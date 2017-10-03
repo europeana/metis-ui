@@ -1,0 +1,32 @@
+.ng-invalid.ng-touched {
+  border-color: red !important;
+}
+
+.metis-autocomplete {
+  position: relative;
+
+  ul {
+    background: #fff;
+    border: 1px solid gray;
+    display: block;
+    top: 40px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 9;
+
+    li {
+      cursor: pointer;
+    }
+  }
+}
+
+.selected-organizations {
+  .tag {
+    cursor: pointer;
+  }
+}
+
+.modal-wrapper {
+  display: block;
+}

@@ -1,0 +1,100 @@
+<div class="metis-form metis-form-horizontal user-profile-form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="profileForm" #formDir="ngForm">
+
+  <div class="messages" *ngIf="userRole=='admin'">
+        <div class="error-message"><i class="fa fa-times" aria-hidden="true"></i> User is admin</div>
+    </div>
+
+    <div class="form-fields">
+      <div class="form-group">
+         <label for="userId">User ID</label>
+         <input type="text" value="12345" name="userId" id="userId" formControlName="userId" />
+      </div> 
+
+      <div class="form-group">
+        <label for="userFirstName">First Name *</label>
+        <input id="userFirstName" name="userFirstName" type="text" formControlName="userFirstName" />
+      </div>
+
+      <div class="form-group">
+        <label for="userLastName">Last Name *</label>
+        <input id="userLastName" name="userLastName" type="text" formControlName="userLastName"  />
+      </div>
+
+      <div class="form-group">
+        <label for="userEmail">Email *</label>
+        <input id="userEmail" name="userEmail" type="text" formControlName="userEmail" />
+      </div>
+
+      <div class="form-group">
+        <label for="userSkype">Skype</label>
+        <input id="userSkype" name="userSkype" type="text" formControlName="userSkype" />
+      </div>
+
+      <div class="form-group">
+        <label for="search-org">Organizations</label>        
+        <div class="metis-autocomplete">
+          <input #searchBox (keyup)="searchOrganization(searchBox.value)" formControlName="organizations" />
+          <ul *ngIf="isSuggesting">
+            <li *ngFor="let org of suggestedOrganizations" (click)="selectThisOrganization(org.organizationId, org.engLabel)">{{org.organizationId}} {{org.engLabel}}</li>
+          </ul>
+        </div>
+      </div>    
+
+      <div class="form-group">
+        <label for="search-org">Selected organizations</label>    
+        <ul class="selected-organizations">
+          <li *ngFor="let select of selectedOrganizations" class="tag" (click)="selectRole(select.id)">{{ select.name }}</li>
+        </ul>
+      </div>
+
+      <div class="modal-wrapper" *ngIf="isRoles">
+        <div class="modal">
+          <div class="head">
+            <a class="btn-close trigger" (click)="closeRolesModal()"></a>
+            <h3 class="headerRole">Select User's Role for: </h3>
+          </div>
+          <div class="content">
+            <div class="role-wrapper">
+              <h4 class="current-selected-organisation"></h4>
+              <select #role class="roles">
+                  <option *ngFor="let role of suggestedRoles" value="{{role.name}}">{{role.name}}</option>                  
+              </select>
+            </div>
+            <button type="button" (click)="confirmRole(role.value)">Confirm role</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea rows="4" cols="50" name="userNotes"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="active">Active</label>
+        <input type="text" name="userActive" id="active" />
+      </div>
+
+      <div class="form-group">
+        <label for="approved">Approved</label>
+        <input type="text" value="No" readonly="" name="userApproved" id="approved" />
+      </div>
+
+      <div class="form-group">
+        <label for="created">Created</label>
+        <input type="text" name="userCreated" id="created" />
+      </div>
+
+      <div class="form-group">
+        <label for="updated">Updated</label>
+        <input type="text" name="userUpdated" id="updated" />
+      </div>
+
+      <div class="form-group form-group-btns user-profile-edit-btns">
+        <button class="submit" type="button">Submit</button>
+      </div>
+
+    </div>
+  </form>
+</div>

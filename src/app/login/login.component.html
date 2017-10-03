@@ -1,0 +1,25 @@
+<div class="metis-login-form metis-form">
+  <form class="login-form" (ngSubmit)="onSubmit()" [formGroup]="loginForm" #formDir="ngForm">
+    <div class="form-header">
+      <h2>Sign in to Metis</h2>
+    </div>
+    <div class="messages">
+    </div>
+    <div class="form-fields">
+      <fieldset class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" placeholder="your@email.com" formControlName="email" />
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="password">New Password</label>
+        <input id="password" type="password" name="password" placeholder="Type your password" formControlName="password" />
+      </fieldset>
+      <div class="forgot-credentials">
+        <p><a href="#">Forgot your credentials? </a></p>
+      </div>
+      <div class="form-group form-group-btns">
+        <button class="login-btn" type="submit" [disabled]="!loginForm.valid">Sign In</button>
+      </div>
+    </div>
+  </form>
+</div>
