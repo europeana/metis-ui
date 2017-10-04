@@ -1,25 +1,13 @@
-<div class="site-hero cf brand-topleft brand-colour-site brand-opacity75" style="background-image: url('http://styleguide.europeana.eu/images/pro/home_image_test.jpg');">
-	<div class="lc">
-		<div class="hero-text">
-			<h2><a href="#"></a></h2>
-			<p></p>
-		</div>
-	</div>
-  <div class="attribution" tabindex="-1">
-    <div class="attribution-toggle">
-      <svg class="icon icon-help">
-        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-help"></use>
-      </svg>
-      <h2 class="is-vishidden">About this image</h2>
-    </div>
+<div class="site-hero" [style.background-image]=heroimage>
+  <div class="attribution">
     <div class="attribution-content white">
-      <a href="http://europeana.eu">This is the attribution text</a>
-      <span rel="cc:useGuidelines" resource="http://www.europeana.eu/rights/pd-usage-guide/"></span>
+      <a [href]=attributionlink>{{attributiontext}}</a>
     </div>
   </div>
   <div class="brand-circles-container">
     <div class="brand-circles">
       <div class="scaling-svg-container">
+
         <svg viewBox="0 0 32 32" preserveAspectRatio="xMidYMin slice">
           <path d="M10.688 0h-0.053c0 5.867-4.768 10.645-10.635 10.645v0.053c5.888 0 10.688-4.8 10.688-10.699z"></path>
           <path d="M15.125 0h-0.053c0 8.32-6.763 15.072-15.072 15.072v0.053c4.043 0 7.84-1.568 10.699-4.427s4.427-6.656 4.427-10.699z"></path>
@@ -30,13 +18,16 @@
           <path d="M19.68 19.68c2.56-2.56 4.565-5.525 5.963-8.843 1.451-3.435 2.187-7.083 2.187-10.837h-0.053c0 15.317-12.459 27.776-27.776 27.776v0.053c3.755 0 7.403-0.736 10.837-2.187 3.307-1.397 6.283-3.403 8.843-5.963z"></path>
           <path d="M31.947 0c-0.032 17.6-14.347 31.915-31.947 31.947v0.053c4.309-0.011 8.48-0.853 12.427-2.517 3.819-1.611 7.243-3.925 10.187-6.869s5.259-6.368 6.869-10.187c1.664-3.947 2.507-8.117 2.517-12.427h-0.053z"></path>
         </svg>
+
       </div>
     </div>
   </div>
+
   <div class="brand-text-wrapper">
     <div class="brand-text-wrapper-inner">
       <div class="brand-text">
-        <div class="scaling-svg-container" style="padding-bottom: 24%">
+        <div class="scaling-svg-container">
+
           <svg viewBox="0 0 313.3 80.6" preserveAspectRatio="xMidYMin slice">
             <path d="M31.3,44.1c0,1.3-0.6,1.9-1.9,1.9H8.6v2.2c0,7.1,3.1,10.7,9.2,10.7c3.6,0,6.8-0.8,9.5-2.3c0.2-0.2,0.6-0.3,0.9-0.3
               c0.8,0,1.3,0.4,1.7,1.2c0.5,1.2,0.3,2-0.8,2.7C26,62.1,22.2,63,17.7,63c-4.7,0-8.2-1.5-10.6-4.5C5.1,56,4,52.5,4,48v-6.7
@@ -76,6 +67,7 @@
               c4.8,0,8.3,1.2,10.2,3.7c1.7,2.2,2.6,5.6,2.6,10.4v14.1c0,2.5,0.7,4.1,2.1,4.8c0.8,0.3,1.2,0.9,1.2,1.7
               C310.5,62.3,309.8,63,308.3,63z M302.7,45.8H294c-5.7,0-8.5,2.1-8.5,6.3v0.6c0,4.2,2.8,6.3,8.4,6.3c5.9,0,8.9-2.9,8.9-8.6V45.8z"></path>
           </svg>
+
         </div>
       </div>
     </div>
@@ -83,14 +75,14 @@
 </div>
 
 <div>
-    <section class="banner" id="banner">
+    <section class="banner">
       <div class="lc">
-        <div class="banner-info">
-          <h2>Metis</h2>
-          <p>An Alpha release means that this website is in active development and will be updated regularly. It may sometimes be offline. Your feedback will help us improve our site.</p>
+        <h2 *ngIf="bannerheading">{{bannerheading}}</h2>
+        <div class="banner-info">          
+          <p *ngIf="bannertext">{{bannertext}}</p>
         </div>
-        <div class="banner-link">
-          <a href="login" class="btn btn-light pill">Login</a>
+        <div class="banner-link" *ngIf="bannertext && bannerlinktext">
+          <a [href]=bannerlink class="btn btn-light pill">{{bannerlinktext}}</a>
         </div>
       </div>
     </section>
