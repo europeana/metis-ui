@@ -1,0 +1,71 @@
+// Base styling for links
+//
+// :hover             - Subtle hover highlight.
+//
+// Styleguide 1.0.0
+
+a {
+
+  color: $textcolour_link;
+  text-decoration: none;
+
+  &:hover{
+    color: darken($textcolour_link, 15%);
+    cursor: pointer;
+  }
+
+  &.highlight{
+    color: $icon_primary;
+
+    &:hover{
+      $darker: darken($icon_primary, 15%);
+      color: $darker;
+      border-bottom: 1px dotted $darker;
+    }
+  }
+
+  &.external:after{
+    @extend %external_link_icon;
+    margin-left: 0.2em;
+  }
+}
+
+.highlight{
+  color: $icon_primary;
+}
+
+// External link icon - indicates that a link is external to europeana
+//
+// Should be extended from site specific scss due to url in the css
+// using this code: a[href*="//"]:not([href*="pro.europeana.com"]):after
+//
+// Styleguide 1.0.0
+
+%external_link_icon{
+  content: '';
+  background: center right no-repeat;
+    @include svg-bg-with-fallback("icons/link_external");
+    background-size: contain;
+    padding-right: 1.2em;
+}
+
+// Skip to main link (uses is-vishidden)
+
+.skip-main:focus,
+.skip-main:active,
+.skip-content:focus,
+.skip-content:active{
+    color: #fff;
+    background-color: $black;
+    left: auto;
+    width: auto;
+    height: auto;
+    overflow:auto;
+    margin: 0 auto;
+    padding: $pad-half;
+    border:4px solid yellow;
+    text-align:center;
+    z-index:999;
+    display: block;
+    clip: auto;
+}

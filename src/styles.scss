@@ -1,3 +1,115 @@
-.pusher {
-	height: auto !important;
-}
+@charset 'UTF-8';
+
+@import 'node_modules/compass-mixins/lib/compass/css3';
+@import 'assets/sass/scss/generic/variables';
+@import 'assets/sass/scss/iconography/svg-icons-metis';
+
+// Europeana variables
+
+
+// Mixins
+@import 'assets/sass/scss/generic/mixins';
+
+
+//SITE SPECIFIC VARIABLE OVERRIDES HERE
+$accent: $eu-user;
+$textcolour_highlight: $accent;
+
+
+// Reset
+@import 'assets/sass/scss/generic/reset';
+
+//------------------------------------
+//  $GLOBAL ELEMENTS
+//------------------------------------
+@import 'assets/sass/scss/base/global-classes';
+@import 'assets/sass/scss/base/main';
+@import 'assets/sass/scss/base/links';
+@import 'assets/sass/scss/base/headings_simple';
+@import 'assets/sass/scss/base/text';
+@import 'assets/sass/scss/base/lists';
+@import 'assets/sass/scss/base/media';
+@import 'assets/sass/scss/base/forms';
+@import 'assets/sass/scss/base/tables';
+
+
+// //------------------------------------
+// //  $PAGE STRUCTURE
+// //------------------------------------
+@import 'assets/sass/scss/objects/header';
+@import 'assets/sass/scss/objects/footer';
+@import 'assets/sass/scss/objects/sections';
+// @import 'assets/sass/scss/objects/blocks';
+// //@import 'assets/sass/scss/objects/blocks/promo-module';
+// //@import 'assets/sass/scss/objects/blocks/browse-entry';
+@import 'assets/sass/scss/objects/blocks/site-hero';
+
+// //------------------------------------
+// //  $NAVIGATION
+// //------------------------------------
+// //global nav styles - includes primary, secondary, tertiary and global offscreen navigation styles
+// @import 'assets/sass/scss/objects/nav';
+
+// //navigation types
+// @import 'assets/sass/scss/objects/navigation/pagination';
+// @import 'assets/sass/scss/objects/navigation/next-previous';
+// @import 'assets/sass/scss/objects/navigation/breadcrumbs';
+// @import 'assets/sass/scss/objects/navigation/phase-flags';
+
+// //------------------------------------
+// //  Buttons and text Styles
+// //------------------------------------
+@import 'assets/sass/scss/objects/buttons';
+// @import 'assets/sass/scss/objects/tags';
+// @import 'assets/sass/scss/objects/action-links';
+// @import 'assets/sass/scss/objects/corner-ribbon';
+// @import 'assets/sass/scss/objects/category-flags';
+// @import 'assets/sass/scss/objects/file-detail';
+@import 'assets/sass/scss/objects/attribution';
+// @import 'assets/sass/scss/objects/social-share';
+// @import 'assets/sass/scss/objects/tooltip';
+@import 'assets/sass/scss/theme/hero-branding-v2';
+
+// // Global icons (svg)
+// @import 'assets/sass/scss/objects/icons/svgicons';
+// // license icons
+// @import 'assets/sass/scss/objects/icons/icons-licenses';
+
+// //------------------------------------
+// //  Components
+// //------------------------------------
+// @import 'assets/sass/scss/objects/controls/dropdown';
+// @import 'assets/sass/scss/objects/controls/buttonbar';
+// @import 'assets/sass/scss/objects/controls/results-filter';
+// @import 'assets/sass/scss/objects/controls/sparkline';
+// @import 'assets/sass/scss/objects/controls/search-multiterm';
+// @import 'assets/sass/scss/objects/controls/attribution-widget';
+// @import 'assets/sass/scss/objects/controls/form-control-groups';
+// @import 'assets/sass/scss/objects/controls/sortby';
+
+// //------------------------------------
+// //  Metis
+// //------------------------------------
+
+@import 'assets/sass/pandora/settings/metis-variables';
+@import 'assets/sass/pandora/tools/ellipsis-mixin';
+
+@import 'assets/sass/pandora/base/form';
+@import 'assets/sass/pandora/base/form-custom';
+@import 'assets/sass/pandora/base/helpers';
+@import 'assets/sass/pandora/base/layout';
+@import 'assets/sass/pandora/base/table';
+
+@import 'assets/sass/pandora/components/accordion';
+@import 'assets/sass/pandora/components/banner';
+@import 'assets/sass/pandora/components/breadcrumbs';
+@import 'assets/sass/pandora/components/collapse-block';
+@import 'assets/sass/pandora/components/dashboard-header';
+@import 'assets/sass/pandora/components/dataset-info-block';
+@import 'assets/sass/pandora/components/modal';
+@import 'assets/sass/pandora/components/selects-nav';
+@import 'assets/sass/pandora/components/sitehero';
+
+//@import '../search/search-site';
+//@import 'site';
+

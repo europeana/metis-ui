@@ -1,0 +1,45 @@
+.pagination {
+  font-size: 0;
+  margin: $space 0 $space-double 0;
+  overflow: hidden;
+  text-align: center;
+
+  li {
+    @include fontSize(16px);
+
+    border-right: 1px solid $grey2;
+    display: inline-block;
+
+    &:last-child {
+      border: 0;
+    }
+  }
+
+  a {
+    color: $textcolour_body;
+    display: block;
+    font-weight: bold;
+    padding: $pad-half $pad;
+
+    &:hover{
+      background-color: $offwhite;
+      color: $textcolour_body;
+    }
+  }
+
+  .is-disabled a{
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .current a,
+  .is-current a{
+    background-color: $textcolour_body;
+    color: $white;
+    font-weight: bold;
+
+    &:hover{
+      background-color: $textcolour_link;
+    }
+  }
+}

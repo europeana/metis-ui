@@ -1,0 +1,52 @@
+/* Global Font Classes */
+.font-secondary {
+	font-family: $font-secondary;
+}
+
+//Intro text
+.intro {
+	font-size: 1.5625em;
+}
+
+//Pullquote
+.pullquote {
+	position:relative;
+	padding: $space;
+	border-left: none;
+
+	color: $textcolour_head;
+	@include font-size(2);
+	line-height: 1.2;
+
+
+	&:before, &:after{
+		@include font-size(4);
+		color: $textcolour_head;
+	}
+
+	&:before{
+		content: "\201C";
+		position:absolute;
+		left: $space;
+		top: 0.4em;
+		line-height: 0.1em;
+	}
+
+	@media all and (min-width: $bp-small-3) {
+		float: right;
+		width: 45%;
+	}
+}
+
+
+//caption
+.caption{
+	border-top: 1px solid $grey2;
+	padding-top: 0.4em;
+	color: $textcolour_body;
+}
+.caption-text{
+	display: block;
+	max-width: 12em;
+	font-size: $font-size-sm;
+}

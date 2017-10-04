@@ -1,0 +1,19 @@
+// Attribution widget styles
+
+
+.widget-attribution{
+
+  .input-attr-wrapper{
+    position: relative;
+  }
+
+  .input-attr{
+    margin-bottom: $space-half;
+    float: left;
+  }
+
+  .input-attr:focus, .input-attr.is-active{
+    background-color: transparent;
+  }
+
+}

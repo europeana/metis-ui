@@ -1,0 +1,33 @@
+.selects-nav {
+  border-bottom: 1px solid $gray87;
+  border-top: 1px solid $gray87;
+  color: $gray-light;
+  display: flex;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+  padding: 0.25rem 0;
+
+  li {
+    border-left: 1px solid $gray87;
+    display: inline-block;
+    flex-grow: 1;
+    padding: 0.25rem 0;
+    text-align: center;
+
+    &:first-child {
+      border-left: 0;
+    }
+
+    &::after {
+      color: $gray-light;
+      content: '\f0d7';
+      display: inline-block;
+      font-family: fontawesome;
+      font-size: 0.8rem;
+      line-height: inherit;
+      padding-left: 1rem;
+    }
+
+  }
+
+}

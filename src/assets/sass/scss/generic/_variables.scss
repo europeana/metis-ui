@@ -1,0 +1,205 @@
+//*------------------------------------*\
+//    $VARIABLES
+//\*------------------------------------*/
+
+//Base Colors
+
+
+
+//  footer bg $grey2 : #e7e7e7;
+//  footer section titles 	#74747b
+//  Footer text  #212121
+//  Footer icons,  top border, footer logo : #293745
+//  footer funded by line #777777
+//  footer seperator line: #a0a0a0
+//
+//  sidebar bg: 				#f1f1ee
+//  sidebar dividers: 			#dedede
+//
+//  top tab divider:  			#dedede
+//
+//  result title text: 			#212121
+//  result description text: 	#575757
+//  results divider line: 		#dedede
+//
+//  view options bg: #fafafa
+//  view options back to top bg: #dedede
+//  view options back to top top border: #cecece
+//
+//  Search Home bg: #EFEFED
+//
+
+//Neutrals
+$grey2: #e7e7e7;
+$grey3: #dedede;
+
+// Neutrals
+$white: #fff;
+$offwhite: #f1f1ee;
+$paper: #d9d4ca;
+
+$gray97: #f8f8f8;
+$gray87: #dedede;
+$gray80: #ccc;
+$gray65: #a6a6a6;
+$gray47: #777;
+$gray30: #4d4d4d;
+
+$gray-lightest: $gray97;
+$gray-lighter: $gray80;
+$gray-light: $gray47;
+$gray-med: $gray30;
+$medium-gray: $gray30;
+
+$gray-dark: #212121; //13
+$black: #1a1a1a;
+$opacity-black: rgba(0, 0, 0, 0.7);
+
+//Europeana brand colours
+$eu-yellow: #ffae00;
+$eu-red: #f22f24;
+$eu-lightblue: #4bc0f0;
+$eu-blue: #1676aa;  // previously #1A8AC7, replaced for WCAG AA compliance
+$eu-jade: #37b98b;
+$eu-raspberry: #e11d53;
+$eu-purple: #7f3978;
+$eu-pink: #fe2d67;
+$eu-orange: #d43900; // previously #E85217, replaced for WCAG AA compliance
+
+$blue-dark: #293745;
+$blue-grey: #c8d5d7;
+
+$peachy: #d12d1e; // previously #e96e62, replaced for WCAG AA compliance
+
+$linkblue: #095f90; // WCAG AA All text + AAA for text > 18pt
+$link-blue: $linkblue;
+
+/////////////////////////////////////////////////////////
+
+// Assign colours to functions
+//
+//Europeana channel colours
+$eu-user: $eu-blue;
+$eu-labs: $eu-jade;
+$eu-pro: $eu-raspberry;
+
+//default highlight colour - can be overridden per site
+$accent: $eu-blue !default;
+
+
+// global page
+$page_bg: $white;
+
+// text
+// Light backgrounds
+$textcolour_head: $black;
+$textcolour_body: $gray-med;
+$textcolour_heavy: $gray-dark;
+$textcolour_highlight: $accent;
+$textcolour_link: $linkblue;
+$textcolour_link_hover: darken($textcolour_link, 15%);
+$text_secondary: $gray-light;
+
+//Dark Backgrounds eg. footer
+$textcolour_dark_body: $gray-light;
+$textcolour_dark_head: $offwhite;
+
+
+$footer_headings: $gray-dark; //grayblue
+$footer_text: $gray-dark;
+
+//Menus
+$offcanvas_bg: $blue-dark;
+
+//backgrounds
+$darkbg: $black;
+$block_bg: $offwhite;
+
+$media_bg: #726f6f; //graybrown
+
+
+// buttons
+$tag_primary: $accent;
+$tag_primary_text: $accent;
+$tag_highlight: $gray-dark;
+
+//Icons
+$icon_primary: $accent !default;
+
+//State, messaging colours
+$error: $eu-red;
+$valid: $eu-jade;
+
+$dim02: rgba(0, 0, 0, 0.2);
+$dim: rgba(0, 0, 0, 0.5);
+$dim07: rgba(0, 0, 0, 0.7);
+$dimmer: rgba(0, 0, 0, 0.8);
+
+
+/////////////////////////////////////////////////////////
+
+
+//Typography
+$font-primary: "Open Sans", "Arial", sans-serif;
+$font-secondary: "Ubuntu", "Arial", sans-serif;
+$font-code: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+
+$font-size-norm: 1em;
+$font-size-slightly-smaller: 0.875em;
+$font-size-sm: 0.75em;
+$font-size-med: 1.2em;
+$font-size-large: 1.6em;
+$base-font-multiplier: 1;
+
+
+//Brand colours
+$brand-facebook: #03539e;
+$brand-twitter: #35ccff;
+$brand-linkedin: #217bc1;
+$brand-pinterest: #b81621;
+$brand-google: #e93f2e;
+$brand-soundcloud: #ff5500;
+$brand-tumblr: #35465c;
+$brand-instagram: #ec5972;
+
+//Layout
+$max-width: 80rem;
+$offset-left-1: 4.5rem;
+
+//Defaults
+$space: 1.6rem;
+$space-and-half: $space * 1.5;
+$space-double: $space * 2;
+$space-triple: $space * 3;
+$space-quad: $space * 4;
+$space-half: $space / 2;
+$space-quarter: $space / 4;
+$pad: 1rem;
+$pad-and-half: $pad * 1.5;
+$pad-double: $pad * 2;
+$pad-half: $pad / 2;
+$pad-quarter: $pad / 4;
+
+//Borders
+$border-med: 3px;
+$border-thick: 7px;
+$base-border-radius: 4px;
+
+// Global navigation
+$globalnavheight: $space-triple;
+$globalnavheight-with-search-small: $space * 4.875;
+$globalnavheight-with-search-large: $space * 6.5;
+
+// Global Off screen navigation
+$menuwidth_right: 250px;
+$menu_top: 300px;
+
+//Breakpoints
+$bp-small: 24em;
+$bp-small-2: 30em;
+$bp-small-3: 40em;
+$bp-med: 50em;
+$bp-large: 60em;
+$bp-xl: 70em;
+$bp-xxl: 90em;
+

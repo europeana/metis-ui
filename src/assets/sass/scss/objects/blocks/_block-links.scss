@@ -1,0 +1,46 @@
+// links grid
+.link-block{
+
+	margin-bottom: $space;
+	text-align: left;
+	min-height: 10em;
+
+	a{
+		color: $textcolour_body;
+		background-color: $offwhite;
+		display: block;
+	}
+
+	.b-thumb{
+		line-height: 1;
+	}
+
+	.b-text{
+		padding: $space-half $space;
+	}
+
+	.item-title{
+		margin-bottom: 0.6rem;
+		line-height: 1.2;
+	}
+}
+
+.link-block-text{
+	.b-text{
+		padding: $space;
+		border-top: solid 6px $accent;
+	}
+}
+
+.link-block-image{
+	.b-thumb{
+		padding-top: 50%;
+		background-size: cover;
+		background-position: 50% 50%;
+    height: 15em;
+	}
+
+	a:hover .item-title{
+		color: $textcolour_link_hover;
+	}
+}

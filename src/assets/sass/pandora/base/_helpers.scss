@@ -1,0 +1,56 @@
+body {
+  background-image: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.block-with-text {
+  @include multiLineEllipsis($maxWidth: 10.3em, $lineHeight: 1.2em, $lineCount: 3);
+}
+
+.dropdown {
+  margin-left: -1em;
+  margin-top: 10px;
+}
+
+.btns-set {
+  background-color: $white;
+  border: 0;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+  margin-right: 0;
+  padding-left: 1.125rem;
+  padding-right: 1.125rem;
+  width: 100%;
+
+  .btn-padding {
+    display: flex;
+    width: 100%;
+
+    .btn {
+      flex-grow: 1;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.load-more-btn {
+  background: none;
+  border-radius: 0;
+  color: $eu-jade;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+
+  &::after {
+    color: $gray80;
+    content: '\f142';
+    display: inline-block;
+    font-family: fontawesome;
+    font-size: 1rem;
+    padding-left: 1rem;
+  }
+
+}
+

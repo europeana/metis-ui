@@ -1,0 +1,50 @@
+.attribution {
+
+  background-color: rgba(#000, 0.7);
+  border-radius: 4px;
+  padding: $space-quarter;
+  font-size: $font-size-sm;
+  color: $gray97;
+
+  .origin{
+    display: block;
+  }
+
+  .license, a{
+    color: $gray87;
+    display: block;
+  }
+
+  &:focus{
+    .attribution-content{
+       display:block;
+    }
+    .attribution-toggle{
+      display: none;
+    }
+  }
+
+}
+
+.attribution-toggle {
+  color: $white;
+  cursor:pointer;
+  @media all and (min-width: $bp-med) {
+    display: none;
+  }
+}
+
+.attribution-content{
+  display: none;
+  @media all and (min-width: $bp-med) {
+    display: block;
+  }
+  .license .svg-icon-linkout{
+    height:        2em;
+    margin-bottom: -0.5em;
+    margin-left:   -0.2em;
+    margin-top:    0;
+    transform:     scale(0.5);
+    width:         2.2em;
+  }
+}

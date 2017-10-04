@@ -1,0 +1,96 @@
+.header-wrapper {
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+}
+
+.header {
+  background: rgba($white, 0.85);
+  min-height: $globalnavheight;
+  padding: 0;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+
+  @include box-shadow(rgba($gray-med, 0.2) 0 0 3px);
+
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+.header > .cf{
+  border-top: 6px solid $accent;
+  position: relative;
+}
+
+.after-header{
+  margin-top: $globalnavheight;
+}
+
+.after-header-with-search{
+
+  margin-top: $globalnavheight-with-search-small;
+  
+  &.e7a1418-nav-wrapper{
+    margin-bottom: -$globalnavheight-with-search-small;
+  }
+  
+  &.search-open{
+    margin-top: $globalnavheight-with-search-large;
+    
+    &.e7a1418-nav-wrapper{
+      margin-bottom: -$globalnavheight-with-search-large;
+    }
+
+    @media only screen and (min-width: $bp-med) {
+      margin-top: $globalnavheight-with-search-small;
+      
+      &.e7a1418-nav-wrapper{
+        margin-bottom: -$globalnavheight-with-search-small;
+      }
+
+    }
+  }
+
+  @media only screen and (min-width: $bp-small-2) {
+    margin-top: $globalnavheight-with-search-large;
+    
+    &.e7a1418-nav-wrapper{
+      margin-bottom: -$globalnavheight-with-search-large;
+    }
+  }
+
+  @media only screen and (min-width: $bp-med) {
+    margin-top: $globalnavheight-with-search-small;
+    &.e7a1418-nav-wrapper{
+      margin-bottom: -$globalnavheight-with-search-small;
+    }
+  }
+}
+
+.logo {
+  display: block;
+  float: left;
+  width: 50%;
+  max-width: 168px;
+  height: 58px;
+  margin: 0.4rem;
+  margin-left: 2%;
+
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('/assets/images/europeana-logo-default.png');
+
+  .svg &{
+    background-image: url('/assets/images/europeana-logo-default.svg');
+  }
+  h1 {
+    padding-top: 5em;
+  }
+}
+
+// See objects/navigation/global-nav for offscreen menus and multi-site nav styles
+

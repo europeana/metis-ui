@@ -1,0 +1,88 @@
+.stats-bar{
+	background-color: $blue-dark;
+	color: $white;
+
+	@media all and (min-width: $bp-xl) {
+		> ul{
+			display: flex;
+			flex-direction: row;
+		}
+	}
+
+
+	li{
+		display: block;
+		padding: $space-half;
+		border-bottom: 3px solid lighten($blue-dark, 10%);
+
+		@media all and (min-width: $bp-small) {
+			width: 50%;
+			float: left;
+		}
+
+		@media all and (min-width: $bp-med) {
+			width: 33%;
+			border-bottom: 0;
+			border-right: 3px solid lighten($blue-dark, 10%);
+			padding: 0 $space-half;
+			margin: $space-half 0;
+		}
+
+		@media all and (min-width: $bp-xl) {
+		  width: 16.6666%;
+		  flex: 1;
+
+		  &:last-child{
+				border: none;
+
+				.tooltip{
+					left: auto;
+					right: -2em;
+				}
+			}
+		}
+	}
+
+	.tooltip-container{
+		float: right;
+		color: rgba(255,255,255,0.6);
+		&:hover, &:focus {
+			color: rgba(255,255,255,1);
+		}
+		.icon{
+			margin-right: 0;
+		}
+	}
+
+	.stat-title{
+		font-weight: normal;
+		text-transform: none;
+		font-size: $font-size-slightly-smaller;
+	}
+	.stat-wrapper{
+		text-align: left;
+	}
+	.stat-display figcaption{
+		margin-bottom: $space-quarter;
+		color: $gray-lightest;
+	}
+
+	.stat-number{
+		@media all and (min-width: $bp-xl) {
+			display: block;
+		}
+	}
+
+	.stat-trend{
+		font-size: $font-size-slightly-smaller;
+
+		@media all and (max-width: $bp-xl) {
+			position: absolute;
+			top: 45%;
+			right: 0;
+		}
+		@media all and (min-width: $bp-xl) {
+			margin-top: $space-quarter;
+		}
+	}
+}

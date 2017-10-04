@@ -1,0 +1,64 @@
+.metis-dataset-info-block {
+  background-color: $white;
+  margin-bottom: 2rem;
+  padding: 0 1.125rem;
+
+  h5 {
+    color: $eu-jade;
+    font-weight: bold;
+    margin-bottom: 0;
+    padding: 1rem 0;
+  }
+
+  dl {
+
+    border-bottom: 1px solid $offwhite;
+    margin-bottom: 0;
+    overflow: hidden;
+
+    dt,
+    dd {
+      border-top: 1px solid $offwhite;
+      float: left;
+      font-size: 0.875rem;
+      padding: 0.75rem 0;
+      width: 50%;
+    }
+
+    dt {
+      clear: left;
+      color: $gray-light;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .extra-info {
+      background: $eu-jade;
+      border-radius: 0.7rem;
+      color: $white;
+      display: inline-block;
+      font-weight: normal;
+      height: 1rem;
+      line-height: 1rem;
+      text-align: center;
+      width: 1rem;
+    }
+
+  }
+
+  .dataset-btns {
+
+    .btns-set {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    i {
+      display: none;
+    }
+
+    .fa-plus::before {
+      content: '';
+    }
+  }
+}

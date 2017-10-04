@@ -1,0 +1,18 @@
+//Article
+.article-header {
+	h1 {
+		font-size: 2.5em;
+	}
+}
+
+
+
+.byline {
+	font-size: $font-size-slightly-smaller;
+	font-style: italic;
+	margin-bottom: $space-half;
+}
+.byline-author, .byline-time{
+	font-weight: bold;
+}
+

@@ -1,0 +1,51 @@
+ol, ul {
+  list-style: none;
+}
+
+/* Definition Lists */
+dl {
+  overflow: hidden;
+  margin: 0 0 $space;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd {
+  margin-left: 0;
+}
+
+.inline-list, ul.inline-list {
+    margin-left: 0;
+  li {
+    display: inline-block;
+    margin-right: $space-quarter;
+  }
+}
+
+// Comma separated inline text list
+.comma-list{
+
+    > *, li {
+        display: inline-block;
+        margin-right: 0.4em;
+    }
+
+    li:after{
+        content: ',';
+    }
+    li:last-child:after{
+        content: '';
+    }
+
+    li.split-items{
+      display: block;
+      margin-bottom: 1em;
+      &:after{
+        content: '';
+      }
+    }
+}
+
+

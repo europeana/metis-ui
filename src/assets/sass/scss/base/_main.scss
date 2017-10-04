@@ -1,0 +1,49 @@
+body, html{
+  height: 100%;
+}
+
+body {
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -o-hyphens: auto;
+  hyphens: auto;
+
+  word-wrap: break-word;
+  // non standard for webkit
+  word-break: break-word;
+
+  background: $page_bg;
+  font: 16px/1.6 $font-primary; //16px default font
+  -webkit-text-size-adjust: 100%;
+  color: $textcolour_body;
+}
+
+/*------------------------------------*\
+    $LAYOUT
+\*------------------------------------*/
+
+/* Layout Container */
+.lc {
+  max-width: $max-width;
+  margin: 0 auto;
+  @extend .cf;
+}
+
+
+/*------------------------------------*\
+    $MAIN CONTENT AREA
+\*------------------------------------*/
+
+main, [role=main] {
+  @extend .cf;
+
+  &:not(.after-header-with-search){
+    padding-top: $globalnavheight;
+  }
+
+}
+
+
+
