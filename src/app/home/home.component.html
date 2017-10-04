@@ -1,5 +1,5 @@
 <div class="site-hero" [style.background-image]=heroimage>
-  <div class="attribution">
+  <div class="attribution" *ngIf="attributionlink && attributiontext">
     <div class="attribution-content white">
       <a [href]=attributionlink>{{attributiontext}}</a>
     </div>
