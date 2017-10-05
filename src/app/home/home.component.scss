@@ -1,3 +1,27 @@
 .site-hero {
-	height: 400px;
+  height: 50vh;
+
+  .brand-text-wrapper {
+    .scaling-svg-container {
+      padding-bottom: 24%;
+    }
+  }
+
+}
+
+.banner {
+
+  .banner-info,
+  .banner-link {
+    float: left;
+    padding: 0 1rem 0 0;
+    width: 50%;
+  }
+
+  .banner-link {
+    padding-left: 5rem;
+    padding-right: 0;
+    width: 50%;
+  }
+
 }
