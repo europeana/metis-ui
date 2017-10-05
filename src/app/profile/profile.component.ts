@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router }   from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
 import { OrganizationsService } from '../services/organizations.service';
@@ -16,7 +17,8 @@ export class ProfileComponent implements OnInit {
 
   constructor(private http: HttpClient, 
       private authentication: AuthenticationService, 
-      private organizations: OrganizationsService) { }
+      private organizations: OrganizationsService,
+      public router: Router) { }
 
   profileForm: FormGroup;
   allOrganizations: {};
@@ -28,17 +30,24 @@ export class ProfileComponent implements OnInit {
   selectedOrganizations = [{ id: 11, name: 'Europeana' }, { id: 12, name: 'KB' }];
   user: {};
   userRole: string;
+  userApproved: boolean;
+  editMode = false;
 
   ngOnInit(): void {
 
-    this.user = this.authentication.getAuthenticationStatus();
+    this.authentication.redirectLogin()
+    
+    this.user = this.authentication.getUserInfo();
     this.userRole = this.user['role'];
+    this.userApproved = this.user['approved'];
 
   	this.profileForm = new FormGroup({
       'userId': new FormControl(this.user['id'], [Validators.required]),
+      'userEmail': new FormControl('bilbo.baggins@europeana.eu', [Validators.required]),
       'userFirstName': new FormControl('Bilbo', [Validators.required]),
       'userLastName': new FormControl('Baggins'),
-      'userEmail': new FormControl('bilbo.baggins@europeana.eu', [Validators.required]),
+      'userPassword': new FormControl('test1234'),
+      'userCountry': new FormControl('Belgium'),
       'userSkype': new FormControl('bbaggins', [Validators.required]),
       'organizations': new FormControl(''),
       'userNotes': new FormControl('Mapping for edm:rights'),
@@ -50,6 +59,14 @@ export class ProfileComponent implements OnInit {
 
     this.organizations.getOrganizations().subscribe(data => this.allOrganizations = data['results']);
 
+  }
+
+  toggleEditMode() {
+    if (this.editMode == false) {
+      this.editMode = true;
+    } else {
+      this.editMode = false;
+    }
   }
 
   searchOrganization(term) {
@@ -76,6 +93,10 @@ export class ProfileComponent implements OnInit {
 
   closeRolesModal () {
     this.isRoles = false;
+  }
+
+  onSubmit() {
+    console.log('submit');
   }
 
 }

@@ -1,29 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router }   from '@angular/router';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  providers: [AuthenticationService]
 })
-export class LoginComponent implements OnInit {
-
-  constructor(public router: Router) { }
+export class LoginComponent {
 
   loginForm: FormGroup;
-  
-  ngOnInit(): void {
+  errors: boolean;
+  errorMessage: string;
 
-    this.loginForm = new FormGroup({
-      'email': new FormControl('', [Validators.required]),
-      'password': new FormControl('', [Validators.required])
+  constructor(private authentication: AuthenticationService, private fb: FormBuilder) { 
+    this.authentication.redirectProfile();
+    this.createForm();
+  }
+
+  createForm() {
+    this.loginForm = this.fb.group({
+      'email': ['', Validators.required ],
+      'password': ['', Validators.required ]
     });
-
-  }  
-
-  onSubmit() { 
-    this.router.navigate(['profile']);
+  }
+  
+  onSubmit() {
+    if (this.authentication.validateUser(this.loginForm)=== false) { 
+      this.errors = true; 
+      this.errorMessage = "Wrong credentials";
+    }
   }
 
 }

@@ -48,13 +48,13 @@ $textcolour_highlight: $accent;
 // //  $NAVIGATION
 // //------------------------------------
 // //global nav styles - includes primary, secondary, tertiary and global offscreen navigation styles
-// @import 'assets/sass/scss/objects/nav';
+@import 'assets/sass/scss/objects/nav';
 
 // //navigation types
 // @import 'assets/sass/scss/objects/navigation/pagination';
 // @import 'assets/sass/scss/objects/navigation/next-previous';
 // @import 'assets/sass/scss/objects/navigation/breadcrumbs';
-// @import 'assets/sass/scss/objects/navigation/phase-flags';
+@import 'assets/sass/scss/objects/navigation/phase-flags';
 
 // //------------------------------------
 // //  Buttons and text Styles
