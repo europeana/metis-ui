@@ -8,9 +8,9 @@ export class OrganizationsService {
   constructor(private http: HttpClient) {} 
 
   organizations: {};
-  apiurl = 'http://metis-core-rest-test.cfapps.io/organizations?apikey=public_r';
-  apiurlsuggest = 'http://metis-core-rest-test.cfapps.io/organizations/suggest?apikey=public_r&searchTerm=';
-  apiurlroles = 'http://metis-core-rest-test.cfapps.io/organizations/roles?apikey=public_r&organizationRoles=EUROPEANA';
+  apiurl = 'http://metis-core-rest-test.cfapps.io/organizations?apikey=';
+  apiurlsuggest = 'http://metis-core-rest-test.cfapps.io/organizations/suggest?apikey=&searchTerm=';
+  apiurlroles = 'http://metis-core-rest-test.cfapps.io/organizations/roles?apikey=&organizationRoles=EUROPEANA';
 
 	getOrganizations() {
     return this.http.get(this.apiurl).map((res:Response) => res);
