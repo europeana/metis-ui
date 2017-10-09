@@ -31,13 +31,13 @@ export class AuthenticationService {
   }
 
   redirectLogin() {
-    if (!this.validatedUser) {
+    if (!this.validatedUser()) {
       this.router.navigate(['login']);
     }
   }
 
   redirectProfile() {
-    if (this.validatedUser) {
+    if (this.validatedUser()) {
       this.router.navigate(['profile']);
     }
   }

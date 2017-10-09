@@ -71,9 +71,9 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/scss/theme/hero-branding-v2';
 
 // // Global icons (svg)
-// @import 'assets/sass/scss/objects/icons/svgicons';
+//@import 'assets/sass/scss/objects/icons/svgicons';
 // // license icons
-// @import 'assets/sass/scss/objects/icons/icons-licenses';
+@import 'assets/sass/scss/objects/icons/icons-licenses';
 
 // //------------------------------------
 // //  Components

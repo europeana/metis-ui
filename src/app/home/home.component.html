@@ -2,6 +2,7 @@
   <div class="attribution" *ngIf="attributionlink && attributiontext">
     <div class="attribution-content white">
       <a [href]=attributionlink>{{attributiontext}}</a>
+      <a *ngIf="attributionrightslink && attributionrights" [href]=attributionrightslink class="license icon-license-zero" target="_blank">{{attributionrights}}<span class="svg-icon-linkout"></span></a>
     </div>
   </div>
   <div class="brand-circles-container">

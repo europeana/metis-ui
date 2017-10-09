@@ -34,7 +34,7 @@ export class ProfileComponent implements OnInit {
   editMode = false;
 
   ngOnInit(): void {
-
+    
     this.authentication.redirectLogin()
     
     this.user = this.authentication.getUserInfo();
