@@ -35,7 +35,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     
-    this.authentication.redirectLogin()
+    this.authentication.redirectLogin();
     
     this.user = this.authentication.getUserInfo();
     this.userRole = this.user['role'];

@@ -1,7 +1,17 @@
+.lc {
+  margin: 0 auto;
+  max-width: 80rem;
+}
+
 // metis main content
 .metis-main-content {
   margin: 7rem 0;
-  min-height: calc(100vh - 55rem); // keeping the footer at the bottom even when there is not enough content to push it down.
+  min-height: calc(100vh - 55rem);
+
+  &.metis-main-content-home {
+    margin-top: 0;
+  }
+
 }
 
 // dashboard wrapper
@@ -23,9 +33,7 @@
     .metis-dashboard-right {
       //@include span(last 16);
     }
-
   }
-
 }
 
 // mapping card related layout

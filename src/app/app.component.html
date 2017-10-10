@@ -1,6 +1,6 @@
 <app-header></app-header>
 <div class="pusher">
-  <div class="metis-main-content">
+  <div class="metis-main-content" [ngClass]="{'metis-main-content-home': isHome }">
     <router-outlet></router-outlet>
   </div>
 </div>
