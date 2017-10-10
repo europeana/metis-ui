@@ -12,13 +12,15 @@ export class AppComponent implements OnInit {
   constructor(public router: Router) {}
 
   routerEventSubscription;
-  isHome: boolean;
+  isHome: boolean = false;
   
   ngOnInit(): void {
 
     this.routerEventSubscription = this.router.events.subscribe((event: any) => {
       if (this.router.isActive(event.url, false)) { 
-        this.isHome = event.url.includes('home');
+        if (event.url.includes('home') || event.url === '/') {
+          this.isHome = true;
+        }
       }
     });
 
