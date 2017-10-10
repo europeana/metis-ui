@@ -5,9 +5,9 @@
 }
 
 .header {
-  @include box-shadow(rgba($gray-med, 0.2) 0 0 3px);
-
   background: rgba($white, 0.85);
+  -webkit-box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
+  box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
   min-height: $globalnavheight;
   padding: 0;
   position: relative;
