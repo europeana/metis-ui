@@ -1,54 +1,52 @@
 .tabs {
-	overflow: hidden;
-	font-family: $font-secondary;
+  font-family: $font-secondary;
+  margin-bottom: $space;
+  overflow: hidden;
 
-	margin-bottom: $space;
+  a {
+    background: $gray-light;
+    display: block;
+    padding: $pad;
 
-	a {
-		display: block;
-		padding: $pad;
-		
-		background: $gray-light;
+    &:hover,
+    &:focus,
+    &:active {
+      background: $black;
+      color: $white;
+    }
 
-		&:hover, &:focus, &:active {
-			background: $black;
-			color: $white;
-		}
-
-		&.active {
-			background: $black;
-			color: $white;
-		}
-	}
+    &.active {
+      background: $black;
+      color: $white;
+    }
+  }
 }
 
-// Horizontal tabs
-.tabs-h{
-	ul{
-		display: table;
-		width: 100%;
-		border-bottom: 5px solid $black;
-	}
-	
-	li {
-		display: table-cell;
-		border-right: 5px solid $white;
+.tabs-h {
+  ul {
+    border-bottom: 5px solid $black;
+    display: table;
+    width: 100%;
 
-		&:last-child {
-			border-right: 0;
-		}
-	}
+    li {
+      border-right: 5px solid $white;
+      display: table-cell;
 
-	a{
-		text-align: center;
-		padding-bottom: $pad-half;
-	}
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
+
+  a {
+    padding-bottom: $pad-half;
+    text-align: center;
+  }
 }
 
-// Vertical tabs
-.tabs-v{
-	a{
-		background-color: transparent;
-		border-bottom: solid 1px $gray-light;
-	}
+.tabs-v {
+  a {
+    background-color: transparent;
+    border-bottom: solid 1px $gray-light;
+  }
 }

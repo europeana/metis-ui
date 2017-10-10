@@ -30,7 +30,7 @@ export class HomeComponent {
     this.bannerheading = 'What can you do with Metis?';
     this.bannertext = 'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
 
-    this.bannerlinktext = 'login';
+    this.bannerlinktext = 'Register to Metis here';
     this.bannerlink = sanitizer.bypassSecurityTrustUrl('login');
 
   }

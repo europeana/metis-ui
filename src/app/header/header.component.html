@@ -3,7 +3,7 @@
     <div class="cf loggedin-metis">
       <div class="metis-logo">
         <a href="#banner" class="phase-flag beta" tabindex="-1">BETA</a>
-        <a href="#" class="logo ir"><h1>Europeana Pandora</h1></a>                
+        <a href="#" class="logo ir"></a>                
       </div>
       <!--<div class="dashboard-header">
         <form action="" class="search-multiterm">
@@ -75,8 +75,19 @@
           </div>
         </div>
       </div>-->
-      <!--<div class="dashboard-header-links">
-        <div id="settings-menu" data-smartmenus-id="15058145837039766">
+      <div class="dashboard-header-links">
+
+        <ul id="settings-menu" class="cf nav-access" *ngIf="!profileMenu">
+          <li>
+            <a class="has-submenu" (click)="toggleSignInMenu()"><span class="link-text">Sign In</span></a>
+              <ul class="menu-sublevel caret" *ngIf="openSignIn">
+                <li><a href="/login" class="">Login</a></li>
+                <li><a href="/register" class="">Register</a></li>
+              </ul>
+          </li>
+        </ul>
+
+        <div id="settings-menu" data-smartmenus-id="15058145837039766" *ngIf="profileMenu">
             <a class="notifications" href="#">
               <span class="svg-icon-notifications"></span>
               <span class="circle">7</span>
@@ -99,7 +110,7 @@
               </ul>
             </div>
         </div>
-      </div>-->
+      </div>
     </div>
   </header>
 </div>

@@ -53,8 +53,11 @@
 
       <div class="form-group">
         <label for="search-org">Selected organizations</label>    
-        <ul class="selected-organizations">
-          <li *ngFor="let select of selectedOrganizations" class="tag" (click)="selectRole(select.id)">{{ select.name }}</li>
+        <ul class="metis-autocomplete-selected">
+          <li *ngFor="let select of selectedOrganizations" class="tag">
+            <span (click)="selectRole(select.id)">{{ select.name }}</span>
+            <span (click)="deleteOrganization(select.id)" class="remove">x</span>
+          </li>
         </ul>
       </div>
 

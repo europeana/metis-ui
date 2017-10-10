@@ -80,6 +80,10 @@ export class ProfileComponent implements OnInit {
     this.profileForm.get('organizations').setValue('');
   }
 
+  deleteOrganization(id, org) {
+    this.selectedOrganizations = this.selectedOrganizations.filter(item => item.id !== id);
+  }
+
   selectRole(org) {
     this.addRoleTo = org;
     this.isRoles = true;

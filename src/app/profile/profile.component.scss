@@ -14,7 +14,6 @@
     box-shadow: none;
     display: inline;
   }
-
 }
 
 .metis-autocomplete {
@@ -36,9 +35,25 @@
   }
 }
 
-.selected-organizations {
+.metis-autocomplete-selected {
   .tag {
     cursor: pointer;
+
+    .remove {
+      display: inline-block;
+      height: 1.2rem;
+      margin-left: 1rem;
+      text-align: center;
+      width: 1.2rem;
+
+      &:hover {
+        background: #fff;
+        border-radius: 1rem;
+        color: #0a3750;
+      }
+
+    }
+
   }
 }
 

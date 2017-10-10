@@ -1,28 +1,22 @@
-/*------------------------------------*\
-    $MEDIA ELEMENTS
-\*------------------------------------*/
-
-/* Flexible Media */
-img, video, object {
-	max-width: 100%;
-	height: auto;
+img,
+video,
+object {
+  height: auto;
+  max-width: 100%;
 }
 
 iframe {
-	margin-bottom: $space;
-	width: 100%;
+  margin-bottom: $space;
+  width: 100%;
 }
 
 figure {
-	margin-bottom: $space;
-	img {
-		margin-bottom: $space-quarter;
-	}
-}
-figcaption {
-	font-style: italic;
+  margin-bottom: $space;
+  img {
+    margin-bottom: $space-quarter;
+  }
 }
 
-.circular{
-	border-radius: 999px;
+figcaption {
+  font-style: italic;
 }

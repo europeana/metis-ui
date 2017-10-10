@@ -1,10 +1,10 @@
 svg.icon {
   display: inline-block;
-  width: 1.2em;
+  fill: currentColor;
   height: 1.2em;
   margin-bottom: -0.25em;
   margin-right: 0.3em;
-  fill: currentColor;
+  width: 1.2em;
 }
 
 a.icon{
@@ -23,7 +23,7 @@ a.icon{
 
 @function url-encode-color($string) {
   $map: (
-    "#": "%23"
+    '#': '%23'
   );
   $new: $string;
   @each $search, $replace in $map {
@@ -32,5 +32,5 @@ a.icon{
   @return $new;
 }
 
-@import "../../iconography/_svg-icon-next";
-@import "../../iconography/_svg-icon-previous";
+@import '../../iconography/svg-icon-next';
+@import '../../iconography/svg-icon-previous';

@@ -4,69 +4,67 @@
 }
 
 .section-title {
-  text-transform: uppercase;
   margin-bottom: $space-half;
+  text-transform: uppercase;
 }
 
-
-.strapline{
+.strapline {
   background-color: $blue-dark;
   color: $white;
-
-  text-align: center;
   line-height: 1.2;
+  text-align: center;
 
   @media all and (min-width: $bp-small) {
     @include fontSize(10px);
   }
 
-
   @media all and (min-width: $bp-med) {
     @include fontSize(16px);
   }
 
-  a{
-    color: $white;
+  a {
     border-bottom: 1px dotted $white;
+    color: $white;
   }
 }
 
 // Section "More" link
 
-.link-more{
-  font-weight: bold;
+.link-more {
   color: $textcolour_link;
+  font-weight: bold;
+
   .section-title &{
     @include fontSize(14px);
     margin-left: 1em;
   }
 }
 
-
-.section.quickinfo{
-
+.section.quickinfo {
   background-color: $offwhite;
   padding-top: $space;
 
-  h2{
-    margin-bottom: $space-double;
+  h2 {
     @include fontSize(24px);
     color: $textcolour_head;
+    margin-bottom: $space-double;
   }
 
-  .lc{
+  .lc {
     border-bottom: 1px solid $grey3;
   }
 }
 
-.primaryaction{
-  padding: $space + $space-half $space;
-  background-color: $white;
-  margin-bottom: $space;
-  border: 1px solid $grey3;
+.primaryaction {
+
   @include fontSize(18px);
 
-  ul{
+  background-color: $white;
+  border: 1px solid $grey3;
+  margin-bottom: $space;
+  padding: $space + $space-half $space;
+
+  ul {
     margin-bottom: $space-double;
 
     a{
@@ -79,17 +77,17 @@
   }
 }
 
-.usefulinfo-links{
-  margin-bottom: $space;
+.usefulinfo-links {
   @include fontSize(18px);
   font-weight: bold;
+  margin-bottom: $space;
   padding-bottom: 1px;
 
-  li{
+  li {
     margin-bottom: $space;
   }
 
-  a{
+  a {
     border-bottom: 1px dotted $eu-blue;
   }
 }
@@ -100,27 +98,27 @@
 .usefulinfo-item{
   margin-bottom: $space;
 
-  h3{
-    text-transform: uppercase;
+  h3 {
     margin-bottom: $space;
+    text-transform: uppercase;
   }
 }
 
-.usefulinfo-secondary{
-  .usefulinfo-item{
-    padding-top: $space;
+.usefulinfo-secondary {
+  .usefulinfo-item {
     border-top: 1px solid $grey3;
+    padding-top: $space;
   }
 }
 
-.banner{
+.banner {
   @include fontSize(18px);
   background-color: $accent;
+  color: $white;
   padding: $space;
   padding-top: $space-double;
-  color: $white;
 
-  .lc > div{
+  .lc > div {
     margin-bottom: $space;
   }
 

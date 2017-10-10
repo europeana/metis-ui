@@ -15,7 +15,6 @@ html:hover [class^='icon-']{-ms-zoom: 1;}
 [class*=' icon-license-']::before
 {
   font-family:                'cc-licenses';
-  -moz-font-feature-settings: 'liga=1';
   -moz-font-feature-settings: 'liga';
   -ms-font-feature-settings:  'liga' 1;
   -o-font-feature-settings:   'liga';
@@ -27,7 +26,6 @@ html:hover [class^='icon-']{-ms-zoom: 1;}
   speak:                      none;
   text-decoration:            none;
   text-rendering:             optimizeLegibility;
-  // -webkit-font-feature-settings: 'liga'; Currently broken in Chrome >= v22. Falls back to text-rendering. Safari is unaffected.
   white-space:                nowrap;
 }
 
