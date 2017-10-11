@@ -76,6 +76,11 @@
           border: 0;
           padding: 0;
         }
+
+        &.ng-invalid.ng-touched {
+          border-color: $error;
+        }
+
       }
 
       input:disabled {
