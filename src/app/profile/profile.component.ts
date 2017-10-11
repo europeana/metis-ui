@@ -31,7 +31,7 @@ export class ProfileComponent implements OnInit {
   user: {};
   userRole: string;
   userApproved: boolean;
-  editMode = false;
+  editMode = false; // if not edit, then preview
 
   ngOnInit(): void {
     

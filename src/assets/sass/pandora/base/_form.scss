@@ -78,6 +78,17 @@
         }
       }
 
+      input:disabled {
+        border: 0;
+        color: $gray-light;
+      }
+
+      input[type="checkbox"],
+      input[type="radio"] {
+        box-shadow: none;
+        display: inline;
+      }
+
       //  selection box stylings.
       select {
         background-color: $white;
@@ -246,6 +257,7 @@
           display: inline-block;
         }
         label {
+          display: inline-block;
           font-weight: normal;
         }
       }
@@ -305,6 +317,11 @@
           &.submit {
             margin-right: 1rem;
           }
+
+          &:disabled {
+            background: $black;
+          }
+
         }
       }
     }

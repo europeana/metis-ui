@@ -1,18 +1,6 @@
-.metis-form  {
-  
+.metis-form {
   .ng-invalid.ng-touched {
     border-color: red;
-  }
-
-  input:disabled {
-    border: 0;
-    color: #777;
-  }
-
-  input[type="checkbox"] {
-    border: 0;
-    box-shadow: none;
-    display: inline;
   }
 }
 
@@ -23,9 +11,9 @@
     background: #fff;
     border: 1px solid #777;
     display: block;
-    top: 40px;
     left: 0;
     position: absolute;
+    top: 40px;
     width: 100%;
     z-index: 9;
 
@@ -53,7 +41,6 @@
       }
 
     }
-
   }
 }
 
