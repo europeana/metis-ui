@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "dist": "ng build && cp src/static/manifest.yml src/static/Staticfile dist"
+    "dist": "ng build && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
   },
   "private": true,
   "dependencies": {
