@@ -31,7 +31,7 @@ export class DatasetComponent implements OnInit {
 
     this.authentication.redirectLogin();
 
-    this.user = this.authentication.getUserInfo();
+    this.user = this.authentication.getUserInfo(1);
     this.userRole = this.user['role'];
 
     this.countryOptions = this.countries.getCountries();
