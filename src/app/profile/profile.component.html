@@ -12,22 +12,22 @@
       </div> 
 
       <div class="form-group">
-        <label for="userEmail">Email </label>
+        <label for="userEmail">Email *</label>
         <input id="userEmail" name="userEmail" type="text" formControlName="userEmail" readonly [attr.disabled]="editMode ? null : 'disabled'" />
       </div>
 
       <div class="form-group">
-        <label for="userFirstName">First Name </label>
-        <input id="userFirstName" name="userFirstName" type="text" formControlName="userFirstName" [attr.disabled]="editMode ? null : 'disabled'" />
-      </div>
-
-      <div class="form-group">
-        <label for="userLastName">Last Name </label>
+        <label for="userLastName">Last Name *</label>
         <input id="userLastName" name="userLastName" type="text" formControlName="userLastName" [attr.disabled]="editMode ? null : 'disabled'" />
       </div>
 
+      <div class="form-group">
+        <label for="userFirstName">First Name *</label>
+        <input id="userFirstName" name="userFirstName" type="text" formControlName="userFirstName" [attr.disabled]="editMode ? null : 'disabled'" />
+      </div>
+
       <div class="form-group" *ngIf="userRole !== 'admin'">
-        <label for="userPassword">Password </label>
+        <label for="userPassword">Password *</label>
         <input id="userPassword" name="userPassword" type="text" formControlName="userPassword" />
       </div>
 
@@ -44,7 +44,7 @@
       <div class="form-group">
         <label for="search-org">Organizations</label>        
         <div class="metis-autocomplete">
-          <input #searchBox (keyup)="searchOrganization(searchBox.value)" formControlName="organizations" />
+          <input #searchBox (keyup)="searchOrganization(searchBox.value)" formControlName="organizations" [attr.disabled]="editMode ? null : 'disabled'" />
           <ul *ngIf="isSuggesting">
             <li *ngFor="let org of suggestedOrganizations" (click)="selectThisOrganization(org.organizationId, org.engLabel)">{{org.organizationId}} {{org.engLabel}}</li>
           </ul>
@@ -65,12 +65,12 @@
         <div class="modal">
           <div class="head">
             <a class="btn-close trigger" (click)="closeRolesModal()"></a>
-            <h3 class="headerRole">Select User's Role for: </h3>
+            <h3 class="headerRole">Select role: </h3>
           </div>
           <div class="content">
             <div class="role-wrapper">
               <h4 class="current-selected-organisation"></h4>
-              <select #role class="roles">
+              <select #role class="roles" formControlName="userNotes">
                   <option *ngFor="let role of suggestedRoles" value="{{role.name}}">{{role.name}}</option>                  
               </select>
             </div>
@@ -105,7 +105,8 @@
       </div>
 
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="button" type="button" *ngIf="editMode" (click)="toggleEditMode()">Cancel</button>&nbsp;&nbsp;<button class="submit" type="button" *ngIf="editMode">Submit</button>
+        <button class="button" type="button" *ngIf="editMode" (click)="toggleEditMode()">Cancel</button>&nbsp;&nbsp;
+        <button class="submit" type="button" *ngIf="editMode" [disabled]="!profileForm.valid">Submit</button>
         <button class="button" type="button" *ngIf="editMode==false" (click)="toggleEditMode()">Edit</button>
       </div>
 

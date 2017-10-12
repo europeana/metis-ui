@@ -9,12 +9,8 @@
 
     background: $white;
 
-    &:nth-child(odd) {
+    &:nth-child(even) {
       background: $gray-lightest;
-    }
-
-    &:first-child {
-      background: $white;
     }
 
     &.loadmore {

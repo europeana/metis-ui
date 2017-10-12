@@ -5,6 +5,7 @@ module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular/cli'],
+    listenAddress: 'localhost',
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
@@ -21,6 +22,9 @@ module.exports = function (config) {
     },
     angularCli: {
       environment: 'dev'
+    },
+    mime: {
+      'text/x-typescript': ['ts','tsx']
     },
     reporters: ['progress', 'kjhtml'],
     port: 9876,

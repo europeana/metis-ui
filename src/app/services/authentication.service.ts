@@ -37,15 +37,13 @@ export class AuthenticationService {
   }
 
   redirectProfile() {
-    if (this.validatedUser()) {
-      this.router.navigate(['profile']);
+    if (this.validatedUser()) {      
+      this.router.navigate(['profile', this.userInfo['id']]);
     }
   }
 
-	getUserInfo() {
-		return this.userInfo;
-	} 
-
-	// working with authentication, ldap
+	getUserInfo(id) {
+    return this.userInfo;
+  } 
 
 }

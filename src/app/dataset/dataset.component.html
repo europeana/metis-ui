@@ -1,176 +1,185 @@
 <div class="metis-form metis-form-horizontal">
-  <form action="#">
+  <form (ngSubmit)="onSubmit()" [formGroup]="datasetForm" #formDir="ngForm">
+    <div class="messages">
+      <div class="error-message"><i class="fa fa-times"></i>Editmode: {{editMode}}</div>
+    </div>
     <div class="form-fields">
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" value="2024913_Photocons_LPDP" readonly />
+      <div class="form-group" *ngIf="editMode">
+        <label for="identifier">Identifier</label>
+        <input type="text" formControlName="identifier" readonly/>
+      </div>    
+      <div class="form-group" *ngIf="editMode">
+        <label for="name">Dataset Name</label>
+        <input type="text" formControlName="datasetName" readonly />
       </div>
       <div class="form-group">
-        <label for="data-provider">Provider</label>
-        <select name="data-provider" class="eu prov">
+        <label for="data-provider">Data provider</label>
+        <select name="data-provider" formControlName="dataProvider">
           <option value="" selected=""></option>
         </select>
       </div>
       <div class="form-group">
-        <label for="data-provider">Data provider</label>
-        <select name="data-provider" class="eu prov">
+        <label for="data-provider">Provider *</label>
+        <select name="data-provider" formControlName="provider" readonly>
+          <option value="" selected=""></option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="data-provider">Intermediate Provider</label>
+        <select name="data-provider" formControlName="intermediateProvider" readonly>
           <option value="" selected=""></option>
         </select>
       </div>
       <div class="form-group">
         <label for="dea-signed">DEA signed</label>
-        <input type="checkbox" class="eu" disabled="" />
-        <label for="dea-signed"></label>
+        <input type="checkbox" class="eu" formControlName="intermediateProvider" />
       </div>
-      <div class="form-group">
+      <div class="form-group" *ngIf="editMode">
         <label for="date-created">Date created</label>
-        <input class="svg-icon-form-field-calendar icon-padding" type="text" readonly="" />
+        <input type="text" formControlName="dateCreated" readonly />
       </div>
-      <div class="form-group">
+      <div class="form-group" *ngIf="editMode">
         <label for="date-updated">Date updated</label>
-        <input class="svg-icon-form-field-calendar icon-padding" type="text" readonly="" />
+        <input type="text" formControlName="dateUpdated" readonly />
       </div>
-    <div class="form-group">
-      <label for="replaced-by">Replaced by</label>
-      <input type="text" class="eu prov" />
-    </div>
-    <div class="form-group">
-      <label for="description">Description</label>
-      <input type="text" class="eu prov" />
-    </div>
-      <div class="form-group">
-        <label for="first-published">First published</label>
-        <input class="svg-icon-form-field-calendar icon-padding" type="text" readonly="" />
+      <div class="form-group" *ngIf="editMode">
+        <label for="replaced-by">Status *</label>
+        <input type="text" formControlName="status" readonly/>
       </div>
       <div class="form-group">
-        <label for="last-published">Last published</label>
-        <input class="svg-icon-form-field-calendar icon-padding" type="text" readonly="" />
+        <label for="replaced-by">Replaces</label>
+        <input type="text" formControlName="replaces" />
       </div>
       <div class="form-group">
-        <label for="assigned-to">Assigned to</label>
-        <input value="" type="text" class="eu" readonly="" />
+        <label for="replaced-by">Replaced by</label>
+        <input type="text" formControlName="replacedBy" />
       </div>
       <div class="form-group">
         <label for="country">Country</label>
-        <select class="eu prov">
-          <option value="" selected="">Select country</option>
-          <option value="Albania">Albania</option>
-          <option value="Algeria">Algeria</option>
-          <option value="Armenia">Armenia</option>
-          <option value="Aruba">Aruba</option>
-          <option value="Austria">Austria</option>
-          <option value="Azerbaijan">Azerbaijan</option>
-          <option value="Belarus">Belarus</option>
-          <option value="Belgium">Belgium</option>
-          <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
-          <option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
-          <option value="Bulgaria">Bulgaria</option>
-          <option value="Canada">Canada</option>
-          <option value="Croatia">Croatia</option>
-          <option value="Cyprus">Cyprus</option>
-          <option value="Czech Republic">Czech Republic</option>
-          <option value="Denmark">Denmark</option>
-          <option value="Estonia">Estonia</option>
-          <option value="Finland">Finland</option>
-          <option value="France">France</option>
-          <option value="French Guiana">French Guiana</option>
-          <option value="French Polynesia">French Polynesia</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Germany">Germany</option>
-          <option value="Gibraltar">Gibraltar</option>
-          <option value="Greece">Greece</option>
-          <option value="Greenland">Greenland</option>
-          <option value="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
-          <option value="Hungary">Hungary</option>
-          <option value="Iceland">Iceland</option>
-          <option value="Ireland">Ireland</option>
-          <option value="Isle of Man">Isle of Man</option>
-          <option value="Italy">Italy</option>
-          <option value="Kazakhstan">Kazakhstan</option>
-          <option value="Kyrgyzstan">Kyrgyzstan</option>
-          <option value="Lao People&quot;S Democratic Republic">Lao People"S Democratic Republic</option>
-          <option value="Latvia">Latvia</option>
-          <option value="Liechtenstein">Liechtenstein</option>
-          <option value="Lithuania">Lithuania</option>
-          <option value="Luxembourg">Luxembourg</option>
-          <option value="Macedonia, The Former Yugoslav Republic of">Macedonia, The Former Yugoslav Republic of</option>
-          <option value="Maldives">Maldives</option>
-          <option value="Marshall Islands">Marshall Islands</option>
-          <option value="Micronesia, Federated States of">Micronesia, Federated States of</option>
-          <option value="Moldova, Republic of">Moldova, Republic of</option>
-          <option value="Monaco">Monaco</option>
-          <option value="Netherlands">Netherlands</option>
-          <option value="Netherlands Antilles">Netherlands Antilles</option>
-          <option value="Norfolk Island">Norfolk Island</option>
-          <option value="Northern Mariana Islands">Northern Mariana Islands</option>
-          <option value="Norway">Norway</option>
-          <option value="Poland">Poland</option>
-          <option value="Portugal">Portugal</option>
-          <option value="Russian Federation">Russian Federation</option>
-          <option value="San Marino">San Marino</option>
-          <option value="Serbia and Montenegro">Serbia and Montenegro</option>
-          <option value="Seychelles">Seychelles</option>
-          <option value="Slovakia">Slovakia</option>
-          <option value="Slovenia">Slovenia</option>
-          <option value="Solomon Islands">Solomon Islands</option>
-          <option value="Spain">Spain</option>
-          <option value="Swaziland">Swaziland</option>
-          <option value="Sweden">Sweden</option>
-          <option value="Switzerland">Switzerland</option>
-          <option value="Tajikistan">Tajikistan</option>
-          <option value="Ukraine">Ukraine</option>
-          <option value="United Kingdom">United Kingdom</option>
-          <option value="Uzbekistan">Uzbekistan</option>
-          <option value="Virgin Islands, British">Virgin Islands, British</option>
+        <select formControlName="country" >
+          <option *ngFor="let country of countryOptions" [value]="country">{{country}}</option>          
+        </select>
+      </div>
+       <div class="form-group">
+        <label for="language">Language</label>
+        <select name="language" formControlName="country">
+          <option *ngFor="let language of languageOptions" [value]="language">{{language}}
         </select>
       </div>
       <div class="form-group">
-        <label for="language">Language</label>
-        <select name="language" class="eu prov">
-          <option value="" selected=""></option>
-        </select>
+        <label for="description">Description</label>
+        <input type="text" formControlName="description" />
+      </div>
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <input type="text" formControlName="notes" />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="createdby">Created by</label>
+        <input type="text" formControlName="createdBy" readonly />
+      </div>
+      <div class="form-group"*ngIf="editMode">
+        <label for="assigned-to">Assigned to</label>
+        <input type="text" formControlName="assignedTo" />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="first-published">First published</label>
+        <input formControlName="firstPublished" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="last-published">Last published</label>
+        <input type="text" formControlName="lastPublished" readonly />
+      </div>     
+      <div class="form-group" *ngIf="editMode">
+        <label for="number-published">Number of items published</label>
+        <input type="text" formControlName="numberOfItemsPublished" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="last-harvest">Last date of harvest</label>
+        <input type="text" formControlName="lastDateHarvest" readonly />
+      </div> 
+      <div class="form-group" *ngIf="editMode">
+        <label for="number-harvest">Number of items harvested</label>
+        <input type="text" formControlName="numberOfItemsHarvested" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="last-submission">Last date of submission</label>
+        <input type="text" formControlName="lastDateSubmission" readonly />
+      </div> 
+      <div class="form-group" *ngIf="editMode">
+        <label for="number-delivered">Number of items delivered</label>
+        <input type="text" formControlName="numberOfItemsDelivered" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="acceptancestep">Acceptance step *</label>
+        <input type="checkbox" class="eu" formControlName="acceptanceStep" />
       </div>
       <div class="form-group">
         <label for="harvest-radio">Harvest protocol</label>
         <div class="form-group-radios">
           <div>
-            <input type="radio" class="with-font eu prov http" />
-            <label for="http">HTTP</label>
+            <label><input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" /> HTTP</label>
           </div>
           <div>
-            <input type="radio" class="with-font eu prov oai-pmh" />
-            <label for="oai-pmh">OAI-PMH</label>
+            <label><input type="radio" formControlName="harvestProtocol" value="ftp" [(ngModel)]="harvestprotocol" /> FTP</label>
           </div>
           <div>
-            <input type="radio" class="with-font eu prov iiif" />
-            <label for="iiif">IIIF</label>
+            <label><input type="radio" formControlName="harvestProtocol" value="oai-pmh" [(ngModel)]="harvestprotocol" /> OAI-PMH</label>
+          </div>
+          <div>
+            <label><input type="radio" formControlName="harvestProtocol" value="folder" [(ngModel)]="harvestprotocol" /> Folder</label>
           </div>
         </div>
       </div>
       <div class="form-group">
-        <label for="havest-url">Harvest URL</label>
-        <input type="url" class="eu prov" />
-      </div>
-      <div class="form-group">
-        <label for="setspec">Setspec</label>
-        <input type="tel" class="eu prov" />
-      </div>
-      <div class="form-group">
-        <label for="metadata-format">Metadata format</label>
-        <input type="text" class="eu prov" />
-      </div>
-
-      <div class="form-group">
-        <label for="metadataSchema">Metadata Schema</label>
-        <select name="metadataSchema" class="eu prov">
-          <option value="" selected=""></option>
+        <label for="metadata-schema">Metadata Schema</label>
+        <select name="metadataSchema" formControlName="metadataSchema">
+          <option value="https://pro.europeana.eu/page/edm-documentation">https://pro.europeana.eu/page/edm-documentation</option>
         </select>
       </div>
-
-      <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="submit" type="button">Submit</button> <button class="cancel " type="button">Cancel</button>
+      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+        <label for="havest-url">Harvest URL</label>
+        <input type="text" formControlName="harvestUrl" />
       </div>
-
+      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+        <label for="setspec">Setspec</label>
+        <input type="tel" formControlName="setSpec" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+        <label for="metadata-format">Metadata format</label>
+        <input type="text" formControlName="metadataFormat" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp' || harvestprotocol === 'folder'">
+        <label for="record-xpath">Record XPath</label>
+        <input type="text" formControlName="recordXPath" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp'">
+        <label for="ftphttpuser">FTP/HTTP user</label>
+        <input type="text" formControlName="ftpHttpUser" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp'">
+        <label for="ftphttppassword">FTP/HTTP password</label>
+        <input type="text" formControlName="ftpHttpPassword" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http'">
+        <label for="url">URL</label>
+        <input type="text" formControlName="url" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'ftp'">
+        <label for="path">Path</label>
+        <input type="text" formControlName="path" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'ftp'">
+        <label for="serveraddress">Server Address</label>
+        <input type="text" formControlName="serverAddress" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'folder'">
+        <label for="folderpath">Folder Path</label>
+        <input type="text" formControlName="folderPath" />
+      </div>
+      <div class="form-group form-group-btns user-profile-edit-btns">
+        <button class="submit" type="button" [disabled]="!datasetForm.valid">Submit</button>
+      </div>
     </div>
   </form>
 </div>

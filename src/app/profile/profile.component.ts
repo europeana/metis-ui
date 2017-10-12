@@ -1,10 +1,13 @@
+import 'rxjs/add/operator/switchMap';
+
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router }   from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
 import { OrganizationsService } from '../services/organizations.service';
+
 
 @Component({
   selector: 'app-profile',
@@ -18,7 +21,8 @@ export class ProfileComponent implements OnInit {
   constructor(private http: HttpClient, 
       private authentication: AuthenticationService, 
       private organizations: OrganizationsService,
-      public router: Router) { }
+      public router: Router,
+      private route: ActivatedRoute) { }
 
   profileForm: FormGroup;
   allOrganizations: {};
@@ -31,13 +35,16 @@ export class ProfileComponent implements OnInit {
   user: {};
   userRole: string;
   userApproved: boolean;
-  editMode = false;
+  editMode = false; // if not edit, then preview
 
   ngOnInit(): void {
     
-    this.authentication.redirectLogin()
+    this.authentication.redirectLogin();
     
-    this.user = this.authentication.getUserInfo();
+    this.route.params.subscribe(params => {
+      this.user = this.authentication.getUserInfo(params['id']);
+    });
+
     this.userRole = this.user['role'];
     this.userApproved = this.user['approved'];
 
@@ -45,11 +52,12 @@ export class ProfileComponent implements OnInit {
       'userId': new FormControl(this.user['id'], [Validators.required]),
       'userEmail': new FormControl('bilbo.baggins@europeana.eu', [Validators.required]),
       'userFirstName': new FormControl('Bilbo', [Validators.required]),
-      'userLastName': new FormControl('Baggins'),
-      'userPassword': new FormControl('test1234'),
+      'userLastName': new FormControl('Baggins', [Validators.required]),
+      'userPassword': new FormControl('test1234', [Validators.required]),
       'userCountry': new FormControl('Belgium'),
-      'userSkype': new FormControl('bbaggins', [Validators.required]),
+      'userSkype': new FormControl('bbaggins'),
       'organizations': new FormControl(''),
+      'roles': new FormControl(''),
       'userNotes': new FormControl('Mapping for edm:rights'),
       'userActive': new FormControl('Yes'),
       'userApproved': new FormControl('No'),

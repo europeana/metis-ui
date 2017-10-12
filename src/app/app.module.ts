@@ -14,6 +14,7 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { HomeComponent } from './home/home.component';
 import { DatasetComponent } from './dataset/dataset.component';
+import { RequestsComponent } from './requests/requests.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { DatasetComponent } from './dataset/dataset.component';
     HeaderComponent,
     FooterComponent,
     HomeComponent,
-    DatasetComponent
+    DatasetComponent,
+    RequestsComponent
   ],
   imports: [
     BrowserModule,
