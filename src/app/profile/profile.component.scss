@@ -2,16 +2,14 @@
   position: relative;
 
   ul {
-    display: block;
-    
     background: #fff;
     border: 1px solid #777;
+    display: block;
     left: 0;
+    position: absolute;
     top: 40px;
     width: 100%;
-         z-index: 9;
-    position: absolute;
-    
+    z-index: 9;
 
     li {
       cursor: pointer;
