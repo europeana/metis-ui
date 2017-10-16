@@ -19,7 +19,7 @@ export class AuthenticationService {
     if (formvalues.get('email').value === 'mirjam.verloop@europeana.eu' && formvalues.get('password').value === 'test123') {
       // retrieve userinfo + send to profile
       sessionStorage.setItem('currentUser', JSON.stringify(this.userInfo));
-      this.router.navigate(['profile']);
+      this.router.navigate(['profile', this.userInfo['id']]);
     } else {
       // error
       return false;
