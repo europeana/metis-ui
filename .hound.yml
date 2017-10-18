@@ -3,4 +3,3 @@ tslint:
   enabled: false
 scss:
   config_file: .scss-lint.yml
-
