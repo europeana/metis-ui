@@ -1,6 +1,6 @@
 fail_on_violations: true
 tslint:
-  enabled: true
+  enabled: false
 scss:
-  config_file: .scss-lint.yml
+  config_file: ./src/scss-lint.yml
 
