@@ -1,30 +1,30 @@
 <div class="metis-register-form metis-form">
-  <form action="" method="post" role="form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" #formDir="ngForm" novalidate>
     <div class="form-header">
       <h2>Register to Metis</h2>
     </div>
-    <div class="messages" *ngIf="messages">
-        <div class="error-message"><i class="fa fa-times" aria-hidden="true"></i> User already exists</div>
-    </div>
+
+    <div class="messages" *ngIf="errors"><div class="error-message"><i class="fa fa-times"></i>{{errorMessage}}</div></div>
     <div class="form-fields">
+
       <fieldset class="form-group">
         <label for="firstName">Name *</label>
-        <input id="firstName" autocomplete="off" name="firstName" placeholder="First">
-        <input id="lastName" autocomplete="off" name="lastName" placeholder="Last">
+        <input id="firstName" formControlName="firstname" placeholder="First">
+        <input id="lastName" formControlName="lastname" placeholder="Last">
       </fieldset>
       <fieldset class="form-group">
         <label for="email">Email *</label>
-        <input id="email" autocomplete="off" type="email" name="email" placeholder="your@email">
+        <input id="email" formControlName="email" placeholder="your@email.com">
       </fieldset>
       <fieldset class="form-group">
         <label for="password">New Password *</label>
-        <input id="password" autocomplete="off" type="password" name="password" placeholder="Create your password">
+        <input id="password" type="password" formControlName="password" placeholder="password">
       </fieldset>
       <div class="form-requirements-warning">
         <p>* needed for registration</p>
       </div>
       <div class="form-group form-group-btns">
-        <button class="submit-btn" type="button" (click)="onSubmit()">Submit</button>
+        <button class="submit-btn" type="submit" [disabled]="!registerForm.valid">Submit</button>
         <button class="reset-btn" type="button" (click)="onReset()">Reset</button>
       </div>
     </div>

@@ -1,26 +1,41 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  providers: [AuthenticationService]
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
 
-  messages = false;
+  registerForm: FormGroup;
+  errors: boolean;
+  errorMessage: string;
 
-  constructor() { }
+  constructor(private authentication: AuthenticationService, private fb: FormBuilder) { 
+    this.authentication.redirectProfile();
+    this.createForm();
+  }
 
-  ngOnInit() {
+  createForm() {
+    this.registerForm = this.fb.group({
+      'firstname': ['', Validators.required ],
+      'lastname': ['', Validators.required ],
+      'email': ['', Validators.required ],
+      'password': ['', Validators.required ]
+    });
   }
 
   onSubmit(): void {
+    // this.errors = true;
+    // this.errorMessage = "Error";
     console.log('submit');
-    this.messages = true;
   }
 
   onReset(): void {
-    console.log('reset');
+    this.registerForm.reset();
   }
 
 }
