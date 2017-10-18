@@ -1,12 +1,11 @@
 .header-wrapper header {
 
   .cf {
+    align-items: center;
     border-top-color: $eu-jade;
-
-    &.loggedin-metis {
-      display: flex;
-      flex: 1;
-    }
+    display: flex;
+    flex: 1;
+    justify-content: center;
 
     .phase-flag.beta {
       background-color: $eu-orange;
@@ -21,7 +20,6 @@
 
         .svg & {
           background-image: url('/assets/images/europeana-metis-logo.svg');
-          
           @media all and (min-width: $bp-med) and (max-width: $bp-large) {
             background-image: url('/assets/images/europeana-logo-symbol.svg');
             max-width: 50px;
@@ -36,6 +34,11 @@
       flex: 2;
       margin-left: 1.2rem;
       padding-top: .4rem;
+
+      input {
+        border: 0;
+        box-shadow: none;
+      }
 
       // searchbox
       .search-multiterm {
@@ -148,13 +151,76 @@
 
       flex: 1;
       padding-right: 1rem;
-      padding-top: .8rem;
+
+      a.signup {
+        color: $gray-med;
+        font-weight: 900;
+        padding-right: 1rem;
+        position: relative;
+        text-transform: uppercase;
+
+        &::after {
+          background: transparent;
+          border-color: $gray-light transparent transparent;
+          border-style: solid dashed dashed;
+          border-width: 4px;
+          content: '';
+          float: right;
+          height: 10px;
+          overflow: hidden;
+          position: absolute;
+          right: 0;
+          top: 0.5rem;
+          width: 0;
+        }
+      }
+
+      .menu-sublevel {
+        background: $white;
+        box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
+        max-width: 20rem;
+        min-width: 10rem;
+        padding: 0.5rem 1rem;
+        position: absolute;
+        right: 1rem;
+        top: 3.5rem;
+
+        li {
+          font-size: 0.875rem;
+        }
+
+        &::before {
+          border-bottom: 10px solid $gray-lightest;
+          border-left: 10px solid transparent;
+          border-right: 10px solid transparent;
+          content: '';
+          height: 0;
+          position: absolute;
+          right: 2rem;
+          top: -10px;
+          width: 0;
+        }
+
+        &::after {
+          border-bottom: 8px solid $white;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          content: '';
+          height: 0;
+          position: absolute;
+          right: calc(2rem + 2px);
+          top: -8px;
+          width: 0;
+        }
+      }
+
+      .nav-loggedin .menu-sublevel {
+        right: 1.1rem;
+      }
 
       #settings-menu {
         float: right;
-        min-width: 11.5rem;
 
-        // notifications
         .notifications {
           position: relative;
 
@@ -165,68 +231,25 @@
             font-size: 10px;
             font-weight: bold;
             height: 18px;
-            left: -36px;
+            left: 15px;
             line-height: 18px;
             margin: 0 auto 10px;
             position: absolute;
             text-align: center;
-            top: 21px;
+            top: 10px;
             width: 18px;
-          }
-
-          @-moz-document url-prefix() {
-            .circle {
-              left: -97px;
-              top: 40px;
-            }
           }
         }
 
         .svg-icon-user-signin,
         .svg-icon-notifications,
         .svg-icon-loggedin-user,
-        .svg-icon-configuration,
-        .svg-icon-form-field-calendar   {
-          float: left;
-          height: 3em;
-          margin-right: .8rem;
-          width: 3em;
-        }
-
-        .svg-icon-user-signin {
-          height: 2em;
-          margin-bottom: -1em;
-          margin-right: -.3em;
-          transform: scale(.7) translateY(-.3em);
-          width: 2em;
-        }
-
-        .svg-icon-notifications {
-          transform: scale(0.6) translateY(-0.5em);
-        }
-
-        .svg-icon-loggedin-user,
-        .svg-icon-configuration  {
-          margin-bottom: -1em;
-          transform: scale(.7) translateY(-.3em);
-        }
-
-        .svg-icon-form-field-calendar {
-          transform: scale(.6) translateY(-.3em);
-        }
-
-        // user details
-        .metis-user {
-          .sub-arrow {
-            display: none;
-          }
-
-          ul li ul.menu-sublevel::before {
-            left: 38px;
-          }
-          ul li ul.menu-sublevel::after {
-            left: 39px;
-          }
+        .svg-icon-configuration {
+          background-size: 1.5rem 1.5rem;
+          display: inline-block;
+          height: 1.65rem;
+          margin-right: 2rem;
+          width: 1.5rem;
         }
       }
     }
