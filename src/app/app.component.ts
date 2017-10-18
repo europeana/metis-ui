@@ -3,7 +3,7 @@ import { Router, UrlTree }   from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 
 @Component({
-  providers: [AuthenticationService],  
+  providers: [AuthenticationService],
   selector: 'app-root',
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',
