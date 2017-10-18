@@ -1,27 +1,26 @@
-import { Component, OnInit, EventEmitter} from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import { Router, UrlTree }   from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  providers: [AuthenticationService],
   styleUrls: ['./app.component.scss'],
-  providers: [AuthenticationService]
+  templateUrl: './app.component.html'  
 })
 
 export class AppComponent implements OnInit {
-
-  constructor(
-    private authentication: AuthenticationService, 
-    public router: Router) {
-  }
 
   routerEventSubscription;
   isHome: boolean = false;
   loggedIn: boolean = false;
 
-  ngOnInit(): void {
-    
+  constructor(
+    private authentication: AuthenticationService,
+    public router: Router) {
+  }
+
+  public ngOnInit(): void {
     this.routerEventSubscription = this.router.events.subscribe((event: any) => {
       if (this.router.isActive(event.url, false)) { 
         
