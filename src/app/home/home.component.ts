@@ -31,7 +31,7 @@ export class HomeComponent {
     this.bannertext = 'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
 
     this.bannerlinktext = 'Register to Metis here';
-    this.bannerlink = sanitizer.bypassSecurityTrustUrl('login');
+    this.bannerlink = sanitizer.bypassSecurityTrustUrl('register');
 
   }
 
