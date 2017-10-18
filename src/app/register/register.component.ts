@@ -29,7 +29,7 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
-    // this.errors = true; 
+    // this.errors = true;
     // this.errorMessage = "Error";
     console.log('submit');
   }
