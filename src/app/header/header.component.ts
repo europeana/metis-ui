@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { Router }   from '@angular/router';
 
@@ -13,13 +13,15 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authentication: AuthenticationService, 
-    public router: Router) { }
+    public router: Router) {
+  }
 
-  profileMenu;
   openSignIn: boolean = false;
 
+  @Input('profilemenu') profileMenu: string; 
+  
   ngOnInit() {
-    this.profileMenu = this.authentication.validatedUser();
+    this.openSignIn = false; 
   }
 
   toggleSignInMenu() {
@@ -28,6 +30,14 @@ export class HeaderComponent implements OnInit {
     } else {
       this.openSignIn = true;
     }
+  }
+
+  gotoProfile() {
+    this.authentication.redirectProfile();
+  }
+
+  logOut() {
+    this.authentication.logOut();  
   }
 
 

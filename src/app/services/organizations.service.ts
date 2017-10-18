@@ -13,15 +13,15 @@ export class OrganizationsService {
   apiurlroles = '';
 
 	getOrganizations() {
-    return this.http.get(this.apiurl).map((res:Response) => res);
+    return false;
   }
 
   searchOrganizations(term: string) {
-    return this.http.get(this.apiurlsuggest + term).map((res:Response) => res);
+    return false;
   }
 
   getRoles(term: string) {
-    return this.http.get(this.apiurlroles).map((res:Response) => res);
+    return false;
   }
 
 }

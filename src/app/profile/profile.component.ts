@@ -65,7 +65,7 @@ export class ProfileComponent implements OnInit {
       'userUpdated': new FormControl('2 june 2012')
     });
 
-    this.organizations.getOrganizations().subscribe(data => this.allOrganizations = data['results']);
+    //this.organizations.getOrganizations().subscribe(data => this.allOrganizations = data['results']);
 
   }
 
@@ -79,7 +79,7 @@ export class ProfileComponent implements OnInit {
 
   searchOrganization(term) {
     this.isSuggesting = true;
-    this.organizations.searchOrganizations(term).subscribe(data => this.suggestedOrganizations = data['Organizations']);
+    //this.organizations.searchOrganizations(term).subscribe(data => this.suggestedOrganizations = data['Organizations']);
   }
 
   selectThisOrganization(id, org) {
@@ -95,7 +95,7 @@ export class ProfileComponent implements OnInit {
   selectRole(org) {
     this.addRoleTo = org;
     this.isRoles = true;
-    this.organizations.getRoles(org).subscribe(data => this.suggestedRoles = data['results']);
+    //this.organizations.getRoles(org).subscribe(data => this.suggestedRoles = data['results']);
   }
 
   confirmRole(role) {

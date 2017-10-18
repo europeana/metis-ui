@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Input, Output } from '@angular/core';
 import { Router }   from '@angular/router';
+
+import { Observable }        from 'rxjs/Observable';
+import { Subject }           from 'rxjs/Subject';
 
 @Injectable()
 
 export class AuthenticationService {
-
-  constructor(public router: Router) { }
 
 	userInfo = {
 	  id: 1, 
@@ -14,6 +15,8 @@ export class AuthenticationService {
     role: 'admin', 
     approved: true
 	};
+
+  constructor(public router: Router) {}
 
   validateUser(formvalues) {
     if (formvalues.get('email').value === 'mirjam.verloop@europeana.eu' && formvalues.get('password').value === 'test123') {
@@ -40,6 +43,11 @@ export class AuthenticationService {
     if (this.validatedUser()) {      
       this.router.navigate(['profile', this.userInfo['id']]);
     }
+  }
+
+  logOut() {
+    sessionStorage.removeItem('currentUser');
+    this.redirectLogin();
   }
 
 	getUserInfo(id) {
