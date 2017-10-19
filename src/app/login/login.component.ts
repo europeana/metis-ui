@@ -14,7 +14,7 @@ export class LoginComponent {
   errors: boolean;
   errorMessage: string;
 
-  constructor(private authentication: AuthenticationService, private fb: FormBuilder) { 
+  constructor(private authentication: AuthenticationService, private fb: FormBuilder) {
     this.authentication.redirectProfile();
     this.createForm();
   }
@@ -25,11 +25,11 @@ export class LoginComponent {
       'password': ['', Validators.required ]
     });
   }
-  
+
   onSubmit() {
-    if (this.authentication.validateUser(this.loginForm)=== false) { 
-      this.errors = true; 
-      this.errorMessage = "Wrong credentials";
+    if (this.authentication.validateUser(this.loginForm) === false) {
+      this.errors = true;
+      this.errorMessage = 'Wrong credentials';
     }
   }
 

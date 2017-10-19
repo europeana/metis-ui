@@ -5,7 +5,7 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class UserrequestsService {
 
-  constructor(private http: HttpClient) {} 
+  constructor(private http: HttpClient) {}
 
   pendingRequests = [
     {id: 1, email: 'mirjam.verloop@europeana.eu', organization: 'Europeana', requestdate: '15-02-2017', requesttype: 'add', requeststatus: 'pending'},
@@ -15,7 +15,5 @@ export class UserrequestsService {
 
   getPendingRequests() {
     return this.pendingRequests;
-  }  
-	
-
+  }
 }

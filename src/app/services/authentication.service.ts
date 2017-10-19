@@ -1,20 +1,20 @@
 import { Injectable, Input, Output } from '@angular/core';
-import { Router }   from '@angular/router';
+import { Router } from '@angular/router';
 
-import { Observable }        from 'rxjs/Observable';
-import { Subject }           from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 
 export class AuthenticationService {
 
-	userInfo = {
-	  id: 1, 
-	  name: 'Mirjam',
+  userInfo = {
+    id: 1,
+    name: 'Mirjam',
     organization: 'Europeana',
-    role: 'admin', 
+    role: 'admin',
     approved: true
-	};
+  };
 
   constructor(public router: Router) {}
 
@@ -40,7 +40,7 @@ export class AuthenticationService {
   }
 
   redirectProfile() {
-    if (this.validatedUser()) {      
+    if (this.validatedUser()) {
       this.router.navigate(['profile', this.userInfo['id']]);
     }
   }
@@ -50,8 +50,7 @@ export class AuthenticationService {
     this.redirectLogin();
   }
 
-	getUserInfo(id) {
+  getUserInfo(id) {
     return this.userInfo;
-  } 
-
+  }
 }

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { Router, UrlTree }   from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 
 @Component({
@@ -12,8 +12,8 @@ import { AuthenticationService } from './services/authentication.service';
 export class AppComponent implements OnInit {
 
   routerEventSubscription;
-  isHome: boolean = false;
-  public loggedIn: boolean = false;
+  isHome = false;
+  public loggedIn = false;
 
   constructor(
     private authentication: AuthenticationService,

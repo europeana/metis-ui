@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser'
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -19,11 +19,11 @@ export class HomeComponent {
   bannerlinktext: string;
   bannerlink;
 
-  constructor(private sanitizer:DomSanitizer) {
+  constructor(private sanitizer: DomSanitizer) {
 
     this.heroimage = sanitizer.bypassSecurityTrustStyle('url(/assets/images/hero_metis_1600x650_jade.png)');
     this.attributiontext = 'Cyclopides metis L., Cyclopides qua... Museum Fur Naturkunde Berlin';
-    this.attributionlink = sanitizer.bypassSecurityTrustUrl('https://www.europeana.eu/portal/en/record/11622/_MFN_DRAWERS_MFN_GERMANY_http___coll_mfn_berlin_de_u_MFNB_Lep_Hesperiidae_D224.html?q=cyclopides');
+    this.attributionlink = sanitizer.bypassSecurityTrustUrl('https://www.europeana.eu/portal/');
     this.attributionrights = 'CC0';
     this.attributionrightslink = sanitizer.bypassSecurityTrustUrl('https://creativecommons.org/publicdomain/zero/1.0/');
 
