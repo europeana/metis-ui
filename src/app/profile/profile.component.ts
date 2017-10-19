@@ -18,11 +18,11 @@ import { OrganizationsService } from '../services/organizations.service';
 
 export class ProfileComponent implements OnInit {
 
-  constructor(private http: HttpClient, 
-      private authentication: AuthenticationService, 
-      private organizations: OrganizationsService,
-      public router: Router,
-      private route: ActivatedRoute) { }
+  constructor(private http: HttpClient,
+    private authentication: AuthenticationService,
+    private organizations: OrganizationsService,
+    public router: Router,
+    private route: ActivatedRoute) { }
 
   profileForm: FormGroup;
   allOrganizations: {};
@@ -38,9 +38,9 @@ export class ProfileComponent implements OnInit {
   editMode = false; // if not edit, then preview
 
   ngOnInit(): void {
-    
+
     this.authentication.redirectLogin();
-    
+
     this.route.params.subscribe(params => {
       this.user = this.authentication.getUserInfo(params['id']);
     });
@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
     this.userRole = this.user['role'];
     this.userApproved = this.user['approved'];
 
-  	this.profileForm = new FormGroup({
+    this.profileForm = new FormGroup({
       'userId': new FormControl(this.user['id'], [Validators.required]),
       'userEmail': new FormControl('bilbo.baggins@europeana.eu', [Validators.required]),
       'userFirstName': new FormControl('Bilbo', [Validators.required]),
@@ -64,13 +64,10 @@ export class ProfileComponent implements OnInit {
       'userCreated': new FormControl('22 April 2011'),
       'userUpdated': new FormControl('2 june 2012')
     });
-
-    //this.organizations.getOrganizations().subscribe(data => this.allOrganizations = data['results']);
-
   }
 
   toggleEditMode() {
-    if (this.editMode == false) {
+    if (this.editMode === false) {
       this.editMode = true;
     } else {
       this.editMode = false;
@@ -79,7 +76,6 @@ export class ProfileComponent implements OnInit {
 
   searchOrganization(term) {
     this.isSuggesting = true;
-    //this.organizations.searchOrganizations(term).subscribe(data => this.suggestedOrganizations = data['Organizations']);
   }
 
   selectThisOrganization(id, org) {
@@ -95,11 +91,9 @@ export class ProfileComponent implements OnInit {
   selectRole(org) {
     this.addRoleTo = org;
     this.isRoles = true;
-    //this.organizations.getRoles(org).subscribe(data => this.suggestedRoles = data['results']);
   }
 
   confirmRole(role) {
-    console.log(role, this.addRoleTo);
     this.closeRolesModal();
   }
 
