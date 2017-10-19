@@ -1,5 +1,5 @@
 fail_on_violations: true
 tslint:
-  enabled: .tslint.json
+  config_file: .tslint.json
 scss:
   config_file: .scss-lint.yml
