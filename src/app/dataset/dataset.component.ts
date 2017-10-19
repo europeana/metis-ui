@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router }   from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
 import { CountriesService } from '../services/countries.service';
@@ -15,8 +15,8 @@ import { CountriesService } from '../services/countries.service';
 
 export class DatasetComponent implements OnInit {
 
-  constructor(private http: HttpClient, 
-    private authentication: AuthenticationService, 
+  constructor(private http: HttpClient,
+    private authentication: AuthenticationService,
     private countries: CountriesService,
     public router: Router) { }
 
@@ -36,7 +36,7 @@ export class DatasetComponent implements OnInit {
 
     this.countryOptions = this.countries.getCountries();
     this.languageOptions = this.countries.getLanguages();
-    
+
     this.datasetForm = new FormGroup({
       'identifier': new FormControl('2024913', [Validators.required]),
       'datasetName': new FormControl('2024913_Photocons_LPDP', [Validators.required]),
@@ -63,8 +63,8 @@ export class DatasetComponent implements OnInit {
       'acceptanceStep': new FormControl('acceptancestep', [Validators.required]),
       'harvestProtocol': new FormControl(''),
       'metadataSchema': new FormControl(''),
-      'harvestUrl': new FormControl(''),    
-      'setSpec': new FormControl(''),    
+      'harvestUrl': new FormControl(''),
+      'setSpec': new FormControl(''),
       'metadataFormat': new FormControl(''),
       'recordXPath': new FormControl(''),
       'ftpHttpUser': new FormControl(''),

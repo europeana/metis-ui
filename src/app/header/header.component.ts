@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
-import { Router }   from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -12,16 +12,16 @@ import { Router }   from '@angular/router';
 export class HeaderComponent implements OnInit {
 
   constructor(
-    private authentication: AuthenticationService, 
+    private authentication: AuthenticationService,
     public router: Router) {
   }
 
-  openSignIn: boolean = false;
+  openSignIn = false;
 
-  @Input('profilemenu') profileMenu: string; 
-  
+  @Input('profileMenu') profileMenu: string;
+
   ngOnInit() {
-    this.openSignIn = false; 
+    this.openSignIn = false;
   }
 
   toggleSignInMenu() {
@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logOut() {
-    this.authentication.logOut();  
+    this.authentication.logOut();
   }
 
 

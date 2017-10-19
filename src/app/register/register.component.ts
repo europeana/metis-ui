@@ -14,7 +14,7 @@ export class RegisterComponent {
   errors: boolean;
   errorMessage: string;
 
-  constructor(private authentication: AuthenticationService, private fb: FormBuilder) { 
+  constructor(private authentication: AuthenticationService, private fb: FormBuilder) {
     this.authentication.redirectProfile();
     this.createForm();
   }
