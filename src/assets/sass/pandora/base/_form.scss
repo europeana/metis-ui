@@ -136,6 +136,11 @@
             background-color: $white;
             color: $gray-dark;
           }
+
+          &:disabled {
+            background: $black;
+          }
+
         }
 
         &.hidden {
@@ -322,11 +327,6 @@
           &.submit {
             margin-right: 1rem;
           }
-
-          &:disabled {
-            background: $black;
-          }
-
         }
       }
     }

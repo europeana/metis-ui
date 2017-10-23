@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
@@ -8,6 +8,7 @@ import { AuthenticationService } from '../services/authentication.service';
   styleUrls: ['./register.component.scss'],
   providers: [AuthenticationService]
 })
+
 export class RegisterComponent {
 
   registerForm: FormGroup;
@@ -21,10 +22,15 @@ export class RegisterComponent {
 
   createForm() {
     this.registerForm = this.fb.group({
-      'firstname': ['', Validators.required ],
-      'lastname': ['', Validators.required ],
-      'email': ['', Validators.required ],
-      'password': ['', Validators.required ]
+      firstname: ['', Validators.required ],
+      lastname: ['', Validators.required ],
+      email: ['', [Validators.required, Validators.email]],
+      password: this.fb.group({ 
+        newPassword: ['', Validators.required ],
+        repeatPassword: ['', Validators.required ]
+      }, {
+        validator: PasswordValidation.MatchPassword 
+      })
     });
   }
 
@@ -37,5 +43,17 @@ export class RegisterComponent {
   onReset(): void {
     this.registerForm.reset();
   }
+}
 
+export class PasswordValidation {
+
+  constructor(private RegisterComponent: RegisterComponent){ }
+
+  static MatchPassword(ac: AbstractControl) {
+    if(ac.get('newPassword').value != ac.get('repeatPassword').value) {
+      ac.get('repeatPassword').setErrors( {MatchPassword: true} )
+    } else {
+      return null;
+    }
+  }
 }
