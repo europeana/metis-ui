@@ -17,11 +17,14 @@ export class HeaderComponent implements OnInit {
   }
 
   openSignIn = false;
+  openSearch = false;
+  searchfilter;
 
   @Input('profileMenu') profileMenu: string;
 
   ngOnInit() {
     this.openSignIn = false;
+    this.searchfilter = 'All';
   }
 
   toggleSignInMenu() {
@@ -30,6 +33,20 @@ export class HeaderComponent implements OnInit {
     } else {
       this.openSignIn = true;
     }
+  }
+
+  toggleSearchMenu() {
+    if (this.openSearch) {
+      this.openSearch = false;
+    } else {
+      this.openSearch = true;
+    }
+  }
+
+  filterSearch(filter) {
+    console.log(filter);
+    this.searchfilter = filter;
+    this.openSearch = false;
   }
 
   gotoProfile() {
