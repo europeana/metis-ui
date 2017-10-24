@@ -12,7 +12,7 @@ import { AuthenticationService } from './services/authentication.service';
 export class AppComponent implements OnInit {
 
   routerEventSubscription;
-  isHome = false;
+  isLessMargin = false;
   public loggedIn = false;
 
   constructor(
@@ -27,8 +27,10 @@ export class AppComponent implements OnInit {
           this.loggedIn = true;
         }
 
-        if (event.url.includes('home') || event.url === '/') {
-          this.isHome = true;
+        if (event.url.includes('home') || event.url === '/' || event.url.includes('dashboard')) {
+          this.isLessMargin = true;
+        } else {
+          this.isLessMargin = false;
         }
       }
     });

@@ -8,8 +8,8 @@
   margin: 7rem 0;
   min-height: calc(100vh - 55rem);
 
-  &.metis-main-content-home {
-    margin-top: 0;
+  &.metis-main-content-lessmargin {
+    margin-top: 4.8rem;
   }
 
 }
@@ -18,20 +18,22 @@
 .dashboard-wrapper {
   background-color: $offwhite;
   display: inline-block;
-  margin-top: 4.8em;
   min-height: 100vh; // TODO: remove temp stylings.
   padding: 0 1.2rem;
   width: 100%;
 
   .metis-dashboard {
+    display: flex;
     padding: 1rem;
 
     .metis-dashboard-left {
-      //@include span(8);
+      margin-right: 1rem;
+      width: 35%;
     }
 
     .metis-dashboard-right {
-      //@include span(last 16);
+      margin-left: 1rem;
+      width: 65%;
     }
   }
 }
