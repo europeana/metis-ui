@@ -11,7 +11,8 @@ import { RequestsComponent } from '../requests/requests.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'dataset', component: DatasetComponent },
+  { path: 'dataset/:tab', component: DatasetComponent },
+  { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'profile/:id', component: ProfileComponent },

@@ -6,21 +6,19 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
-import { OrganizationsService } from '../services/organizations.service';
 
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
-  providers: [AuthenticationService, OrganizationsService]
+  providers: [AuthenticationService]
 })
 
 export class ProfileComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    private organizations: OrganizationsService,
     public router: Router,
     private route: ActivatedRoute) { }
 
@@ -72,34 +70,7 @@ export class ProfileComponent implements OnInit {
     } else {
       this.editMode = false;
     }
-  }
-
-  searchOrganization(term) {
-    this.isSuggesting = true;
-  }
-
-  selectThisOrganization(id, org) {
-    this.selectedOrganizations.push({id: id, name: org});
-    this.isSuggesting = false;
-    this.profileForm.get('organizations').setValue('');
-  }
-
-  deleteOrganization(id, org) {
-    this.selectedOrganizations = this.selectedOrganizations.filter(item => item.id !== id);
-  }
-
-  selectRole(org) {
-    this.addRoleTo = org;
-    this.isRoles = true;
-  }
-
-  confirmRole(role) {
-    this.closeRolesModal();
-  }
-
-  closeRolesModal () {
-    this.isRoles = false;
-  }
+  }  
 
   onSubmit() {
     console.log('submit');

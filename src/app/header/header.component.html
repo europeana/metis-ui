@@ -2,8 +2,8 @@
   <header class="header">
     <div class="header-container">
       <div class="metis-logo">
-        <a href="#banner" class="phase-flag beta" tabindex="-1">BETA</a>
-        <a href="#" class="logo ir"></a>                
+        <a routerLink="/home" class="phase-flag beta" tabindex="-1">BETA</a>
+        <a routerLink="/home" class="logo ir"></a>                
       </div>
 
       <div class="dashboard-header">
@@ -29,17 +29,17 @@
           <li>
             <a class="signup has-submenu" (click)="toggleSignInMenu()">Sign In</a>
             <ul class="menu-sublevel caret" *ngIf="openSignIn">
-              <li><a href="/login">Login</a></li>
-              <li><a href="/register">Register</a></li>
+              <li><a routerLink="/login">Login</a></li>
+              <li><a routerLink="/register">Register</a></li>
             </ul>
           </li>
         </ul>
         <div id="settings-menu" class="cf nav-loggedin" *ngIf="profileMenu">
-            <a class="notifications" href="/dashboard">
+            <a class="notifications" routerLink="/dashboard">
               <span class="svg-icon-notifications"></span>
               <span class="circle">7</span>
             </a>
-            <a href="#"> <span class="svg-icon-configuration"></span></a>
+            <a routerLink="#"> <span class="svg-icon-configuration"></span></a>
             <div class="metis-user">
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
