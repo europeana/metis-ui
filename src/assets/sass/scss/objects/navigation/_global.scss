@@ -146,6 +146,12 @@
   position: relative;
 }
 
+.pusher-home,
+.pusher-register,
+.pusher-login {
+  background: $white;
+}
+
 .pusher::before,
 .pusher::after {
   content: ' ';

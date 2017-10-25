@@ -6,7 +6,7 @@
         <a routerLink="/home" class="logo ir"></a>                
       </div>
 
-      <div class="dashboard-header">
+      <div class="dashboard-header" *ngIf="profileMenu">
         <form class="search-multiterm">
           <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />        
           <ul class="search-select">
