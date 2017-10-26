@@ -136,6 +136,11 @@
             background-color: $white;
             color: $gray-dark;
           }
+
+          &:disabled {
+            background: $black;
+          }
+
         }
 
         &.hidden {
@@ -319,8 +324,8 @@
           margin: 0;
           padding: .8rem 5rem;
 
-          &:disabled {
-            background: $black;
+          &.submit {
+            margin-right: 1rem;
           }
 
         }
