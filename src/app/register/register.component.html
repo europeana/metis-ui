@@ -4,8 +4,11 @@
       <h2>Register to Metis</h2>
     </div>
 
-    <div class="messages" *ngIf="errors"><div class="error-message"><i class="fa fa-times"></i>{{errorMessage}}</div></div>
-    <div class="form-fields">
+    <div class="messages" *ngIf="errors">
+      <div class="error-message">{{errorMessage}}</div>
+    </div>
+ 
+     <div class="form-fields">
 
       <fieldset class="form-group">
         <label for="firstName">Name *</label>
@@ -15,11 +18,18 @@
       <fieldset class="form-group">
         <label for="email">Email *</label>
         <input id="email" formControlName="email" placeholder="your@email.com">
+        <div class="messages" *ngIf="registerForm.controls.email.touched && !registerForm.controls.email.valid">
+          <div class="error-message">Please enter an email address</div>
+        </div>
       </fieldset>
-      <fieldset class="form-group">
-        <label for="password">New Password *</label>
-        <input id="password" type="password" formControlName="password" placeholder="password">
-      </fieldset>
+      <fieldset class="form-group" formGroupName="password">
+        <label for="password">Password *</label>
+        <input id="password" type="password" formControlName="newPassword" placeholder="password">
+        <input id="repeatpassword" type="password" formControlName="repeatPassword" placeholder="repeat password">      
+        <div class="messages" *ngIf="registerForm.controls.password.controls.repeatPassword.touched && !registerForm.controls.password.controls.repeatPassword.valid">
+          <div class="error-message">Passwords do not match!</div>
+        </div>
+      </fieldset>     
       <div class="form-requirements-warning">
         <p>* needed for registration</p>
       </div>
