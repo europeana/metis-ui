@@ -1,0 +1,185 @@
+<div class="metis-form metis-form-horizontal">
+  <form (ngSubmit)="onSubmit()" [formGroup]="datasetForm" #formDir="ngForm">
+    <div class="messages">
+      <div class="error-message"><i class="fa fa-times"></i>Editmode: {{editMode}}</div>
+    </div>
+    <div class="form-fields">
+      <div class="form-group" *ngIf="editMode">
+        <label for="identifier">Identifier</label>
+        <input type="text" formControlName="identifier" readonly/>
+      </div>    
+      <div class="form-group" *ngIf="editMode">
+        <label for="name">Dataset Name</label>
+        <input type="text" formControlName="datasetName" readonly />
+      </div>
+      <div class="form-group">
+        <label for="data-provider">Data provider</label>
+        <select name="data-provider" formControlName="dataProvider">
+          <option value="" selected=""></option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="data-provider">Provider *</label>
+        <select name="data-provider" formControlName="provider" readonly>
+          <option value="" selected=""></option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="data-provider">Intermediate Provider</label>
+        <select name="data-provider" formControlName="intermediateProvider" readonly>
+          <option value="" selected=""></option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="dea-signed">DEA signed</label>
+        <input type="checkbox" class="eu" formControlName="intermediateProvider" />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="date-created">Date created</label>
+        <input type="text" formControlName="dateCreated" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="date-updated">Date updated</label>
+        <input type="text" formControlName="dateUpdated" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="replaced-by">Status *</label>
+        <input type="text" formControlName="status" readonly/>
+      </div>
+      <div class="form-group">
+        <label for="replaced-by">Replaces</label>
+        <input type="text" formControlName="replaces" />
+      </div>
+      <div class="form-group">
+        <label for="replaced-by">Replaced by</label>
+        <input type="text" formControlName="replacedBy" />
+      </div>
+      <div class="form-group">
+        <label for="country">Country</label>
+        <select formControlName="country" >
+          <option *ngFor="let country of countryOptions" [value]="country">{{country}}</option>          
+        </select>
+      </div>
+       <div class="form-group">
+        <label for="language">Language</label>
+        <select name="language" formControlName="country">
+          <option *ngFor="let language of languageOptions" [value]="language">{{language}}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" formControlName="description" />
+      </div>
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <input type="text" formControlName="notes" />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="createdby">Created by</label>
+        <input type="text" formControlName="createdBy" readonly />
+      </div>
+      <div class="form-group"*ngIf="editMode">
+        <label for="assigned-to">Assigned to</label>
+        <input type="text" formControlName="assignedTo" />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="first-published">First published</label>
+        <input formControlName="firstPublished" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="last-published">Last published</label>
+        <input type="text" formControlName="lastPublished" readonly />
+      </div>     
+      <div class="form-group" *ngIf="editMode">
+        <label for="number-published">Number of items published</label>
+        <input type="text" formControlName="numberOfItemsPublished" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="last-harvest">Last date of harvest</label>
+        <input type="text" formControlName="lastDateHarvest" readonly />
+      </div> 
+      <div class="form-group" *ngIf="editMode">
+        <label for="number-harvest">Number of items harvested</label>
+        <input type="text" formControlName="numberOfItemsHarvested" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="last-submission">Last date of submission</label>
+        <input type="text" formControlName="lastDateSubmission" readonly />
+      </div> 
+      <div class="form-group" *ngIf="editMode">
+        <label for="number-delivered">Number of items delivered</label>
+        <input type="text" formControlName="numberOfItemsDelivered" readonly />
+      </div>
+      <div class="form-group" *ngIf="editMode">
+        <label for="acceptancestep">Acceptance step *</label>
+        <input type="checkbox" class="eu" formControlName="acceptanceStep" />
+      </div>
+      <div class="form-group">
+        <label for="harvest-radio">Harvest protocol</label>
+        <div class="form-group-radios">
+          <div>
+            <label><input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" /> HTTP</label>
+          </div>
+          <div>
+            <label><input type="radio" formControlName="harvestProtocol" value="ftp" [(ngModel)]="harvestprotocol" /> FTP</label>
+          </div>
+          <div>
+            <label><input type="radio" formControlName="harvestProtocol" value="oai-pmh" [(ngModel)]="harvestprotocol" /> OAI-PMH</label>
+          </div>
+          <div>
+            <label><input type="radio" formControlName="harvestProtocol" value="folder" [(ngModel)]="harvestprotocol" /> Folder</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="metadata-schema">Metadata Schema</label>
+        <select name="metadataSchema" formControlName="metadataSchema">
+          <option value="https://pro.europeana.eu/page/edm-documentation">https://pro.europeana.eu/page/edm-documentation</option>
+        </select>
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+        <label for="havest-url">Harvest URL</label>
+        <input type="text" formControlName="harvestUrl" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+        <label for="setspec">Setspec</label>
+        <input type="tel" formControlName="setSpec" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+        <label for="metadata-format">Metadata format</label>
+        <input type="text" formControlName="metadataFormat" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp' || harvestprotocol === 'folder'">
+        <label for="record-xpath">Record XPath</label>
+        <input type="text" formControlName="recordXPath" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp'">
+        <label for="ftphttpuser">FTP/HTTP user</label>
+        <input type="text" formControlName="ftpHttpUser" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp'">
+        <label for="ftphttppassword">FTP/HTTP password</label>
+        <input type="text" formControlName="ftpHttpPassword" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'http'">
+        <label for="url">URL</label>
+        <input type="text" formControlName="url" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'ftp'">
+        <label for="path">Path</label>
+        <input type="text" formControlName="path" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'ftp'">
+        <label for="serveraddress">Server Address</label>
+        <input type="text" formControlName="serverAddress" />
+      </div>
+      <div class="form-group" *ngIf="harvestprotocol === 'folder'">
+        <label for="folderpath">Folder Path</label>
+        <input type="text" formControlName="folderPath" />
+      </div>
+      <div class="form-group form-group-btns user-profile-edit-btns">
+        <button class="submit" type="button" [disabled]="!datasetForm.valid">Submit</button>
+      </div>
+    </div>
+  </form>
+</div> 

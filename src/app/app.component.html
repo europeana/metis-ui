@@ -1,6 +1,6 @@
 <app-header [profileMenu]="loggedIn"></app-header>
-<div class="pusher">
-  <div class="metis-main-content" [ngClass]="{'metis-main-content-home': isHome }">
+<div class="pusher pusher-{{bodyClass}}">
+  <div class="metis-main-content" [ngClass]="{'metis-main-content-lessmargin': isLessMargin }">
     <router-outlet></router-outlet>
   </div>
 </div>

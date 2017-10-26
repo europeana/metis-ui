@@ -62,10 +62,9 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/pandora/base/helpers';
 @import 'assets/sass/pandora/base/layout';
 @import 'assets/sass/pandora/base/table';
+@import 'assets/sass/pandora/base/tabs';
 
-@import 'assets/sass/pandora/components/accordion';
 @import 'assets/sass/pandora/components/banner';
-@import 'assets/sass/pandora/components/breadcrumbs';
 @import 'assets/sass/pandora/components/collapse-block';
 @import 'assets/sass/pandora/components/dashboard-header';
 @import 'assets/sass/pandora/components/dataset-info-block';

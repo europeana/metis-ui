@@ -15,6 +15,9 @@ import { FooterComponent } from './footer/footer.component';
 import { HomeComponent } from './home/home.component';
 import { DatasetComponent } from './dataset/dataset.component';
 import { RequestsComponent } from './requests/requests.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { DatasetformComponent } from './dataset/datasetform/datasetform.component';
+import { DatasetDirective } from './dataset/dataset.directive';
 
 
 @NgModule({
@@ -27,7 +30,10 @@ import { RequestsComponent } from './requests/requests.component';
     FooterComponent,
     HomeComponent,
     DatasetComponent,
-    RequestsComponent
+    RequestsComponent,
+    DashboardComponent,
+    DatasetformComponent,
+    DatasetDirective
   ],
   imports: [
     BrowserModule,
@@ -36,6 +42,7 @@ import { RequestsComponent } from './requests/requests.component';
     HttpClientModule,
     AppRoutingModule
   ],
+  entryComponents: [ DatasetformComponent ],
   providers: [],
   bootstrap: [AppComponent]
 })

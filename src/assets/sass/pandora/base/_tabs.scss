@@ -1,0 +1,48 @@
+.tabs {
+  background: $white;
+  border-bottom: 5px solid $eu-jade;
+  border-right: 0;
+  border-top: 5px solid $white;
+  display: flex;
+  height: $tab-header-height;
+  line-height: 1.3em;
+  margin-bottom: 0;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+
+  li {
+    display: inline-block;
+    flex: 1 1 0;
+
+    a {
+      color: $gray-light;
+      display: block;
+      height: 100%;
+      padding: 0.4em 1.2em;
+    }
+
+    span {
+      display: block;
+    }
+
+    .tab-subtitle {
+      color: $gray-light;
+      font-size: 0.75rem;
+    }
+
+    &:hover,
+    &.active {
+      background: $eu-jade;
+      color: $white;
+
+      a,
+      span {
+        color: inherit;
+      }
+
+    }
+
+  }
+
+}

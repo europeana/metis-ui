@@ -12,7 +12,8 @@ import { AuthenticationService } from './services/authentication.service';
 export class AppComponent implements OnInit {
 
   routerEventSubscription;
-  isHome = false;
+  isLessMargin = false;
+  bodyClass: string;
   public loggedIn = false;
 
   constructor(
@@ -25,10 +26,16 @@ export class AppComponent implements OnInit {
       if (this.router.isActive(event.url, false)) {
         if (this.authentication.validatedUser()) {
           this.loggedIn = true;
+        } else {
+          this.loggedIn = false;
         }
+        
+        this.bodyClass = event.url.split('/')[1];
 
-        if (event.url.includes('home') || event.url === '/') {
-          this.isHome = true;
+        if (event.url.includes('home') || event.url === '/' || event.url.includes('dashboard')) {
+          this.isLessMargin = true;
+        } else {
+          this.isLessMargin = false;
         }
       }
     });

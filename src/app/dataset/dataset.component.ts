@@ -1,28 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, AfterViewInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
-import { CountriesService } from '../services/countries.service';
+
+import { DatasetDirective } from '../dataset/dataset.directive';
+import { DatasetformComponent } from '../dataset/datasetform/datasetform.component';
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss'],
-  providers: [AuthenticationService, CountriesService]
+  providers: [AuthenticationService]
 })
 
 export class DatasetComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    private countries: CountriesService,
-    public router: Router) { }
+    public router: Router,
+    private route: ActivatedRoute,
+    private componentFactoryResolver: ComponentFactoryResolver) { }
 
-  datasetForm: FormGroup;
-  countryOptions;
-  languageOptions;
+  @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
+  
+  activeTab: string;
   user: {};
   userRole: string;
   editMode = false; // if not edit, then create
@@ -34,47 +36,29 @@ export class DatasetComponent implements OnInit {
     this.user = this.authentication.getUserInfo(1);
     this.userRole = this.user['role'];
 
-    this.countryOptions = this.countries.getCountries();
-    this.languageOptions = this.countries.getLanguages();
-
-    this.datasetForm = new FormGroup({
-      'identifier': new FormControl('2024913', [Validators.required]),
-      'datasetName': new FormControl('2024913_Photocons_LPDP', [Validators.required]),
-      'dataProvider': new FormControl(''),
-      'provider': new FormControl('provider', [Validators.required]),
-      'intermediateProvider': new FormControl(''),
-      'dateCreated': new FormControl(''),
-      'dateUpdated': new FormControl(''),
-      'status': new FormControl('status', [Validators.required]),
-      'replaces': new FormControl(''),
-      'replacedBy': new FormControl(''),
-      'country': new FormControl(''),
-      'description': new FormControl(''),
-      'notes': new FormControl(''),
-      'createdBy': new FormControl(''),
-      'assignedTo': new FormControl(''),
-      'firstPublished': new FormControl(''),
-      'lastPublished': new FormControl(''),
-      'numberOfItemsPublished': new FormControl(''),
-      'lastDateHarvest': new FormControl(''),
-      'numberOfItemsHarvested': new FormControl(''),
-      'lastDateSubmission': new FormControl(''),
-      'numberOfItemsDelivered': new FormControl(''),
-      'acceptanceStep': new FormControl('acceptancestep', [Validators.required]),
-      'harvestProtocol': new FormControl(''),
-      'metadataSchema': new FormControl(''),
-      'harvestUrl': new FormControl(''),
-      'setSpec': new FormControl(''),
-      'metadataFormat': new FormControl(''),
-      'recordXPath': new FormControl(''),
-      'ftpHttpUser': new FormControl(''),
-      'ftpHttpPassword': new FormControl(''),
-      'url': new FormControl(''),
-      'path': new FormControl(''),
-      'serverAddress': new FormControl(''),
-      'folderPath': new FormControl('')
+    this.route.params.subscribe(params => {
+      this.activeTab = params['tab'];
+      this.loadTabComponent();
     });
+    
+  }
 
+  loadTabComponent() {
+
+    let viewContainerRef = this.datasetHost.viewContainerRef;
+    viewContainerRef.clear();
+
+    if (!this.getcurrentTab()) {return false};
+
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab());
+    let componentRef = viewContainerRef.createComponent(componentFactory);
+
+  }
+
+  getcurrentTab() {
+    if (this.activeTab === 'new') {
+      return DatasetformComponent;
+    } 
   }
 
   onSubmit() {
