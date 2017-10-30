@@ -17,7 +17,6 @@ export class HomeComponent {
   bannerheading: string;
   bannertext: string;
   bannerlinktext: string;
-  bannerlink;
 
   constructor(private sanitizer: DomSanitizer) {
 

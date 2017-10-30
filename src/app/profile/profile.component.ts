@@ -1,9 +1,9 @@
 import 'rxjs/add/operator/switchMap';
 
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -36,7 +36,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
 
     this.authentication.redirectLogin();
-    
+
     this.route.params.subscribe(params => {
       this.user = this.authentication.getUserInfo(params['id']);
     });
@@ -64,12 +64,8 @@ export class ProfileComponent implements OnInit {
   }
 
   toggleEditMode() {
-    if (this.editMode === false) {
-      this.editMode = true;
-    } else {
-      this.editMode = false;
-    }
-  }  
+    this.editMode = !this.editMode;
+  }
 
   onSubmit() {
     this.toggleEditMode();

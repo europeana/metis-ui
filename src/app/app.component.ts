@@ -1,5 +1,5 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
-import { Router, UrlTree } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 
 @Component({
@@ -24,19 +24,11 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
     this.routerEventSubscription = this.router.events.subscribe((event: any) => {
       if (this.router.isActive(event.url, false)) {
-        if (this.authentication.validatedUser()) {
-          this.loggedIn = true;
-        } else {
-          this.loggedIn = false;
-        }
-        
+        this.loggedIn = !!this.authentication.validatedUser();
+
         this.bodyClass = event.url.split('/')[1];
 
-        if (event.url.includes('home') || event.url === '/' || event.url.includes('dashboard')) {
-          this.isLessMargin = true;
-        } else {
-          this.isLessMargin = false;
-        }
+        this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
       }
     });
 

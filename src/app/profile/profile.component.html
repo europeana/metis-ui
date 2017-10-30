@@ -10,7 +10,7 @@
       <div class="form-group" *ngIf="userApproved">
          <label for="userId">User ID</label>
          <input type="text" value="12345" name="userId" id="userId" formControlName="userId" readonly [attr.disabled]="editMode ? null : 'disabled'" />
-      </div> 
+      </div>
 
       <div class="form-group">
         <label for="userEmail">Email *</label>
@@ -40,11 +40,11 @@
       <div class="form-group">
         <label for="userSkype">SkypeId</label>
         <input id="userSkype" name="userSkype" type="text" formControlName="userSkype" [attr.disabled]="editMode ? null : 'disabled'" />
-      </div>      
+      </div>
 
       <div class="form-group">
-        <label for="search-org">Organizations</label>    
-        <ul class="metis-autocomplete-selected">
+        <label for="search-org">Organizations</label>
+        <ul id="search-org" class="metis-autocomplete-selected">
           <li *ngFor="let select of selectedOrganizations" class="tag">
             <span>{{ select.name }}</span>
           </li>
@@ -61,7 +61,7 @@
             <div class="role-wrapper">
               <h4 class="current-selected-organisation"></h4>
               <select #role class="roles" formControlName="userNotes">
-                  <option *ngFor="let role of suggestedRoles" value="{{role.name}}">{{role.name}}</option>                  
+                  <option *ngFor="let role of suggestedRoles" value="{{role.name}}">{{role.name}}</option>
               </select>
             </div>
             <button type="button" (click)="confirmRole(role.value)">Confirm role</button>
@@ -71,7 +71,7 @@
 
       <div class="form-group">
         <label for="notes">Notes</label>
-        <textarea rows="4" cols="50" name="userNotes" formControlName="userNotes" [attr.disabled]="editMode ? null : 'disabled'"></textarea>
+        <textarea rows="4" cols="50" id="notes" name="userNotes" formControlName="userNotes" [attr.disabled]="editMode ? null : 'disabled'"></textarea>
       </div>
 
       <div class="form-group">

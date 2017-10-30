@@ -1,11 +1,11 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthenticationService } from '../services/authentication.service';
 
-import { DatasetDirective } from '../dataset/dataset.directive';
-import { DatasetformComponent } from '../dataset/datasetform/datasetform.component';
+import { DatasetDirective } from './dataset.directive';
+import { DatasetformComponent } from './datasetform/datasetform.component';
 
 @Component({
   selector: 'app-dataset',
@@ -23,7 +23,7 @@ export class DatasetComponent implements OnInit {
     private componentFactoryResolver: ComponentFactoryResolver) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
-  
+
   activeTab: string;
   user: {};
   userRole: string;
@@ -40,7 +40,7 @@ export class DatasetComponent implements OnInit {
       this.activeTab = params['tab'];
       this.loadTabComponent();
     });
-    
+
   }
 
   loadTabComponent() {
@@ -48,7 +48,7 @@ export class DatasetComponent implements OnInit {
     let viewContainerRef = this.datasetHost.viewContainerRef;
     viewContainerRef.clear();
 
-    if (!this.getcurrentTab()) {return false};
+    if (!this.getcurrentTab()) {return false; }
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab());
     let componentRef = viewContainerRef.createComponent(componentFactory);
@@ -58,7 +58,7 @@ export class DatasetComponent implements OnInit {
   getcurrentTab() {
     if (this.activeTab === 'new') {
       return DatasetformComponent;
-    } 
+    }
   }
 
   onSubmit() {

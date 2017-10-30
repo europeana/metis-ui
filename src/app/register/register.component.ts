@@ -25,11 +25,11 @@ export class RegisterComponent {
       firstname: ['', Validators.required ],
       lastname: ['', Validators.required ],
       email: ['', [Validators.required, Validators.email]],
-      password: this.fb.group({ 
+      password: this.fb.group({
         newPassword: ['', Validators.required ],
         repeatPassword: ['', Validators.required ]
       }, {
-        validator: PasswordValidation.MatchPassword 
+        validator: PasswordValidation.MatchPassword
       })
     });
   }
@@ -50,7 +50,7 @@ export class PasswordValidation {
   constructor(private RegisterComponent: RegisterComponent){ }
 
   static MatchPassword(ac: AbstractControl) {
-    if(ac.get('newPassword').value != ac.get('repeatPassword').value) {
+    if(ac.get('newPassword').value !== ac.get('repeatPassword').value) {
       ac.get('repeatPassword').setErrors( {MatchPassword: true} )
     } else {
       return null;

@@ -28,19 +28,11 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleSignInMenu() {
-    if (this.openSignIn) {
-      this.openSignIn = false;
-    } else {
-      this.openSignIn = true;
-    }
+    this.openSignIn = !this.openSignIn;
   }
 
   toggleSearchMenu() {
-    if (this.openSearch) {
-      this.openSearch = false;
-    } else {
-      this.openSearch = true;
-    }
+    this.openSearch = !this.openSearch;
   }
 
   filterSearch(filter) {
@@ -57,6 +49,4 @@ export class HeaderComponent implements OnInit {
     this.authentication.logOut();
     this.openSignIn = false;
   }
-
-
 }

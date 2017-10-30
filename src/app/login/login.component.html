@@ -3,7 +3,7 @@
     <div class="form-header">
       <h2>Sign in to Metis</h2>
     </div>
-    
+
     <div class="messages" *ngIf="errors"><div class="error-message"><i class="fa fa-times"></i>{{errorMessage}}</div></div>
 
     <div class="form-fields">
@@ -24,6 +24,3 @@
     </div>
   </form>
 </div>
-
-<p>Form value: {{ loginForm.value | json }}</p>
-<p>Form status: {{ loginForm.status | json }}</p>

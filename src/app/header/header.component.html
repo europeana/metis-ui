@@ -3,12 +3,12 @@
     <div class="header-container">
       <div class="metis-logo">
         <a routerLink="/home" class="phase-flag beta" tabindex="-1">BETA</a>
-        <a routerLink="/home" class="logo ir"></a>                
+        <a routerLink="/home" class="logo ir"></a>
       </div>
 
       <div class="dashboard-header" *ngIf="profileMenu">
         <form class="search-multiterm">
-          <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />        
+          <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />
           <ul class="search-select">
             <li>
               <a class="has-submenu" (click)="toggleSearchMenu()">{{searchfilter}}</a>
@@ -19,13 +19,13 @@
                   <li><a (click)="filterSearch('All');">All</a></li>
                 </ul>
             </li>
-          </ul>                            
+          </ul>
           <button type="submit" class="search-submit"><i class="fa fa-search"></i></button>
-        </form>    
+        </form>
       </div>
 
       <div class="dashboard-header-links">
-        <ul id="settings-menu" class="cf nav-access" *ngIf="!profileMenu">
+        <ul class="settings-menu cf nav-access" *ngIf="!profileMenu">
           <li>
             <a class="signup has-submenu" (click)="toggleSignInMenu()">Sign In</a>
             <ul class="menu-sublevel caret" *ngIf="openSignIn">
@@ -34,7 +34,7 @@
             </ul>
           </li>
         </ul>
-        <div id="settings-menu" class="cf nav-loggedin" *ngIf="profileMenu">
+        <div class="settings-menu cf nav-loggedin" *ngIf="profileMenu">
             <a class="notifications" routerLink="/dashboard">
               <span class="svg-icon-notifications"></span>
               <span class="circle">7</span>
