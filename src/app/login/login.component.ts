@@ -21,7 +21,7 @@ export class LoginComponent {
 
   createForm() {
     this.loginForm = this.fb.group({
-      'email': ['', Validators.required ],
+      'email': ['', Validators.compose([Validators.required, Validators.email]) ],
       'password': ['', Validators.required ]
     });
   }
