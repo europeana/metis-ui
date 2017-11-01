@@ -51,7 +51,7 @@ export class PasswordValidation {
 
   static MatchPassword(ac: AbstractControl) {
     if(ac.get('newPassword').value !== ac.get('repeatPassword').value) {
-      ac.get('repeatPassword').setErrors( {MatchPassword: true} )
+      ac.get('repeatPassword').setErrors( {MatchPassword: true} );
     } else {
       return null;
     }

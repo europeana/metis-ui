@@ -1,5 +1,8 @@
-<div class="metis-form metis-form-horizontal user-profile-form">
-  <form [formGroup]="profileForm" #formDir="ngForm">
+<div class="metis-profile-form metis-form metis-form-horizontal">
+  <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
+    <div class="form-header">
+      <h2>Profile form</h2>
+    </div>
 
     <div class="messages">
       <div class="error-message" *ngIf="errors">{{message}}</div>
@@ -7,11 +10,6 @@
     </div>
 
     <div class="form-fields">
-      <div class="form-group" *ngIf="userApproved">
-         <label for="userId">User ID</label>
-         <input type="text" value="12345" name="userId" id="userId" formControlName="userId" readonly [attr.disabled]="editMode ? null : 'disabled'" />
-      </div>
-
       <div class="form-group">
         <label for="userEmail">Email *</label>
         <input id="userEmail" name="userEmail" type="text" formControlName="userEmail" readonly [attr.disabled]="editMode ? null : 'disabled'" />
@@ -29,7 +27,7 @@
 
       <div class="form-group" *ngIf="userRole !== 'admin'">
         <label for="userPassword">Password *</label>
-        <input id="userPassword" name="userPassword" type="text" formControlName="userPassword" />
+        <input id="userPassword" name="userPassword" type="password" formControlName="userPassword" />
       </div>
 
       <div class="form-group">
@@ -51,7 +49,7 @@
         </ul>
       </div>
 
-      <div class="modal-wrapper" *ngIf="isRoles">
+      <div class="modal-wrapper" *ngIf="isRoles && roles.length">
         <div class="modal">
           <div class="head">
             <a class="btn-close trigger" (click)="closeRolesModal()"></a>
@@ -61,10 +59,10 @@
             <div class="role-wrapper">
               <h4 class="current-selected-organisation"></h4>
               <select #role class="roles" formControlName="userNotes">
-                  <option *ngFor="let role of suggestedRoles" value="{{role.name}}">{{role.name}}</option>
+                  <option *ngFor="let role of roles" value="{{role.id}}">{{role.name}}</option>
               </select>
             </div>
-            <button type="button" (click)="confirmRole(role.value)">Confirm role</button>
+            <button type="button" (click)="confirmRole()">Confirm role</button>
           </div>
         </div>
       </div>
@@ -77,11 +75,6 @@
       <div class="form-group">
         <label for="active">Active</label>
         <input type="text" name="userActive" id="active" formControlName="userActive" readonly [attr.disabled]="editMode ? null : 'disabled'" />
-      </div>
-
-      <div class="form-group">
-        <label for="approved">Approved</label>
-        <input type="text" name="userApproved" id="approved" formControlName="userApproved" readonly [attr.disabled]="editMode ? null : 'disabled'" />
       </div>
 
       <div class="form-group">

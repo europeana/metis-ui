@@ -32,10 +32,20 @@ export class ProfileComponent implements OnInit {
   success = false;
   message: string;
 
+  isRoles: boolean;
+  roles = [
+    { id: 1001, name: 'admin' },
+    { id: 1002, name: 'user' },
+    { id: 1003, name: 'guest' },
+    { id: 1004, name: 'editor' },
+    { id: 1005, name: 'reviewer' }
+  ];
+
   ngOnInit(): void {
 
     this.user = this.authentication.currentUser;
     this.userRole = this.user.accountRole;
+    this.isRoles = false;
 
     this.profileForm = this.fb.group({
       'userId': [this.user.userId, [Validators.required]],
@@ -52,11 +62,24 @@ export class ProfileComponent implements OnInit {
       'userUpdated': [this.user.updatedDate]
     });
 
-    this.selectedOrganizations = this.user.organizationName;
+    this.selectedOrganizations = [
+      {
+        id: this.user.organizationId,
+        name: this.user.organizationName,
+      }
+    ];
   }
 
   toggleEditMode() {
     this.editMode = !this.editMode;
+  }
+
+  closeRolesModal() {
+    console.log('closeRolesModal');
+  }
+
+  confirmRole() {
+    console.log('confirmRole');
   }
 
   onSubmit() {
