@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthenticationService } from '../services/authentication.service';
-import { UserrequestsService } from '../services/userrequests.service';
+import { AuthenticationService,
+         UserrequestsService } from '../_services/index';
 
 @Component({
   selector: 'app-requests',
@@ -21,7 +21,6 @@ export class RequestsComponent implements OnInit {
   pendingusers: {};
 
   ngOnInit() {
-    this.authentication.redirectLogin();
     this.pendingusers = this.userrequests.getPendingRequests();
   }
 

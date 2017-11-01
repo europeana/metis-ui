@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../_services/index';
 
 @Component({
   selector: 'app-login',
@@ -8,29 +9,42 @@ import { AuthenticationService } from '../services/authentication.service';
   styleUrls: ['./login.component.scss'],
   providers: [AuthenticationService]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  loading = false;
+  error = '';
 
   loginForm: FormGroup;
-  errors: boolean;
-  errorMessage: string;
 
-  constructor(private authentication: AuthenticationService, private fb: FormBuilder) {
-    this.authentication.redirectProfile();
+  constructor(
+    private router: Router,
+    private authentication: AuthenticationService,
+    private fb: FormBuilder) { }
+
+  ngOnInit() {
+    // reset login status
+    this.authentication.logOut();
     this.createForm();
   }
 
   createForm() {
     this.loginForm = this.fb.group({
-      'email': ['', Validators.compose([Validators.required, Validators.email]) ],
+      'email': ['', [Validators.required, Validators.email] ],
       'password': ['', Validators.required ]
     });
   }
 
   onSubmit() {
-    if (this.authentication.validateUser(this.loginForm) === false) {
-      this.errors = true;
-      this.errorMessage = 'Wrong credentials';
-    }
+    this.loading = true;
+    const email = this.loginForm.controls.email.value;
+    const password = this.loginForm.controls.password.value;
+    this.authentication.logIn(email, password).subscribe(result => {
+      if (result === true) {
+        this.router.navigate(['/profile']);
+      } else {
+        this.error = 'Username or password is incorrect';
+        this.loading = false;
+      }
+    });
   }
 
 }

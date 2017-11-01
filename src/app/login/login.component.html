@@ -4,16 +4,22 @@
       <h2>Sign in to Metis</h2>
     </div>
 
-    <div class="messages" *ngIf="errors"><div class="error-message"><i class="fa fa-times"></i>{{errorMessage}}</div></div>
+    <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
 
     <div class="form-fields">
       <fieldset class="form-group">
         <label for="email">Email</label>
         <input id="email" type="email" formControlName="email" />
+        <div class="messages" *ngIf="loginForm.controls.email.touched && !loginForm.controls.email.valid">
+          <div class="error-message">Please enter an email address</div>
+        </div>
       </fieldset>
       <fieldset class="form-group">
         <label for="password">Password</label>
         <input id="password" type="password" formControlName="password" />
+        <div class="messages" *ngIf="loginForm.controls.password.touched && !loginForm.controls.password.valid">
+          <div class="error-message">Please enter a password</div>
+        </div>
       </fieldset>
       <div class="forgot-credentials">
         <p><a routerLink="#">Forgot your credentials?</a></p>
@@ -24,6 +30,3 @@
     </div>
   </form>
 </div>
-
-<p>Form value: {{ loginForm.value | json }}</p>
-<p>Form status: {{ loginForm.status | json }}</p>

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../../_services/index';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,8 +13,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authentication: AuthenticationService,
-    public router: Router) {
-  }
+    public router: Router) {}
 
   openSignIn = false;
   openSearch = false;

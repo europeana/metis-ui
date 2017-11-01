@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'profile/:id', component: ProfileComponent },
+  { path: 'profile', component: ProfileComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'requests', component: RequestsComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },

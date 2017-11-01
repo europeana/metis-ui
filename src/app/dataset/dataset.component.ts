@@ -2,10 +2,12 @@ import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../_services/authentication.service';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
+
+import { User } from '../_models/index';
 
 @Component({
   selector: 'app-dataset',
@@ -25,16 +27,14 @@ export class DatasetComponent implements OnInit {
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string;
-  user: {};
+  user: User;
   userRole: string;
   editMode = false; // if not edit, then create
 
   ngOnInit() {
 
-    this.authentication.redirectLogin();
-
-    this.user = this.authentication.getUserInfo(1);
-    this.userRole = this.user['role'];
+    this.user = this.authentication.currentUser;
+    this.userRole = this.user.accountRole;
 
     this.route.params.subscribe(params => {
       this.activeTab = params['tab'];

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from './services/authentication.service';
+import { AuthenticationService } from './_services/index';
 
 @Component({
   providers: [AuthenticationService],
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
     this.routerEventSubscription = this.router.events.subscribe((event: any) => {
       if (this.router.isActive(event.url, false)) {
-        this.loggedIn = !!this.authentication.validatedUser();
+        this.loggedIn = !!this.authentication.currentUser;
 
         this.bodyClass = event.url.split('/')[1];
 

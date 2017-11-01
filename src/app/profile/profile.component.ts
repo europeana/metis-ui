@@ -5,8 +5,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from '../services/authentication.service';
-
+import { AuthenticationService } from '../_services/authentication.service';
+import { User } from '../_models/index';
 
 @Component({
   selector: 'app-profile',
@@ -25,9 +25,8 @@ export class ProfileComponent implements OnInit {
 
   profileForm: FormGroup;
   selectedOrganizations;
-  user: {};
+  user: User;
   userRole: string;
-  userApproved: boolean;
   editMode = false; // if not edit, then preview
   errors = false;
   success = false;
@@ -35,32 +34,25 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.authentication.redirectLogin();
-
-    this.route.params.subscribe(params => {
-      this.user = this.authentication.getUserInfo(params['id']);
-    });
-
-    this.userRole = this.user['role'];
-    this.userApproved = this.user['approved'];
+    this.user = this.authentication.currentUser;
+    this.userRole = this.user.accountRole;
 
     this.profileForm = this.fb.group({
-      'userId': [this.user['id'], [Validators.required]],
-      'userEmail': [this.user['email'], [Validators.required]],
-      'userFirstName': [this.user['firstname'], [Validators.required]],
-      'userLastName': [this.user['lastname'], [Validators.required]],
+      'userId': [this.user.userId, [Validators.required]],
+      'userEmail': [this.user.email, [Validators.required]],
+      'userFirstName': [this.user.firstName, [Validators.required]],
+      'userLastName': [this.user.lastName, [Validators.required]],
       'userPassword': ['test1234', [Validators.required]],
-      'userCountry': [this.user['country']],
-      'userSkype': [this.user['skypeid']],
-      'roles': [],
-      'userNotes': [this.user['notes']],
-      'userActive': [this.user['active']],
-      'userApproved': [this.user['approved']],
-      'userCreated': [this.user['created']],
-      'userUpdated': [this.user['updated']]
+      'userCountry': [this.user.country],
+      'userSkype': [this.user.skypeId || ''],
+      'roles': [this.user.accountRole || ''],
+      'userNotes': [this.user.notes || ''],
+      'userActive': [this.user.active],
+      'userCreated': [this.user.createdDate],
+      'userUpdated': [this.user.updatedDate]
     });
 
-    this.selectedOrganizations = this.user['organizations'];
+    this.selectedOrganizations = this.user.organizationName;
   }
 
   toggleEditMode() {

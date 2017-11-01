@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../_services/index';
+import { User } from '../_models/index';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,19 +10,15 @@ import { AuthenticationService } from '../services/authentication.service';
 })
 export class DashboardComponent implements OnInit {
 
-  user: {};
+  user: User;
   userName: string;
 
-
   constructor(private authentication: AuthenticationService) {
-    this.authentication.redirectLogin();
   }
 
   ngOnInit() {
-
-  this.user = this.authentication.getUserInfo(1);
-    this.userName = this.user['firstname'];
-
+    this.user = this.authentication.currentUser;
+    this.userName = this.user ? this.user.firstName : '';
   }
 
 }
