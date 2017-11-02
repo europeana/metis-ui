@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService } from '../../_services';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
 import { User } from '../../_models';
 
 @Component({
@@ -14,24 +13,21 @@ import { User } from '../../_models';
 export class HeaderComponent implements OnInit {
 
   public currentUser: User;
-  public loggedIn: boolean;
-
-  isLoggedIn$: Observable<boolean>;
 
   constructor(
     private authentication: AuthenticationService,
-    public router: Router) {
-      this.currentUser = authentication.currentUser;
-  }
+    public router: Router) {}
 
   openSignIn = false;
   openSearch = false;
   searchfilter;
 
+  @Input('loggedIn') loggedIn: boolean;
+
   ngOnInit() {
     this.openSignIn = false;
     this.searchfilter = 'All';
-    this.isLoggedIn$.subscribe( (b) => this.loggedIn = b );
+    this.currentUser = this.authentication.currentUser;
   }
 
   toggleSignInMenu() {
@@ -43,16 +39,30 @@ export class HeaderComponent implements OnInit {
   }
 
   filterSearch(filter) {
-    this.searchfilter = filter;
     this.openSearch = false;
+    this.searchfilter = filter;
   }
 
   gotoProfile() {
-    this.authentication.redirectProfile();
     this.openSignIn = false;
+    this.authentication.redirectProfile();
   }
 
-  logout() {
+  isLoggedIn() {
+    return this.loggedIn;
+  }
+
+  gotoLogin() {
+    this.openSignIn = false;
+    this.router.navigate(['/login']);
+  }
+
+  gotoRegister() {
+    this.openSignIn = false;
+    this.router.navigate(['/register']);
+  }
+
+  logOut() {
     this.authentication.logout();
     this.openSignIn = false;
     this.router.navigate(['/home']);

@@ -1,4 +1,4 @@
-<app-header></app-header>
+<app-header [loggedIn]="loggedIn"></app-header>
 <div class="pusher pusher-{{bodyClass}}">
   <div class="metis-main-content" [ngClass]="{'metis-main-content-lessmargin': isLessMargin }">
     <router-outlet></router-outlet>

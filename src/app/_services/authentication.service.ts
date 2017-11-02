@@ -1,9 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Http, Headers, Response } from '@angular/http';
-
 import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
 
 import { User } from '../_models';
@@ -14,16 +12,11 @@ export class AuthenticationService {
   private readonly key = 'currentUser';
   private readonly url = '/api/authenticate';
 
-  public currentUser: User;
+  public currentUser = null;
   public token: string;
 
-  private loggedIn = new BehaviorSubject<boolean>(false);
-
-  get isLoggedIn() {
-    return this.loggedIn.asObservable();
-  }
-
-  constructor(public router: Router, private http: Http) {
+  constructor(public router: Router,
+              private http: Http) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
     if (value) {
@@ -31,6 +24,10 @@ export class AuthenticationService {
       this.currentUser = hash.user;
       this.token = hash.token;
     }
+  }
+
+  validatedUser(): boolean {
+    return localStorage.getItem(this.key) !== null;
   }
 
   login(email: string, password: string): Observable<boolean> {
@@ -47,11 +44,9 @@ export class AuthenticationService {
         localStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
 
         // return true to indicate successful login
-        this.loggedIn.next(true);
         return true;
       } else {
         // return false to indicate failed login
-        this.loggedIn.next(false);
         return false;
       }
     });

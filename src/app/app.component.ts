@@ -24,13 +24,13 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
     this.routerEventSubscription = this.router.events.subscribe((event: any) => {
       if (this.router.isActive(event.url, false)) {
-        this.loggedIn = !!this.authentication.currentUser;
+        this.loggedIn = this.authentication.validatedUser( );
 
         this.bodyClass = event.url.split('/')[1];
 
         this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
       }
     });
-
   }
+
 }

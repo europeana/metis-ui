@@ -6,7 +6,7 @@
         <a routerLink="/home" class="logo ir"></a>
       </div>
 
-      <div class="dashboard-header" *ngIf="currentUser">
+      <div class="dashboard-header" *ngIf="isLoggedIn()">
         <form class="search-multiterm">
           <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />
           <ul class="search-select">
@@ -25,7 +25,7 @@
       </div>
 
       <div class="dashboard-header-links">
-        <div *ngIf="loggedIn; then loggedIn else loggedOut"></div>
+        <div *ngIf="isLoggedIn(); then loggedIn else loggedOut"></div>
         <ng-template #loggedIn>
           <div class="settings-menu cf nav-loggedin">
             <a class="notifications" routerLink="/dashboard">
@@ -37,7 +37,7 @@
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li><a (click)="gotoProfile();">My Profile</a></li>
-                <li><a (click)="logout();">Log out</a></li>
+                <li><a (click)="logOut();">Log out</a></li>
               </ul>
             </div>
           </div>
@@ -47,8 +47,8 @@
             <li>
               <a class="signup has-submenu" (click)="toggleSignInMenu()">Sign In</a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
-                <li><a routerLink="/login">Login</a></li>
-                <li><a routerLink="/register">Register</a></li>
+                <li><a (click)="gotoLogin();">Login</a></li>
+                <li><a (click)="gotoRegister();">Register</a></li>
               </ul>
             </li>
           </ul>

@@ -7,31 +7,31 @@
     <div class="messages" *ngIf="errors">
       <div class="error-message">{{errorMessage}}</div>
     </div>
- 
+
      <div class="form-fields">
 
       <fieldset class="form-group">
-        <label for="firstName">Name *</label>
+        <label for="firstName">Name:</label>
         <input id="firstName" formControlName="firstname" placeholder="First">
         <input id="lastName" formControlName="lastname" placeholder="Last">
       </fieldset>
       <fieldset class="form-group">
-        <label for="email">Email *</label>
+        <label for="email">Email:</label>
         <input id="email" formControlName="email" placeholder="your@email.com">
-        <div class="messages" *ngIf="registerForm.controls.email.touched && !registerForm.controls.email.valid">
+        <div class="messages" *ngIf="registerForm.controls['email'].touched && !registerForm.controls['email'].valid">
           <div class="error-message">Please enter an email address</div>
         </div>
       </fieldset>
       <fieldset class="form-group" formGroupName="password">
-        <label for="password">Password *</label>
+        <label for="password">Password:</label>
         <input id="password" type="password" formControlName="newPassword" placeholder="password">
-        <input id="repeatpassword" type="password" formControlName="repeatPassword" placeholder="repeat password">      
-        <div class="messages" *ngIf="registerForm.controls.password.controls.repeatPassword.touched && !registerForm.controls.password.controls.repeatPassword.valid">
+        <input id="repeatpassword" type="password" formControlName="repeatPassword" placeholder="repeat password">
+        <div class="messages" *ngIf="registerForm.controls['password'].controls['repeatPassword'].touched && !registerForm.controls['password'].controls['repeatPassword'].valid">
           <div class="error-message">Passwords do not match!</div>
         </div>
-      </fieldset>     
+      </fieldset>
       <div class="form-requirements-warning">
-        <p>* needed for registration</p>
+        <p>* All fields required</p>
       </div>
       <div class="form-group form-group-btns">
         <button class="submit-btn" type="submit" [disabled]="!registerForm.valid">Submit</button>
