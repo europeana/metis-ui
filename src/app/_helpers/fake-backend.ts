@@ -2,6 +2,10 @@
 import { User } from '../_models';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
+// http://metis-authentication-rest-test.eanadev.org/authentication/register
+// http://metis-authentication-rest-test.eanadev.org/authentication/login
+// http://metis-authentication-rest-test.eanadev.org/authentication/delete?userEmailToDelete=valentine.charles@europeana.eu
+
 export function fakeBackendFactory(backend: MockBackend, options: BaseRequestOptions) {
   // configure fake backend
   backend.connections.subscribe((connection: MockConnection) => {
@@ -9,22 +13,18 @@ export function fakeBackendFactory(backend: MockBackend, options: BaseRequestOpt
     const testUser: User = {
       userId: '1482250000003199100',
       email: 'mirjam.verloop@europeana.eu',
-      firstName: 'Valentine',
-      lastName: 'Charles',
+      firstName: 'Mirjam',
+      lastName: 'Verloop',
       organizationId: '1482250000001617026',
       organizationName: 'Europeana Foundation',
-      accountRole: null,
+      accountRole: 'EUROPEANA_DATA_OFFICER',
       country: 'Netherlands',
-      skypeId: null,
-      networkMember: false,
-      notes: null,
-      active: false,
+      networkMember: true,
+      metisUserFlag: true,
       createdDate: 1502350107000,
       updatedDate: 1502441110000,
-      metisUserToken: {
-        email: 'mirjam.verloop@europeana.eu',
+      metisUserAccessToken: {
         accessToken: 'w1EeItnofNxniCj3yijXj74s9EnxhSac',
-        timestamp: 1509380572434
       }
     };
 
@@ -32,7 +32,7 @@ export function fakeBackendFactory(backend: MockBackend, options: BaseRequestOpt
     setTimeout(() => {
 
       // fake authenticate api end point
-      if (connection.request.url.endsWith('/api/authenticate') && connection.request.method === RequestMethod.Post) {
+      if (connection.request.url.endsWith('/authentication/login') && connection.request.method === RequestMethod.Post) {
         // get parameters from post request
         const params = JSON.parse(connection.request.getBody());
 
@@ -42,22 +42,6 @@ export function fakeBackendFactory(backend: MockBackend, options: BaseRequestOpt
             new ResponseOptions({ status: 200, body: testUser })
           ));
         } else {
-          connection.mockRespond(new Response(
-            new ResponseOptions({ status: 401 })
-          ));
-        }
-      }
-
-      // fake users api end point
-      if (connection.request.url.endsWith('/api/users') && connection.request.method === RequestMethod.Get) {
-        // check for fake auth token in header and return test users if valid, this security is implemented server side
-        // in a real application
-        if (connection.request.headers.get('Authorization') === `Bearer ${testUser.metisUserToken.accessToken}`) {
-          connection.mockRespond(new Response(
-            new ResponseOptions({ status: 200, body: [testUser] })
-          ));
-        } else {
-          // return 401 not authorised if token is null or invalid
           connection.mockRespond(new Response(
             new ResponseOptions({ status: 401 })
           ));

@@ -5,7 +5,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from '../_services/authentication.service';
+import { AuthenticationService } from '../_services';
 import { User } from '../_models';
 
 @Component({
@@ -24,68 +24,33 @@ export class ProfileComponent implements OnInit {
     private fb: FormBuilder) { }
 
   profileForm: FormGroup;
-  selectedOrganizations;
-  user: User;
-  userRole: string;
-  editMode = false; // if not edit, then preview
-  errors = false;
-  success = false;
-  message: string;
-
-  isRoles: boolean;
-  roles = [
-    { id: 1001, name: 'admin' },
-    { id: 1002, name: 'user' },
-    { id: 1003, name: 'guest' },
-    { id: 1004, name: 'editor' },
-    { id: 1005, name: 'reviewer' }
-  ];
+  editMode = false;
 
   ngOnInit(): void {
 
-    this.user = this.authentication.currentUser;
-    this.userRole = this.user.accountRole;
-    this.isRoles = false;
-
+    const user: User = this.authentication.currentUser;
     this.profileForm = this.fb.group({
-      'userId': [this.user.userId, [Validators.required]],
-      'userEmail': [this.user.email, [Validators.required]],
-      'userFirstName': [this.user.firstName, [Validators.required]],
-      'userLastName': [this.user.lastName, [Validators.required]],
-      'userPassword': ['test1234', [Validators.required]],
-      'userCountry': [this.user.country],
-      'userSkype': [this.user.skypeId || ''],
-      'roles': [this.user.accountRole || ''],
-      'userNotes': [this.user.notes || ''],
-      'userActive': [this.user.active],
-      'userCreated': [this.user.createdDate],
-      'userUpdated': [this.user.updatedDate]
+      'user-id': [user.userId],
+      'email': [user.email],
+      'first-name': [user.firstName],
+      'last-name': [user.lastName],
+      'organization-name': [user.organizationName || 'Unknown'],
+      'country': [user.country || 'Unknown'],
+      'network-member': [user.networkMember],
+      'metis-user-flag': [user.metisUserFlag],
+      'account-role': [user.accountRole || 'Unknown'],
+      'created-date': [new Date(user.createdDate)],
+      'updated-date': [new Date(user.updatedDate)]
     });
 
-    this.selectedOrganizations = [
-      {
-        id: this.user.organizationId,
-        name: this.user.organizationName,
-      }
-    ];
   }
 
   toggleEditMode() {
     this.editMode = !this.editMode;
   }
 
-  closeRolesModal() {
-    console.log('closeRolesModal');
-  }
-
-  confirmRole() {
-    console.log('confirmRole');
-  }
-
   onSubmit() {
+    console.log('onSubmit()');
     this.toggleEditMode();
-    this.success = true;
-    this.message = 'You just updated your profile!';
   }
-
 }

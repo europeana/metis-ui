@@ -7,13 +7,11 @@ export class User {
   lastName: string;
   organizationId: string;
   organizationName: string;
-  accountRole?: string;
+  accountRole: string;
   country: string;
-  skypeId?: string;
   networkMember: boolean;
-  notes?: string;
-  active: boolean;
+  metisUserFlag: boolean;
   createdDate: number;
   updatedDate: number;
-  metisUserToken: UserToken;
+  metisUserAccessToken: UserToken;
 }

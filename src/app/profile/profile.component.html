@@ -1,96 +1,69 @@
 <div class="metis-profile-form metis-form metis-form-horizontal">
   <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
     <div class="form-header">
-      <h2>Profile</h2>
-    </div>
-
-    <div class="messages">
-      <div class="error-message" *ngIf="errors">{{message}}</div>
-      <div class="success-message" *ngIf="success">{{message}}</div>
+      <h2>User Profile</h2>
     </div>
 
     <div class="form-fields">
       <div class="form-group">
-        <label for="userEmail">Email *</label>
-        <input id="userEmail" name="userEmail" type="text" formControlName="userEmail" readonly [attr.disabled]="editMode ? null : 'disabled'" />
+        <label for="user-id">Id</label>
+        <input id="user-id" name="user-id" type="text" formControlName="user-id" readonly />
       </div>
 
       <div class="form-group">
-        <label for="userLastName">Last Name *</label>
-        <input id="userLastName" name="userLastName" type="text" formControlName="userLastName" [attr.disabled]="editMode ? null : 'disabled'" />
+        <label for="email">Email</label>
+        <input id="email" name="email" type="text" formControlName="email" readonly />
       </div>
 
       <div class="form-group">
-        <label for="userFirstName">First Name *</label>
-        <input id="userFirstName" name="userFirstName" type="text" formControlName="userFirstName" [attr.disabled]="editMode ? null : 'disabled'" />
-      </div>
-
-      <div class="form-group" *ngIf="userRole !== 'admin'">
-        <label for="userPassword">Password *</label>
-        <input id="userPassword" name="userPassword" type="password" formControlName="userPassword" />
+        <label for="first-name">First Name *</label>
+        <input id="first-name" name="first-name" type="text" formControlName="first-name" [attr.disabled]="editMode ? null : 'disabled'" />
       </div>
 
       <div class="form-group">
-        <label for="userCountry">Country </label>
-        <input id="userCountry" name="userCountry" type="text" formControlName="userCountry" [attr.disabled]="editMode ? null : 'disabled'"/>
+        <label for="last-name">Last Name *</label>
+        <input id="last-name" name="last-name" type="text" formControlName="last-name" [attr.disabled]="editMode ? null : 'disabled'" />
       </div>
 
       <div class="form-group">
-        <label for="userSkype">SkypeId</label>
-        <input id="userSkype" name="userSkype" type="text" formControlName="userSkype" [attr.disabled]="editMode ? null : 'disabled'" />
+        <label for="organization-name">Organization Name</label>
+        <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" readonly />
       </div>
 
       <div class="form-group">
-        <label for="search-org">Organizations</label>
-        <ul id="search-org" class="metis-autocomplete-selected">
-          <li *ngFor="let select of selectedOrganizations" class="tag">
-            <span>{{ select.name }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="modal-wrapper" *ngIf="isRoles && roles.length">
-        <div class="modal">
-          <div class="head">
-            <a class="btn-close trigger" (click)="closeRolesModal()"></a>
-            <h3 class="headerRole">Select role: </h3>
-          </div>
-          <div class="content">
-            <div class="role-wrapper">
-              <h4 class="current-selected-organisation"></h4>
-              <select #role class="roles" formControlName="userNotes">
-                  <option *ngFor="let role of roles" value="{{role.id}}">{{role.name}}</option>
-              </select>
-            </div>
-            <button type="button" (click)="confirmRole()">Confirm role</button>
-          </div>
-        </div>
+        <label for="country">Country</label>
+        <input id="country" name="country" type="text" formControlName="country" readonly/>
       </div>
 
       <div class="form-group">
-        <label for="notes">Notes</label>
-        <textarea rows="4" cols="50" id="notes" name="userNotes" formControlName="userNotes" [attr.disabled]="editMode ? null : 'disabled'"></textarea>
+        <label for="network-member">Network Member</label>
+        <input id="network-member" name="network-member" type="text" formControlName="network-member" readonly/>
       </div>
 
       <div class="form-group">
-        <label for="active">Active</label>
-        <input type="text" name="userActive" id="active" formControlName="userActive" readonly [attr.disabled]="editMode ? null : 'disabled'" />
+        <label for="metis-user-flag">Metis User Flag</label>
+        <input id="metis-user-flag" name="metis-user-flag" type="text" formControlName="metis-user-flag" readonly/>
       </div>
 
       <div class="form-group">
-        <label for="created">Created</label>
-        <input type="text" name="userCreated" id="created" formControlName="userCreated" readonly [attr.disabled]="editMode ? null : 'disabled'" />
+        <label for="account-role">Account Role</label>
+        <input id="account-role" name="account-role" type="text" formControlName="account-role" readonly/>
       </div>
 
       <div class="form-group">
-        <label for="updated">Updated</label>
-        <input type="text" name="userUpdated" id="updated" formControlName="userUpdated" readonly [attr.disabled]="editMode ? null : 'disabled'" />
+        <label for="created-date">Created Date</label>
+        <input type="text" name="created-date" id="created-date" formControlName="created-date" readonly />
+      </div>
+
+      <div class="form-group">
+        <label for="updated-date">Updated Date</label>
+        <input type="text" name="updated-date" id="updated-date" formControlName="updated-date" readonly />
       </div>
 
       <div class="form-group form-group-btns user-profile-edit-btns">
         <button class="button" type="button" *ngIf="editMode" (click)="toggleEditMode()">Cancel</button>&nbsp;&nbsp;
         <button class="submit" type="button" *ngIf="editMode" [disabled]="!profileForm.valid" (click)="onSubmit()">Submit</button>
-        <button class="button" type="button" *ngIf="editMode==false" (click)="toggleEditMode()">Edit</button>
+        <button class="button" type="button" *ngIf="!editMode" (click)="toggleEditMode()">Edit</button>
       </div>
 
     </div>

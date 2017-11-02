@@ -10,7 +10,7 @@ import { User } from '../_models';
 export class AuthenticationService {
 
   private readonly key = 'currentUser';
-  private readonly url = '/api/authenticate';
+  private readonly url = '/authentication/login';
 
   public currentUser = null;
   public token: string;
@@ -35,10 +35,10 @@ export class AuthenticationService {
     return this.http.post(this.url, JSON.stringify(value)).map((response: Response) => {
       // login successful if there's a jwt token in the response
       const user: User = response.json();
-      if (user && user.metisUserToken) {
+      if (user && user.metisUserAccessToken) {
         // set token property
         this.currentUser = user;
-        this.token = user.metisUserToken.accessToken;
+        this.token = user.metisUserAccessToken.accessToken;
 
         // store email and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
