@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService } from '../_services/index';
+import { AuthenticationService } from '../_services';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     // reset login status
-    this.authentication.logOut();
+    this.authentication.logout();
     this.createForm();
   }
 
@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     const email = this.loginForm.controls.email.value;
     const password = this.loginForm.controls.password.value;
-    this.authentication.logIn(email, password).subscribe(result => {
+    this.authentication.login(email, password).subscribe(result => {
       if (result === true) {
         this.router.navigate(['/profile']);
       } else {

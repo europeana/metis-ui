@@ -6,7 +6,7 @@
         <a routerLink="/home" class="logo ir"></a>
       </div>
 
-      <div class="dashboard-header" *ngIf="profileMenu">
+      <div class="dashboard-header" *ngIf="currentUser">
         <form class="search-multiterm">
           <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />
           <ul class="search-select">
@@ -25,16 +25,9 @@
       </div>
 
       <div class="dashboard-header-links">
-        <ul class="settings-menu cf nav-access" *ngIf="!profileMenu">
-          <li>
-            <a class="signup has-submenu" (click)="toggleSignInMenu()">Sign In</a>
-            <ul class="menu-sublevel caret" *ngIf="openSignIn">
-              <li><a routerLink="/login">Login</a></li>
-              <li><a routerLink="/register">Register</a></li>
-            </ul>
-          </li>
-        </ul>
-        <div class="settings-menu cf nav-loggedin" *ngIf="profileMenu">
+        <div *ngIf="loggedIn; then loggedIn else loggedOut"></div>
+        <ng-template #loggedIn>
+          <div class="settings-menu cf nav-loggedin">
             <a class="notifications" routerLink="/dashboard">
               <span class="svg-icon-notifications"></span>
               <span class="circle">7</span>
@@ -44,10 +37,22 @@
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li><a (click)="gotoProfile();">My Profile</a></li>
-                <li><a (click)="logOut();">Log out</a></li>
+                <li><a (click)="logout();">Log out</a></li>
               </ul>
             </div>
-        </div>
+          </div>
+        </ng-template>
+        <ng-template #loggedOut>
+          <ul class="settings-menu cf nav-access">
+            <li>
+              <a class="signup has-submenu" (click)="toggleSignInMenu()">Sign In</a>
+              <ul class="menu-sublevel caret" *ngIf="openSignIn">
+                <li><a routerLink="/login">Login</a></li>
+                <li><a routerLink="/register">Register</a></li>
+              </ul>
+            </li>
+          </ul>
+        </ng-template>
       </div>
     </div>
   </header>

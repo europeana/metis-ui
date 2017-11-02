@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AuthenticationService } from '../../_services/index';
+import { AuthenticationService } from '../../_services';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { User } from '../../_models';
 
 @Component({
   selector: 'app-header',
@@ -11,19 +13,25 @@ import { Router } from '@angular/router';
 
 export class HeaderComponent implements OnInit {
 
+  public currentUser: User;
+  public loggedIn: boolean;
+
+  isLoggedIn$: Observable<boolean>;
+
   constructor(
     private authentication: AuthenticationService,
-    public router: Router) {}
+    public router: Router) {
+      this.currentUser = authentication.currentUser;
+  }
 
   openSignIn = false;
   openSearch = false;
   searchfilter;
 
-  @Input('profileMenu') profileMenu: string;
-
   ngOnInit() {
     this.openSignIn = false;
     this.searchfilter = 'All';
+    this.isLoggedIn$.subscribe( (b) => this.loggedIn = b );
   }
 
   toggleSignInMenu() {
@@ -44,8 +52,8 @@ export class HeaderComponent implements OnInit {
     this.openSignIn = false;
   }
 
-  logOut() {
-    this.authentication.logOut();
+  logout() {
+    this.authentication.logout();
     this.openSignIn = false;
     this.router.navigate(['/home']);
   }

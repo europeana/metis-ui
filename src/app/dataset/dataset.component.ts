@@ -2,12 +2,12 @@ import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from '../_services/authentication.service';
+import { AuthenticationService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
 
-import { User } from '../_models/index';
+import { User } from '../_models';
 
 @Component({
   selector: 'app-dataset',

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthenticationService,
-         UserrequestsService } from '../_services/index';
+         UserrequestsService } from '../_services';
 
 @Component({
   selector: 'app-requests',
