@@ -45,7 +45,7 @@ export class HeaderComponent implements OnInit {
 
   gotoProfile() {
     this.openSignIn = false;
-    this.authentication.redirectProfile();
+    this.router.navigate(['/profile']);
   }
 
   isLoggedIn() {

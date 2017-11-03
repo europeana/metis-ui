@@ -5,66 +5,95 @@
     </div>
 
     <div class="form-fields">
-      <div class="form-group">
-        <label for="user-id">Id</label>
-        <input id="user-id" name="user-id" type="text" formControlName="user-id" readonly />
-      </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email" name="email" type="text" formControlName="email" readonly />
-      </div>
+      <div *ngIf="editMode; then editmode else readonly"></div>
 
-      <div class="form-group">
-        <label for="first-name">First Name *</label>
-        <input id="first-name" name="first-name" type="text" formControlName="first-name" [attr.disabled]="editMode ? null : 'disabled'" />
-      </div>
+      <ng-template #readonly>
 
-      <div class="form-group">
-        <label for="last-name">Last Name *</label>
-        <input id="last-name" name="last-name" type="text" formControlName="last-name" [attr.disabled]="editMode ? null : 'disabled'" />
-      </div>
+        <div class="form-group form-group-btns user-profile-edit-btns">
+          <button class="button" type="button" (click)="toggleEditMode()">Edit</button>
+        </div>
 
-      <div class="form-group">
-        <label for="organization-name">Organization Name</label>
-        <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" readonly />
-      </div>
+        <div class="form-group">
+          <label for="user-id">Id:</label>
+          <input id="user-id" name="user-id" type="text" formControlName="user-id" readonly />
+        </div>
 
-      <div class="form-group">
-        <label for="country">Country</label>
-        <input id="country" name="country" type="text" formControlName="country" readonly/>
-      </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input id="email" name="email" type="text" formControlName="email" readonly />
+        </div>
 
-      <div class="form-group">
-        <label for="network-member">Network Member</label>
-        <input id="network-member" name="network-member" type="text" formControlName="network-member" readonly/>
-      </div>
+        <div class="form-group">
+          <label for="first-name">First Name:</label>
+          <input id="first-name" name="first-name" type="text" formControlName="first-name" readonly />
+        </div>
 
-      <div class="form-group">
-        <label for="metis-user-flag">Metis User Flag</label>
-        <input id="metis-user-flag" name="metis-user-flag" type="text" formControlName="metis-user-flag" readonly/>
-      </div>
+        <div class="form-group">
+          <label for="last-name">Last Name:</label>
+          <input id="last-name" name="last-name" type="text" formControlName="last-name" readonly />
+        </div>
 
-      <div class="form-group">
-        <label for="account-role">Account Role</label>
-        <input id="account-role" name="account-role" type="text" formControlName="account-role" readonly/>
-      </div>
+        <div class="form-group">
+          <label for="organization-name">Organization Name:</label>
+          <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" readonly />
+        </div>
 
-      <div class="form-group">
-        <label for="created-date">Created Date</label>
-        <input type="text" name="created-date" id="created-date" formControlName="created-date" readonly />
-      </div>
+        <div class="form-group">
+          <label for="country">Country:</label>
+          <input id="country" name="country" type="text" formControlName="country" readonly/>
+        </div>
 
-      <div class="form-group">
-        <label for="updated-date">Updated Date</label>
-        <input type="text" name="updated-date" id="updated-date" formControlName="updated-date" readonly />
-      </div>
+        <div class="form-group">
+          <label for="network-member">Network Member:</label>
+          <input id="network-member" name="network-member" type="text" formControlName="network-member" readonly/>
+        </div>
 
-      <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="button" type="button" *ngIf="editMode" (click)="toggleEditMode()">Cancel</button>&nbsp;&nbsp;
-        <button class="submit" type="button" *ngIf="editMode" [disabled]="!profileForm.valid" (click)="onSubmit()">Submit</button>
-        <button class="button" type="button" *ngIf="!editMode" (click)="toggleEditMode()">Edit</button>
-      </div>
+        <div class="form-group">
+          <label for="metis-user-flag">Metis User Flag:</label>
+          <input id="metis-user-flag" name="metis-user-flag" type="text" formControlName="metis-user-flag" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label for="account-role">Account Role:</label>
+          <input id="account-role" name="account-role" type="text" formControlName="account-role" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label for="created-date">Created Date:</label>
+          <input type="text" name="created-date" id="created-date" formControlName="created-date" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="updated-date">Updated Date:</label>
+          <input type="text" name="updated-date" id="updated-date" formControlName="updated-date" readonly />
+        </div>
+
+      </ng-template>
+
+      <ng-template #editmode>
+
+        <div class="form-group">
+          <label for="old-password">Old Password:</label>
+          <input id="old-password" name="old-password" type="password" formControlName="old-password" />
+        </div>
+
+        <div class="form-group">
+          <label for="new-password">New Password:</label>
+          <input id="new-password" name="new-password" type="password" formControlName="new-password" />
+        </div>
+
+        <div class="form-group">
+          <label for="new-password-confirm">Confirm:</label>
+          <input id="new-password-confirm" name="new-password-confirm" type="password" formControlName="new-password-confirm" />
+        </div>
+
+        <div class="form-group form-group-btns user-profile-edit-btns">
+          <button class="button" type="button" (click)="toggleEditMode()">Cancel</button>&nbsp;&nbsp;
+          <button class="submit" type="button" [disabled]="!profileForm.valid" (click)="onSubmit()">Submit</button>
+        </div>
+
+      </ng-template>
 
     </div>
   </form>

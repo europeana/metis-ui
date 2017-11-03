@@ -32,6 +32,9 @@ export class ProfileComponent implements OnInit {
     this.profileForm = this.fb.group({
       'user-id': [user.userId],
       'email': [user.email],
+      'old-password': [''],
+      'new-password': [''],
+      'new-password-confirm': [''],
       'first-name': [user.firstName],
       'last-name': [user.lastName],
       'organization-name': [user.organizationName || 'Unknown'],

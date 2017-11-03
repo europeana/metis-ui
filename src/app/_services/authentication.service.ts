@@ -18,7 +18,7 @@ export class AuthenticationService {
   constructor(public router: Router,
               private http: Http) {
     // set currentUser and token if already saved in local storage
-    const value = localStorage.getItem(this.key);
+    const value = sessionStorage.getItem(this.key);
     if (value) {
       const hash = JSON.parse(value);
       this.currentUser = hash.user;
@@ -27,7 +27,7 @@ export class AuthenticationService {
   }
 
   validatedUser(): boolean {
-    return localStorage.getItem(this.key) !== null;
+    return sessionStorage.getItem(this.key) !== null;
   }
 
   login(email: string, password: string): Observable<boolean> {
@@ -41,7 +41,7 @@ export class AuthenticationService {
         this.token = user.metisUserAccessToken.accessToken;
 
         // store email and jwt token in local storage to keep user logged in between page refreshes
-        localStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
+        sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
 
         // return true to indicate successful login
         return true;
@@ -52,16 +52,10 @@ export class AuthenticationService {
     });
   }
 
-  redirectProfile(): void {
-    if (this.currentUser) {
-      this.router.navigate(['profile']);
-    }
-  }
-
   logout(): void {
     // clear token remove user from local storage to log user out
     this.currentUser = null;
     this.token = null;
-    localStorage.removeItem(this.key);
+    sessionStorage.removeItem(this.key);
   }
 }

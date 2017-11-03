@@ -6,7 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './routing/app-routing.module';
 
-import { AuthGuard } from './_guards';
+import { AuthUserGuard,
+         AuthVisitorGuard } from './_guards';
 import { AuthenticationService } from './_services';
 
 import { AppComponent } from './app.component';
@@ -51,7 +52,8 @@ import { BaseRequestOptions } from '@angular/http';
   ],
   entryComponents: [ DatasetformComponent ],
   providers: [
-    AuthGuard,
+    AuthVisitorGuard,
+    AuthUserGuard,
     AuthenticationService,
 
     // providers used to create fake backend

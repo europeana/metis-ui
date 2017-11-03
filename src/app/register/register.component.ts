@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { AuthenticationService } from '../_services';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
-  providers: [AuthenticationService]
+  styleUrls: ['./register.component.scss']
 })
 
 export class RegisterComponent {
@@ -15,8 +13,7 @@ export class RegisterComponent {
   errors: boolean;
   errorMessage: string;
 
-  constructor(private authentication: AuthenticationService, private fb: FormBuilder) {
-    this.authentication.redirectProfile();
+  constructor(private fb: FormBuilder) {
     this.createForm();
   }
 
