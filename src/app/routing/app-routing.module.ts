@@ -11,6 +11,8 @@ import { RequestsComponent } from '../requests';
 
 import { AuthVisitorGuard, AuthUserGuard } from '../_guards';
 
+import { PageNotFoundComponent } from '../page-not-found';
+
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthUserGuard] },
   { path: 'dataset/:tab', component: DatasetComponent, canActivate: [AuthUserGuard] },
@@ -21,7 +23,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent, canActivate: [AuthVisitorGuard] },
   { path: 'requests', component: RequestsComponent, canActivate: [AuthUserGuard] },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: '**', redirectTo: '/home' }
+  { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({

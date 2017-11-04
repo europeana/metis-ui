@@ -22,6 +22,7 @@ import { DatasetComponent,
          DatasetDirective } from './dataset';
 import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
+import { PageNotFoundComponent } from './page-not-found';
 
 // used to create fake backend
 import { fakeBackendProvider } from './_helpers';
@@ -34,6 +35,7 @@ import { BaseRequestOptions } from '@angular/http';
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
+    PageNotFoundComponent,
     HeaderComponent,
     FooterComponent,
     HomeComponent,
