@@ -2,13 +2,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { HttpClientModule } from '@angular/common/http';
+import { HttpModule } from '@angular/http';
+
+import { HttpClientModule,
+         HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './routing/app-routing.module';
 
 import { AuthUserGuard,
          AuthVisitorGuard } from './_guards';
-import { AuthenticationService } from './_services';
+import { AuthenticationService,
+         TokenInterceptor } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
@@ -23,8 +27,6 @@ import { DatasetComponent,
 import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
-
-import { HttpModule } from '@angular/http';
 
 // used to create fake backend
 // import { fakeBackendProvider } from './_helpers';
@@ -60,6 +62,11 @@ import { HttpModule } from '@angular/http';
     AuthVisitorGuard,
     AuthUserGuard,
     AuthenticationService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
 
     // providers used to create fake backend
     // fakeBackendProvider,

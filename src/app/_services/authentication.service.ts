@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Http, Headers, RequestOptions, Response } from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
@@ -13,11 +13,12 @@ export class AuthenticationService {
   private readonly key = 'currentUser';
   private readonly url = `${environment.apiHost}/${environment.apiLogin}`;
 
+  private token: string;
+
   public currentUser = null;
-  public token: string;
 
   constructor(public router: Router,
-              private http: Http) {
+              private http: HttpClient) {
     // set currentUser and token if already saved in local storage
     const value = sessionStorage.getItem(this.key);
     if (value) {
@@ -31,13 +32,17 @@ export class AuthenticationService {
     return sessionStorage.getItem(this.key) !== null;
   }
 
-  login(email: string, password: string): Observable<boolean> {
+  getToken(): string {
+    return this.token;
+  }
+
+  login(email: string, password: string) {
     const body = '';
-    const headers = new Headers({'Authorization': 'Basic ' + btoa(email + ':' + password)});
-    const options = new RequestOptions({ headers: headers });
-    return this.http.post(this.url, body, options).map((response: Response) => {
+    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
+    // const options = new RequestOptions({ headers: headers });
+    return this.http.post(this.url, body, { headers: headers }).map(data => {
       // login successful if there's a jwt token in the response
-      const user: User = response.json();
+      const user: User = <User>data;
       if (user && user.metisUserAccessToken) {
         // set token property
         this.currentUser = user;
@@ -52,7 +57,10 @@ export class AuthenticationService {
         // return false to indicate failed login
         return false;
       }
-    });
+    },
+      err => {
+        return false;
+      });
   }
 
   logout(): void {
