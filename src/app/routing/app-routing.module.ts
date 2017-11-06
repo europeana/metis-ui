@@ -23,7 +23,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent, canActivate: [AuthVisitorGuard] },
   { path: 'requests', component: RequestsComponent, canActivate: [AuthUserGuard] },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: '**', component: PageNotFoundComponent }
+  { path: '404', component: PageNotFoundComponent },
+  { path: '**', redirectTo: '/404' }
 ];
 
 @NgModule({

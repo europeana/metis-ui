@@ -24,10 +24,12 @@ import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
+import { HttpModule } from '@angular/http';
+
 // used to create fake backend
-import { fakeBackendProvider } from './_helpers';
-import { MockBackend } from '@angular/http/testing';
-import { BaseRequestOptions } from '@angular/http';
+// import { fakeBackendProvider } from './_helpers';
+// import { MockBackend } from '@angular/http/testing';
+// import { BaseRequestOptions } from '@angular/http';
 
 @NgModule({
   declarations: [
@@ -49,6 +51,7 @@ import { BaseRequestOptions } from '@angular/http';
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpModule,
     HttpClientModule,
     AppRoutingModule
   ],
@@ -59,9 +62,9 @@ import { BaseRequestOptions } from '@angular/http';
     AuthenticationService,
 
     // providers used to create fake backend
-    fakeBackendProvider,
-    MockBackend,
-    BaseRequestOptions
+    // fakeBackendProvider,
+    // MockBackend,
+    // BaseRequestOptions
   ],
   bootstrap: [AppComponent]
 })

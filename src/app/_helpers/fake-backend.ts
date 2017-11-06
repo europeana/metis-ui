@@ -35,6 +35,7 @@ export function fakeBackendFactory(backend: MockBackend, options: BaseRequestOpt
       if (connection.request.url.endsWith('/authentication/login') && connection.request.method === RequestMethod.Post) {
         // get parameters from post request
         const params = JSON.parse(connection.request.getBody());
+        const headers = connection.request.headers;
 
         // check user credentials and return fake jwt token if valid
         if (params.email === testUser.email && params.password === password) {

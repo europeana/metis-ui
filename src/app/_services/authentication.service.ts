@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Http, Headers, Response } from '@angular/http';
+import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
@@ -10,7 +10,8 @@ import { User } from '../_models';
 export class AuthenticationService {
 
   private readonly key = 'currentUser';
-  private readonly url = '/authentication/login';
+  // private readonly url = '/authentication/login';
+  private readonly url = 'http://metis-authentication-rest-test.eanadev.org/authentication/login';
 
   public currentUser = null;
   public token: string;
@@ -31,8 +32,10 @@ export class AuthenticationService {
   }
 
   login(email: string, password: string): Observable<boolean> {
-    const value = { email: email, password: password };
-    return this.http.post(this.url, JSON.stringify(value)).map((response: Response) => {
+    const body = '';
+    const headers = new Headers({'Authorization': 'Basic ' + btoa(email + ':' + password)});
+    const options = new RequestOptions({ headers: headers });
+    return this.http.post(this.url, body, options).map((response: Response) => {
       // login successful if there's a jwt token in the response
       const user: User = response.json();
       if (user && user.metisUserAccessToken) {
