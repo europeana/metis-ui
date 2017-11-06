@@ -4,14 +4,14 @@ import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
+import { environment } from '../../environments/environment';
 import { User } from '../_models';
 
 @Injectable()
 export class AuthenticationService {
 
   private readonly key = 'currentUser';
-  // private readonly url = '/authentication/login';
-  private readonly url = 'http://metis-authentication-rest-test.eanadev.org/authentication/login';
+  private readonly url = `${environment.apiHost}/${environment.apiLogin}`;
 
   public currentUser = null;
   public token: string;
