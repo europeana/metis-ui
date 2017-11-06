@@ -11,7 +11,6 @@ import { User } from '../_models';
 export class AuthenticationService {
 
   private readonly key = 'currentUser';
-  private readonly url = `${environment.apiHost}/${environment.apiLogin}`;
 
   private token: string;
 
@@ -36,11 +35,31 @@ export class AuthenticationService {
     return this.token;
   }
 
+  register(firstname: string, lastname: string, email: string, password: string, password_confirm: string) {
+    const url = `${environment.apiHost}/${environment.apiRegister}`;
+    const body = {
+      firstname: firstname,
+      lastname: lastname,
+      email: email,
+      password: password,
+      password_confirm: password_confirm
+    };
+    return this.http.post(url, body).map(data => {
+        // registration successful
+        console.log(data);
+        return false;
+      },
+      err => {
+        return false;
+      });
+  }
+
   login(email: string, password: string) {
+    const url = `${environment.apiHost}/${environment.apiLogin}`;
     const body = '';
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     // const options = new RequestOptions({ headers: headers });
-    return this.http.post(this.url, body, { headers: headers }).map(data => {
+    return this.http.post(url, body, { headers: headers }).map(data => {
       // login successful if there's a jwt token in the response
       const user: User = <User>data;
       if (user && user.metisUserAccessToken) {

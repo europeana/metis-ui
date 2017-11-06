@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { AuthenticationService } from '../_services';
 
 @Component({
   selector: 'app-register',
@@ -8,12 +10,15 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 })
 
 export class RegisterComponent {
+  loading = false;
+  error = '';
 
   registerForm: FormGroup;
-  errors: boolean;
-  errorMessage: string;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authentication: AuthenticationService ) {
     this.createForm();
   }
 
@@ -22,19 +27,34 @@ export class RegisterComponent {
       firstname: ['', Validators.required ],
       lastname: ['', Validators.required ],
       email: ['', [Validators.required, Validators.email]],
-      password: this.fb.group({
-        newPassword: ['', Validators.required ],
-        repeatPassword: ['', Validators.required ]
+      'password-group': this.fb.group({
+        password: ['', Validators.required ],
+        'password-confirm': ['', Validators.required ]
       }, {
         validator: PasswordValidation.MatchPassword
       })
     });
   }
 
-  onSubmit(): void {
-    // this.errors = true;
-    // this.errorMessage = "Error";
-    console.log('submit');
+  onSubmit() {
+    this.loading = true;
+    const controls = this.registerForm.controls;
+    const pw_controls = controls['password-group'].controls;
+    const firstname = controls['firstname'].value;
+    const lastname = controls['lastname'].value;
+    const email = controls['email'].value;
+    const password = controls['password'].value;
+    const password_confirm = controls['password-confirm'].value;
+
+    this.authentication.register(firstname, lastname, email, password, password_confirm).subscribe(result => {
+      if (result === true) {
+        this.router.navigate(['/registered']);
+      } else {
+        this.error = 'Cannot register, please try again at a later time';
+        this.loading = false;
+      }
+    });
+
   }
 
   onReset(): void {
@@ -44,11 +64,11 @@ export class RegisterComponent {
 
 export class PasswordValidation {
 
-  constructor(private RegisterComponent: RegisterComponent){ }
+  constructor(private RegisterComponent: RegisterComponent) { }
 
   static MatchPassword(ac: AbstractControl) {
-    if(ac.get('newPassword').value !== ac.get('repeatPassword').value) {
-      ac.get('repeatPassword').setErrors( {MatchPassword: true} );
+    if(ac.get('password').value !== ac.get('password-confirm').value) {
+      ac.get('password-confirm').setErrors( {MatchPassword: true} );
     } else {
       return null;
     }
