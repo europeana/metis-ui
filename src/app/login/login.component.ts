@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthenticationService } from '../_services';
+import { HttpErrorResponse } from '@angular/common/http';
+import { StringifyHttpError } from '../_helpers';
 
 @Component({
   selector: 'app-login',
@@ -41,9 +43,13 @@ export class LoginComponent implements OnInit {
       if (result === true) {
         this.router.navigate(['/profile']);
       } else {
-        this.error = 'Username or password is incorrect';
-        this.loading = false;
+        this.error = 'Email or password is incorrect';
       }
+      this.loading = false;
+    },
+    (err: HttpErrorResponse) => {
+      this.error = StringifyHttpError(err);
+      this.loading = false;
     });
   }
 

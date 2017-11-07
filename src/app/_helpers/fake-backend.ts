@@ -2,10 +2,6 @@
 import { User } from '../_models';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
-// http://metis-authentication-rest-test.eanadev.org/authentication/register
-// http://metis-authentication-rest-test.eanadev.org/authentication/login
-// http://metis-authentication-rest-test.eanadev.org/authentication/delete?userEmailToDelete=valentine.charles@europeana.eu
-
 export function fakeBackendFactory(backend: MockBackend, options: BaseRequestOptions) {
   // configure fake backend
   backend.connections.subscribe((connection: MockConnection) => {

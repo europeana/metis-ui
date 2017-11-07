@@ -53,29 +53,24 @@ export class AuthenticationService {
     const fn = `login(email='${email}',password='${password}')`;
     const url = `${environment.apiHost}/${environment.apiLogin}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, '', { headers: headers }).map(
-     data => {
-       const user = <User>data;
-       if (user && user.metisUserAccessToken) {
-         // set token property
-         this.currentUser = user;
-         this.token = user.metisUserAccessToken.accessToken;
+    return this.http.post(url, '', { headers: headers }).map(data => {
+      const user = <User>data;
+      if (user && user.metisUserAccessToken) {
+        // set token property
+        this.currentUser = user;
+        this.token = user.metisUserAccessToken.accessToken;
 
-         // store email and jwt token in local storage to keep user logged in between page refreshes
-         sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
+        // store email and jwt token in local storage to keep user logged in between page refreshes
+        sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
 
-         // return true to indicate successful login
-         console.log(`${fn} => OK`);
-         return true;
-       } else {
-         // return false to indicate failed login
-         console.log(`${fn} => NOK (token missing)`);
-         return false;
-       }
-     },
-    err => {
-      console.log(`${fn} => NOK (${JSON.stringify(err)})`);
-      return false;
+        // return true to indicate successful login
+        console.log(`${fn} => OK`);
+        return true;
+      } else {
+        // return false to indicate failed login
+        console.log(`${fn} => NOK (token missing)`);
+        return false;
+      }
     });
   }
 
