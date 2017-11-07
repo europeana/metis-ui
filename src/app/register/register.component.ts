@@ -24,12 +24,10 @@ export class RegisterComponent {
 
   createForm() {
     this.registerForm = this.fb.group({
-      firstname: ['', Validators.required ],
-      lastname: ['', Validators.required ],
       email: ['', [Validators.required, Validators.email]],
-      'password-group': this.fb.group({
+      passwords: this.fb.group({
         password: ['', Validators.required ],
-        'password-confirm': ['', Validators.required ]
+        confirm: ['', Validators.required ]
       }, {
         validator: PasswordValidation.MatchPassword
       })
@@ -39,26 +37,19 @@ export class RegisterComponent {
   onSubmit() {
     this.loading = true;
     const controls = this.registerForm.controls;
-    const pw_controls = controls['password-group'].controls;
-    const firstname = controls['firstname'].value;
-    const lastname = controls['lastname'].value;
-    const email = controls['email'].value;
-    const password = controls['password'].value;
-    const password_confirm = controls['password-confirm'].value;
+    const email = controls.email.value;
+    const passwords = controls.passwords;
+    const password = passwords.get('password').value;
 
-    this.authentication.register(firstname, lastname, email, password, password_confirm).subscribe(result => {
+    this.authentication.register(email, password).subscribe(result => {
       if (result === true) {
-        this.router.navigate(['/registered']);
+        this.router.navigate(['/login']);
       } else {
         this.error = 'Cannot register, please try again at a later time';
         this.loading = false;
       }
     });
 
-  }
-
-  onReset(): void {
-    this.registerForm.reset();
   }
 }
 
@@ -67,8 +58,8 @@ export class PasswordValidation {
   constructor(private RegisterComponent: RegisterComponent) { }
 
   static MatchPassword(ac: AbstractControl) {
-    if(ac.get('password').value !== ac.get('password-confirm').value) {
-      ac.get('password-confirm').setErrors( {MatchPassword: true} );
+    if(ac.get('password').value !== ac.get('confirm').value) {
+      ac.get('confirm').setErrors( {MatchPassword: true} );
     } else {
       return null;
     }

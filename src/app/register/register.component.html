@@ -1,45 +1,32 @@
 <div class="metis-register-form metis-form">
-  <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" #formDir="ngForm" novalidate>
+  <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" #formDir="ngForm" novalidate autocomplete="off">
     <div class="form-header">
       <h2>Register to Metis</h2>
     </div>
 
     <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
 
-     <div class="form-fields">
+    <div class="form-fields">
 
       <fieldset class="form-group">
-        <label for="firstName">Name:</label>
-        <input id="firstName" name="firstname" class="form-control" formControlName="firstname" placeholder="First name">
-        <div class="messages" *ngIf="registerForm.controls['firstname'].touched && !registerForm.controls['firstname'].valid">
-          <div class="error-message">Please enter an firstname address</div>
-        </div>
-        <input id="lastName" name="lastname" class="form-control" formControlName="lastname" placeholder="Last name">
-        <div class="messages" *ngIf="registerForm.controls['lastname'].touched && !registerForm.controls['lastname'].valid">
-          <div class="error-message">Please enter an lastname address</div>
-        </div>
-      </fieldset>
-      <fieldset class="form-group">
         <label for="email">Email:</label>
-        <input id="email" name="email" class="form-control" formControlName="email" placeholder="your@email.com">
+        <input id="email" formControlName="email" placeholder="your@email.com">
         <div class="messages" *ngIf="registerForm.controls['email'].touched && !registerForm.controls['email'].valid">
-          <div class="error-message">Please enter an email address</div>
+          <div class="error-message">Please enter a valid email address</div>
         </div>
       </fieldset>
-      <fieldset class="form-group" formGroupName="password-group">
+
+       <fieldset class="form-group" formGroupName="passwords">
         <label for="password">Password:</label>
-        <input id="password" name="password" type="password" class="form-control" formControlName="password" placeholder="Password">
-        <input id="password-confirm" name="class-control" type="password" class="form-control" formControlName="password-confirm" placeholder="Repeat password">
-        <div class="messages" *ngIf="registerForm.controls['password-group'].controls['password-confirm'].touched && !registerForm.controls['password-group'].controls['password-confirm'].valid">
+        <input id="password" type="password" formControlName="password" placeholder="Password">
+        <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
+        <div class="messages" *ngIf="registerForm.controls['passwords'].get('password').touched && !registerForm.controls['passwords'].get('confirm').valid">
           <div class="error-message">Passwords do not match!</div>
         </div>
       </fieldset>
-      <div class="form-requirements-warning">
-        <p>* All fields required</p>
-      </div>
+
       <div class="form-group form-group-btns">
         <button class="submit-btn" type="submit" [disabled]="!registerForm.valid || loading">Submit</button>
-        <button class="reset-btn" type="button" (click)="onReset()">Reset</button>
       </div>
     </div>
   </form>

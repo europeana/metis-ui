@@ -1,11 +1,10 @@
 <div class="metis-login-form metis-form">
-  <form class="login-form" (ngSubmit)="onSubmit()" [formGroup]="loginForm" #formDir="ngForm" novalidate>
+  <form class="login-form" (ngSubmit)="onSubmit()" [formGroup]="loginForm" #formDir="ngForm" novalidate autocomplete="off">
     <div class="form-header">
       <h2>Sign in to Metis</h2>
     </div>
 
     <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
-
     <div class="form-fields">
       <fieldset class="form-group">
         <label for="email">Email:</label>
@@ -14,6 +13,7 @@
           <div class="error-message">Please enter a valid email address</div>
         </div>
       </fieldset>
+
       <fieldset class="form-group">
         <label for="password">Password:</label>
         <input id="password" type="password" formControlName="password" />
@@ -21,9 +21,11 @@
           <div class="error-message">Please enter a valid password</div>
         </div>
       </fieldset>
+
       <div class="forgot-credentials">
         <p><a routerLink="#">Forgot your credentials?</a></p>
       </div>
+
       <div class="form-group form-group-btns">
         <button class="login-btn" type="submit" [disabled]="!loginForm.valid || loading">Sign In</button>
       </div>

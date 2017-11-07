@@ -1,7 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
 import { environment } from '../../environments/environment';
@@ -35,51 +34,49 @@ export class AuthenticationService {
     return this.token;
   }
 
-  register(firstname: string, lastname: string, email: string, password: string, password_confirm: string) {
+  register(email: string, password: string) {
+    const fn = `register(email='${email}',password='${password}'`;
     const url = `${environment.apiHost}/${environment.apiRegister}`;
-    const body = {
-      firstname: firstname,
-      lastname: lastname,
-      email: email,
-      password: password,
-      password_confirm: password_confirm
-    };
-    return this.http.post(url, body).map(data => {
+    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
+    return this.http.post(url, '', { headers: headers }).map(data => {
         // registration successful
-        console.log(data);
-        return false;
+        console.log(`${fn} => OK`);
+        return true;
       },
       err => {
+        console.log(`${fn} => NOK`);
         return false;
       });
   }
 
   login(email: string, password: string) {
+    const fn = `login(email='${email}',password='${password}')`;
     const url = `${environment.apiHost}/${environment.apiLogin}`;
-    const body = '';
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    // const options = new RequestOptions({ headers: headers });
-    return this.http.post(url, body, { headers: headers }).map(data => {
-      // login successful if there's a jwt token in the response
-      const user: User = <User>data;
-      if (user && user.metisUserAccessToken) {
-        // set token property
-        this.currentUser = user;
-        this.token = user.metisUserAccessToken.accessToken;
+    return this.http.post(url, '', { headers: headers }).map(
+     data => {
+       const user = <User>data;
+       if (user && user.metisUserAccessToken) {
+         // set token property
+         this.currentUser = user;
+         this.token = user.metisUserAccessToken.accessToken;
 
-        // store email and jwt token in local storage to keep user logged in between page refreshes
-        sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
+         // store email and jwt token in local storage to keep user logged in between page refreshes
+         sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
 
-        // return true to indicate successful login
-        return true;
-      } else {
-        // return false to indicate failed login
-        return false;
-      }
-    },
-      err => {
-        return false;
-      });
+         // return true to indicate successful login
+         console.log(`${fn} => OK`);
+         return true;
+       } else {
+         // return false to indicate failed login
+         console.log(`${fn} => NOK (token missing)`);
+         return false;
+       }
+     },
+    err => {
+      console.log(`${fn} => NOK (${JSON.stringify(err)})`);
+      return false;
+    });
   }
 
   logout(): void {
