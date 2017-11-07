@@ -2,6 +2,7 @@
 
 export function StringifyHttpError(err: HttpErrorResponse): string {
   let errmsg;
+  console.log(err);
   if (err.error instanceof Error) {
     // A client-side or network error occurred. Handle it accordingly.
     errmsg = `Unexpected error: ${err.error.message}, please try again later`;

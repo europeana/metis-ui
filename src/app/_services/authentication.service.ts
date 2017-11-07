@@ -39,13 +39,9 @@ export class AuthenticationService {
     const url = `${environment.apiHost}/${environment.apiRegister}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, '', { headers: headers }).map(data => {
-        // registration successful
+      // registration successful
         console.log(`${fn} => OK`);
         return true;
-      },
-      err => {
-        console.log(`${fn} => NOK`);
-        return false;
       });
   }
 
