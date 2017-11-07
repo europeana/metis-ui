@@ -43,8 +43,7 @@ export class LoginComponent implements OnInit {
     const password = this.loginForm.controls.password.value;
     this.authentication.login(email, password).subscribe(result => {
       if (result === true) {
-        this.flashMessage.show( 'You are now logged in', { cssClass: 'success-message'} );
-
+        this.flashMessage.show('You are now logged in, have fun!', { cssClass: 'alert-success', timeout: 5000 });
         this.router.navigate(['/profile']);
       } else {
         this.error = 'Email or password is incorrect';

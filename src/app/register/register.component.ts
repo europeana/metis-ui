@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { AuthenticationService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { FlashMessagesService } from 'angular2-flash-messages';
 import { StringifyHttpError } from '../_helpers';
 
 @Component({
@@ -21,7 +21,8 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authentication: AuthenticationService ) {
+    private authentication: AuthenticationService,
+    private flashMessage: FlashMessagesService) {
     this.createForm();
   }
 
@@ -64,6 +65,7 @@ export class RegisterComponent {
   }
 
   onRegistration() {
+    this.flashMessage.show('You are now registered, please log in!', { cssClass: 'alert-success', timeout: 5000 });
     this.router.navigate(['/login']);
   }
 }

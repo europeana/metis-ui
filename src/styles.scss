@@ -1,20 +1,26 @@
-@charset 'UTF-8';
+@charset "UTF-8";
 
 @import 'assets/sass/scss/generic/variables';
 @import 'assets/sass/scss/iconography/svg-icons-metis';
 
+//------------------------------------
 // Mixins
+//------------------------------------
 @import 'assets/sass/scss/generic/mixins';
 
-//SITE SPECIFIC VARIABLE OVERRIDES HERE
+//------------------------------------
+// SITE SPECIFIC VARIABLE OVERRIDES HERE
+//------------------------------------
 $accent: $eu-user;
 $textcolour_highlight: $accent;
 
+//------------------------------------
 // Reset
+//------------------------------------
 @import 'assets/sass/scss/generic/reset';
 
 //------------------------------------
-//  $GLOBAL ELEMENTS
+// $GLOBAL ELEMENTS
 //------------------------------------
 @import 'assets/sass/scss/base/global-classes';
 @import 'assets/sass/scss/base/main';
@@ -26,35 +32,36 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/scss/base/forms';
 @import 'assets/sass/scss/base/tables';
 
-// //------------------------------------
-// //  $PAGE STRUCTURE
-// //------------------------------------
+//------------------------------------
+// $PAGE STRUCTURE
+//------------------------------------
 @import 'assets/sass/scss/objects/header';
 @import 'assets/sass/scss/objects/footer';
 @import 'assets/sass/scss/objects/sections';
 @import 'assets/sass/scss/objects/blocks/site-hero';
 
-// //------------------------------------
-// //  $NAVIGATION
-// //------------------------------------
+//------------------------------------
+// $NAVIGATION
+//------------------------------------
 @import 'assets/sass/scss/objects/nav';
 @import 'assets/sass/scss/objects/navigation/phase-flags';
 
-// //------------------------------------
-// //  Buttons and text Styles
-// //------------------------------------
+//------------------------------------
+// Buttons and text Styles
+//------------------------------------
 @import 'assets/sass/scss/objects/buttons';
 @import 'assets/sass/scss/objects/tags';
 @import 'assets/sass/scss/objects/attribution';
 @import 'assets/sass/scss/theme/hero-branding-v2';
 
-// // Global icons (svg)
+//------------------------------------
+// Global icons (svg)
+//------------------------------------
 @import 'assets/sass/scss/objects/icons/icons-licenses';
 
-// //------------------------------------
-// //  Metis
-// //------------------------------------
-
+//------------------------------------
+// Metis
+//------------------------------------
 @import 'assets/sass/pandora/settings/metis-variables';
 @import 'assets/sass/pandora/tools/ellipsis-mixin';
 
@@ -71,4 +78,9 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/pandora/components/modal';
 @import 'assets/sass/pandora/components/selects-nav';
 @import 'assets/sass/pandora/components/sitehero';
+
+//------------------------------------
+// Extra
+//------------------------------------
+@import 'assets/sass/extra/flash-messages';
 
