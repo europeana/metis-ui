@@ -28,6 +28,8 @@ import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
+import { FlashMessagesModule } from 'angular2-flash-messages';
+
 // used to create fake backend
 // import { fakeBackendProvider } from './_helpers';
 // import { MockBackend } from '@angular/http/testing';
@@ -55,7 +57,8 @@ import { PageNotFoundComponent } from './page-not-found';
     ReactiveFormsModule,
     HttpModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FlashMessagesModule,
   ],
   entryComponents: [ DatasetformComponent ],
   providers: [
