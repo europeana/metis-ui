@@ -38,7 +38,7 @@ export class AuthenticationService {
     const fn = `register(email='${email}',password='${password}'`;
     const url = `${environment.apiHost}/${environment.apiRegister}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, '', { headers: headers }).map(data => {
+    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       // registration successful
         console.log(`${fn} => OK`);
         return true;
@@ -49,7 +49,7 @@ export class AuthenticationService {
     const fn = `login(email='${email}',password='${password}')`;
     const url = `${environment.apiHost}/${environment.apiLogin}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, '', { headers: headers }).map(data => {
+    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
       if (user && user.metisUserAccessToken) {
         // set token property

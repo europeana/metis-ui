@@ -13,6 +13,9 @@ export class AuthUserGuard implements CanActivate {
             return true;
         }
 
+        // // save original url to be redirected to after login
+        // const extras = {queryParams: {returnUrl: this.router.routerState.snapshot.url}};
+        // this.router.navigate(['/login'], extras);
         // not logged in so redirect to login page
         this.router.navigate(['/login']);
         return false;
