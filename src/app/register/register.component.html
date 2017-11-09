@@ -18,7 +18,8 @@
 
        <fieldset class="form-group" formGroupName="passwords">
         <label for="password">Password:</label>
-        <input id="password" type="password" formControlName="password" placeholder="Password">
+        <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="Password">
+        <app-password-check [passwordToCheck]="password"></app-password-check>
         <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
         <div class="messages" *ngIf="registerForm.controls['passwords'].get('password').touched && !registerForm.controls['passwords'].get('confirm').valid">
           <div class="error-message">Passwords do not match!</div>

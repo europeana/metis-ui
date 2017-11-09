@@ -20,7 +20,8 @@ import { RegisterComponent } from './register';
 import { LoginComponent } from './login';
 import { ProfileComponent } from './profile';
 import { HeaderComponent,
-         FooterComponent } from './shared';
+         FooterComponent,
+         PasswordCheckComponent } from './shared';
 import { HomeComponent } from './home';
 import { DatasetComponent,
          DatasetformComponent,
@@ -50,7 +51,8 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
     RequestsComponent,
     DashboardComponent,
     DatasetformComponent,
-    DatasetDirective
+    DatasetDirective,
+    PasswordCheckComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +61,7 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
     HttpModule,
     HttpClientModule,
     AppRoutingModule,
-    FlashMessagesModule,
+    FlashMessagesModule
   ],
   entryComponents: [ DatasetformComponent ],
   providers: [

@@ -12,9 +12,10 @@ import { StringifyHttpError, MatchPassword } from '../_helpers';
   styleUrls: ['./register.component.scss']
 })
 
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   loading = false;
   error = '';
+  public password = '';
 
   registerForm: FormGroup;
 
@@ -34,6 +35,11 @@ export class RegisterComponent {
         validator: MatchPassword
       })
     });
+  }
+
+  onKeyupPassword() {
+    this.password = this.registerForm.controls.passwords.get('password').value;
+    console.log(this.password);
   }
 
   onSubmit() {
