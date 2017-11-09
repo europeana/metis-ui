@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-// import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { StringifyHttpError } from '../_helpers';
@@ -23,6 +22,7 @@ export class LoginComponent implements OnInit {
     // private route: ActivatedRoute,
     private router: Router,
     private authentication: AuthenticationService,
+    private redirectPreviousUrl: RedirectPreviousUrl,
     private fb: FormBuilder,
     private flashMessage: FlashMessagesService) { }
 
@@ -45,9 +45,13 @@ export class LoginComponent implements OnInit {
     const password = this.loginForm.controls.password.value;
     this.authentication.login(email, password).subscribe(result => {
       if (result === true) {
+        const url = this.redirectPreviousUrl.get();
         this.flashMessage.show('Login successful, have fun!', { cssClass: 'alert-success', timeout: 5000 });
-        this.router.navigate(['/profile']);
-        //this.router.navigateByUrl(this.returnUrl);
+        if (url) {
+          this.router.navigateByUrl(`/${url}`);
+        } else {
+          this.router.navigate(['/profile']);
+        }
       } else {
         this.error = 'Login failed: email or password is incorrect';
       }

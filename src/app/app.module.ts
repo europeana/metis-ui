@@ -12,7 +12,8 @@ import { AppRoutingModule } from './routing/app-routing.module';
 import { AuthUserGuard,
          AuthVisitorGuard } from './_guards';
 import { AuthenticationService,
-         TokenInterceptor } from './_services';
+         TokenInterceptor,
+         RedirectPreviousUrl } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
@@ -69,7 +70,8 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true
-    }
+    },
+    RedirectPreviousUrl
 
     // providers used to create fake backend
     // fakeBackendProvider,
