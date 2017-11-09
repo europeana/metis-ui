@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthenticationService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FlashMessagesService } from 'angular2-flash-messages';
-import { StringifyHttpError } from '../_helpers';
+import { StringifyHttpError, MatchPassword } from '../_helpers';
 
 @Component({
   selector: 'app-register',
@@ -22,18 +22,16 @@ export class RegisterComponent {
     private fb: FormBuilder,
     private router: Router,
     private authentication: AuthenticationService,
-    private flashMessage: FlashMessagesService) {
-    this.createForm();
-  }
+    private flashMessage: FlashMessagesService) { }
 
-  createForm() {
+  ngOnInit() {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       passwords: this.fb.group({
         password: ['', Validators.required ],
         confirm: ['', Validators.required ]
       }, {
-        validator: PasswordValidation.MatchPassword
+        validator: MatchPassword
       })
     });
   }
@@ -49,36 +47,24 @@ export class RegisterComponent {
       if (result === true) {
         this.onRegistration();
       } else {
-        this.error = 'Cannot register, please try again at a later time';
+        this.error = 'Registration failed: please try again later';
       }
       this.loading = false;
     },
      (err: HttpErrorResponse) => {
       if (err.status === 201 ) {
-        // Bug in HttpClient, returned as error for some reason.
+        // Bug in HttpClient, a 201 is returned as error for some reason.
         this.onRegistration();
       } else {
-        this.error = StringifyHttpError(err);
+        this.error = `Registration failed: ${StringifyHttpError(err)}`;
         this.loading = false;
       }
     });
   }
 
-  onRegistration() {
-    this.flashMessage.show('You are now registered, please log in!', { cssClass: 'alert-success', timeout: 5000 });
+  private onRegistration() {
+    this.flashMessage.show('Registration successful, please log in!', { cssClass: 'alert-success', timeout: 5000 });
     this.router.navigate(['/login']);
   }
 }
 
-export class PasswordValidation {
-
-  constructor(private RegisterComponent: RegisterComponent) { }
-
-  static MatchPassword(ac: AbstractControl) {
-    if (ac.get('password').value !== ac.get('confirm').value) {
-      ac.get('confirm').setErrors( {MatchPassword: true} );
-    } else {
-      return null;
-    }
-  }
-}

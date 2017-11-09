@@ -1,8 +1,11 @@
-<div class="metis-profile-form metis-form metis-form-horizontal">
+<div class="metis-profile-form metis-form metis-form-horizontal" xmlns="http://www.w3.org/1999/html">
   <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
     <div class="form-header">
-      <h2>User Profile</h2>
+      <h2 *ngIf="!editMode">User Profile</h2>
+      <h2 *ngIf="editMode">Change Password</h2>
     </div>
+
+    <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
 
     <div class="form-fields">
 
@@ -73,20 +76,14 @@
 
       <ng-template #editmode>
 
-        <div class="form-group">
-          <label for="old-password">Old Password:</label>
-          <input id="old-password" name="old-password" type="password" formControlName="old-password" />
-        </div>
-
-        <div class="form-group">
-          <label for="new-password">New Password:</label>
-          <input id="new-password" name="new-password" type="password" formControlName="new-password" />
-        </div>
-
-        <div class="form-group">
-          <label for="new-password-confirm">New Password Confirm:</label>
-          <input id="new-password-confirm" name="new-password-confirm" type="password" formControlName="new-password-confirm" />
-        </div>
+        <fieldset class="form-group" formGroupName="passwords">
+          <input id="password" type="password" formControlName="password" placeholder="New password">
+          <br/>
+          <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
+          <div class="messages" *ngIf="profileForm.controls['passwords'].get('password').touched && !profileForm.controls['passwords'].get('confirm').valid">
+            <div class="error-message">Passwords do not match!</div>
+          </div>
+        </fieldset>
 
         <div class="form-group form-group-btns user-profile-edit-btns">
           <button class="button" type="button" (click)="toggleEditMode()">Cancel</button>&nbsp;&nbsp;

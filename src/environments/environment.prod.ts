@@ -3,5 +3,6 @@ export const environment = {
   envName: 'production',
   apiHost: 'http://metis-authentication-rest-test.eanadev.org',
   apiLogin: 'authentication/login',
-  apiRegister: 'authentication/register'
+  apiRegister: 'authentication/register',
+  apiUpdatePassword: 'authentication/update/password'
 };

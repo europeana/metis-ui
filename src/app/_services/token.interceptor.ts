@@ -16,11 +16,11 @@ export class TokenInterceptor implements HttpInterceptor {
     const auth = this.inj.get(AuthenticationService);
     const token = auth.getToken();
     if (token) {
+      const headers = { Authorization: `Bearer ${token}` };
+      console.log(`Token interceptor => ${JSON.stringify(headers)}`);
         // Insert authorization header into all outgoing calls
         request = request.clone({
-          setHeaders: {
-            Authorization: `Bearer ${token}`
-          }
+          setHeaders: headers
         });
     }
 

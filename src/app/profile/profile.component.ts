@@ -2,11 +2,13 @@ import 'rxjs/add/operator/switchMap';
 
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthenticationService } from '../_services';
 import { User } from '../_models';
+import { StringifyHttpError, MatchPassword } from '../_helpers';
+import { FlashMessagesService } from 'angular2-flash-messages';
 
 @Component({
   selector: 'app-profile',
@@ -16,25 +18,25 @@ import { User } from '../_models';
 })
 
 export class ProfileComponent implements OnInit {
+  editMode = false;
+  loading = false;
+  error = '';
+
+  profileForm: FormGroup;
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
     public router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private flashMessage: FlashMessagesService) { }
 
-  profileForm: FormGroup;
-  editMode = false;
-
-  ngOnInit(): void {
-
+  ngOnInit() {
     const user: User = this.authentication.currentUser;
+
     this.profileForm = this.fb.group({
       'user-id': [user.userId],
       'email': [user.email],
-      'old-password': [''],
-      'new-password': [''],
-      'new-password-confirm': [''],
       'first-name': [user.firstName],
       'last-name': [user.lastName],
       'organization-name': [user.organizationName || 'Unknown'],
@@ -43,7 +45,13 @@ export class ProfileComponent implements OnInit {
       'metis-user-flag': [user.metisUserFlag],
       'account-role': [user.accountRole || 'Unknown'],
       'created-date': [new Date(user.createdDate)],
-      'updated-date': [new Date(user.updatedDate)]
+      'updated-date': [new Date(user.updatedDate)],
+       passwords: this.fb.group({
+        password: ['', Validators.required ],
+        confirm: ['', Validators.required ]
+      }, {
+        validator: MatchPassword
+      })
     });
 
   }
@@ -53,7 +61,27 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('onSubmit()');
-    this.toggleEditMode();
+    this.loading = true;
+    const controls = this.profileForm.controls;
+    const passwords = controls.passwords;
+    const password = passwords.get('password').value;
+
+    this.authentication.updatePassword(password).subscribe(result => {
+        if (result === true) {
+          this.onUpdatePassword();
+        } else {
+          this.error = 'Update password failed, please try again later';
+        }
+        this.loading = false;
+        this.toggleEditMode();
+      },
+      (err: HttpErrorResponse) => {
+        this.error = `Update password failed: ${StringifyHttpError(err)}`;
+        this.loading = false;
+      });
+  }
+
+  private onUpdatePassword() {
+    this.flashMessage.show('Update password successful!', { cssClass: 'alert-success', timeout: 5000 });
   }
 }

@@ -5,7 +5,7 @@ export function StringifyHttpError(err: HttpErrorResponse): string {
   console.log(err);
   if (err.error instanceof Error) {
     // A client-side or network error occurred. Handle it accordingly.
-    errmsg = `Unexpected error: ${err.error.message}, please try again later`;
+    errmsg = err.error.message;
   } else {
     // The backend returned an unsuccessful response code.
     // The response body may contain clues as to what went wrong,
@@ -18,7 +18,7 @@ export function StringifyHttpError(err: HttpErrorResponse): string {
     if (err.status && errmsg) {
       errmsg = `${err.status} ${errmsg}`;
     } else {
-      errmsg = 'Unexpected network error, please try again later';
+      errmsg = 'Unexpected network error';
     }
   }
   return errmsg;

@@ -33,10 +33,6 @@ export class LoginComponent implements OnInit {
     // get return url from route parameters or default to '/'
     //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/profile';
 
-    this.createForm();
-  }
-
-  createForm() {
     this.loginForm = this.fb.group({
       'email': ['', [Validators.required, Validators.email] ],
       'password': ['', Validators.required ]
@@ -49,16 +45,16 @@ export class LoginComponent implements OnInit {
     const password = this.loginForm.controls.password.value;
     this.authentication.login(email, password).subscribe(result => {
       if (result === true) {
-        this.flashMessage.show('You are now logged in, have fun!', { cssClass: 'alert-success', timeout: 5000 });
+        this.flashMessage.show('Login successful, have fun!', { cssClass: 'alert-success', timeout: 5000 });
         this.router.navigate(['/profile']);
         //this.router.navigateByUrl(this.returnUrl);
       } else {
-        this.error = 'Email or password is incorrect';
+        this.error = 'Login failed: email or password is incorrect';
       }
       this.loading = false;
     },
     (err: HttpErrorResponse) => {
-      this.error = StringifyHttpError(err);
+      this.error = `Login failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
   }

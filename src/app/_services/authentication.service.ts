@@ -34,13 +34,23 @@ export class AuthenticationService {
     return this.token;
   }
 
+  updatePassword(password: string) {
+    const fn = `updatePassword(password='${password}'`;
+    const url = `${environment.apiHost}/${environment.apiUpdatePassword}?newPassword=${password}`;
+    return this.http.put(url, JSON.stringify('{}')).map(data => {
+      // update successful
+      console.log(`${fn} PUT ${url} => OK`);
+      return true;
+    });
+  }
+
   register(email: string, password: string) {
     const fn = `register(email='${email}',password='${password}'`;
     const url = `${environment.apiHost}/${environment.apiRegister}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       // registration successful
-        console.log(`${fn} => OK`);
+        console.log(`${fn} POST ${url} => OK`);
         return true;
       });
   }
@@ -60,20 +70,22 @@ export class AuthenticationService {
         sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
 
         // return true to indicate successful login
-        console.log(`${fn} => OK`);
+        console.log(`${fn} POST ${url} => OK`);
         return true;
       } else {
         // return false to indicate failed login
-        console.log(`${fn} => NOK (token missing)`);
+        console.log(`${fn} POST ${url} => NOK (token missing)`);
         return false;
       }
     });
   }
 
   logout(): void {
+    const fn = 'logout()';
     // clear token remove user from local storage to log user out
     this.currentUser = null;
     this.token = null;
     sessionStorage.removeItem(this.key);
+    console.log(`${fn} => OK`);
   }
 }
