@@ -4,7 +4,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthenticationService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FlashMessagesService } from 'angular2-flash-messages';
-import { StringifyHttpError, MatchPassword } from '../_helpers';
+import { StringifyHttpError, MatchPasswordValidator, PasswordStrength } from '../_helpers';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -32,14 +33,13 @@ export class RegisterComponent implements OnInit {
         password: ['', Validators.required ],
         confirm: ['', Validators.required ]
       }, {
-        validator: MatchPassword
+        validator: MatchPasswordValidator
       })
     });
   }
 
   onKeyupPassword() {
     this.password = this.registerForm.controls.passwords.get('password').value;
-    console.log(this.password);
   }
 
   onSubmit() {
@@ -48,24 +48,33 @@ export class RegisterComponent implements OnInit {
     const email = controls.email.value;
     const passwords = controls.passwords;
     const password = passwords.get('password').value;
+    const strength = PasswordStrength(password);
+    const min = environment.passwordStrength;
 
-    this.authentication.register(email, password).subscribe(result => {
-      if (result === true) {
-        this.onRegistration();
-      } else {
-        this.error = 'Registration failed: please try again later';
-      }
+    console.log(`strength=${strength}, min=${min}`);
+
+    if (strength <= min) {
+      this.error = 'Password is too weak';
       this.loading = false;
-    },
-     (err: HttpErrorResponse) => {
-      if (err.status === 201 ) {
-        // Bug in HttpClient, a 201 is returned as error for some reason.
-        this.onRegistration();
-      } else {
-        this.error = `Registration failed: ${StringifyHttpError(err)}`;
+    } else {
+      this.authentication.register(email, password).subscribe(result => {
+        if (result === true) {
+          this.onRegistration();
+        } else {
+          this.error = 'Registration failed: please try again later';
+        }
         this.loading = false;
-      }
-    });
+      },
+       (err: HttpErrorResponse) => {
+        if (err.status === 201 ) {
+          // Bug in HttpClient, a 201 is returned as error for some reason.
+          this.onRegistration();
+        } else {
+          this.error = `Registration failed: ${StringifyHttpError(err)}`;
+          this.loading = false;
+        }
+      });
+    }
   }
 
   private onRegistration() {

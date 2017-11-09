@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthenticationService } from '../_services';
 import { User } from '../_models';
-import { StringifyHttpError, MatchPassword } from '../_helpers';
+import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
 import { FlashMessagesService } from 'angular2-flash-messages';
 
 @Component({
@@ -50,7 +50,7 @@ export class ProfileComponent implements OnInit {
         password: ['', Validators.required ],
         confirm: ['', Validators.required ]
       }, {
-        validator: MatchPassword
+        validator: MatchPasswordValidator
       })
     });
 

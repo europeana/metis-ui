@@ -1,6 +1,5 @@
-// Based on: https://blog.brunoscopelliti.com/angularjs-directive-to-test-the-strength-of-a-password/
-
-import {Component, OnChanges, Input, SimpleChange} from '@angular/core';
+import { Component, OnChanges, Input, SimpleChange } from '@angular/core';
+import { PasswordStrength } from '../../_helpers';
 
 @Component({
   selector: 'app-password-check',
@@ -9,6 +8,7 @@ import {Component, OnChanges, Input, SimpleChange} from '@angular/core';
 })
 export class PasswordCheckComponent implements OnChanges {
     @Input() passwordToCheck: string;
+
     bar0: string;
     bar1: string;
     bar2: string;
@@ -16,36 +16,10 @@ export class PasswordCheckComponent implements OnChanges {
     bar4: string;
 
     private colors = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
+    private strengths = ['Worst', 'Bad', 'Weak', 'Good', 'Strong'];
 
-    private static measureStrength(p) {
-        let _force = 0;
-        const _regex = /[$-/:-?{-~!"^_`\[\]]/g; // "
+    strengthText = this.strengths[0];
 
-        const _lowerLetters = /[a-z]+/.test(p);
-        const _upperLetters = /[A-Z]+/.test(p);
-        const _numbers = /[0-9]+/.test(p);
-        const _symbols = _regex.test(p);
-
-        const _flags = [_lowerLetters, _upperLetters, _numbers, _symbols];
-
-        let _passedMatches = 0;
-        for (const _flag of _flags) {
-            _passedMatches += _flag === true ? 1 : 0;
-        }
-
-        _force += 2 * p.length + ((p.length >= 10) ? 1 : 0);
-        _force += _passedMatches * 10;
-
-        // penalty (short password)
-        _force = (p.length <= 6) ? Math.min(_force, 10) : _force;
-
-        // penalty (poor variety of characters)
-        _force = (_passedMatches === 1) ? Math.min(_force, 10) : _force;
-        _force = (_passedMatches === 2) ? Math.min(_force, 20) : _force;
-        _force = (_passedMatches === 3) ? Math.min(_force, 40) : _force;
-
-        return _force;
-    }
     private getColor(s) {
         let idx = 0;
         if (s <= 10) {
@@ -59,6 +33,7 @@ export class PasswordCheckComponent implements OnChanges {
         } else {
             idx = 4;
         }
+        this.strengthText = this.strengths[idx];
         return {
             idx: idx + 1,
             col: this.colors[idx]
@@ -69,7 +44,7 @@ export class PasswordCheckComponent implements OnChanges {
         const password = changes['passwordToCheck'].currentValue;
         this.setBarColors(5, '#DDD');
         if (password) {
-            const c = this.getColor(PasswordCheckComponent.measureStrength(password));
+            const c = this.getColor(PasswordStrength(password));
             this.setBarColors(c.idx, c.col);
         }
     }
