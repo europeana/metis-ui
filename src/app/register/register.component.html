@@ -27,7 +27,10 @@
       </fieldset>
 
       <div class="form-group form-group-btns">
-        <button class="submit-btn" type="submit" [disabled]="!registerForm.valid || loading">Submit</button>
+        <button class="submit-btn" type="submit" [disabled]="!registerForm.valid || loading">
+          Submit
+          &nbsp; <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
+        </button>
       </div>
     </div>
   </form>
