@@ -12,8 +12,6 @@ import { User } from '../../_models';
 
 export class HeaderComponent implements OnInit {
 
-  public currentUser: User;
-
   constructor(
     private authentication: AuthenticationService,
     public router: Router) {}
@@ -27,7 +25,6 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.openSignIn = false;
     this.searchfilter = 'All';
-    this.currentUser = this.authentication.currentUser;
   }
 
   toggleSignInMenu() {
