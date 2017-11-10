@@ -15,6 +15,8 @@ export class PasswordCheckComponent implements OnChanges {
     bar3: string;
     bar4: string;
 
+    public info = false;
+
     private colors = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
     private strengths = ['Worst', 'Bad', 'Weak', 'Good', 'Strong'];
 
@@ -48,9 +50,15 @@ export class PasswordCheckComponent implements OnChanges {
             this.setBarColors(c.idx, c.col);
         }
     }
+
     private setBarColors(count, col) {
         for (let _n = 0; _n < count; _n++) {
             this['bar' + _n] = col;
         }
+    }
+
+    toggleInfo() {
+      this.info = !this.info;
+      return false;
     }
 }

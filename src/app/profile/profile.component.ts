@@ -21,6 +21,7 @@ export class ProfileComponent implements OnInit {
   editMode = false;
   loading = false;
   error = '';
+  public password = '';
 
   profileForm: FormGroup;
 
@@ -58,6 +59,10 @@ export class ProfileComponent implements OnInit {
 
   toggleEditMode() {
     this.editMode = !this.editMode;
+  }
+
+  onKeyupPassword() {
+    this.password = this.profileForm.controls.passwords.get('password').value;
   }
 
   onSubmit() {
