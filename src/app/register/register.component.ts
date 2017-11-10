@@ -51,6 +51,8 @@ export class RegisterComponent implements OnInit {
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 
+    const msg_successful = 'Registration successful, please log in!';
+
     console.log(`strength=${strength}, min=${min}`);
 
     if (strength <= min) {
@@ -59,7 +61,7 @@ export class RegisterComponent implements OnInit {
     } else {
       this.authentication.register(email, password).subscribe(result => {
         if (result === true) {
-          this.onRegistration();
+          this.onRegistration(msg_successful);
         } else {
           this.error = 'Registration failed: please try again later';
         }
@@ -68,17 +70,22 @@ export class RegisterComponent implements OnInit {
        (err: HttpErrorResponse) => {
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
-          this.onRegistration();
+          this.onRegistration(msg_successful);
         } else {
-          this.error = `Registration failed: ${StringifyHttpError(err)}`;
+          const errmsg = StringifyHttpError(err);
+          if (errmsg.match(/409/) && errmsg.match(/already exists/)) {
+            this.onRegistration('You are already registered, please login in!');
+          } else {
+            this.error = `Registration failed: ${errmsg}`;
+          }
           this.loading = false;
         }
       });
     }
   }
 
-  private onRegistration() {
-    this.flashMessage.show('Registration successful, please log in!', { cssClass: 'alert-success', timeout: 5000 });
+  private onRegistration(msg) {
+    this.flashMessage.show(msg, { cssClass: 'alert-success', timeout: 5000 });
     this.router.navigate(['/login']);
   }
 }
