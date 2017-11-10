@@ -1,0 +1,47 @@
+<div class="dashboard-wrapper">
+<h2>Users</h2>
+
+<table *ngIf="!error" class="table-horizontal-layout users-table ">
+  <thead>
+    <tr>
+      <th colspan="2">User</th>
+      <th colspan="2">Name</th>
+      <th colspan="2">Organization</th>
+      <th colspan="4"></th>
+      <th colspan="2">Dates</th>
+      <th></th>
+    </tr><tr>
+      <th>Id</th>
+      <th>Email</th>
+      <th>First</th>
+      <th>Last</th>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Role</th>
+      <th>Country</th>
+      <th>Member</th>
+      <th>Metis</th>
+      <th>Created</th>
+      <th>Updated</th>
+      <th>Token</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let user of users">
+    <td>{{user.userId}}</td>
+    <td>{{user.email}}</td>
+    <td>{{user.firstName}}</td>
+    <td>{{user.lastName}}</td>
+    <td>{{user.organizationId}}</td>
+    <td>{{user.organizationName}}</td>
+    <td>{{user.accountRole}}</td>
+    <td>{{user.country}}</td>
+    <td>{{user.networkMember}}</td>
+    <td>{{user.metisUserFlag}}</td>
+    <td>{{user.createdDate | date}}</td>
+    <td>{{user.updatedDate | date}}</td>
+    <td>{{user.metisUserAccessToken ? user.metisUserAccessToken.accessToken : ''}}</td>
+  </tr>
+  </tbody>
+</table>
+</div>
