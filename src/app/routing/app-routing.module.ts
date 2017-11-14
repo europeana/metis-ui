@@ -8,6 +8,7 @@ import { LoginComponent } from '../login';
 import { ProfileComponent } from '../profile';
 import { RegisterComponent } from '../register';
 import { RequestsComponent } from '../requests';
+import { UsersComponent } from '../users';
 
 import { AuthVisitorGuard, AuthUserGuard } from '../_guards';
 
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [AuthUserGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [AuthVisitorGuard] },
   { path: 'requests', component: RequestsComponent, canActivate: [AuthUserGuard] },
+  { path: 'users', component: UsersComponent, canActivate: [AuthUserGuard] },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
