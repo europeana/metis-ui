@@ -8,6 +8,13 @@ import {
 import { AuthenticationService } from './authentication.service';
 import { Observable } from 'rxjs/Observable';
 
+// TokenInterceptor:
+//
+// This hooks into all outgoing HTTP requests, and if the user is logged in,
+// an authorization header is inserted: { Authorization: 'Bearer [token]' }
+//
+// The token is that which was passed back during successful login and was saved.
+//
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
   private auth;
