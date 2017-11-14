@@ -62,12 +62,8 @@ export class AuthenticationService {
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
       if (user && user.metisUserAccessToken) {
-        // set token property
-        this.currentUser = user;
-        this.token = user.metisUserAccessToken.accessToken;
 
-        // store email and jwt token in local storage to keep user logged in between page refreshes
-        sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: email, token: this.token }));
+        this.setCurrentUser(user);
 
         // return true to indicate successful login
         console.log(`${fn} POST ${url} => OK`);
@@ -87,5 +83,33 @@ export class AuthenticationService {
     this.token = null;
     sessionStorage.removeItem(this.key);
     console.log(`${fn} => OK`);
+  }
+
+  reloadCurrentUser() {
+    const fn = 'reloadCurrentUser()';
+    const url = `${environment.apiHost}/${environment.apiProfile}`;
+    return this.http.get(url, JSON.stringify('{}')).map(data => {
+      const user = <User>data;
+      if (user) {
+
+        this.setCurrentUser(user);
+
+        // return true to indicate success
+        console.log(`${fn} GET ${url} => OK`);
+        return true;
+      } else {
+        // return false to indicate fail
+        console.log(`${fn} GET ${url} => NOK`);
+        return false;
+      }
+    });
+  }
+
+  private setCurrentUser(user: User) {
+    this.currentUser = user;
+    this.token = user.metisUserAccessToken.accessToken;
+
+    // store email and jwt token in local storage to keep user logged in between page refreshes
+    sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
   }
 }

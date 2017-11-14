@@ -5,21 +5,21 @@ export function StringifyHttpError(err: HttpErrorResponse): string {
   console.log(err);
   if (err.error instanceof Error) {
     // A client-side or network error occurred. Handle it accordingly.
-    errmsg = err.error.message;
+    if (err.status === 404) {
+      errmsg = `${err.status} ${err.statusText}`;
+    } else {
+      errmsg = err.error.message;
+    }
   } else {
     // The backend returned an unsuccessful response code.
     // The response body may contain clues as to what went wrong,
     try {
       errmsg = JSON.parse(err.error);
-      errmsg = errmsg['errorMessage'] || errmsg;
+      errmsg = errmsg['errorMessage'];
     } catch (e) {
-      errmsg = err.error;
+      errmsg = null;
     }
-    if (err.status && errmsg) {
-      errmsg = `${err.status} ${errmsg}`;
-    } else {
-      errmsg = 'Unexpected network error';
-    }
+    errmsg = `${err.status} ${errmsg || err.statusText}`;
   }
   return errmsg;
 }

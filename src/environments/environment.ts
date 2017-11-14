@@ -11,5 +11,6 @@ export const environment = {
   apiLogin: 'authentication/login',
   apiRegister: 'authentication/register',
   apiUsers: 'authentication/users',
+  apiProfile: 'authentication/profile',
   apiUpdatePassword: 'authentication/update/password'
 };

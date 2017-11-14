@@ -89,9 +89,20 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-  refreshProfile() {
+  onReloadProfile() {
     this.loading = true;
-    this.flashMessage.show('Profile has been refreshed', { cssClass: 'alert-success', timeout: 5000 });
+    this.authentication.reloadCurrentUser().subscribe(result => {
+        if (result === true) {
+          this.createForm();
+        } else {
+          this.error = 'Refresh failed, please try again later';
+        }
+        this.loading = false;
+      },
+      (err: HttpErrorResponse) => {
+        this.error = `Refresh failed: ${StringifyHttpError(err)}`;
+        this.loading = false;
+      });
   }
 
   private onUpdatePassword() {
