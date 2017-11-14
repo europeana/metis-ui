@@ -33,6 +33,10 @@ export class ProfileComponent implements OnInit {
     private flashMessage: FlashMessagesService) { }
 
   ngOnInit() {
+    this.createForm();
+  }
+
+  createForm() {
     const user: User = this.authentication.currentUser;
 
     this.profileForm = this.fb.group({
@@ -47,14 +51,13 @@ export class ProfileComponent implements OnInit {
       'account-role': [user.accountRole || 'Unknown'],
       'created-date': [new Date(user.createdDate)],
       'updated-date': [new Date(user.updatedDate)],
-       passwords: this.fb.group({
+      passwords: this.fb.group({
         password: ['', Validators.required ],
         confirm: ['', Validators.required ]
       }, {
         validator: MatchPasswordValidator
       })
     });
-
   }
 
   toggleEditMode() {
@@ -84,6 +87,11 @@ export class ProfileComponent implements OnInit {
         this.error = `Update password failed: ${StringifyHttpError(err)}`;
         this.loading = false;
       });
+  }
+
+  refreshProfile() {
+    this.loading = true;
+    this.flashMessage.show('Profile has been refreshed', { cssClass: 'alert-success', timeout: 5000 });
   }
 
   private onUpdatePassword() {
