@@ -6,6 +6,14 @@
         <a routerLink="/home" class="logo ir"></a>
       </div>
 
+      <div *ngIf="isLoggedIn()" class="dashboard-header-links">
+        <div class="settings-menu cf nav-loggedin">
+          <a routerLink="/dashboard"><i class="fa fa-dashboard fa-2x"></i> Dashboard</a>
+          &nbsp;
+          <a routerLink="/users"><i class="fa fa-users fa-2x"></i> Users</a>
+        </div>
+      </div>
+
       <div class="dashboard-header" *ngIf="isLoggedIn()">
         <form class="search-multiterm">
           <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />
