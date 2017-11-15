@@ -43,6 +43,7 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
+    this.error = '';
     this.loading = true;
     const controls = this.registerForm.controls;
     const email = controls.email.value;
@@ -71,15 +72,12 @@ export class RegisterComponent implements OnInit {
           this.onRegistration(msg_successful);
         } else if (err.status === 404) {
           this.router.navigate(['/register/notfound']);
+        } else if (err.status === 409) {
+          this.onRegistration('You are already registered, please login in!');
         } else {
-          const errmsg = StringifyHttpError(err);
-          if (errmsg.match(/409/) && errmsg.match(/already exists/)) {
-            this.onRegistration('You are already registered, please login in!');
-          } else {
-            this.error = `Registration failed: ${errmsg}`;
-          }
-          this.loading = false;
+          this.error = `Registration failed: ${StringifyHttpError(err)}`;
         }
+        this.loading = false;
       });
     }
   }
