@@ -71,6 +71,8 @@ export class RegisterComponent implements OnInit {
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
+        } else if (err.status === 404) {
+          this.router.navigate(['/register/notfound']);
         } else {
           const errmsg = StringifyHttpError(err);
           if (errmsg.match(/409/) && errmsg.match(/already exists/)) {

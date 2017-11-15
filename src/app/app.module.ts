@@ -16,7 +16,8 @@ import { AuthenticationService,
          RedirectPreviousUrl } from './_services';
 
 import { AppComponent } from './app.component';
-import { RegisterComponent } from './register';
+import { RegisterComponent,
+         RegisterNotfoundComponent } from './register';
 import { LoginComponent } from './login';
 import { ProfileComponent } from './profile';
 import { HeaderComponent,
@@ -42,6 +43,7 @@ import { UsersComponent } from './users';
   declarations: [
     AppComponent,
     RegisterComponent,
+    RegisterNotfoundComponent,
     LoginComponent,
     ProfileComponent,
     PageNotFoundComponent,
