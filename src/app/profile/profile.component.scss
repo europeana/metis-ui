@@ -61,3 +61,12 @@ label {
     padding: 10px 20px !important;
   }
 }
+
+span.invalid {
+  float: right;
+  margin-right: 6px;
+  margin-left: -33px;
+  position: relative;
+  z-index: 2;
+  color: red;
+}

@@ -44,11 +44,11 @@ export class ProfileComponent implements OnInit {
       'email': [user.email],
       'first-name': [user.firstName],
       'last-name': [user.lastName],
-      'organization-name': [user.organizationName || 'Unknown'],
+      'organization-name': [user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown'],
       'country': [user.country || 'Unknown'],
       'network-member': [user.networkMember],
       'metis-user-flag': [user.metisUserFlag],
-      'account-role': [user.accountRole || 'Unknown'],
+      'account-role': [user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown'],
       'created-date': [new Date(user.createdDate)],
       'updated-date': [new Date(user.updatedDate)],
       passwords: this.fb.group({

@@ -35,6 +35,7 @@
         <div class="form-group">
           <label for="organization-name">Organization Name:</label>
           <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" readonly />
+          <span *ngIf="profileForm.controls['organization-name'].value==='Unknown'" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
 
         <div class="form-group">
@@ -50,11 +51,13 @@
         <div class="form-group">
           <label for="metis-user-flag">Metis User Flag:</label>
           <input id="metis-user-flag" name="metis-user-flag" type="text" formControlName="metis-user-flag" readonly/>
+          <span *ngIf="!profileForm.controls['metis-user-flag'].value" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
 
         <div class="form-group">
           <label for="account-role">Account Role:</label>
           <input id="account-role" name="account-role" type="text" formControlName="account-role" readonly/>
+          <span *ngIf="profileForm.controls['account-role'].value==='Unknown'" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
 
         <div class="form-group">
