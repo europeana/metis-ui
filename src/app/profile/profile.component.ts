@@ -61,6 +61,7 @@ export class ProfileComponent implements OnInit {
   }
 
   toggleEditMode() {
+    this.error = '';
     this.editMode = !this.editMode;
   }
 
@@ -69,6 +70,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
+    this.error = '';
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
@@ -90,6 +92,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onReloadProfile() {
+    this.error = '';
     this.loading = true;
     this.authentication.reloadCurrentUser().subscribe(result => {
         if (result === true) {

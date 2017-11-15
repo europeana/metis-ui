@@ -53,8 +53,6 @@ export class RegisterComponent implements OnInit {
 
     const msg_successful = 'Registration successful, please log in!';
 
-    console.log(`strength=${strength}, min=${min}`);
-
     if (strength <= min) {
       this.error = 'Password is too weak';
       this.loading = false;
