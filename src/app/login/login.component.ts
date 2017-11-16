@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
+    const msg_bad_credentials = 'Email or password is incorrect, please try again.';
     this.loading = true;
     const email = this.loginForm.controls.email.value;
     const password = this.loginForm.controls.password.value;
@@ -53,12 +54,16 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/profile']);
         }
       } else {
-        this.error = 'Login failed: email or password is incorrect';
+        this.error = msg_bad_credentials;
       }
       this.loading = false;
     },
     (err: HttpErrorResponse) => {
-      this.error = `Login failed: ${StringifyHttpError(err)}`;
+      if (err.status === 406) {
+        this.error = msg_bad_credentials;
+      } else {
+        this.error = `Login failed: ${StringifyHttpError(err)}`;
+      }
       this.loading = false;
     });
   }
