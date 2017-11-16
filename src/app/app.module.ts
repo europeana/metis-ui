@@ -32,7 +32,8 @@ import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
 import { FlashMessagesModule } from 'angular2-flash-messages';
-import { UsersComponent } from './users';
+import { UsersComponent,
+         UserDetailComponent } from './users';
 
 // used to create fake backend
 // import { fakeBackendProvider } from './_helpers';
@@ -56,7 +57,8 @@ import { UsersComponent } from './users';
     DatasetformComponent,
     DatasetDirective,
     PasswordCheckComponent,
-    UsersComponent
+    UsersComponent,
+    UserDetailComponent
   ],
   imports: [
     BrowserModule,

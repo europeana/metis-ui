@@ -1,0 +1,59 @@
+<div class="dashboard-wrapper">
+  <h2>User</h2>
+
+  <table *ngIf="user" class="table-horizontal-layout user-table">
+    <thead>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Id</td>
+        <td>{{user.userId}}</td>
+      </tr>
+      <tr>
+        <td>First Name</td>
+        <td>{{user.firstName}}</td>
+      </tr>
+      <tr>
+        <td>Last Name</td>
+        <td>{{user.lastName}}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{user.email}}</td>
+      </tr>
+      <tr>
+        <td>Role</td>
+        <td>{{user.accountRole}}</td>
+      </tr>
+      <tr>
+        <td>Organization Id</td>
+        <td>{{user.organizationId}}</td>
+      </tr>
+      <tr>
+        <td>Organization Name</td>
+        <td>{{user.organizationName}}</td>
+      </tr>
+      <tr>
+        <td>Country</td>
+        <td>{{user.country}}</td>
+      </tr>
+      <tr>
+        <td>Network Member</td>
+        <td>
+          <i *ngIf="user.networkMember" class="fa fa-check"></i>
+          <i *ngIf="!user.networkMember" class="fa fa-close"></i>
+        </td>
+      </tr>
+      <tr>
+        <td>Metis User Flag</td>
+        <td>
+          <i *ngIf="user.metisUserFlag" class="fa fa-check"></i>
+          <i *ngIf="!user.metisUserFlag" class="fa fa-close"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="user" class="form-group form-group-btns user-profile-edit-btns">
+    <button class="button" type="button" (click)="goBack()">Back</button>
+  </div>
+</div>

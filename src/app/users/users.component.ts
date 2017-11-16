@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { User } from '../_models';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { environment } from '../../environments/environment';
@@ -17,6 +18,7 @@ export class UsersComponent implements OnInit {
   public users: User[];
 
   constructor(private http: HttpClient,
+              private router: Router,
               private flashMessage: FlashMessagesService) { }
 
   ngOnInit() {
@@ -30,5 +32,10 @@ export class UsersComponent implements OnInit {
         this.error = true;
         this.flashMessage.show( StringifyHttpError(err), { cssClass: 'alert-error', timeout: 5000 });
     });
+  }
+
+  gotoUser(user: User) {
+    console.log(user);
+    this.router.navigate(['/users', user.userId]);
   }
 }

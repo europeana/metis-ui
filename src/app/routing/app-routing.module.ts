@@ -9,7 +9,8 @@ import { ProfileComponent } from '../profile';
 import { RegisterComponent,
          RegisterNotfoundComponent } from '../register';
 import { RequestsComponent } from '../requests';
-import { UsersComponent } from '../users';
+import { UsersComponent,
+         UserDetailComponent } from '../users';
 
 import { AuthVisitorGuard, AuthUserGuard } from '../_guards';
 
@@ -22,10 +23,11 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [AuthVisitorGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthUserGuard] },
-  { path: 'register/notfound', component: RegisterNotfoundComponent, canActivate: [AuthVisitorGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [AuthVisitorGuard] },
+  { path: 'register/notfound', component: RegisterNotfoundComponent, canActivate: [AuthVisitorGuard] },
   { path: 'requests', component: RequestsComponent, canActivate: [AuthUserGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthUserGuard] },
+  { path: 'users/:id', component: UserDetailComponent, canActivate: [AuthUserGuard] },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
