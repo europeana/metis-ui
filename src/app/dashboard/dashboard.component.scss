@@ -1,0 +1,29 @@
+.metis-dashboard-right {
+  h3 {
+    font-size: 1.25rem;
+  }
+  .btns-set {
+    margin-top: -5px;
+    font-size: 0.875rem;
+
+    height: 49px;
+    width: 65%;
+  }
+}
+
+.tab-pending {
+  position: absolute;
+  bottom: 6px;
+  .fa-circle {
+    color: red;
+  }
+}
+
+table {
+  th {
+    font-size: 12px;
+  }
+  td {
+    font-size: 13px;
+  }
+}
