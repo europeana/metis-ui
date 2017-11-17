@@ -9,6 +9,7 @@ import { AuthenticationService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
 import { FlashMessagesService } from 'angular2-flash-messages';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -22,6 +23,7 @@ export class ProfileComponent implements OnInit {
   loading = false;
   error = '';
   public password = '';
+  public emailInfo = environment.emails.profile;
 
   profileForm: FormGroup;
 
@@ -46,7 +48,7 @@ export class ProfileComponent implements OnInit {
       'last-name': [user.lastName],
       'organization-name': [user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown'],
       'country': [user.country || 'Unknown'],
-      'network-member': [user.networkMember],
+      'network-member': [user.networkMember ? 'Yes' : 'No'],
       'metis-user-flag': [user.metisUserFlag],
       'account-role': [user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown'],
       'created-date': [new Date(user.createdDate)],

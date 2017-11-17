@@ -44,14 +44,8 @@
         </div>
 
         <div class="form-group">
-          <label for="network-member">Network Member:</label>
+          <label for="network-member">Europeana Network<br/>Association Member:</label>
           <input id="network-member" name="network-member" type="text" formControlName="network-member" readonly/>
-        </div>
-
-        <div class="form-group">
-          <label for="metis-user-flag">Metis User Flag:</label>
-          <input id="metis-user-flag" name="metis-user-flag" type="text" formControlName="metis-user-flag" readonly/>
-          <span *ngIf="!profileForm.controls['metis-user-flag'].value" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
 
         <div class="form-group">
@@ -59,20 +53,13 @@
           <input id="account-role" name="account-role" type="text" formControlName="account-role" readonly/>
           <span *ngIf="profileForm.controls['account-role'].value==='Unknown'" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
-
-        <div class="form-group">
-          <label for="created-date">Created Date:</label>
-          <input type="text" name="created-date" id="created-date" formControlName="created-date" readonly />
-        </div>
-
-        <div class="form-group">
-          <label for="updated-date">Updated Date:</label>
-          <input type="text" name="updated-date" id="updated-date" formControlName="updated-date" readonly />
-        </div>
-
         <div class="form-group form-group-btns user-profile-edit-btns">
           <button class="button" type="button" (click)="toggleEditMode()">Change Password</button>
           <button class="button" type="button" (click)="onReloadProfile()">Refresh</button>
+        </div>
+
+        <div class="profile-form-extra">
+          <p> If you want to update your profile, send an email to <a href="mailto:{{emailInfo}}">{{emailInfo}}</a>.</p>
         </div>
 
       </div>

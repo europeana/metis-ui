@@ -6,5 +6,11 @@ export const environment = {
   apiLogin: 'authentication/login',
   apiRegister: 'authentication/register',
   apiUsers: 'authentication/users',
-  apiUpdatePassword: 'authentication/update/password'
+  apiUpdatePassword: 'authentication/update/password',
+  emails: {
+    profile: 'content@europeana.eu'
+  },
+  links: {
+    registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis'
+  }
 };

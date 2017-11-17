@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-register-notfound',
@@ -7,5 +8,6 @@ import { Component } from '@angular/core';
 })
 
 export class RegisterNotfoundComponent {
+  public linkRegister = environment.links.registerMetis;
 }
 
