@@ -21,17 +21,23 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(private inj: Injector) {}
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Ignore if login, register or refresh.
+    const fn = 'TokeInterceptor#intercept';
+    console.log(`${fn}: request.url='${request.url}'`);
     if (!request.url.match(/login|register/)) {
       const auth = this.inj.get(AuthenticationService);
       const token = auth.getToken();
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };
-        console.log(`Token interceptor => ${JSON.stringify(headers)}`);
+        console.log(`${fn}: headers='${JSON.stringify(headers)}'`);
         // Insert authorization header into all outgoing calls
         request = request.clone({
           setHeaders: headers
         });
+      } else {
+        console.log(`${fn}: no token!`);
       }
+    } else {
+      console.log(`${fn}: ignore`);
     }
 
     return next.handle(request);

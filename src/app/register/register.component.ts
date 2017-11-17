@@ -70,7 +70,7 @@ export class RegisterComponent implements OnInit {
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
-        } else if (err.status === 404) {
+        } else if (err.status === 404 || err.status === 406) {
           let errmsg: string;
           try {
             errmsg = JSON.parse(err.error);

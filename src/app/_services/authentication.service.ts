@@ -18,7 +18,7 @@ export class AuthenticationService {
   constructor(public router: Router,
               private http: HttpClient) {
     // set currentUser and token if already saved in local storage
-    const value = sessionStorage.getItem(this.key);
+    const value = localStorage.getItem(this.key);
     if (value) {
       const hash = JSON.parse(value);
       this.currentUser = hash.user;
@@ -27,7 +27,7 @@ export class AuthenticationService {
   }
 
   validatedUser(): boolean {
-    return sessionStorage.getItem(this.key) !== null;
+    return localStorage.getItem(this.key) !== null;
   }
 
   getToken(): string {
@@ -81,7 +81,7 @@ export class AuthenticationService {
     // clear token remove user from local storage to log user out
     this.currentUser = null;
     this.token = null;
-    sessionStorage.removeItem(this.key);
+    localStorage.removeItem(this.key);
     console.log(`${fn} => OK`);
   }
 
@@ -110,6 +110,6 @@ export class AuthenticationService {
     this.token = user.metisUserAccessToken.accessToken;
 
     // store email and jwt token in local storage to keep user logged in between page refreshes
-    sessionStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
+    localStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
   }
 }
