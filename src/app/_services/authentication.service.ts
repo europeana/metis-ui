@@ -31,7 +31,12 @@ export class AuthenticationService {
   }
 
   getToken(): string {
-    return this.token;
+    const s = localStorage.getItem(this.key);
+    if (!s)  {
+      return null;
+    }
+    const h = JSON.parse(s);
+    return h.token;
   }
 
   updatePassword(password: string) {
