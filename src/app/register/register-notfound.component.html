@@ -1,5 +1,6 @@
 <div class="metis-register-form metis-form">
-  <h2>Your account doesn't exist yet.</h2>
+  <h2>Your account doesn't exist or is not ready yet.</h2>
+  <p *ngIf="reasonMessage">Reason: {{reasonMessage}}</p>
   <p>In order to register, please fill in the form at: <a href="{{linkRegister}}" target="_blank">{{linkRegister}}</a></p>
 </div>
 
