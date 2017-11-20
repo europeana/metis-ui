@@ -68,22 +68,20 @@ export class RegisterComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         console.log(err);
-        if (err.status === 201 ) {
+        if (+err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
-        } else if (err.status === 404 || err.status === 406) {
-          console.log('err.status=' + err.status);
+        } else if (+err.status === 404 || +err.status === 406) {
           let errmsg: string;
           try {
             errmsg = JSON.parse(err.error);
-            console.log('errmsg=', errmsg);
             errmsg = errmsg['errorMessage'];
-            console.log('errmsg=' + errmsg);
           } catch (e) {
+            console.error('RegisterComponent: JSON.parse(err.error) failed', err.error);
             errmsg = null;
           }
           this.router.navigate(['/register/notfound', { reason: errmsg || 'Unknown' }]);
-        } else if (err.status === 409) {
+        } else if (+err.status === 409) {
           this.onRegistration('You are already registered, please login in!');
         } else {
           this.error = `Registration failed: ${StringifyHttpError(err)}`;
