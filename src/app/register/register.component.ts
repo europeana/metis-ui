@@ -67,14 +67,18 @@ export class RegisterComponent implements OnInit {
         this.loading = false;
       },
       (err: HttpErrorResponse) => {
+        console.log(err);
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
         } else if (err.status === 404 || err.status === 406) {
+          console.log('err.status=' + err.status);
           let errmsg: string;
           try {
             errmsg = JSON.parse(err.error);
+            console.log('errmsg=', errmsg);
             errmsg = errmsg['errorMessage'];
+            console.log('errmsg=' + errmsg);
           } catch (e) {
             errmsg = null;
           }
