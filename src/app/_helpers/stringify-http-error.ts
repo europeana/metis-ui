@@ -14,8 +14,8 @@ export function StringifyHttpError(err: HttpErrorResponse): string {
     // The backend returned an unsuccessful response code.
     // The response body may contain clues as to what went wrong,
     try {
-      errmsg = JSON.parse(err.error);
-      errmsg = errmsg['errorMessage'];
+      const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
+      errmsg = h['errorMessage'];
     } catch (e) {
       console.error('StringifyHttpError: JSON.parse(err.error) failed', err.error);
       errmsg = null;
