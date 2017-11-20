@@ -66,7 +66,7 @@ export class RegisterComponent implements OnInit {
         }
         this.loading = false;
       },
-       (err: HttpErrorResponse) => {
+      (err: HttpErrorResponse) => {
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
@@ -75,7 +75,7 @@ export class RegisterComponent implements OnInit {
           try {
             errmsg = JSON.parse(err.error);
             errmsg = errmsg['errorMessage'];
-          } catch(e) {
+          } catch (e) {
             errmsg = null;
           }
           this.router.navigate(['/register/notfound', { reason: errmsg || 'Unknown' }]);
