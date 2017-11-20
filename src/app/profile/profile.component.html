@@ -84,7 +84,7 @@
           <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="Password">
           <app-password-check [passwordToCheck]="password"></app-password-check>
           <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
-          <div class="messages" *ngIf="profileForm.controls['passwords'].get('password').touched && !profileForm.controls['passwords'].get('confirm').valid">
+          <div class="messages" *ngIf="profileForm.controls['passwords'].get('confirm').touched && !profileForm.controls['passwords'].get('confirm').valid">
             <div class="error-message">Passwords do not match!</div>
           </div>
         </fieldset>
