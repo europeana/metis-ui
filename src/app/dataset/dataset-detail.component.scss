@@ -14,11 +14,12 @@
   th {
     color: #37B98B;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
   }
   th,
   td {
     width: 50%;
+    vertical-align: middle;
     font-size: 16px;
     padding: 10px;
     .fa {
@@ -31,7 +32,29 @@
       }
     }
   }
+  td:nth-child(2) {
+    font-size: 18px;
+  }
   tr:last-child td {
     padding: 0;
+  }
+}
+
+.progress-bar {
+  background-color: white;
+
+  .bar1 {
+    float: left;
+	  height: 5px;
+	  width: 25%;
+	  border-radius: 5.7px;
+	  background-color: #1A8AC7;
+  }
+  .bar2 {
+    float: left;
+    height: 5px;
+    width: 60%;
+    border-radius: 5.7px;
+    background-color: #EBEBEB;
   }
 }
