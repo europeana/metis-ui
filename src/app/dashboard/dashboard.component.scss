@@ -1,3 +1,5 @@
+@import '../../assets/sass/scss/generic/variables';
+
 .metis-dashboard-right {
   h3 {
     font-size: 1.25rem;
@@ -19,11 +21,28 @@
   }
 }
 
-table {
-  th {
-    font-size: 12px;
+.notifications-table,
+.executions-table {
+  tbody {
+    tr {
+      cursor: pointer;
+
+      &:hover {
+        background: $gray-lighter;
+      }
+
+    }
   }
-  td {
-    font-size: 13px;
-  }
+}
+
+th, td {
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center;
+}
+
+.fa-circle {
+  color: red;
 }

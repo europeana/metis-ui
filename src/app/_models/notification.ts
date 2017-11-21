@@ -1,4 +1,4 @@
 export class Notification {
-  action: String;
+  action: string;
   date: Date;
 }

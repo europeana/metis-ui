@@ -1,0 +1,37 @@
+@import '../../assets/sass/scss/generic/variables';
+
+.metis-welcome-message {
+  color: $black;
+  font-size: 1.125rem;
+  padding: 1rem;
+
+  strong {
+    font-size: 1.25rem;
+  }
+}
+
+.general-info-table {
+  th {
+    color: #37B98B;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  th,
+  td {
+    width: 50%;
+    font-size: 16px;
+    padding: 10px;
+    .fa {
+      color: #37B98B;
+    }
+    .btns-set {
+      margin-bottom: 0;
+      .btn {
+        font-size: 18px;
+      }
+    }
+  }
+  tr:last-child td {
+    padding: 0;
+  }
+}

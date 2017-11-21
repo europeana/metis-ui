@@ -14,6 +14,7 @@ import { AuthUserGuard,
 import { AuthenticationService,
          TokenInterceptor,
          RedirectPreviousUrl,
+         DatasetsService,
          NotificationsService } from './_services';
 
 import { AppComponent } from './app.component';
@@ -27,7 +28,8 @@ import { HeaderComponent,
 import { HomeComponent } from './home';
 import { DatasetComponent,
          DatasetformComponent,
-         DatasetDirective } from './dataset';
+         DatasetDirective,
+         DatasetDetailComponent } from './dataset';
 import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
@@ -57,6 +59,7 @@ import { UsersComponent,
     DashboardComponent,
     DatasetformComponent,
     DatasetDirective,
+    DatasetDetailComponent,
     PasswordCheckComponent,
     UsersComponent,
     UserDetailComponent
@@ -81,6 +84,7 @@ import { UsersComponent,
       multi: true
     },
     RedirectPreviousUrl,
+    DatasetsService,
     NotificationsService
 
     // providers used to create fake backend

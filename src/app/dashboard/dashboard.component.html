@@ -84,16 +84,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+          <tr *ngFor="let dataset of datasets" (click)="gotoDataset(dataset)">
+            <td>
+              <span *ngIf="dataset.flag"><i class="fa fa-circle"></i></span>
+            </td>
+            <td>{{dataset.organizationId}}</td>
+            <td>{{dataset.name}}</td>
+            <td><i class="fa fa-{{dataset.workflow.icon}}"></i></td>
+            <td>{{dataset.workflow.name}}</td>
+            <td>{{dataset.totalProcessed}}</td>
+            <td>{{dataset.totalDataset}}</td>
+            <td>{{dataset.startDate | date:'MM/dd/yyyy - HH:mm'}}</td>
+            <td>{{dataset.endDate | date:'MM/dd/yyyy - HH:mm'}}</td>
           </tr>
         </tbody>
       </table>

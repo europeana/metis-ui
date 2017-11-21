@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService, NotificationsService } from '../_services';
-import { User, Notification } from '../_models';
+import { Router } from '@angular/router';
+import { AuthenticationService, NotificationsService, DatasetsService } from '../_services';
+import { User, Notification, Dataset } from '../_models';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,15 +14,23 @@ export class DashboardComponent implements OnInit {
   user: User;
   userName: string;
   notifications: Notification[];
+  datasets: Dataset[];
 
   constructor(private authentication: AuthenticationService,
-              private notify: NotificationsService) {
+              private router: Router,
+              private notify: NotificationsService,
+              private dataset: DatasetsService) {
   }
 
   ngOnInit() {
     this.user = this.authentication.currentUser;
     this.userName = this.user ? this.user.firstName : '';
     this.notifications = this.notify.getNotifications();
+    this.datasets = this.dataset.getDatasets();
+  }
+
+  gotoDataset(dataset: Dataset) {
+    this.router.navigate(['/dataset/detail', '' + dataset.id]);
   }
 
 }
