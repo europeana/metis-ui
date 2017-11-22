@@ -17,6 +17,7 @@ export const environment = {
     profile: 'content@europeana.eu'
   },
   links: {
-    registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis'
+    registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis',
+    gotoZoho: 'https:/www.zoho.com'
   }
 };
