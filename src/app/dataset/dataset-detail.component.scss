@@ -40,6 +40,10 @@
   }
 }
 
+th, td {
+  vertical-align: middle;
+}
+
 .progress {
 
   td {
@@ -100,5 +104,28 @@
 
   td:nth-child(4) {
     font-size: 14px;
+  }
+}
+
+.btn {
+  font-size: 14px;
+}
+
+.fa.red {
+  color: #E91E63;
+}
+
+.fa.orange {
+  color: #FFAB91;
+}
+
+.load-more {
+  text-align: center;
+  td {
+    font-weight: bold;
+    color: #37B98B;
+    .fa {
+      color: #9FACB3;
+    }
   }
 }
