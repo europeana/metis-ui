@@ -44,17 +44,20 @@
     </div>
 
     <div class="metis-dashboard-right">
-      <table class="table-horizontal-layout progress-bar">
+      <table class="table-horizontal-layout progress">
         <tbody>
           <tr>
-            <td>
-              Harvest<br/>
-              Now running
+            <td class="workflow">
+              <div class="name">Harvest</div>
+              <div class="status">Now running</div>
             </td>
             <td>
-              <div class="progress-bar">
-                <div class="bar1"></div>
-                <div class="bar2"></div>
+              <div class="bar-info">
+                <span class="float-left">23003 / 37001</span><span class="float-right">60%</span>
+              </div>
+              <br />
+              <div class="bar">
+                <div class="done"></div>
               </div>
             </td>
             <td>
@@ -63,7 +66,7 @@
             <td>
               <div class="btns-set">
                 <span class="btn-padding">
-                  <a class="btn btn-left">
+                  <a class="btn btn-right">
                     <i class="fa fa-file-text-o fa-fw"></i> Log
                   </a>
                   <a class="btn btn-right">
@@ -75,8 +78,8 @@
                   <a class="btn btn-right">
                     New Action <i class="fa fa-caret-down fa-fw"></i>
                   </a>
-        </span>
-      </div>
+                </span>
+              </div>
             </td>
           </tr>
         </tbody>

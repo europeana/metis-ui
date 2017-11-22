@@ -40,21 +40,65 @@
   }
 }
 
-.progress-bar {
-  background-color: white;
+.progress {
 
-  .bar1 {
-    float: left;
-	  height: 5px;
-	  width: 25%;
-	  border-radius: 5.7px;
-	  background-color: #1A8AC7;
+  td {
+    padding: 5px;
+    white-space: nowrap;
+    font-size: 16px;
+    vertical-align: middle;
+    .name {
+      font-weight: bold;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: smaller;
+    }
+    .btns-set {
+      margin: 0;
+      padding: 0;
+      .btn {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
   }
-  .bar2 {
-    float: left;
-    height: 5px;
-    width: 60%;
-    border-radius: 5.7px;
-    background-color: #EBEBEB;
+
+  td:nth-child(1) {
+    padding-left: 10px;
+    width: 10%;
+  }
+
+  td:nth-child(2) {
+    width: 40%;
+    .bar-info {
+      font-size: 14px;
+      margin-top: -20px;
+      .float-left {
+        float: left;
+      }
+      .float-right {
+        float: right;
+      }
+    }
+    .bar {
+      background-color: #EBEBEB;
+	    border-radius: 5px;
+      .done {
+        border-radius: 5px;
+        background-color: #1A8AC7;
+        height: 10px;
+        width: 60%;
+      }
+    }
+  }
+
+  td:nth-child(3) {
+    padding-left: 10px;
+    font-size: 14px;
+  }
+
+  td:nth-child(4) {
+    font-size: 14px;
   }
 }
