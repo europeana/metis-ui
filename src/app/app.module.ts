@@ -36,6 +36,7 @@ import { PageNotFoundComponent } from './page-not-found';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
+import { GeneralinfoComponent } from './dataset/generalinfo/generalinfo.component';
 
 // used to create fake backend
 // import { fakeBackendProvider } from './_helpers';
@@ -60,7 +61,8 @@ import { UsersComponent,
     DatasetDirective,
     PasswordCheckComponent,
     UsersComponent,
-    UserDetailComponent
+    UserDetailComponent,
+    GeneralinfoComponent
   ],
   imports: [
     BrowserModule,
