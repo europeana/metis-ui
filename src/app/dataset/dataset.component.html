@@ -1,5 +1,27 @@
 <div class="dashboard-wrapper">
 
+  <div class="collapse-block">
+
+    <div class="dataset-name">
+      datasetname
+    </div>
+    <div class="collapse-toggle-block">
+      <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
+        <span class="info-toggle">
+          <i class="fa fa-expand" aria-hidden="true"></i>Expand info
+        </span>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed">
+      <div class="metis-dashboard-left">left</div>
+      <div class="metis-dashboard-right">right</div>
+    </div>
+
+  </div>
+
   <div class="metis-dashboard">
     <ul class="tabs">
       <li [ngClass]="{'active': activeTab === 'new' }">

@@ -27,6 +27,8 @@ export class DatasetComponent implements OnInit {
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string;
+  activeSet: string;
+  isCollapsed: boolean = false;
   user: User;
   userRole: string;
   editMode = false; // if not edit, then create
@@ -38,6 +40,7 @@ export class DatasetComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.activeTab = params['tab'];
+      this.activeSet = params['id'];
       this.loadTabComponent();
     });
 

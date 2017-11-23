@@ -20,8 +20,8 @@ import { PageNotFoundComponent } from '../page-not-found';
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthUserGuard] },
   { path: 'dataset/detail/:id', component: DatasetDetailComponent, canActivate: [AuthUserGuard] },
-  { path: 'dataset/:tab', component: DatasetComponent, canActivate: [AuthUserGuard] },
-  { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' },
+  { path: 'dataset/:tab/:id', component: DatasetComponent, canActivate: [AuthUserGuard] },
+  { path: 'dataset', redirectTo: '/dataset/log/1', pathMatch: 'full' }, // should be removed or updated eventually
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [AuthVisitorGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthUserGuard] },

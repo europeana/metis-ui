@@ -1,51 +1,5 @@
 @import '../../assets/sass/scss/generic/variables';
 
-.metis-welcome-message {
-  color: $black;
-  font-size: 1.125rem;
-  padding: 1rem;
-}
-
-.general-info-table {
-
-  font-size: 0.875rem;
-
-  th {
-    color: $eu-jade;
-    font-weight: bold;
-  }
-
-  th,
-  td {
-    padding: 1rem;
-    vertical-align: middle;
-    width: 50%;
-
-    .fa {
-      color: $eu-jade;
-    }
-
-    .btns-set {
-      margin-bottom: 0;
-
-      .btn {
-        font-size: 1.125rem;
-      }
-
-    }
-  }
-
-  tr:last-child td {
-    padding: 0;
-  }
-
-}
-
-th,
-td {
-  vertical-align: middle;
-}
-
 .progress {
 
   td {
