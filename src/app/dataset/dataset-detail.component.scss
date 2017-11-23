@@ -4,68 +4,76 @@
   color: $black;
   font-size: 1.125rem;
   padding: 1rem;
-
-  strong {
-    font-size: 1.25rem;
-  }
 }
 
 .general-info-table {
+
+  font-size: 0.875rem;
+
   th {
-    color: #37B98B;
+    color: $eu-jade;
     font-weight: bold;
-    font-size: 16px;
   }
+
   th,
   td {
-    width: 50%;
+    padding: 1rem;
     vertical-align: middle;
-    font-size: 16px;
-    padding: 10px;
+    width: 50%;
+
     .fa {
-      color: #37B98B;
+      color: $eu-jade;
     }
+
     .btns-set {
       margin-bottom: 0;
+
       .btn {
-        font-size: 18px;
+        font-size: 1.125rem;
       }
+
     }
   }
-  td:nth-child(2) {
-    font-size: 18px;
-  }
+
   tr:last-child td {
     padding: 0;
   }
+
 }
 
-th, td {
+th,
+td {
   vertical-align: middle;
 }
 
 .progress {
 
   td {
+    font-size: 1rem;
     padding: 5px;
-    white-space: nowrap;
-    font-size: 16px;
     vertical-align: middle;
+    white-space: nowrap;
+
     .name {
       font-weight: bold;
     }
+
     .status {
-      margin-top: 10px;
-      font-size: smaller;
+      font-size: 0.875rem;
+      margin-top: 1rem;
     }
+
     .btns-set {
       margin: 0;
       padding: 0;
+
       .btn {
-        padding: 10px;
-        font-size: 14px;
+        font-size: 0.875rem;
+        padding: 1rem;
       }
+
     }
+
   }
 
   td:nth-child(1) {
@@ -75,57 +83,70 @@ th, td {
 
   td:nth-child(2) {
     width: 40%;
+
     .bar-info {
-      font-size: 14px;
+      font-size: 0.875rem;
       margin-top: -20px;
+
       .float-left {
         float: left;
       }
+
       .float-right {
         float: right;
       }
+
     }
+
     .bar {
-      background-color: #EBEBEB;
-	    border-radius: 5px;
+      background-color: #ebebeb;
+      border-radius: $base-border-radius;
+
       .done {
-        border-radius: 5px;
-        background-color: #1A8AC7;
+        background-color: $eu-blue;
+        border-radius: $base-border-radius;
         height: 10px;
         width: 60%;
       }
     }
+
   }
 
   td:nth-child(3) {
-    padding-left: 10px;
-    font-size: 14px;
+    font-size: 0.875rem;
+    padding-left: 1rem;
   }
 
   td:nth-child(4) {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 }
 
 .btn {
-  font-size: 14px;
+  border: 0;
+  font-size: 0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 .fa.red {
-  color: #E91E63;
+  color: #e91e63;
 }
 
 .fa.orange {
-  color: #FFAB91;
+  color: #ffab91;
 }
 
 .load-more {
   text-align: center;
+
   td {
+    color: #37b98b;
     font-weight: bold;
-    color: #37B98B;
+
     .fa {
-      color: #9FACB3;
+      color: #9facb3;
     }
+
   }
 }
