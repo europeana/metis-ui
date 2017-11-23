@@ -2,7 +2,7 @@
 
 export function StringifyHttpError(err: HttpErrorResponse): string {
   let errmsg;
-  console.log(err);
+  console.log('StringifyHttpError', err);
   if (err.error instanceof Error) {
     // A client-side or network error occurred. Handle it accordingly.
     if (err.status === 404) {
@@ -14,9 +14,10 @@ export function StringifyHttpError(err: HttpErrorResponse): string {
     // The backend returned an unsuccessful response code.
     // The response body may contain clues as to what went wrong,
     try {
-      errmsg = JSON.parse(err.error);
-      errmsg = errmsg['errorMessage'];
+      const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
+      errmsg = h['errorMessage'];
     } catch (e) {
+      console.error('StringifyHttpError: JSON.parse(err.error) failed', err.error);
       errmsg = null;
     }
     errmsg = `${err.status} ${errmsg || err.statusText}`;

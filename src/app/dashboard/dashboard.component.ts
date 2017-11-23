@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService, NotificationsService, DatasetsService } from '../_services';
 import { User, Notification, Dataset } from '../_models';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,6 +32,10 @@ export class DashboardComponent implements OnInit {
 
   gotoDataset(dataset: Dataset) {
     this.router.navigate(['/dataset/detail', '' + dataset.id]);
+  }
+
+  gotoZoho() {
+    window.location.href = environment.links.gotoZoho;
   }
 
 }

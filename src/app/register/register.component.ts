@@ -66,16 +66,17 @@ export class RegisterComponent implements OnInit {
         }
         this.loading = false;
       },
-       (err: HttpErrorResponse) => {
+      (err: HttpErrorResponse) => {
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
-        } else if (err.status === 404) {
+        } else if (err.status === 404 || err.status === 406) {
           let errmsg: string;
           try {
-            errmsg = JSON.parse(err.error);
-            errmsg = errmsg['errorMessage'];
-          } catch(e) {
+            const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
+            errmsg = h['errorMessage'];
+          } catch (e) {
+            console.error('RegisterComponent: JSON.parse(err.error) failed', err.error);
             errmsg = null;
           }
           this.router.navigate(['/register/notfound', { reason: errmsg || 'Unknown' }]);
