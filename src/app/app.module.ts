@@ -28,8 +28,7 @@ import { HeaderComponent,
 import { HomeComponent } from './home';
 import { DatasetComponent,
          DatasetformComponent,
-         DatasetDirective,
-         DatasetDetailComponent } from './dataset';
+         DatasetDirective } from './dataset';
 import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
@@ -59,7 +58,6 @@ import { UsersComponent,
     DashboardComponent,
     DatasetformComponent,
     DatasetDirective,
-    DatasetDetailComponent,
     PasswordCheckComponent,
     UsersComponent,
     UserDetailComponent

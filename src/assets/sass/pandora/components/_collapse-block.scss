@@ -23,8 +23,13 @@
   }
 
   .dataset-collapse-toggle {
+    cursor: pointer;
     float: right;
     font-size: 0.75rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
 
     .info-toggle {
       margin-right: 1rem;

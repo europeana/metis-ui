@@ -2,12 +2,12 @@ import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, DatasetsService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
 
-import { User } from '../_models';
+import { Dataset, User } from '../_models';
 
 @Component({
   selector: 'app-dataset',
@@ -22,6 +22,7 @@ export class DatasetComponent implements OnInit {
     private authentication: AuthenticationService,
     public router: Router,
     private route: ActivatedRoute,
+    private datasets: DatasetsService,
     private componentFactoryResolver: ComponentFactoryResolver) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
@@ -29,6 +30,7 @@ export class DatasetComponent implements OnInit {
   activeTab: string;
   activeSet: string;
   isCollapsed: boolean = false;
+  dataset: Dataset;
   user: User;
   userRole: string;
   editMode = false; // if not edit, then create
@@ -39,9 +41,13 @@ export class DatasetComponent implements OnInit {
     this.userRole = this.user.accountRole;
 
     this.route.params.subscribe(params => {
+
       this.activeTab = params['tab'];
       this.activeSet = params['id'];
+      this.dataset = this.datasets.getDataset(+params['id']);
+
       this.loadTabComponent();
+
     });
 
   }
