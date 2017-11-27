@@ -47,10 +47,11 @@ export class DatasetComponent implements OnInit {
 
       if (this.activeSet) {
         this.dataset = this.datasets.getDataset(+params['id']);
-        this.loadTabComponent();
       } else {
         // create new dataset
       }
+
+      this.loadTabComponent();
 
     });
 
