@@ -1,33 +1,55 @@
 <div class="dashboard-wrapper">
 
+  <div class="collapse-block">
+
+    <div class="dataset-name" *ngIf="dataset">
+      {{dataset.name}}
+    </div>
+    <div class="collapse-toggle-block">
+      <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
+        <span class="info-toggle">
+          <i class="fa fa-expand" aria-hidden="true"></i>Expand info
+        </span>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed">
+      <div class="metis-dashboard-left">left</div>
+      <div class="metis-dashboard-right">right</div>
+    </div>
+
+  </div>
+
   <div class="metis-dashboard">
     <ul class="tabs">
       <li [ngClass]="{'active': activeTab === 'new' }">
-        <a routerLink="/dataset/new">
+        <a routerLink="/dataset/new/{{activeSet}}">
           <span class="tab-title">Dataset Information</span>
           <span class="tab-subtitle">last action</span>
           <span class="tab-subtitle tab-date">23/06/2017</span>
         </a>
       </li>
       <li [ngClass]="{'active': activeTab === 'pandora' }">
-        <a routerLink="/dataset/pandora">
+        <a routerLink="/dataset/pandora/{{activeSet}}">
           <span class="tab-title">Pandora</span>
         </a>
       </li>
       <li [ngClass]="{'active': activeTab === 'log' }">
-        <a routerLink="/dataset/log">
+        <a routerLink="/dataset/log/{{activeSet}}">
           <span class="tab-title">Processing History</span>
           <span class="tab-subtitle">last modified</span>
           <span class="tab-subtitle tab-date">11/03/2017</span>
         </a>
       </li>
       <li [ngClass]="{'active': activeTab === 'preview' }">
-        <a routerLink="/dataset/preview">
+        <a routerLink="/dataset/preview/{{activeSet}}">
           <span class="tab-title">Preview</span>
         </a>
       </li>
        <li [ngClass]="{'active': activeTab === 'dataquality' }">
-        <a routerLink="/dataset/dataquality">
+        <a routerLink="/dataset/dataquality/{{activeSet}}">
           <span class="tab-title">Data Quality Assurance</span>
         </a>
       </li>
