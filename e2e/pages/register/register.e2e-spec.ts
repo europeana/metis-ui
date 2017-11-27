@@ -5,11 +5,15 @@ describe('Register | Page', () => {
 
   beforeEach(() => {
     page = new RegisterPage();
-    //page.clearForm();
+    page.navigateTo();
+    page.clearForm();
   });
 
   it('should display form title', () => {
-    page.navigateTo();
     expect(page.getFormTitle()).toEqual('Register to Metis');
+  });
+
+  it('submit button should be disabled', () => {
+    expect(page.getSubmitButton().isEnabled()).toBe(false);
   });
 });

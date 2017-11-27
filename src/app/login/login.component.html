@@ -9,7 +9,7 @@
     <div class="form-fields">
       <fieldset class="form-group">
         <label for="email">Email:</label>
-        <input id="email" type="email" formControlName="email" />
+        <input id="email" name="email" type="email" formControlName="email" />
         <div class="messages" *ngIf="loginForm.controls['email'].touched && !loginForm.controls['email'].valid">
           <div class="error-message">Please enter a valid email address</div>
         </div>
@@ -17,7 +17,7 @@
 
       <fieldset class="form-group">
         <label for="password">Password:</label>
-        <input id="password" type="password" formControlName="password" />
+        <input id="password" name="password" type="password" formControlName="password" />
         <div class="messages" *ngIf="loginForm.controls['password'].touched && !loginForm.controls['password'].valid">
           <div class="error-message">Please enter a valid password</div>
         </div>
