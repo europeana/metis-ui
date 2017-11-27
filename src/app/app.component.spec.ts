@@ -29,11 +29,4 @@ describe('AppComponent', () => {
     const app = fixture.debugElement.componentInstance;
     expect(app.title).toEqual('Metis-UI');
   }));
-
-  xit(`should render html title 'Metis-UI'`, async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('title').textContent).toContain('Metis-UI');
-  }));
 });
