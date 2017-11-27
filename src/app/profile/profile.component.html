@@ -2,7 +2,7 @@
 
 <ng-template #readonly>
 
-  <div class="metis-profile-form metis-form metis-form-horizontal">
+  <div *ngIf="profileForm" class="metis-profile-form metis-form metis-form-horizontal">
     <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
       <div class="form-header">
         <h2>User Profile</h2>
@@ -70,7 +70,7 @@
 
 <ng-template #editmode>
 
-  <div class="metis-profile-form metis-form metis-form-horizontal password-form">
+  <div *ngIf="profileForm" class="metis-profile-form metis-form metis-form-horizontal password-form">
     <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
       <div class="form-header">
         <h2>Change Password</h2>

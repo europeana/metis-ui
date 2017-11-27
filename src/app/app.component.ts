@@ -11,6 +11,8 @@ import { AuthenticationService } from './_services';
 
 export class AppComponent implements OnInit {
 
+  title = 'Metis-UI';
+
   routerEventSubscription;
   isLessMargin = false;
   bodyClass: string;

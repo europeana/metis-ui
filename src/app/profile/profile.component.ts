@@ -41,25 +41,27 @@ export class ProfileComponent implements OnInit {
   createForm() {
     const user: User = this.authentication.currentUser;
 
-    this.profileForm = this.fb.group({
-      'user-id': [user.userId],
-      'email': [user.email],
-      'first-name': [user.firstName],
-      'last-name': [user.lastName],
-      'organization-name': [user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown'],
-      'country': [user.country || 'Unknown'],
-      'network-member': [user.networkMember ? 'Yes' : 'No'],
-      'metis-user-flag': [user.metisUserFlag],
-      'account-role': [user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown'],
-      'created-date': [new Date(user.createdDate)],
-      'updated-date': [new Date(user.updatedDate)],
-      passwords: this.fb.group({
-        password: ['', Validators.required ],
-        confirm: ['', Validators.required ]
-      }, {
-        validator: MatchPasswordValidator
-      })
-    });
+    if (user) {
+      this.profileForm = this.fb.group({
+        'user-id': [user.userId],
+        'email': [user.email],
+        'first-name': [user.firstName],
+        'last-name': [user.lastName],
+        'organization-name': [user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown'],
+        'country': [user.country || 'Unknown'],
+        'network-member': [user.networkMember ? 'Yes' : 'No'],
+        'metis-user-flag': [user.metisUserFlag],
+        'account-role': [user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown'],
+        'created-date': [new Date(user.createdDate)],
+        'updated-date': [new Date(user.updatedDate)],
+        passwords: this.fb.group({
+          password: ['', Validators.required ],
+          confirm: ['', Validators.required ]
+        }, {
+          validator: MatchPasswordValidator
+        })
+      });
+    }
   }
 
   toggleEditMode() {
