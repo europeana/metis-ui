@@ -20,14 +20,14 @@ export class DatasetComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    public router: Router,
+    private router: Router,
     private route: ActivatedRoute,
     private datasets: DatasetsService,
     private componentFactoryResolver: ComponentFactoryResolver) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
-  activeTab: string;
+  activeTab: string = 'new';
   activeSet: string;
   isCollapsed: boolean = false;
   dataset: Dataset;
@@ -42,11 +42,15 @@ export class DatasetComponent implements OnInit {
 
     this.route.params.subscribe(params => {
 
-      this.activeTab = params['tab'];
-      this.activeSet = params['id'];
-      this.dataset = this.datasets.getDataset(+params['id']);
+      this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
+      this.activeSet = params['id']; // if no id defined, let's create a new dataset
 
-      this.loadTabComponent();
+      if (this.activeSet) {
+        this.dataset = this.datasets.getDataset(+params['id']);
+        this.loadTabComponent();
+      } else {
+        // create new dataset
+      }
 
     });
 
