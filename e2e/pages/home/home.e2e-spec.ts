@@ -1,10 +1,10 @@
-import { AppPage } from './app.po';
+import { HomePage } from './home.po';
 
-describe('metis App', () => {
-  let page: AppPage;
+describe('Home | Page', () => {
+  let page: HomePage;
 
   beforeEach(() => {
-    page = new AppPage();
+    page = new HomePage();
   });
 
   it('should display welcome message', () => {
