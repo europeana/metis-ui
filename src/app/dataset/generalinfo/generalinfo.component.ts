@@ -18,9 +18,7 @@ export class GeneralinfoComponent implements OnInit {
   ngOnInit() {
 
   	this.route.params.subscribe(params => {
-
-      this.dataset = this.datasets.getDataset(+params['id']);
-      
+      this.dataset = this.datasets.getDataset(+params['id']);      
     });
 
   }

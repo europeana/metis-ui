@@ -26,11 +26,12 @@ export class DatasetsService {
           id: ++cnt,
           flag: randomNumber(1, 5) === 3,
           organizationId: randomOrganizationId(),
-          provider: 'Osterijke Nationalbibliothek - Austrian National Library',
           name: randomDatasetName(),
           workflow: randomWorkflow(),
           totalProcessed: randomNumber(0, totalDataset),
           totalDataset: totalDataset,
+          publishedRecords: randomNumber(100, 999999),
+          lastPublicationDate: startDate,
           startDate: startDate,
           endDate: endDate
         }
