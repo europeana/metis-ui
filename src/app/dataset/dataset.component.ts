@@ -2,12 +2,12 @@ import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, DatasetsService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
 
-import { User } from '../_models';
+import { Dataset, User } from '../_models';
 
 @Component({
   selector: 'app-dataset',
@@ -20,13 +20,17 @@ export class DatasetComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    public router: Router,
+    private router: Router,
     private route: ActivatedRoute,
+    private datasets: DatasetsService,
     private componentFactoryResolver: ComponentFactoryResolver) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
-  activeTab: string;
+  activeTab: string = 'new';
+  activeSet: string;
+  isCollapsed: boolean = false;
+  dataset: Dataset;
   user: User;
   userRole: string;
   editMode = false; // if not edit, then create
@@ -37,8 +41,17 @@ export class DatasetComponent implements OnInit {
     this.userRole = this.user.accountRole;
 
     this.route.params.subscribe(params => {
-      this.activeTab = params['tab'];
-      this.loadTabComponent();
+
+      this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
+      this.activeSet = params['id']; // if no id defined, let's create a new dataset
+
+      if (this.activeSet) {
+        this.dataset = this.datasets.getDataset(+params['id']);
+        this.loadTabComponent();
+      } else {
+        // create new dataset
+      }
+
     });
 
   }

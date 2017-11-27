@@ -11,16 +11,94 @@
           <a routerLink="/dataset/new" class="btn btn-left">
             <i class="fa fa-plus fa-fw"></i>New Dataset
           </a>
-          <a class="btn btn-right">
+          <a class="btn btn-right" (click)="gotoZoho()">
             <i class="fa fa-plus fa-fw"></i>New Organization
             <span class="right-btn-under-text">Go to ZOHO</span>
           </a>
         </span>
       </div>
+      <ul class="tabs">
+        <li [ngClass]="{'active': true }">
+          <a routerLink="/dashboard">
+            <span class="tab-title">All Notifications</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/dashboard">
+            <span class="tab-title">User Requests</span>
+            <span class="tab-pending"><i class="fa fa-circle"></i> 5 pending</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/dashboard">
+            <span class="tab-title">Data Notifications</span>
+          </a>
+        </li>
+      </ul>
+      <table class="table-horizontal-layout notifications-table">
+        <thead>
+        <tr>
+          <th>Action</th>
+          <th>Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let notification of notifications">
+          <td>{{notification.action}}</td>
+          <td>{{notification.date | date:'MM/dd/yyyy - HH:mm'  }}</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
+
     <div class="metis-dashboard-right">
-      ...
+      <h3>All Executions</h3>
+      <div class="btns-set">
+        <span class="btn-padding">
+          <a class="btn btn-left">
+            By Workflow
+            <i class="fa fa-caret-down fa-fw"></i>
+          </a>
+          <a class="btn btn-right">
+            Finished
+            <i class="fa fa-caret-down fa-fw"></i>
+          </a>
+          <a class="btn btn-right">
+            By Operator
+            <i class="fa fa-caret-down fa-fw"></i>
+          </a>
+          <a class="btn btn-right">
+            My History
+          </a>
+        </span>
+      </div>
+      <table class="table-horizontal-layout executions-table">
+        <thead>
+          <tr>
+            <th colspan="4"></th>
+            <th>Workflow</th>
+            <th>Total processed</th>
+            <th>Total dataset</th>
+            <th>Start date</th>
+            <th>End date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dataset of datasets" (click)="gotoDataset(dataset)">
+            <td>
+              <span *ngIf="dataset.flag"><i class="fa fa-circle"></i></span>
+            </td>
+            <td>{{dataset.organizationId}}</td>
+            <td>{{dataset.name}}</td>
+            <td><i class="fa fa-{{dataset.workflow.icon}}"></i></td>
+            <td>{{dataset.workflow.name}}</td>
+            <td>{{dataset.totalProcessed}}</td>
+            <td>{{dataset.totalDataset}}</td>
+            <td>{{dataset.startDate | date:'MM/dd/yyyy - HH:mm'}}</td>
+            <td>{{dataset.endDate | date:'MM/dd/yyyy - HH:mm'}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-
 </div>

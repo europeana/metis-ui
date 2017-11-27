@@ -8,22 +8,30 @@
   }
 }
 
-.metis-collapse-block {
-  margin: 6rem auto 0;
-  max-width: 90rem;
-  padding-top: 1rem;
+.collapse-block {
+  margin: 1rem auto 0;
 
-  .metis-dataset-name,
-  .metis-dataset-collapse-toggle {
+  .dataset-name,
+  .dataset-collapse-toggle {
     display: block;
     float: left;
   }
 
-  .metis-dataset-collapse-toggle {
+  .dataset-name {
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+  }
+
+  .dataset-collapse-toggle {
+    cursor: pointer;
     float: right;
     font-size: 0.75rem;
 
-    .metis-info-toggle {
+    &:hover {
+      text-decoration: underline;
+    }
+
+    .info-toggle {
       margin-right: 1rem;
 
       i.fa.fa-expand {
@@ -33,9 +41,15 @@
   }
 
   hr {
-    background: $gray80;
+    background: $gray-lighter;
+    border: 0;
+    clear: both;
     height: 1px;
-    margin-bottom: 1rem;
+    margin: $space 0;
+  }
+
+  .dataset-collapse-blocks {
+    clear: both;
   }
 
 }

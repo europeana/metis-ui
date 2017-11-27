@@ -13,7 +13,9 @@ import { AuthUserGuard,
          AuthVisitorGuard } from './_guards';
 import { AuthenticationService,
          TokenInterceptor,
-         RedirectPreviousUrl } from './_services';
+         RedirectPreviousUrl,
+         DatasetsService,
+         NotificationsService } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent,
@@ -79,7 +81,9 @@ import { UsersComponent,
       useClass: TokenInterceptor,
       multi: true
     },
-    RedirectPreviousUrl
+    RedirectPreviousUrl,
+    DatasetsService,
+    NotificationsService
 
     // providers used to create fake backend
     // fakeBackendProvider,
