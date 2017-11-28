@@ -30,6 +30,8 @@ export class DatasetsService {
           workflow: randomWorkflow(),
           totalProcessed: randomNumber(0, totalDataset),
           totalDataset: totalDataset,
+          publishedRecords: randomNumber(100, 999999),
+          lastPublicationDate: startDate,
           startDate: startDate,
           endDate: endDate
         }

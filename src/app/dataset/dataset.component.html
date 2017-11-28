@@ -1,8 +1,8 @@
 <div class="dashboard-wrapper">
 
-  <div class="collapse-block">
+  <div class="collapse-block" *ngIf="dataset">
 
-    <div class="dataset-name" *ngIf="dataset">
+    <div class="dataset-name">
       {{dataset.name}}
     </div>
     <div class="collapse-toggle-block">
@@ -16,8 +16,12 @@
     <hr/>
 
     <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed">
-      <div class="metis-dashboard-left">left</div>
-      <div class="metis-dashboard-right">right</div>
+      <div class="metis-dashboard-left">
+        
+        <app-generalinfo></app-generalinfo>
+
+      </div>
+      <div class="metis-dashboard-right"></div>
     </div>
 
   </div>
