@@ -30,7 +30,6 @@ import { DatasetComponent,
          DatasetformComponent,
          DatasetDirective,
          GeneralinfoComponent } from './dataset';
-import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
@@ -55,7 +54,6 @@ import { UsersComponent,
     FooterComponent,
     HomeComponent,
     DatasetComponent,
-    RequestsComponent,
     DashboardComponent,
     DatasetformComponent,
     DatasetDirective,
