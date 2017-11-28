@@ -1,5 +1,7 @@
 import { LoginPage } from '../pages/login/login.po';
 
+import { environment } from '../../src/environments/environment';
+
 describe('User | Login | OK', () => {
   let page: LoginPage;
 
@@ -13,8 +15,8 @@ describe('User | Login | OK', () => {
   });
 
   it('can login with valid credentials', () => {
-    page.fillEmail('valentine.metis@europeana.eu');
-    page.fillPassword('123');
+    page.fillEmail(environment.test.username);
+    page.fillPassword(environment.test.password);
     page.getSubmitButton().click().then(() => {
       expect(page.getCurrentUrl()).toContain('/profile');
     });
