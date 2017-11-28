@@ -10,4 +10,5 @@ export class AuthVisitorGuard implements CanActivate {
     canActivate() {
       return !this.authentication.validatedUser();
     }
+    
 }
