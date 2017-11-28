@@ -3,7 +3,7 @@ import { LoginPage } from '../pages/login/login.po';
 describe('User | Login', () => {
   let page: LoginPage;
 
-  beforeAll(() => {
+  beforeEach(() => {
     page = new LoginPage();
     page.navigateTo();
   });
@@ -19,14 +19,26 @@ describe('User | Login', () => {
 
     it('when email filled but password empty', () => {
       page.fillEmail('mirjam.metis@europeana.eu');
-      page.fillPassword('');
       expect(page.getSubmitButton().isEnabled()).toBe(false);
     });
 
     it('when password filled but email empty', () => {
-      page.fillEmail('');
       page.fillPassword('secret');
       expect(page.getSubmitButton().isEnabled()).toBe(false);
+    });
+
+    it('when password filled but email is invalid', () => {
+      page.fillEmail('mirjam.metis');
+      page.fillPassword('secret');
+      expect(page.getSubmitButton().isEnabled()).toBe(false);
+    });
+  });
+
+  describe('submit button should be enabled', () => {
+    it('when valid email and password filled', () => {
+      page.fillEmail('mirjam.metis@europeana.eu');
+      page.fillPassword('secret');
+      expect(page.getSubmitButton().isEnabled()).toBe(true);
     });
   });
 });
