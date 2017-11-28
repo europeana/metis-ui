@@ -1,9 +1,12 @@
 import { LoginPage } from './login.po';
 
 describe('Login | Page', () => {
-  const page = new LoginPage();
+  let page: LoginPage;
 
-  page.navigateTo();
+  beforeAll(() => {
+    page = new LoginPage();
+    page.navigateTo();
+  });
 
   it('should display form title', () => {
     expect(page.getFormTitle()).toEqual('Sign in to Metis');

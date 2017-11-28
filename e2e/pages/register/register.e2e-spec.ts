@@ -1,9 +1,12 @@
 import { RegisterPage } from './register.po';
 
 describe('Register | Page', () => {
-  const page = new RegisterPage();
+  let page: RegisterPage;
 
-  page.navigateTo();
+  beforeAll(() => {
+    page = new RegisterPage();
+    page.navigateTo();
+  });
 
   it('should display form title', () => {
     expect(page.getFormTitle()).toEqual('Register to Metis');

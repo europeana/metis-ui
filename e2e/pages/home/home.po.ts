@@ -6,15 +6,15 @@ export class HomePage {
   }
 
   getBannerHeading() {
-    return element(by.css('section.banner .lc h2')).getText();
+    return element(by.css('h2')).getText();
   }
 
   getBannerText() {
-    return element(by.css('section.banner .banner-info p')).getText();
+    return element(by.css('.banner-info')).getText();
   }
 
   getBannerLinkText() {
-    return element(by.css('section.banner .banner-link a.btn')).getText();
+    return element(by.css('.banner-link')).getText();
   }
 }
 

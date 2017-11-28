@@ -1,12 +1,15 @@
 import { HomePage } from './home.po';
 
 describe('Home | Page', () => {
-  const page = new HomePage();
+  let page: HomePage;
 
-  page.navigateTo();
+  beforeAll(() => {
+    page = new HomePage();
+    page.navigateTo();
+  });
 
   it('should display banner heading', () => {
-    expect(page.getBannerHeading()).toEqual('Register to Metis');
+    expect(page.getBannerHeading()).toEqual('What can you do with Metis?');
   });
 
   it('should display banner text', () => {
@@ -17,4 +20,3 @@ describe('Home | Page', () => {
     expect(page.getBannerLinkText()).toEqual('REGISTER TO METIS HERE');
   });
 });
-
