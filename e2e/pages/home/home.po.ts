@@ -17,15 +17,3 @@ export class HomePage {
     return element(by.css('.banner-link')).getText();
   }
 }
-
-// <section class="banner">
-//   <div class="lc">
-//     <h2 *ngIf="bannerheading">{{bannerheading}}</h2>
-//     <div class="banner-info">
-//       <p *ngIf="bannertext">{{bannertext}}</p>
-//     </div>
-//     <div class="banner-link" *ngIf="bannerlinktext">
-//       <a routerLink="/register" class="btn btn-light pill">{{bannerlinktext}}</a>
-//     </div>
-//   </div>
-// </section>

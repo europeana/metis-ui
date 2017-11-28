@@ -21,6 +21,10 @@ export class LoginPage {
     return element(by.css('form .login-btn'));
   }
 
+  getCurrentUrl() {
+    return browser.getCurrentUrl();
+  }
+
   clearForm() {
     this.fillEmail('');
     this.fillPassword('');
@@ -32,6 +36,10 @@ export class LoginPage {
 
   fillPassword(value) {
     this.fillField('password', value);
+  }
+
+  logOut() {
+    return browser.get('/logout');
   }
 
   private getFieldValue(name) {

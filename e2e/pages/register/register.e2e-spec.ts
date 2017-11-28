@@ -1,6 +1,6 @@
 import { RegisterPage } from './register.po';
 
-describe('Register | Page', () => {
+describe('Page | Register', () => {
   let page: RegisterPage;
 
   beforeAll(() => {

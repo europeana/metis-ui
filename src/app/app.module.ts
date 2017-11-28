@@ -20,7 +20,8 @@ import { AuthenticationService,
 import { AppComponent } from './app.component';
 import { RegisterComponent,
          RegisterNotfoundComponent } from './register';
-import { LoginComponent } from './login';
+import { LoginComponent,
+         LogoutComponent } from './login';
 import { ProfileComponent } from './profile';
 import { HeaderComponent,
          FooterComponent,
@@ -48,6 +49,7 @@ import { UsersComponent,
     RegisterComponent,
     RegisterNotfoundComponent,
     LoginComponent,
+    LogoutComponent,
     ProfileComponent,
     PageNotFoundComponent,
     HeaderComponent,

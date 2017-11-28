@@ -1,15 +1,15 @@
-import { RegisterPage } from '../pages/register/register.po';
+import { LoginPage } from '../pages/login/login.po';
 
-describe('User | Register', () => {
-  let page: RegisterPage;
+describe('User | Login | General', () => {
+  let page: LoginPage;
 
   beforeEach(() => {
-    page = new RegisterPage();
+    page = new LoginPage();
     page.navigateTo();
   });
 
   it('should display form title', () => {
-    expect(page.getFormTitle()).toEqual('Register to Metis');
+    expect(page.getFormTitle()).toEqual('Sign in to Metis');
   });
 
   describe('submit button should be disabled', () => {
@@ -32,20 +32,12 @@ describe('User | Register', () => {
       page.fillPassword('secret');
       expect(page.getSubmitButton().isEnabled()).toBe(false);
     });
-
-    it('when email valid but passwords do not match', () => {
-      page.fillEmail('mirjam.metis@europeana.eu');
-      page.fillPassword('secret');
-      page.fillConfirm('secretx');
-      expect(page.getSubmitButton().isEnabled()).toBe(false);
-    });
   });
 
   describe('submit button should be enabled', () => {
-    it('when valid email and passwords match', () => {
+    it('when valid email and password filled', () => {
       page.fillEmail('mirjam.metis@europeana.eu');
       page.fillPassword('secret');
-      page.fillConfirm('secret');
       expect(page.getSubmitButton().isEnabled()).toBe(true);
     });
   });

@@ -1,6 +1,6 @@
 import { LoginPage } from './login.po';
 
-describe('Login | Page', () => {
+describe('Page | Login', () => {
   let page: LoginPage;
 
   beforeAll(() => {

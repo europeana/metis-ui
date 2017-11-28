@@ -1,6 +1,6 @@
 import { HomePage } from './home.po';
 
-describe('Home | Page', () => {
+describe('Page | Home', () => {
   let page: HomePage;
 
   beforeAll(() => {
