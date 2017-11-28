@@ -17,7 +17,6 @@ describe('User | Login | OK', () => {
     page.fillPassword('123');
     page.getSubmitButton().click().then(() => {
       expect(page.getCurrentUrl()).toContain('/profile');
-      page.logOut();
     });
   });
 });

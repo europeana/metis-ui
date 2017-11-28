@@ -9,8 +9,10 @@ describe('User | Login | NOK', () => {
   });
 
   it('cannot login with invalid credentials', () => {
-    page.fillEmail('mirjam.metis@europeana.eu');
+    page.fillEmail('joe.metix@europeana.eu');
     page.fillPassword('secret');
-    expect(page.getSubmitButton().isEnabled()).toBe(true);
+    page.getSubmitButton().click().then(() => {
+      expect(page.getErrorMessage()).toContain('Email or password is incorrect');
+    });
   });
 });

@@ -25,6 +25,10 @@ export class LoginPage {
     return browser.getCurrentUrl();
   }
 
+  getErrorMessage() {
+    return element(by.css('.error-message')).getText();
+  }
+
   clearForm() {
     this.fillEmail('');
     this.fillPassword('');
