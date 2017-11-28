@@ -35,7 +35,6 @@ export class UsersComponent implements OnInit {
   }
 
   gotoUser(user: User) {
-    console.log(user);
     this.router.navigate(['/users', user.userId]);
   }
 }
