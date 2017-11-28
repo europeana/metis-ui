@@ -13,6 +13,18 @@ export class RegisterPage {
     return element(by.css('form .submit-btn'));
   }
 
+  getEmailValue() {
+    this.getFieldValue('email');
+  }
+
+  getConfirmValue() {
+    this.getFieldValue('confirm');
+  }
+
+  getPasswordValue() {
+    this.getFieldValue('password');
+  }
+
   clearForm() {
     this.fillEmail('');
     this.fillPassword('');
@@ -29,6 +41,10 @@ export class RegisterPage {
 
   fillConfirm(value) {
     this.fillField('confirm', value);
+  }
+
+  private getFieldValue(name) {
+    return element(by.id(name)).getText();
   }
 
   private fillField(name, value) {

@@ -1,16 +1,24 @@
 import { LoginPage } from './login.po';
 
 describe('Login | Page', () => {
-  let page: LoginPage;
+  const page = new LoginPage();
 
-  beforeEach(() => {
-    page = new LoginPage();
-    page.navigateTo();
-    page.clearForm();
-  });
+  page.navigateTo();
 
   it('should display form title', () => {
     expect(page.getFormTitle()).toEqual('Sign in to Metis');
+  });
+
+  it('should be an empty email field present', () => {
+    expect(page.getEmailValue()).toEqual(undefined);
+  });
+
+  it('should be an empty password field present', () => {
+    expect(page.getPasswordValue()).toEqual(undefined);
+  });
+
+  it('should be a submit button present', () => {
+    expect(page.getSubmitButton().isPresent()).toBe(true);
   });
 
   it('submit button should be disabled', () => {

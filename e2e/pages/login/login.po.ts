@@ -9,6 +9,14 @@ export class LoginPage {
     return element(by.css('form h2')).getText();
   }
 
+  getEmailValue() {
+    this.getFieldValue('email');
+  }
+
+  getPasswordValue() {
+    this.getFieldValue('password');
+  }
+
   getSubmitButton() {
     return element(by.css('form .login-btn'));
   }
@@ -24,6 +32,10 @@ export class LoginPage {
 
   fillPassword(value) {
     this.fillField('password', value);
+  }
+
+  private getFieldValue(name) {
+    return element(by.id(name)).getText();
   }
 
   private fillField(name, value) {
