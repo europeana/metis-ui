@@ -28,7 +28,8 @@ import { HeaderComponent,
 import { HomeComponent } from './home';
 import { DatasetComponent,
          DatasetformComponent,
-         DatasetDirective } from './dataset';
+         DatasetDirective,
+         GeneralinfoComponent } from './dataset';
 import { RequestsComponent } from './requests';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
@@ -36,7 +37,6 @@ import { PageNotFoundComponent } from './page-not-found';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
-import { GeneralinfoComponent } from './dataset/generalinfo/generalinfo.component';
 
 // used to create fake backend
 // import { fakeBackendProvider } from './_helpers';

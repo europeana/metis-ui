@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GeneralinfoComponent } from './generalinfo.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DatasetsService } from '../../_services';
 
 describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
@@ -8,7 +10,9 @@ describe('GeneralinfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GeneralinfoComponent ]
+      imports: [ RouterTestingModule],
+      declarations: [ GeneralinfoComponent ],
+      providers: [ DatasetsService ]
     })
     .compileComponents();
   }));
