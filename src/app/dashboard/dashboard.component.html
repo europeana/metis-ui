@@ -6,17 +6,11 @@
 
   <div class="metis-dashboard">
     <div class="metis-dashboard-left">
-      <div class="btns-set">
-        <span class="btn-padding">
-          <a routerLink="/dataset/new" class="btn btn-left">
-            <i class="fa fa-plus fa-fw"></i>New Dataset
-          </a>
-          <a class="btn btn-right" (click)="gotoZoho()">
-            <i class="fa fa-plus fa-fw"></i>New Organization
-            <span class="right-btn-under-text">Go to ZOHO</span>
-          </a>
-        </span>
-      </div>
+
+      <app-dashboardactions></app-dashboardactions>
+      
+      <!--
+
       <ul class="tabs">
         <li [ngClass]="{'active': true }">
           <a routerLink="/dashboard">
@@ -48,11 +42,13 @@
           <td>{{notification.date | date:'MM/dd/yyyy - HH:mm'  }}</td>
         </tr>
         </tbody>
-      </table>
+      </table>-->
+
     </div>
 
     <div class="metis-dashboard-right">
-      <h3>All Executions</h3>
+     
+      <!--<h3>All Executions</h3>
       <div class="btns-set">
         <span class="btn-padding">
           <a class="btn btn-left">
@@ -98,7 +94,8 @@
             <td>{{dataset.endDate | date:'MM/dd/yyyy - HH:mm'}}</td>
           </tr>
         </tbody>
-      </table>
+      </table>-->
+
     </div>
   </div>
 </div>

@@ -34,8 +34,4 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/dataset/detail', '' + dataset.id]);
   }
 
-  gotoZoho() {
-    window.location.href = environment.links.gotoZoho;
-  }
-
 }
