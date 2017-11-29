@@ -1,4 +1,11 @@
-import { browser, by, element } from 'protractor';
+import { browser, by, element, ExpectedConditions } from 'protractor';
+import { environment } from '../../../src/environments/environment';
+
+export enum UserRole {
+  METIS_ADMIN = 1,
+  EUROPEANA_DATA_OFFICER,
+  PROVIDER_VIEWER
+}
 
 export class LoginPage {
   navigateTo() {
@@ -40,6 +47,15 @@ export class LoginPage {
 
   fillPassword(value) {
     this.fillField('password', value);
+  }
+
+  loginAs(role: UserRole) {
+    this.logOut();
+    this.navigateTo();
+    this.fillEmail(environment.test.username);
+    this.fillPassword(environment.test.password);
+    this.getSubmitButton().click();
+    browser.wait(ExpectedConditions.urlContains(environment.afterLoginGoto), 5000);
   }
 
   logOut() {

@@ -18,7 +18,7 @@ describe('User | Login | OK', () => {
     page.fillEmail(environment.test.username);
     page.fillPassword(environment.test.password);
     page.getSubmitButton().click().then(() => {
-      expect(page.getCurrentUrl()).toContain('/profile');
+      expect(page.getCurrentUrl()).toContain(environment.afterLoginGoto);
     });
   });
 });

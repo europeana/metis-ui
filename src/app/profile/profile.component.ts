@@ -113,6 +113,6 @@ export class ProfileComponent implements OnInit {
   }
 
   private onUpdatePassword() {
-    this.flashMessage.show('Update password successful!', { cssClass: 'alert-success', timeout: 5000 });
+    this.flashMessage.show('Update password successful!', { cssClass: 'alert-success', timeout: 50000 });
   }
 }

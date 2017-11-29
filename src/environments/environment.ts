@@ -13,6 +13,7 @@ export const environment = {
   apiUsers: 'authentication/users',
   apiProfile: 'authentication/profile',
   apiUpdatePassword: 'authentication/update/password',
+  afterLoginGoto: '/profile',
   emails: {
     profile: 'content@europeana.eu'
   },

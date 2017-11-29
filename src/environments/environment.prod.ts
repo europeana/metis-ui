@@ -7,6 +7,7 @@ export const environment = {
   apiRegister: 'authentication/register',
   apiUsers: 'authentication/users',
   apiUpdatePassword: 'authentication/update/password',
+  afterLoginGoto: '/profile',
   emails: {
     profile: 'content@europeana.eu'
   },
