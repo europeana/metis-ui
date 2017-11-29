@@ -23,9 +23,9 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     const url = `${environment.apiHost}/${environment.apiUsers}`;
-    this.http.get(url, JSON.stringify('{}')).subscribe(data => {
+
+    this.http.get(url).subscribe(data => {
       // Read the result field from the JSON response.
-      console.log(`GET ${url} => OK`);
       this.users = <User[]>data;
     },
       err => {

@@ -20,7 +20,7 @@ export class UserDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
     const url = `${environment.apiHost}/${environment.apiUsers}`;
-    this.http.get(url, JSON.stringify('{}')).subscribe(data => {
+    this.http.get(url).subscribe(data => {
       const users = <User[]>data;
       this.user = users.filter(user => user.userId === id)[0];
     });
