@@ -6,6 +6,8 @@ import { AuthenticationService, NotificationsService, DatasetsService } from '..
 import { RouterTestingModule } from '@angular/router/testing';
 import {HttpClientModule} from '@angular/common/http';
 
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
@@ -14,7 +16,8 @@ describe('DashboardComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule ],
       declarations: [ DashboardComponent ], 
-      providers: [ AuthenticationService, NotificationsService, DatasetsService ]
+      providers: [ AuthenticationService, NotificationsService, DatasetsService ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();
   }));

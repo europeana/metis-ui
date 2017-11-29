@@ -36,7 +36,7 @@
             <div class="metis-user">
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
-                <li><a routerLink="/profile">My Profile</a></li>
+                <li><a (click)="gotoProfile()">My Profile</a></li>
                 <li><a (click)="logOut()">Log out</a></li>
               </ul>
             </div>
