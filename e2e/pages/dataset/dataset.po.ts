@@ -1,7 +1,11 @@
 import { browser, by, element } from 'protractor';
 
 export class DatasetPage {
-  getWelcomeMessage() {
-    return element(by.css('.metis-welcome-message p')).getText();
+  getDatasetName() {
+    return element(by.css('.dataset-name')).getText();
+  }
+
+  getCurrentUrl() {
+    return browser.getCurrentUrl();
   }
 }

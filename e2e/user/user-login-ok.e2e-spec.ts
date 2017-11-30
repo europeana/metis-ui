@@ -14,7 +14,7 @@ describe('User | Login | OK', () => {
     page.logOut();
   });
 
-  it('can login with valid credentials', () => {
+  it('should be able to login with valid credentials', () => {
     page.fillEmail(environment.test.username);
     page.fillPassword(environment.test.password);
     page.getSubmitButton().click().then(() => {

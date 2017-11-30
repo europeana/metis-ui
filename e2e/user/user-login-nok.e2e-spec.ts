@@ -8,7 +8,7 @@ describe('User | Login | NOK', () => {
     page.navigateTo();
   });
 
-  it('cannot login with invalid credentials', () => {
+  it('should not be able to login with invalid credentials', () => {
     page.fillEmail('joe.metix@europeana.eu');
     page.fillPassword('secret');
     page.getSubmitButton().click().then(() => {

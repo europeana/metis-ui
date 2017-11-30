@@ -13,7 +13,7 @@ describe('User | Register | Default', () => {
   });
 
   describe('submit button should be disabled', () => {
-    it('on page load', () => {
+    it('when page loaded', () => {
       expect(page.getSubmitButton().isEnabled()).toBe(false);
     });
 
@@ -42,7 +42,8 @@ describe('User | Register | Default', () => {
   });
 
   describe('submit button should be enabled', () => {
-    it('when valid email and passwords match', () => {
+    it('when valid email and :wa' +
+      'passwords match', () => {
       page.fillEmail('mirjam.metis@europeana.eu');
       page.fillPassword('secret');
       page.fillConfirm('secret');

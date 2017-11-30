@@ -22,7 +22,17 @@ describe('Page | Dataset', () => {
     loginPage.logOut();
   });
 
-  it('should display welcome message', () => {
-    expect(dashboardPage.getWelcomeMessage()).toContain('Welcome');
+  it('should display executions table', () => {
+    expect(dashboardPage.getExecutionsTableRows().count()).toBeGreaterThan(0);
+  });
+
+  it('should display dataset page', () => {
+    dashboardPage.getExecutionsTableRows().count().then(rows => {
+      const n = Math.floor(Math.random() * rows) + 1;
+      dashboardPage.getExecutionsTableRow(n).click().then(() => {
+        expect(page.getCurrentUrl()).toContain( `/dataset/detail/${n}` );
+        expect(page.getDatasetName()).toBeDefined();
+      });
+    });
   });
 });

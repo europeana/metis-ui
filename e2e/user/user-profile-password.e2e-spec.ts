@@ -32,7 +32,7 @@ describe('User | Profile | Password', () => {
   });
 
   describe('submit button should be disabled', () => {
-    it('on page load', () => {
+    it('when page loaded', () => {
       expect(page.getSubmitButton().isEnabled()).toBe(false);
     });
 
@@ -57,7 +57,7 @@ describe('User | Profile | Password', () => {
   });
 
   describe('submit new password', () => {
-    it('password changed successfully', () => {
+    it('when password changed successfully', () => {
       page.clearFields();
       page.fillPassword(environment.test.password);
       page.fillConfirm(environment.test.password);
