@@ -1,6 +1,6 @@
 import { RegisterPage } from '../pages/register/register.po';
 
-describe('User | Register | General', () => {
+describe('User | Register | Default', () => {
   let page: RegisterPage;
 
   beforeEach(() => {

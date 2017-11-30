@@ -33,6 +33,10 @@ export class NavbarPage {
     return element(by.linkText('Log out'));
   }
 
+  getElementIconNotifications() {
+    return element(by.css('.svg-icon-notifications'));
+  }
+
   getElementIconUser() {
     return element(by.css('.svg-icon-loggedin-user'));
   }

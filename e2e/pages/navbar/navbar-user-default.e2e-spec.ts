@@ -23,11 +23,15 @@ describe('Page | Navbar | User | Default', () => {
     expect(page.getCompanyLogo()).toBeDefined();
   });
 
-  it('should display user icon link', () => {
-    expect(page.getElementIconUser()).toBeDefined();
-  });
-
   it('should display search', () => {
     expect(page.getElementSearch()).toBeDefined();
+  });
+
+  it('should display notifications icon link', () => {
+    expect(page.getElementIconNotifications()).toBeDefined();
+  });
+
+  it('should display user icon link', () => {
+    expect(page.getElementIconUser()).toBeDefined();
   });
 });

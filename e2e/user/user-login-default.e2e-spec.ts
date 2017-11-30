@@ -1,6 +1,6 @@
 import { LoginPage } from '../pages/login/login.po';
 
-describe('User | Login | General', () => {
+describe('User | Login | Default', () => {
   let page: LoginPage;
 
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { DashboardPage } from './dashboard.po';
 import { LoginPage, UserRole } from '../login/login.po';
 
-describe('Page | Profile', () => {
+describe('Page | Dashboard', () => {
   let page: DashboardPage;
   let loginPage: LoginPage;
 

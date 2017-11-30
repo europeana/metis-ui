@@ -3,7 +3,7 @@ import { LoginPage, UserRole } from '../pages/login/login.po';
 
 import { environment } from '../../src/environments/environment';
 
-describe('User | Profile', () => {
+describe('User | Profile | Password', () => {
   let page: ProfilePage;
   let loginPage: LoginPage;
 
