@@ -9,7 +9,13 @@ exports.config = {
     './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+
+    // https://sites.google.com/a/chromium.org/chromedriver/capabilities
+    chromeOptions: {
+     args: [ "--headless", "--disable-gpu", "--window-size=1920,1080" ]
+   }
+
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
@@ -25,7 +31,7 @@ exports.config = {
     });
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
     // IMPORTANT: Need to maximize browser window to ensure that all page elements are visible,
-    // otherwise certain tests may fail unexpectantly.
+    // otherwise certain tests may fail unexpectantly. Does not work in headless chrome.
     browser.manage().window().maximize();
   }
 };
