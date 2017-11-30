@@ -6,8 +6,7 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
-    // './e2e/**/*.e2e-spec.ts'
-    './e2e/pages/navbar/*.e2e-spec.ts'
+    './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
     'browserName': 'chrome'
@@ -25,5 +24,8 @@ exports.config = {
       project: 'e2e/tsconfig.e2e.json'
     });
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+    // IMPORTANT: Need to maximize browser window to ensure that all page elements are visible,
+    // otherwise certain tests may fail unexpectantly.
+    browser.manage().window().maximize();
   }
 };

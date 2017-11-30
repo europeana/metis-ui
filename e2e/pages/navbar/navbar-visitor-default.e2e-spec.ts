@@ -1,6 +1,6 @@
 import { NavbarPage } from './navbar.po';
 
-describe('Page | Navbar | Default', () => {
+describe('Page | Navbar | Visitor | Default', () => {
   let page: NavbarPage;
 
   beforeAll(() => {
@@ -14,5 +14,11 @@ describe('Page | Navbar | Default', () => {
 
   it('should display sign in link', () => {
     expect(page.getElementSignIn().getText()).toEqual('SIGN IN');
+  });
+
+  it('should display sub-menu when sign in link is clicked', () => {
+    page.getElementSignIn().click();
+    expect(page.getElementSubmenuLogin()).toBeDefined();
+    expect(page.getElementSubmenuRegister()).toBeDefined();
   });
 });

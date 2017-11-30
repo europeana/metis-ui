@@ -1,7 +1,7 @@
 import { NavbarPage } from './navbar.po';
 import { LoginPage, UserRole } from '../login/login.po';
 
-describe('Page | Profile | Login', () => {
+describe('Page | Navbar | User | Default', () => {
   let page: NavbarPage;
   let loginPage: LoginPage;
 
@@ -25,5 +25,9 @@ describe('Page | Profile | Login', () => {
 
   it('should display user icon link', () => {
     expect(page.getElementIconUser()).toBeDefined();
+  });
+
+  it('should display search', () => {
+    expect(page.getElementSearch()).toBeDefined();
   });
 });
