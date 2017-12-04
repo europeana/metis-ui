@@ -1,0 +1,26 @@
+<div class="metis-dataset-info-block" *ngIf="dataset">
+  <h5>
+    General info
+  </h5>
+  <dl class="dataset-info-fields">
+    <dt>Provider</dt>
+    <dd>{{dataset.organizationId}}</dd>
+    <dt>Nr Published Records</dt>
+    <dd>{{dataset.publishedRecords}}</dd>
+    <dt>Last Publication</dt>
+    <dd>{{dataset.lastPublicationDate}}</dd>     
+  </dl>
+  <div class="dataset-btns">
+    <div class="btns-set">
+      <span class="btn-padding">
+        <a class="btn btn-left">
+          <i class="fa fa-plus fa-fw"></i>View in Acceptance
+        </a>
+        <a class="btn btn-right">
+          <i class="fa fa-plus fa-fw"></i>View in Collections
+          <span class="right-btn-under-text"></span>
+        </a>
+      </span>
+    </div>
+  </div>
+</div>
