@@ -29,8 +29,8 @@ import { HeaderComponent,
 import { HomeComponent } from './home';
 import { DatasetComponent,
          DatasetformComponent,
-         DatasetDirective } from './dataset';
-import { RequestsComponent } from './requests';
+         DatasetDirective,
+         GeneralinfoComponent } from './dataset';
 import { DashboardComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
@@ -56,13 +56,13 @@ import { UsersComponent,
     FooterComponent,
     HomeComponent,
     DatasetComponent,
-    RequestsComponent,
     DashboardComponent,
     DatasetformComponent,
     DatasetDirective,
     PasswordCheckComponent,
     UsersComponent,
-    UserDetailComponent
+    UserDetailComponent,
+    GeneralinfoComponent
   ],
   imports: [
     BrowserModule,
