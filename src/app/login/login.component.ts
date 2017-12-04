@@ -5,6 +5,7 @@ import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { StringifyHttpError } from '../_helpers';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -54,7 +55,7 @@ export class LoginComponent implements OnInit {
         if (url) {
           this.router.navigateByUrl(`/${url}`);
         } else {
-          this.router.navigate(['/profile']);
+          this.router.navigate([environment.afterLoginGoto]);
         }
       } else {
         this.error = msg_bad_credentials;

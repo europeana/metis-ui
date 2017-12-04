@@ -7,11 +7,16 @@ export const environment = {
   apiRegister: 'authentication/register',
   apiUsers: 'authentication/users',
   apiUpdatePassword: 'authentication/update/password',
+  afterLoginGoto: '/profile',
   emails: {
     profile: 'content@europeana.eu'
   },
   links: {
     registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis',
     gotoZoho: 'https://www.zoho.com'
+  },
+  test: {
+    username: 'test.metis@europeana.eu',
+    password: '123'
   }
 };
