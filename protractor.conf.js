@@ -14,7 +14,7 @@ exports.config = {
     // https://sites.google.com/a/chromium.org/chromedriver/capabilities
     chromeOptions: {
      args: [ "--headless", "--disable-gpu", "--window-size=1920,1080" ]
-   }
+    }
 
   },
   directConnect: true,
