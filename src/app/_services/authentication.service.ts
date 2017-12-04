@@ -44,7 +44,6 @@ export class AuthenticationService {
     const url = `${environment.apiHost}/${environment.apiUpdatePassword}?newPassword=${password}`;
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       // update successful
-      console.log(`${fn} PUT ${url} => OK`);
       return true;
     });
   }
@@ -55,7 +54,6 @@ export class AuthenticationService {
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       // registration successful
-        console.log(`${fn} POST ${url} => OK`);
         return true;
       });
   }
@@ -67,15 +65,11 @@ export class AuthenticationService {
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
       if (user && user.metisUserAccessToken) {
-
         this.setCurrentUser(user);
-
         // return true to indicate successful login
-        console.log(`${fn} POST ${url} => OK`);
         return true;
       } else {
         // return false to indicate failed login
-        console.log(`${fn} POST ${url} => NOK (token missing)`);
         return false;
       }
     });
@@ -87,7 +81,6 @@ export class AuthenticationService {
     this.currentUser = null;
     this.token = null;
     localStorage.removeItem(this.key);
-    console.log(`${fn} => OK`);
   }
 
   reloadCurrentUser() {
@@ -96,15 +89,11 @@ export class AuthenticationService {
     return this.http.get(url, JSON.stringify('{}')).map(data => {
       const user = <User>data;
       if (user) {
-
         this.setCurrentUser(user);
-
         // return true to indicate success
-        console.log(`${fn} GET ${url} => OK`);
         return true;
       } else {
         // return false to indicate fail
-        console.log(`${fn} GET ${url} => NOK`);
         return false;
       }
     });

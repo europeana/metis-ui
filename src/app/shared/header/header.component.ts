@@ -61,6 +61,7 @@ export class HeaderComponent implements OnInit {
 
   logOut() {
     this.authentication.logout();
+    this.loggedIn = false;
     this.openSignIn = false;
     this.router.navigate(['/home']);
   }

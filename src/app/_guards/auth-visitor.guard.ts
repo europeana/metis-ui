@@ -5,9 +5,10 @@ import { AuthenticationService } from '../_services';
 @Injectable()
 export class AuthVisitorGuard implements CanActivate {
 
-  constructor( private authentication: AuthenticationService ) { }
+  constructor( private authentication: AuthenticationService ) {}
 
-    canActivate() {
-      return !this.authentication.validatedUser();
-    }
+  canActivate() {
+  	return !this.authentication.validatedUser();
+  }
+    
 }
