@@ -27,24 +27,27 @@ export class LoginComponent implements OnInit {
     private flashMessage: FlashMessagesService) { }
 
   ngOnInit() {
+
     // reset login status
     this.authentication.logout();
-
-    // get return url from route parameters or default to '/'
-    //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/profile';
 
     this.loginForm = this.fb.group({
       'email': ['', [Validators.required, Validators.email] ],
       'password': ['', Validators.required ]
     });
+
   }
 
   onSubmit() {
+
     const msg_bad_credentials = 'Email or password is incorrect, please try again.';
-    this.loading = true;
     const email = this.loginForm.controls.email.value;
     const password = this.loginForm.controls.password.value;
+
+    this.loading = true;
+
     this.authentication.login(email, password).subscribe(result => {
+
       if (result === true) {
         const url = this.redirectPreviousUrl.get();
         this.flashMessage.show('Login successful, have fun!', { cssClass: 'alert-success', timeout: 5000 });
@@ -57,15 +60,19 @@ export class LoginComponent implements OnInit {
         this.error = msg_bad_credentials;
       }
       this.loading = false;
+
     },
     (err: HttpErrorResponse) => {
+
       if (err.status === 406) {
         this.error = msg_bad_credentials;
       } else {
         this.error = `Login failed: ${StringifyHttpError(err)}`;
       }
+      
       this.loading = false;
     });
+
   }
 
 }

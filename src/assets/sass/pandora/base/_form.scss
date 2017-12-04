@@ -18,7 +18,7 @@
 
     h2 {
       font-size: 1.375rem;
-      margin-bottom: .6rem;
+      margin-bottom: 1.5rem;
     }
   }
 
@@ -164,6 +164,11 @@
       }
     }
 
+    .profile-form-extra {
+      padding-right: 0;
+      padding-top: 1rem;
+    }
+
     // autocomplete
     .metis-autocomplete {
       .metis-autocomplete-wrap {
@@ -254,7 +259,7 @@
       label,
       p {
         flex: 1 0 120px;
-        max-width: 12rem;
+        max-width: 14rem;
         padding-bottom: 0;
         padding-right: 2rem;
       }
@@ -323,16 +328,10 @@
           color: $white;
           display: inline-block;
           margin: 0;
+          margin-left: 1rem;
           padding: .8rem 5rem;
-
-          &.submit {
-            margin-right: 1rem;
-          }
-
         }
       }
     }
   }
 }
-
-

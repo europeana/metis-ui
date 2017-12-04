@@ -1,78 +1,12 @@
-.metis-autocomplete {
-  position: relative;
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
 
-  ul {
-    background: #fff;
-    border: 1px solid #777;
-    display: block;
-    left: 0;
-    position: absolute;
-    top: 40px;
-    width: 100%;
-    z-index: 9;
-
-    li {
-      cursor: pointer;
-    }
-  }
-}
-
-.metis-autocomplete-selected {
-  .tag {
-    cursor: pointer;
-
-    .remove {
-      display: inline-block;
-      height: 1.2rem;
-      margin-left: 1rem;
-      text-align: center;
-      width: 1.2rem;
-
-      &:hover {
-        background: #fff;
-        border-radius: 1rem;
-        color: #0a3750;
-      }
-
-    }
-  }
-}
-
-.modal-wrapper {
-  display: block;
-}
-
-label {
-  white-space: nowrap;
-  margin-right: 10px;
-}
-
-#password {
-  margin-bottom: 10px;
-}
-
-.button {
-  margin-left: 10px !important;
-}
-
-.password-form {
-  max-width: 480px;
-  button {
-    padding: 10px 20px !important;
-  }
-}
-
-span.invalid {
-  float: right;
-  margin-right: 6px;
-  margin-left: -33px;
-  position: relative;
-  z-index: 2;
-  color: red;
-}
-
-.profile-form-extra {
-  a {
-    margin-left: 5px;
+.metis-form-bg {
+  .form-fields {
+    background-color: $white;
+    border: 1px solid $offwhite;
+    border-radius: $border-radius;
+    color: $gray-light;
+    min-width: 25rem;
   }
 }

@@ -70,8 +70,9 @@
 
 <ng-template #editmode>
 
-  <div *ngIf="profileForm" class="metis-profile-form metis-form metis-form-horizontal password-form">
-    <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
+
+  <div class="metis-form-bg metis-form" *ngIf="profileForm" >
+    <form [formGroup]="profileForm" #formDir="ngForm">
       <div class="form-header">
         <h2>Change Password</h2>
       </div>
@@ -79,7 +80,6 @@
       <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
 
       <div class="form-fields">
-
         <fieldset class="form-group" formGroupName="passwords">
           <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="Password">
           <app-password-check [passwordToCheck]="password"></app-password-check>
@@ -89,16 +89,14 @@
           </div>
         </fieldset>
 
-        <div class="form-group form-group-btns user-profile-edit-btns">
-          <button class="button" type="button" (click)="toggleEditMode()">Cancel</button>&nbsp;&nbsp;
+         <div class="form-group form-group-btns user-profile-edit-btns">
+          <button class="button" type="button" (click)="toggleEditMode()">Cancel</button>
           <button class="submit" type="button" [disabled]="!profileForm.valid" (click)="onSubmit()">
             Submit
             &nbsp; <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
           </button>
         </div>
-
       </div>
-
     </form>
   </div>
 
