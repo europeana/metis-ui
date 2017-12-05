@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import 'rxjs/Rx';
 
 import { CountriesService, ProvidersService, DatasetsService } from '../../_services';
+import { Dataset } from '../../_models';
 
 @Component({
   selector: 'app-datasetform',
@@ -14,6 +15,7 @@ import { CountriesService, ProvidersService, DatasetsService } from '../../_serv
 
 export class DatasetformComponent implements OnInit {
 
+  datasetData: Dataset;
   datasetForm: FormGroup;
   autosuggest;
   autosuggestId: String;
@@ -24,6 +26,7 @@ export class DatasetformComponent implements OnInit {
   activeSet;
   editMode: Boolean = false;
   successMessage;
+  harvestprotocol; 
   
   constructor(private countries: CountriesService,
     private datasets: DatasetsService,
@@ -39,6 +42,9 @@ export class DatasetformComponent implements OnInit {
 
     if (!this.activeSet) {
       this.editMode = false;
+    } else {
+      this.editMode = true;
+      this.datasetData = this.datasets.getDataset(this.activeSet);
     }
 
     this.countryOptions = this.countries.getCountries();
@@ -46,30 +52,30 @@ export class DatasetformComponent implements OnInit {
     this.providerOptions = this.providers.getProviders();
 
     this.datasetForm = this.fb.group({
-      identifier: ['2024913', [Validators.required]],
-      datasetName: ['2024913_Photocons_LPDP', [Validators.required]],
+      identifier: [(this.datasetData ? this.datasetData.id : ''), [Validators.required]],
+      datasetName: [(this.datasetData ? this.datasetData.name : ''), [Validators.required]],
       dataProvider: [''],
-      provider: ['', [Validators.required]],
+      provider: [(this.datasetData ? this.datasetData.provider : ''), [Validators.required]],
       intermediateProvider: [''],
       dateCreated: [''],
       dateUpdated: [''],
-      tatus: ['status', [Validators.required]],
+      status: [(this.datasetData ? this.datasetData.workflow.name : ''), [Validators.required]],
       replaces: [''],
       replacedBy: [''],
-      country: [''],
+      country: [(this.datasetData ? this.datasetData.country : '')],
       description: [''],
       notes: [''],
       createdBy: [''],
       assignedTo: [''],
-      firstPublished: [''],
-      lastPublished: [''],
-      numberOfItemsPublished: [''],
+      firstPublished: [(this.datasetData ? this.datasetData.startDate : '')],
+      lastPublished: [(this.datasetData ? this.datasetData.lastPublicationDate : '')],
+      numberOfItemsPublished: [(this.datasetData ? this.datasetData.publishedRecords : '')],
       lastDateHarvest: [''],
       numberOfItemsHarvested: [''],
       lastDateSubmission: [''],
       numberOfItemsDelivered: [''],
       acceptanceStep: ['acceptancestep', [Validators.required]],
-      harvestProtocol: [''],
+      harvestProtocol: [(this.datasetData ? this.datasetData.harvestprotocol : '')],
       metadataSchema: [''],
       harvestUrl: [''],
       setSpec: [''],
@@ -82,6 +88,8 @@ export class DatasetformComponent implements OnInit {
       serverAddress: [''],
       folderPath: ['']
     });
+
+    this.harvestprotocol = (this.datasetData ? this.datasetData.harvestprotocol : '');
 
   }
 

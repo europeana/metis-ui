@@ -126,19 +126,29 @@
         <input id="acceptance-step" type="checkbox" class="eu" formControlName="acceptanceStep" />
       </div>
       <div class="form-group">
-        <label>Harvest protocol</label>
+        <label>Harvest protocol {{datasetData.harvestprotocol}}</label>
         <div class="form-group-radios">
           <div>
-            <label><input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" /> HTTP</label>
+            <label>
+              <input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'http' ? true : false" />
+              HTTP
+            </label>
           </div>
           <div>
-            <label><input type="radio" formControlName="harvestProtocol" value="ftp" [(ngModel)]="harvestprotocol" /> FTP</label>
+            <label>
+              <input type="radio" formControlName="harvestProtocol" value="ftp" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'ftp' ? true : false"/>
+              FTP
+            </label>
           </div>
           <div>
-            <label><input type="radio" formControlName="harvestProtocol" value="oai-pmh" [(ngModel)]="harvestprotocol" /> OAI-PMH</label>
+            <label>
+              <input type="radio" formControlName="harvestProtocol" value="oai-pmh" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'oai-pmh' ? true : false" /> OAI-PMH
+            </label>
           </div>
           <div>
-            <label><input type="radio" formControlName="harvestProtocol" value="folder" [(ngModel)]="harvestprotocol" /> Folder</label>
+            <label>
+              <input type="radio" formControlName="harvestProtocol" value="folder" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'folder' ? true : false" /> Folder
+            </label>
           </div>
         </div>
       </div>
@@ -189,7 +199,7 @@
         <input id="folder-path" type="text" formControlName="folderPath" />
       </div>
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="submit" type="button" [disabled]="!datasetForm.valid" (click)="onSubmit()">Submit</button>
+        <button class="submit" type="button" [disabled]="!datasetForm.valid" (click)="onSubmit()">{{ editMode === false ? 'Submit' : 'Update' }}</button>
       </div>
     </div>
   </form>

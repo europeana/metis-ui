@@ -12,4 +12,7 @@ export class Dataset {
   lastPublicationDate: Date;
   startDate: Date;
   endDate: Date;
+  country: string;
+  provider: string;
+  harvestprotocol: string;
 }

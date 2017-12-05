@@ -35,9 +35,12 @@ export class DatasetsService {
           totalProcessed: randomNumber(0, totalDataset),
           totalDataset: totalDataset,
           publishedRecords: randomNumber(100, 999999),
-          lastPublicationDate: startDate,
+          lastPublicationDate: endDate,
           startDate: startDate,
-          endDate: endDate
+          endDate: endDate, 
+          country: 'Austria',
+          provider: 'Internet Culturale',
+          harvestprotocol: 'folder'
         }
       );
     }
