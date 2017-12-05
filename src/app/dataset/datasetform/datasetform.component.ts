@@ -23,6 +23,7 @@ export class DatasetformComponent implements OnInit {
   languageOptions;
   activeSet;
   editMode: Boolean = false;
+  successMessage;
   
   constructor(private countries: CountriesService,
     private datasets: DatasetsService,
@@ -95,6 +96,14 @@ export class DatasetformComponent implements OnInit {
     this.datasetOptions = '';
     this.autosuggest = '';
     this.autosuggestId = '';
+  }
+
+  onSubmit() {
+    this.successMessage = 'SUBMIT OK - ';
+    for (let x in this.datasetForm.value) {
+      this.successMessage += x + ': ' + this.datasetForm.value[x] + ' --- ';
+    }
+    window.scrollTo(0, 0);
   }
 
 }

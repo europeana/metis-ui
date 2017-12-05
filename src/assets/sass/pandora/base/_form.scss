@@ -24,8 +24,7 @@
 
   // messages
   .messages {
-    height: 2rem;
-
+    
     .error-message,
     .success-message {
       color: $white;
@@ -179,7 +178,7 @@
         display: block;
         left: 0;
         position: absolute;
-        top: 40px;
+        top: 2.7rem;
         width: 100%;
         z-index: 12;
 
@@ -279,7 +278,7 @@
       textarea {
         box-shadow: none;
         color: $gray-light;
-        padding: 10px;
+        padding: 0.75rem;
 
         &.icon-padding {
           padding-right: 50px;
