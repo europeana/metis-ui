@@ -171,45 +171,22 @@
 
     // autocomplete
     .metis-autocomplete {
-      .metis-autocomplete-wrap {
-        position: relative;
+      position: relative;
 
-        .eu-autocomplete {
-          box-sizing: initial;
-          margin-left: -2px;
-          margin-right: -2px;
-          padding-left: 2px;
-          padding-right: 2px;
-        }
+      ul {
+        background: $white;
+        border: 1px solid $gray-light;
+        display: block;
+        left: 0;
+        position: absolute;
+        top: 40px;
+        width: 100%;
+        z-index: 12;
 
-      }
-    }
-
-    .metis-autocomplete-selected {
-
-      .tag {
-        cursor: pointer;
-
-        svg {
+        li {
           cursor: pointer;
-          margin-left: 1em;
-
-          &:hover {
-            background: $white;
-            border-radius: 10px;
-            fill: $hoverblue;
-          }
-
         }
       }
-
-      .disable-tag {
-        background-color: $gray-lightest;
-        color: $gray-lighter;
-        cursor: default;
-        pointer-events: none;
-      }
-
     }
 
     // icons
@@ -255,6 +232,7 @@
       flex-wrap: wrap;
       margin-bottom: 2rem;
       padding: 0;
+      position: relative;
 
       label,
       p {
@@ -284,7 +262,7 @@
 
       input {
         border: 1px solid $gray-light;
-        color: $eu-blue;
+        color: $gray-light;
         margin-bottom: 0;
 
         &::placeholder {
@@ -300,6 +278,7 @@
       input:not([type='checkbox']),
       textarea {
         box-shadow: none;
+        color: $gray-light;
         padding: 10px;
 
         &.icon-padding {

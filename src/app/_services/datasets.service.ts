@@ -6,10 +6,14 @@ import { randomDatasetName,
          randomWorkflow,
          randomDateRange } from '../_helpers';
 
+import 'rxjs/Rx';
+import { switchMap } from 'rxjs/operators';
+
+
 @Injectable()
 export class DatasetsService {
   private datasets: Dataset[]  = [];
-
+  
   constructor() {
     let max = 25;
     const today = new Date();
@@ -40,6 +44,10 @@ export class DatasetsService {
   }
 
   getDatasets(): Dataset[] {
+    return this.datasets;
+  }
+
+  searchDatasets(term: string) {
     return this.datasets;
   }
 
