@@ -38,6 +38,7 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
 import { ActionbarComponent } from './dataset/actionbar/actionbar.component';
+import { HistoryComponent } from './dataset/history/history.component';
 
 
 // used to create fake backend
@@ -65,7 +66,8 @@ import { ActionbarComponent } from './dataset/actionbar/actionbar.component';
     UserDetailComponent,
     GeneralinfoComponent,
     DashboardactionsComponent,
-    ActionbarComponent
+    ActionbarComponent,
+    HistoryComponent
   ],
   imports: [
     BrowserModule,

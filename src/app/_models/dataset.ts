@@ -10,7 +10,7 @@ export class Dataset {
   totalDataset: number;
   publishedRecords: number;
   lastPublicationDate: Date;
-  logFile: string;
+  reportFile: string;
   startDate: Date;
   endDate: Date;
 }

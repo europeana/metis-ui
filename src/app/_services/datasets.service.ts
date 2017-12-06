@@ -33,7 +33,7 @@ export class DatasetsService {
           totalDataset: totalDataset,
           publishedRecords: randomNumber(100, 999999),
           lastPublicationDate: startDate,
-          logFile: 'http://www.sample-videos.com/text/Sample-text-file-10kb.txt',
+          reportFile: 'http://www.sample-videos.com/text/Sample-text-file-10kb.txt',
           startDate: startDate,
           endDate: endDate
         }
