@@ -37,6 +37,7 @@ import { PageNotFoundComponent } from './page-not-found';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
+import { ActionbarComponent } from './dataset/actionbar/actionbar.component';
 
 
 // used to create fake backend
@@ -63,7 +64,8 @@ import { UsersComponent,
     UsersComponent,
     UserDetailComponent,
     GeneralinfoComponent,
-    DashboardactionsComponent
+    DashboardactionsComponent,
+    ActionbarComponent
   ],
   imports: [
     BrowserModule,

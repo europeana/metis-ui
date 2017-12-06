@@ -1,0 +1,43 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
+.dataset-actionbar {
+  align-items: center;
+  display: flex;
+  min-height: 4rem;
+  padding: 0.75rem;
+
+  nav {
+
+    li {
+
+      border-left: 1px solid $offwhite;
+      display: inline-block;
+      padding: 0.4rem 0.625rem;
+
+      &:first-child {
+        border-left: 0;
+      }
+
+      a {
+        align-items: center;
+        color: $gray-med;
+        display: flex;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+
+        &:hover {
+          background: $offwhite;
+          border-radius: $border-radius;
+        }
+
+        span {
+          display: inline-block;
+          line-height: 1.36;
+          padding-left: 0.5rem;
+        }
+
+      }
+    }
+  }
+}
