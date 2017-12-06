@@ -29,7 +29,7 @@ export class DatasetComponent implements OnInit {
 
   activeTab: string = 'new';
   activeSet: string;
-  isCollapsed: boolean = true;
+  isCollapsed: boolean = false;
   dataset: Dataset;
   user: User;
   userRole: string;
