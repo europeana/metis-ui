@@ -126,28 +126,28 @@
         <input id="acceptance-step" type="checkbox" class="eu" formControlName="acceptanceStep" />
       </div>
       <div class="form-group">
-        <label>Harvest protocol {{datasetData.harvestprotocol}}</label>
+        <label>Harvest protocol</label>
         <div class="form-group-radios">
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'http' ? true : false" />
+              <input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'http' ? true : false" />
               HTTP
             </label>
           </div>
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="ftp" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'ftp' ? true : false"/>
+              <input type="radio" formControlName="harvestProtocol" value="ftp" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'ftp' ? true : false"/>
               FTP
             </label>
           </div>
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="oai-pmh" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'oai-pmh' ? true : false" /> OAI-PMH
+              <input type="radio" formControlName="harvestProtocol" value="oai-pmh" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'oai-pmh' ? true : false" /> OAI-PMH
             </label>
           </div>
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="folder" [(ngModel)]="harvestprotocol" [checked]="datasetData.harvestprotocol === 'folder' ? true : false" /> Folder
+              <input type="radio" formControlName="harvestProtocol" value="folder" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'folder' ? true : false" /> Folder
             </label>
           </div>
         </div>
