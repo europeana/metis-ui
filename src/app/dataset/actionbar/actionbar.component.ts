@@ -1,6 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatasetsService } from '../../_services';
 import { Dataset } from '../../_models';
 
 @Component({
@@ -9,26 +8,16 @@ import { Dataset } from '../../_models';
   styleUrls: ['./actionbar.component.scss']
 })
 
-export class ActionbarComponent implements OnInit {
+export class ActionbarComponent {
 
-  constructor(private datasets: DatasetsService,
-  	private route: ActivatedRoute) { }
-
-  dataset: Dataset;
+  constructor(private route: ActivatedRoute) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
+  @Input('dataset') dataset: Dataset;
+  
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  ngOnInit() {
-
-  	this.route.params.subscribe(params => {
-      this.dataset = this.datasets.getDataset(+params['id']);      
-    });
-
-  }
-
   showLog() {
-    // get information to display? 
     this.notifyShowLogStatus.emit(true);
   }
 
