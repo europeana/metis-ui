@@ -29,12 +29,14 @@ export class DatasetComponent implements OnInit {
 
   activeTab: string = 'new';
   activeSet: string;
-  isCollapsed: boolean = false;
+  isCollapsed: boolean = true;
+  showLog: boolean = false;
   dataset: Dataset;
   user: User;
   userRole: string;
   editMode = false; // if not edit, then create
-
+  public isShowingLog = false;
+  
   ngOnInit() {
 
     this.user = this.authentication.currentUser;
@@ -55,6 +57,10 @@ export class DatasetComponent implements OnInit {
 
     });
 
+  }
+
+  onNotifyShowLogStatus(message:boolean):void {
+    this.isShowingLog = message;
   }
 
   loadTabComponent() {

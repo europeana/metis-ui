@@ -39,6 +39,8 @@ import { UsersComponent,
          UserDetailComponent } from './users';
 import { ActionbarComponent } from './dataset/actionbar/actionbar.component';
 import { HistoryComponent } from './dataset/history/history.component';
+import { LogComponent } from './dataset/log/log.component';
+import { DatasetlogComponent } from './dataset/datasetlog/datasetlog.component';
 
 
 // used to create fake backend
@@ -67,7 +69,9 @@ import { HistoryComponent } from './dataset/history/history.component';
     GeneralinfoComponent,
     DashboardactionsComponent,
     ActionbarComponent,
-    HistoryComponent
+    HistoryComponent,
+    LogComponent,
+    DatasetlogComponent
   ],
   imports: [
     BrowserModule,

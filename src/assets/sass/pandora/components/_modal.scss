@@ -1,12 +1,11 @@
 .modal-wrapper {
   background: $opacity-black;
-  display: none;
   height: 100vh;
   left: 0;
   position: fixed;
   top: 0;
   width: 100vw;
-  z-index: 9;
+  z-index: 11;
 
   .modal {
     background: $white;
@@ -15,7 +14,7 @@
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 20vw;
+    width: 50vw;
 
     .head {
       background: $eu-jade;
@@ -31,7 +30,7 @@
         display: block;
         float: right;
         height: 2rem;
-        margin-top: -0.5rem;
+        margin-top: 0;
         width: 2rem;
 
         &::before,
