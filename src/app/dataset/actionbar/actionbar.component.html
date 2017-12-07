@@ -1,12 +1,12 @@
 <div class="metis-dataset-info-block dataset-actionbar">
 	<div class="status">
-    <strong>{{dataset.workflow.name}}</strong>
+    <strong>{{dataset ? dataset.workflow.name : ''}}</strong>
     Now running 
   </div>
   <div class="progress">
     <div class="progress-status">
-      <span class="progress-statusnumbers">{{dataset.totalProcessed}} / {{dataset.totalDataset}}</span>
-      <span class="progress-percentage">{{dataset.totalProcessed / dataset.totalDataset * 100 | number:'2.0-0'}} %</span>
+      <span class="progress-statusnumbers">{{dataset ? dataset.totalProcessed : ''}} / {{dataset ? dataset.totalDataset : ''}}</span>
+      <span class="progress-percentage">62%</span>
     </div>
     <div class="progressbar">
       <div class="progressbar-done" style="width: 62%"></div>

@@ -28,18 +28,17 @@ describe('ActionbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   it('should emit on up/down vote click', fakeAsync((): void => {
 
     spyOn(component.notifyShowLogStatus, 'emit');
-    let button = fixture.debugElement.query(By.css('log-btn')).nativeElement;
+    let button = fixture.debugElement.query(By.css('.log-btn')).nativeElement;
     button.click();
 
     fixture.detectChanges();
     tick();
 
     expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
-
+    
   }));
 
 });
