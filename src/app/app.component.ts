@@ -29,8 +29,8 @@ export class AppComponent implements OnInit {
         this.loggedIn = this.authentication.validatedUser( );
 
         this.bodyClass = event.url.split('/')[1];
-
         this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
+
       }
     });
   }

@@ -3,7 +3,7 @@
   <div class="collapse-block" *ngIf="dataset">
 
     <div class="dataset-name">
-      {{dataset.name}}
+      {{dataset.name}} {{isShowingLog}}
     </div>
     <div class="collapse-toggle-block">
       <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
@@ -18,12 +18,18 @@
     <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed">
       <div class="metis-dashboard-left">
         
-        <app-dashboardactions></app-dashboardactions>
+        <app-generalinfo></app-generalinfo>
 
       </div>
-      <div class="metis-dashboard-right"></div>
-    </div>
+      <div class="metis-dashboard-right">
+        
+        <app-actionbar [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
+        <app-history></app-history>
 
+        <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
+
+      </div>
+    </div>
   </div>
 
   <div class="metis-dashboard">
