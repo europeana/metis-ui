@@ -29,7 +29,9 @@ import { HomeComponent } from './home';
 import { DatasetComponent,
          DatasetformComponent,
          DatasetDirective,
-         GeneralinfoComponent } from './dataset';
+         GeneralinfoComponent,
+         DatasetlogComponent,
+         HistoryComponent } from './dataset';
 import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
@@ -38,10 +40,6 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
 import { ActionbarComponent } from './dataset/actionbar/actionbar.component';
-import { HistoryComponent } from './dataset/history/history.component';
-import { LogComponent } from './dataset/log/log.component';
-import { DatasetlogComponent } from './dataset/datasetlog/datasetlog.component';
-
 
 // used to create fake backend
 // import { fakeBackendProvider } from './_helpers';
@@ -70,7 +68,6 @@ import { DatasetlogComponent } from './dataset/datasetlog/datasetlog.component';
     DashboardactionsComponent,
     ActionbarComponent,
     HistoryComponent,
-    LogComponent,
     DatasetlogComponent
   ],
   imports: [
