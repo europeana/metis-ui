@@ -5,14 +5,14 @@
   </div>
   <div class="progress">
     <div class="progress-status">
-      <span class="progress-statusnumbers">{{dataset ? dataset.totalProcessed : ''}} / {{dataset ? dataset.totalDataset : ''}}</span>
-      <span class="progress-percentage">62%</span>
+      <span class="progress-statusnumbers">{{totalProcessed}} / {{totalInDataset}}</span>
+      <span class="progress-percentage">{{workflowPercentage}}%</span>
     </div>
     <div class="progressbar">
-      <div class="progressbar-done" style="width: 62%"></div>
+      <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
     </div>
   </div>
-  <div class="datetime">21/01/2017 - 08:16</div>
+  <div class="datetime">{{now | date:'dd-MM-yyyy'}} {{now | date:'shortTime'}}</div>
   <nav>
 		<ul>
 			<li>

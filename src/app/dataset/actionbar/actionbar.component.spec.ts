@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core
 import { RouterTestingModule } from '@angular/router/testing';
 import { DatasetsService } from '../../_services';
 import {By} from '@angular/platform-browser';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ActionbarComponent } from './actionbar.component';
 
@@ -11,7 +12,7 @@ describe('ActionbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule],
+      imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent ],
       providers: [ DatasetsService ]
     })
