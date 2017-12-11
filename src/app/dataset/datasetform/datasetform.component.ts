@@ -12,9 +12,9 @@ import { CountriesService } from '../../_services';
 
 export class DatasetformComponent implements OnInit {
 
-  datasetForm: FormGroup;
-  countryOptions;
-  languageOptions;
+  private datasetForm: FormGroup;
+  private countryOptions;
+  private languageOptions;
 
   constructor(private countries: CountriesService) { }
 

@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatasetsService } from '../../_services';
 import { Dataset } from '../../_models';
 
 @Component({
@@ -10,8 +9,7 @@ import { Dataset } from '../../_models';
 })
 export class HistoryComponent implements OnInit {
 
-  constructor(private datasets: DatasetsService,
-  	private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute) { }
 
   @Input('dataset') dataset: Dataset;
 

@@ -2,7 +2,8 @@
 @import '../../assets/sass/pandora/settings/metis-variables';
 
 table {
-  tr:hover {
+
+  tbody tr:hover {
     border-left: 3px solid $eu-jade;
   }
 

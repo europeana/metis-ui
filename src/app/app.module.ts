@@ -79,7 +79,7 @@ import { ActionbarComponent } from './dataset/actionbar/actionbar.component';
     AppRoutingModule,
     FlashMessagesModule
   ],
-  entryComponents: [ DatasetformComponent ],
+  entryComponents: [ DatasetformComponent, HistoryComponent ],
   providers: [
     AuthVisitorGuard,
     AuthUserGuard,
