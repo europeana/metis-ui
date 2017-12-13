@@ -12,11 +12,13 @@ export class HistoryComponent implements OnInit {
   constructor(private route: ActivatedRoute) { }
 
   @Input('dataset') dataset: Dataset;
+  @Input('inCollapsablePanel') inCollapsablePanel;
+  @Input('activeSet') activeSet;
 
-  ngOnInit() {
+  ngOnInit() {  }
 
-  	console.log(this.dataset);
-
+  scroll(el) {
+  	el.scrollIntoView({behavior:'smooth'});
   }
 
 }

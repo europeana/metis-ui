@@ -38,15 +38,31 @@ body {
   border-radius: 0;
   color: $eu-jade;
   font-size: 0.625rem;
+  font-weight: bold;
+  line-height: 0.875rem;
+  padding-right: 0.75rem;
+  position: relative;
   text-transform: uppercase;
 
   &::after {
-    color: $gray80;
+    color: $gray-lighter;
     content: '\f142';
     display: inline-block;
     font-family: fontawesome;
-    font-size: 1rem;
-    padding-left: 1rem;
+    font-size: 0.875rem;
+    font-weight: 100;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  &:hover {
+    color: $gray-lighter;
+
+    &::after {
+      color: $eu-jade;
+    }
+
   }
 
 }
