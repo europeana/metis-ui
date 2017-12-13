@@ -77,6 +77,7 @@ export class DatasetComponent implements OnInit {
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
+    componentRef.instance.dataset = this.getcurrentTab().data;
 
   }
 
@@ -84,7 +85,7 @@ export class DatasetComponent implements OnInit {
     if (this.activeTab === 'new') {
       return new datasetTab(DatasetformComponent, {});
     } else if (this.activeTab === 'log') {
-      return new datasetTab(HistoryComponent, {});
+      return new datasetTab(HistoryComponent, this.dataset);
     }
   }
 
