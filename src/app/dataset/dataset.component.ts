@@ -31,11 +31,12 @@ export class DatasetComponent implements OnInit {
   activeSet: string;
   isCollapsed: boolean = true;
   showLog: boolean = false;
-  dataset: Dataset;
   user: User;
   userRole: string;
   editMode = false; // if not edit, then create
+  
   public isShowingLog = false;
+  public dataset: Dataset;  
   
   ngOnInit() {
 

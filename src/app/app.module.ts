@@ -31,7 +31,8 @@ import { DatasetComponent,
          DatasetDirective,
          GeneralinfoComponent,
          DatasetlogComponent,
-         HistoryComponent } from './dataset';
+         HistoryComponent,
+         ActionbarComponent } from './dataset';
 import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
@@ -39,7 +40,6 @@ import { PageNotFoundComponent } from './page-not-found';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
-import { ActionbarComponent } from './dataset/actionbar/actionbar.component';
 
 // used to create fake backend
 // import { fakeBackendProvider } from './_helpers';
