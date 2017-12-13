@@ -1,7 +1,59 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
 
-a {
+table {
+
+  tbody tr:hover {
+    border-left: 3px solid $eu-jade;
+  }
+
+  th {
+    padding: 0.5rem 0.5rem 0.25rem;
+    text-align: left;
+
+    &:nth-child(5),
+    &:nth-child(6),
+    &:nth-child(8) {
+      text-align: center;
+    }
+
+  }
+
+  td {
+    padding: 0.5rem 0.5rem 0.25rem;
+
+    &:nth-child(1) {
+      padding-left: 1rem;
+    }
+
+    &:nth-child(2) {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    &:nth-child(1),
+    &:nth-child(6),
+    &:nth-child(7) {
+      text-align: center;
+    }
+
+    &:nth-child(8) {
+      padding-top: 0.4rem;
+    }
+
+    &:nth-child(9) {
+      padding-top: 0.3rem;
+      text-align: center;
+
+      .table-btn {
+        display: inline-block;
+      }
+    }
+  }
+
+}
+
+.table-btn {
   align-items: center;
   color: $gray-med;
   display: flex;
@@ -19,4 +71,23 @@ a {
     line-height: 1.36;
     padding-left: 0.5rem;
   }
+
+  &.deactivate-btn {
+    color: $gray-lighter;
+  }
+
+}
+
+.error,
+.watchout {
+  background: $error;
+  border: 1px solid $error;
+  border-radius: 0.3rem;
+  display: inline-block;
+  height:  0.625rem;
+  width: 0.625rem;
+}
+
+.watchout {
+  background: #ffab91;
 }

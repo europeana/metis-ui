@@ -79,7 +79,7 @@ import { UsersComponent,
     AppRoutingModule,
     FlashMessagesModule
   ],
-  entryComponents: [ DatasetformComponent ],
+  entryComponents: [ DatasetformComponent, HistoryComponent ],
   providers: [
     AuthVisitorGuard,
     AuthUserGuard,

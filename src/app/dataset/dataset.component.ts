@@ -6,6 +6,9 @@ import { AuthenticationService, DatasetsService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
+import { HistoryComponent } from './history/history.component';
+
+import { datasetTab } from './datasettab';
 
 import { Dataset, User } from '../_models';
 
@@ -36,8 +39,8 @@ export class DatasetComponent implements OnInit {
   editMode = false; // if not edit, then create
   
   public isShowingLog = false;
-  public dataset: Dataset;  
-  
+  public dataset: Dataset; 
+
   ngOnInit() {
 
     this.user = this.authentication.currentUser;
@@ -66,19 +69,22 @@ export class DatasetComponent implements OnInit {
 
   loadTabComponent() {
 
+    if (!this.getcurrentTab()) {return false; }
+
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab().component);
+
     let viewContainerRef = this.datasetHost.viewContainerRef;
     viewContainerRef.clear();
 
-    if (!this.getcurrentTab()) {return false; }
-
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab());
     let componentRef = viewContainerRef.createComponent(componentFactory);
 
   }
 
   getcurrentTab() {
     if (this.activeTab === 'new') {
-      return DatasetformComponent;
+      return new datasetTab(DatasetformComponent, {});
+    } else if (this.activeTab === 'log') {
+      return new datasetTab(HistoryComponent, {});
     }
   }
 
