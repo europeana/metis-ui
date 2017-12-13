@@ -23,9 +23,8 @@
       </div>
       <div class="metis-dashboard-right">
         
-        <app-actionbar [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
+        <app-actionbar [isShowingLog]="isShowingLog" [dataset]="dataset" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
         <app-history [dataset]="dataset"></app-history>
-
         <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
 
       </div>
