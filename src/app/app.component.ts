@@ -12,8 +12,6 @@ import { AuthenticationService } from './_services';
 export class AppComponent implements OnInit {
 
   title = 'Metis-UI';
-
-  routerEventSubscription;
   isLessMargin = false;
   bodyClass: string;
   public loggedIn = false;
@@ -24,13 +22,14 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.routerEventSubscription = this.router.events.subscribe((event: any) => {
+    
+    this.router.events.subscribe((event: any) => {
+      if (!event.url) { return false; }
       if (this.router.isActive(event.url, false)) {
         this.loggedIn = this.authentication.validatedUser( );
 
         this.bodyClass = event.url.split('/')[1];
         this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
-
       }
     });
   }

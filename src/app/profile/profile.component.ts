@@ -1,5 +1,3 @@
-import 'rxjs/add/operator/switchMap';
-
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';

@@ -2,8 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { HttpModule } from '@angular/http';
-
 import { HttpClientModule,
          HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -41,11 +39,6 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
 
-// used to create fake backend
-// import { fakeBackendProvider } from './_helpers';
-// import { MockBackend } from '@angular/http/testing';
-// import { BaseRequestOptions } from '@angular/http';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -73,8 +66,7 @@ import { UsersComponent,
   imports: [
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule,
-    HttpModule,
+    ReactiveFormsModule,    
     HttpClientModule,
     AppRoutingModule,
     FlashMessagesModule
@@ -92,11 +84,6 @@ import { UsersComponent,
     RedirectPreviousUrl,
     DatasetsService,
     NotificationsService
-
-    // providers used to create fake backend
-    // fakeBackendProvider,
-    // MockBackend,
-    // BaseRequestOptions
   ],
   bootstrap: [AppComponent]
 })
