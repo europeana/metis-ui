@@ -7,6 +7,10 @@ table {
     border-left: 3px solid $eu-jade;
   }
 
+  tbody tr.loadmore:hover {
+    border: 0;
+  }
+
   th {
     padding: 0.5rem 0.5rem 0.25rem;
     text-align: left;
@@ -90,4 +94,8 @@ table {
 
 .watchout {
   background: #ffab91;
+}
+
+.load-more-btn {
+  color: $eu-jade;
 }
