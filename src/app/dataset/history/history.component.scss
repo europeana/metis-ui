@@ -98,4 +98,12 @@ table {
 
 .load-more-btn {
   color: $eu-jade;
+
+  &:hover {
+    text-decoration: underline;
+    &::after {
+      color: $eu-jade;
+    }
+  }
+
 }

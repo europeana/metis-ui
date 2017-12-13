@@ -56,5 +56,14 @@ body {
     top: 0;
   }
 
+  &:hover {
+    color: $gray-lighter;
+
+    &::after {
+      color: $eu-jade;
+    }
+
+  }
+
 }
 
