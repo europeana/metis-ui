@@ -31,7 +31,6 @@ export class DatasetComponent implements OnInit {
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string = 'new';
-  activeSet: string;
   isCollapsed: boolean = true;
   showLog: boolean = false;
   user: User;
@@ -40,6 +39,7 @@ export class DatasetComponent implements OnInit {
   
   public isShowingLog = false;
   public dataset: Dataset; 
+  public activeSet: string;
 
   ngOnInit() {
 
