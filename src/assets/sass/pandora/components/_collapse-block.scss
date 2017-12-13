@@ -26,17 +26,24 @@
     cursor: pointer;
     float: right;
     font-size: 0.75rem;
+    margin-right: 1rem;
+    padding-left: 1rem;
+    position: relative;
 
     &:hover {
       text-decoration: underline;
     }
 
-    .info-toggle {
-      margin-right: 1rem;
-
-      i.fa.fa-expand {
-        margin-right: 1rem;
-      }
+    &::before {
+      background-image: url("data:image/svg+xml,%3Csvg width='13' height='13' viewBox='0 0 13 13' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.4.517v3.616c0 .283-.234.517-.516.517-.138 0-.267-.056-.364-.153l-1.162-1.163-2.68 2.68c-.05.05-.122.08-.186.08-.065 0-.137-.03-.186-.08l-.92-.92c-.05-.048-.08-.12-.08-.186 0-.064.03-.137.08-.185l2.68-2.68L7.904.88C7.807.783 7.75.654 7.75.517c0-.283.234-.517.517-.517h3.617c.282 0 .516.234.516.517zM6.095 7.492c0 .064-.032.137-.08.186l-2.68 2.68 1.162 1.162c.097.097.153.226.153.364 0 .282-.234.516-.517.516H.517c-.283 0-.517-.234-.517-.516V8.267c0-.283.234-.517.517-.517.137 0 .266.057.363.154l1.163 1.162 2.68-2.68c.048-.05.12-.08.185-.08s.138.03.186.08l.92.92c.05.05.08.12.08.186z'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      content: '';
+      display: inline-block;
+      height: 13px;
+      left: 0;
+      position: absolute;
+      top: 3px;
+      width: 13px;
     }
   }
 
