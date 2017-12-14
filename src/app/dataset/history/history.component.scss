@@ -42,7 +42,7 @@ table {
     }
 
     &:nth-child(8) {
-      padding-top: 0.4rem;
+      padding-top: 0.25rem;
     }
 
     &:nth-child(9) {
@@ -70,14 +70,12 @@ table {
     border-radius: $border-radius;
   }
 
-  span {
-    display: inline-block;
-    line-height: 1.36;
-    padding-left: 0.5rem;
-  }
-
   &.deactivate-btn {
     color: $gray-lighter;
+  }
+
+  &.svg-icon-report {
+    padding-left: 1.5rem;
   }
 
 }

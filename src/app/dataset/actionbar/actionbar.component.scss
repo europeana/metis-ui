@@ -64,21 +64,18 @@
       }
 
       a {
-        align-items: center;
         color: $gray-med;
-        display: flex;
         font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
+        padding: 0.25rem 0.5rem 0.25rem 1.75rem;
 
         &:hover {
           background: $offwhite;
           border-radius: $border-radius;
         }
 
-        span {
-          display: inline-block;
-          line-height: 1.36;
+        &.newaction-btn {
           padding-left: 0.5rem;
+          padding-right: 1.75rem;
         }
 
       }
