@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import 'rxjs/add/operator/map';
+import { map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { User } from '../_models';
@@ -86,7 +86,7 @@ export class AuthenticationService {
   reloadCurrentUser() {
     const fn = 'reloadCurrentUser()';
     const url = `${environment.apiHost}/${environment.apiProfile}`;
-    return this.http.get(url, JSON.stringify('{}')).map(data => {
+    return this.http.get(url).map(data => {
       const user = <User>data;
       if (user) {
         this.setCurrentUser(user);
