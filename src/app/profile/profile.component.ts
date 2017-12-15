@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
-import { FlashMessagesService } from 'angular2-flash-messages';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -19,7 +18,8 @@ import { environment } from '../../environments/environment';
 export class ProfileComponent implements OnInit {
   editMode = false;
   loading = false;
-  error = '';
+  errorMessage: string;
+  successMessage: string;
   public password = '';
   public emailInfo = environment.emails.profile;
 
@@ -29,8 +29,7 @@ export class ProfileComponent implements OnInit {
     private authentication: AuthenticationService,
     public router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder,
-    private flashMessage: FlashMessagesService) { }
+    private fb: FormBuilder) { }
 
   ngOnInit() {
     this.createForm();
@@ -63,7 +62,7 @@ export class ProfileComponent implements OnInit {
   }
 
   toggleEditMode() {
-    this.error = '';
+    this.errorMessage = '';
     this.editMode = !this.editMode;
   }
 
@@ -72,7 +71,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    this.error = '';
+    this.errorMessage = '';
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
@@ -82,35 +81,35 @@ export class ProfileComponent implements OnInit {
         if (result === true) {
           this.onUpdatePassword();
         } else {
-          this.error = 'Update password failed, please try again later';
+          this.errorMessage = 'Update password failed, please try again later';
         }
         this.loading = false;
         this.toggleEditMode();
       },
       (err: HttpErrorResponse) => {
-        this.error = `Update password failed: ${StringifyHttpError(err)}`;
+        this.errorMessage = `Update password failed: ${StringifyHttpError(err)}`;
         this.loading = false;
       });
   }
 
   onReloadProfile() {
-    this.error = '';
+    this.errorMessage = '';
     this.loading = true;
     this.authentication.reloadCurrentUser().subscribe(result => {
         if (result === true) {
           this.createForm();
         } else {
-          this.error = 'Refresh failed, please try again later';
+          this.errorMessage = 'Refresh failed, please try again later';
         }
         this.loading = false;
       },
       (err: HttpErrorResponse) => {
-        this.error = `Refresh failed: ${StringifyHttpError(err)}`;
+        this.errorMessage = `Refresh failed: ${StringifyHttpError(err)}`;
         this.loading = false;
       });
   }
 
   private onUpdatePassword() {
-    this.flashMessage.show('Update password successful!', { cssClass: 'alert-success', timeout: 5000 });
+    this.successMessage = 'Update password successful!';
   }
 }

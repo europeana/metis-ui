@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthenticationService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FlashMessagesService } from 'angular2-flash-messages';
 import { StringifyHttpError, MatchPasswordValidator, PasswordStrength } from '../_helpers';
 import { environment } from '../../environments/environment';
 
@@ -23,8 +22,7 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authentication: AuthenticationService,
-    private flashMessage: FlashMessagesService) { }
+    private authentication: AuthenticationService) { }
 
   ngOnInit() {
     this.registerForm = this.fb.group({

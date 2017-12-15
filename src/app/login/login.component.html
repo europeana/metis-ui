@@ -4,7 +4,10 @@
       <h2>Sign in to Metis</h2>
     </div>
 
-    <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
+    <div class="messages">
+      <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+      <div class="success-message" *ngIf="successMessage"><i class="fa fa-times"></i>{{successMessage}}</div>
+    </div>
 
     <div class="form-fields">
       <fieldset class="form-group">

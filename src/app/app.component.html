@@ -1,7 +1,6 @@
 <app-header [loggedIn]="loggedIn"></app-header>
 <div class="pusher pusher-{{bodyClass}}">
   <div class="metis-main-content" [ngClass]="{'metis-main-content-lessmargin': isLessMargin }">
-    <flash-messages></flash-messages>
     <router-outlet></router-outlet>
   </div>
 </div>
