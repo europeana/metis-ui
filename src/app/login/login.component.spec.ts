@@ -7,7 +7,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { RedirectPreviousUrl } from '../_services';
-import { FlashMessagesService } from 'angular2-flash-messages';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -17,7 +16,7 @@ describe('LoginComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
       declarations: [ LoginComponent ],
-      providers: [ RedirectPreviousUrl, FlashMessagesService ]
+      providers: [ RedirectPreviousUrl ]
     })
       .compileComponents();
   }));

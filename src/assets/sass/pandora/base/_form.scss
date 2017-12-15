@@ -8,7 +8,7 @@
   padding: 2rem 0;
 
   form {
-    min-width: 25rem;
+    width: 25rem;
   }
 
   // formheader
@@ -24,14 +24,16 @@
 
   // messages
   .messages {
-    height: 2rem;
+
+    max-width: 100%;
 
     .error-message,
     .success-message {
       color: $white;
       font-size: $font-size-slightly-smaller;
-      margin-bottom: .6rem;
-      padding: .1rem 1.2rem;
+      line-height: 1.25rem;
+      margin-bottom: 0.6rem;
+      padding: 0.5rem 1.2rem;
 
       i {
         padding-right: .6rem;

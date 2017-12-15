@@ -35,7 +35,6 @@ import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
-import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
 
@@ -68,8 +67,7 @@ import { UsersComponent,
     FormsModule,
     ReactiveFormsModule,    
     HttpClientModule,
-    AppRoutingModule,
-    FlashMessagesModule
+    AppRoutingModule    
   ],
   entryComponents: [ DatasetformComponent, HistoryComponent ],
   providers: [

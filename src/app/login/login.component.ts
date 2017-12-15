@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FlashMessagesService } from 'angular2-flash-messages';
 import { StringifyHttpError } from '../_helpers';
 
 @Component({
@@ -14,7 +13,8 @@ import { StringifyHttpError } from '../_helpers';
 })
 export class LoginComponent implements OnInit {
   loading = false;
-  error = '';
+  errorMessage: string;
+  successMessage: string;
   returnUrl: string;
   loginForm: FormGroup;
 
@@ -23,8 +23,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private authentication: AuthenticationService,
     private redirectPreviousUrl: RedirectPreviousUrl,
-    private fb: FormBuilder,
-    private flashMessage: FlashMessagesService) { }
+    private fb: FormBuilder) { }
 
   ngOnInit() {
 
@@ -50,14 +49,13 @@ export class LoginComponent implements OnInit {
 
       if (result === true) {
         const url = this.redirectPreviousUrl.get();
-        this.flashMessage.show('Login successful, have fun!', { cssClass: 'alert-success', timeout: 5000 });
         if (url) {
           this.router.navigateByUrl(`/${url}`);
         } else {
           this.router.navigate(['/profile']);
         }
       } else {
-        this.error = msg_bad_credentials;
+        this.errorMessage = msg_bad_credentials;
       }
       this.loading = false;
 
@@ -65,9 +63,9 @@ export class LoginComponent implements OnInit {
     (err: HttpErrorResponse) => {
 
       if (err.status === 406) {
-        this.error = msg_bad_credentials;
+        this.errorMessage = msg_bad_credentials;
       } else {
-        this.error = `Login failed: ${StringifyHttpError(err)}`;
+        this.errorMessage = `Login failed: ${StringifyHttpError(err)}`;
       }
       
       this.loading = false;
