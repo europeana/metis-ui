@@ -23,7 +23,6 @@
     "@angular/platform-browser-dynamic": "^5.1.0",
     "@angular/platform-server": "^5.1.0",
     "@angular/router": "^5.1.0",
-    "angular2-flash-messages": "^1.0.8",
     "compass": "^0.1.1",
     "compass-mixins": "^0.12.10",
     "core-js": "^2.4.1",
