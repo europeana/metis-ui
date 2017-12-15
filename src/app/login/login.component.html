@@ -25,15 +25,10 @@
           <div class="error-message">Please enter a valid password</div>
         </div>
       </fieldset>
-
-      <div class="forgot-credentials">
-        <p><a href="#">Forgot your credentials?</a></p>
-      </div>
-
+     
       <div class="form-group form-group-btns">
         <button class="login-btn" type="submit" [disabled]="!loginForm.valid || loading">
-          Sign In
-          &nbsp; <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
+          Sign In <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
         </button>
       </div>
     </div>
