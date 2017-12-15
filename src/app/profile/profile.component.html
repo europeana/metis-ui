@@ -13,43 +13,43 @@
       <div class="form-fields">
 
         <div class="form-group">
-          <label for="user-id">Id:</label>
+          <label for="user-id">Id</label>
           <input id="user-id" name="user-id" type="text" formControlName="user-id" readonly />
         </div>
 
         <div class="form-group">
-          <label for="email">Email:</label>
+          <label for="email">Email</label>
           <input id="email" name="email" type="text" formControlName="email" readonly />
         </div>
 
         <div class="form-group">
-          <label for="first-name">First Name:</label>
+          <label for="first-name">First Name</label>
           <input id="first-name" name="first-name" type="text" formControlName="first-name" readonly />
         </div>
 
         <div class="form-group">
-          <label for="last-name">Last Name:</label>
+          <label for="last-name">Last Name</label>
           <input id="last-name" name="last-name" type="text" formControlName="last-name" readonly />
         </div>
 
         <div class="form-group">
-          <label for="organization-name">Organization Name:</label>
+          <label for="organization-name">Organization Name</label>
           <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" readonly />
           <span *ngIf="profileForm.controls['organization-name'].value==='Unknown'" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
 
         <div class="form-group">
-          <label for="country">Country:</label>
+          <label for="country">Country</label>
           <input id="country" name="country" type="text" formControlName="country" readonly/>
         </div>
 
         <div class="form-group">
-          <label for="network-member">Europeana Network<br/>Association Member:</label>
+          <label for="network-member">Europeana Network Association Member</label>
           <input id="network-member" name="network-member" type="text" formControlName="network-member" readonly/>
         </div>
 
         <div class="form-group">
-          <label for="account-role">Account Role:</label>
+          <label for="account-role">Account Role</label>
           <input id="account-role" name="account-role" type="text" formControlName="account-role" readonly/>
           <span *ngIf="profileForm.controls['account-role'].value==='Unknown'" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
@@ -59,7 +59,7 @@
         </div>
 
         <div class="profile-form-extra">
-          <p> If you want to update your profile, send an email to <a href="mailto:{{emailInfo}}">{{emailInfo}}</a>.</p>
+          <p> If you want to update your profile, send an email to&nbsp; <a href="mailto:{{emailInfo}}">{{emailInfo}}</a>.</p>
         </div>
 
       </div>
