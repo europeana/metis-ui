@@ -1,0 +1,78 @@
+<table class="table-horizontal-layout">
+  <thead>
+  	<tr>
+      <th colspan="2"></th>
+      <th>Workflow</th>
+      <th>Total processed</th>
+      <th>Total dataset</th>
+      <th>Start date</th>
+      <th>End date</th>
+      <th></th>
+      <th>Trigger next action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="svg-icon-publish"></span></td>
+      <td><span class="error"></span></td>
+      <td>Publish</td>
+      <td>35860</td>
+      <td>12</td>
+      <td>05/07/2017 - 05:56</td>
+      <td>05/07/2017 - 09:01</td>
+      <td>
+        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">         
+          Report
+        </a>
+      </td>
+      <td><a class="table-btn deactivate-btn">Deactive</a> | <a class="table-btn">Harvest</a></td>
+    </tr>
+    <tr>
+      <td><span class="svg-icon-process"></span></td>
+      <td><span class="watchout"></span></td>
+      <td>Process</td>
+      <td>1492</td>
+      <td>178922</td>
+      <td>04/07/2017 - 08:34</td>
+      <td>04/07/2017 - 22:14</td>
+      <td>
+        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">         
+          Report
+        </a>
+      </td>
+      <td><a class="table-btn">Pusblish</a></td>
+    </tr>
+    <tr>
+      <td><span class="svg-icon-transform"></span></td>
+      <td></td>
+      <td>Transform</td>
+      <td>66199</td>
+      <td>99911</td>
+      <td>04/07/2017 - 08:34</td>
+      <td>04/07/2017  - 12:01</td>
+      <td>
+        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">
+          Report
+        </a>
+      </td>
+      <td><a class="table-btn">Process</a></td>
+    </tr>
+    <tr>
+      <td><span class="svg-icon-harvest"></span></td>
+      <td></td>
+      <td>Harvest</td>
+      <td>119082</td>
+      <td>112890</td>
+      <td>04/07/2017 - 08:34</td>
+      <td>05/07/2017 - 00:31</td>
+      <td>
+        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">         
+          Report
+        </a>
+      </td>
+      <td><a class="table-btn">Open in Pandora</a></td>
+    </tr>
+    <tr class="loadmore" *ngIf="inCollapsablePanel"><td colspan="9"><a class="load-more-btn" routerLink="/dataset/log/{{activeSet}}" (click)="scroll(starttab)">See full processing history</a></td></tr>
+  </tbody>
+</table>
+<div #starttab></div>

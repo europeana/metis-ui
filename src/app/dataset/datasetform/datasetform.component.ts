@@ -16,13 +16,10 @@ import { Dataset } from '../../_models';
 export class DatasetformComponent implements OnInit {
 
   datasetData: Dataset;
-  datasetForm: FormGroup;
   autosuggest;
   autosuggestId: String;
   datasetOptions: Object;
   providerOptions;
-  countryOptions;
-  languageOptions;
   activeSet;
   editMode: Boolean = false;
   successMessage;
@@ -33,6 +30,10 @@ export class DatasetformComponent implements OnInit {
     private providers: ProvidersService,
     private route: ActivatedRoute, 
     private fb: FormBuilder) {}
+
+  private datasetForm: FormGroup;
+  private countryOptions;
+  private languageOptions;
 
   ngOnInit() {
 

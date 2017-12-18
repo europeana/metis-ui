@@ -6,6 +6,9 @@ import { AuthenticationService, DatasetsService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
+import { HistoryComponent } from './history/history.component';
+
+import { datasetTab } from './datasettab';
 
 import { Dataset, User } from '../_models';
 
@@ -28,12 +31,15 @@ export class DatasetComponent implements OnInit {
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string = 'new';
-  activeSet: string;
-  isCollapsed: boolean = false;
-  dataset: Dataset;
+  isCollapsed: boolean = true;
+  showLog: boolean = false;
   user: User;
   userRole: string;
   editMode = false; // if not edit, then create
+  
+  public isShowingLog = false;
+  public dataset: Dataset; 
+  public activeSet: string;
 
   ngOnInit() {
 
@@ -57,21 +63,29 @@ export class DatasetComponent implements OnInit {
 
   }
 
+  onNotifyShowLogStatus(message:boolean):void {
+    this.isShowingLog = message;
+  }
+
   loadTabComponent() {
+
+    if (!this.getcurrentTab()) {return false; }
+
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab().component);
 
     let viewContainerRef = this.datasetHost.viewContainerRef;
     viewContainerRef.clear();
 
-    if (!this.getcurrentTab()) {return false; }
-
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab());
     let componentRef = viewContainerRef.createComponent(componentFactory);
+    componentRef.instance.dataset = this.getcurrentTab().data;
 
   }
 
   getcurrentTab() {
     if (this.activeTab === 'new') {
-      return DatasetformComponent;
+      return new datasetTab(DatasetformComponent, {});
+    } else if (this.activeTab === 'log') {
+      return new datasetTab(HistoryComponent, this.dataset);
     }
   }
 

@@ -3,7 +3,7 @@
 
   border: 0;
   color: $gray-light;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 
   tr {
 
@@ -22,12 +22,18 @@
       border: 0;
       color: $gray-light;
       padding: 0.5rem 1rem;
+
+      a {
+        color: $gray-light;
+      }
+
     }
 
     th {
       border-bottom: 1px solid $gray87;
+      font-size: 0.8125rem;
       white-space: nowrap;
-    
+
       &.alignleft {
         text-align: left;
       }

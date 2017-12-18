@@ -2,8 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { HttpModule } from '@angular/http';
-
 import { HttpClientModule,
          HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -29,20 +27,16 @@ import { HomeComponent } from './home';
 import { DatasetComponent,
          DatasetformComponent,
          DatasetDirective,
-         GeneralinfoComponent } from './dataset';
+         GeneralinfoComponent,
+         DatasetlogComponent,
+         HistoryComponent,
+         ActionbarComponent } from './dataset';
 import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
-import { FlashMessagesModule } from 'angular2-flash-messages';
 import { UsersComponent,
          UserDetailComponent } from './users';
-
-
-// used to create fake backend
-// import { fakeBackendProvider } from './_helpers';
-// import { MockBackend } from '@angular/http/testing';
-// import { BaseRequestOptions } from '@angular/http';
 
 @NgModule({
   declarations: [
@@ -63,18 +57,19 @@ import { UsersComponent,
     UsersComponent,
     UserDetailComponent,
     GeneralinfoComponent,
-    DashboardactionsComponent
+    DashboardactionsComponent,
+    ActionbarComponent,
+    HistoryComponent,
+    DatasetlogComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule,
-    HttpModule,
+    ReactiveFormsModule,    
     HttpClientModule,
-    AppRoutingModule,
-    FlashMessagesModule
+    AppRoutingModule    
   ],
-  entryComponents: [ DatasetformComponent ],
+  entryComponents: [ DatasetformComponent, HistoryComponent ],
   providers: [
     AuthVisitorGuard,
     AuthUserGuard,
@@ -87,11 +82,6 @@ import { UsersComponent,
     RedirectPreviousUrl,
     DatasetsService,
     NotificationsService
-
-    // providers used to create fake backend
-    // fakeBackendProvider,
-    // MockBackend,
-    // BaseRequestOptions
   ],
   bootstrap: [AppComponent]
 })

@@ -4,7 +4,6 @@ import { RegisterComponent } from './register.component';
 
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FlashMessagesService } from 'angular2-flash-messages';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AuthenticationService } from '../_services';
@@ -20,7 +19,7 @@ describe('RegisterComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule ],
       declarations: [ RegisterComponent ],
-      providers: [ AuthenticationService, FlashMessagesService ],
+      providers: [ AuthenticationService ],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
       .compileComponents();

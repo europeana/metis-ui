@@ -8,7 +8,7 @@
     <div class="collapse-toggle-block">
       <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
         <span class="info-toggle">
-          <i class="fa fa-expand" aria-hidden="true"></i>Expand info
+          Expand info
         </span>
       </div>
     </div>
@@ -18,12 +18,18 @@
     <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed">
       <div class="metis-dashboard-left">
         
-        <app-dashboardactions></app-dashboardactions>
+        <app-generalinfo></app-generalinfo>
 
       </div>
-      <div class="metis-dashboard-right"></div>
-    </div>
+      <div class="metis-dashboard-right">       
 
+        <app-actionbar [isShowingLog]="isShowingLog" [dataset]="dataset" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
+        <app-history [dataset]="dataset" [inCollapsablePanel]=true [activeSet]="activeSet"></app-history>
+
+        <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
+
+      </div>
+    </div>
   </div>
 
   <div class="metis-dashboard">
@@ -59,7 +65,7 @@
       </li>
     </ul>
   </div>
-
-  <ng-template dataset-host></ng-template>
-
+  <div class="tab-content">
+    <ng-template dataset-host></ng-template>
+  </div>
 </div>

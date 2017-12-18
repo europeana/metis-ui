@@ -11,6 +11,7 @@ import { switchMap } from 'rxjs/operators';
 
 
 @Injectable()
+
 export class DatasetsService {
   private datasets: Dataset[]  = [];
   
@@ -36,6 +37,7 @@ export class DatasetsService {
           totalDataset: totalDataset,
           publishedRecords: randomNumber(100, 999999),
           lastPublicationDate: endDate,
+          reportFile: 'http://www.sample-videos.com/text/Sample-text-file-10kb.txt',
           startDate: startDate,
           endDate: endDate, 
           country: 'Austria',

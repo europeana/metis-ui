@@ -10,6 +10,7 @@ export class Dataset {
   totalDataset: number;
   publishedRecords: number;
   lastPublicationDate: Date;
+  reportFile: string;
   startDate: Date;
   endDate: Date;
   country: string;

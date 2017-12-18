@@ -1,0 +1,32 @@
+<div class="metis-dataset-info-block dataset-actionbar">
+	<div class="status">
+    <strong>{{dataset ? dataset.workflow.name : ''}}</strong>
+    {{currentStatus}}
+  </div>
+  <div class="progress">
+    <div class="progress-status">
+      <span class="progress-statusnumbers">{{totalProcessed}} / {{totalInDataset}}</span>
+      <span class="progress-percentage">{{workflowPercentage}}%</span>
+    </div>
+    <div class="progressbar">
+      <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
+    </div>
+  </div>
+  <div class="datetime"><span class="date">{{now | date:'dd-MM-yyyy'}}</span> <span class="time">{{now | date:'shortTime'}}</span></div>
+  <nav>
+		<ul>
+			<li>
+        <a class="log-btn svg-icon-log" (click)=showLog();><span>Log</span></a>
+      </li> 
+      <li>
+        <a class="svg-icon-history"><span>History</span></a>
+      </li>    
+      <li>
+        <a class="svg-icon-edit"><span>Workflow</span></a>
+      </li>  
+      <li>
+        <a class="newaction-btn svg-icon-selector"><span>New action</span></a>
+      </li>     
+		</ul>
+	</nav>
+</div>
