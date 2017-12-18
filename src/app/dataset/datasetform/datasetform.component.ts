@@ -1,66 +1,118 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import 'rxjs/Rx';
 
-import { CountriesService } from '../../_services';
+import { CountriesService, ProvidersService, DatasetsService } from '../../_services';
+import { Dataset } from '../../_models';
 
 @Component({
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss'],
-  providers: [CountriesService]
+  providers: [CountriesService, ProvidersService, DatasetsService]
 })
 
 export class DatasetformComponent implements OnInit {
+
+  datasetData: Dataset;
+  autosuggest;
+  autosuggestId: String;
+  datasetOptions: Object;
+  providerOptions;
+  activeSet;
+  editMode: Boolean = false;
+  successMessage;
+  harvestprotocol; 
+  
+  constructor(private countries: CountriesService,
+    private datasets: DatasetsService,
+    private providers: ProvidersService,
+    private route: ActivatedRoute, 
+    private fb: FormBuilder) {}
 
   private datasetForm: FormGroup;
   private countryOptions;
   private languageOptions;
 
-  constructor(private countries: CountriesService) { }
-
   ngOnInit() {
+
+    this.route.params.subscribe(params => {
+      this.activeSet = +params['id']; 
+    });
+
+    if (!this.activeSet) {
+      this.editMode = false;
+    } else {
+      this.editMode = true;
+      this.datasetData = this.datasets.getDataset(this.activeSet);
+    }
 
     this.countryOptions = this.countries.getCountries();
     this.languageOptions = this.countries.getLanguages();
+    this.providerOptions = this.providers.getProviders();
 
-    this.datasetForm = new FormGroup({
-      'identifier': new FormControl('2024913', [Validators.required]),
-      'datasetName': new FormControl('2024913_Photocons_LPDP', [Validators.required]),
-      'dataProvider': new FormControl(''),
-      'provider': new FormControl('provider', [Validators.required]),
-      'intermediateProvider': new FormControl(''),
-      'dateCreated': new FormControl(''),
-      'dateUpdated': new FormControl(''),
-      'status': new FormControl('status', [Validators.required]),
-      'replaces': new FormControl(''),
-      'replacedBy': new FormControl(''),
-      'country': new FormControl(''),
-      'description': new FormControl(''),
-      'notes': new FormControl(''),
-      'createdBy': new FormControl(''),
-      'assignedTo': new FormControl(''),
-      'firstPublished': new FormControl(''),
-      'lastPublished': new FormControl(''),
-      'numberOfItemsPublished': new FormControl(''),
-      'lastDateHarvest': new FormControl(''),
-      'numberOfItemsHarvested': new FormControl(''),
-      'lastDateSubmission': new FormControl(''),
-      'numberOfItemsDelivered': new FormControl(''),
-      'acceptanceStep': new FormControl('acceptancestep', [Validators.required]),
-      'harvestProtocol': new FormControl(''),
-      'metadataSchema': new FormControl(''),
-      'harvestUrl': new FormControl(''),
-      'setSpec': new FormControl(''),
-      'metadataFormat': new FormControl(''),
-      'recordXPath': new FormControl(''),
-      'ftpHttpUser': new FormControl(''),
-      'ftpHttpPassword': new FormControl(''),
-      'url': new FormControl(''),
-      'path': new FormControl(''),
-      'serverAddress': new FormControl(''),
-      'folderPath': new FormControl('')
+    this.datasetForm = this.fb.group({
+      identifier: [(this.datasetData ? this.datasetData.id : ''), [Validators.required]],
+      datasetName: [(this.datasetData ? this.datasetData.name : ''), [Validators.required]],
+      dataProvider: [''],
+      provider: [(this.datasetData ? this.datasetData.provider : ''), [Validators.required]],
+      intermediateProvider: [''],
+      dateCreated: [''],
+      dateUpdated: [''],
+      status: [(this.datasetData ? this.datasetData.workflow.name : ''), [Validators.required]],
+      replaces: [''],
+      replacedBy: [''],
+      country: [(this.datasetData ? this.datasetData.country : '')],
+      description: [''],
+      notes: [''],
+      createdBy: [''],
+      assignedTo: [''],
+      firstPublished: [(this.datasetData ? this.datasetData.startDate : '')],
+      lastPublished: [(this.datasetData ? this.datasetData.lastPublicationDate : '')],
+      numberOfItemsPublished: [(this.datasetData ? this.datasetData.publishedRecords : '')],
+      lastDateHarvest: [''],
+      numberOfItemsHarvested: [''],
+      lastDateSubmission: [''],
+      numberOfItemsDelivered: [''],
+      acceptanceStep: ['acceptancestep', [Validators.required]],
+      harvestProtocol: [(this.datasetData ? this.datasetData.harvestprotocol : '')],
+      metadataSchema: [''],
+      harvestUrl: [''],
+      setSpec: [''],
+      metadataFormat: [''],
+      recordXPath: [''],
+      ftpHttpUser: [''],
+      ftpHttpPassword: [''],
+      url: [''],
+      path: [''],
+      serverAddress: [''],
+      folderPath: ['']
     });
 
+    this.harvestprotocol = (this.datasetData ? this.datasetData.harvestprotocol : '');
+    
+  }
+
+  searchDataset(event) {
+    this.datasetOptions = this.datasets.searchDatasets(event.target.value);
+    this.autosuggest = event.target;
+    this.autosuggestId = event.target.id;
+  }
+
+  selectDataset(datasetname) {
+    this.autosuggest.value = datasetname;
+    this.datasetOptions = '';
+    this.autosuggest = '';
+    this.autosuggestId = '';
+  }
+
+  onSubmit() {
+    this.successMessage = 'SUBMIT OK - ';
+    for (let x in this.datasetForm.value) {
+      this.successMessage += x + ': ' + this.datasetForm.value[x] + ' --- ';
+    }
+    window.scrollTo(0, 0);
   }
 
 }

@@ -68,7 +68,7 @@ export function randomOrganizationId() {
 }
 
 export function randomDatasetName() {
-  return randomAlphaNumericString(randomNumber(4, 6)) + '_' + randomDigitString(randomNumber(3, 5)) + '_' + randomCharString(randomNumber(2, 4));
+  return randomAlphaNumericString(randomNumber(4, 6)) + randomDigitString(randomNumber(3, 5)) + randomCharString(randomNumber(2, 4));
 }
 
 export function randomWorkflow(): Workflow {
