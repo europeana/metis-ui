@@ -1,5 +1,25 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
 .messages {
-  margin-left: 14rem;
-  margin-top: 1rem;
   width: 100%;
+}
+
+.metis-form .form-fields .form-group:not(.form-group-btns) {
+
+  .messages {
+    margin-left: 14rem;
+    margin-top: 1rem;
+  }
+
+  .ng-touched.ng-invalid {
+    border-color: $error;
+  }
+
+  :disabled {
+    border: 1px solid $gray-lighter;
+    color: $gray-lighter;
+    padding: 0.75rem;
+  }
+
 }
