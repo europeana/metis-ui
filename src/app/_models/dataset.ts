@@ -14,6 +14,7 @@ export class Dataset {
   startDate: Date;
   endDate: Date;
   country: string;
+  language: string;
   provider: string;
   harvestprotocol: string;
 }
