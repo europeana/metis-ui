@@ -105,6 +105,11 @@
         option {
           color: $gray-light;
         }
+
+        &.ng-invalid.ng-touched {
+          border-color: $error;
+        }
+
       }
 
       // icons
@@ -294,7 +299,10 @@
           .svg-icon-search {
             display: none;
           }
+        }
 
+        &.ng-invalid.ng-touched {
+          border-color: $error;
         }
       }
 

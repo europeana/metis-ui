@@ -21,7 +21,7 @@ export class DatasetformComponent implements OnInit {
   datasetOptions: Object;
   providerOptions;
   activeSet;
-  editMode: Boolean = false;
+  formMode: String = 'create'; // create, read, update
   successMessage;
   harvestprotocol; 
   
@@ -42,9 +42,9 @@ export class DatasetformComponent implements OnInit {
     });
 
     if (!this.activeSet) {
-      this.editMode = false;
+      this.formMode = 'create';
     } else {
-      this.editMode = true;
+      this.formMode = 'read';
       this.datasetData = this.datasets.getDataset(this.activeSet);
     }
 
@@ -58,12 +58,14 @@ export class DatasetformComponent implements OnInit {
       dataProvider: [''],
       provider: [(this.datasetData ? this.datasetData.provider : ''), [Validators.required]],
       intermediateProvider: [''],
+      deaSigned: [''],
       dateCreated: [''],
       dateUpdated: [''],
       status: [(this.datasetData ? this.datasetData.workflow.name : ''), [Validators.required]],
       replaces: [''],
       replacedBy: [''],
       country: [(this.datasetData ? this.datasetData.country : '')],
+      language: [(this.datasetData ? this.datasetData.language : '')],
       description: [''],
       notes: [''],
       createdBy: [''],
@@ -91,7 +93,48 @@ export class DatasetformComponent implements OnInit {
     });
 
     this.harvestprotocol = (this.datasetData ? this.datasetData.harvestprotocol : '');
+
+    this.datasetForm.controls['identifier'].disable();      
+    this.datasetForm.controls['dateCreated'].disable();
+    this.datasetForm.controls['dateUpdated'].disable();
+    this.datasetForm.controls['status'].disable();    
+    this.datasetForm.controls['createdBy'].disable();    
+    this.datasetForm.controls['firstPublished'].disable();
+    this.datasetForm.controls['lastPublished'].disable();
+    this.datasetForm.controls['numberOfItemsPublished'].disable();
+    this.datasetForm.controls['lastDateHarvest'].disable();
+    this.datasetForm.controls['numberOfItemsHarvested'].disable();
+    this.datasetForm.controls['lastDateSubmission'].disable();
+    this.datasetForm.controls['numberOfItemsDelivered'].disable();
     
+    if (this.formMode == 'read') {
+      this.datasetForm.controls['datasetName'].disable();
+      this.datasetForm.controls['dataProvider'].disable();
+      this.datasetForm.controls['provider'].disable();
+      this.datasetForm.controls['intermediateProvider'].disable();
+      this.datasetForm.controls['deaSigned'].disable();
+      this.datasetForm.controls['replaces'].disable();
+      this.datasetForm.controls['replacedBy'].disable();
+      this.datasetForm.controls['country'].disable();
+      this.datasetForm.controls['language'].disable();
+      this.datasetForm.controls['description'].disable();
+      this.datasetForm.controls['notes'].disable();
+      this.datasetForm.controls['assignedTo'].disable();
+      this.datasetForm.controls['acceptanceStep'].disable();
+      this.datasetForm.controls['harvestProtocol'].disable();
+      this.datasetForm.controls['metadataSchema'].disable();
+      this.datasetForm.controls['harvestUrl'].disable();
+      this.datasetForm.controls['setSpec'].disable();
+      this.datasetForm.controls['metadataFormat'].disable();
+      this.datasetForm.controls['recordXPath'].disable();
+      this.datasetForm.controls['ftpHttpUser'].disable();
+      this.datasetForm.controls['ftpHttpPassword'].disable();
+      this.datasetForm.controls['url'].disable();
+      this.datasetForm.controls['path'].disable();
+      this.datasetForm.controls['serverAddress'].disable();
+      this.datasetForm.controls['folderPath'].disable();
+    }
+
   }
 
   searchDataset(event) {
@@ -112,6 +155,36 @@ export class DatasetformComponent implements OnInit {
     for (let x in this.datasetForm.value) {
       this.successMessage += x + ': ' + this.datasetForm.value[x] + ' --- ';
     }
+    window.scrollTo(0, 0);
+  }
+
+  updateForm() {
+    this.formMode = 'update';
+
+    this.datasetForm.controls['datasetName'].enable();
+    this.datasetForm.controls['dataProvider'].enable();
+    this.datasetForm.controls['deaSigned'].enable();
+    this.datasetForm.controls['replaces'].enable();
+    this.datasetForm.controls['replacedBy'].enable();
+    this.datasetForm.controls['country'].enable();
+    this.datasetForm.controls['language'].enable();
+    this.datasetForm.controls['description'].enable();
+    this.datasetForm.controls['notes'].enable();
+    this.datasetForm.controls['assignedTo'].enable();
+    this.datasetForm.controls['acceptanceStep'].enable();
+    this.datasetForm.controls['harvestProtocol'].enable();
+    this.datasetForm.controls['metadataSchema'].enable();
+    this.datasetForm.controls['harvestUrl'].enable();
+    this.datasetForm.controls['setSpec'].enable();
+    this.datasetForm.controls['metadataFormat'].enable();
+    this.datasetForm.controls['recordXPath'].enable();
+    this.datasetForm.controls['ftpHttpUser'].enable();
+    this.datasetForm.controls['ftpHttpPassword'].enable();
+    this.datasetForm.controls['url'].enable();
+    this.datasetForm.controls['path'].enable();
+    this.datasetForm.controls['serverAddress'].enable();
+    this.datasetForm.controls['folderPath'].enable();
+
     window.scrollTo(0, 0);
   }
 

@@ -5,50 +5,50 @@
       <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
     </div>
     <div class="form-fields">
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="identifier">Identifier</label>
-        <input id="identifier" type="text" formControlName="identifier" readonly/>
+        <input id="identifier" type="text" formControlName="identifier" />
       </div>
-      <div class="form-group" *ngIf="editMode">
-        <label for="dataset-name">Dataset Name</label>
+      <div class="form-group">
+        <label for="dataset-name">Dataset Name *</label>
         <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9]+" />
-        <div class="messages" [hidden]="datasetForm.controls.datasetName.valid">
+        <div class="messages" *ngIf="formMode === 'update'" [hidden]="datasetForm.controls.datasetName.valid">
           <div class="error-message">Only A to Z and numbers are allowed.</div>
         </div>
       </div>
       <div class="form-group">
         <label for="data-provider">Data provider</label>
-        <select formControlName="dataProvider">
+        <select formControlName="dataProvider" >
           <option *ngFor="let provider of providerOptions" [value]="provider">{{provider}}</option>
         </select>
       </div>
       <div class="form-group">
         <label for="provider">Provider *</label>
-        <select id="provider" formControlName="provider" readonly>
+        <select id="provider" formControlName="provider" >
           <option *ngFor="let provider of providerOptions" [value]="provider">{{provider}}</option>
         </select>
       </div>
       <div class="form-group">
         <label for="intermediate-provider">Intermediate Provider</label>
-        <select id="intermediate-provider" formControlName="intermediateProvider" readonly>
+        <select id="intermediate-provider" formControlName="intermediateProvider" >
           <option *ngFor="let provider of providerOptions" [value]="provider">{{provider}}</option>
         </select>
       </div>
       <div class="form-group">
         <label for="dea-signed">DEA signed</label>
-        <input id="dea-signed" type="checkbox" class="eu" formControlName="intermediateProvider" />
+        <input id="dea-signed" type="checkbox" class="eu" formControlName="deaSigned" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="date-created">Date created</label>
-        <input id="date-created" type="text" formControlName="dateCreated" readonly />
+        <input id="date-created" type="text" formControlName="dateCreated" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="date-updated">Date updated</label>
-        <input id="date-updated" type="text" formControlName="dateUpdated" readonly />
+        <input id="date-updated" type="text" formControlName="dateUpdated" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="status">Status *</label>
-        <input id="status" type="text" formControlName="status" readonly/>
+        <input id="status" type="text" formControlName="status" />
       </div>
       <div class="form-group">
         <label for="replaces">Replaces</label>
@@ -76,55 +76,55 @@
       </div>
        <div class="form-group">
         <label for="language">Language</label>
-        <select id="language" formControlName="country">
+        <select id="language" formControlName="language" >
           <option *ngFor="let language of languageOptions" [value]="language">{{language}}
         </select>
       </div>
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea id="description" formControlName="description" [value]="description ? description : ''"></textarea>
+        <textarea id="description" formControlName="description" [value]="description ? description : ''" ></textarea>
       </div>
       <div class="form-group">
         <label for="notes">Notes</label>
-        <textarea id="notes" formControlName="notes" [value]="notes ? noted : ''"></textarea>
+        <textarea id="notes" formControlName="notes" [value]="notes ? noted : ''" ></textarea>
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="created-by">Created by</label>
-        <input id="created-by" type="text" formControlName="createdBy" readonly />
+        <input id="created-by" type="text" formControlName="createdBy" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="assigned-to">Assigned to</label>
         <input id="assigned-to" type="text" formControlName="assignedTo" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="first-published">First published</label>
-        <input id="first-published" formControlName="firstPublished" readonly />
+        <input id="first-published" formControlName="firstPublished" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="last-published">Last published</label>
-        <input id="last-published" type="text" formControlName="lastPublished" readonly />
+        <input id="last-published" type="text" formControlName="lastPublished" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="number-published">Number of items published</label>
-        <input id="number-published" type="text" formControlName="numberOfItemsPublished" readonly />
+        <input id="number-published" type="text" formControlName="numberOfItemsPublished" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="last-date-harvest">Last date of harvest</label>
-        <input id="last-date-harvest" type="text" formControlName="lastDateHarvest" readonly />
+        <input id="last-date-harvest" type="text" formControlName="lastDateHarvest"  />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="number-items-harvested">Number of items harvested</label>
-        <input id="number-items-harvested" type="text" formControlName="numberOfItemsHarvested" readonly />
+        <input id="number-items-harvested" type="text" formControlName="numberOfItemsHarvested" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="last-date-submission">Last date of submission</label>
-        <input id="last-date-submission" type="text" formControlName="lastDateSubmission" readonly />
+        <input id="last-date-submission" type="text" formControlName="lastDateSubmission" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="number-delivered">Number of items delivered</label>
-        <input id="number-delivered" type="text" formControlName="numberOfItemsDelivered" readonly />
+        <input id="number-delivered" type="text" formControlName="numberOfItemsDelivered" />
       </div>
-      <div class="form-group" *ngIf="editMode">
+      <div class="form-group">
         <label for="acceptance-step">Acceptance step *</label>
         <input id="acceptance-step" type="checkbox" class="eu" formControlName="acceptanceStep" />
       </div>
@@ -163,7 +163,7 @@
       </div>
       <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
         <label for="harvest-url">Harvest URL</label>
-        <input id="harvest-url" type="text" formControlName="harvestUrl" />
+        <input id="harvest-url" type="text" formControlName="harvestUrl"/>
       </div>
       <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
         <label for="setspec">Setspec</label>
@@ -202,7 +202,8 @@
         <input id="folder-path" type="text" formControlName="folderPath" />
       </div>
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="submit" type="button" [disabled]="!datasetForm.valid" (click)="onSubmit()">{{ editMode === false ? 'Submit' : 'Update' }}</button>
+        <button class="submit" type="button" *ngIf="formMode !== 'read'" [disabled]="!datasetForm.valid" (click)="onSubmit()">Submit</button>
+        <button class="submit" type="button" *ngIf="formMode === 'read'" (click)="updateForm()">Update</button>
       </div>
     </div>
   </form>
