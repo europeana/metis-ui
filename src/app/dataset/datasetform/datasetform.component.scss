@@ -5,7 +5,7 @@
   width: 100%;
 }
 
-.metis-form .form-fields .form-group {
+.metis-form .form-fields .form-group:not(.form-group-btns) {
 
   .messages {
     margin-left: 14rem;
