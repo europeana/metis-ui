@@ -41,6 +41,7 @@ export class DatasetsService {
           startDate: startDate,
           endDate: endDate, 
           country: 'Austria',
+          language: 'French',
           provider: 'Internet Culturale',
           harvestprotocol: 'folder'
         }
