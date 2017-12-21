@@ -59,8 +59,7 @@ export class LoginComponent implements OnInit {
       }
       this.loading = false;
 
-    },
-    (err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
 
       if (err.status === 406) {
         this.errorMessage = msg_bad_credentials;

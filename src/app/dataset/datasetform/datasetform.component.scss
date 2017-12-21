@@ -16,10 +16,4 @@
     border-color: $error;
   }
 
-  :disabled {
-    border: 1px solid $gray-lighter;
-    color: $gray-lighter;
-    padding: 0.75rem;
-  }
-
 }
