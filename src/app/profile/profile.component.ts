@@ -40,17 +40,17 @@ export class ProfileComponent implements OnInit {
 
     if (user) {
       this.profileForm = this.fb.group({
-        'user-id': [user.userId],
-        'email': [user.email],
-        'first-name': [user.firstName],
-        'last-name': [user.lastName],
-        'organization-name': [user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown'],
-        'country': [user.country || 'Unknown'],
-        'network-member': [user.networkMember ? 'Yes' : 'No'],
-        'metis-user-flag': [user.metisUserFlag],
-        'account-role': [user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown'],
-        'created-date': [new Date(user.createdDate)],
-        'updated-date': [new Date(user.updatedDate)],
+        'user-id': [{value: user.userId, disabled: true}],
+        'email': [{value: user.email, disabled: true}],
+        'first-name': [{value: user.firstName, disabled: true}],
+        'last-name': [{value: user.lastName, disabled: true}],
+        'organization-name': [{value: user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown', disabled: true}],
+        'country': [{value: user.country ? user.country : 'Unknown', disabled: true}],
+        'network-member': [{value: user.networkMember ? 'Yes' : 'No', disabled: true}],
+        'metis-user-flag': [{value: user.metisUserFlag, disabled: true}],
+        'account-role': [{value: user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown', disabled: true}],
+        'created-date': [{value: new Date(user.createdDate), disabled: true}],
+        'updated-date': [{value: new Date(user.updatedDate), disabled: true}],
         passwords: this.fb.group({
           password: ['', Validators.required ],
           confirm: ['', Validators.required ]
@@ -106,6 +106,11 @@ export class ProfileComponent implements OnInit {
       this.loading = false;
     },
     (err: HttpErrorResponse) => {
+      if (err.error.errorMessage === 'Wrong access token') {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+
       this.errorMessage = `Refresh failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
