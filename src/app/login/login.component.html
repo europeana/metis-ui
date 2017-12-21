@@ -4,7 +4,10 @@
       <h2>Sign in to Metis</h2>
     </div>
 
-    <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
+    <div class="messages">
+      <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+      <div class="success-message" *ngIf="successMessage"><i class="fa fa-times"></i>{{successMessage}}</div>
+    </div>
 
     <div class="form-fields">
       <fieldset class="form-group">
@@ -22,15 +25,10 @@
           <div class="error-message">Please enter a valid password</div>
         </div>
       </fieldset>
-
-      <div class="forgot-credentials">
-        <p><a href="#">Forgot your credentials?</a></p>
-      </div>
-
+     
       <div class="form-group form-group-btns">
         <button class="login-btn" type="submit" [disabled]="!loginForm.valid || loading">
-          Sign In
-          &nbsp; <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
+          Sign In <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
         </button>
       </div>
     </div>

@@ -6,11 +6,15 @@ import { randomDatasetName,
          randomWorkflow,
          randomDateRange } from '../_helpers';
 
+import 'rxjs/Rx';
+import { switchMap } from 'rxjs/operators';
+
+
 @Injectable()
 
 export class DatasetsService {
   private datasets: Dataset[]  = [];
-
+  
   constructor() {
     let max = 25;
     const today = new Date();
@@ -32,16 +36,24 @@ export class DatasetsService {
           totalProcessed: randomNumber(0, totalDataset),
           totalDataset: totalDataset,
           publishedRecords: randomNumber(100, 999999),
-          lastPublicationDate: startDate,
+          lastPublicationDate: endDate,
           reportFile: 'http://www.sample-videos.com/text/Sample-text-file-10kb.txt',
           startDate: startDate,
-          endDate: endDate
+          endDate: endDate, 
+          country: 'Austria',
+          language: 'French',
+          provider: 'Internet Culturale',
+          harvestprotocol: 'folder'
         }
       );
     }
   }
 
   getDatasets(): Dataset[] {
+    return this.datasets;
+  }
+
+  searchDatasets(term: string) {
     return this.datasets;
   }
 

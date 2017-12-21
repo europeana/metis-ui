@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { User } from '../_models';
-import { FlashMessagesService } from 'angular2-flash-messages';
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
 
@@ -18,8 +17,7 @@ export class UsersComponent implements OnInit {
   public users: User[];
 
   constructor(private http: HttpClient,
-              private router: Router,
-              private flashMessage: FlashMessagesService) { }
+              private router: Router) { }
 
   ngOnInit() {
     const url = `${environment.apiHost}/${environment.apiUsers}`;
@@ -29,8 +27,7 @@ export class UsersComponent implements OnInit {
       this.users = <User[]>data;
     },
       err => {
-        this.error = true;
-        this.flashMessage.show( StringifyHttpError(err), { cssClass: 'alert-error', timeout: 5000 });
+        this.error = true;        
     });
   }
 

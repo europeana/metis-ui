@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthenticationService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FlashMessagesService } from 'angular2-flash-messages';
 import { StringifyHttpError, MatchPasswordValidator, PasswordStrength } from '../_helpers';
 import { environment } from '../../environments/environment';
 
@@ -15,7 +14,8 @@ import { environment } from '../../environments/environment';
 
 export class RegisterComponent implements OnInit {
   loading = false;
-  error = '';
+  errorMessage: string;
+  successMessage: string;
   public password = '';
 
   registerForm: FormGroup;
@@ -23,8 +23,7 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authentication: AuthenticationService,
-    private flashMessage: FlashMessagesService) { }
+    private authentication: AuthenticationService) { }
 
   ngOnInit() {
     this.registerForm = this.fb.group({
@@ -43,7 +42,7 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    this.error = '';
+    this.errorMessage = '';
     this.loading = true;
     const controls = this.registerForm.controls;
     const email = controls.email.value;
@@ -52,21 +51,24 @@ export class RegisterComponent implements OnInit {
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 
-    const msg_successful = 'Registration successful, please log in!';
+    const msg_successful = 'Registration successful, you will be redirected to the login page!';
 
     if (strength <= min) {
-      this.error = 'Password is too weak';
+      this.errorMessage = 'Password is too weak';
       this.loading = false;
     } else {
       this.authentication.register(email, password).subscribe(result => {
         if (result === true) {
           this.onRegistration(msg_successful);
         } else {
-          this.error = 'Registration failed: please try again later';
+          this.errorMessage = 'Registration failed: please try again later';
         }
         this.loading = false;
       },
       (err: HttpErrorResponse) => {
+
+        console.log(err.status);
+
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
@@ -81,9 +83,9 @@ export class RegisterComponent implements OnInit {
           }
           this.router.navigate(['/register/notfound', { reason: errmsg || 'Unknown' }]);
         } else if (err.status === 409) {
-          this.onRegistration('You are already registered, please login in!');
+          this.onRegistration('You are already registered, you will be redirected to the login page!');
         } else {
-          this.error = `Registration failed: ${StringifyHttpError(err)}`;
+          this.errorMessage = `Registration failed: ${StringifyHttpError(err)}`;
         }
         this.loading = false;
       });
@@ -91,8 +93,10 @@ export class RegisterComponent implements OnInit {
   }
 
   private onRegistration(msg) {
-    this.flashMessage.show(msg, { cssClass: 'alert-success', timeout: 5000 });
-    this.router.navigate(['/login']);
+    this.successMessage = msg;
+    setTimeout(() => {
+      this.router.navigate(['/login']);
+    }, 3000);
   }
 }
 

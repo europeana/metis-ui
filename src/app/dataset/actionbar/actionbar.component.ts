@@ -27,12 +27,14 @@ export class ActionbarComponent {
   now;
   totalInDataset: Number = 10000;
   totalProcessed: Number = 0;
+  currentStatus: string;
 
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   ngOnInit() {
 
     this.now = Date.now();
+    this.currentStatus = 'Now running';
 
     let timer = Observable.timer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
@@ -46,6 +48,7 @@ export class ActionbarComponent {
      this.totalProcessed = t * 1000;
      this.now = Date.now();
      if (this.workflowPercentage === 100) {
+       this.currentStatus = 'Complete';
        this.subscription.unsubscribe();
      }
   };

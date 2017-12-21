@@ -77,7 +77,10 @@
         <h2>Change Password</h2>
       </div>
 
-      <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
+      <div class="messages">
+        <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+        <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+      </div>
 
       <div class="form-fields">
         <fieldset class="form-group" formGroupName="passwords">
@@ -92,8 +95,7 @@
          <div class="form-group form-group-btns user-profile-edit-btns">
           <button class="button" type="button" (click)="toggleEditMode()">Cancel</button>
           <button class="submit" type="button" [disabled]="!profileForm.valid" (click)="onSubmit()">
-            Submit
-            &nbsp; <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
+            Submit<i *ngIf="loading" class="fa fa-cog fa-spin"></i>
           </button>
         </div>
       </div>

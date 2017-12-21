@@ -13,4 +13,8 @@ export class Dataset {
   reportFile: string;
   startDate: Date;
   endDate: Date;
+  country: string;
+  language: string;
+  provider: string;
+  harvestprotocol: string;
 }
