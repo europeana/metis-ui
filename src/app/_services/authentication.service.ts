@@ -67,8 +67,6 @@ export class AuthenticationService {
     
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
-      console.log(user);
-
       if (user && user.metisUserAccessToken) {
         this.setCurrentUser(user);
         return true;
