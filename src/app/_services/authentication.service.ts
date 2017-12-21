@@ -42,61 +42,64 @@ export class AuthenticationService {
   updatePassword(password: string) {
     const fn = `updatePassword(password='${password}'`;
     const url = `${environment.apiHost}/${environment.apiUpdatePassword}?newPassword=${password}`;
+    
     return this.http.put(url, JSON.stringify('{}')).map(data => {
-      // update successful
       return true;
     });
+
   }
 
   register(email: string, password: string) {
     const fn = `register(email='${email}',password='${password}'`;
     const url = `${environment.apiHost}/${environment.apiRegister}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
+    
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
-      // registration successful
-        return true;
-      });
+      return true;
+    });
+
   }
 
   login(email: string, password: string) {
     const fn = `login(email='${email}',password='${password}')`;
     const url = `${environment.apiHost}/${environment.apiLogin}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
+    
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
+      console.log(user);
+
       if (user && user.metisUserAccessToken) {
         this.setCurrentUser(user);
-        // return true to indicate successful login
         return true;
       } else {
-        // return false to indicate failed login
         return false;
       }
     });
+
   }
 
   logout(): void {
     const fn = 'logout()';
-    // clear token remove user from local storage to log user out
     this.currentUser = null;
-    this.token = null;
-    localStorage.removeItem(this.key);
+    this.token = null;  
+    localStorage.removeItem(this.key); // clear token remove user from local storage to log user out
   }
 
-  reloadCurrentUser() {
+  reloadCurrentUser(email) {
     const fn = 'reloadCurrentUser()';
-    const url = `${environment.apiHost}/${environment.apiProfile}`;
-    return this.http.get(url).map(data => {
+    const url = `${environment.apiHost}/${environment.apiProfile}/?userEmailToUpdate=${email}`;
+    
+    return this.http.put(url, JSON.stringify('{}')).map(data => {
       const user = <User>data;
       if (user) {
         this.setCurrentUser(user);
-        // return true to indicate success
         return true;
       } else {
-        // return false to indicate fail
         return false;
       }
     });
+
   }
 
   private setCurrentUser(user: User) {

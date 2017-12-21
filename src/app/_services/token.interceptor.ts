@@ -17,14 +17,20 @@ import { Observable } from 'rxjs/Observable';
 //
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
+
   private auth;
   constructor(private inj: Injector) {}
+
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Ignore if login, register or refresh.
+
     const fn = 'TokeInterceptor#intercept';
+    
     if (!request.url.match(/login|register/)) {
       const auth = this.inj.get(AuthenticationService);
       const token = auth.getToken();
+
+      console.log('token:' + token);
+
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };
         // Insert authorization header into all outgoing calls
@@ -34,6 +40,7 @@ export class TokenInterceptor implements HttpInterceptor {
       } else {
         console.log(`${fn}: no token!`);
       }
+      
     } else {
       console.log(`${fn}: ignore`);
     }

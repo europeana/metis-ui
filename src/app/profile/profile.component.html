@@ -1,56 +1,58 @@
 <div *ngIf="editMode; then editmode else readonly"></div>
 
 <ng-template #readonly>
-
   <div *ngIf="profileForm" class="metis-profile-form metis-form metis-form-horizontal">
     <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
       <div class="form-header">
         <h2>User Profile</h2>
       </div>
 
-      <div class="messages" *ngIf="error"><div class="error-message"><i class="fa fa-times"></i>{{error}}</div></div>
+      <div class="messages">
+        <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+        <div class="success-message" *ngIf="successMessage"><i class="fa fa-times"></i>{{successMessage}}</div>
+      </div>
 
       <div class="form-fields">
 
         <div class="form-group">
           <label for="user-id">Id</label>
-          <input id="user-id" name="user-id" type="text" formControlName="user-id" readonly />
+          <input id="user-id" name="user-id" type="text" formControlName="user-id" disabled />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input id="email" name="email" type="text" formControlName="email" readonly />
+          <input id="email" name="email" type="text" formControlName="email" disabled />
         </div>
 
         <div class="form-group">
           <label for="first-name">First Name</label>
-          <input id="first-name" name="first-name" type="text" formControlName="first-name" readonly />
+          <input id="first-name" name="first-name" type="text" formControlName="first-name" disabled />
         </div>
 
         <div class="form-group">
           <label for="last-name">Last Name</label>
-          <input id="last-name" name="last-name" type="text" formControlName="last-name" readonly />
+          <input id="last-name" name="last-name" type="text" formControlName="last-name" disabled />
         </div>
 
         <div class="form-group">
           <label for="organization-name">Organization Name</label>
-          <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" readonly />
+          <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" disabled />
           <span *ngIf="profileForm.controls['organization-name'].value==='Unknown'" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
 
         <div class="form-group">
           <label for="country">Country</label>
-          <input id="country" name="country" type="text" formControlName="country" readonly/>
+          <input id="country" name="country" type="text" formControlName="country" disabled/>
         </div>
 
         <div class="form-group">
           <label for="network-member">Europeana Network Association Member</label>
-          <input id="network-member" name="network-member" type="text" formControlName="network-member" readonly/>
+          <input id="network-member" name="network-member" type="text" formControlName="network-member" disabled/>
         </div>
 
         <div class="form-group">
           <label for="account-role">Account Role</label>
-          <input id="account-role" name="account-role" type="text" formControlName="account-role" readonly/>
+          <input id="account-role" name="account-role" type="text" formControlName="account-role" disabled/>
           <span *ngIf="profileForm.controls['account-role'].value==='Unknown'" title="Invalid value" class="fa fa-exclamation-circle fa-2x invalid"></span>
         </div>
         <div class="form-group form-group-btns user-profile-edit-btns">
@@ -65,12 +67,9 @@
       </div>
     </form>
   </div>
-
 </ng-template>
 
 <ng-template #editmode>
-
-
   <div class="metis-form-bg metis-form" *ngIf="profileForm" >
     <form [formGroup]="profileForm" #formDir="ngForm">
       <div class="form-header">
@@ -101,6 +100,5 @@
       </div>
     </form>
   </div>
-
 </ng-template>
 

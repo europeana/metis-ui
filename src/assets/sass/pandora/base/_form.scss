@@ -72,20 +72,10 @@
           color: $gray-light;
         }
 
-        &:disabled {
-          border: 0;
-          padding: 0;
-        }
-
         &.ng-invalid.ng-touched {
           border-color: $error;
         }
 
-      }
-
-      input:disabled {
-        border: 0;
-        color: $gray-light;
       }
 
       input[type="checkbox"],
@@ -107,6 +97,11 @@
 
         &.ng-invalid.ng-touched {
           border-color: $error;
+        }
+
+        &:disabled {
+          border-color: $opacity-gray-light;
+          color: $opacity-gray-light;
         }
 
       }
@@ -289,9 +284,8 @@
         }
 
         &:disabled {
-          border: 0;
-          padding-bottom: 0;
-          padding-top: 0;
+          border-color: $opacity-gray-light;
+          color: $opacity-gray-light;
 
           .svg-icon-search {
             display: none;

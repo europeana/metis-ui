@@ -78,35 +78,42 @@ export class ProfileComponent implements OnInit {
     const password = passwords.get('password').value;
 
     this.authentication.updatePassword(password).subscribe(result => {
-        if (result === true) {
-          this.onUpdatePassword();
-        } else {
-          this.errorMessage = 'Update password failed, please try again later';
-        }
-        this.loading = false;
-        this.toggleEditMode();
-      },
-      (err: HttpErrorResponse) => {
-        this.errorMessage = `Update password failed: ${StringifyHttpError(err)}`;
-        this.loading = false;
-      });
+      if (result === true) {
+        this.onUpdatePassword();
+      } else {
+        this.errorMessage = 'Update password failed, please try again later';
+      }
+      this.loading = false;
+      this.toggleEditMode();
+    },
+    (err: HttpErrorResponse) => {
+      this.errorMessage = `Update password failed: ${StringifyHttpError(err)}`;
+      this.loading = false;
+    });
   }
 
   onReloadProfile() {
     this.errorMessage = '';
     this.loading = true;
-    this.authentication.reloadCurrentUser().subscribe(result => {
-        if (result === true) {
-          this.createForm();
-        } else {
-          this.errorMessage = 'Refresh failed, please try again later';
-        }
-        this.loading = false;
-      },
-      (err: HttpErrorResponse) => {
-        this.errorMessage = `Refresh failed: ${StringifyHttpError(err)}`;
-        this.loading = false;
-      });
+
+    this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(result => {
+      if (result === true) {
+        this.successMessage = 'Your profile has been updated';
+        this.createForm();
+      } else {
+        this.errorMessage = 'Refresh failed, please try again later';
+      }
+      this.loading = false;
+    },
+    (err: HttpErrorResponse) => {
+      this.errorMessage = `Refresh failed: ${StringifyHttpError(err)}`;
+      this.loading = false;
+    });
+
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 500);   
+
   }
 
   private onUpdatePassword() {
