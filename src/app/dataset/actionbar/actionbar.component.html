@@ -12,17 +12,14 @@
       <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
     </div>
   </div>
-  <div class="datetime"><span class="date">{{now | date:'dd-MM-yyyy'}}</span> <span class="time">{{now | date:'shortTime'}}</span></div>
+  <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{now | date:'shortTime'}}</span></div>
   <nav>
 		<ul>
 			<li>
-        <a class="log-btn svg-icon-log" (click)=showLog();><span>Log</span></a>
+        <a class="log-btn svg-icon-history" data-tooltip="Log" (click)=showLog();><span>Log</span></a>
       </li> 
       <li>
-        <a class="svg-icon-history"><span>History</span></a>
-      </li>    
-      <li>
-        <a class="svg-icon-edit"><span>Workflow</span></a>
+        <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
       </li>  
       <li>
         <a class="newaction-btn svg-icon-selector"><span>New action</span></a>

@@ -8,10 +8,12 @@
   padding: 0.75rem;
 
   .status {
+    flex-basis: 1;
+    flex-grow: 0;
     font-size: 0.75rem;
-    padding-right: 1rem;
+    padding-left: 0.75rem;
+    padding-right: 1.5rem;
     white-space: nowrap;
-    width: 6rem;
 
     strong {
       display: block;
@@ -20,8 +22,10 @@
   }
 
   .progress {
+    flex-basis: 1;
+    flex-grow: 2;
     font-size: 0.75rem;
-    padding-right: 1rem;
+    padding-right: 1.5rem;
 
     .progress-status {
       align-content: center;
@@ -29,22 +33,21 @@
       justify-content: space-between;
     }
 
+    .progress-statusnumbers {
+      width: 6rem;
+    }
+
+    .progress-percentage {
+      text-align: right;
+      width: 3rem;
+    }
+
     .progressbar {
       background: $offwhite;
       border-radius: 0.5rem;
       height: 0.5rem;
       margin-bottom: 1rem;
-      max-width: 10rem;
       width: 100%;
-
-      @media (min-width: $bp-xl) {
-        min-width: 14rem;
-      }
-
-      @media (min-width: $bp-xxl) {
-        max-width: auto;
-        min-width: 18rem;
-      }
 
       .progressbar-done {
         background: $eu-blue;
@@ -56,19 +59,28 @@
   }
 
   .datetime {
+    flex-basis: 1;
+    flex-grow: 0;
     font-size: 0.8125rem;
     padding-right: 0.5rem;
+    text-align: center;
     white-space: nowrap;
 
     @media (max-width: $bp-xxl) {
       span {
         display: block;
       }
+
+      .datedivider {
+        display: none;
+      }
     }
 
   }
 
   nav {
+    flex-basis: 1;
+    flex-grow: 0;
     white-space: nowrap;
 
     li {
@@ -79,6 +91,10 @@
 
       &:first-child {
         border-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
       }
 
       a {
@@ -96,16 +112,43 @@
           padding-right: 1.75rem;
         }
       }
-    }
 
-    @media (max-width: $bp-xxl) {
-      span {
-        display: none;
+      @media (max-width: $bp-xxl) {
+
+        a:not(.newaction-btn)[data-tooltip] {
+          cursor: pointer;
+          position: relative;
+          z-index: 2;
+
+          &::after {
+            background: $gray-light;
+            border-radius: $border-radius;
+            bottom: 2rem;
+            color: $white;
+            content: attr(data-tooltip);
+            font-size: 0.75rem;
+            left: 50%;
+            opacity: 0;
+            padding: 0.25rem 1rem;
+            position: absolute;
+            transform: translate(-50%, 0);
+          }
+
+          &:hover::after {
+            opacity: 1;
+          }
+
+        }
+
+        span {
+          display: none;
+        }
+
+        .newaction-btn span {
+          display: inline-block;
+        }
       }
 
-      .newaction-btn span {
-        display: inline-block;
-      }
     }
   }
 }
