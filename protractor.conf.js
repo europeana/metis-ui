@@ -11,12 +11,9 @@ exports.config = {
     './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome',
-    chromeOptions: {
-      args: [ "--headless", "--disable-gpu", "--window-size=800x600" ]
-    }
+    'browserName': 'safari'      
   },
-  directConnect: true,
+  seleniumAddress : "http://localhost:4444/wd/hub",
   baseUrl: 'http://localhost:4200/',
   framework: 'jasmine',
   jasmineNodeOpts: {
