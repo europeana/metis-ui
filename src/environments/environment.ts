@@ -16,6 +16,11 @@ export const environment = {
   emails: {
     profile: 'content@europeana.eu'
   },
+  test: {
+    username: 'test.metis@europeana.eu',
+    password: '123'
+  },
+  afterLoginGoto: '/profile',
   links: {
     registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis',
     gotoZoho: 'https://www.zoho.com'
