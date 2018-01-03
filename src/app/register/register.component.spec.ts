@@ -7,13 +7,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AuthenticationService } from '../_services';
-
-// Can't bind to 'passwordToCheck' since it isn't a known property of 'app-password-check'.
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
+  let submitBtn;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -31,7 +30,17 @@ describe('RegisterComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should contain a form', () => {
+    expect(fixture.nativeElement.querySelector('.metis-register-form') === null).toBe(false);
+  });
+
+  it('should contain a disabled button at first', () => {
+    submitBtn = fixture.nativeElement.querySelector('.submit-btn');
+    expect(submitBtn.disabled).toBe(true);
+  });
+
 });
