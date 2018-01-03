@@ -13,9 +13,13 @@ import { environment } from '../../environments/environment';
 })
 
 export class RegisterComponent implements OnInit {
+  
   loading = false;
   errorMessage: string;
   successMessage: string;
+  notfoundMessage: string;
+  linkRegister: string = environment.links.registerMetis;
+
   public password = '';
 
   registerForm: FormGroup;
@@ -71,6 +75,7 @@ export class RegisterComponent implements OnInit {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
         } else if (err.status === 404 || err.status === 406) {
+          
           let errmsg: string;
           try {
             const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
@@ -79,12 +84,14 @@ export class RegisterComponent implements OnInit {
             console.error('RegisterComponent: JSON.parse(err.error) failed', err.error);
             errmsg = null;
           }
-          this.router.navigate(['/register/notfound', { reason: errmsg || 'Unknown' }]);
+          this.notfoundMessage = errmsg || 'Unknown';
+
         } else if (err.status === 409) {
           this.onRegistration('You are already registered, you will be redirected to the login page!');
         } else {
           this.errorMessage = `Registration failed: ${StringifyHttpError(err)}`;
         }
+        
         this.loading = false;
       });
     }

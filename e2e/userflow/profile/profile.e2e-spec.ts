@@ -33,4 +33,8 @@ describe('Profile', () => {
     });
   });
 
+  afterEach(function() {
+    browser.executeScript('window.localStorage.clear();');
+  });
+
 });

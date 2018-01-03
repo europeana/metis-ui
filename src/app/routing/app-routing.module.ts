@@ -6,8 +6,7 @@ import { DatasetComponent } from '../dataset';
 import { HomeComponent } from '../home';
 import { LoginComponent } from '../login';
 import { ProfileComponent } from '../profile';
-import { RegisterComponent,
-         RegisterNotfoundComponent } from '../register';
+import { RegisterComponent } from '../register';
 import { UsersComponent,
          UserDetailComponent } from '../users';
 
@@ -24,7 +23,6 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [AuthVisitorGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthUserGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [AuthVisitorGuard] },
-  { path: 'register/notfound', component: RegisterNotfoundComponent, canActivate: [AuthVisitorGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthUserGuard] },
   { path: 'users/:id', component: UserDetailComponent, canActivate: [AuthUserGuard] },
   { path: '', redirectTo: '/home', pathMatch: 'full' },

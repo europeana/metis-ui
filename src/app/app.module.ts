@@ -16,8 +16,7 @@ import { AuthenticationService,
          NotificationsService } from './_services';
 
 import { AppComponent } from './app.component';
-import { RegisterComponent,
-         RegisterNotfoundComponent } from './register';
+import { RegisterComponent } from './register';
 import { LoginComponent } from './login';
 import { ProfileComponent } from './profile';
 import { HeaderComponent,
@@ -42,7 +41,6 @@ import { UsersComponent,
   declarations: [
     AppComponent,
     RegisterComponent,
-    RegisterNotfoundComponent,
     LoginComponent,
     ProfileComponent,
     PageNotFoundComponent,
