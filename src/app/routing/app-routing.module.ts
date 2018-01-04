@@ -11,7 +11,6 @@ import { UsersComponent,
          UserDetailComponent } from '../users';
 
 import { AuthVisitorGuard, AuthUserGuard } from '../_guards';
-
 import { PageNotFoundComponent } from '../page-not-found';
 
 const routes: Routes = [
