@@ -1,14 +1,21 @@
 ﻿import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
 import { AuthenticationService } from '../_services';
 
 @Injectable()
 export class AuthVisitorGuard implements CanActivate {
 
-  constructor( private authentication: AuthenticationService ) {}
+  constructor( private router: Router, 
+    private authentication: AuthenticationService ) {}
 
   canActivate() {
-  	return !this.authentication.validatedUser();
-  }
-    
+  	
+  	if (this.authentication.validatedUser() === false) {
+  		return true;
+  	} else {
+      // user is loggedin: useless to visit eg login and registrationpage again, so redirect to profile
+      this.router.navigate(['/profile']);
+    }
+
+  }    
 }
