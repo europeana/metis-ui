@@ -29,13 +29,18 @@ import { DatasetComponent,
          GeneralinfoComponent,
          DatasetlogComponent,
          HistoryComponent,
-         ActionbarComponent } from './dataset';
+         ActionbarComponent,
+         MappingComponent,
+         PreviewComponent,
+         QualityassuranceComponent } from './dataset';
 import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
 import { UsersComponent,
          UserDetailComponent } from './users';
+import { ExecutionsComponent } from './dashboard/executions/executions.component';
+import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoingexecutions.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +63,13 @@ import { UsersComponent,
     DashboardactionsComponent,
     ActionbarComponent,
     HistoryComponent,
-    DatasetlogComponent
+    ActionbarComponent,
+    MappingComponent,
+    PreviewComponent,
+    QualityassuranceComponent,
+    DatasetlogComponent,
+    ExecutionsComponent,
+    OngoingexecutionsComponent
   ],
   imports: [
     BrowserModule,
@@ -67,7 +78,7 @@ import { UsersComponent,
     HttpClientModule,
     AppRoutingModule    
   ],
-  entryComponents: [ DatasetformComponent, HistoryComponent ],
+  entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, QualityassuranceComponent ],
   providers: [
     AuthVisitorGuard,
     AuthUserGuard,

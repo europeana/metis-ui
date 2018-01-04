@@ -7,6 +7,9 @@ import { AuthenticationService, DatasetsService } from '../_services';
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
 import { HistoryComponent } from './history/history.component';
+import { MappingComponent } from './mapping/mapping.component';
+import { PreviewComponent } from './preview/preview.component';
+import { QualityassuranceComponent } from './qualityassurance/qualityassurance.component';
 
 import { datasetTab } from './datasettab';
 
@@ -86,6 +89,12 @@ export class DatasetComponent implements OnInit {
       return new datasetTab(DatasetformComponent, {});
     } else if (this.activeTab === 'log') {
       return new datasetTab(HistoryComponent, this.dataset);
+    } else  if (this.activeTab === 'mapping') {
+      return new datasetTab(MappingComponent, {});
+    } else  if (this.activeTab === 'preview') {
+      return new datasetTab(PreviewComponent, {});
+    } else  if (this.activeTab === 'dataquality') {
+      return new datasetTab(QualityassuranceComponent, {});
     }
   }
 
