@@ -1,3 +1,29 @@
+// messages
+.messages {
+  max-width: 100%;
+
+  .error-message,
+  .success-message {
+    color: $white;
+    font-size: $font-size-slightly-smaller;
+    line-height: 1.25rem;
+    margin-bottom: 0.6rem;
+    padding: 0.5rem 1.2rem;
+
+    i {
+      padding-right: .6rem;
+      }
+    }
+
+  .success-message {
+    background-color: $eu-jade;
+  }
+
+  .error-message {
+    background-color: $eu-red;
+  }
+}
+
 .metis-form {
   align-items: center;
   display: flex;
@@ -18,32 +44,6 @@
     h2 {
       font-size: 1.375rem;
       margin-bottom: 1.5rem;
-    }
-  }
-
-  // messages
-  .messages {
-    max-width: 100%;
-
-    .error-message,
-    .success-message {
-      color: $white;
-      font-size: $font-size-slightly-smaller;
-      line-height: 1.25rem;
-      margin-bottom: 0.6rem;
-      padding: 0.5rem 1.2rem;
-
-      i {
-        padding-right: .6rem;
-        }
-      }
-
-    .success-message {
-      background-color: $eu-jade;
-    }
-
-    .error-message {
-      background-color: $eu-red;
     }
   }
 

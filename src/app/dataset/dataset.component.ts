@@ -58,7 +58,9 @@ export class DatasetComponent implements OnInit {
 
       if (this.activeSet) {
         this.returnDataset(+params['id']);
-      } 
+      } else {
+        this.loadTabComponent();
+      }
 
     });
   }
@@ -74,7 +76,14 @@ export class DatasetComponent implements OnInit {
       this.updatedDate = convertDate(this.datasetData.updatedDate);
     },
       (err: HttpErrorResponse) => {
+
         this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
+
+        if (err.status === 401) {
+          this.authentication.logout();
+          this.router.navigate(['/login']);
+        }
+
     });
 
   }
