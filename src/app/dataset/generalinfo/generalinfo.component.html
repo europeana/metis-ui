@@ -1,14 +1,14 @@
-<div class="metis-dataset-info-block" *ngIf="dataset">
+<div class="metis-dataset-info-block" *ngIf="datasetData">
   <h5>
     General info
   </h5>
   <dl class="dataset-info-fields">
     <dt>Provider</dt>
-    <dd>{{dataset.organizationId}}</dd>
+    <dd>{{datasetData.organizationName}}</dd>
     <dt>Nr Published Records</dt>
-    <dd>{{dataset.publishedRecords}}</dd>
+    <dd>{{datasetData.publishedRecords}}</dd>
     <dt>Last Publication</dt>
-    <dd>{{dataset.lastPublicationDate}}</dd>     
+    <dd>{{lastPublishedDate}}</dd>     
   </dl>
   <div class="dataset-btns">
     <div class="btns-set">

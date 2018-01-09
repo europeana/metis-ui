@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import 'rxjs/Rx';
 
 import { CountriesService, ProvidersService, DatasetsService } from '../../_services';
-import { Dataset } from '../../_models';
 import { convertDate } from '../../_helpers';
 
 @Component({
@@ -45,7 +44,6 @@ export class DatasetformComponent implements OnInit {
       this.formMode = 'create';
     } else {
       this.formMode = 'read';
-      console.log(this.datasetData.harvestingMetadata);
     }
 
     this.countryOptions = this.countries.getCountries();

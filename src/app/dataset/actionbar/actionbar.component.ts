@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Dataset } from '../../_models';
 import { HttpClient } from '@angular/common/http';
 
 import {Observable} from 'rxjs/Rx';
@@ -20,7 +19,7 @@ export class ActionbarComponent {
       private http: HttpClient) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
-  @Input('dataset') dataset: Dataset;
+  @Input('datasetData') datasetData;
   workflowPercentage = 0;
   subscription;
   intervalTimer = 500;
@@ -40,7 +39,6 @@ export class ActionbarComponent {
     this.subscription = timer.subscribe(t => {
         this.pollingWorkflow(t);
     });
-
   }
 
   pollingWorkflow(t) {

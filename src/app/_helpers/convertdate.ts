@@ -1,6 +1,4 @@
 export function convertDate(date) {
-  
-	console.log('convertDate', date);
 
 	if (!date) return '';
 

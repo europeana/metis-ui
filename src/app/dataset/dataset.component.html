@@ -5,10 +5,10 @@
     <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
   </div>
   
-  <div class="collapse-block" *ngIf="dataset">
+  <div class="collapse-block" *ngIf="datasetData">
 
     <div class="dataset-name">
-      {{dataset.name}}
+      {{datasetData.datasetName}}
     </div>
     <div class="collapse-toggle-block">
       <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
@@ -23,13 +23,13 @@
     <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed">
       <div class="metis-dashboard-left">
         
-        <app-generalinfo></app-generalinfo>
+        <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
 
       </div>
       <div class="metis-dashboard-right">       
 
-        <app-actionbar [isShowingLog]="isShowingLog" [dataset]="dataset" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
-        <app-history [dataset]="dataset" [inCollapsablePanel]=true [activeSet]="activeSet"></app-history>
+        <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
+        <app-history [datasetData]="datasetData" [inCollapsablePanel]=true [activeSet]="activeSet"></app-history>
 
         <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
 

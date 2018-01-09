@@ -42,7 +42,7 @@ export class DatasetComponent implements OnInit {
   successMessage: string;
   
   public isShowingLog = false;
-  public dataset; 
+  public datasetData; 
   public activeSet: string;
 
   ngOnInit() {
@@ -68,7 +68,7 @@ export class DatasetComponent implements OnInit {
   returnDataset(id) {
 
     this.datasets.getDataset(id).subscribe(result => {
-      this.dataset = result;
+      this.datasetData = result;
       this.loadTabComponent();
     },
       (err: HttpErrorResponse) => {
@@ -107,9 +107,9 @@ export class DatasetComponent implements OnInit {
   */
   getcurrentTab() {
     if (this.activeTab === 'new') {
-      return new datasetTab(DatasetformComponent, this.dataset);
+      return new datasetTab(DatasetformComponent, this.datasetData);
     } else if (this.activeTab === 'log') {
-      return new datasetTab(HistoryComponent, this.dataset);
+      return new datasetTab(HistoryComponent, this.datasetData);
     } else  if (this.activeTab === 'mapping') {
       return new datasetTab(MappingComponent, {});
     } else  if (this.activeTab === 'preview') {
