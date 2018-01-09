@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { StringifyHttpError } from '../_helpers';
 
 import { AuthenticationService, DatasetsService } from '../_services';
 
@@ -18,8 +19,7 @@ import { Dataset, User } from '../_models';
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss'],
-  providers: [AuthenticationService]
+  styleUrls: ['./dataset.component.scss']
 })
 
 export class DatasetComponent implements OnInit {
@@ -38,10 +38,11 @@ export class DatasetComponent implements OnInit {
   showLog: boolean = false;
   user: User;
   userRole: string;
-  editMode = false; // if not edit, then create
+  errorMessage: string;
+  successMessage: string;
   
   public isShowingLog = false;
-  public dataset: Dataset; 
+  public dataset; 
   public activeSet: string;
 
   ngOnInit() {
@@ -55,21 +56,37 @@ export class DatasetComponent implements OnInit {
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
 
       if (this.activeSet) {
-        this.dataset = this.datasets.getDataset(+params['id']);
-      } else {
-        // create new dataset
-      }
+        this.returnDataset(+params['id']);
+      } 
 
+    });
+  }
+
+  /* returnDataset
+    returns all dataset information based on identifier
+  */
+  returnDataset(id) {
+
+    this.datasets.getDataset(id).subscribe(result => {
+      this.dataset = result;
       this.loadTabComponent();
-
+    },
+      (err: HttpErrorResponse) => {
+        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
     });
 
   }
 
+  /* onNotifyShowLogStatus
+    opens/closes the log messages 
+  */
   onNotifyShowLogStatus(message:boolean):void {
     this.isShowingLog = message;
   }
 
+  /* loadTabComponent
+    loads the content within the placeholder
+  */
   loadTabComponent() {
 
     if (!this.getcurrentTab()) {return false; }
@@ -80,13 +97,17 @@ export class DatasetComponent implements OnInit {
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.dataset = this.getcurrentTab().data;
+    componentRef.instance.datasetData = this.getcurrentTab().data;
 
   }
 
+  /* getcurrentTab
+    returns the components that will be used in the component placeholder within a tab
+    based on currently active tab
+  */
   getcurrentTab() {
     if (this.activeTab === 'new') {
-      return new datasetTab(DatasetformComponent, {});
+      return new datasetTab(DatasetformComponent, this.dataset);
     } else if (this.activeTab === 'log') {
       return new datasetTab(HistoryComponent, this.dataset);
     } else  if (this.activeTab === 'mapping') {
@@ -96,10 +117,6 @@ export class DatasetComponent implements OnInit {
     } else  if (this.activeTab === 'dataquality') {
       return new datasetTab(QualityassuranceComponent, {});
     }
-  }
-
-  onSubmit() {
-    console.log('submit');
   }
 
 }

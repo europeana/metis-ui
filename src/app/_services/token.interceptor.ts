@@ -6,6 +6,7 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 import { AuthenticationService } from './authentication.service';
+
 import { Observable } from 'rxjs/Observable';
 
 // TokenInterceptor:
@@ -24,10 +25,14 @@ export class TokenInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     const fn = 'TokeInterceptor#intercept';
-    
+
+    console.log('intercept: ' + request.url);
+  
     if (!request.url.match(/login|register/)) {
       const auth = this.inj.get(AuthenticationService);
       const token = auth.getToken();
+
+      console.log(token);
 
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };
@@ -35,6 +40,9 @@ export class TokenInterceptor implements HttpInterceptor {
         request = request.clone({
           setHeaders: headers
         });
+
+        console.log(`${fn}: token!`, request);
+
       } else {
         console.log(`${fn}: no token!`);
       }

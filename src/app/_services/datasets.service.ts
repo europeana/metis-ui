@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Dataset } from '../_models';
 import { randomDatasetName,
          randomOrganizationId,
@@ -6,16 +7,17 @@ import { randomDatasetName,
          randomWorkflow,
          randomDateRange } from '../_helpers';
 
+import { environment } from '../../environments/environment';
+
 import 'rxjs/Rx';
 import { switchMap } from 'rxjs/operators';
 
 
 @Injectable()
-
 export class DatasetsService {
   private datasets: Dataset[]  = [];
   
-  constructor() {
+  constructor(private http: HttpClient) {
     let max = 25;
     const today = new Date();
     const dt1 = new Date(today);
@@ -57,9 +59,44 @@ export class DatasetsService {
     return this.datasets;
   }
 
-  getDataset(id: number): Dataset {
-   const dataset = this.datasets.filter(ds => ds.id === id);
-   return dataset ? dataset[0] : null;
+
+  // new ones  
+  getDataset(id: number) {
+    const url = `${environment.apiHostCore}/${environment.apiDatasets}/${id}`;
+    
+    return this.http.get(url).map(data => {   
+      const dataset = data;
+      if (dataset) {
+        return dataset;
+      } else {
+        return false;
+      }
+
+    });
+    
   }
+
+  createDataset(datasetFormValues) {
+    console.log('createDataset', datasetFormValues);
+
+    const url = `${environment.apiHostCore}/${environment.apiDatasets}`;
+    console.log(url);
+
+    return this.http.post(url, JSON.stringify('{}')).map(data => {      
+      return true;
+    });
+  }
+
+  updateDataset(datasetFormValues) {
+
+    //const url = `${environment.apiHost}/${environment.apiDatasets}/7`;
+    //console.log(url);
+
+    //return this.http.get(url).map(data => {      
+    //  return true;
+    //});
+
+  }
+
 }
 

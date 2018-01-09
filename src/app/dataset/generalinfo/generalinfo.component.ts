@@ -13,12 +13,12 @@ export class GeneralinfoComponent implements OnInit {
   constructor(private datasets: DatasetsService,
   	private route: ActivatedRoute) { }
 
-  dataset: Dataset;
+  dataset; //use @input
 
   ngOnInit() {
 
   	this.route.params.subscribe(params => {
-      this.dataset = this.datasets.getDataset(+params['id']);      
+      //this.dataset = this.datasets.returnDataset(+params['id']);      
     });
 
   }

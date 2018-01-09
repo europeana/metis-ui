@@ -1,5 +1,10 @@
 <div class="dashboard-wrapper">
 
+  <div class="messages">
+    <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+    <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+  </div>
+  
   <div class="collapse-block" *ngIf="dataset">
 
     <div class="dataset-name">

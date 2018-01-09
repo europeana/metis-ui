@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from './_services';
+import { AuthenticationService, DatasetsService } from './_services';
 
 @Component({
-  providers: [AuthenticationService],
+  providers: [AuthenticationService, DatasetsService],
   selector: 'app-root',
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html'

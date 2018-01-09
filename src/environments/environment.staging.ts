@@ -3,6 +3,7 @@ export const environment = {
   envName: 'staging',
   passwordStrength: 0,
   apiHost: 'https://metis-authentication-rest-test.eanadev.org',
+  apiHostCore: 'https://metis-core-rest-test.eanadev.org',
   apiLogin: 'authentication/login',
   apiRegister: 'authentication/register',
   apiUsers: 'authentication/users',
