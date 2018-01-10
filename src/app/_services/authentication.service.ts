@@ -42,7 +42,6 @@ export class AuthenticationService {
   updatePassword(password: string) {
     const fn = `updatePassword(password='${password}'`;
     const url = `${apiSettings.apiHostAuth}/${environment.apiUpdatePassword}?newPassword=${password}`;
-    console.log(url);
 
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       return true;
