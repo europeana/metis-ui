@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../_models';
+
 import { environment } from '../../environments/environment';
+import { apiSettings } from '../../environments/apisettings';
 
 @Component({
   selector: 'app-user-detail',
@@ -19,7 +21,7 @@ export class UserDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    const url = `${environment.apiHost}/${environment.apiUsers}`;
+    const url = `${apiSettings.apiHostAuth}/${environment.apiUsers}`;
     this.http.get(url).subscribe(data => {
       const users = <User[]>data;
       this.user = users.filter(user => user.userId === id)[0];
