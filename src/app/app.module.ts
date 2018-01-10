@@ -13,7 +13,8 @@ import { AuthenticationService,
          TokenInterceptor,
          RedirectPreviousUrl,
          DatasetsService,
-         NotificationsService } from './_services';
+         NotificationsService,
+         SettingsService } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
@@ -90,7 +91,8 @@ import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoin
     },
     RedirectPreviousUrl,
     DatasetsService,
-    NotificationsService
+    NotificationsService,
+    SettingsService
   ],
   bootstrap: [AppComponent]
 })
