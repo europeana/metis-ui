@@ -15,7 +15,8 @@ import { AuthenticationService,
          RedirectPreviousUrl,         
          NotificationsService,
          CountriesService,
-         ProvidersService } from './_services';
+         ProvidersService, 
+         SettingsService } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
@@ -90,6 +91,7 @@ import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoin
     NotificationsService,
     CountriesService,
     ProvidersService,
+    SettingsService
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

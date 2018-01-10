@@ -37,7 +37,7 @@ export class TokenInterceptor implements HttpInterceptor {
           setHeaders: headers
         });
 
-        console.log(`${fn}: token!`, request);
+        console.log(`${fn}: token!`);
 
       } else {
         console.log(`${fn}: no token!`);

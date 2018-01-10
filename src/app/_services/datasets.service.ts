@@ -8,6 +8,7 @@ import { randomDatasetName,
          randomDateRange } from '../_helpers';
 
 import { environment } from '../../environments/environment';
+import { apiSettings } from '../../environments/apisettings';
 
 import 'rxjs/Rx';
 import { switchMap } from 'rxjs/operators';
@@ -71,7 +72,7 @@ export class DatasetsService {
   }
 
   getDataset(id: number) {
-    const url = `${environment.apiHostCore}/${environment.apiDatasets}/${id}`;
+    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/${id}`;
     
     return this.http.get(url).map(data => {   
       const dataset = data;
@@ -86,7 +87,7 @@ export class DatasetsService {
 
   createDataset(datasetFormValues) {
     
-    const url = `${environment.apiHostCore}/${environment.apiDatasets}`;
+    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;
     
     return this.http.post(url, datasetFormValues).map(data => {      
       const dataset = data;
