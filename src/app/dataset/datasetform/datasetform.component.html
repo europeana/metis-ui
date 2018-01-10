@@ -115,13 +115,13 @@
         <div class="form-group-radios">
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'http' ? true : false" />
+              <input type="radio" formControlName="pluginType" value="http" [(ngModel)]="harvestprotocol" [checked]="datasetData && harvestprotocol === 'http' ? true : false" />
               HTTP
             </label>
           </div>          
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="OAIPMH_HARVEST" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestingMetadata.pluginType === 'OAIPMH_HARVEST' ? true : false" /> OAI-PMH
+              <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" [(ngModel)]="harvestprotocol" [checked]="datasetData && harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> OAI-PMH
             </label>
           </div>          
         </div>

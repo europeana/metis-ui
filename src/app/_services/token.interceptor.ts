@@ -26,13 +26,9 @@ export class TokenInterceptor implements HttpInterceptor {
 
     const fn = 'TokeInterceptor#intercept';
 
-    console.log('intercept: ' + request.url);
-  
     if (!request.url.match(/login|register/)) {
       const auth = this.inj.get(AuthenticationService);
       const token = auth.getToken();
-
-      console.log(token);
 
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };

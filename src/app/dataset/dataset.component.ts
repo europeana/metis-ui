@@ -34,7 +34,7 @@ export class DatasetComponent implements OnInit {
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string = 'new';
-  isCollapsed: boolean = true;
+  isCollapsed: boolean = false;
   showLog: boolean = false;
   user: User;
   userRole: string;
@@ -109,6 +109,8 @@ export class DatasetComponent implements OnInit {
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.datasetData = this.getcurrentTab().data;
+     
+    this.successMessage = this.datasets.getDatasetMessage();
 
   }
 

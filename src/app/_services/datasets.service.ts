@@ -16,6 +16,7 @@ import { switchMap } from 'rxjs/operators';
 @Injectable()
 export class DatasetsService {
   private datasets: Dataset[]  = [];
+  datasetMessage;
   
   constructor(private http: HttpClient) {
     let max = 25;
@@ -61,6 +62,14 @@ export class DatasetsService {
 
 
   // new ones  
+  setDatasetMessage(message) {
+    this.datasetMessage = message;
+  }
+
+  getDatasetMessage() {
+    return this.datasetMessage;
+  }
+
   getDataset(id: number) {
     const url = `${environment.apiHostCore}/${environment.apiDatasets}/${id}`;
     
@@ -71,19 +80,21 @@ export class DatasetsService {
       } else {
         return false;
       }
-
     });
     
   }
 
   createDataset(datasetFormValues) {
-    console.log('createDataset', datasetFormValues);
-
+    
     const url = `${environment.apiHostCore}/${environment.apiDatasets}`;
-    console.log(url);
-
-    return this.http.post(url, JSON.stringify('{}')).map(data => {      
-      return true;
+    
+    return this.http.post(url, datasetFormValues).map(data => {      
+      const dataset = data;
+      if (dataset) {
+        return dataset;
+      } else {
+        return false;
+      }
     });
   }
 
