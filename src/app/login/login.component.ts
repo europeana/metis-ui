@@ -36,8 +36,6 @@ export class LoginComponent implements OnInit {
       'password': ['', Validators.required ]
     });
 
-    console.log('ngOnInit', this.settings.returnApiHosts());
-
   }
 
   onSubmit() {

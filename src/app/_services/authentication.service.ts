@@ -4,15 +4,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { apiSettings } from '../../environments/apisettings';
+
 import { User } from '../_models';
 
 @Injectable()
 export class AuthenticationService {
 
   private readonly key = 'currentUser';
-
   private token: string;
-
   public currentUser = null;
 
   constructor(public router: Router,
@@ -41,8 +41,8 @@ export class AuthenticationService {
 
   updatePassword(password: string) {
     const fn = `updatePassword(password='${password}'`;
-    const url = `${environment.apiHost}/${environment.apiUpdatePassword}?newPassword=${password}`;
-    
+    const url = `${apiSettings.apiHostAuth}/${environment.apiUpdatePassword}?newPassword=${password}`;
+
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       return true;
     });
@@ -51,7 +51,7 @@ export class AuthenticationService {
 
   register(email: string, password: string) {
     const fn = `register(email='${email}',password='${password}'`;
-    const url = `${environment.apiHost}/${environment.apiRegister}`;
+    const url = `${apiSettings.apiHostAuth}/${environment.apiRegister}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
@@ -61,10 +61,11 @@ export class AuthenticationService {
   }
 
   login(email: string, password: string) {
+
     const fn = `login(email='${email}',password='${password}')`;
-    const url = `${environment.apiHost}/${environment.apiLogin}`;
+    const url = `${apiSettings.apiHostAuth}/${environment.apiLogin}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    
+
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
       if (user && user.metisUserAccessToken) {
@@ -86,7 +87,7 @@ export class AuthenticationService {
 
   reloadCurrentUser(email) {
     const fn = 'reloadCurrentUser()';
-    const url = `${environment.apiHost}/${environment.apiProfile}/?userEmailToUpdate=${email}`;
+    const url = `${apiSettings.apiHostAuth}/${environment.apiProfile}/?userEmailToUpdate=${email}`;
     
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       const user = <User>data;
