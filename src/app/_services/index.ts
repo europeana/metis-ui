@@ -5,3 +5,4 @@ export * from './notifications.service';
 export * from './providers.service';
 export * from './redirect-previous-url.service';
 export * from './token.interceptor';
+export * from './settings.service';
