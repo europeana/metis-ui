@@ -14,7 +14,7 @@ import { QualityassuranceComponent } from './qualityassurance/qualityassurance.c
 
 import { datasetTab } from './datasettab';
 
-import { Dataset, User } from '../_models';
+import { User } from '../_models';
 
 @Component({
   selector: 'app-dataset',

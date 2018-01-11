@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Dataset } from '../_models';
 import { randomDatasetName,
          randomOrganizationId,
          randomNumber,
@@ -16,7 +15,7 @@ import { switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class DatasetsService {
-  private datasets: Dataset[]  = [];
+  private datasets = [];
   datasetMessage;
   
   constructor(private http: HttpClient) {
@@ -53,7 +52,7 @@ export class DatasetsService {
     }
   }
 
-  getDatasets(): Dataset[] {
+  getDatasets() {
     return this.datasets;
   }
 
@@ -81,8 +80,7 @@ export class DatasetsService {
       } else {
         return false;
       }
-    });
-    
+    });    
   }
 
   createDataset(datasetFormValues) {

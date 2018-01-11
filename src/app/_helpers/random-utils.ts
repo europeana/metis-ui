@@ -1,9 +1,7 @@
-import { Workflow } from '../_models';
-
 const _letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const _digits = '0123456789';
 const _alphanumeric = _letters + _digits;
-const _workflows: Workflow[] = [{
+const _workflows = [{
     id: 1,
     name: 'Publish',
     icon: 'car'
@@ -71,7 +69,7 @@ export function randomDatasetName() {
   return randomAlphaNumericString(randomNumber(4, 6)) + randomDigitString(randomNumber(3, 5)) + randomCharString(randomNumber(2, 4));
 }
 
-export function randomWorkflow(): Workflow {
+export function randomWorkflow() {
   return randomValue(_workflows);
 }
 
