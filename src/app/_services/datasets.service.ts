@@ -85,8 +85,7 @@ export class DatasetsService {
 
   createDataset(datasetFormValues) {
     
-    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;
-    
+    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;    
     return this.http.post(url, datasetFormValues).map(data => {      
       const dataset = data;
       if (dataset) {
@@ -95,16 +94,22 @@ export class DatasetsService {
         return false;
       }
     });
+
   }
 
   updateDataset(datasetFormValues) {
 
-    //const url = `${environment.apiHost}/${environment.apiDatasets}/7`;
-    //console.log(url);
+    console.log('updateDataset', datasetFormValues);
 
-    //return this.http.get(url).map(data => {      
-    //  return true;
-    //});
+    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;    
+    return this.http.put(url, datasetFormValues).map(data => {      
+      const dataset = data;
+      if (dataset) {
+        return dataset;
+      } else {
+        return false;
+      }
+    });
 
   }
 

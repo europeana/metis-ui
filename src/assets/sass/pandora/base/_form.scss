@@ -266,11 +266,6 @@
         &::placeholder {
           color: $eu-blue;
         }
-
-        &:read-only,
-        &:read-only::placeholder {
-          color: $gray-light;
-        }
       }
 
       input:not([type='checkbox']),
@@ -290,6 +285,11 @@
           .svg-icon-search {
             display: none;
           }
+        }
+
+        &:read-only {
+          border-color: $opacity-gray-light;
+          color: $opacity-gray-light;
         }
 
         &.ng-invalid.ng-touched {

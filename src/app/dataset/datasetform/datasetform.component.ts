@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+
 import 'rxjs/Rx';
 
 import { CountriesService, DatasetsService, AuthenticationService } from '../../_services';
@@ -38,16 +39,45 @@ export class DatasetformComponent implements OnInit {
 
   ngOnInit() {
 
-    if (!this.datasetData) {
+    if (!this.datasetData) {      
+      const tempdata = JSON.parse(localStorage.getItem('tempDatasetData')); // something in localstorage? 
+      this.datasetData = tempdata;
       this.formMode = 'create';
     } else {
       this.formMode = 'read';
     }
 
-    this.countryOptions = this.countries.getCountries();
-    this.languageOptions = this.countries.getLanguages();
+    this.returnCountries();
+    this.returnLanguages();
 
     this.buildForm();
+    this.saveTempData();
+    
+  }
+
+  returnCountries() {
+    
+    this.countries.getCountries().subscribe(result => {
+      this.countryOptions = result;
+    },(err: HttpErrorResponse) => {
+      if (err.status === 401 || err.status === 406) {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+
+  }
+
+  returnLanguages() {
+
+    this.countries.getLanguages().subscribe(result => {
+      this.languageOptions = result;
+    },(err: HttpErrorResponse) => {
+      if (err.status === 401 || err.status === 406) {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+    });
 
   }
 
@@ -58,15 +88,16 @@ export class DatasetformComponent implements OnInit {
   */
   buildForm() {
      /* populated the form or leave empty when creating a new dataset */
+
     this.datasetForm = this.fb.group({
-      identifier: [(this.datasetData ? this.datasetData.datasetId : ''), [Validators.required]],
+      datasetId: [(this.datasetData ? this.datasetData.datasetId : '')],
       datasetName: [(this.datasetData ? this.datasetData.datasetName : ''), [Validators.required]],
       dataProvider: [(this.datasetData ? this.datasetData.dataProvider : '')],
       provider: [(this.datasetData ? this.datasetData.provider : ''), [Validators.required]],
       intermediateProvider: [(this.datasetData ? this.datasetData.intermediateProvider : '')],
       dateCreated: [(this.datasetData ? convertDate(this.datasetData.createdDate) : '')],
       dateUpdated: [(this.datasetData ? convertDate(this.datasetData.updatedDate) : '')],
-      status: [(this.datasetData ? this.datasetData.datasetStatus : ''), [Validators.required]],
+      status: [(this.datasetData ? this.datasetData.datasetStatus : '')],
       replaces: [(this.datasetData ? this.datasetData.replaces : '')],
       replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],
       country: [(this.datasetData ? this.datasetData.country : '')],
@@ -89,75 +120,37 @@ export class DatasetformComponent implements OnInit {
       url: ['']
     });
 
+    console.log(this.datasetForm.controls['country']);
+
+
     if (this.datasetData) {
       if (this.datasetData.harvestingMetadata) {
         this.harvestprotocol = (this.datasetData ? this.datasetData.harvestingMetadata.pluginType : '');
       }
     }
 
-    /* disable fields depening on mode and restrictions */
-    this.datasetForm.controls['identifier'].disable();      
-    this.datasetForm.controls['dateCreated'].disable();
-    this.datasetForm.controls['dateUpdated'].disable();
-    this.datasetForm.controls['status'].disable();    
-    this.datasetForm.controls['createdBy'].disable();    
-    this.datasetForm.controls['firstPublished'].disable();
-    this.datasetForm.controls['lastPublished'].disable();
-    this.datasetForm.controls['numberOfItemsPublished'].disable();
-    this.datasetForm.controls['lastDateHarvest'].disable();
-    this.datasetForm.controls['numberOfItemsHarvested'].disable();
-    
     if (this.formMode == 'read') { 
-      this.datasetForm.controls['datasetName'].disable();
-      this.datasetForm.controls['dataProvider'].disable();
-      this.datasetForm.controls['provider'].disable();
-      this.datasetForm.controls['intermediateProvider'].disable();
-      this.datasetForm.controls['replaces'].disable();
-      this.datasetForm.controls['replacedBy'].disable();
       this.datasetForm.controls['country'].disable();
       this.datasetForm.controls['language'].disable();
       this.datasetForm.controls['description'].disable();
       this.datasetForm.controls['notes'].disable();
-      this.datasetForm.controls['pluginType'].disable();
-      this.datasetForm.controls['harvestUrl'].disable();
-      this.datasetForm.controls['setSpec'].disable();
-      this.datasetForm.controls['metadataFormat'].disable();
-      this.datasetForm.controls['recordXPath'].disable();
-      this.datasetForm.controls['ftpHttpUser'].disable();
-      this.datasetForm.controls['ftpHttpPassword'].disable();
-      this.datasetForm.controls['url'].disable();
     }
 
   }
 
-  /* searchDataset
-    searches in all datasets
-    creates an autosuggest field
-  */
-  searchDataset(event) {
-    this.datasetOptions = this.datasets.searchDatasets(event.target.value);
-    this.autosuggest = event.target;
-    this.autosuggestId = event.target.id;
+  saveTempData() {
+
+    if (this.datasetForm.touched === false) { return false }
+
+    this.datasetForm.valueChanges.subscribe(val => {
+      this.formatFormValues();
+      localStorage.removeItem('tempDatasetData');
+      localStorage.setItem('tempDatasetData', JSON.stringify(this.datasetForm.value));
+    });
+
   }
 
-  /* selectDataset
-    select a dataset
-    from the autosuggest field
-  */
-  selectDataset(datasetname) {
-    this.autosuggest.value = datasetname;
-    this.datasetOptions = '';
-    this.autosuggest = '';
-    this.autosuggestId = '';
-  }
-
-  /* onSubmit
-    submits the form and shows an error or success message
-  */
-  onSubmit() {
-
-    this.successMessage = '';
-    this.errorMessage = '';
+  formatFormValues() {
 
     this.datasetForm.value.harvestingMetadata = {
       pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'VOID',
@@ -172,21 +165,64 @@ export class DatasetformComponent implements OnInit {
     delete this.datasetForm.value['metadataFormat'];
     delete this.datasetForm.value['setSpec'];
 
-    this.datasets.createDataset(this.datasetForm.value).subscribe(result => {
+    if (!this.datasetForm.value['country']) {
+      this.datasetForm.value['country'] = null;
+    }
+
+    if (!this.datasetForm.value['language']) {
+      this.datasetForm.value['language'] = null;
+    }
+
+  }
+
+  /* onSubmit
+    submits the form and shows an error or success message
+  */
+  onSubmit() {
+
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.formatFormValues();
+
+    if (this.formMode === 'update') {
+
+      this.datasets.updateDataset(this.datasetForm.value).subscribe(result => {
+
+        localStorage.removeItem('tempDatasetData');
+        this.successMessage = 'Dataset updated!';
+        
+      }, (err: HttpErrorResponse) => {
+
+        if (err.error.errorMessage === 'Wrong access token') {
+          this.authentication.logout();
+          this.router.navigate(['/login']);
+        }
+
+        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
+
+      });
+
+    } else {
+
+      this.datasets.createDataset(this.datasetForm.value).subscribe(result => {
+        
+        localStorage.removeItem('tempDatasetData');
+        this.datasets.setDatasetMessage('New dataset created! Id: ' + result['datasetId']);
+        this.router.navigate(['/dataset/new/' + result['datasetId']]);
       
-      this.datasets.setDatasetMessage('New dataset created! Id: ' + result['datasetId']);
-      this.router.navigate(['/dataset/new/' + result['datasetId']]);
-    
-    }, (err: HttpErrorResponse) => {
+      }, (err: HttpErrorResponse) => {
 
-      if (err.error.errorMessage === 'Wrong access token') {
-        this.authentication.logout();
-        this.router.navigate(['/login']);
-      }
+        if (err.error.errorMessage === 'Wrong access token') {
+          this.authentication.logout();
+          this.router.navigate(['/login']);
+        }
 
-      this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
+        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
 
-    });
+      });
+
+    }
 
     window.scrollTo(0, 0);
 
@@ -200,29 +236,13 @@ export class DatasetformComponent implements OnInit {
   updateForm() {
     this.formMode = 'update';
 
-    this.datasetForm.controls['datasetName'].enable();
-    this.datasetForm.controls['dataProvider'].enable();
-    this.datasetForm.controls['replaces'].enable();
-    this.datasetForm.controls['replacedBy'].enable();
     this.datasetForm.controls['country'].enable();
     this.datasetForm.controls['language'].enable();
     this.datasetForm.controls['description'].enable();
     this.datasetForm.controls['notes'].enable();
-    this.datasetForm.controls['pluginType'].enable();
-    this.datasetForm.controls['metadataSchema'].enable();
-    this.datasetForm.controls['harvestUrl'].enable();
-    this.datasetForm.controls['setSpec'].enable();
-    this.datasetForm.controls['metadataFormat'].enable();
-    this.datasetForm.controls['recordXPath'].enable();
-    this.datasetForm.controls['ftpHttpUser'].enable();
-    this.datasetForm.controls['ftpHttpPassword'].enable();
-    this.datasetForm.controls['url'].enable();
-
-    //this.datasets.updateDataset(this.datasetForm.value).subscribe(result => {
-    //  console.log('updateForm', result);
-    //});
-
+    
     window.scrollTo(0, 0);
-  }
+
+  }   
 
 }
