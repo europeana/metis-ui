@@ -1,8 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GeneralinfoComponent } from './generalinfo.component';
-import { RouterTestingModule } from '@angular/router/testing';
 import { DatasetsService } from '../../_services';
+
+import { HttpClientModule } from '@angular/common/http';
 
 describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
@@ -10,7 +11,7 @@ describe('GeneralinfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule],
+      imports: [ HttpClientModule],
       declarations: [ GeneralinfoComponent ],
       providers: [ DatasetsService ]
     })
@@ -26,4 +27,6 @@ describe('GeneralinfoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+
 });

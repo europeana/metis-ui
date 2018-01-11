@@ -1,5 +1,5 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { environment } from '../../../src/environments/environment';
+import { environment } from '../../src/environments/environment';
 
 describe('Register', () => {
 

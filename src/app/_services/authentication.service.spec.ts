@@ -3,7 +3,7 @@ import { TestBed, inject } from '@angular/core/testing';
 import { AuthenticationService } from './authentication.service';
 
 import { RouterTestingModule } from '@angular/router/testing';
-import {HttpClientModule} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('AuthenticationService', () => {
   beforeEach(() => {

@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { DatasetsService } from '../../_services';
 import { convertDate } from '../../_helpers';
 
@@ -10,14 +9,15 @@ import { convertDate } from '../../_helpers';
 })
 export class GeneralinfoComponent implements OnInit {
 
-  constructor(private datasets: DatasetsService,
-  	private route: ActivatedRoute) { }
+  constructor(private datasets: DatasetsService) { }
 
   @Input() datasetData: any;
   lastPublishedDate;
 
   ngOnInit() {
-    this.lastPublishedDate = convertDate(this.datasetData.lastPublishedDate);
+    if (this.datasetData) {
+      this.lastPublishedDate = convertDate(this.datasetData.lastPublishedDate);
+    }
   }
 
 }

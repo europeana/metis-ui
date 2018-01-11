@@ -91,7 +91,7 @@ import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoin
     NotificationsService,
     CountriesService,
     ProvidersService,
-    SettingsService
+    SettingsService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

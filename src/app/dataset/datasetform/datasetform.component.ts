@@ -1,10 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import 'rxjs/Rx';
 
-import { CountriesService, ProvidersService, DatasetsService, AuthenticationService } from '../../_services';
+import { CountriesService, DatasetsService, AuthenticationService } from '../../_services';
 import { StringifyHttpError, convertDate } from '../../_helpers';
 
 @Component({
@@ -19,8 +19,6 @@ export class DatasetformComponent implements OnInit {
   autosuggest;
   autosuggestId: String;
   datasetOptions: Object;
-  providerOptions;
-  activeSet;
   formMode: String = 'create'; // create, read, update
   errorMessage;
   successMessage;
@@ -33,7 +31,6 @@ export class DatasetformComponent implements OnInit {
  
   constructor(private countries: CountriesService,
     private datasets: DatasetsService,
-    private providers: ProvidersService,
     private authentication: AuthenticationService,
     private route: ActivatedRoute, 
     private router: Router,
@@ -41,11 +38,7 @@ export class DatasetformComponent implements OnInit {
 
   ngOnInit() {
 
-    this.route.params.subscribe(params => {
-      this.activeSet = +params['id']; 
-    });
-
-    if (!this.activeSet) {
+    if (!this.datasetData) {
       this.formMode = 'create';
     } else {
       this.formMode = 'read';
@@ -53,7 +46,6 @@ export class DatasetformComponent implements OnInit {
 
     this.countryOptions = this.countries.getCountries();
     this.languageOptions = this.countries.getLanguages();
-    this.providerOptions = this.providers.getProviders();
 
     this.buildForm();
 
