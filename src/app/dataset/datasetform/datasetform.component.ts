@@ -24,6 +24,8 @@ export class DatasetformComponent implements OnInit {
   errorMessage;
   successMessage;
   harvestprotocol; 
+  selectedCountry;
+  selectedLanguage;
 
   private datasetForm: FormGroup;
   private countryOptions;
@@ -59,6 +61,13 @@ export class DatasetformComponent implements OnInit {
     
     this.countries.getCountries().subscribe(result => {
       this.countryOptions = result;
+      if (this.datasetData.country && result) {
+        for (let i = 0; i < result.length; i++) {
+          if (result[i].enum = this.datasetData.country.enum) {
+            this.selectedCountry = this.countryOptions[i];
+          }
+        }
+      }
     },(err: HttpErrorResponse) => {
       if (err.status === 401 || err.status === 406) {
         this.authentication.logout();
@@ -71,7 +80,15 @@ export class DatasetformComponent implements OnInit {
   returnLanguages() {
 
     this.countries.getLanguages().subscribe(result => {
+
       this.languageOptions = result;
+      if (this.datasetData.language && result) {
+        for (let i = 0; i < result.length; i++) {
+          if (result[i].enum = this.datasetData.country.enum) {
+            this.selectedLanguage = this.languageOptions[i];
+          }
+        }
+      }
     },(err: HttpErrorResponse) => {
       if (err.status === 401 || err.status === 406) {
         this.authentication.logout();
@@ -100,7 +117,7 @@ export class DatasetformComponent implements OnInit {
       status: [(this.datasetData ? this.datasetData.datasetStatus : '')],
       replaces: [(this.datasetData ? this.datasetData.replaces : '')],
       replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],
-      country: [(this.datasetData ? this.datasetData.country : '')],
+      country: [],
       language: [(this.datasetData ? this.datasetData.language : '')],
       description: [(this.datasetData ? this.datasetData.description : '')],
       notes: [(this.datasetData ? this.datasetData.notes : '')],
@@ -119,9 +136,6 @@ export class DatasetformComponent implements OnInit {
       ftpHttpPassword: [''],
       url: ['']
     });
-
-    console.log(this.datasetForm.controls['country']);
-
 
     if (this.datasetData) {
       if (this.datasetData.harvestingMetadata) {
