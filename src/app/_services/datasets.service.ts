@@ -99,8 +99,6 @@ export class DatasetsService {
 
   updateDataset(datasetFormValues) {
 
-    console.log('updateDataset', datasetFormValues);
-
     const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;    
     return this.http.put(url, datasetFormValues).map(data => {      
       const dataset = data;
