@@ -27,17 +27,17 @@ describe('Dataset', () => {
 
   });
 
-  it('should create update a dataset', () => {
+  it('should update a dataset', () => {
     
-    //browser.get('/dataset/new/10');
-    //browser.wait(ExpectedConditions.urlContains('dataset'), 5000);
-    //element(by.id('dataset-name')).sendKeys('AngularTestCaseDatasetname');
-    //element(by.id('provider')).sendKeys('AngularTestCaseProvider');
+    browser.get('/dataset/new/10');
+    browser.wait(ExpectedConditions.urlContains('dataset'), 5000);
+    element(by.id('dataset-name')).sendKeys('AngularTestCaseDatasetname');
+    element(by.id('provider')).sendKeys('AngularTestCaseProvider');
 
-    //element(by.css('.submit')).click();
-    //browser.sleep(2000);
+    element(by.css('.submit')).click();
+    browser.sleep(2000);
 
-    //expect(element(by.css('.success-message')).isPresent()).toBeTruthy();
+    expect(element(by.css('.success-message')).isPresent()).toBeTruthy();
 
   });
 

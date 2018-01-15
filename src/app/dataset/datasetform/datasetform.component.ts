@@ -61,12 +61,13 @@ export class DatasetformComponent implements OnInit {
     
     this.countries.getCountries().subscribe(result => {
       this.countryOptions = result;
+      console.log(result);
       if (this.datasetData.country && result) {
-        for (let i = 0; i < result.length; i++) {
-          if (result[i].enum = this.datasetData.country.enum) {
-            this.selectedCountry = this.countryOptions[i];
-          }
-        }
+        //for (let i = 0; i < result.length; i++) {
+        //  if (result[i].enum = this.datasetData.country.enum) {
+        //    this.selectedCountry = this.countryOptions[i];
+        //  }
+        //}
       }
     },(err: HttpErrorResponse) => {
       if (err.status === 401 || err.status === 406) {
@@ -83,11 +84,11 @@ export class DatasetformComponent implements OnInit {
 
       this.languageOptions = result;
       if (this.datasetData.language && result) {
-        for (let i = 0; i < result.length; i++) {
-          if (result[i].enum = this.datasetData.country.enum) {
-            this.selectedLanguage = this.languageOptions[i];
-          }
-        }
+       // for (let i = 0; i < result.length; i++) {
+       //   if (result[i].enum = this.datasetData.country.enum) {
+       //     this.selectedLanguage = this.languageOptions[i];
+        //  }
+       // }
       }
     },(err: HttpErrorResponse) => {
       if (err.status === 401 || err.status === 406) {
