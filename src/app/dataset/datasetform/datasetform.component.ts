@@ -28,8 +28,8 @@ export class DatasetformComponent implements OnInit {
   selectedLanguage;
 
   private datasetForm: FormGroup;
-  private countryOptions;
-  private languageOptions;
+  private countryOptions: any;
+  private languageOptions: any;
 
  
   constructor(private countries: CountriesService,
@@ -61,10 +61,10 @@ export class DatasetformComponent implements OnInit {
     
     this.countries.getCountries().subscribe(result => {
       this.countryOptions = result;
-      if (this.datasetData && result) {
+      if (this.datasetData && this.countryOptions) {
         if (this.datasetData.country) {
-          for (let i = 0; i < result.length; i++) {
-            if (result[i].enum === this.datasetData.country.enum) {
+          for (let i = 0; i < this.countryOptions.length; i++) {
+            if (this.countryOptions[i].enum === this.datasetData.country.enum) {
               this.selectedCountry = this.countryOptions[i];
             }
           }
@@ -86,8 +86,8 @@ export class DatasetformComponent implements OnInit {
       this.languageOptions = result;
       if (this.datasetData && result) {
         if (this.datasetData.language) {
-          for (let i = 0; i < result.length; i++) {
-            if (result[i].enum === this.datasetData.language.enum) {
+          for (let i = 0; i < this.languageOptions.length; i++) {
+            if (this.languageOptions[i].enum === this.datasetData.language.enum) {
               this.selectedLanguage = this.languageOptions[i];
             }
           }
