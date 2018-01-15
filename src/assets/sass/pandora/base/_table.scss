@@ -105,6 +105,14 @@
           display: inline-block;
         }
       }
+
+
+      .date,
+      .time {
+        display: inine-block;
+        white-space: nowrap;
+      }
+
     }
   }
 
@@ -145,7 +153,6 @@
       }
     }
   }
-
 }
 
 
@@ -204,5 +211,4 @@
       color: $eu-jade;
     }
   }
-
 }
