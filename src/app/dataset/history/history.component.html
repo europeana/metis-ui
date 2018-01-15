@@ -1,3 +1,8 @@
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+</div>
+
 <table class="table-horizontal-layout" *ngIf="activeSet">
   <thead>
   	<tr>
@@ -25,7 +30,7 @@
           Report
         </a>
       </td>
-      <td><a class="table-btn deactivate-btn">Deactive</a> | <a class="table-btn">Harvest</a></td>
+      <td><a class="table-btn deactivate-btn">Deactive</a> | <a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
     </tr>
     <tr>
       <td><span class="svg-icon-process"></span></td>
