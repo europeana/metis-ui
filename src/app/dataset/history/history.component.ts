@@ -41,7 +41,8 @@ export class HistoryComponent implements OnInit {
         this.router.navigate(['/login']);
       }
 
-      this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
+      this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
+      
     });
 
   }

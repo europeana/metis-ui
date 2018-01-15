@@ -13,9 +13,17 @@ export class WorkflowService {
 
   triggerNewWorkflow (id) {
 
-  	const url = `https://metis-core-rest-test.eanadev.org/orchestrator/workflows/${id}/execute?workflowOwner=owner1&workflowName=workflow30&priority=0`;    
+  	const owner = 'owner1';
+  	const workflow = 'workflow30';
+  	const priority = 0;
+
+  	const url = `https://metis-core-rest-test.eanadev.org/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
     return this.http.post(url, JSON.stringify('{}')).map(data => {      
-      console.log(data);
+    	if (data) {
+        return data;
+      } else {
+        return false;
+      }
     });
 
   }
