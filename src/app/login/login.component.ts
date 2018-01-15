@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService, RedirectPreviousUrl, SettingsService } from '../_services';
+import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../_helpers';
 
@@ -21,7 +21,6 @@ export class LoginComponent implements OnInit {
   constructor(
     // private route: ActivatedRoute,
     private router: Router,
-    private settings: SettingsService,
     private authentication: AuthenticationService,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private fb: FormBuilder) { }
