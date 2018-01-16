@@ -1,0 +1,11 @@
+<div class="modal-wrapper" *ngIf="report">
+  <div class="modal">
+    <div class="head">Report <a class="btn-close" (click)="closeReport();"></a></div>
+    <div class="content">
+    	<strong>errorType: {{report.errorType}}</strong><br/>
+        <strong>identifiers: {{report.identifiers}}</strong><br/>
+        <strong>message: {{report.message}}</strong><br/>
+        <strong>occurences: {{report.occurences}}</strong><br/>
+    </div>
+  </div>
+</div>

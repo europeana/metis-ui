@@ -21,6 +21,7 @@ export class HistoryComponent implements OnInit {
   @Input('inCollapsablePanel') inCollapsablePanel;
   
   errorMessage: string;
+  report;
 
   ngOnInit() {  }
 
@@ -44,6 +45,26 @@ export class HistoryComponent implements OnInit {
       
     });
 
+  }
+
+  openReport () {
+    
+    this.report = '';
+
+    this.workflows.getReport().subscribe(result => {
+
+      this.workflows.setCurrentReport(result);
+      this.report = result;
+
+    }, (err: HttpErrorResponse) => {
+      if (err.error.errorMessage === 'Wrong access token') {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+
+      this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
+      
+    });
   }
 
 }

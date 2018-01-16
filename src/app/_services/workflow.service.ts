@@ -14,8 +14,9 @@ export class WorkflowService {
 
   constructor(private http: HttpClient) { }
 
-  @Output() changeWorkflow: EventEmitter<boolean> = new EventEmitter();
+  @Output() changeWorkflow: EventEmitter<any> = new EventEmitter();
   activeWorkflow: any = 'workflow!';
+  currentReport: any;
 
   triggerNewWorkflow (id) {
 
@@ -55,7 +56,7 @@ export class WorkflowService {
     const topology = 'oai_harvest';
     const externalTaskId = '2070373127078497810';
 
-    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report`;   
     return this.http.get(url).map(data => {   
       if (data) {
         return data;
@@ -66,6 +67,13 @@ export class WorkflowService {
 
   }
 
+  setCurrentReport(report): void {
+    this.currentReport = report;
+  }
+
+  getCurrentReport() {
+    return this.currentReport;
+  }
 
   setActiveWorkflow(workflow): void {
     this.activeWorkflow = workflow;

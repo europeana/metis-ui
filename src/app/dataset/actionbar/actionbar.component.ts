@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import {Observable} from 'rxjs/Rx';
+import { Observable } from 'rxjs/Rx';
 
 import { WorkflowService, AuthenticationService } from '../../_services';
 
@@ -65,15 +65,15 @@ export class ActionbarComponent {
     this.notifyShowLogStatus.emit(true);
   }
 
-   returnLog() {
-      this.workflows.getLogs().subscribe(result => {
-        this.logMessages = result;
-      },(err: HttpErrorResponse) => {
-        if (err.status === 401 || err.status === 406) {
-          this.authentication.logout();
-          this.router.navigate(['/login']);
-        }
-      });
-    }
+  returnLog() {
+    this.workflows.getLogs().subscribe(result => {
+      this.logMessages = result;
+    },(err: HttpErrorResponse) => {
+      if (err.status === 401 || err.status === 406) {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+  }
 
 }
