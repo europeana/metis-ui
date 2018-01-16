@@ -2,12 +2,11 @@
   <div class="modal">
     <div class="head">Log <a class="btn-close" (click)="closeLog();"></a></div>
     <div class="content">
-    	<pre>
-    		Permission denied.
-      	Error code: 3
-      	Error message from server: Permission denied
-      	Request code: 3
-    	</pre>
+    	<p *ngFor="let msg of logMessages">
+    		{{msg.resourceNum}} <strong>{{msg.state}} {{msg.info}}</strong><br/>
+        {{msg.resource !== 'null' ? msg.resource : ''}} {{msg.resultResource !== 'null' ? msg.resultResource : ''}} <br/>
+        {{msg.additionalInformations}} 
+    	</p>
     </div>
   </div>
 </div>

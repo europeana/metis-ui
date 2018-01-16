@@ -24,7 +24,7 @@ export class WorkflowService {
   	const priority = 0;
 
   	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
-    return this.http.post(url, JSON.stringify('{}')).map(data => {      
+    return this.http.post(url, JSON.stringify('{}')).map(data => {   
     	if (data) {
         return data;
       } else {
@@ -33,6 +33,23 @@ export class WorkflowService {
     });
 
   }
+
+  getLogs() {
+
+    const topology = 'oai_harvest';
+    const externalTaskId = '2070373127078497810';
+
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+
+  }
+
 
   setActiveWorkflow(workflow): void {
     this.activeWorkflow = workflow;
