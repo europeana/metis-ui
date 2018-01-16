@@ -23,7 +23,7 @@ export class WorkflowService {
   	const workflow = 'workflow30';
   	const priority = 0;
 
-  	const url = `https://metis-core-rest-test.eanadev.org/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
+  	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
     return this.http.post(url, JSON.stringify('{}')).map(data => {      
     	if (data) {
         return data;
