@@ -12,7 +12,8 @@ import { WorkflowService, AuthenticationService } from '../../_services';
 export class DatasetlogComponent implements OnInit {
 
   constructor(private workflows: WorkflowService, 
-    private authentication: AuthenticationService) { }
+    private authentication: AuthenticationService, 
+    private router: Router) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();

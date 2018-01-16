@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import {Observable} from 'rxjs/Rx';
 
-import { WorkflowService } from '../../_services';
+import { WorkflowService, AuthenticationService } from '../../_services';
 
 @Component({
   selector: 'app-actionbar',
@@ -16,7 +16,9 @@ export class ActionbarComponent {
 
   constructor(private route: ActivatedRoute, 
       private workflows: WorkflowService,
-      private http: HttpClient) { }
+      private http: HttpClient,
+      private authentication: AuthenticationService,
+      private router: Router) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
@@ -28,6 +30,7 @@ export class ActionbarComponent {
   totalProcessed: Number = 0;
   currentStatus: string;
   currentWorkflow;
+  logMessages;
 
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -61,5 +64,16 @@ export class ActionbarComponent {
   showLog() {
     this.notifyShowLogStatus.emit(true);
   }
+
+   returnLog() {
+      this.workflows.getLogs().subscribe(result => {
+        this.logMessages = result;
+      },(err: HttpErrorResponse) => {
+        if (err.status === 401 || err.status === 406) {
+          this.authentication.logout();
+          this.router.navigate(['/login']);
+        }
+      });
+    }
 
 }

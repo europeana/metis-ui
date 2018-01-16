@@ -92,13 +92,6 @@ export class DatasetComponent implements OnInit {
 
   }
 
-  /* onNotifyWorkflow
-    the active workflow changes, notify all relevant components
-  */
-  onNotifyWorkflow(message:any):void {
-    console.log('onNotifyWorkflow');
-  }
-
   /* onNotifyShowLogStatus
     opens/closes the log messages 
   */
