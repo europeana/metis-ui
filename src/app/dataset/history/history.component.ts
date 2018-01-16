@@ -30,6 +30,7 @@ export class HistoryComponent implements OnInit {
 
   triggerWorkflow() {    
 
+    this.errorMessage = '';
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
 
       this.workflows.setActiveWorkflow('start!');
