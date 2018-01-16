@@ -1,7 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService } from '../../_services';
+import { HttpClientModule } from '@angular/common/http';
+import { By } from '@angular/platform-browser';
 
+import { DatasetsService, WorkflowService, AuthenticationService } from '../../_services';
 import { HistoryComponent } from './history.component';
 
 describe('HistoryComponent', () => {
@@ -10,9 +12,9 @@ describe('HistoryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule],
+      imports: [ RouterTestingModule, HttpClientModule],
       declarations: [ HistoryComponent ],
-      providers: [ DatasetsService ]
+      providers: [ DatasetsService, WorkflowService, AuthenticationService ]
     })
     .compileComponents();
   }));
@@ -26,5 +28,6 @@ describe('HistoryComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 });
 

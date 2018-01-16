@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService } from '../../_services';
-import {By} from '@angular/platform-browser';
+import { DatasetsService, WorkflowService } from '../../_services';
+import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ActionbarComponent } from './actionbar.component';
@@ -14,7 +14,7 @@ describe('ActionbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent ],
-      providers: [ DatasetsService ]
+      providers: [ DatasetsService, WorkflowService ]
     })
     .compileComponents();
   }));
@@ -29,16 +29,19 @@ describe('ActionbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should emit on up/down vote click', fakeAsync((): void => {
+  it('should do click to show logging', fakeAsync((): void => {
 
-    spyOn(component.notifyShowLogStatus, 'emit');
-    let button = fixture.debugElement.query(By.css('.log-btn')).nativeElement;
-    button.click();
+    let button = fixture.debugElement.query(By.css('.log-btn'));
+    if (button) {
+      spyOn(component.notifyShowLogStatus, 'emit');
+      button.nativeElement.click();
 
-    fixture.detectChanges();
-    tick();
+      fixture.detectChanges();
+      tick();
 
-    expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
+      expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
+
+    } 
     
   }));
 

@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import {Observable} from 'rxjs/Rx';
 
-import { DatasetsService } from '../../_services';
+import { WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-actionbar',
@@ -15,7 +15,7 @@ import { DatasetsService } from '../../_services';
 export class ActionbarComponent {
 
   constructor(private route: ActivatedRoute, 
-      private DatasetsService: DatasetsService, 
+      private workflows: WorkflowService,
       private http: HttpClient) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
@@ -27,6 +27,7 @@ export class ActionbarComponent {
   totalInDataset: Number = 10000;
   totalProcessed: Number = 0;
   currentStatus: string;
+  currentWorkflow;
 
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -35,10 +36,16 @@ export class ActionbarComponent {
     this.now = Date.now();
     this.currentStatus = 'Now running';
 
-    let timer = Observable.timer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-        this.pollingWorkflow(t);
-    });
+    this.workflows.changeWorkflow.subscribe(
+      workflow => {
+        this.currentWorkflow = workflow;
+        let timer = Observable.timer(0, this.intervalTimer);
+        this.subscription = timer.subscribe(t => {
+          this.pollingWorkflow(t);
+        });
+      }
+    );
+
   }
 
   pollingWorkflow(t) {

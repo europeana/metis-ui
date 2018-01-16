@@ -1,15 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 
 import { environment } from '../../environments/environment';
 import { apiSettings } from '../../environments/apisettings';
 
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 import 'rxjs/Rx';
 
 @Injectable()
 export class WorkflowService {
 
   constructor(private http: HttpClient) { }
+
+  @Output() changeWorkflow: EventEmitter<boolean> = new EventEmitter();
+  activeWorkflow: any = 'workflow!';
 
   triggerNewWorkflow (id) {
 
@@ -26,6 +32,11 @@ export class WorkflowService {
       }
     });
 
+  }
+
+  setActiveWorkflow(workflow): void {
+    this.activeWorkflow = workflow;
+    this.changeWorkflow.emit(this.activeWorkflow);
   }
 
 }

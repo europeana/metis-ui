@@ -19,8 +19,7 @@ export class HistoryComponent implements OnInit {
 
   @Input('datasetData') datasetData;
   @Input('inCollapsablePanel') inCollapsablePanel;
-  @Input('activeSet') activeSet;
-
+  
   errorMessage: string;
 
   ngOnInit() {  }
@@ -29,12 +28,12 @@ export class HistoryComponent implements OnInit {
   	el.scrollIntoView({behavior:'smooth'});
   }
 
-  triggerWorkflow() {
+  triggerWorkflow() {    
 
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
 
-      console.log('started!');
-
+      this.workflows.setActiveWorkflow('start!');
+      
     }, (err: HttpErrorResponse) => {
       if (err.error.errorMessage === 'Wrong access token') {
         this.authentication.logout();
