@@ -13,7 +13,9 @@ export class ReportComponent implements OnInit {
   report;
 
   ngOnInit() {
-	this.report = this.workflows.getCurrentReport().errors[0];
+    if (this.workflows.getCurrentReport()) {
+	    this.report = this.workflows.getCurrentReport().errors[0];
+    }
   }
 
   closeReport () {

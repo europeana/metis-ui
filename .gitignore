@@ -1,5 +1,6 @@
 *.DS_Store
 node_modules/
+coverage/
 dist/
 src/.DS_Store
 src/environments/apisettings.ts
