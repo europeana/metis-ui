@@ -3,7 +3,7 @@
   <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
 </div>
 
-<table class="table-horizontal-layout table-history" *ngIf="datasetData">
+<table class="table-horizontal-layout history-table" *ngIf="datasetData">
   <thead>
   	<tr>
       <th colspan="2"></th>
@@ -77,7 +77,11 @@
       </td>
       <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
     </tr>
-    <tr class="loadmore" *ngIf="inCollapsablePanel"><td colspan="9"><a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a></td></tr>
+    <tr class="loadmore" *ngIf="inCollapsablePanel">
+      <td colspan="9">
+        <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a>
+      </td>
+    </tr>
   </tbody>
 </table>
 <div #starttab></div>
