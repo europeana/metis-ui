@@ -41,6 +41,8 @@ export class DatasetformComponent implements OnInit {
 
   ngOnInit() {
 
+    console.log(this.datasetData);
+
     if (!this.datasetData) {      
       const tempdata = JSON.parse(localStorage.getItem('tempDatasetData')); // something in localstorage? 
       this.datasetData = tempdata;
