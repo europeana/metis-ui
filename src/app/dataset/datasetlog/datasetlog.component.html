@@ -4,7 +4,8 @@
     <div class="content">
     	<p *ngFor="let msg of logMessages">
     		{{msg.resourceNum}} <strong>{{msg.state}} {{msg.info}}</strong><br/>
-        {{msg.resource !== 'null' ? msg.resource : ''}} {{msg.resultResource !== 'null' ? msg.resultResource : ''}} <br/>
+        {{msg.resource !== 'null' ? msg.resource : ''}} {{msg.resultResource !== 'null' ? msg.resultResource : ''}} 
+        <br *ngIf="msg.resource !== 'null' || msg.resultResource !== 'null'" />
         {{msg.additionalInformations}} 
     	</p>
     </div>
