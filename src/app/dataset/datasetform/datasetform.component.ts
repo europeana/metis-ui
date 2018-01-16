@@ -1,191 +1,274 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+
 import 'rxjs/Rx';
 
-import { CountriesService, ProvidersService, DatasetsService } from '../../_services';
-import { Dataset } from '../../_models';
+import { CountriesService, DatasetsService, AuthenticationService } from '../../_services';
+import { StringifyHttpError, convertDate } from '../../_helpers';
 
 @Component({
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
-  styleUrls: ['./datasetform.component.scss'],
-  providers: [CountriesService, ProvidersService, DatasetsService]
+  styleUrls: ['./datasetform.component.scss']
 })
 
 export class DatasetformComponent implements OnInit {
 
-  datasetData: Dataset;
+  @Input() datasetData: any;
   autosuggest;
   autosuggestId: String;
   datasetOptions: Object;
-  providerOptions;
-  activeSet;
   formMode: String = 'create'; // create, read, update
+  errorMessage;
   successMessage;
   harvestprotocol; 
-  
-  constructor(private countries: CountriesService,
-    private datasets: DatasetsService,
-    private providers: ProvidersService,
-    private route: ActivatedRoute, 
-    private fb: FormBuilder) {}
+  selectedCountry;
+  selectedLanguage;
 
   private datasetForm: FormGroup;
-  private countryOptions;
-  private languageOptions;
+  private countryOptions: any;
+  private languageOptions: any;
+
+ 
+  constructor(private countries: CountriesService,
+    private datasets: DatasetsService,
+    private authentication: AuthenticationService,
+    private route: ActivatedRoute, 
+    private router: Router,
+    private fb: FormBuilder) {}
 
   ngOnInit() {
 
-    this.route.params.subscribe(params => {
-      this.activeSet = +params['id']; 
-    });
-
-    if (!this.activeSet) {
+    if (!this.datasetData) {      
+      const tempdata = JSON.parse(localStorage.getItem('tempDatasetData')); // something in localstorage? 
+      this.datasetData = tempdata;
       this.formMode = 'create';
     } else {
       this.formMode = 'read';
-      this.datasetData = this.datasets.getDataset(this.activeSet);
     }
 
-    this.countryOptions = this.countries.getCountries();
-    this.languageOptions = this.countries.getLanguages();
-    this.providerOptions = this.providers.getProviders();
+    this.returnCountries();
+    this.returnLanguages();
+
+    this.buildForm();
+    this.saveTempData();
+    
+  }
+
+  returnCountries() {
+    
+    this.countries.getCountries().subscribe(result => {
+      this.countryOptions = result;
+      if (this.datasetData && this.countryOptions) {
+        if (this.datasetData.country) {
+          for (let i = 0; i < this.countryOptions.length; i++) {
+            if (this.countryOptions[i].enum === this.datasetData.country.enum) {
+              this.selectedCountry = this.countryOptions[i];
+            }
+          }
+        }
+      }
+    },(err: HttpErrorResponse) => {
+      if (err.status === 401 || err.status === 406) {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+
+  }
+
+  returnLanguages() {
+
+    this.countries.getLanguages().subscribe(result => {
+
+      this.languageOptions = result;
+      if (this.datasetData && result) {
+        if (this.datasetData.language) {
+          for (let i = 0; i < this.languageOptions.length; i++) {
+            if (this.languageOptions[i].enum === this.datasetData.language.enum) {
+              this.selectedLanguage = this.languageOptions[i];
+            }
+          }
+        }
+      }
+    },(err: HttpErrorResponse) => {
+      if (err.status === 401 || err.status === 406) {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+
+  }
+
+  /* buildForm
+    creates a new form
+    if datasetid exists: prefill form
+    disable/enable fields
+  */
+  buildForm() {
+     /* populated the form or leave empty when creating a new dataset */
 
     this.datasetForm = this.fb.group({
-      identifier: [(this.datasetData ? this.datasetData.id : ''), [Validators.required]],
-      datasetName: [(this.datasetData ? this.datasetData.name : ''), [Validators.required]],
-      dataProvider: [''],
+      datasetId: [(this.datasetData ? this.datasetData.datasetId : '')],
+      datasetName: [(this.datasetData ? this.datasetData.datasetName : ''), [Validators.required]],
+      dataProvider: [(this.datasetData ? this.datasetData.dataProvider : '')],
       provider: [(this.datasetData ? this.datasetData.provider : ''), [Validators.required]],
-      intermediateProvider: [''],
-      deaSigned: [''],
-      dateCreated: [''],
-      dateUpdated: [''],
-      status: [(this.datasetData ? this.datasetData.workflow.name : ''), [Validators.required]],
-      replaces: [''],
-      replacedBy: [''],
-      country: [(this.datasetData ? this.datasetData.country : '')],
+      intermediateProvider: [(this.datasetData ? this.datasetData.intermediateProvider : '')],
+      dateCreated: [(this.datasetData ? convertDate(this.datasetData.createdDate) : '')],
+      dateUpdated: [(this.datasetData ? convertDate(this.datasetData.updatedDate) : '')],
+      status: [''],
+      replaces: [(this.datasetData ? this.datasetData.replaces : '')],
+      replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],
+      country: [],
       language: [(this.datasetData ? this.datasetData.language : '')],
-      description: [''],
-      notes: [''],
-      createdBy: [''],
-      assignedTo: [''],
-      firstPublished: [(this.datasetData ? this.datasetData.startDate : '')],
-      lastPublished: [(this.datasetData ? this.datasetData.lastPublicationDate : '')],
-      numberOfItemsPublished: [(this.datasetData ? this.datasetData.publishedRecords : '')],
+      description: [(this.datasetData ? this.datasetData.description : '')],
+      notes: [(this.datasetData ? this.datasetData.notes : '')],
+      createdBy: [(this.datasetData ? this.datasetData.createdByUserId : '')],
+      firstPublished: [''],
+      lastPublished: [''],
+      numberOfItemsPublished: [''],
       lastDateHarvest: [''],
       numberOfItemsHarvested: [''],
-      lastDateSubmission: [''],
-      numberOfItemsDelivered: [''],
-      acceptanceStep: ['acceptancestep', [Validators.required]],
-      harvestProtocol: [(this.datasetData ? this.datasetData.harvestprotocol : '')],
-      metadataSchema: [''],
-      harvestUrl: [''],
-      setSpec: [''],
-      metadataFormat: [''],
+      pluginType: ['', [Validators.required]],
+      harvestUrl: [(this.datasetData ? this.datasetData.harvestingMetadata.url : '')],
+      setSpec: [(this.datasetData ? this.datasetData.harvestingMetadata.setSpec : '')],
+      metadataFormat: [(this.datasetData ? this.datasetData.harvestingMetadata.metadataFormat : '')],
       recordXPath: [''],
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
-      url: [''],
-      path: [''],
-      serverAddress: [''],
-      folderPath: ['']
+      url: ['']
     });
 
-    this.harvestprotocol = (this.datasetData ? this.datasetData.harvestprotocol : '');
+    if (this.datasetData) {
+      if (this.datasetData.harvestingMetadata) {
+        this.harvestprotocol = (this.datasetData ? this.datasetData.harvestingMetadata.pluginType : '');
+      }
+    }
 
-    this.datasetForm.controls['identifier'].disable();      
-    this.datasetForm.controls['dateCreated'].disable();
-    this.datasetForm.controls['dateUpdated'].disable();
-    this.datasetForm.controls['status'].disable();    
-    this.datasetForm.controls['createdBy'].disable();    
-    this.datasetForm.controls['firstPublished'].disable();
-    this.datasetForm.controls['lastPublished'].disable();
-    this.datasetForm.controls['numberOfItemsPublished'].disable();
-    this.datasetForm.controls['lastDateHarvest'].disable();
-    this.datasetForm.controls['numberOfItemsHarvested'].disable();
-    this.datasetForm.controls['lastDateSubmission'].disable();
-    this.datasetForm.controls['numberOfItemsDelivered'].disable();
-    
-    if (this.formMode == 'read') {
-      this.datasetForm.controls['datasetName'].disable();
-      this.datasetForm.controls['dataProvider'].disable();
-      this.datasetForm.controls['provider'].disable();
-      this.datasetForm.controls['intermediateProvider'].disable();
-      this.datasetForm.controls['deaSigned'].disable();
-      this.datasetForm.controls['replaces'].disable();
-      this.datasetForm.controls['replacedBy'].disable();
+    if (this.formMode == 'read') { 
       this.datasetForm.controls['country'].disable();
       this.datasetForm.controls['language'].disable();
       this.datasetForm.controls['description'].disable();
       this.datasetForm.controls['notes'].disable();
-      this.datasetForm.controls['assignedTo'].disable();
-      this.datasetForm.controls['acceptanceStep'].disable();
-      this.datasetForm.controls['harvestProtocol'].disable();
-      this.datasetForm.controls['metadataSchema'].disable();
-      this.datasetForm.controls['harvestUrl'].disable();
-      this.datasetForm.controls['setSpec'].disable();
-      this.datasetForm.controls['metadataFormat'].disable();
-      this.datasetForm.controls['recordXPath'].disable();
-      this.datasetForm.controls['ftpHttpUser'].disable();
-      this.datasetForm.controls['ftpHttpPassword'].disable();
-      this.datasetForm.controls['url'].disable();
-      this.datasetForm.controls['path'].disable();
-      this.datasetForm.controls['serverAddress'].disable();
-      this.datasetForm.controls['folderPath'].disable();
+      this.datasetForm.controls['pluginType'].disable();
     }
 
   }
 
-  searchDataset(event) {
-    this.datasetOptions = this.datasets.searchDatasets(event.target.value);
-    this.autosuggest = event.target;
-    this.autosuggestId = event.target.id;
+  saveTempData() {
+
+    if (this.datasetForm.touched === false) { return false }
+
+    this.datasetForm.valueChanges.subscribe(val => {
+      this.formatFormValues();
+      localStorage.removeItem('tempDatasetData');
+      localStorage.setItem('tempDatasetData', JSON.stringify(this.datasetForm.value));
+    });
+
   }
 
-  selectDataset(datasetname) {
-    this.autosuggest.value = datasetname;
-    this.datasetOptions = '';
-    this.autosuggest = '';
-    this.autosuggestId = '';
+  formatFormValues() {
+
+    this.datasetForm.value.harvestingMetadata = {
+      pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'NULL',
+      mocked: true,
+      url: this.datasetForm.value.harvestUrl ? this.datasetForm.value.harvestUrl : '',
+      metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
+      setSpec: this.datasetForm.value.setSpec ? this.datasetForm.value.setSpec : ''
+    };
+
+    delete this.datasetForm.value['pluginType'];
+    delete this.datasetForm.value['harvestUrl'];
+    delete this.datasetForm.value['metadataFormat'];
+    delete this.datasetForm.value['setSpec'];
+
+    if (!this.datasetForm.value['country']) {
+      this.datasetForm.value['country'] = null;
+    }
+
+    if (!this.datasetForm.value['language']) {
+      this.datasetForm.value['language'] = null;
+    }
+
   }
 
+  /* onSubmit
+    submits the form and shows an error or success message
+  */
   onSubmit() {
-    this.successMessage = 'SUBMIT OK - ';
-    for (let x in this.datasetForm.value) {
-      this.successMessage += x + ': ' + this.datasetForm.value[x] + ' --- ';
+
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.formatFormValues();
+
+    if (this.formMode === 'update') {
+
+      this.datasets.updateDataset(this.datasetForm.value).subscribe(result => {
+
+        localStorage.removeItem('tempDatasetData');
+        this.successMessage = 'Dataset updated!';
+        this.formMode = 'read';
+        this.datasetForm.controls['country'].disable();
+        this.datasetForm.controls['language'].disable();
+        this.datasetForm.controls['description'].disable();
+        this.datasetForm.controls['notes'].disable();
+        this.datasetForm.controls['pluginType'].disable();
+        
+      }, (err: HttpErrorResponse) => {
+
+        if (err.error.errorMessage === 'Wrong access token') {
+          this.authentication.logout();
+          this.router.navigate(['/login']);
+        }
+
+        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
+
+      });
+
+    } else {
+
+      this.datasets.createDataset(this.datasetForm.value).subscribe(result => {
+        
+        localStorage.removeItem('tempDatasetData');
+        this.datasets.setDatasetMessage('New dataset created! Id: ' + result['datasetId']);
+        this.router.navigate(['/dataset/new/' + result['datasetId']]);
+      
+      }, (err: HttpErrorResponse) => {
+
+        if (err.error.errorMessage === 'Wrong access token') {
+          this.authentication.logout();
+          this.router.navigate(['/login']);
+        }
+
+        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
+
+      });
+
     }
+
     window.scrollTo(0, 0);
+
   }
 
+  /* updateForm
+    update an existing dataset
+    using (new) values from the form
+    show an error or success message
+  */
   updateForm() {
     this.formMode = 'update';
 
-    this.datasetForm.controls['datasetName'].enable();
-    this.datasetForm.controls['dataProvider'].enable();
-    this.datasetForm.controls['deaSigned'].enable();
-    this.datasetForm.controls['replaces'].enable();
-    this.datasetForm.controls['replacedBy'].enable();
     this.datasetForm.controls['country'].enable();
     this.datasetForm.controls['language'].enable();
     this.datasetForm.controls['description'].enable();
     this.datasetForm.controls['notes'].enable();
-    this.datasetForm.controls['assignedTo'].enable();
-    this.datasetForm.controls['acceptanceStep'].enable();
-    this.datasetForm.controls['harvestProtocol'].enable();
-    this.datasetForm.controls['metadataSchema'].enable();
-    this.datasetForm.controls['harvestUrl'].enable();
-    this.datasetForm.controls['setSpec'].enable();
-    this.datasetForm.controls['metadataFormat'].enable();
-    this.datasetForm.controls['recordXPath'].enable();
-    this.datasetForm.controls['ftpHttpUser'].enable();
-    this.datasetForm.controls['ftpHttpPassword'].enable();
-    this.datasetForm.controls['url'].enable();
-    this.datasetForm.controls['path'].enable();
-    this.datasetForm.controls['serverAddress'].enable();
-    this.datasetForm.controls['folderPath'].enable();
-
+    this.datasetForm.controls['pluginType'].enable();
+    
     window.scrollTo(0, 0);
-  }
+
+  }   
 
 }

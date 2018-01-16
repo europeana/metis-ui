@@ -1,22 +1,34 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { Params, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
 
 import { DatasetformComponent } from './datasetform.component';
-import { CountriesService } from '../../_services';
+import { CountriesService, DatasetsService, ProvidersService, AuthenticationService } from '../../_services';
 
 import { ReactiveFormsModule } from '@angular/forms';
+
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('DatasetformComponent', () => {
   
   let component: DatasetformComponent;
   let fixture: ComponentFixture<DatasetformComponent>;
+  let mockParams, mockActivatedRoute;
 
   beforeEach(async(() => {
+
+    mockParams = Observable.of<Params>({id: '10'});
+    mockActivatedRoute = {params: mockParams};
+
     TestBed.configureTestingModule({
-      imports: [ ReactiveFormsModule ],
+      imports: [ RouterTestingModule, ReactiveFormsModule, HttpClientModule ],
       declarations: [ DatasetformComponent ],
-      providers: [{ provide: ActivatedRoute, useValue: { 'params': Observable.from([{ 'id': 1 }]) } }]
+      providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }, 
+        CountriesService, 
+        DatasetsService,
+        ProvidersService,
+        AuthenticationService]
     })
     .compileComponents();
   }));

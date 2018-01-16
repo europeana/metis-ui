@@ -7,200 +7,143 @@
     <div class="form-fields">
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="identifier">Identifier</label>
-        <input id="identifier" type="text" formControlName="identifier" />
+        <input id="identifier" type="text" formControlName="datasetId" [readonly]="true" />
       </div>
       <div class="form-group">
         <label for="dataset-name">Dataset Name *</label>
-        <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9]+" />
+        <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9]+" [readonly]="formMode === 'read' ? true : false" />
         <div class="messages" *ngIf="formMode === 'update'" [hidden]="datasetForm.controls.datasetName.valid">
           <div class="error-message">Only A to Z and numbers are allowed.</div>
         </div>
       </div>
+
       <div class="form-group">
         <label for="data-provider">Data provider</label>
-        <select formControlName="dataProvider" >
-          <option *ngFor="let provider of providerOptions" [value]="provider">{{provider}}</option>
-        </select>
+        <input id="data-provider" type="text" formControlName="dataProvider" [readonly]="formMode === 'read' ? true : false" />
       </div>
       <div class="form-group">
         <label for="provider">Provider *</label>
-        <select id="provider" formControlName="provider" >
-          <option *ngFor="let provider of providerOptions" [value]="provider">{{provider}}</option>
-        </select>
+        <input id="provider" type="text" formControlName="provider" [readonly]="formMode === 'read' ? true : false" />
       </div>
       <div class="form-group">
         <label for="intermediate-provider">Intermediate Provider</label>
-        <select id="intermediate-provider" formControlName="intermediateProvider" >
-          <option *ngFor="let provider of providerOptions" [value]="provider">{{provider}}</option>
-        </select>
+        <input id="intermediate-provider" type="text" formControlName="intermediateProvider" [readonly]="formMode === 'read' ? true : false" />
       </div>
-      <div class="form-group">
-        <label for="dea-signed">DEA signed</label>
-        <input id="dea-signed" type="checkbox" class="eu" formControlName="deaSigned" />
-      </div>
+
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="date-created">Date created</label>
-        <input id="date-created" type="text" formControlName="dateCreated" />
+        <input id="date-created" type="text" formControlName="dateCreated" [readonly]="true" />
       </div>
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="date-updated">Date updated</label>
-        <input id="date-updated" type="text" formControlName="dateUpdated" />
+        <input id="date-updated" type="text" formControlName="dateUpdated" [readonly]="true" />
       </div>
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="status">Status *</label>
-        <input id="status" type="text" formControlName="status" />
+        <input id="status" type="text" formControlName="status" [readonly]="true" />
       </div>
+
       <div class="form-group">
         <label for="replaces">Replaces</label>
-        <div class="metis-autocomplete">
-          <input id="replaces" formControlName="replaces" (keyup)=searchDataset($event); />
-          <ul *ngIf="datasetOptions && autosuggestId ==='replaces'">
-            <li (click)=selectDataset(dataset.name); *ngFor="let dataset of datasetOptions">{{dataset.name}}</li>
-          </ul>
-        </div>    
+        <input id="replaces" formControlName="replaces" [readonly]="formMode === 'read' ? true : false" />   
       </div>
       <div class="form-group">
         <label for="replaced-by">Replaced by</label>
-        <div class="metis-autocomplete">
-          <input id="replaced-by" formControlName="replacedBy" (keyup)=searchDataset($event); />
-          <ul *ngIf="datasetOptions && autosuggestId ==='replaced-by'">
-            <li (click)=selectDataset(dataset.name); *ngFor="let dataset of datasetOptions">{{dataset.name}}</li>
-          </ul>
-        </div> 
+        <input id="replaced-by" formControlName="replacedBy" [readonly]="formMode === 'read' ? true : false" />
       </div>
       <div class="form-group">
         <label for="country">Country</label>
-        <select id="country" formControlName="country" >
-          <option *ngFor="let country of countryOptions" [value]="country">{{country}}</option>
+        <select id="country" formControlName="country" [ngModel]="selectedCountry"> 
+          <option *ngFor="let c of countryOptions" [ngValue]="c">{{c.name}}</option> 
         </select>
       </div>
        <div class="form-group">
         <label for="language">Language</label>
-        <select id="language" formControlName="language" >
-          <option *ngFor="let language of languageOptions" [value]="language">{{language}}
+        <select id="language" formControlName="language" [ngModel]="selectedLanguage">
+          <option *ngFor="let l of languageOptions" [ngValue]="l">{{l.name}}</option>
         </select>
       </div>
+
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea id="description" formControlName="description" [value]="description ? description : ''" ></textarea>
+        <textarea id="description" formControlName="description"></textarea>
       </div>
       <div class="form-group">
         <label for="notes">Notes</label>
-        <textarea id="notes" formControlName="notes" [value]="notes ? noted : ''" ></textarea>
+        <textarea id="notes" formControlName="notes"></textarea>
       </div>
+
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="created-by">Created by</label>
-        <input id="created-by" type="text" formControlName="createdBy" />
-      </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="assigned-to">Assigned to</label>
-        <input id="assigned-to" type="text" formControlName="assignedTo" />
+        <input id="created-by" type="text" formControlName="createdBy" [readonly]="true"/>
       </div>
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="first-published">First published</label>
-        <input id="first-published" formControlName="firstPublished" />
+        <input id="first-published" formControlName="firstPublished" [readonly]="true" />
       </div>
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="last-published">Last published</label>
-        <input id="last-published" type="text" formControlName="lastPublished" />
+        <input id="last-published" type="text" formControlName="lastPublished" [readonly]="true" />
       </div>
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="number-published">Number of items published</label>
-        <input id="number-published" type="text" formControlName="numberOfItemsPublished" />
+        <input id="number-published" type="text" formControlName="numberOfItemsPublished" [readonly]="true" />
       </div>
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="last-date-harvest">Last date of harvest</label>
-        <input id="last-date-harvest" type="text" formControlName="lastDateHarvest"  />
+        <input id="last-date-harvest" type="text" formControlName="lastDateHarvest"  [readonly]="true" />
       </div>
       <div class="form-group" *ngIf="formMode !== 'create'">
         <label for="number-items-harvested">Number of items harvested</label>
-        <input id="number-items-harvested" type="text" formControlName="numberOfItemsHarvested" />
+        <input id="number-items-harvested" type="text" formControlName="numberOfItemsHarvested" [readonly]="true"/>
       </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="last-date-submission">Last date of submission</label>
-        <input id="last-date-submission" type="text" formControlName="lastDateSubmission" />
-      </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="number-delivered">Number of items delivered</label>
-        <input id="number-delivered" type="text" formControlName="numberOfItemsDelivered" />
-      </div>
+
       <div class="form-group">
-        <label for="acceptance-step">Acceptance step *</label>
-        <input id="acceptance-step" type="checkbox" class="eu" formControlName="acceptanceStep" />
-      </div>
-      <div class="form-group">
-        <label>Harvest protocol</label>
+        <label>Harvest protocol *</label>
         <div class="form-group-radios">
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="http" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'http' ? true : false" />
+              <input type="radio" [readonly]="formMode === 'read' ? true : false" formControlName="pluginType" value="HTTP_HARVEST" [(ngModel)]="harvestprotocol" [checked]="datasetData && harvestprotocol === 'HTTP_HARVEST' ? true : false" />
               HTTP
             </label>
-          </div>
+          </div>          
           <div>
             <label>
-              <input type="radio" formControlName="harvestProtocol" value="ftp" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'ftp' ? true : false"/>
-              FTP
+              <input type="radio" [readonly]="formMode === 'read' ? true : false" formControlName="pluginType" value="OAIPMH_HARVEST" [(ngModel)]="harvestprotocol" [checked]="datasetData && harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> OAI-PMH
             </label>
-          </div>
-          <div>
-            <label>
-              <input type="radio" formControlName="harvestProtocol" value="oai-pmh" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'oai-pmh' ? true : false" /> OAI-PMH
-            </label>
-          </div>
-          <div>
-            <label>
-              <input type="radio" formControlName="harvestProtocol" value="folder" [(ngModel)]="harvestprotocol" [checked]="datasetData && datasetData.harvestprotocol === 'folder' ? true : false" /> Folder
-            </label>
-          </div>
+          </div>          
         </div>
       </div>
-      <div class="form-group">
-        <label for="metadata-schema">Metadata Schema</label>
-        <select id="metadata-schema" formControlName="metadataSchema">
-          <option value="https://pro.europeana.eu/page/edm-documentation">https://pro.europeana.eu/page/edm-documentation</option>
-        </select>
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+
+      <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
         <label for="harvest-url">Harvest URL</label>
-        <input id="harvest-url" type="text" formControlName="harvestUrl"/>
+        <input id="harvest-url" type="text" formControlName="harvestUrl" [readonly]="formMode === 'read' ? true : false"/>
       </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+      <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
         <label for="setspec">Setspec</label>
-        <input id="setspec" type="tel" formControlName="setSpec" />
+        <input id="setspec" type="tel" formControlName="setSpec" [readonly]="formMode === 'read' ? true : false" />
       </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'oai-pmh'">
+      <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
         <label for="metadata-format">Metadata format</label>
-        <input id="metadata-format" type="text" formControlName="metadataFormat" />
+        <input id="metadata-format" type="text" formControlName="metadataFormat" [readonly]="formMode === 'read' ? true : false" />
       </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp' || harvestprotocol === 'folder'">
+      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
         <label for="record-xpath">Record XPath</label>
-        <input id="record-xpath" type="text" formControlName="recordXPath" />
+        <input id="record-xpath" type="text" formControlName="recordXPath" [readonly]="formMode === 'read' ? true : false" />
       </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp'">
+      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
         <label for="ftphttpuser">FTP/HTTP user</label>
-        <input id="ftphttpuser" type="text" formControlName="ftpHttpUser" />
+        <input id="ftphttpuser" type="text" formControlName="ftpHttpUser" [readonly]="formMode === 'read' ? true : false" />
       </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'http' || harvestprotocol === 'ftp'">
+      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
         <label for="ftphttppassword">FTP/HTTP password</label>
-        <input id="ftphttppassword" type="text" formControlName="ftpHttpPassword" />
+        <input id="ftphttppassword" type="text" formControlName="ftpHttpPassword" [readonly]="formMode === 'read' ? true : false" />
       </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'http'">
+      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
         <label for="url">URL</label>
-        <input id="url" type="text" formControlName="url" />
+        <input id="url" type="text" formControlName="url" [readonly]="formMode === 'read' ? true : false" />
       </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'ftp'">
-        <label for="path">Path</label>
-        <input id="path" type="text" formControlName="path" />
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'ftp'">
-        <label for="server-address">Server Address</label>
-        <input id="server-address" type="text" formControlName="serverAddress" />
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'folder'">
-        <label for="folder-path">Folder Path</label>
-        <input id="folder-path" type="text" formControlName="folderPath" />
-      </div>
+
       <div class="form-group form-group-btns user-profile-edit-btns">
         <button class="submit" type="button" *ngIf="formMode !== 'read'" [disabled]="!datasetForm.valid" (click)="onSubmit()">Submit</button>
         <button class="submit" type="button" *ngIf="formMode === 'read'" (click)="updateForm()">Update</button>

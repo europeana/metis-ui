@@ -12,6 +12,7 @@ export const environment = {
   apiUsers: 'authentication/users',
   apiProfile: 'authentication/update',
   apiUpdatePassword: 'authentication/update/password',
+  apiDatasets: 'datasets',
   emails: {
     profile: 'content@europeana.eu'
   },

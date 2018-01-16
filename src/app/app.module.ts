@@ -10,10 +10,12 @@ import { AppRoutingModule } from './routing/app-routing.module';
 import { AuthUserGuard,
          AuthVisitorGuard } from './_guards';
 import { AuthenticationService,
-         TokenInterceptor,
-         RedirectPreviousUrl,
          DatasetsService,
+         TokenInterceptor,
+         RedirectPreviousUrl,         
          NotificationsService,
+         CountriesService,
+         ProvidersService, 
          SettingsService } from './_services';
 
 import { AppComponent } from './app.component';
@@ -84,15 +86,17 @@ import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoin
     AuthVisitorGuard,
     AuthUserGuard,
     AuthenticationService,
+    DatasetsService,
+    RedirectPreviousUrl,
+    NotificationsService,
+    CountriesService,
+    ProvidersService,
+    SettingsService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true
-    },
-    RedirectPreviousUrl,
-    DatasetsService,
-    NotificationsService,
-    SettingsService
+    }    
   ],
   bootstrap: [AppComponent]
 })

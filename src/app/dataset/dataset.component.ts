@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { StringifyHttpError, convertDate } from '../_helpers';
 
 import { AuthenticationService, DatasetsService } from '../_services';
 
@@ -13,13 +14,12 @@ import { QualityassuranceComponent } from './qualityassurance/qualityassurance.c
 
 import { datasetTab } from './datasettab';
 
-import { Dataset, User } from '../_models';
+import { User } from '../_models';
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss'],
-  providers: [AuthenticationService]
+  styleUrls: ['./dataset.component.scss']
 })
 
 export class DatasetComponent implements OnInit {
@@ -34,14 +34,16 @@ export class DatasetComponent implements OnInit {
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string = 'new';
-  isCollapsed: boolean = true;
+  isCollapsed: boolean = false;
   showLog: boolean = false;
   user: User;
   userRole: string;
-  editMode = false; // if not edit, then create
+  errorMessage: string;
+  successMessage: string;
+  updatedDate;
   
   public isShowingLog = false;
-  public dataset: Dataset; 
+  public datasetData; 
   public activeSet: string;
 
   ngOnInit() {
@@ -55,21 +57,47 @@ export class DatasetComponent implements OnInit {
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
 
       if (this.activeSet) {
-        this.dataset = this.datasets.getDataset(+params['id']);
+        this.returnDataset(+params['id']);
       } else {
-        // create new dataset
+        this.loadTabComponent();
       }
 
+    });
+  }
+
+  /* returnDataset
+    returns all dataset information based on identifier
+  */
+  returnDataset(id) {
+
+    this.datasets.getDataset(id).subscribe(result => {
+      this.datasetData = result;
       this.loadTabComponent();
+      this.updatedDate = convertDate(this.datasetData.updatedDate);
+    },
+      (err: HttpErrorResponse) => {
+
+        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
+
+        if (err.status === 401) {
+          this.authentication.logout();
+          this.router.navigate(['/login']);
+        }
 
     });
 
   }
 
+  /* onNotifyShowLogStatus
+    opens/closes the log messages 
+  */
   onNotifyShowLogStatus(message:boolean):void {
     this.isShowingLog = message;
   }
 
+  /* loadTabComponent
+    loads the content within the placeholder
+  */
   loadTabComponent() {
 
     if (!this.getcurrentTab()) {return false; }
@@ -80,15 +108,21 @@ export class DatasetComponent implements OnInit {
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.dataset = this.getcurrentTab().data;
+    componentRef.instance.datasetData = this.getcurrentTab().data;
+     
+    this.successMessage = this.datasets.getDatasetMessage();
 
   }
 
+  /* getcurrentTab
+    returns the components that will be used in the component placeholder within a tab
+    based on currently active tab
+  */
   getcurrentTab() {
     if (this.activeTab === 'new') {
-      return new datasetTab(DatasetformComponent, {});
+      return new datasetTab(DatasetformComponent, this.datasetData);
     } else if (this.activeTab === 'log') {
-      return new datasetTab(HistoryComponent, this.dataset);
+      return new datasetTab(HistoryComponent, this.datasetData);
     } else  if (this.activeTab === 'mapping') {
       return new datasetTab(MappingComponent, {});
     } else  if (this.activeTab === 'preview') {
@@ -96,10 +130,6 @@ export class DatasetComponent implements OnInit {
     } else  if (this.activeTab === 'dataquality') {
       return new datasetTab(QualityassuranceComponent, {});
     }
-  }
-
-  onSubmit() {
-    console.log('submit');
   }
 
 }

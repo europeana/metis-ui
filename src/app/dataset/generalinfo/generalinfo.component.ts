@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, Input } from '@angular/core';
 import { DatasetsService } from '../../_services';
-import { Dataset } from '../../_models';
+import { convertDate } from '../../_helpers';
 
 @Component({
   selector: 'app-generalinfo',
@@ -10,17 +9,15 @@ import { Dataset } from '../../_models';
 })
 export class GeneralinfoComponent implements OnInit {
 
-  constructor(private datasets: DatasetsService,
-  	private route: ActivatedRoute) { }
+  constructor(private datasets: DatasetsService) { }
 
-  dataset: Dataset;
+  @Input() datasetData: any;
+  lastPublishedDate;
 
   ngOnInit() {
-
-  	this.route.params.subscribe(params => {
-      this.dataset = this.datasets.getDataset(+params['id']);      
-    });
-
+    if (this.datasetData) {
+      this.lastPublishedDate = convertDate(this.datasetData.lastPublishedDate);
+    }
   }
 
 }

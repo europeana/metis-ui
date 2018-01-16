@@ -46,7 +46,6 @@ export class AuthenticationService {
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       return true;
     });
-
   }
 
   register(email: string, password: string) {
@@ -108,4 +107,5 @@ export class AuthenticationService {
     // store email and jwt token in local storage to keep user logged in between page refreshes
     localStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
   }
+
 }
