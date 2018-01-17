@@ -118,7 +118,7 @@ export class DatasetformComponent implements OnInit {
       intermediateProvider: [(this.datasetData ? this.datasetData.intermediateProvider : '')],
       dateCreated: [(this.datasetData ? convertDate(this.datasetData.createdDate) : '')],
       dateUpdated: [(this.datasetData ? convertDate(this.datasetData.updatedDate) : '')],
-      status: [(this.datasetData ? this.datasetData.datasetStatus : '')],
+      status: [''],
       replaces: [(this.datasetData ? this.datasetData.replaces : '')],
       replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],
       country: [],
@@ -126,12 +126,12 @@ export class DatasetformComponent implements OnInit {
       description: [(this.datasetData ? this.datasetData.description : '')],
       notes: [(this.datasetData ? this.datasetData.notes : '')],
       createdBy: [(this.datasetData ? this.datasetData.createdByUserId : '')],
-      firstPublished: [(this.datasetData ? convertDate(this.datasetData.firstPublishedDate) : '')],
-      lastPublished: [(this.datasetData ? convertDate(this.datasetData.lastPublishedDate) : '')],
-      numberOfItemsPublished: [(this.datasetData ? this.datasetData.publishedRecords : '')],
-      lastDateHarvest: [(this.datasetData ? convertDate(this.datasetData.harvestedDate) : '')],
-      numberOfItemsHarvested: [(this.datasetData ? this.datasetData.harvestedRecords : '')],
-      pluginType: [''],
+      firstPublished: [''],
+      lastPublished: [''],
+      numberOfItemsPublished: [''],
+      lastDateHarvest: [''],
+      numberOfItemsHarvested: [''],
+      pluginType: ['', [Validators.required]],
       harvestUrl: [(this.datasetData ? this.datasetData.harvestingMetadata.url : '')],
       setSpec: [(this.datasetData ? this.datasetData.harvestingMetadata.setSpec : '')],
       metadataFormat: [(this.datasetData ? this.datasetData.harvestingMetadata.metadataFormat : '')],
@@ -152,6 +152,7 @@ export class DatasetformComponent implements OnInit {
       this.datasetForm.controls['language'].disable();
       this.datasetForm.controls['description'].disable();
       this.datasetForm.controls['notes'].disable();
+      this.datasetForm.controls['pluginType'].disable();
     }
 
   }
@@ -171,7 +172,7 @@ export class DatasetformComponent implements OnInit {
   formatFormValues() {
 
     this.datasetForm.value.harvestingMetadata = {
-      pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'VOID',
+      pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'NULL',
       mocked: true,
       url: this.datasetForm.value.harvestUrl ? this.datasetForm.value.harvestUrl : '',
       metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
@@ -209,6 +210,12 @@ export class DatasetformComponent implements OnInit {
 
         localStorage.removeItem('tempDatasetData');
         this.successMessage = 'Dataset updated!';
+        this.formMode = 'read';
+        this.datasetForm.controls['country'].disable();
+        this.datasetForm.controls['language'].disable();
+        this.datasetForm.controls['description'].disable();
+        this.datasetForm.controls['notes'].disable();
+        this.datasetForm.controls['pluginType'].disable();
         
       }, (err: HttpErrorResponse) => {
 
@@ -258,6 +265,7 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.controls['language'].enable();
     this.datasetForm.controls['description'].enable();
     this.datasetForm.controls['notes'].enable();
+    this.datasetForm.controls['pluginType'].enable();
     
     window.scrollTo(0, 0);
 

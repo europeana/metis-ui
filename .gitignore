@@ -2,6 +2,7 @@
 node_modules/
 coverage/
 dist/
+coverage/
 src/.DS_Store
 src/environments/apisettings.ts
 
