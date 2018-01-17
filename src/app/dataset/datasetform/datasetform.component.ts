@@ -18,9 +18,10 @@ export class DatasetformComponent implements OnInit {
 
   @Input() datasetData: any;
   autosuggest;
-  autosuggestId: String;
-  datasetOptions: Object;
-  formMode: String = 'create'; // create, read, update
+  autosuggestId: string;
+  datasetOptions: object;
+  formMode: string = 'create'; // create, read, update
+  formSubmitted: boolean;
   errorMessage;
   successMessage;
   harvestprotocol; 
@@ -53,7 +54,6 @@ export class DatasetformComponent implements OnInit {
     this.returnLanguages();
 
     this.buildForm();
-    this.saveTempData();
     
   }
 
@@ -158,15 +158,11 @@ export class DatasetformComponent implements OnInit {
   }
 
   saveTempData() {
-
-    if (this.datasetForm.touched === false) { return false }
-
-    this.datasetForm.valueChanges.subscribe(val => {
+    if (this.formMode === 'create') {
       this.formatFormValues();
       localStorage.removeItem('tempDatasetData');
       localStorage.setItem('tempDatasetData', JSON.stringify(this.datasetForm.value));
-    });
-
+    }
   }
 
   formatFormValues() {
@@ -178,11 +174,6 @@ export class DatasetformComponent implements OnInit {
       metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
       setSpec: this.datasetForm.value.setSpec ? this.datasetForm.value.setSpec : ''
     };
-
-    delete this.datasetForm.value['pluginType'];
-    delete this.datasetForm.value['harvestUrl'];
-    delete this.datasetForm.value['metadataFormat'];
-    delete this.datasetForm.value['setSpec'];
 
     if (!this.datasetForm.value['country']) {
       this.datasetForm.value['country'] = null;
@@ -204,6 +195,7 @@ export class DatasetformComponent implements OnInit {
 
     this.formatFormValues();
 
+    
     if (this.formMode === 'update') {
 
       this.datasets.updateDataset(this.datasetForm.value).subscribe(result => {
@@ -211,6 +203,7 @@ export class DatasetformComponent implements OnInit {
         localStorage.removeItem('tempDatasetData');
         this.successMessage = 'Dataset updated!';
         this.formMode = 'read';
+        
         this.datasetForm.controls['country'].disable();
         this.datasetForm.controls['language'].disable();
         this.datasetForm.controls['description'].disable();
