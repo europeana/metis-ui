@@ -1,6 +1,6 @@
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf=currentWorkflow>
 	<div class="status">
-    <strong>Harvest</strong>
+    <strong>{{currentWorkflowName}}</strong>
     {{currentStatus}}
   </div>
   <div class="progress">
@@ -21,9 +21,9 @@
       <li>
         <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
       </li>  
-      <li>
-        <a class="newaction-btn svg-icon-selector"><span>New action</span></a>
-      </li>     
+      <!--<li>
+        <a class="newaction-btn svg-icon-selector"><span>Next action</span></a>
+      </li> -->    
 		</ul>
 	</nav>
 </div>

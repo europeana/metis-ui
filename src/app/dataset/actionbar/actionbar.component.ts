@@ -22,44 +22,78 @@ export class ActionbarComponent {
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
-  workflowPercentage = 0;
+  workflowPercentage: number = 0;
   subscription;
   intervalTimer = 500;
   now;
-  totalInDataset: Number = 10000;
-  totalProcessed: Number = 0;
+  totalInDataset: number;
+  totalProcessed: number = 0;
   currentStatus: string;
   currentWorkflow;
+  currentWorkflowName;
+  currentPlugin = 0;
   logMessages;
 
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   ngOnInit() {
-
-    this.now = Date.now();
-    this.currentStatus = 'Now running';
+    
+    this.getRunningExecution();
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
         this.currentWorkflow = workflow;
+        this.currentStatus = this.currentWorkflow.workflowStatus;
         let timer = Observable.timer(0, this.intervalTimer);
         this.subscription = timer.subscribe(t => {
-          this.pollingWorkflow(t);
+          this.pollingWorkflow(this.currentWorkflow.id);
         });
       }
     );
 
   }
 
-  pollingWorkflow(t) {
-     this.workflowPercentage = t * 10;
-     this.totalProcessed = t * 1000;
-     this.now = Date.now();
-     if (this.workflowPercentage === 100) {
-       this.currentStatus = 'Complete';
-       this.subscription.unsubscribe();
-     }
+  pollingWorkflow(id) {
+    this.workflows.getWorkflowStatus(id).subscribe(execution => {
+
+      if (execution['metisPlugins'][this.currentPlugin].pluginStatus === null) {
+        this.currentStatus = execution['workflowStatus'];
+      } else {
+        this.currentStatus = execution['metisPlugins'][this.currentPlugin].pluginStatus;
+      }
+
+      this.currentWorkflowName = execution['metisPlugins'][this.currentPlugin].pluginType;
+      this.totalProcessed = execution['metisPlugins'][this.currentPlugin]['executionProgress'].processedRecords;
+      this.totalInDataset = execution['metisPlugins'][this.currentPlugin]['executionProgress'].expectedRecords;
+        
+      if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
+       this.workflowPercentage = (this.totalProcessed / this.totalInDataset) * 100;
+      }
+
+      if (execution['updatedDate'] === null) {
+        this.now = execution['startedDate']; 
+      } else {
+        this.now = execution['updatedDate']; 
+      }
+      
+      if (this.currentStatus === 'FINISHED') {
+        /*if (this.currentPlugin < execution['metisPlugins'].length - 1) {
+          this.currentPlugin += 1;
+        } else {*/
+          this.currentPlugin = 0;
+          this.now = execution['finishedDate'];
+          this.subscription.unsubscribe();
+       /*}*/
+      }
+    });
+
   };
+
+  getRunningExecution () {
+    //this.workflows.getWorkflowStatus(this.currentWorkflow.id).subscribe(execution => {
+    //  console.log(execution['workflowStatus']);
+    //});
+  }
 
   showLog() {
     this.notifyShowLogStatus.emit(true);

@@ -23,7 +23,7 @@ export class HistoryComponent implements OnInit {
   errorMessage: string;
   report;
 
-  ngOnInit() {  }
+  ngOnInit() { }
 
   scroll(el) {
   	el.scrollIntoView({behavior:'smooth'});
@@ -33,7 +33,7 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
 
-      this.workflows.setActiveWorkflow('start!');
+      this.workflows.setActiveWorkflow(result);
       
     }, (err: HttpErrorResponse) => {
       if (err.error.errorMessage === 'Wrong access token') {
@@ -45,10 +45,11 @@ export class HistoryComponent implements OnInit {
       
     });
 
+
   }
 
   openReport () {
-    
+  
     this.report = '';
 
     this.workflows.getReport().subscribe(result => {
@@ -65,6 +66,7 @@ export class HistoryComponent implements OnInit {
       this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
       
     });
+    
   }
 
 }
