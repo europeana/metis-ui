@@ -116,7 +116,7 @@
       </div>
 
       <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-        <label for="harvest-url">Harvest URL</label>
+        <label for="harvest-url">Harvest URL *</label>
         <input id="harvest-url" type="text" formControlName="harvestUrl" [readonly]="formMode === 'read' ? true : false"/>
       </div>
       <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
@@ -124,7 +124,7 @@
         <input id="setspec" type="tel" formControlName="setSpec" [readonly]="formMode === 'read' ? true : false" />
       </div>
       <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-        <label for="metadata-format">Metadata format</label>
+        <label for="metadata-format">Metadata format *</label>
         <input id="metadata-format" type="text" formControlName="metadataFormat" [readonly]="formMode === 'read' ? true : false" />
       </div>
       <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
