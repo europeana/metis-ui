@@ -77,7 +77,8 @@ export class DatasetComponent implements OnInit {
 
         this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
 
-        if (err.status === 401) {
+        if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+          this.RedirectPreviousUrl.set(this.router.url);) {
           this.authentication.logout();
           this.router.navigate(['/login']);
         }
