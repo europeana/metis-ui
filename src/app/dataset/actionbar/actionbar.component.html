@@ -6,7 +6,7 @@
   <div class="progress">
     <div class="progress-status">
       <span class="progress-statusnumbers">{{totalProcessed}} / {{totalInDataset}}</span>
-      <span class="progress-percentage">{{workflowPercentage}}%</span>
+      <span class="progress-percentage">{{workflowPercentage | number:'1.0-0' }}%</span>
     </div>
     <div class="progressbar">
       <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
