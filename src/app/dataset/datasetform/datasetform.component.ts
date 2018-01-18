@@ -172,7 +172,7 @@ export class DatasetformComponent implements OnInit {
 
     this.datasetForm.value.harvestingMetadata = {
       pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'NULL',
-      mocked: true,
+      mocked: false,
       url: this.datasetForm.value.harvestUrl ? this.datasetForm.value.harvestUrl : '',
       metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
       setSpec: this.datasetForm.value.setSpec ? this.datasetForm.value.setSpec : ''
