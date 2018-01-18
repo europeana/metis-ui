@@ -14,8 +14,11 @@ export class WorkflowService {
 
   constructor(private http: HttpClient) { }
 
-  @Output() changeWorkflow: EventEmitter<boolean> = new EventEmitter();
+  @Output() changeWorkflow: EventEmitter<any> = new EventEmitter();
   activeWorkflow: any = 'workflow!';
+  currentReport: any;
+  activeTopolgy: any;
+  activeExternalTaskId: any;
 
   triggerNewWorkflow (id) {
 
@@ -24,14 +27,70 @@ export class WorkflowService {
   	const priority = 0;
 
   	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
-    return this.http.post(url, JSON.stringify('{}')).map(data => {      
+    return this.http.post(url, JSON.stringify('{}')).map(data => {   
     	if (data) {
+        console.log(data);
+        this.activeTopolgy = data['metisPlugins'][0]['topologyName']; // 0 for now
+        this.activeExternalTaskId = data['metisPlugins'][0]['externalTaskId']; // 0 for now
         return data;
       } else {
         return false;
       }
     });
 
+  }
+
+  getLogs() {
+
+    const topology = this.activeTopolgy;
+    const externalTaskId = '2070373127078497810';
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
+    
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+
+  }
+
+   getReport() {
+
+    const topology = 'oai_harvest';
+    const externalTaskId = '2070373127078497810';
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report`;   
+    
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+
+  }
+
+  getWorkflowStatus(id) {
+
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/execution/${id}`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+
+  }
+
+  setCurrentReport(report): void {
+    this.currentReport = report;
+  }
+
+  getCurrentReport() {
+    return this.currentReport;
   }
 
   setActiveWorkflow(workflow): void {

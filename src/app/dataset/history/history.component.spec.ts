@@ -5,6 +5,7 @@ import { By } from '@angular/platform-browser';
 
 import { DatasetsService, WorkflowService, AuthenticationService } from '../../_services';
 import { HistoryComponent } from './history.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('HistoryComponent', () => {
   let component: HistoryComponent;
@@ -14,7 +15,8 @@ describe('HistoryComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
       declarations: [ HistoryComponent ],
-      providers: [ DatasetsService, WorkflowService, AuthenticationService ]
+      providers: [ DatasetsService, WorkflowService, AuthenticationService ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();
   }));

@@ -26,7 +26,7 @@
       <td><span class="date">05/07/2017</span> <span class="datedivider">-</span> <span class="time">05:56</span></td>
       <td><span class="date">05/07/2017</span> <span class="datedivider">-</span> <span class="time">09:01</span></td>
       <td>
-        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">         
+        <a class="table-btn svg-icon-report" (click)="openReport()">         
           Report
         </a>
       </td>
@@ -41,7 +41,7 @@
       <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">08:34</span></td>
       <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">22:14</span></td>
       <td>
-        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">         
+        <a class="table-btn svg-icon-report" (click)="openReport()">         
           Report
         </a>
       </td>
@@ -56,7 +56,7 @@
       <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">08:34</span></td>
       <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">12:01</span></td>
       <td>
-        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">
+        <a class="table-btn svg-icon-report" (click)="openReport()">
           Report
         </a>
       </td>
@@ -71,7 +71,7 @@
       <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">08:34</span></td>
       <td><span class="date">05/07/2017</span> <span class="datedivider">-</span> <span class="time">00:31</span></td>
       <td>
-        <a class="table-btn svg-icon-report" href="{{dataset ? dataset.reportFile : ''}}" target="_blank">         
+        <a class="table-btn svg-icon-report" (click)="openReport()">         
           Report
         </a>
       </td>
@@ -85,3 +85,5 @@
   </tbody>
 </table>
 <div #starttab></div>
+
+<app-report *ngIf="report"></app-report>

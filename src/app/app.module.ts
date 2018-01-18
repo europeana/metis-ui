@@ -45,6 +45,7 @@ import { UsersComponent,
          UserDetailComponent } from './users';
 import { ExecutionsComponent } from './dashboard/executions/executions.component';
 import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoingexecutions.component';
+import { ReportComponent } from './dataset/report/report.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoin
     QualityassuranceComponent,
     DatasetlogComponent,
     ExecutionsComponent,
-    OngoingexecutionsComponent
+    OngoingexecutionsComponent,
+    ReportComponent
   ],
   imports: [
     BrowserModule,

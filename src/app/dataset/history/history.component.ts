@@ -21,8 +21,9 @@ export class HistoryComponent implements OnInit {
   @Input('inCollapsablePanel') inCollapsablePanel;
   
   errorMessage: string;
+  report;
 
-  ngOnInit() {  }
+  ngOnInit() { }
 
   scroll(el) {
   	el.scrollIntoView({behavior:'smooth'});
@@ -32,9 +33,28 @@ export class HistoryComponent implements OnInit {
 
     this.errorMessage = '';
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
+      this.workflows.setActiveWorkflow(result);      
+    }, (err: HttpErrorResponse) => {
+      if (err.error.errorMessage === 'Wrong access token') {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
 
-      this.workflows.setActiveWorkflow('start!');
+      this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
       
+    });
+
+  }
+
+  openReport () {
+  
+    this.report = '';
+
+    this.workflows.getReport().subscribe(result => {
+
+      this.workflows.setCurrentReport(result);
+      this.report = result;
+
     }, (err: HttpErrorResponse) => {
       if (err.error.errorMessage === 'Wrong access token') {
         this.authentication.logout();
