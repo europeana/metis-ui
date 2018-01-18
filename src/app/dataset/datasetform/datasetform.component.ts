@@ -72,7 +72,8 @@ export class DatasetformComponent implements OnInit {
         }
       }
     },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.status === 406) {
+      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+        this.RedirectPreviousUrl.set(this.router.url);
         this.authentication.logout();
         this.router.navigate(['/login']);
       }
@@ -95,7 +96,8 @@ export class DatasetformComponent implements OnInit {
         }
       }
     },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.status === 406) {
+      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+        this.RedirectPreviousUrl.set(this.router.url);
         this.authentication.logout();
         this.router.navigate(['/login']);
       }
