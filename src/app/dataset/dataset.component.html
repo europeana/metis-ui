@@ -8,7 +8,7 @@
   <div class="collapse-block" *ngIf="datasetData">
 
     <div class="dataset-name">
-      {{datasetData.datasetName}}
+      {{datasetData.datasetName}} {{activeWorkflow}}
     </div>
     <div class="collapse-toggle-block">
       <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
@@ -29,7 +29,7 @@
       <div class="metis-dashboard-right">       
 
         <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
-        <app-history [datasetData]="datasetData" [inCollapsablePanel]=true [activeSet]="activeSet"></app-history>
+        <app-history [datasetData]="datasetData" [inCollapsablePanel]=true ></app-history>
 
         <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
 

@@ -1,4 +1,9 @@
-<table class="table-horizontal-layout history-table" *ngIf="activeSet">
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+</div>
+
+<table class="table-horizontal-layout history-table" *ngIf="datasetData">
   <thead>
   	<tr>
       <th colspan="2"></th>
@@ -25,7 +30,7 @@
           Report
         </a>
       </td>
-      <td><a class="table-btn deactivate-btn">Deactive</a> | <a class="table-btn">Harvest</a></td>
+      <td><!--<a class="table-btn deactivate-btn">Deactive</a> |--> <a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
     </tr>
     <tr>
       <td><span class="svg-icon-process"></span></td>
@@ -40,7 +45,7 @@
           Report
         </a>
       </td>
-      <td><a class="table-btn">Pusblish</a></td>
+      <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
     </tr>
     <tr>
       <td><span class="svg-icon-transform"></span></td>
@@ -55,7 +60,7 @@
           Report
         </a>
       </td>
-      <td><a class="table-btn">Process</a></td>
+      <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
     </tr>
     <tr>
       <td><span class="svg-icon-harvest"></span></td>
@@ -70,11 +75,11 @@
           Report
         </a>
       </td>
-      <td><a class="table-btn">Open in Pandora</a></td>
+      <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
     </tr>
     <tr class="loadmore" *ngIf="inCollapsablePanel">
       <td colspan="9">
-        <a class="load-more-btn" routerLink="/dataset/log/{{activeSet}}" (click)="scroll(starttab)">See full processing history</a>
+        <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a>
       </td>
     </tr>
   </tbody>

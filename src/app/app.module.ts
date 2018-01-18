@@ -16,7 +16,8 @@ import { AuthenticationService,
          NotificationsService,
          CountriesService,
          ProvidersService, 
-         SettingsService } from './_services';
+         SettingsService, 
+         WorkflowService } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
@@ -92,6 +93,7 @@ import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoin
     CountriesService,
     ProvidersService,
     SettingsService,
+    WorkflowService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

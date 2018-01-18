@@ -46,6 +46,9 @@ export class DatasetComponent implements OnInit {
   public datasetData; 
   public activeSet: string;
 
+  public workflowData;
+  public activeWorkflow;
+
   ngOnInit() {
 
     this.user = this.authentication.currentUser;
@@ -62,6 +65,7 @@ export class DatasetComponent implements OnInit {
       }
 
     });
+
   }
 
   /* returnDataset
@@ -86,6 +90,13 @@ export class DatasetComponent implements OnInit {
 
     });
 
+  }
+
+  /* onNotifyWorkflow
+    the active workflow changes, notify all relevant components
+  */
+  onNotifyWorkflow(message:any):void {
+    console.log('onNotifyWorkflow');
   }
 
   /* onNotifyShowLogStatus
