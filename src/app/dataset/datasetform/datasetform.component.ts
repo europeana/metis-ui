@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import 'rxjs/Rx';
 
-import { CountriesService, DatasetsService, AuthenticationService } from '../../_services';
+import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { StringifyHttpError, convertDate } from '../../_helpers';
 
 @Component({
@@ -18,9 +18,10 @@ export class DatasetformComponent implements OnInit {
 
   @Input() datasetData: any;
   autosuggest;
-  autosuggestId: String;
-  datasetOptions: Object;
-  formMode: String = 'create'; // create, read, update
+  autosuggestId: string;
+  datasetOptions: object;
+  formMode: string = 'create'; // create, read, update
+  formSubmitted: boolean;
   errorMessage;
   successMessage;
   harvestprotocol; 
@@ -37,7 +38,8 @@ export class DatasetformComponent implements OnInit {
     private authentication: AuthenticationService,
     private route: ActivatedRoute, 
     private router: Router,
-    private fb: FormBuilder) {}
+    private fb: FormBuilder, 
+    private RedirectPreviousUrl: RedirectPreviousUrl) {}
 
   ngOnInit() {
 
@@ -53,7 +55,6 @@ export class DatasetformComponent implements OnInit {
     this.returnLanguages();
 
     this.buildForm();
-    this.saveTempData();
     
   }
 
@@ -71,7 +72,8 @@ export class DatasetformComponent implements OnInit {
         }
       }
     },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.status === 406) {
+      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+        this.RedirectPreviousUrl.set(this.router.url);
         this.authentication.logout();
         this.router.navigate(['/login']);
       }
@@ -94,7 +96,8 @@ export class DatasetformComponent implements OnInit {
         }
       }
     },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.status === 406) {
+      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+        this.RedirectPreviousUrl.set(this.router.url);
         this.authentication.logout();
         this.router.navigate(['/login']);
       }
@@ -158,15 +161,11 @@ export class DatasetformComponent implements OnInit {
   }
 
   saveTempData() {
-
-    if (this.datasetForm.touched === false) { return false }
-
-    this.datasetForm.valueChanges.subscribe(val => {
+    if (this.formMode === 'create') {
       this.formatFormValues();
       localStorage.removeItem('tempDatasetData');
       localStorage.setItem('tempDatasetData', JSON.stringify(this.datasetForm.value));
-    });
-
+    }
   }
 
   formatFormValues() {
@@ -178,11 +177,6 @@ export class DatasetformComponent implements OnInit {
       metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
       setSpec: this.datasetForm.value.setSpec ? this.datasetForm.value.setSpec : ''
     };
-
-    delete this.datasetForm.value['pluginType'];
-    delete this.datasetForm.value['harvestUrl'];
-    delete this.datasetForm.value['metadataFormat'];
-    delete this.datasetForm.value['setSpec'];
 
     if (!this.datasetForm.value['country']) {
       this.datasetForm.value['country'] = null;
@@ -211,6 +205,7 @@ export class DatasetformComponent implements OnInit {
         localStorage.removeItem('tempDatasetData');
         this.successMessage = 'Dataset updated!';
         this.formMode = 'read';
+        
         this.datasetForm.controls['country'].disable();
         this.datasetForm.controls['language'].disable();
         this.datasetForm.controls['description'].disable();
@@ -218,6 +213,8 @@ export class DatasetformComponent implements OnInit {
         this.datasetForm.controls['pluginType'].disable();
         
       }, (err: HttpErrorResponse) => {
+
+        this.RedirectPreviousUrl.set(this.router.url);
 
         if (err.error.errorMessage === 'Wrong access token') {
           this.authentication.logout();
@@ -237,6 +234,8 @@ export class DatasetformComponent implements OnInit {
         this.router.navigate(['/dataset/new/' + result['datasetId']]);
       
       }, (err: HttpErrorResponse) => {
+
+        this.RedirectPreviousUrl.set(this.router.url);
 
         if (err.error.errorMessage === 'Wrong access token') {
           this.authentication.logout();
@@ -260,6 +259,9 @@ export class DatasetformComponent implements OnInit {
   */
   updateForm() {
     this.formMode = 'update';
+    this.datasets.setDatasetMessage('');
+    this.errorMessage = '';
+    this.successMessage = '';
 
     this.datasetForm.controls['country'].enable();
     this.datasetForm.controls['language'].enable();

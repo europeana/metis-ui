@@ -31,10 +31,9 @@ export class HistoryComponent implements OnInit {
 
   triggerWorkflow() {    
 
+    this.errorMessage = '';
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
-
-      this.workflows.setActiveWorkflow(result);
-      
+      this.workflows.setActiveWorkflow(result);      
     }, (err: HttpErrorResponse) => {
       if (err.error.errorMessage === 'Wrong access token') {
         this.authentication.logout();
@@ -44,7 +43,6 @@ export class HistoryComponent implements OnInit {
       this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
       
     });
-
 
   }
 
@@ -66,7 +64,7 @@ export class HistoryComponent implements OnInit {
       this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
       
     });
-    
+
   }
 
 }

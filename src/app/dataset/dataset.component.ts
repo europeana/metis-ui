@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StringifyHttpError, convertDate } from '../_helpers';
 
-import { AuthenticationService, DatasetsService } from '../_services';
+import { AuthenticationService, DatasetsService, RedirectPreviousUrl } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
@@ -29,7 +29,8 @@ export class DatasetComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private datasets: DatasetsService,
-    private componentFactoryResolver: ComponentFactoryResolver) { }
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private RedirectPreviousUrl: RedirectPreviousUrl) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
@@ -37,7 +38,6 @@ export class DatasetComponent implements OnInit {
   isCollapsed: boolean = false;
   showLog: boolean = false;
   user: User;
-  userRole: string;
   errorMessage: string;
   successMessage: string;
   updatedDate;
@@ -52,8 +52,7 @@ export class DatasetComponent implements OnInit {
   ngOnInit() {
 
     this.user = this.authentication.currentUser;
-    this.userRole = this.user.accountRole;
-
+    
     this.route.params.subscribe(params => {
 
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
@@ -83,13 +82,21 @@ export class DatasetComponent implements OnInit {
 
         this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
 
-        if (err.status === 401) {
+        if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+          this.RedirectPreviousUrl.set(this.router.url);
           this.authentication.logout();
           this.router.navigate(['/login']);
         }
 
     });
 
+  }
+
+  /* onNotifyWorkflow
+    the active workflow changes, notify all relevant components
+  */
+  onNotifyWorkflow(message:any):void {
+    console.log('onNotifyWorkflow');
   }
 
   /* onNotifyShowLogStatus

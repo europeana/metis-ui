@@ -34,6 +34,7 @@ export class ActionbarComponent {
   currentPlugin = 0;
   logMessages;
 
+
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   ngOnInit() {
