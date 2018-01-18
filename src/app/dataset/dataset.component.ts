@@ -37,7 +37,6 @@ export class DatasetComponent implements OnInit {
   isCollapsed: boolean = false;
   showLog: boolean = false;
   user: User;
-  userRole: string;
   errorMessage: string;
   successMessage: string;
   updatedDate;
@@ -49,8 +48,7 @@ export class DatasetComponent implements OnInit {
   ngOnInit() {
 
     this.user = this.authentication.currentUser;
-    this.userRole = this.user.accountRole;
-
+    
     this.route.params.subscribe(params => {
 
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
