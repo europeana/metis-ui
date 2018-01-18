@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StringifyHttpError, convertDate } from '../_helpers';
 
-import { AuthenticationService, DatasetsService, RedirectPreviousUrl } from '../_services';
+import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
@@ -29,13 +29,14 @@ export class DatasetComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private datasets: DatasetsService,
+    private workflows: WorkflowService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private RedirectPreviousUrl: RedirectPreviousUrl) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string = 'new';
-  isCollapsed: boolean = false;
+  isCollapsed: boolean = true;
   showLog: boolean = false;
   user: User;
   errorMessage: string;
@@ -61,10 +62,15 @@ export class DatasetComponent implements OnInit {
       if (this.activeSet) {
         this.returnDataset(+params['id']);
       } else {
-        this.loadTabComponent();
-      }
+        this.loadTabComponent();      }
 
     });
+
+    this.workflows.changeWorkflow.subscribe(
+      workflow => {
+        this.isCollapsed = true;
+      }
+    );
 
   }
 
