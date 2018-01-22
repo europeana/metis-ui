@@ -20,16 +20,15 @@ export class WorkflowService {
   activeTopolgy: any;
   activeExternalTaskId: any;
 
-  triggerNewWorkflow (id) {
+  triggerNewWorkflow (id, workflowName) {
 
   	const owner = 'owner1';
-  	const workflow = 'workflow30';
+  	const workflow = workflowName;
   	const priority = 0;
 
   	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
     return this.http.post(url, JSON.stringify('{}')).map(data => {   
     	if (data) {
-        console.log(data);
         this.activeTopolgy = data['metisPlugins'][0]['topologyName']; // 0 for now
         this.activeExternalTaskId = data['metisPlugins'][0]['externalTaskId']; // 0 for now
         return data;

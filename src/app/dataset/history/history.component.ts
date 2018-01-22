@@ -29,10 +29,10 @@ export class HistoryComponent implements OnInit {
   	el.scrollIntoView({behavior:'smooth'});
   }
 
-  triggerWorkflow() {    
+  triggerWorkflow(workflowName) {    
 
     this.errorMessage = '';
-    this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
+    this.workflows.triggerNewWorkflow(this.datasetData.datasetId, workflowName).subscribe(result => {
       this.workflows.setActiveWorkflow(result);      
     }, (err: HttpErrorResponse) => {
       if (err.error.errorMessage === 'Wrong access token') {

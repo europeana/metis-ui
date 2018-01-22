@@ -13,14 +13,14 @@
       <th>Start date</th>
       <th>End date</th>
       <th></th>
-      <th>Trigger next action</th>
+      <th>Trigger action</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><span class="svg-icon-publish"></span></td>
+      <td><span class="svg-icon-harvest"></span></td>
       <td><span class="error"></span></td>
-      <td>Publish</td>
+      <td>Harvest</td>
       <td>35860</td>
       <td>12</td>
       <td><span class="date">05/07/2017</span> <span class="datedivider">-</span> <span class="time">05:56</span></td>
@@ -30,12 +30,12 @@
           Report
         </a>
       </td>
-      <td><!--<a class="table-btn deactivate-btn">Deactive</a> |--> <a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
+      <td><!--<a class="table-btn deactivate-btn">Deactive</a> |--> <a class="table-btn" (click)="triggerWorkflow('workflow30')">Harvest</a></td>
     </tr>
     <tr>
       <td><span class="svg-icon-process"></span></td>
       <td><span class="watchout"></span></td>
-      <td>Process</td>
+      <td>Validate</td>
       <td>1492</td>
       <td>178922</td>
       <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">08:34</span></td>
@@ -45,9 +45,9 @@
           Report
         </a>
       </td>
-      <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
+      <td><a class="table-btn" (click)="triggerWorkflow()">Validate</a></td>
     </tr>
-    <tr>
+    <!--<tr>
       <td><span class="svg-icon-transform"></span></td>
       <td></td>
       <td>Transform</td>
@@ -76,7 +76,7 @@
         </a>
       </td>
       <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
-    </tr>
+    </tr>-->
     <tr class="loadmore" *ngIf="inCollapsablePanel">
       <td colspan="9">
         <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a>
