@@ -33,7 +33,7 @@ export class DatasetlogComponent implements OnInit {
     this.workflows.getLogs().subscribe(result => {
       this.logMessages = result;
     },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.status === 406) {
+      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
         this.authentication.logout();
         this.router.navigate(['/login']);
       }

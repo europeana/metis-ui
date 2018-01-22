@@ -87,6 +87,12 @@ export class ProfileComponent implements OnInit {
       this.toggleEditMode();
     },
     (err: HttpErrorResponse) => {
+
+      if (err.error.errorMessage === 'Wrong access token') {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+      
       this.errorMessage = `Update password failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
