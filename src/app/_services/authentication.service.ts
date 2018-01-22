@@ -108,4 +108,8 @@ export class AuthenticationService {
     localStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
   }
 
+  getCurrentUser() {
+    return this.currentUser;
+  }
+
 }

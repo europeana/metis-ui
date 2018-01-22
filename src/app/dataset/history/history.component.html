@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr>
+    <tr (click)="showStatusWorkflow(1)" [ngClass]="activeRow === 1 ? 'active' : ''">
       <td><span class="svg-icon-harvest"></span></td>
       <td><span class="error"></span></td>
       <td>Harvest</td>
@@ -32,7 +32,7 @@
       </td>
       <td><!--<a class="table-btn deactivate-btn">Deactive</a> |--> <a class="table-btn" (click)="triggerWorkflow('workflow30')">Harvest</a></td>
     </tr>
-    <tr>
+    <tr (click)="showStatusWorkflow(2)" [ngClass]="activeRow === 2 ? 'active' : ''">
       <td><span class="svg-icon-process"></span></td>
       <td><span class="watchout"></span></td>
       <td>Validate</td>

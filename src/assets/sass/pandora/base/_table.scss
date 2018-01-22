@@ -41,8 +41,13 @@
 .table-horizontal-layout.executions-table,
 .table-horizontal-layout.history-table {
 
-  tbody tr:hover {
+  tbody tr:hover,
+  tbody tr.active {
     border-left: 3px solid $eu-jade;
+  }
+
+  tbody tr.active {
+    background: rgba(55,185,139, 0.1);
   }
 
   tbody tr.loadmore:hover {
@@ -61,6 +66,7 @@
   }
 
   tr:not(.loadmore) {
+
     td {
       padding: 0.5rem 0.5rem 0.25rem;
 
@@ -139,6 +145,12 @@
     }
   }
 
+}
+
+.metis-dashboard-right .table-horizontal-layout {
+  tbody tr:not(.loadmore) {
+    cursor: pointer;
+  }
 }
 
 .table-horizontal-layout.executions-table {

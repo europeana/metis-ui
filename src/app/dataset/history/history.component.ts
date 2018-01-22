@@ -22,6 +22,7 @@ export class HistoryComponent implements OnInit {
   
   errorMessage: string;
   report;
+  activeRow;
 
   ngOnInit() { }
 
@@ -65,6 +66,12 @@ export class HistoryComponent implements OnInit {
       
     });
 
+  }
+
+  showStatusWorkflow (row) {
+    if (this.inCollapsablePanel) {
+      this.activeRow = row;
+    }
   }
 
 }
