@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardComponent } from './dashboard.component';
-import { AuthenticationService, NotificationsService, DatasetsService } from '../_services';
+import { AuthenticationService, DatasetsService } from '../_services';
 
 import { RouterTestingModule } from '@angular/router/testing';
 import {HttpClientModule} from '@angular/common/http';
@@ -16,7 +16,7 @@ describe('DashboardComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule ],
       declarations: [ DashboardComponent ], 
-      providers: [ AuthenticationService, NotificationsService, DatasetsService ],
+      providers: [ AuthenticationService, DatasetsService ],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();

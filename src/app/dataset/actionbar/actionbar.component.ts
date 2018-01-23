@@ -92,6 +92,7 @@ export class ActionbarComponent {
   };
 
   getRunningExecution () {
+    // either running or inqueue
     //this.workflows.getWorkflowStatus(this.currentWorkflow.id).subscribe(execution => {
     //  console.log(execution['workflowStatus']);
     //});

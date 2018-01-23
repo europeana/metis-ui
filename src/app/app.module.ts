@@ -12,10 +12,8 @@ import { AuthUserGuard,
 import { AuthenticationService,
          DatasetsService,
          TokenInterceptor,
-         RedirectPreviousUrl,         
-         NotificationsService,
-         CountriesService,
-         ProvidersService, 
+         RedirectPreviousUrl, 
+         CountriesService,          
          SettingsService, 
          WorkflowService } from './_services';
 
@@ -91,9 +89,7 @@ import { ReportComponent } from './dataset/report/report.component';
     AuthenticationService,
     DatasetsService,
     RedirectPreviousUrl,
-    NotificationsService,
-    CountriesService,
-    ProvidersService,
+    CountriesService,    
     SettingsService,
     WorkflowService,
     {

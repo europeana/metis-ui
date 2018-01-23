@@ -3,7 +3,7 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
 
 import { DatasetformComponent } from './datasetform.component';
-import { CountriesService, DatasetsService, ProvidersService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -48,7 +48,6 @@ describe('DatasetformComponent', () => {
       providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }, 
         CountriesService, 
         DatasetsService,
-        ProvidersService,
         AuthenticationService,
         RedirectPreviousUrl]
     })
