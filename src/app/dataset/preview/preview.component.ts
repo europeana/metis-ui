@@ -9,7 +9,12 @@ export class PreviewComponent implements OnInit {
 
   constructor() { }
 
+  code;
+
   ngOnInit() {
+
+  	this.code = `// Some code...`;
+
   }
 
 }

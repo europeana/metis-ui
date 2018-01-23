@@ -46,6 +46,7 @@ import { UsersComponent,
 import { ExecutionsComponent } from './dashboard/executions/executions.component';
 import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoingexecutions.component';
 import { ReportComponent } from './dataset/report/report.component';
+import { CodemirrorModule } from 'ng2-codemirror';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,8 @@ import { ReportComponent } from './dataset/report/report.component';
     FormsModule,
     ReactiveFormsModule,    
     HttpClientModule,
-    AppRoutingModule    
+    AppRoutingModule,
+    CodemirrorModule  
   ],
   entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, QualityassuranceComponent ],
   providers: [
