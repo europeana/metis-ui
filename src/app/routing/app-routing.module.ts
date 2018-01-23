@@ -22,8 +22,6 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [AuthVisitorGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthUserGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [AuthVisitorGuard] },
-  { path: 'users', component: UsersComponent, canActivate: [AuthUserGuard] },
-  { path: 'users/:id', component: UserDetailComponent, canActivate: [AuthUserGuard] },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];

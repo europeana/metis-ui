@@ -39,8 +39,6 @@ import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
-import { UsersComponent,
-         UserDetailComponent } from './users';
 import { ExecutionsComponent } from './dashboard/executions/executions.component';
 import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoingexecutions.component';
 import { ReportComponent } from './dataset/report/report.component';
@@ -60,8 +58,6 @@ import { ReportComponent } from './dataset/report/report.component';
     DatasetformComponent,
     DatasetDirective,
     PasswordCheckComponent,
-    UsersComponent,
-    UserDetailComponent,
     GeneralinfoComponent,
     DashboardactionsComponent,
     ActionbarComponent,
