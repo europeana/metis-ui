@@ -84,6 +84,19 @@ export class WorkflowService {
 
   }
 
+  cancelThisWorkflow(id) {
+    
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/execution/${id}`;   
+    return this.http.delete(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+
+  }
+
   setCurrentReport(report): void {
     this.currentReport = report;
   }

@@ -96,6 +96,19 @@ export class ActionbarComponent {
     //});
   }
 
+  cancelWorkflow () {
+    
+    this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
+      this.subscription.unsubscribe();
+    },(err: HttpErrorResponse) => {
+      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+
+  }
+
   showLog() {
     this.notifyShowLogStatus.emit(true);
   }
