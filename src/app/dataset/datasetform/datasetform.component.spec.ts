@@ -3,7 +3,7 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
 
 import { DatasetformComponent } from './datasetform.component';
-import { CountriesService, DatasetsService, ProvidersService, AuthenticationService } from '../../_services';
+import { CountriesService, DatasetsService, ProvidersService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -49,7 +49,8 @@ describe('DatasetformComponent', () => {
         CountriesService, 
         DatasetsService,
         ProvidersService,
-        AuthenticationService]
+        AuthenticationService,
+        RedirectPreviousUrl]
     })
     .compileComponents();
   }));

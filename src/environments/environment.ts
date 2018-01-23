@@ -17,8 +17,8 @@ export const environment = {
     profile: 'content@europeana.eu'
   },
   test: {
-    username: 'test.metis@europeana.eu',
-    password: '123'
+    username: '',
+    password: ''
   },
   afterLoginGoto: '/profile',
   links: {

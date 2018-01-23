@@ -43,6 +43,7 @@ export class ActionbarComponent {
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
+        console.log(workflow);
         this.currentWorkflow = workflow;
         this.currentStatus = this.currentWorkflow.workflowStatus;
         let timer = Observable.timer(0, this.intervalTimer);
@@ -100,6 +101,7 @@ export class ActionbarComponent {
     
     this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
       this.subscription.unsubscribe();
+      this.currentWorkflow = result;
     },(err: HttpErrorResponse) => {
       if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
         this.authentication.logout();
