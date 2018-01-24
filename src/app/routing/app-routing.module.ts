@@ -7,8 +7,6 @@ import { HomeComponent } from '../home';
 import { LoginComponent } from '../login';
 import { ProfileComponent } from '../profile';
 import { RegisterComponent } from '../register';
-import { UsersComponent,
-         UserDetailComponent } from '../users';
 
 import { AuthVisitorGuard, AuthUserGuard } from '../_guards';
 import { PageNotFoundComponent } from '../page-not-found';

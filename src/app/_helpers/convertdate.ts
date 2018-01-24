@@ -2,13 +2,13 @@ export function convertDate(date) {
 
 	if (!date) return '';
 
-	const splittedDate = date.split('T');
-	const newDate = splittedDate[0].split('-');
-	const newTime = splittedDate[1].split(':');
-	
-	const returnDate = newDate[2] + '/' + newDate[1] + '/' + newDate[0];
-	const returnTime = newTime[0] + ':' + newTime[1];
-	
+	var localDate = new Date(date);
+  console.log(localDate, date);
+  console.log(localDate.getDate());
+
+	const returnDate = localDate.getDate() + '/' + localDate.getMonth()+1 + '/' + localDate.getFullYear();
+	const returnTime = localDate.getHours() + ':' + localDate.getMinutes();
+		
 	return returnDate + ' - ' + returnTime; 
 
 }
