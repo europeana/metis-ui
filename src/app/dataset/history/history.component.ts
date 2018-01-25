@@ -23,8 +23,35 @@ export class HistoryComponent implements OnInit {
   errorMessage: string;
   report;
   activeRow;
+  allWorkflows;
+  currentPlugin:number = 0;
 
-  ngOnInit() { }
+  ngOnInit() { 
+
+    this.returnAllWorkflows();
+    
+  }
+
+  returnAllWorkflows() {
+
+    this.allWorkflows = '';
+    this.workflows.getAllWorkflows(this.datasetData.datasetId).subscribe(result => {
+      if (this.inCollapsablePanel) {
+        this.allWorkflows = result['results'].slice(0, 4);
+      } else {
+        this.allWorkflows = result['results'];
+      }
+
+      console.log(this.allWorkflows);
+
+    },(err: HttpErrorResponse) => {
+      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+
+  }
 
   scroll(el) {
   	el.scrollIntoView({behavior:'smooth'});
@@ -34,6 +61,7 @@ export class HistoryComponent implements OnInit {
 
     this.errorMessage = '';
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId, workflowName).subscribe(result => {
+      this.returnAllWorkflows();
       this.workflows.setActiveWorkflow(result);      
     }, (err: HttpErrorResponse) => {
       if (err.error.errorMessage === 'Wrong access token') {
@@ -47,11 +75,11 @@ export class HistoryComponent implements OnInit {
 
   }
 
-  openReport () {
+  openReport (taskid, topology) {
   
     this.report = '';
 
-    this.workflows.getReport().subscribe(result => {
+    this.workflows.getReport(taskid, topology).subscribe(result => {
 
       this.workflows.setCurrentReport(result);
       this.report = result;
@@ -70,6 +98,7 @@ export class HistoryComponent implements OnInit {
 
   showStatusWorkflow (row) {
     if (this.inCollapsablePanel) {
+      this.workflows.setSpecificWorkflow(row);
       this.activeRow = row;
     }
   }

@@ -28,7 +28,7 @@ export class ActionbarComponent {
   now;
   totalInDataset: number;
   totalProcessed: number = 0;
-  currentStatus: string;
+  currentStatus: any;
   currentWorkflow;
   currentWorkflowName;
   currentPlugin = 0;
@@ -43,59 +43,77 @@ export class ActionbarComponent {
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
-        console.log(workflow);
         this.currentWorkflow = workflow;
         this.currentStatus = this.currentWorkflow.workflowStatus;
-        let timer = Observable.timer(0, this.intervalTimer);
-        this.subscription = timer.subscribe(t => {
-          this.pollingWorkflow(this.currentWorkflow.id);
-        });
+        this.currentWorkflowName = this.currentWorkflow.workflowName;
+
+        if (this.currentStatus !== 'FINISHED' || this.currentStatus !== 'CANCELLED') {
+          this.startPollingWorkflow();
+        }
       }
     );
 
   }
 
-  pollingWorkflow(id) {
-    this.workflows.getWorkflowStatus(id).subscribe(execution => {
+  startPollingWorkflow() {
+    console.log('startPollingWorkflow');
+    if (this.subscription) { this.subscription.unsubscribe(); }
+    let timer = Observable.timer(0, this.intervalTimer);
+    this.subscription = timer.subscribe(t => {
+      this.pollingWorkflow();
+    });
+  }
 
-      if (execution['metisPlugins'][this.currentPlugin].pluginStatus === null) {
-        this.currentStatus = execution['workflowStatus'];
-      } else {
-        this.currentStatus = execution['metisPlugins'][this.currentPlugin].pluginStatus;
+  pollingWorkflow() {
+
+    this.workflows.getRunningWorkflows(this.datasetData.datasetId).subscribe(execution => {
+
+      let e = execution[0];
+      console.log('pollingWorkflow', e);
+
+      if (this.currentStatus === 'FINISHED' || this.currentStatus === 'CANCELLED') {
+      //   /*if (this.currentPlugin < e['metisPlugins'].length - 1) {
+      //     this.currentPlugin += 1;
+      //   } else {*/
+        this.currentPlugin = 0;
+        this.now = e['finishedDate'];
+        this.subscription.unsubscribe();
+      //  /*}*/
       }
 
-      this.currentWorkflowName = execution['metisPlugins'][this.currentPlugin].pluginType;
-      this.totalProcessed = execution['metisPlugins'][this.currentPlugin]['executionProgress'].processedRecords;
-      this.totalInDataset = execution['metisPlugins'][this.currentPlugin]['executionProgress'].expectedRecords;
+      if (e['metisPlugins'][this.currentPlugin].pluginStatus === null) {
+        this.currentStatus = e['workflowStatus'];
+      } else {
+        this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
+      }
+
+      this.totalProcessed = e['metisPlugins'][this.currentPlugin]['executionProgress'].processedRecords;
+      this.totalInDataset = e['metisPlugins'][this.currentPlugin]['executionProgress'].expectedRecords;
         
       if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
-       this.workflowPercentage = (this.totalProcessed / this.totalInDataset) * 100;
+        this.workflowPercentage = (this.totalProcessed / this.totalInDataset) * 100;
       }
 
-      if (execution['updatedDate'] === null) {
-        this.now = execution['startedDate']; 
+      if (e['updatedDate'] === null) {
+        this.now = e['startedDate']; 
       } else {
-        this.now = execution['updatedDate']; 
+        this.now = e['updatedDate']; 
       }
       
-      if (this.currentStatus === 'FINISHED') {
-        /*if (this.currentPlugin < execution['metisPlugins'].length - 1) {
-          this.currentPlugin += 1;
-        } else {*/
-          this.currentPlugin = 0;
-          this.now = execution['finishedDate'];
-          this.subscription.unsubscribe();
-       /*}*/
-      }
     });
 
   };
 
   getRunningExecution () {
+    console.log('getRunningExecution');
     // either running or inqueue
-    //this.workflows.getWorkflowStatus(this.currentWorkflow.id).subscribe(execution => {
-    //  console.log(execution['workflowStatus']);
-    //});
+    this.workflows.getRunningWorkflows(this.datasetData.datasetId).subscribe(workflow => {
+      for (let w of workflow) {
+        this.currentWorkflow = w;
+        this.currentStatus = this.currentWorkflow.workflowStatus;
+        this.startPollingWorkflow();
+      }
+    });
   }
 
   cancelWorkflow () {

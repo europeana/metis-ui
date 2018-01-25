@@ -10,6 +10,7 @@
       <th>Workflow</th>
       <th>Total processed</th>
       <th>Total dataset</th>
+      <th>Status</th>
       <th>Start date</th>
       <th>End date</th>
       <th></th>
@@ -17,68 +18,24 @@
     </tr>
   </thead>
   <tbody>
-    <tr (click)="showStatusWorkflow(1)" [ngClass]="activeRow === 1 ? 'active' : ''">
+    <tr *ngFor="let w of allWorkflows; let i = index" (click)="showStatusWorkflow(i)" [ngClass]="activeRow === i ? 'active' : ''">
       <td><span class="svg-icon-harvest"></span></td>
-      <td><span class="error"></span></td>
-      <td>Harvest</td>
-      <td>35860</td>
-      <td>12</td>
-      <td><span class="date">05/07/2017</span> <span class="datedivider">-</span> <span class="time">05:56</span></td>
-      <td><span class="date">05/07/2017</span> <span class="datedivider">-</span> <span class="time">09:01</span></td>
+      <td><span class="error" *ngIf="w.metisPlugins[currentPlugin].executionProgress.errors !== 0"></span></td>
+      <td>{{w.workflowName}}</td>
+      <td>{{w.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
+      <td>{{w.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</td>
+      <td>{{w.workflowStatus}}</td>
+      <td><span class="date">{{w.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{w.startedDate | date:'HH:mm'}}</span></td>
+      <td><span class="date">{{w.finishedDate | date:'shortDate'}}</span> <span class="datedivider">-</span> <span class="time">{{w.finishedDate | date:'shortTime'}}</span></td>
       <td>
-        <a class="table-btn svg-icon-report" (click)="openReport()">         
+        <a class="table-btn svg-icon-report" (click)="openReport(w.metisPlugins[currentPlugin].externalTaskId, w.metisPlugins[currentPlugin].topologyName)">         
           Report
         </a>
       </td>
-      <td><!--<a class="table-btn deactivate-btn">Deactive</a> |--> <a class="table-btn" (click)="triggerWorkflow('workflow30')">Harvest</a></td>
+      <td><a class="table-btn" (click)="triggerWorkflow('workflow30')">Harvest</a></td>
     </tr>
-    <tr (click)="showStatusWorkflow(2)" [ngClass]="activeRow === 2 ? 'active' : ''">
-      <td><span class="svg-icon-process"></span></td>
-      <td><span class="watchout"></span></td>
-      <td>Validate</td>
-      <td>1492</td>
-      <td>178922</td>
-      <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">08:34</span></td>
-      <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">22:14</span></td>
-      <td>
-        <a class="table-btn svg-icon-report" (click)="openReport()">         
-          Report
-        </a>
-      </td>
-      <td><a class="table-btn" (click)="triggerWorkflow()">Validate</a></td>
-    </tr>
-    <!--<tr>
-      <td><span class="svg-icon-transform"></span></td>
-      <td></td>
-      <td>Transform</td>
-      <td>66199</td>
-      <td>99911</td>
-      <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">08:34</span></td>
-      <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">12:01</span></td>
-      <td>
-        <a class="table-btn svg-icon-report" (click)="openReport()">
-          Report
-        </a>
-      </td>
-      <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
-    </tr>
-    <tr>
-      <td><span class="svg-icon-harvest"></span></td>
-      <td></td>
-      <td>Harvest</td>
-      <td>119082</td>
-      <td>112890</td>
-      <td><span class="date">04/07/2017</span> <span class="datedivider">-</span> <span class="time">08:34</span></td>
-      <td><span class="date">05/07/2017</span> <span class="datedivider">-</span> <span class="time">00:31</span></td>
-      <td>
-        <a class="table-btn svg-icon-report" (click)="openReport()">         
-          Report
-        </a>
-      </td>
-      <td><a class="table-btn" (click)="triggerWorkflow()">Harvest</a></td>
-    </tr>-->
     <tr class="loadmore" *ngIf="inCollapsablePanel">
-      <td colspan="9">
+      <td colspan="10">
         <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a>
       </td>
     </tr>

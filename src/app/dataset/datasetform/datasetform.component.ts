@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import 'rxjs/Rx';
 
-import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
 import { StringifyHttpError, convertDate } from '../../_helpers';
 
 @Component({
@@ -39,7 +39,8 @@ export class DatasetformComponent implements OnInit {
     private route: ActivatedRoute, 
     private router: Router,
     private fb: FormBuilder, 
-    private RedirectPreviousUrl: RedirectPreviousUrl) {}
+    private RedirectPreviousUrl: RedirectPreviousUrl,
+    private errors: ErrorService) {}
 
   ngOnInit() {
 
@@ -71,12 +72,8 @@ export class DatasetformComponent implements OnInit {
           }
         }
       }
-    },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
-        this.RedirectPreviousUrl.set(this.router.url);
-        this.authentication.logout();
-        this.router.navigate(['/login']);
-      }
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);     
     });
 
   }
@@ -95,12 +92,8 @@ export class DatasetformComponent implements OnInit {
           }
         }
       }
-    },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
-        this.RedirectPreviousUrl.set(this.router.url);
-        this.authentication.logout();
-        this.router.navigate(['/login']);
-      }
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);     
     });
 
   }
@@ -214,14 +207,8 @@ export class DatasetformComponent implements OnInit {
         
       }, (err: HttpErrorResponse) => {
 
-        this.RedirectPreviousUrl.set(this.router.url);
-
-        if (err.error.errorMessage === 'Wrong access token') {
-          this.authentication.logout();
-          this.router.navigate(['/login']);
-        }
-
-        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
+        let error = this.errors.handleError(err);
+        this.errorMessage = `Not able to submit this dataset: ${StringifyHttpError(error)}`; 
 
       });
 
@@ -235,14 +222,8 @@ export class DatasetformComponent implements OnInit {
       
       }, (err: HttpErrorResponse) => {
 
-        this.RedirectPreviousUrl.set(this.router.url);
-
-        if (err.error.errorMessage === 'Wrong access token') {
-          this.authentication.logout();
-          this.router.navigate(['/login']);
-        }
-
-        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;  
+        let error = this.errors.handleError(err);
+        this.errorMessage = `Not able to submit this dataset: ${StringifyHttpError(error)}`;  
 
       });
 

@@ -19,6 +19,7 @@ export class WorkflowService {
   currentReport: any;
   activeTopolgy: any;
   activeExternalTaskId: any;
+  allWorkflows: any;
 
   triggerNewWorkflow (id, workflowName) {
 
@@ -55,10 +56,10 @@ export class WorkflowService {
 
   }
 
-   getReport() {
+   getReport(taskId, topologyName) {
 
-    const topology = 'oai_harvest';
-    const externalTaskId = '2070373127078497810';
+    const topology = topologyName;
+    const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report`;   
     
     return this.http.get(url).map(data => {   
@@ -71,11 +72,12 @@ export class WorkflowService {
 
   }
 
-  getWorkflowStatus(id) {
+  getAllWorkflows(id) {
 
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/execution/${id}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=&orderField=FINISHED_DATE&ascending=&nextPage=`;   
     return this.http.get(url).map(data => {   
       if (data) {
+        this.allWorkflows = data['results'];
         return data;
       } else {
         return false;
@@ -84,9 +86,27 @@ export class WorkflowService {
 
   }
 
+  getRunningWorkflows(id) {
+
+    // or inqueue
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=FINISHED_DATE&ascending=&nextPage=`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data['results'];
+      } else {
+        return false;
+      }
+    });
+
+  }
+
+  setSpecificWorkflow(index) {
+    this.changeWorkflow.emit(this.allWorkflows[index]);
+  }
+
   cancelThisWorkflow(id) {
     
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/execution/${id}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}`;   
     return this.http.delete(url).map(data => {   
       if (data) {
         return data;

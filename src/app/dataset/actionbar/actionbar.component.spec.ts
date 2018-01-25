@@ -10,6 +10,7 @@ describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
   let WorkflowServiceStub;
+  let WorkflowService;
 
   beforeEach(() => {
 

@@ -15,7 +15,8 @@ import { AuthenticationService,
          RedirectPreviousUrl, 
          CountriesService,          
          SettingsService, 
-         WorkflowService } from './_services';
+         WorkflowService,
+         ErrorService } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
@@ -88,6 +89,7 @@ import { ReportComponent } from './dataset/report/report.component';
     CountriesService,    
     SettingsService,
     WorkflowService,
+    ErrorService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
