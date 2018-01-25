@@ -143,7 +143,7 @@ export class DatasetComponent implements OnInit {
     } else  if (this.activeTab === 'mapping') {
       return new datasetTab(MappingComponent, {});
     } else  if (this.activeTab === 'preview') {
-      return new datasetTab(PreviewComponent, {});
+      return new datasetTab(PreviewComponent, this.datasetData);
     } else  if (this.activeTab === 'dataquality') {
       return new datasetTab(QualityassuranceComponent, {});
     }
