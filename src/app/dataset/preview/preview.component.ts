@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import 'codemirror/mode/xml/xml';
+import 'codemirror/addon/fold/foldcode';
+import 'codemirror/addon/fold/foldgutter';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/addon/fold/indent-fold';
+import 'codemirror/addon/fold/markdown-fold';
+import 'codemirror/addon/fold/comment-fold';
 
 @Component({
   selector: 'app-preview',
@@ -39,9 +46,10 @@ export class PreviewComponent implements OnInit {
       mode: 'application/xml',
       lineNumbers: true,
       tabSize: 2,
-      readOnly: true
+      readOnly: true,
+      foldGutter: true,
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
   }
-
 }
