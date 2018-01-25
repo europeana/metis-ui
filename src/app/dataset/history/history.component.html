@@ -26,7 +26,7 @@
       <td>{{w.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</td>
       <td>{{w.workflowStatus}}</td>
       <td><span class="date">{{w.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{w.startedDate | date:'HH:mm'}}</span></td>
-      <td><span class="date">{{w.finishedDate | date:'shortDate'}}</span> <span class="datedivider">-</span> <span class="time">{{w.finishedDate | date:'shortTime'}}</span></td>
+      <td><span class="date">{{w.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{w.finishedDate | date:'HH:mm'}}</span></td>
       <td>
         <a class="table-btn svg-icon-report" (click)="openReport(w.metisPlugins[currentPlugin].externalTaskId, w.metisPlugins[currentPlugin].topologyName)">         
           Report

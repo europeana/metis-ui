@@ -72,13 +72,9 @@ export class ActionbarComponent {
       console.log('pollingWorkflow', e);
 
       if (this.currentStatus === 'FINISHED' || this.currentStatus === 'CANCELLED') {
-      //   /*if (this.currentPlugin < e['metisPlugins'].length - 1) {
-      //     this.currentPlugin += 1;
-      //   } else {*/
         this.currentPlugin = 0;
         this.now = e['finishedDate'];
         this.subscription.unsubscribe();
-      //  /*}*/
       }
 
       if (e['metisPlugins'][this.currentPlugin].pluginStatus === null) {
