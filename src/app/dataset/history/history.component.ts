@@ -22,28 +22,27 @@ export class HistoryComponent implements OnInit {
   
   errorMessage: string;
   report;
-  activeRow;
-  allWorkflows;
-  currentPlugin:number = 0;
+  allWorkflows: Array<any> = [];
+  currentPlugin: number = 0;
+  nextPage: number = 0;
 
   ngOnInit() { 
-
-    this.returnAllWorkflows();
-    
+    this.returnAllWorkflows();    
   }
 
   returnAllWorkflows() {
 
-    this.allWorkflows = '';
-    this.workflows.getAllWorkflows(this.datasetData.datasetId).subscribe(result => {
+    this.workflows.getAllWorkflows(this.datasetData.datasetId, this.nextPage).subscribe(result => {
       if (this.inCollapsablePanel) {
         this.allWorkflows = result['results'].slice(0, 4);
       } else {
-        this.allWorkflows = result['results'];
+
+        for (let i = 0; i < result['results'].length; i++) {
+          this.allWorkflows.push(result['results'][i]);
+        }
+        
+        this.nextPage = result['nextPage'];
       }
-
-      console.log(this.allWorkflows);
-
     },(err: HttpErrorResponse) => {
       if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
         this.authentication.logout();
@@ -55,6 +54,12 @@ export class HistoryComponent implements OnInit {
 
   scroll(el) {
   	el.scrollIntoView({behavior:'smooth'});
+  }
+
+  loadNextPage() {
+    if (this.nextPage > 0) {
+      this.returnAllWorkflows();
+    }
   }
 
   triggerWorkflow(workflowName) {    
@@ -94,13 +99,6 @@ export class HistoryComponent implements OnInit {
       
     });
 
-  }
-
-  showStatusWorkflow (row) {
-    if (this.inCollapsablePanel) {
-      this.workflows.setSpecificWorkflow(row);
-      this.activeRow = row;
-    }
   }
 
 }

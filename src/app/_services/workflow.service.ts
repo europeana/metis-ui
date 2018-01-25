@@ -20,6 +20,7 @@ export class WorkflowService {
   activeTopolgy: any;
   activeExternalTaskId: any;
   allWorkflows: any;
+  nextPage: number;
 
   triggerNewWorkflow (id, workflowName) {
 
@@ -72,9 +73,9 @@ export class WorkflowService {
 
   }
 
-  getAllWorkflows(id) {
+  getAllWorkflows(id, page?) {
 
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=&orderField=FINISHED_DATE&ascending=false`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/82?workflowOwner=&workflowName=&workflowStatus=FINISHED&workflowStatus=CANCELLED&orderField=UPDATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
         this.allWorkflows = data['results'];
@@ -89,7 +90,7 @@ export class WorkflowService {
   getRunningWorkflows(id) {
 
     // or inqueue
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=FINISHED_DATE&ascending=false`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=STARTED_DATE&ascending=false`;   
     return this.http.get(url).map(data => {   
       if (data) {
         return data['results'];
@@ -98,10 +99,6 @@ export class WorkflowService {
       }
     });
 
-  }
-
-  setSpecificWorkflow(index) {
-    this.changeWorkflow.emit(this.allWorkflows[index]);
   }
 
   cancelThisWorkflow(id) {

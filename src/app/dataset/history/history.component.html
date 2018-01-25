@@ -18,7 +18,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let w of allWorkflows; let i = index" (click)="showStatusWorkflow(i)" [ngClass]="activeRow === i ? 'active' : ''">
+    <tr *ngFor="let w of allWorkflows; let i = index">
       <td><span class="svg-icon-harvest"></span></td>
       <td><span class="error" *ngIf="w.metisPlugins[currentPlugin].executionProgress.errors !== 0"></span></td>
       <td>{{w.workflowName}}</td>
@@ -37,6 +37,11 @@
     <tr class="loadmore" *ngIf="inCollapsablePanel">
       <td colspan="10">
         <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a>
+      </td>
+    </tr>
+    <tr class="loadmore" *ngIf="!inCollapsablePanel">
+      <td colspan="10">
+        <a class="load-more-btn" (click)="loadNextPage()" *ngIf="nextPage > 0">Load more</a>
       </td>
     </tr>
   </tbody>
