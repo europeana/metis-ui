@@ -61,6 +61,9 @@ export class HistoryComponent implements OnInit {
   }
 
   returnAllWorkflows() {
+    
+    if (!this.datasetData) { return false; }
+
     this.workflows.getAllWorkflows(this.datasetData.datasetId, this.nextPage).subscribe(result => {
       
       let showTotal = result['results'].length;

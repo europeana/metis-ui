@@ -42,7 +42,8 @@ export class ActionbarComponent {
     
     this.getLastExecution();
 
-    this.workflows.changeWorkflow.subscribe(
+    if (!this.workflows.changeWorkflow) { return false; }
+    this.workflows.changeWorkflow.map(
       workflow => {
         if (workflow) {
           this.currentWorkflow = workflow;
@@ -56,7 +57,7 @@ export class ActionbarComponent {
           this.currentWorkflow = '';
         }
       }
-    );
+    ).toPromise();
 
   }
 
@@ -69,6 +70,8 @@ export class ActionbarComponent {
   }
 
   pollingWorkflow() {
+
+    if (!this.datasetData) { return false }
 
     this.workflows.getLastWorkflow(this.datasetData.datasetId).subscribe(execution => {
 
@@ -118,6 +121,7 @@ export class ActionbarComponent {
   };
 
   getLastExecution () {
+    if (!this.datasetData) { return false }
     this.workflows.getLastWorkflow(this.datasetData.datasetId).subscribe(workflow => {
       if (workflow) {
         this.currentWorkflow = workflow;

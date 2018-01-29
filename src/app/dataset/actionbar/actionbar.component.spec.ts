@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService, WorkflowService, AuthenticationService } from '../../_services';
+import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../../_services';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -10,11 +10,11 @@ describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
   let WorkflowServiceStub;
-  let WorkflowService;
+  let tempWorkflowService;
 
   beforeEach(() => {
 
-     WorkflowServiceStub = { 
+    WorkflowServiceStub = { 
       cancelling: false,
       createdDate: '2018-01-23T08:39:20.891Z',
       datasetId: 82,
@@ -33,23 +33,23 @@ describe('ActionbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent ],
-      providers: [ {provide: WorkflowService, useValue: WorkflowServiceStub }, AuthenticationService ]
-    })
-    .compileComponents();
+      providers:    [ {provide: WorkflowService, useValue: WorkflowServiceStub }, AuthenticationService, ErrorService, RedirectPreviousUrl ]
+    });
 
     fixture = TestBed.createComponent(ActionbarComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component    = fixture.componentInstance;
 
-    WorkflowService = TestBed.get(WorkflowService);
+    tempWorkflowService = TestBed.get(WorkflowService);
 
   });
 
   it('should create', () => {    
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should do click to show logging', fakeAsync((): void => {
+    fixture.detectChanges();
 
     let button = fixture.debugElement.query(By.css('.log-btn'));
     if (button) {
@@ -60,11 +60,9 @@ describe('ActionbarComponent', () => {
       tick();
 
       expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
-
     } 
     
   }));
-
 
 
 });
