@@ -94,11 +94,8 @@
         white-space: nowrap;
       }
 
-      &:nth-child(8) {
-        padding-top: 0.25rem;
-      }
-
-      &:nth-child(9) {
+      &:nth-child(9),
+      &:nth-child(10) {
         padding-right: 1rem;
         padding-top: 0.3rem;
         text-align: center;
@@ -106,6 +103,10 @@
         .table-btn {
           display: inline-block;
         }
+      }
+
+      &:nth-child(9) {
+        padding-right: 0; 
       }
 
       a {

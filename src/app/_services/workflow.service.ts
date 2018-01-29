@@ -15,6 +15,8 @@ export class WorkflowService {
   constructor(private http: HttpClient) { }
 
   @Output() changeWorkflow: EventEmitter<any> = new EventEmitter();
+  @Output() selectedWorkflow: EventEmitter<any> = new EventEmitter();
+  @Output() workflowIsDone: EventEmitter<any> = new EventEmitter();
   activeWorkflow: any = 'workflow!';
   currentReport: any;
   activeTopolgy: any;
@@ -23,7 +25,6 @@ export class WorkflowService {
   nextPage: number;
 
   triggerNewWorkflow (id, workflowName) {
-
   	const owner = 'owner1';
   	const workflow = workflowName;
   	const priority = 0;
@@ -44,7 +45,7 @@ export class WorkflowService {
   getLogs() {
 
     const topology = this.activeTopolgy;
-    const externalTaskId = '2070373127078497810';
+    const externalTaskId = this.activeExternalTaskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
     
     return this.http.get(url).map(data => {   
@@ -75,7 +76,7 @@ export class WorkflowService {
 
   getAllWorkflows(id, page?) {
 
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/82?workflowOwner=&workflowName=&workflowStatus=FINISHED&workflowStatus=CANCELLED&orderField=UPDATED_DATE&ascending=false&nextPage=${page}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
         this.allWorkflows = data['results'];
@@ -87,13 +88,16 @@ export class WorkflowService {
 
   }
 
-  getRunningWorkflows(id) {
+  getLastWorkflow(id) {
 
-    // or inqueue
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=STARTED_DATE&ascending=false`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(data => {   
       if (data) {
-        return data['results'];
+        if (data['results'][0]) {
+          this.activeTopolgy = data['results'][0]['metisPlugins'][0]['topologyName']; // 0 for now
+          this.activeExternalTaskId = data['results'][0]['metisPlugins'][0]['externalTaskId']; // 0 for now
+        }
+        return data['results'][0];
       } else {
         return false;
       }
@@ -122,9 +126,23 @@ export class WorkflowService {
     return this.currentReport;
   }
 
-  setActiveWorkflow(workflow): void {
+  setActiveWorkflow(workflow?): void {
+
+    if (!workflow) {
+      workflow = '';
+    }
+
     this.activeWorkflow = workflow;
     this.changeWorkflow.emit(this.activeWorkflow);
+
+  }
+
+  selectWorkflow(workflow): void {
+    this.selectedWorkflow.emit(workflow);
+  }
+
+  workflowDone(status): void {
+    this.workflowIsDone.emit(status);
   }
 
 }

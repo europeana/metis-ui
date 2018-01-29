@@ -12,21 +12,40 @@
       <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
     </div>
   </div>
-  <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{now | date:'shortTime'}}</span></div>
+  <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{now | date:'HH:mm'}}</span></div>
   <nav>
 		<ul>
       <li>
         <a class="log-btn" data-tooltip="Log" (click)=cancelWorkflow();><span>Cancel</span></a>
-      </li> 
+      </li>
 			<li>
         <a class="log-btn svg-icon-history" data-tooltip="Log" (click)=showLog();><span>Log</span></a>
       </li> 
-      <li>
-        <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
-      </li>  
       <!--<li>
-        <a class="newaction-btn svg-icon-selector"><span>Next action</span></a>
-      </li> -->    
+        <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
+      </li>-->
+      <li *ngIf="currentStatus === 'CANCELLED' || currentStatus === 'FINISHED'">
+        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
+        <ul *ngIf="isShowingWorkflowSelector">
+          <li><a (click)="selectWorkflow('workflow30')">workflow30</a></li>
+        </ul>
+      </li> 
 		</ul>
 	</nav>
+</div>
+
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf=!currentWorkflow>
+  <div class="status status-new">
+    Start your first workflow!
+  </div>
+  <nav>
+    <ul>
+      <li>
+        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
+        <ul *ngIf="isShowingWorkflowSelector">
+          <li><a (click)="selectWorkflow('workflow30')">workflow30</a></li>
+        </ul>
+      </li>   
+    </ul>
+  </nav>
 </div>

@@ -13,8 +13,7 @@
       <th>Status</th>
       <th>Start date</th>
       <th>End date</th>
-      <th></th>
-      <th>Trigger action</th>
+      <th colspan="2"></th>
     </tr>
   </thead>
   <tbody>
@@ -28,11 +27,11 @@
       <td><span class="date">{{w.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{w.startedDate | date:'HH:mm'}}</span></td>
       <td><span class="date">{{w.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{w.finishedDate | date:'HH:mm'}}</span></td>
       <td>
-        <a class="table-btn svg-icon-report" (click)="openReport(w.metisPlugins[currentPlugin].externalTaskId, w.metisPlugins[currentPlugin].topologyName)">         
+        <a *ngIf="w.hasReport" class="table-btn svg-icon-report" (click)="openReport(w.metisPlugins[currentPlugin].externalTaskId, w.metisPlugins[currentPlugin].topologyName)">         
           Report
-        </a>
+         </a>
       </td>
-      <td><a class="table-btn" (click)="triggerWorkflow('workflow30')">Harvest</a></td>
+      <td><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(w.workflowName)">Restart</a></td>
     </tr>
     <tr class="loadmore" *ngIf="inCollapsablePanel">
       <td colspan="10">
