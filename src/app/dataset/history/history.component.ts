@@ -60,6 +60,9 @@ export class HistoryComponent implements OnInit {
 
   }
 
+  /* returnAllWorkflows
+    return all workflows, either max 4 to display in collapsable panel of list with pagination
+  */
   returnAllWorkflows() {
     
     if (!this.datasetData) { return false; }
@@ -96,16 +99,25 @@ export class HistoryComponent implements OnInit {
     });
   }
 
+  /* scroll
+    scroll to specific point in page after click
+  */
   scroll(el) {
   	el.scrollIntoView({behavior:'smooth'});
   }
 
+  /* loadNextPage
+    used in processing history table to display next page
+  */
   loadNextPage() {
     if (this.nextPage > 0) {
       this.returnAllWorkflows();
     }
   }
 
+  /* triggerWorkflow
+    trigger a workflow, based on selection in workflow dropdown or restart button
+  */
   triggerWorkflow(workflowName) {   
     this.errorMessage = '';
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId, workflowName).subscribe(result => {
@@ -117,6 +129,9 @@ export class HistoryComponent implements OnInit {
 
   }
 
+  /* openReport
+    click on link to open report, if available
+  */
   openReport (taskid, topology) {  
     this.report = '';
     this.workflows.getReport(taskid, topology).subscribe(result => {

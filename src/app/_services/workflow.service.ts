@@ -24,6 +24,9 @@ export class WorkflowService {
   allWorkflows: any;
   nextPage: number;
 
+  /* triggerNewWorkflow
+    trigger a new workflow
+  */
   triggerNewWorkflow (id, workflowName) {
   	const owner = 'owner1';
   	const workflow = workflowName;
@@ -39,11 +42,12 @@ export class WorkflowService {
         return false;
       }
     });
-
   }
 
+  /* getLogs
+    get logging information using topology and externaltaskid
+  */
   getLogs() {
-
     const topology = this.activeTopolgy;
     const externalTaskId = this.activeExternalTaskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
@@ -55,11 +59,12 @@ export class WorkflowService {
         return false;
       }
     });
-
   }
 
-   getReport(taskId, topologyName) {
-
+  /* getReport
+    get report information using topology and externaltaskid
+  */
+  getReport(taskId, topologyName) {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report`;   
@@ -71,11 +76,12 @@ export class WorkflowService {
         return false;
       }
     });
-
   }
 
+  /* getAllWorkflows
+    get history of executions for specific datasetid, possible to retrieve results for a specific page
+  */
   getAllWorkflows(id, page?) {
-
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
@@ -85,11 +91,12 @@ export class WorkflowService {
         return false;
       }
     });
-
   }
 
+  /* getLastWorkflow
+    get most recent workflow/execution for specific datasetid
+  */
   getLastWorkflow(id) {
-
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(data => {   
       if (data) {
@@ -102,11 +109,12 @@ export class WorkflowService {
         return false;
       }
     });
-
   }
 
-  cancelThisWorkflow(id) {
-    
+  /* cancelThisWorkflow
+    cancel the running execution for a datasetid
+  */
+  cancelThisWorkflow(id) {    
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}`;   
     return this.http.delete(url).map(data => {   
       if (data) {
@@ -115,32 +123,43 @@ export class WorkflowService {
         return false;
       }
     });
-
   }
 
+  /* setCurrentReport
+    set content for selected report 
+  */
   setCurrentReport(report): void {
     this.currentReport = report;
   }
 
+  /* getCurrentReport
+    get content for selected report
+  */
   getCurrentReport() {
     return this.currentReport;
   }
 
+  /* setActiveWorkflow
+    set active workflow and emit changes so other components can act upon
+  */
   setActiveWorkflow(workflow?): void {
-
     if (!workflow) {
       workflow = '';
     }
-
     this.activeWorkflow = workflow;
     this.changeWorkflow.emit(this.activeWorkflow);
-
   }
 
+  /* selectWorkflow
+    set selected workflow, and emit changes so other components can act upon
+  */
   selectWorkflow(workflow): void {
     this.selectedWorkflow.emit(workflow);
   }
 
+  /* workflowDone
+    indicate when workflow is done, and emit changes so other components can act upon
+  */
   workflowDone(status): void {
     this.workflowIsDone.emit(status);
   }

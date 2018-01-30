@@ -61,6 +61,9 @@ export class ActionbarComponent {
 
   }
 
+  /* startPollingWorkflow
+    start a timer and start to check the status of a workflow
+  */
   startPollingWorkflow() {
     if (this.subscription) { this.subscription.unsubscribe(); }
     let timer = Observable.timer(0, this.intervalTimer);
@@ -69,6 +72,9 @@ export class ActionbarComponent {
     });
   }
 
+  /* pollingWorkflow
+    check the current status of a workflow
+  */
   pollingWorkflow() {
 
     if (!this.datasetData) { return false }
@@ -120,6 +126,9 @@ export class ActionbarComponent {
 
   };
 
+  /* getLastExecution
+    get the last action for this dataset and display its status in the progress/actionbar
+  */
   getLastExecution () {
     if (!this.datasetData) { return false }
     this.workflows.getLastWorkflow(this.datasetData.datasetId).subscribe(workflow => {
@@ -132,6 +141,9 @@ export class ActionbarComponent {
     });
   }
 
+  /* cancelWorkflow
+    cancel a running execution
+  */
   cancelWorkflow () {    
     this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
     },(err: HttpErrorResponse) => {
@@ -139,10 +151,16 @@ export class ActionbarComponent {
     });
   }
 
+  /* showLog
+    show the log for the current/last execution
+  */
   showLog() {
     this.notifyShowLogStatus.emit(true);
   }
 
+  /* returnLog
+    get the actual logs and make them available for display in the log modal window
+  */
   returnLog() {
     this.workflows.getLogs().subscribe(result => {
       this.logMessages = result;
@@ -151,6 +169,9 @@ export class ActionbarComponent {
     });
   }
 
+  /* openWorkflowSelector
+    open up the workflow selector, now working with fixed values
+  */
   openWorkflowSelector() {
     if (this.isShowingWorkflowSelector === false) {
       this.isShowingWorkflowSelector = true;
@@ -159,6 +180,9 @@ export class ActionbarComponent {
     }
   }
 
+  /* selectWorkflow
+    select a workflow from the dropdownlist
+  */
   selectWorkflow(workflow) {
     this.workflows.selectWorkflow(workflow);
     this.openWorkflowSelector();
