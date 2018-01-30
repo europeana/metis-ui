@@ -189,8 +189,8 @@ export class DatasetformComponent implements OnInit {
   */
   onSubmit() {
 
-    this.successMessage = '';
-    this.errorMessage = '';
+    this.successMessage = undefined;
+    this.errorMessage = undefined;
 
     this.formatFormValues();
 
@@ -244,8 +244,8 @@ export class DatasetformComponent implements OnInit {
   updateForm() {
     this.formMode = 'update';
     this.datasets.setDatasetMessage('');
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.errorMessage = undefined;
+    this.successMessage = undefined;
 
     this.datasetForm.controls['country'].enable();
     this.datasetForm.controls['language'].enable();

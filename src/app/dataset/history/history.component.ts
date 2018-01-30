@@ -67,7 +67,7 @@ export class HistoryComponent implements OnInit {
     
     if (!this.datasetData) { return false; }
 
-    this.workflows.getAllWorkflows(this.datasetData.datasetId, this.nextPage).subscribe(result => {
+    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
       
       if (result['results'].length === 0) { return false }
 
@@ -77,15 +77,18 @@ export class HistoryComponent implements OnInit {
       }
 
       for (let i = 0; i < showTotal; i++) {
-        result['results'][i]['hasReport'] = false;
-        if (result['results'][i].metisPlugins[0].externalTaskId !== null && result['results'][i].metisPlugins[0].topologyName !== null) {
-          this.workflows.getReport(result['results'][i].metisPlugins[0].externalTaskId, result['results'][i].metisPlugins[0].topologyName).subscribe(r => {
-            if (r['errors'].length > 0) {
-              result['results'][i]['hasReport'] = true;
-            } 
-          });
+        let r = result['results'][i];
+        r['hasReport'] = false;        
+        if (r['workflowStatus'] === 'FINISHED') {
+          if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null) {
+            this.workflows.getReport(r['metisPlugins'][this.currentPlugin].externalTaskId, r['metisPlugins'][this.currentPlugin].topologyName).subscribe(report => {
+              if (report['errors'].length > 0) {
+                r['hasReport'] = true;
+              } 
+            });
+          }
         }
-        this.allWorkflows.push(result['results'][i]);
+        this.allWorkflows.push(r);
       }
 
       if (!this.inCollapsablePanel) {
@@ -121,7 +124,7 @@ export class HistoryComponent implements OnInit {
     trigger a workflow, based on selection in workflow dropdown or restart button
   */
   triggerWorkflow(workflowName) {   
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId, workflowName).subscribe(result => {
       this.workflows.setActiveWorkflow(result); 
       this.workflowRunning = true;     
@@ -135,7 +138,7 @@ export class HistoryComponent implements OnInit {
     click on link to open report, if available
   */
   openReport (taskid, topology) {  
-    this.report = '';
+    this.report = undefined;
     this.workflows.getReport(taskid, topology).subscribe(result => {
       this.workflows.setCurrentReport(result);
       this.report = result;

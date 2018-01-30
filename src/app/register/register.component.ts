@@ -20,7 +20,7 @@ export class RegisterComponent implements OnInit {
   notfoundMessage: string;
   linkRegister: string = environment.links.registerMetis;
 
-  public password = '';
+  public password;
 
   registerForm: FormGroup;
 
@@ -46,7 +46,7 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.loading = true;
     const controls = this.registerForm.controls;
     const email = controls.email.value;

@@ -16,10 +16,10 @@
   <nav>
 		<ul>
       <!--<li>
-        <a class="log-btn" data-tooltip="Log" (click)=cancelWorkflow();><span>Cancel</span></a>
+        <a class="log-btn" data-tooltip="Log" (click)="cancelWorkflow()""><span>Cancel</span></a>
       </li>-->
 			<li>
-        <a class="log-btn svg-icon-history" data-tooltip="Log" (click)=showLog();><span>Log</span></a>
+        <a class="log-btn svg-icon-history" data-tooltip="Log" (click)="showLog()"><span>Log</span></a>
       </li> 
       <!--<li>
         <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
@@ -27,7 +27,7 @@
       <li *ngIf="currentStatus === 'CANCELLED' || currentStatus === 'FINISHED'">
         <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
         <ul *ngIf="isShowingWorkflowSelector">
-          <li><a (click)="selectWorkflow('workflow30')">workflow30</a></li>
+          <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
         </ul>
       </li> 
 		</ul>
@@ -43,7 +43,7 @@
       <li>
         <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
         <ul *ngIf="isShowingWorkflowSelector">
-          <li><a (click)="selectWorkflow('workflow30')">workflow30</a></li>
+          <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
         </ul>
       </li>   
     </ul>

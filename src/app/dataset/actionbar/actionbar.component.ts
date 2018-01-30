@@ -23,6 +23,7 @@ export class ActionbarComponent {
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
+  allWorkflows;
   workflowPercentage: number = 0;
   subscription;
   intervalTimer = 500;
@@ -32,7 +33,7 @@ export class ActionbarComponent {
   currentStatus: any;
   currentWorkflow;
   currentWorkflowName;
-  currentPlugin = 0;
+  currentPlugin = 0; // pick the first one for now
   logMessages;
   isShowingWorkflowSelector: boolean = false;
 
@@ -40,8 +41,9 @@ export class ActionbarComponent {
 
   ngOnInit() {
     
-    this.getLastExecution();
-
+    this.returnLastExecution();
+    this.allWorkflows = this.workflows.getWorkflows();
+    
     if (!this.workflows.changeWorkflow) { return false; }
     this.workflows.changeWorkflow.map(
       workflow => {
@@ -54,7 +56,7 @@ export class ActionbarComponent {
             this.startPollingWorkflow();
           }
         } else {
-          this.currentWorkflow = '';
+          this.currentWorkflow = undefined;
         }
       }
     ).toPromise();
@@ -79,10 +81,10 @@ export class ActionbarComponent {
 
     if (!this.datasetData) { return false }
 
-    this.workflows.getLastWorkflow(this.datasetData.datasetId).subscribe(execution => {
+    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
 
       if (execution === 0) {
-        this.currentPlugin = 0;
+        this.currentPlugin = 0; // pick the first one for now
         this.subscription.unsubscribe();
         this.workflows.setActiveWorkflow();
       } else {
@@ -98,11 +100,7 @@ export class ActionbarComponent {
         } else {
 
           if (e['cancelling'] === false) {
-            if (e['metisPlugins'][this.currentPlugin].pluginStatus === null) {
-              this.currentStatus = e['workflowStatus'];
-            } else {
-              this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
-            }
+            this.currentStatus = e['workflowStatus'];
           } else {
             this.currentStatus = 'CANCELLING';
           }
@@ -126,12 +124,12 @@ export class ActionbarComponent {
 
   };
 
-  /* getLastExecution
+  /* returnLastExecution
     get the last action for this dataset and display its status in the progress/actionbar
   */
-  getLastExecution () {
+  returnLastExecution () {
     if (!this.datasetData) { return false }
-    this.workflows.getLastWorkflow(this.datasetData.datasetId).subscribe(workflow => {
+    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
       if (workflow) {
         this.currentWorkflow = workflow;
         this.currentWorkflowName = this.currentWorkflow.workflowName;

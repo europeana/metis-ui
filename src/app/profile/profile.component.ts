@@ -20,7 +20,7 @@ export class ProfileComponent implements OnInit {
   loading = false;
   errorMessage: string;
   successMessage: string;
-  public password = '';
+  public password;
   public emailInfo = environment.emails.profile;
 
   profileForm: FormGroup;
@@ -62,7 +62,7 @@ export class ProfileComponent implements OnInit {
   }
 
   toggleEditMode() {
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.editMode = !this.editMode;
   }
 
@@ -71,7 +71,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
@@ -99,7 +99,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onReloadProfile() {
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.loading = true;
 
     this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(result => {

@@ -23,6 +23,7 @@ export class WorkflowService {
   activeExternalTaskId: any;
   allWorkflows: any;
   nextPage: number;
+  currentPlugin = 0; // pick the first plugin for now
 
   /* triggerNewWorkflow
     trigger a new workflow
@@ -35,8 +36,8 @@ export class WorkflowService {
   	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
     return this.http.post(url, JSON.stringify('{}')).map(data => {   
     	if (data) {
-        this.activeTopolgy = data['metisPlugins'][0]['topologyName']; // 0 for now
-        this.activeExternalTaskId = data['metisPlugins'][0]['externalTaskId']; // 0 for now
+        this.activeTopolgy = data['metisPlugins'][this.currentPlugin]['topologyName']; 
+        this.activeExternalTaskId = data['metisPlugins'][this.currentPlugin]['externalTaskId']; 
         return data;
       } else {
         return false;
@@ -78,10 +79,10 @@ export class WorkflowService {
     });
   }
 
-  /* getAllWorkflows
+  /* getAllExecutions
     get history of executions for specific datasetid, possible to retrieve results for a specific page
   */
-  getAllWorkflows(id, page?) {
+  getAllExecutions(id, page?) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
@@ -93,22 +94,28 @@ export class WorkflowService {
     });
   }
 
-  /* getLastWorkflow
-    get most recent workflow/execution for specific datasetid
+  /* getLastExecution
+    get most recent execution for specific datasetid
   */
-  getLastWorkflow(id) {
+  getLastExecution(id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(data => {   
       if (data) {
-        if (data['results'][0]) {
-          this.activeTopolgy = data['results'][0]['metisPlugins'][0]['topologyName']; // 0 for now
-          this.activeExternalTaskId = data['results'][0]['metisPlugins'][0]['externalTaskId']; // 0 for now
+        let latestWorkflow = data['results'][0];
+        if (latestWorkflow) {
+          this.activeTopolgy = latestWorkflow['metisPlugins'][this.currentPlugin]['topologyName']; 
+          this.activeExternalTaskId = latestWorkflow['metisPlugins'][this.currentPlugin]['externalTaskId'];
         }
         return data['results'][0];
       } else {
         return false;
       }
     });
+  }
+
+  getWorkflows() {
+    let workflows = ['workflow30'];
+    return workflows ;
   }
 
   /* cancelThisWorkflow
@@ -144,7 +151,7 @@ export class WorkflowService {
   */
   setActiveWorkflow(workflow?): void {
     if (!workflow) {
-      workflow = '';
+      workflow = undefined;
     }
     this.activeWorkflow = workflow;
     this.changeWorkflow.emit(this.activeWorkflow);
