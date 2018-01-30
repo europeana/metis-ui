@@ -23,20 +23,20 @@ export class HistoryComponent implements OnInit {
   
   errorMessage: string;
   report;
-  allWorkflows: Array<any> = [];
+  allExecutions: Array<any> = [];
   currentPlugin: number = 0;
   nextPage: number = 0;
   workflowRunning: Boolean = false;
 
   ngOnInit() { 
-    this.returnAllWorkflows();
+    this.returnAllExecutions();
 
     this.workflows.changeWorkflow.map(
       workflow => {
         if (!workflow) {
-          this.allWorkflows = [];
+          this.allExecutions = [];
           this.nextPage = 0;
-          this.returnAllWorkflows();
+          this.returnAllExecutions();
         }
       }
     ).toPromise();
@@ -51,19 +51,19 @@ export class HistoryComponent implements OnInit {
       workflowstatus => {
         if (workflowstatus) {
           this.workflowRunning = false;
-          this.allWorkflows = [];
+          this.allExecutions = [];
           this.nextPage = 0;
-          this.returnAllWorkflows();
+          this.returnAllExecutions();
         }
       }
     ).toPromise();
 
   }
 
-  /* returnAllWorkflows
-    return all workflows, either max 4 to display in collapsable panel of list with pagination
+  /* returnAllExecutions
+    return all executions, either max 4 to display in collapsable panel of list with pagination
   */
-  returnAllWorkflows() {
+  returnAllExecutions() {
     
     if (!this.datasetData) { return false; }
 
@@ -88,7 +88,7 @@ export class HistoryComponent implements OnInit {
             });
           }
         }
-        this.allWorkflows.push(r);
+        this.allExecutions.push(r);
       }
 
       if (!this.inCollapsablePanel) {
@@ -100,7 +100,8 @@ export class HistoryComponent implements OnInit {
       }
 
     },(err: HttpErrorResponse) => {
-      this.errors.handleError(err);   
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;  
     });
   }
 
@@ -116,7 +117,7 @@ export class HistoryComponent implements OnInit {
   */
   loadNextPage() {
     if (this.nextPage > 0) {
-      this.returnAllWorkflows();
+      this.returnAllExecutions();
     }
   }
 
@@ -129,7 +130,8 @@ export class HistoryComponent implements OnInit {
       this.workflows.setActiveWorkflow(result); 
       this.workflowRunning = true;     
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);   
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
     });
 
   }
@@ -143,7 +145,8 @@ export class HistoryComponent implements OnInit {
       this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);     
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
     });
   }
 

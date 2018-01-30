@@ -83,7 +83,8 @@ export class DatasetComponent implements OnInit {
       this.loadTabComponent();
     },
       (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
+        let error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 

@@ -1,3 +1,7 @@
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+</div>
+
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf=currentWorkflow>
 	<div class="status">
     <strong>{{currentWorkflowName}}</strong>
@@ -15,9 +19,9 @@
   <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{now | date:'HH:mm'}}</span></div>
   <nav>
 		<ul>
-      <!--<li>
-        <a class="log-btn" data-tooltip="Log" (click)="cancelWorkflow()""><span>Cancel</span></a>
-      </li>-->
+      <li>
+        <a class="log-btn" data-tooltip="Log" (click)="cancelWorkflow()"><span>Cancel</span></a>
+      </li>
 			<li>
         <a class="log-btn svg-icon-history" data-tooltip="Log" (click)="showLog()"><span>Log</span></a>
       </li> 

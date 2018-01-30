@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Rx';
+import { StringifyHttpError } from '../../_helpers';
 
 import { WorkflowService, AuthenticationService, ErrorService } from '../../_services';
 
@@ -24,6 +25,7 @@ export class ActionbarComponent {
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
   allWorkflows;
+  errorMessage;
   workflowPercentage: number = 0;
   subscription;
   intervalTimer = 500;
@@ -145,7 +147,8 @@ export class ActionbarComponent {
   cancelWorkflow () {    
     this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
     },(err: HttpErrorResponse) => {
-      this.errors.handleError(err);   
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -163,7 +166,7 @@ export class ActionbarComponent {
     this.workflows.getLogs().subscribe(result => {
       this.logMessages = result;
     },(err: HttpErrorResponse) => {
-      this.errors.handleError(err);   
+      this.errors.handleError(err);  
     });
   }
 
