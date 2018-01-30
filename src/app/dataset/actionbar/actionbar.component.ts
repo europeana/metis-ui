@@ -47,7 +47,7 @@ export class ActionbarComponent {
     this.allWorkflows = this.workflows.getWorkflows();
     
     if (!this.workflows.changeWorkflow) { return false; }
-    this.workflows.changeWorkflow.map(
+    this.workflows.changeWorkflow.subscribe(
       workflow => {
         if (workflow) {
           this.currentWorkflow = workflow;
@@ -61,7 +61,7 @@ export class ActionbarComponent {
           this.currentWorkflow = undefined;
         }
       }
-    ).toPromise();
+    );
 
   }
 

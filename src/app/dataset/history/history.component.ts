@@ -31,7 +31,7 @@ export class HistoryComponent implements OnInit {
   ngOnInit() { 
     this.returnAllExecutions();
 
-    this.workflows.changeWorkflow.map(
+    this.workflows.changeWorkflow.subscribe(
       workflow => {
         if (!workflow) {
           this.allExecutions = [];
@@ -39,15 +39,15 @@ export class HistoryComponent implements OnInit {
           this.returnAllExecutions();
         }
       }
-    ).toPromise();
+    );
 
-    this.workflows.selectedWorkflow.map(
+    this.workflows.selectedWorkflow.subscribe(
       selectedworkflow => {
         this.triggerWorkflow(selectedworkflow);
       }
-    ).toPromise();
+    );
 
-    this.workflows.workflowIsDone.map(
+    this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
         if (workflowstatus) {
           this.workflowRunning = false;
@@ -56,7 +56,7 @@ export class HistoryComponent implements OnInit {
           this.returnAllExecutions();
         }
       }
-    ).toPromise();
+    );
 
   }
 
