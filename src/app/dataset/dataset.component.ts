@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StringifyHttpError, convertDate } from '../_helpers';
+import { StringifyHttpError } from '../_helpers';
 
 import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService, ErrorService } from '../_services';
 
@@ -42,7 +42,6 @@ export class DatasetComponent implements OnInit {
   user: User;
   errorMessage: string;
   successMessage: string;
-  updatedDate;
   
   public isShowingLog = false;
   public datasetData; 
@@ -82,7 +81,6 @@ export class DatasetComponent implements OnInit {
     this.datasets.getDataset(id).subscribe(result => {
       this.datasetData = result;
       this.loadTabComponent();
-      this.updatedDate = convertDate(this.datasetData.updatedDate);
     },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);

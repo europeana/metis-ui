@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -6,12 +7,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import 'rxjs/Rx';
 
 import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
-import { StringifyHttpError, convertDate } from '../../_helpers';
+import { StringifyHttpError } from '../../_helpers';
 
 @Component({
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
-  styleUrls: ['./datasetform.component.scss']
+  styleUrls: ['./datasetform.component.scss'],
+  providers: [DatePipe]
 })
 
 export class DatasetformComponent implements OnInit {
@@ -40,7 +42,8 @@ export class DatasetformComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder, 
     private RedirectPreviousUrl: RedirectPreviousUrl,
-    private errors: ErrorService) {}
+    private errors: ErrorService,
+    private datePipe: DatePipe) {}
 
   ngOnInit() {
 
@@ -112,8 +115,8 @@ export class DatasetformComponent implements OnInit {
       dataProvider: [(this.datasetData ? this.datasetData.dataProvider : '')],
       provider: [(this.datasetData ? this.datasetData.provider : ''), [Validators.required]],
       intermediateProvider: [(this.datasetData ? this.datasetData.intermediateProvider : '')],
-      dateCreated: [(this.datasetData ? convertDate(this.datasetData.createdDate) : '')],
-      dateUpdated: [(this.datasetData ? convertDate(this.datasetData.updatedDate) : '')],
+      dateCreated: [(this.datasetData ? this.datePipe.transform(this.datasetData.createdDate, 'dd/MM/yyyy - HH:mm') : '')],
+      dateUpdated: [(this.datasetData ? this.datePipe.transform(this.datasetData.updatedDate, 'dd/MM/yyyy - HH:mm') : '')],
       status: [''],
       replaces: [(this.datasetData ? this.datasetData.replaces : '')],
       replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],

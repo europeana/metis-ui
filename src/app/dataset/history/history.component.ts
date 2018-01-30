@@ -69,6 +69,8 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.getAllWorkflows(this.datasetData.datasetId, this.nextPage).subscribe(result => {
       
+      if (result['results'].length === 0) { return false }
+
       let showTotal = result['results'].length;
       if (this.inCollapsablePanel && result['results'].length >= 4 ) {
         showTotal = 4;

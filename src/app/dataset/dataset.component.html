@@ -37,8 +37,8 @@
       <li [ngClass]="{'active': activeTab === 'new' }">
         <a routerLink="/dataset/new/{{activeSet}}">
           <span class="tab-title">Dataset Information</span>
-          <span class="tab-subtitle">last action</span>
-          <span class="tab-subtitle tab-date">{{updatedDate}}</span>
+          <span class="tab-subtitle" *ngIf="datasetData">last action</span>
+          <span class="tab-subtitle tab-date" *ngIf="datasetData">{{datasetData.updatedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
         </a>
       </li>
       <li [ngClass]="{'active': activeTab === 'mapping' }">
