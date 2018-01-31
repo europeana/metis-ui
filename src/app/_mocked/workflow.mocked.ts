@@ -13,3 +13,4 @@ export const WorkflowServiceStub = {
   workflowPriority: 0,
   workflowStatus: 'INQUEUE'
 }
+

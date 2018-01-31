@@ -43,10 +43,13 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
-        if (!workflow) {
+        if (workflow) {
           this.allExecutions = [];
           this.nextPage = 0;
           this.returnAllExecutions();
+          if (workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
+            this.workflowRunning = true;
+          }
         }
       }
     );
@@ -54,7 +57,9 @@ export class HistoryComponent implements OnInit {
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
         if (workflowstatus) {
-          this.workflowRunning = false;
+          if (workflowstatus !== 'RUNNING' || this.workflowstatus !== 'INQUEUE') {
+            this.workflowRunning = false;
+          }
           this.allExecutions = [];
           this.nextPage = 0;
           this.returnAllExecutions();
@@ -83,7 +88,7 @@ export class HistoryComponent implements OnInit {
       for (let i = 0; i < showTotal; i++) {
         let r = result['results'][i];
         r['hasReport'] = false;        
-        if (r['workflowStatus'] === 'FINISHED') {
+        if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED') {
           if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null) {
             this.workflows.getReport(r['metisPlugins'][this.currentPlugin].externalTaskId, r['metisPlugins'][this.currentPlugin].topologyName).subscribe(report => {
               if (report['errors'].length > 0) {
@@ -101,7 +106,7 @@ export class HistoryComponent implements OnInit {
 
       this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
         if (!status) { return false; }
-        if (status['workflowStatus'] === 'RUNNING' ||  status['workflowStatus'] === 'INQUEUE') {
+        if (status['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
           this.workflowRunning = true;
         }
       });

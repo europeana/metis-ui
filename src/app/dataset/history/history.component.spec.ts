@@ -30,6 +30,6 @@ describe('HistoryComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
+  
 });
 

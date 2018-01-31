@@ -161,7 +161,6 @@ export class WorkflowService {
     set selected workflow, and emit changes so other components can act upon
   */
   selectWorkflow(workflow): void {
-    console.log('selectWorkflow', workflow);
     this.selectedWorkflow.emit(workflow);
   }
 
