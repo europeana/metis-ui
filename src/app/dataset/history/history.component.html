@@ -23,7 +23,7 @@
       <td>{{ex.workflowName}}</td>
       <td>{{ex.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
       <td>{{ex.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</td>
-      <td>{{ex.workflowStatus}}</td>
+      <td>{{ex.metisPlugins[currentPlugin].pluginStatus}}</td>
       <td><span class="date">{{ex.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.startedDate | date:'HH:mm'}}</span></td>
       <td><span class="date">{{ex.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.finishedDate | date:'HH:mm'}}</span></td>
       <td>
