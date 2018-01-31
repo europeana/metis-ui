@@ -103,8 +103,6 @@ export class ActionbarComponent {
             this.now = e['updatedDate'];
           }
 
-          console.log('pollingworkflow');
-
           this.subscription.unsubscribe();
           this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
           this.workflows.workflowDone(true);          

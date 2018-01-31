@@ -56,7 +56,6 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
-        console.log('history workflowIsDone', workflowstatus);
         if (workflowstatus) {
           if (workflowstatus !== 'RUNNING' || this.workflowstatus !== 'INQUEUE') {
             this.workflowRunning = false;
