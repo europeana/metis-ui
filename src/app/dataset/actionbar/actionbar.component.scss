@@ -15,10 +15,12 @@
     padding-right: 1.5rem;
     white-space: nowrap;
 
-    strong {
+    strong,
+    &.status-new {
       display: block;
       font-size: 0.875rem;
     }
+
   }
 
   .progress {
@@ -88,6 +90,7 @@
       border-left: 1px solid $offwhite;
       display: inline-block;
       padding: 0.4rem;
+      position: relative;
 
       &:first-child {
         border-left: 0;
@@ -108,9 +111,39 @@
         }
 
         &.newaction-btn {
+          border: 1px solid $white;
+          border-bottom: 0;
           padding-left: 0.5rem;
           padding-right: 1.75rem;
         }
+
+        &.newaction-btn-open {
+          border: 1px solid $offwhite;
+          border-bottom: 0;
+        }
+
+        &.newaction-btn+ul {
+          background: $white;
+          border: 1px solid $offwhite;
+          border-top: 0;
+          position: absolute;
+          width: calc(100% - 0.4rem);
+
+          li {
+            padding: 0.25rem 0.5rem;
+          }
+
+          a {
+            padding: 0;
+          }
+
+          a:hover {
+            background: none;
+            text-decoration: underline;
+          }
+
+        }
+
       }
 
       @media (max-width: $bp-xxl) {

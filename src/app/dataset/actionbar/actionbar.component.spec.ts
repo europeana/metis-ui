@@ -1,35 +1,39 @@
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService, WorkflowService, AuthenticationService } from '../../_services';
+import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../../_services';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ActionbarComponent } from './actionbar.component';
+import { WorkflowServiceStub } from '../../_mocked';
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
+  let tempWorkflowService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
+
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent ],
-      providers: [ DatasetsService, WorkflowService, AuthenticationService ]
-    })
-    .compileComponents();
-  }));
+      providers:    [ {provide: WorkflowService, useValue: WorkflowServiceStub }, AuthenticationService, ErrorService, RedirectPreviousUrl ]
+    });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component    = fixture.componentInstance;
+
+    tempWorkflowService = TestBed.get(WorkflowService);
+
   });
 
   it('should create', () => {    
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should do click to show logging', fakeAsync((): void => {
+    fixture.detectChanges();
 
     let button = fixture.debugElement.query(By.css('.log-btn'));
     if (button) {
@@ -40,9 +44,9 @@ describe('ActionbarComponent', () => {
       tick();
 
       expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
-
     } 
     
   }));
+
 
 });

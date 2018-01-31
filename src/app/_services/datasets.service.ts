@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { randomDatasetName,
-         randomOrganizationId,
-         randomNumber,
-         randomWorkflow,
-         randomDateRange } from '../_helpers';
 
 import { environment } from '../../environments/environment';
 import { apiSettings } from '../../environments/apisettings';

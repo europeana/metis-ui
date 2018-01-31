@@ -20,7 +20,7 @@ export class ProfileComponent implements OnInit {
   loading = false;
   errorMessage: string;
   successMessage: string;
-  public password = '';
+  public password;
   public emailInfo = environment.emails.profile;
 
   profileForm: FormGroup;
@@ -62,7 +62,7 @@ export class ProfileComponent implements OnInit {
   }
 
   toggleEditMode() {
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.editMode = !this.editMode;
   }
 
@@ -71,7 +71,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
@@ -87,13 +87,19 @@ export class ProfileComponent implements OnInit {
       this.toggleEditMode();
     },
     (err: HttpErrorResponse) => {
+
+      if (err.error.errorMessage === 'Wrong access token') {
+        this.authentication.logout();
+        this.router.navigate(['/login']);
+      }
+      
       this.errorMessage = `Update password failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
   }
 
   onReloadProfile() {
-    this.errorMessage = '';
+    this.errorMessage = undefined;
     this.loading = true;
 
     this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(result => {

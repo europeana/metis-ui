@@ -19,7 +19,7 @@ export class ReportComponent implements OnInit {
   }
 
   closeReport () {
-  	this.report = '';
+  	this.report = undefined;
   }
 
 }

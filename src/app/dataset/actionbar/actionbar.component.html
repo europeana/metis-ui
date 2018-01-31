@@ -1,29 +1,55 @@
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+</div>
+
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf=currentWorkflow>
 	<div class="status">
     <strong>{{currentWorkflowName}}</strong>
     {{currentStatus}}
   </div>
   <div class="progress">
-    <div class="progress-status">
+    <div class="progress-status" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
       <span class="progress-statusnumbers">{{totalProcessed}} / {{totalInDataset}}</span>
       <span class="progress-percentage">{{workflowPercentage | number:'1.0-0' }}%</span>
     </div>
-    <div class="progressbar">
+    <div class="progressbar" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
       <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
     </div>
   </div>
-  <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{now | date:'shortTime'}}</span></div>
+  <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{now | date:'HH:mm'}}</span></div>
   <nav>
 		<ul>
-			<li>
-        <a class="log-btn svg-icon-history" data-tooltip="Log" (click)=showLog();><span>Log</span></a>
-      </li> 
-      <li>
-        <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
-      </li>  
       <!--<li>
-        <a class="newaction-btn svg-icon-selector"><span>Next action</span></a>
-      </li> -->    
+        <a class="" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>Cancel</span></a>
+      </li>-->
+			<li>
+        <a class="log-btn svg-icon-history" data-tooltip="Log" (click)="showLog()"><span>Log</span></a>
+      </li> 
+      <!--<li>
+        <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
+      </li>-->
+      <li *ngIf="currentStatus === 'CANCELLED' || currentStatus === 'FINISHED'">
+        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
+        <ul *ngIf="isShowingWorkflowSelector">
+          <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
+        </ul>
+      </li> 
 		</ul>
 	</nav>
+</div>
+
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf=!currentWorkflow>
+  <div class="status status-new">
+    Start your next workflow!
+  </div>
+  <nav>
+    <ul>
+      <li>
+        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
+        <ul *ngIf="isShowingWorkflowSelector">
+          <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
+        </ul>
+      </li>   
+    </ul>
+  </nav>
 </div>

@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StringifyHttpError, convertDate } from '../_helpers';
+import { StringifyHttpError } from '../_helpers';
 
-import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService } from '../_services';
+import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService, ErrorService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
@@ -31,7 +31,8 @@ export class DatasetComponent implements OnInit {
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private componentFactoryResolver: ComponentFactoryResolver,
-    private RedirectPreviousUrl: RedirectPreviousUrl) { }
+    private RedirectPreviousUrl: RedirectPreviousUrl,
+    private errors: ErrorService) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
@@ -41,7 +42,6 @@ export class DatasetComponent implements OnInit {
   user: User;
   errorMessage: string;
   successMessage: string;
-  updatedDate;
   
   public isShowingLog = false;
   public datasetData; 
@@ -78,31 +78,14 @@ export class DatasetComponent implements OnInit {
     returns all dataset information based on identifier
   */
   returnDataset(id) {
-
     this.datasets.getDataset(id).subscribe(result => {
       this.datasetData = result;
       this.loadTabComponent();
-      this.updatedDate = convertDate(this.datasetData.updatedDate);
     },
       (err: HttpErrorResponse) => {
-
-        this.errorMessage = `Not able to load this dataset: ${StringifyHttpError(err)}`;
-
-        if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
-          this.RedirectPreviousUrl.set(this.router.url);
-          this.authentication.logout();
-          this.router.navigate(['/login']);
-        }
-
+        let error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
     });
-
-  }
-
-  /* onNotifyWorkflow
-    the active workflow changes, notify all relevant components
-  */
-  onNotifyWorkflow(message:any):void {
-    console.log('onNotifyWorkflow');
   }
 
   /* onNotifyShowLogStatus
