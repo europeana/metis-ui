@@ -20,7 +20,7 @@ export const environment = {
     username: '',
     password: ''
   },
-  afterLoginGoto: '/profile',
+  afterLoginGoto: '/dashboard',
   links: {
     registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis',
     gotoZoho: 'https://www.zoho.com'
