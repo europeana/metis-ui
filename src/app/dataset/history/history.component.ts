@@ -29,6 +29,16 @@ export class HistoryComponent implements OnInit {
   workflowRunning: Boolean = false;
 
   ngOnInit() { 
+    
+    // only init once
+    if (this.inCollapsablePanel) {
+      this.workflows.selectedWorkflow.subscribe(
+        selectedworkflow => {
+          this.triggerWorkflow(selectedworkflow);
+        }
+      );
+    }
+
     this.returnAllExecutions();
 
     this.workflows.changeWorkflow.subscribe(
@@ -38,12 +48,6 @@ export class HistoryComponent implements OnInit {
           this.nextPage = 0;
           this.returnAllExecutions();
         }
-      }
-    );
-
-    this.workflows.selectedWorkflow.subscribe(
-      selectedworkflow => {
-        this.triggerWorkflow(selectedworkflow);
       }
     );
 
@@ -68,7 +72,7 @@ export class HistoryComponent implements OnInit {
     if (!this.datasetData) { return false; }
 
     this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
-      
+
       if (result['results'].length === 0) { return false }
 
       let showTotal = result['results'].length;
@@ -95,9 +99,12 @@ export class HistoryComponent implements OnInit {
         this.nextPage = result['nextPage'];
       }
 
-      if (result['results'][0]['workflowStatus'] === 'RUNNING' ||  result['results'][0]['workflowStatus'] === 'INQUEUE') {
-        this.workflowRunning = true;
-      }
+      this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
+        if (!status) { return false; }
+        if (status['workflowStatus'] === 'RUNNING' ||  status['workflowStatus'] === 'INQUEUE') {
+          this.workflowRunning = true;
+        }
+      });
 
     },(err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 

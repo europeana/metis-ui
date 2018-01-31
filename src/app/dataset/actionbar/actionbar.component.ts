@@ -85,7 +85,7 @@ export class ActionbarComponent {
 
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
 
-      if (execution === 0) {
+      if (execution === 0 || !execution) {
         this.currentPlugin = 0; // pick the first one for now
         this.subscription.unsubscribe();
         this.workflows.setActiveWorkflow();
@@ -96,6 +96,11 @@ export class ActionbarComponent {
         if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED') {        
           this.currentPlugin = 0;
           this.now = e['finishedDate'];
+
+          if (e['workflowStatus'] === 'CANCELLED') {
+            this.now = e['updatedDate'];
+          }
+
           this.subscription.unsubscribe();
           this.currentStatus = e['workflowStatus'];
           this.workflows.workflowDone(true);          

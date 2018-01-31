@@ -83,7 +83,7 @@ export class WorkflowService {
     get history of executions for specific datasetid, possible to retrieve results for a specific page
   */
   getAllExecutions(id, page?) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowStatus=FINISHED&workflowStatus=CANCELLED&workflowName=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=FINISHED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
         this.allWorkflows = data['results'];
@@ -98,7 +98,7 @@ export class WorkflowService {
     get most recent execution for specific datasetid
   */
   getLastExecution(id) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=&orderField=CREATED_DATE&ascending=false`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(data => {   
       if (data) {
         let latestWorkflow = data['results'][0];
@@ -161,6 +161,7 @@ export class WorkflowService {
     set selected workflow, and emit changes so other components can act upon
   */
   selectWorkflow(workflow): void {
+    console.log('selectWorkflow', workflow);
     this.selectedWorkflow.emit(workflow);
   }
 

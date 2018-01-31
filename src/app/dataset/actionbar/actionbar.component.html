@@ -8,11 +8,11 @@
     {{currentStatus}}
   </div>
   <div class="progress">
-    <div class="progress-status">
+    <div class="progress-status" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
       <span class="progress-statusnumbers">{{totalProcessed}} / {{totalInDataset}}</span>
       <span class="progress-percentage">{{workflowPercentage | number:'1.0-0' }}%</span>
     </div>
-    <div class="progressbar">
+    <div class="progressbar" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
       <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
     </div>
   </div>
@@ -20,7 +20,7 @@
   <nav>
 		<ul>
       <!--<li>
-        <a class="log-btn" data-tooltip="Log" (click)="cancelWorkflow()"><span>Cancel</span></a>
+        <a class="" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>Cancel</span></a>
       </li>-->
 			<li>
         <a class="log-btn svg-icon-history" data-tooltip="Log" (click)="showLog()"><span>Log</span></a>
@@ -40,7 +40,7 @@
 
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf=!currentWorkflow>
   <div class="status status-new">
-    Start your first workflow!
+    Start your next workflow!
   </div>
   <nav>
     <ul>
