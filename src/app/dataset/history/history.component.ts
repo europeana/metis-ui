@@ -43,18 +43,24 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
-        if (!workflow) {
+        if (workflow) {
           this.allExecutions = [];
           this.nextPage = 0;
           this.returnAllExecutions();
+          if (workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
+            this.workflowRunning = true;
+          }
         }
       }
     );
 
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
+        console.log('history workflowIsDone', workflowstatus);
         if (workflowstatus) {
-          this.workflowRunning = false;
+          if (workflowstatus !== 'RUNNING' || this.workflowstatus !== 'INQUEUE') {
+            this.workflowRunning = false;
+          }
           this.allExecutions = [];
           this.nextPage = 0;
           this.returnAllExecutions();

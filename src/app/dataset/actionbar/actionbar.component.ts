@@ -44,6 +44,8 @@ export class ActionbarComponent {
   ngOnInit() {
     
     this.returnLastExecution();
+
+    if (typeof this.workflows.getWorkflows !== 'function') { return false }
     this.allWorkflows = this.workflows.getWorkflows();
     
     if (!this.workflows.changeWorkflow) { return false; }
@@ -100,6 +102,8 @@ export class ActionbarComponent {
           if (e['metisPlugins'][this.currentPlugin].pluginStatus === 'CANCELLED') {
             this.now = e['updatedDate'];
           }
+
+          console.log('pollingworkflow');
 
           this.subscription.unsubscribe();
           this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;

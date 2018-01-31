@@ -48,7 +48,6 @@ export class DatasetComponent implements OnInit {
   public activeSet: string;
 
   public workflowData;
-  public activeWorkflow;
 
   ngOnInit() {
 

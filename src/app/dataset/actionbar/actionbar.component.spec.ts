@@ -48,5 +48,14 @@ describe('ActionbarComponent', () => {
     
   }));
 
+  it('stub object and injected service should not be the same', () => {
+    expect(tempWorkflowService === WorkflowService).toBe(false);
+  });
+
+  it('should have a running workflow', (): void => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.dataset-actionbar') === null).toBe(false);
+  }));
+
 
 });
