@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AuthenticationService } from '../../_services';
+import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { Router } from '@angular/router';
 import { User } from '../../_models';
 
@@ -14,7 +14,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authentication: AuthenticationService,
-    public router: Router) {}
+    public router: Router, 
+    private redirectPreviousUrl: RedirectPreviousUrl) {}
 
   openSignIn = false;
   openSearch = false;
@@ -61,6 +62,7 @@ export class HeaderComponent implements OnInit {
 
   logOut() {
     this.authentication.logout();
+    this.redirectPreviousUrl.set(undefined);
     this.loggedIn = false;
     this.openSignIn = false;
     this.router.navigate(['/home']);
