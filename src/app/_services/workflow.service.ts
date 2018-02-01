@@ -113,7 +113,7 @@ export class WorkflowService {
   }
 
   getWorkflows() {
-    let workflows = ['workflow30'];
+    let workflows = ['workflow30', 'workflow31', 'workflow35', 'workflow36', 'workflow37'];
     return workflows ;
   }
 
