@@ -23,6 +23,9 @@
       color: $gray-light;
       padding: 0.5rem 1rem;
 
+      &.centered {
+        text-align: center;
+      }
     }
 
     th {
@@ -52,12 +55,6 @@
   th {
     padding: 0.5rem 0.5rem 0.25rem;
     text-align: left;
-
-    &:nth-child(5),
-    &:nth-child(6),
-    &:nth-child(8) {
-      text-align: center;
-    }
   }
 
   tr:not(.loadmore) {
@@ -65,37 +62,21 @@
     td {
       padding: 0.5rem 0.5rem 0.25rem;
 
-      &:nth-child(1) {
-        padding-left: 1rem;
-
-        @media (max-width: $bp-xxl) {
-          padding: 0 0 0 0.5rem;
-        }
-
-      }
-
-      &:nth-child(2) {
+      &.errorindicator {
         padding-left: 0;
         padding-right: 0;
         white-space: nowrap;
 
         @media (max-width: $bp-xxl) {
-          padding-top: 0.8rem;
+          padding-top: 0.85rem;
         }
       }
 
-      &:nth-child(1),
-      &:nth-child(6),
-      &:nth-child(7) {
-        text-align: center;
-      }
-
-      &:nth-child(5) {
+      &.nowrap {
         white-space: nowrap;
       }
 
-      &:nth-child(9),
-      &:nth-child(10) {
+      &.buttonplaceholder {
         padding-right: 1rem;
         padding-top: 0.3rem;
         text-align: center;
@@ -105,8 +86,12 @@
         }
       }
 
-      &:nth-child(9) {
-        padding-right: 0;
+      &:first-child {
+        padding-left: 0.5rem;
+      }
+
+      &:last-child {
+        padding-right: 1rem;
       }
 
       a {
@@ -143,30 +128,6 @@
 
 }
 
-.table-horizontal-layout.executions-table {
-  th {
-    padding: 0.5rem 0.5rem 0.25rem;
-    text-align: left;
-  }
-
-  tr:not(.loadmore) {
-    td {
-      &:nth-child(1),
-      &:nth-child(6),
-      &:nth-child(7) {
-        padding-left: 0.5rem;
-        text-align: left;
-      }
-
-      &:nth-child(9) {
-        padding-right: 1rem;
-      }
-
-    }
-  }
-}
-
-
 .table-btn {
   align-items: center;
   color: $gray-med;
@@ -194,7 +155,6 @@
         display: none;
       }
     }
-
   }
 
 }
