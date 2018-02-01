@@ -22,7 +22,6 @@ export class WorkflowService {
   activeTopolgy: any;
   activeExternalTaskId: any;
   allWorkflows: any;
-  nextPage: number;
   currentPlugin = 0; // pick the first plugin for now
 
   /* triggerNewWorkflow
