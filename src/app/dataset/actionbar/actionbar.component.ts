@@ -95,21 +95,21 @@ export class ActionbarComponent {
         
         let e = execution;
 
-        if (e['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || e['metisPlugins'][this.currentPlugin].pluginStatus === 'CANCELLED') {        
+        if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED') {        
           this.currentPlugin = 0;
           this.now = e['finishedDate'];
 
-          if (e['metisPlugins'][this.currentPlugin].pluginStatus === 'CANCELLED') {
+          if (e['workflowStatus'] === 'CANCELLED') {
             this.now = e['updatedDate'];
           }
 
           this.subscription.unsubscribe();
-          this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
+          this.currentStatus = e['workflowStatus'];
           this.workflows.workflowDone(true);          
         } else {
 
           if (e['cancelling'] === false) {
-            this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
+            this.currentStatus = e['workflowStatus'];
           } else {
             this.currentStatus = 'CANCELLING';
           }
@@ -128,7 +128,7 @@ export class ActionbarComponent {
           }
         }
       }
-      
+            
     });
 
   };
