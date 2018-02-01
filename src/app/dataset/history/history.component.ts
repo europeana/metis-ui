@@ -47,7 +47,6 @@ export class HistoryComponent implements OnInit {
           this.allExecutions = [];
           this.nextPage = 0;
           this.returnAllExecutions();
-          console.log(workflow['workflowStatus']);
           if (workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
             this.workflowRunning = true;
           }
@@ -57,7 +56,6 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
-        console.log('workflowIsDone', workflowstatus, 'workflowDone');
         if (workflowstatus) {
           this.workflowRunning = false;
           this.allExecutions = [];
@@ -88,8 +86,8 @@ export class HistoryComponent implements OnInit {
       for (let i = 0; i < showTotal; i++) {
         let r = result['results'][i];
         r['hasReport'] = false;        
-        if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED') {
-          if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null) {
+        if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || r['metisPlugins'][this.currentPlugin].pluginStatus === 'FAILED') {
+          if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null && r['metisPlugins'][this.currentPlugin].topologyName) {
             this.workflows.getReport(r['metisPlugins'][this.currentPlugin].externalTaskId, r['metisPlugins'][this.currentPlugin].topologyName).subscribe(report => {
               if (report['errors'].length > 0) {
                 r['hasReport'] = true;
