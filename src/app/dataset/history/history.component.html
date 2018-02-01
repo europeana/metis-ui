@@ -26,12 +26,12 @@
       <td class="nowrap">{{ex.workflowStatus}}</td>
       <td class="centered"><span class="date">{{ex.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.startedDate | date:'HH:mm'}}</span></td>
       <td class="centered"><span class="date">{{ex.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.finishedDate | date:'HH:mm'}}</span></td>
-      <td class="buttonplaceholder">
+      <td class="buttonplaceholder nowrap">
         <a *ngIf="ex.hasReport" class="table-btn svg-icon-report" (click)="openReport(ex.metisPlugins[currentPlugin].externalTaskId, ex.metisPlugins[currentPlugin].topologyName)">         
           Report
          </a>
       </td>
-      <td class="buttonplaceholder"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">Restart</a></td>
+      <td class="buttonplaceholder nowrap"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">Restart</a></td>
     </tr>
     <tr class="loadmore" *ngIf="inCollapsablePanel">
       <td colspan="10">

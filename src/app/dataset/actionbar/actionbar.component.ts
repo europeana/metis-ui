@@ -98,6 +98,7 @@ export class ActionbarComponent {
         if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {        
           this.currentPlugin = 0;
           this.now = e['finishedDate'];
+          this.workflowPercentage = 0;
 
           if (e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {
             this.now = e['updatedDate'];

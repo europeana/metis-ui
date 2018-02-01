@@ -127,7 +127,8 @@
           border: 1px solid $offwhite;
           border-top: 0;
           position: absolute;
-          width: calc(100% - 0.4rem);
+          right: 0;
+          width: 16rem;
 
           li {
             display: block;
@@ -135,6 +136,7 @@
           }
 
           a {
+            font-size: 0.75rem;
             padding: 0;
           }
 
