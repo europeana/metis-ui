@@ -56,7 +56,7 @@ export class ActionbarComponent {
           this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
           this.currentWorkflowName = this.currentWorkflow.workflowName;
 
-          if (this.currentStatus !== 'FINISHED' || this.currentStatus !== 'CANCELLED') {
+          if (this.currentStatus !== 'FINISHED' || this.currentStatus !== 'CANCELLED' || this.currentStatus !== 'FAILED') {
             this.startPollingWorkflow();
           }
         } else {
@@ -95,11 +95,11 @@ export class ActionbarComponent {
         
         let e = execution;
 
-        if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED') {        
+        if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {        
           this.currentPlugin = 0;
           this.now = e['finishedDate'];
 
-          if (e['workflowStatus'] === 'CANCELLED') {
+          if (e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {
             this.now = e['updatedDate'];
           }
 

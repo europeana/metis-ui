@@ -82,7 +82,7 @@ export class WorkflowService {
     get history of executions for specific datasetid, possible to retrieve results for a specific page
   */
   getAllExecutions(id, page?) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=FINISHED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
         this.allWorkflows = data['results'];
@@ -113,7 +113,7 @@ export class WorkflowService {
   }
 
   getWorkflows() {
-    let workflows = ['workflow30'];
+    let workflows = ['workflow30', 'workflow31', 'workflow35', 'workflow36', 'workflow37'];
     return workflows ;
   }
 
