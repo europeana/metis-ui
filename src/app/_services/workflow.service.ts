@@ -113,7 +113,7 @@ export class WorkflowService {
   }
 
   getWorkflows() {
-    let workflows = ['workflow30', 'workflow31', 'workflow35', 'workflow36', 'workflow37'];
+    let workflows = ['only_harvest', 'only_validation_external_mocked', 'only_validation_external', 'harvest_and_validation_external', 'harvest_and_validation_external_mocked'];
     return workflows ;
   }
 
