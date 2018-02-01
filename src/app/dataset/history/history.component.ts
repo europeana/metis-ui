@@ -47,7 +47,6 @@ export class HistoryComponent implements OnInit {
           this.allExecutions = [];
           this.nextPage = 0;
           this.returnAllExecutions();
-          console.log(workflow['workflowStatus']);
           if (workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
             this.workflowRunning = true;
           }
@@ -57,7 +56,6 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
-        console.log('workflowIsDone', workflowstatus, 'workflowDone');
         if (workflowstatus) {
           this.workflowRunning = false;
           this.allExecutions = [];
