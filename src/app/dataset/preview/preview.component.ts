@@ -26,7 +26,7 @@ export class PreviewComponent implements OnInit {
   editorPreviewCode;
   editorConfig;
   allWorkflows;
-  filterWorkflow: boolean = false;
+  filterWorkflow: boolean = true;
 
   ngOnInit() {
 
@@ -62,4 +62,10 @@ export class PreviewComponent implements OnInit {
     };
 
   }
+
+  filterPreviewWorkflow(w) {
+    console.log('filterPreviewWorkflow', w);
+  }
+
+
 }
