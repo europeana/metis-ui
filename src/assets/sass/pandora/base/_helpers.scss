@@ -62,7 +62,6 @@ body {
     &::after {
       color: $eu-jade;
     }
-
   }
 }
 
@@ -71,7 +70,9 @@ body {
   border-top: 1px solid $gray87;
   display: inline-block;
   font-size: 0.875rem;
-  margin-bottom: 1rem;
+  margin-bottom: 3rem;
+  margin-left: calc(-10% - 1rem);
+  margin-top: -2rem;
   padding: 0.25rem 0;
 
   li {
@@ -79,9 +80,83 @@ body {
     color: $gray-light;
     display: inline-block;
     padding: 0.3rem 0.625rem;
+    position: relative;
 
     &:first-child {
       border: 0;
+      padding-right: 2rem;
+    }
+
+    a {
+      color: $gray-light;
+      padding: 0.25rem 0.5rem;
+
+      &:hover {
+        background: $white;
+        border-radius: 2px;
+      }
+    }
+
+    &.dropdown {
+      margin: 0;
+
+      &::after {
+        border-left: 0.25rem solid transparent;
+        border-right: 0.25rem solid transparent;
+        border-top: 0.25rem solid $gray-light;
+        content: '';
+        height: 0;
+        margin-top: -0.125rem;
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        width: 0;
+      }
+
+      a {
+        border: 1px solid $offwhite;
+      }
+
+      a:hover {
+        border: 1px solid $gray-lighter;
+        margin-left: 0;
+      }
+
+      ul {
+        background: #fff;
+        border: 1px solid $gray-lighter;
+        border-top: 0;
+        left: 0.625rem;
+        position: absolute;
+        width: auto;
+        z-index: 10;
+
+        li {
+          border: 0;
+          display: block;
+          font-size: 0.75rem;
+          padding: 0.25rem 0.5rem;
+          white-space: nowrap;
+
+          a {
+            border: 0;
+          }
+
+          a:hover {
+            text-decoration: underline;
+          }
+
+        }
+
+      }
+
+    }
+
+    &.search {
+      padding-right: 1rem;
+      i {
+        margin-left: 0.5rem;
+      }
     }
 
   }

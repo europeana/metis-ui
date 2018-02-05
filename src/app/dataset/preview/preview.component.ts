@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { WorkflowService } from '../../_services';
+
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
@@ -18,11 +20,13 @@ import 'codemirror/addon/fold/comment-fold';
 
 export class PreviewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private workflows: WorkflowService) { }
 
   @Input('datasetData') datasetData;
   editorPreviewCode;
   editorConfig;
+  allWorkflows;
+  filterWorkflow: boolean = false;
 
   ngOnInit() {
 
@@ -44,7 +48,10 @@ export class PreviewComponent implements OnInit {
       <edm:intermediateProvider rdf:resource="http://Aggregation-edm-intermediateProvider"/>
   </ore:Aggregation>`;
     }
-    
+  
+    if (typeof this.workflows.getWorkflows !== 'function') { return false }
+    this.allWorkflows = this.workflows.getWorkflows();
+
   	this.editorConfig = { 
       mode: 'application/xml',
       lineNumbers: true,

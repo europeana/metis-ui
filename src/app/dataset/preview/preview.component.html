@@ -1,7 +1,12 @@
 <ul class="filter">
-  <li>Worklow</li>
-  <li><a>Show random</a></li>
-  <li>Search</li>
+  <li class="dropdown">
+    <a>Worklow</a>
+  	<ul *ngIf="filterWorkflow">
+      <li *ngFor="let w of allWorkflows;"><a (click)="filterPreviewWorkflow(w)">{{w}}</a></li>
+    </ul>
+  </li>
+  <li><a class="filter-btn">Show random</a></li>
+  <li class="search">Search <i class="fa fa-search"></i></li>
 </ul>
 
 <codemirror [(ngModel)]="editorPreviewCode" [config]="editorConfig"></codemirror>
