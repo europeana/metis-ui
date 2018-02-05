@@ -65,3 +65,24 @@ body {
 
   }
 }
+
+.filter {
+  border-bottom: 1px solid $gray87;
+  border-top: 1px solid $gray87;
+  display: inline-block;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0;
+
+  li {
+    border-left: 1px solid $gray87;
+    color: $gray-light;
+    display: inline-block;
+    padding: 0.3rem 0.625rem;
+
+    &:first-child {
+      border: 0;
+    }
+
+  }
+}
