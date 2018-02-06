@@ -17,4 +17,17 @@
   </li>
 </ul>
 
-<codemirror [(ngModel)]="editorPreviewCode" [config]="editorConfig"></codemirror>
+<div class="view-sample">
+  <div class="view-sample-title">
+    <h3>{{editorPreviewTitle}}</h3>
+    <div class="dropdown-specific dropdown">
+      <a (click)="toggleFilterPreviewSample()">Choose workflow to preview</a>    
+      <ul *ngIf="filterWorkflowSample">
+        <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="view-sample-editor">
+    <codemirror [(ngModel)]="editorPreviewCode" [config]="editorConfig"></codemirror>
+  </div>
+</div>

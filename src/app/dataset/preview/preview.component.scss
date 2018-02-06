@@ -1,0 +1,72 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
+.view-sample {
+  display: flex;
+  width: 100%;
+
+  .view-sample-title {
+    background-color: $eu-jade;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30%;
+
+    h3 {
+      color: $white;
+      font-weight: normal;
+      padding: 1rem;
+    }
+
+    .dropdown-specific {
+      background: $gray-med;
+      color: $white;
+      display: block;
+      font-size: 0.875rem;
+      padding: 1rem 0;
+      position: relative;
+      text-align: center;
+
+      > a {
+        border: 0;
+        color: $white;
+        display: block;
+
+        &::after {
+          border-left: 0.25rem solid transparent;
+          border-right: 0.25rem solid transparent;
+          border-top: 0.25rem solid $white;
+          content: '';
+          height: 0;
+          margin-top: -0.125rem;
+          position: absolute;
+          right: 1rem;
+          top: 50%;
+          width: 0;
+        }
+      }
+
+      ul {
+        left: 3rem;
+
+        li {
+          text-align: left;
+
+          a {
+            color: $gray-med;
+          }
+
+          a:hover {
+            color: $eu-jade;
+          }
+
+        }
+      }
+    }
+  }
+
+  .view-sample-editor {
+    display: inline-block;
+    width: 70%;
+  }
+}

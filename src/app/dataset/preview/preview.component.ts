@@ -28,9 +28,11 @@ export class PreviewComponent implements OnInit {
 
   @Input('datasetData') datasetData;
   editorPreviewCode;
+  editorPreviewTitle;
   editorConfig;
   allWorkflows;
   filterWorkflow: boolean = false;
+  filterWorkflowSample: boolean = false;
   displaySearch: boolean = false;
   minRandom: number = 1;
   maxRandom: number = 3;
@@ -58,34 +60,37 @@ export class PreviewComponent implements OnInit {
 
   getXMLSample(mode?, workflow?, keyword?) {
     this.editorPreviewCode = undefined;
+    this.editorPreviewTitle = undefined;
+    let previewSample;
 
-    if (!mode) { // default = random
-      this.editorPreviewCode = this.showRandomPreview();
+    if (!mode) { 
+      previewSample = this.showRandomPreview();
     } else if (mode === 'workflow' && workflow !== '') {
-      this.editorPreviewCode = this.filterPreviewWorkflow(workflow);
+      previewSample = this.filterPreviewWorkflow(workflow);
     } else if (mode === 'search' && keyword != '') {
-      this.editorPreviewCode = this.searchPreview(keyword); 
+      previewSample = this.searchPreview(keyword); 
     }
 
+    this.editorPreviewCode = previewSample.sample;
+    this.editorPreviewTitle = previewSample.name;
     this.onClickedOutside();
-
   }
 
   filterPreviewWorkflow(w) {
     if (w === 'only_harvest') {
-      return previewSamples['sample1'];
+      return {'name': 'sample1', 'sample': previewSamples['sample1']};
     } else if (w === 'only_validation_external') {
-      return previewSamples['sample2'];
+      return {'name': 'sample2', 'sample': previewSamples['sample2']};
     } else if (w === 'harvest_and_validation_external') {
-      return previewSamples['sample3'];
+      return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return 'No sample available';
+      return {'name': 'No sample available', 'sample': 'No sample available'};
     }
   }
 
   showRandomPreview () {
     let random = Math.floor(Math.random() * (this.maxRandom - this.minRandom + 1)) + this.minRandom;
-    return previewSamples['sample'+random];    
+    return {'name': 'sample'+random, 'sample': previewSamples['sample'+random]};    
   }
 
   displaySearchBox() {
@@ -95,13 +100,13 @@ export class PreviewComponent implements OnInit {
 
   searchPreview(keyword) {
     if (keyword === '123') {
-      return previewSamples['sample1'];
+      return {'name': 'sample1', 'sample': previewSamples['sample1']};
     } else if (keyword === '456') {
-      return previewSamples['sample2'];
+      return {'name': 'sample2', 'sample': previewSamples['sample2']};
     } else if (keyword === '789') {
-      return previewSamples['sample3'];
+      return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return 'No sample available';
+      return {'name': 'No sample available', 'sample': 'No sample available'};
     }
   }
 
@@ -113,8 +118,23 @@ export class PreviewComponent implements OnInit {
     }
   }
 
+  toggleFilterPreviewSample() {
+    if (this.filterWorkflowSample === false) {
+      this.filterWorkflowSample = true;
+    } else {
+      this.filterWorkflowSample = false;
+    }
+  }
+
   onClickedOutside(e?) {
-    this.filterWorkflow = false;
+    if (e !== undefined) {
+      if (e.path[0].className.indexOf('dropdown-specific') >= 0 || e.path[1].className.indexOf('dropdown-specific') >= 0) {
+        this.filterWorkflowSample = true;
+      } else {
+        this.filterWorkflowSample = false;
+      }
+    }
+    this.filterWorkflow = false;    
   }
 
 }
