@@ -55,7 +55,6 @@ describe('ActionbarComponent', () => {
   it('should have a running workflow', (): void => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.dataset-actionbar') === null).toBe(false);
-  }));
-
+  });
 
 });
