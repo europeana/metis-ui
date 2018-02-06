@@ -1,5 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkflowService } from '../../_services';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+
+import { previewSamples } from '../../_mocked';
 
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
@@ -20,33 +23,22 @@ import 'codemirror/addon/fold/comment-fold';
 
 export class PreviewComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService) { }
+  constructor(private workflows: WorkflowService, 
+    private http: HttpClient) { }
 
   @Input('datasetData') datasetData;
   editorPreviewCode;
   editorConfig;
   allWorkflows;
-  filterWorkflow: boolean = true;
+  filterWorkflow: boolean = false;
+  displaySearch: boolean = false;
+  minRandom: number = 1;
+  maxRandom: number = 3;
 
   ngOnInit() {
 
     if (this.datasetData) {
-    	this.editorPreviewCode = `<ore:Aggregation
-      rdf:about="/aggregation/provider/08502/5F41E0B657BDD9923BA2C4655BB7A6880A2ED5C2">
-      <edm:aggregatedCHO rdf:resource="/item/08502/5F41E0B657BDD9923BA2C4655BB7A6880A2ED5C2"/>
-      <edm:dataProvider>Israel Museum, Jerusalem</edm:dataProvider>
-      <edm:isShownAt
-          rdf:resource="http://www.imj.org.il/imagine/collections/item.asp?itemNum=193112"/>
-      <edm:isShownBy
-          rdf:resource="http://www.imj.org.il/images/corridor/bezalel/modern/new modern scans/g-h-i/gauguin-still life~b66_1041.jpg"/>
-      <edm:object
-          rdf:resource="http://www.imj.org.il/images/corridor/bezalel/modern/new modern scans/g-h-i/gauguin-still life~b66_1041.jpg"/>
-      <edm:provider>Athena</edm:provider>
-      <dc:rights>aggregation - dc:rights</dc:rights>
-      <edm:rights rdf:resource="http://rightsstatements.org/vocab/InC/1.0/"/>
-      <edm:intermediateProvider> Name of the intermediate provider</edm:intermediateProvider>
-      <edm:intermediateProvider rdf:resource="http://Aggregation-edm-intermediateProvider"/>
-  </ore:Aggregation>`;
+    	this.getXMLSample();
     }
   
     if (typeof this.workflows.getWorkflows !== 'function') { return false }
@@ -55,17 +47,74 @@ export class PreviewComponent implements OnInit {
   	this.editorConfig = { 
       mode: 'application/xml',
       lineNumbers: true,
-      tabSize: 2,
+      indentUnit: 2,
       readOnly: true,
       foldGutter: true,
+      indentWithTabs: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
   }
 
-  filterPreviewWorkflow(w) {
-    console.log('filterPreviewWorkflow', w);
+  getXMLSample(mode?, workflow?, keyword?) {
+    this.editorPreviewCode = undefined;
+
+    if (!mode) { // default = random
+      this.editorPreviewCode = this.showRandomPreview();
+    } else if (mode === 'workflow' && workflow !== '') {
+      this.editorPreviewCode = this.filterPreviewWorkflow(workflow);
+    } else if (mode === 'search' && keyword != '') {
+      this.editorPreviewCode = this.searchPreview(keyword); 
+    }
+
+    this.onClickedOutside();
+
   }
 
+  filterPreviewWorkflow(w) {
+    if (w === 'only_harvest') {
+      return previewSamples['sample1'];
+    } else if (w === 'only_validation_external') {
+      return previewSamples['sample2'];
+    } else if (w === 'harvest_and_validation_external') {
+      return previewSamples['sample3'];
+    } else {
+      return 'No sample available';
+    }
+  }
+
+  showRandomPreview () {
+    let random = Math.floor(Math.random() * (this.maxRandom - this.minRandom + 1)) + this.minRandom;
+    return previewSamples['sample'+random];    
+  }
+
+  displaySearchBox() {
+    this.displaySearch = true;
+    this.onClickedOutside();
+  }
+
+  searchPreview(keyword) {
+    if (keyword === '123') {
+      return previewSamples['sample1'];
+    } else if (keyword === '456') {
+      return previewSamples['sample2'];
+    } else if (keyword === '789') {
+      return previewSamples['sample3'];
+    } else {
+      return 'No sample available';
+    }
+  }
+
+  toggleFilterPreview() {
+    if (this.filterWorkflow === false) {
+      this.filterWorkflow = true;
+    } else {
+      this.filterWorkflow = false;
+    }
+  }
+
+  onClickedOutside(e?) {
+    this.filterWorkflow = false;
+  }
 
 }

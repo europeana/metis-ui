@@ -43,7 +43,9 @@ import { PageNotFoundComponent } from './page-not-found';
 import { ExecutionsComponent } from './dashboard/executions/executions.component';
 import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoingexecutions.component';
 import { ReportComponent } from './dataset/report/report.component';
+
 import { CodemirrorModule } from 'ng2-codemirror';
+import { ClickOutsideModule } from 'ng4-click-outside';
 
 @NgModule({
   declarations: [
@@ -79,7 +81,8 @@ import { CodemirrorModule } from 'ng2-codemirror';
     ReactiveFormsModule,    
     HttpClientModule,
     AppRoutingModule,
-    CodemirrorModule  
+    CodemirrorModule,
+    ClickOutsideModule 
   ],
   entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, QualityassuranceComponent ],
   providers: [
