@@ -4,7 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
-import { MockWorkflowService } from '../../_mocked';
+import { MockWorkflowService } from '../../_mocked/workflow.mocked';
 
 import { HistoryComponent } from './history.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -30,7 +30,26 @@ describe('HistoryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HistoryComponent);
     component = fixture.componentInstance;
+    component.workflows = MockWorkflowService;
     fixture.detectChanges();
+  });
+
+  it('should show in collapsable panel', () => {
+    component.inCollapsablePanel = true;
+    fixture.detectChanges();
+  });
+
+  it('should show in tab', () => {
+    component.inCollapsablePanel = false;
+    fixture.detectChanges();
+  });
+
+  it('should go to next page', () => {
+    component.inCollapsablePanel = false;
+    component.datasetData = this.mockedDataset;
+    component.nextPage = 0;
+    component.returnAllExecutions();    
+    fixture.detectChanges();    
   });
 
   it('should open workflow filter', (): void => {   
@@ -39,6 +58,17 @@ describe('HistoryComponent', () => {
       workflow.triggerEventHandler('click', null);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).toBeTruthy();
+
+      component.allWorkflows = ['mocked'];
+      const filter = fixture.debugElement.query(By.css('.dropdown ul a'));
+      filter.triggerEventHandler('click', null);
+      fixture.detectChanges();
+      expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).not.toBeTruthy();
+
+      component.filterWorkflow = true;
+      component.toggleFilterByWorkflow();
+      component.onClickedOutside();
+      fixture.detectChanges();
     }
   });
 

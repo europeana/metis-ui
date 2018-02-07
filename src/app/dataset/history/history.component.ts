@@ -28,7 +28,7 @@ export class HistoryComponent implements OnInit {
   nextPage: number = 0;
   workflowRunning: boolean = false;
   filterWorkflow: boolean = false;
-  selectedFilterWorkflow: string;
+  selectedFilterWorkflow: string = '';
   allWorkflows;
   totalPages: number = 0;
 
