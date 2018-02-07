@@ -43,7 +43,7 @@
       </td>
       <td class="buttonplaceholder nowrap"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">Restart</a></td>
     </tr>
-    <tr class="loadmore" *ngIf="inCollapsablePanel">
+    <tr class="loadmore loadmore-history" *ngIf="inCollapsablePanel">
       <td colspan="10">
         <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a>
       </td>

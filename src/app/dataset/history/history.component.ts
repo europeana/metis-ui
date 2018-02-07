@@ -44,6 +44,7 @@ export class HistoryComponent implements OnInit {
     }
 
     if (!this.inCollapsablePanel) {
+      if (typeof this.workflows.getCurrentPage !== 'function') { return false }
       this.totalPages = this.workflows.getCurrentPage();
       this.returnAllExecutions();
     } else {
@@ -99,7 +100,7 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage, filterWorkflow).subscribe(result => {
 
-      if (result['results'].length === 0) { return false }
+      if (result['results'].length === 0) { this.nextPage = 0; return false }
 
       let showTotal = result['results'].length;
       if (this.inCollapsablePanel && result['results'].length >= 4 ) {
@@ -130,8 +131,7 @@ export class HistoryComponent implements OnInit {
           if (startPage < totalPageNr) {
             this.loadNextPage();
           }
-        }
-
+        } 
       }
 
       this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
