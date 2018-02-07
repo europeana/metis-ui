@@ -26,7 +26,9 @@ export class HistoryComponent implements OnInit {
   allExecutions: Array<any> = [];
   currentPlugin: number = 0;
   nextPage: number = 0;
-  workflowRunning: Boolean = false;
+  workflowRunning: boolean = false;
+  filterWorkflow: boolean = false;
+  allWorkflows;
 
   ngOnInit() { 
     
@@ -64,6 +66,9 @@ export class HistoryComponent implements OnInit {
         }
       }
     );
+
+    if (typeof this.workflows.getWorkflows !== 'function') { return false }
+    this.allWorkflows = this.workflows.getWorkflows();
 
   }
 
@@ -158,6 +163,20 @@ export class HistoryComponent implements OnInit {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
+  }
+
+
+  toggleFilterByWorkflow () {
+    console.log('toggleFilterByWorkflow');
+    if (this.filterWorkflow === false) {
+      this.filterWorkflow = true;
+    } else {
+      this.filterWorkflow = false;
+    }
+  }
+
+  onClickedOutside() {
+    this.filterWorkflow = false;
   }
 
 }

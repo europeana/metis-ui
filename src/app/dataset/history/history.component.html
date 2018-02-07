@@ -1,3 +1,12 @@
+<ul class="filter" *ngIf="!inCollapsablePanel" (clickOutside)="onClickedOutside($event)">
+  <li class="dropdown">
+    <a (click)="toggleFilterByWorkflow()">Worklow</a>
+    <ul *ngIf="filterWorkflow">
+      <li *ngFor="let w of allWorkflows;"><a>{{w}}</a></li>
+    </ul>
+  </li>  
+</ul>
+
 <div class="messages">
   <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
   <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
