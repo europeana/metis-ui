@@ -1,4 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { WorkflowService } from '../../_services';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+
+import { previewSamples } from '../../_mocked';
+
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
@@ -18,41 +23,118 @@ import 'codemirror/addon/fold/comment-fold';
 
 export class PreviewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private workflows: WorkflowService, 
+    private http: HttpClient) { }
 
   @Input('datasetData') datasetData;
   editorPreviewCode;
+  editorPreviewTitle;
   editorConfig;
+  allWorkflows;
+  filterWorkflow: boolean = false;
+  filterWorkflowSample: boolean = false;
+  displaySearch: boolean = false;
+  minRandom: number = 1;
+  maxRandom: number = 3;
 
   ngOnInit() {
 
     if (this.datasetData) {
-    	this.editorPreviewCode = `<ore:Aggregation
-      rdf:about="/aggregation/provider/08502/5F41E0B657BDD9923BA2C4655BB7A6880A2ED5C2">
-      <edm:aggregatedCHO rdf:resource="/item/08502/5F41E0B657BDD9923BA2C4655BB7A6880A2ED5C2"/>
-      <edm:dataProvider>Israel Museum, Jerusalem</edm:dataProvider>
-      <edm:isShownAt
-          rdf:resource="http://www.imj.org.il/imagine/collections/item.asp?itemNum=193112"/>
-      <edm:isShownBy
-          rdf:resource="http://www.imj.org.il/images/corridor/bezalel/modern/new modern scans/g-h-i/gauguin-still life~b66_1041.jpg"/>
-      <edm:object
-          rdf:resource="http://www.imj.org.il/images/corridor/bezalel/modern/new modern scans/g-h-i/gauguin-still life~b66_1041.jpg"/>
-      <edm:provider>Athena</edm:provider>
-      <dc:rights>aggregation - dc:rights</dc:rights>
-      <edm:rights rdf:resource="http://rightsstatements.org/vocab/InC/1.0/"/>
-      <edm:intermediateProvider> Name of the intermediate provider</edm:intermediateProvider>
-      <edm:intermediateProvider rdf:resource="http://Aggregation-edm-intermediateProvider"/>
-  </ore:Aggregation>`;
+    	this.getXMLSample();
     }
-    
+  
+    if (typeof this.workflows.getWorkflows !== 'function') { return false }
+    this.allWorkflows = this.workflows.getWorkflows();
+
   	this.editorConfig = { 
       mode: 'application/xml',
       lineNumbers: true,
-      tabSize: 2,
+      indentUnit: 2,
       readOnly: true,
       foldGutter: true,
+      indentWithTabs: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
   }
+
+  getXMLSample(mode?, workflow?, keyword?) {
+    this.editorPreviewCode = undefined;
+    this.editorPreviewTitle = undefined;
+    let previewSample;
+
+    if (!mode) { 
+      previewSample = this.showRandomPreview();
+    } else if (mode === 'workflow' && workflow !== '') {
+      previewSample = this.filterPreviewWorkflow(workflow);
+    } else if (mode === 'search' && keyword != '') {
+      previewSample = this.searchPreview(keyword); 
+    }
+
+    this.editorPreviewCode = previewSample.sample;
+    this.editorPreviewTitle = previewSample.name;
+    this.onClickedOutside();
+  }
+
+  filterPreviewWorkflow(w) {
+    if (w === 'only_harvest') {
+      return {'name': 'sample1', 'sample': previewSamples['sample1']};
+    } else if (w === 'only_validation_external') {
+      return {'name': 'sample2', 'sample': previewSamples['sample2']};
+    } else if (w === 'harvest_and_validation_external') {
+      return {'name': 'sample3', 'sample': previewSamples['sample3']};
+    } else {
+      return {'name': 'No sample available', 'sample': 'No sample available'};
+    }
+  }
+
+  showRandomPreview () {
+    let random = Math.floor(Math.random() * (this.maxRandom - this.minRandom + 1)) + this.minRandom;
+    return {'name': 'sample'+random, 'sample': previewSamples['sample'+random]};    
+  }
+
+  displaySearchBox() {
+    this.displaySearch = true;
+    this.onClickedOutside();
+  }
+
+  searchPreview(keyword) {
+    if (keyword === '123') {
+      return {'name': 'sample1', 'sample': previewSamples['sample1']};
+    } else if (keyword === '456') {
+      return {'name': 'sample2', 'sample': previewSamples['sample2']};
+    } else if (keyword === '789') {
+      return {'name': 'sample3', 'sample': previewSamples['sample3']};
+    } else {
+      return {'name': 'No sample available', 'sample': 'No sample available'};
+    }
+  }
+
+  toggleFilterPreview() {
+    if (this.filterWorkflow === false) {
+      this.filterWorkflow = true;
+    } else {
+      this.filterWorkflow = false;
+    }
+  }
+
+  toggleFilterPreviewSample() {
+    if (this.filterWorkflowSample === false) {
+      this.filterWorkflowSample = true;
+    } else {
+      this.filterWorkflowSample = false;
+    }
+  }
+
+  onClickedOutside(e?) {
+    if (e !== undefined) {
+      if (e.path[0].className.indexOf('dropdown-specific') >= 0 || e.path[1].className.indexOf('dropdown-specific') >= 0) {
+        this.filterWorkflowSample = true;
+      } else {
+        this.filterWorkflowSample = false;
+      }
+    }
+    this.filterWorkflow = false;    
+  }
+
 }

@@ -1,1 +1,33 @@
-<codemirror [(ngModel)]="editorPreviewCode" [config]="editorConfig"></codemirror>
+<ul class="filter" (clickOutside)="onClickedOutside($event)">
+  <li class="dropdown">
+    <a (click)="toggleFilterPreview()">Worklow</a>
+  	<ul *ngIf="filterWorkflow">
+      <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
+    </ul>
+  </li>
+  <li>
+  	<a (click)="getXMLSample()" class="filter-btn">Show random</a>
+  </li>
+  <li class="search">
+  	<a *ngIf="!displaySearch" (click)="displaySearchBox()">Search <i class="fa fa-search"></i></a>
+  	<form *ngIf="displaySearch">
+  		<input type="text" #search />
+  		<button class="search-submit" type="submit" (click)="getXMLSample('search', '', search.value)"><i class="fa fa-search"></i></button>
+  	</form>
+  </li>
+</ul>
+
+<div class="view-sample">
+  <div class="view-sample-title">
+    <h3>{{editorPreviewTitle}}</h3>
+    <div class="dropdown-specific dropdown">
+      <a (click)="toggleFilterPreviewSample()">Choose workflow to preview</a>    
+      <ul *ngIf="filterWorkflowSample">
+        <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="view-sample-editor">
+    <codemirror [(ngModel)]="editorPreviewCode" [config]="editorConfig"></codemirror>
+  </div>
+</div>
