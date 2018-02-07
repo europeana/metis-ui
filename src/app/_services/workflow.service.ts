@@ -17,12 +17,13 @@ export class WorkflowService {
   @Output() changeWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() selectedWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() workflowIsDone: EventEmitter<any> = new EventEmitter();
-  activeWorkflow: any = 'workflow!';
+  activeWorkflow: any;
   currentReport: any;
   activeTopolgy: any;
   activeExternalTaskId: any;
   allWorkflows: any;
-  currentPlugin = 0; // pick the first plugin for now
+  currentPlugin: number = 0; // pick the first plugin for now
+  currentPage: number = 0;
 
   /* triggerNewWorkflow
     trigger a new workflow
@@ -81,8 +82,13 @@ export class WorkflowService {
   /* getAllExecutions
     get history of executions for specific datasetid, possible to retrieve results for a specific page
   */
-  getAllExecutions(id, page?) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+  getAllExecutions(id, page?, workflow?) {
+    let owner = '';
+    if (workflow) {
+      owner = 'owner1';
+    }
+
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=${owner}&workflowName=${workflow}&workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
         this.allWorkflows = data['results'];
@@ -143,6 +149,20 @@ export class WorkflowService {
   */
   getCurrentReport() {
     return this.currentReport;
+  }
+
+  /* setCurrentPage
+    set currentpage to current page number
+  */
+  setCurrentPage(page): void {
+    this.currentPage = page;
+  }
+
+  /* getCurrentPage
+    get the current page
+  */
+  getCurrentPage() {
+    return this.currentPage;
   }
 
   /* setActiveWorkflow

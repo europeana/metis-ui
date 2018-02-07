@@ -2,7 +2,8 @@
   <li class="dropdown">
     <a (click)="toggleFilterByWorkflow()">Worklow</a>
     <ul *ngIf="filterWorkflow">
-      <li *ngFor="let w of allWorkflows;"><a>{{w}}</a></li>
+      <li><a (click)="selectWorkflow()">All workflows</a></li>
+      <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
     </ul>
   </li>  
 </ul>

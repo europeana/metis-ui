@@ -28,10 +28,12 @@ export class HistoryComponent implements OnInit {
   nextPage: number = 0;
   workflowRunning: boolean = false;
   filterWorkflow: boolean = false;
+  selectedFilterWorkflow: string;
   allWorkflows;
+  totalPages: number = 0;
 
   ngOnInit() { 
-    
+
     // only init once
     if (this.inCollapsablePanel) {
       this.workflows.selectedWorkflow.subscribe(
@@ -41,14 +43,16 @@ export class HistoryComponent implements OnInit {
       );
     }
 
-    this.returnAllExecutions();
-
+    if (!this.inCollapsablePanel) {
+      this.totalPages = this.workflows.getCurrentPage();
+      this.returnAllExecutions();
+    } else {
+      this.returnAllExecutions();
+    }
+    
     this.workflows.changeWorkflow.subscribe(
       workflow => {
-        if (workflow) {
-          this.allExecutions = [];
-          this.nextPage = 0;
-          this.returnAllExecutions();
+        if (workflow) {          
           if (workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
             this.workflowRunning = true;
           }
@@ -60,9 +64,14 @@ export class HistoryComponent implements OnInit {
       workflowstatus => {
         if (workflowstatus) {
           this.workflowRunning = false;
-          this.allExecutions = [];
+          this.allExecutions = [];          
           this.nextPage = 0;
-          this.returnAllExecutions();
+          if (!this.inCollapsablePanel) {
+            this.totalPages = this.workflows.getCurrentPage();
+            this.returnAllExecutions();
+          } else {
+            this.returnAllExecutions();
+          }
         }
       }
     );
@@ -74,12 +83,21 @@ export class HistoryComponent implements OnInit {
 
   /* returnAllExecutions
     return all executions, either max 4 to display in collapsable panel of list with pagination
+    option to filter on workflow in table
   */
   returnAllExecutions() {
-    
+
     if (!this.datasetData) { return false; }
 
-    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
+    let filterWorkflow = this.selectedFilterWorkflow;
+    if (this.inCollapsablePanel) {
+      filterWorkflow = '';
+    }
+
+    let startPage = 0;
+    let totalPageNr = this.totalPages;
+
+    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage, filterWorkflow).subscribe(result => {
 
       if (result['results'].length === 0) { return false }
 
@@ -104,7 +122,16 @@ export class HistoryComponent implements OnInit {
       }
 
       if (!this.inCollapsablePanel) {
+        startPage = this.nextPage;
+        this.workflows.setCurrentPage(this.nextPage);
         this.nextPage = result['nextPage'];
+
+        if (totalPageNr > 0) {
+          if (startPage < totalPageNr) {
+            this.loadNextPage();
+          }
+        }
+
       }
 
       this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
@@ -131,7 +158,7 @@ export class HistoryComponent implements OnInit {
     used in processing history table to display next page
   */
   loadNextPage() {
-    if (this.nextPage > 0) {
+    if (this.nextPage !== -1) {
       this.returnAllExecutions();
     }
   }
@@ -167,12 +194,19 @@ export class HistoryComponent implements OnInit {
 
 
   toggleFilterByWorkflow () {
-    console.log('toggleFilterByWorkflow');
     if (this.filterWorkflow === false) {
       this.filterWorkflow = true;
     } else {
       this.filterWorkflow = false;
     }
+  }
+
+  selectWorkflow (w) {
+    this.selectedFilterWorkflow = w;
+    this.nextPage = 0;
+    this.allExecutions = [];
+    this.returnAllExecutions();
+    this.filterWorkflow = false;
   }
 
   onClickedOutside() {
