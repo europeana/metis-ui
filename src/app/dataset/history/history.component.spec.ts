@@ -85,13 +85,11 @@ describe('HistoryComponent', () => {
     }
   });
 
-  it('spy on getAllExecutions', () => {
+  it('spy on selectedWorkflow', () => {
     let wService: WorkflowService = fixture.debugElement.injector.get(WorkflowService);
     spy = spyOn(wService, 'selectedWorkflow').and.returnValue([]);
     fixture.detectChanges();
   });
-
-  
 
   it('should create', () => {
     expect(component).toBeTruthy();
