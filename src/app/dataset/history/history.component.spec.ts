@@ -19,6 +19,11 @@ describe('HistoryComponent', () => {
   let errors: ErrorService;
   let spy: any;
 
+
+  let datasetData = { 
+    datasetId: 1 
+  }
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
@@ -84,13 +89,7 @@ describe('HistoryComponent', () => {
       fixture.detectChanges();
     }
   });
-
-  it('spy on selectedWorkflow', () => {
-    let wService: WorkflowService = fixture.debugElement.injector.get(WorkflowService);
-    spy = spyOn(wService, 'selectedWorkflow').and.returnValue([]);
-    fixture.detectChanges();
-  });
-
+  
   it('should create', () => {
     expect(component).toBeTruthy();
   });

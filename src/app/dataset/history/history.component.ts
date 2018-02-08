@@ -167,6 +167,7 @@ export class HistoryComponent implements OnInit {
   */
   triggerWorkflow(workflowName) {   
     this.errorMessage = undefined;
+    if (!this.datasetData) { return false; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId, workflowName).subscribe(result => {
       this.workflows.setActiveWorkflow(result); 
       this.workflowRunning = true;     
