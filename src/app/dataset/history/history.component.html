@@ -28,7 +28,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let ex of allExecutions; let i = index">
-      <td class="centered"><span class="svg-icon-harvest"></span></td>
+      <td class="centered"><span class="svg-icon-{{ex.workflowName}}"></span></td>
       <td class="errorindicator"><span class="error" *ngIf="ex.metisPlugins[currentPlugin].executionProgress.errors !== 0"></span></td>
       <td class="nowrap">{{ex.workflowName}}</td>
       <td class="nowrap">{{ex.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
