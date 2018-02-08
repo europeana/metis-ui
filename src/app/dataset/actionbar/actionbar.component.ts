@@ -28,7 +28,7 @@ export class ActionbarComponent {
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
-  intervalTimer = 500;
+  intervalTimer = 2000;
   now;
   totalInDataset: number;
   totalProcessed: number = 0;
