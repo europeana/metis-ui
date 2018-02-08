@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { WorkflowService, AuthenticationService, ErrorService } from '../../_services';
+import { WorkflowService, ErrorService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
 
 @Component({
@@ -14,7 +14,6 @@ export class HistoryComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, 
     private workflows: WorkflowService,
-    private authentication: AuthenticationService, 
     private router: Router,
     private errors: ErrorService) { }
 

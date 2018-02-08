@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
-import { MockWorkflowService } from '../../_mocked/workflow.mocked';
 
 import { HistoryComponent } from './history.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -12,13 +12,19 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 describe('HistoryComponent', () => {
   let component: HistoryComponent;
   let fixture: ComponentFixture<HistoryComponent>;
+  let wService: WorkflowService;
+  let http: HttpClientModule;
+  let route: ActivatedRoute;
+  let router: Router;
+  let errors: ErrorService;
+  let spy: any;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
       declarations: [ HistoryComponent ],
       providers: [ DatasetsService, 
-        {provide: WorkflowService, useValue: MockWorkflowService }, 
+        WorkflowService, 
         RedirectPreviousUrl, 
         AuthenticationService, 
         ErrorService ],
@@ -78,6 +84,14 @@ describe('HistoryComponent', () => {
       fixture.detectChanges();
     }
   });
+
+  it('spy on getAllExecutions', () => {
+    let wService: WorkflowService = fixture.debugElement.injector.get(WorkflowService);
+    spy = spyOn(wService, 'selectedWorkflow').and.returnValue([]);
+    fixture.detectChanges();
+  });
+
+  
 
   it('should create', () => {
     expect(component).toBeTruthy();

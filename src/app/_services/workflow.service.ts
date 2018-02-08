@@ -28,7 +28,7 @@ export class WorkflowService {
   /* triggerNewWorkflow
     trigger a new workflow
   */
-  triggerNewWorkflow (id, workflowName) {
+  public triggerNewWorkflow (id, workflowName) {
   	const owner = 'owner1';
   	const workflow = workflowName;
   	const priority = 0;
