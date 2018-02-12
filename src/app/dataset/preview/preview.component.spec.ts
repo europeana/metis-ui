@@ -8,8 +8,6 @@ import { WorkflowService } from '../../_services';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { WorkflowServiceStub } from '../../_mocked';
-
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
@@ -19,7 +17,7 @@ describe('PreviewComponent', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule, FormsModule, CodemirrorModule ],
       declarations: [ PreviewComponent ],
-      providers: [ {provide: WorkflowService, useValue: WorkflowServiceStub }]
+      providers: [ WorkflowService ]
     })
     .compileComponents();
   }));
@@ -27,8 +25,6 @@ describe('PreviewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PreviewComponent);
     component = fixture.componentInstance;
-
-    tempWorkflowService = TestBed.get(WorkflowService);
   });
 
   it('should create', () => {
@@ -51,7 +47,6 @@ describe('PreviewComponent', () => {
     search.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.search form')).length).toBeTruthy();
-
 
   });
 

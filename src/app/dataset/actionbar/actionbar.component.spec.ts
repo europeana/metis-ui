@@ -5,25 +5,21 @@ import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ActionbarComponent } from './actionbar.component';
-import { WorkflowServiceStub } from '../../_mocked';
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
-  let tempWorkflowService;
 
   beforeEach(() => {
 
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent ],
-      providers:    [ {provide: WorkflowService, useValue: WorkflowServiceStub }, AuthenticationService, ErrorService, RedirectPreviousUrl ]
+      providers:    [ WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl ]
     });
 
     fixture = TestBed.createComponent(ActionbarComponent);
     component    = fixture.componentInstance;
-
-    tempWorkflowService = TestBed.get(WorkflowService);
 
   });
 
@@ -47,10 +43,6 @@ describe('ActionbarComponent', () => {
     } 
     
   }));
-
-  it('stub object and injected service should not be the same', () => {
-    expect(tempWorkflowService === WorkflowService).toBe(false);
-  });
 
   it('should have a running workflow', (): void => {
     fixture.detectChanges();

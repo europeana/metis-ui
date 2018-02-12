@@ -67,4 +67,13 @@ export class HeaderComponent implements OnInit {
     this.openSignIn = false;
     this.router.navigate(['/home']);
   }
+
+  onClickedOutsideUser(e?) {
+    this.openSignIn = false;
+  }
+
+  onClickedOutsideSearch(e?) {
+    this.openSearch = false;
+  }
+
 }

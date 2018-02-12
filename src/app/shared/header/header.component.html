@@ -11,7 +11,7 @@
           <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />
           <ul class="search-select">
             <li>
-              <a class="has-submenu" (click)="toggleSearchMenu()">{{searchfilter}}</a>
+              <a class="has-submenu" (click)="toggleSearchMenu()" (clickOutside)="onClickedOutsideSearch($event)">{{searchfilter}}</a>
                 <ul class="menu-sublevel caret" *ngIf="openSearch">
                   <li><a (click)="filterSearch('Dataset');">Dataset</a></li>
                   <li><a (click)="filterSearch('User');">User</a></li>
@@ -33,7 +33,7 @@
               <span class="circle">7</span>
             </a>
             <a routerLink="/home"> <span class="svg-icon-configuration"></span></a>
-            <div class="metis-user">
+            <div class="metis-user" (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li><a (click)="gotoProfile()">My Profile</a></li>

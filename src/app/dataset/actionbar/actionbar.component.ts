@@ -28,7 +28,7 @@ export class ActionbarComponent {
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
-  intervalTimer = 500;
+  intervalTimer = 2000;
   now;
   totalInDataset: number;
   totalProcessed: number = 0;
@@ -144,7 +144,9 @@ export class ActionbarComponent {
         this.currentWorkflow = workflow;
         this.currentWorkflowName = this.currentWorkflow.workflowName;
         this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
-        this.startPollingWorkflow();
+        if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
+          this.startPollingWorkflow();
+        }
       }
     });
   }
