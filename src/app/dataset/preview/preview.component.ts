@@ -32,6 +32,7 @@ export class PreviewComponent implements OnInit {
   editorConfig;
   allWorkflows;
   filterWorkflow: boolean = false;
+  selectedWorkflow: string;
   filterWorkflowSample: boolean = false;
   displaySearch: boolean = false;
   minRandom: number = 1;
@@ -61,12 +62,17 @@ export class PreviewComponent implements OnInit {
   getXMLSample(mode?, workflow?, keyword?) {
     this.editorPreviewCode = undefined;
     this.editorPreviewTitle = undefined;
+    this.selectedWorkflow = undefined;
+
     let previewSample;
 
     if (!mode) { 
       previewSample = this.showRandomPreview();
+      this.displaySearch = false;
     } else if (mode === 'workflow' && workflow !== '') {
       previewSample = this.filterPreviewWorkflow(workflow);
+      this.displaySearch = false;
+      this.selectedWorkflow = workflow;
     } else if (mode === 'search' && keyword != '') {
       previewSample = this.searchPreview(keyword); 
     }
