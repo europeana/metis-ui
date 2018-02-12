@@ -199,4 +199,10 @@ export class ActionbarComponent {
     this.openWorkflowSelector();
   }
 
+  /* onClickedOutsideWorkflow
+    close workflow selector
+  */  
+  onClickedOutsideWorkflow(e?) {
+    this.isShowingWorkflowSelector = false;
+  }
 }
