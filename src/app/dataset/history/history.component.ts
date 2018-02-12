@@ -203,6 +203,7 @@ export class HistoryComponent implements OnInit {
 
   selectWorkflow (w) {
     this.selectedFilterWorkflow = w;
+    this.totalPages = this.workflows.getCurrentPage();
     this.nextPage = 0;
     this.allExecutions = [];
     this.returnAllExecutions();
