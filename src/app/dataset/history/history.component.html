@@ -1,6 +1,6 @@
 <ul class="filter" *ngIf="!inCollapsablePanel" (clickOutside)="onClickedOutside($event)">
   <li class="dropdown">
-    <a (click)="toggleFilterByWorkflow()">Worklow</a>
+    <a (click)="toggleFilterByWorkflow()">Workflow</a>
     <ul *ngIf="filterWorkflow">
       <li><a (click)="selectWorkflow()">All workflows</a></li>
       <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>

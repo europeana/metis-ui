@@ -1,8 +1,12 @@
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
+
+import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angular/http';
+import {Response, ResponseOptions} from '@angular/http';
+import {MockBackend, MockConnection} from '@angular/http/testing';
+
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
 
@@ -12,11 +16,6 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 describe('HistoryComponent', () => {
   let component: HistoryComponent;
   let fixture: ComponentFixture<HistoryComponent>;
-  let wService: WorkflowService;
-  let http: HttpClientModule;
-  let route: ActivatedRoute;
-  let router: Router;
-  let errors: ErrorService;
   let spy: any;
 
 
@@ -24,12 +23,19 @@ describe('HistoryComponent', () => {
     datasetId: 1 
   }
 
+  const mockHttpProvider = {  
+    deps: [ MockBackend, BaseRequestOptions ],
+    useFactory: (backend: MockBackend, defaultOptions: BaseRequestOptions) => {
+      return new Http(backend, defaultOptions);
+    }
+  }
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
       declarations: [ HistoryComponent ],
-      providers: [ DatasetsService, 
-        WorkflowService, 
+      providers: [ DatasetsService,    
+        WorkflowService,     
         RedirectPreviousUrl, 
         AuthenticationService, 
         ErrorService ],

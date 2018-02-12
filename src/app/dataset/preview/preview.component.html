@@ -1,6 +1,6 @@
 <ul class="filter" (clickOutside)="onClickedOutside($event)">
   <li class="dropdown">
-    <a (click)="toggleFilterPreview()">Worklow</a>
+    <a (click)="toggleFilterPreview()">Workflow</a>
   	<ul *ngIf="filterWorkflow">
       <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
     </ul>
