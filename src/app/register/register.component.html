@@ -1,7 +1,7 @@
 <div class="metis-register-form metis-form" *ngIf="!notfoundMessage">
   <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" #formDir="ngForm" novalidate autocomplete="off">
     <div class="form-header">
-      <h2>Register to Metis</h2>
+      <h2>{{ 'register' | translate }}</h2>
     </div>
 
     <div class="messages">
@@ -12,26 +12,26 @@
     <div class="form-fields">
 
       <fieldset class="form-group">
-        <label for="email">Email:</label>
+        <label for="email">{{ 'email' | translate }}:</label>
         <input id="email" formControlName="email" placeholder="your@email.com">
         <div class="messages" *ngIf="registerForm.controls['email'].touched && !registerForm.controls['email'].valid">
-          <div class="error-message">Please enter a valid email address</div>
+          <div class="error-message">{{ 'emailerror' | translate }}</div>
         </div>
       </fieldset>
 
        <fieldset class="form-group" formGroupName="passwords">
-        <label for="password">Password:</label>
-        <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="Password">
+        <label for="password">{{ 'password' | translate }}:</label>
+        <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}">
         <app-password-check [passwordToCheck]="password"></app-password-check>
         <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
         <div class="messages" *ngIf="registerForm.controls['passwords'].get('confirm').touched && !registerForm.controls['passwords'].get('confirm').valid">
-          <div class="error-message">Passwords do not match!</div>
+          <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
         </div>
       </fieldset>
 
       <div class="form-group form-group-btns">
         <button class="submit-btn" type="submit" [disabled]="!registerForm.valid || loading">
-          Submit <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
+          {{ 'submit' | translate }} <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
         </button>
       </div>
     </div>
@@ -39,10 +39,10 @@
 </div>
 
 <div class="notfound" *ngIf="notfoundMessage">
-  <h2>Your account doesn't exist or is not ready yet.</h2>
+  <h2>{{ 'registererror' | translate }}</h2>
   <div class="notfound-body">
-    <p>Reason: {{notfoundMessage}}</p>
-    <p>In order to register, please fill in the form at: <a href="{{linkRegister}}" target="_blank">{{linkRegister}}</a></p>
+    <p>{{notfoundMessage}}</p>
+    <p>{{registerinorderto}}: <a href="{{linkRegister}}" target="_blank">{{linkRegister}}</a></p>
   </div>
 </div>
 

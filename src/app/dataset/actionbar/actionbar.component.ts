@@ -5,7 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 import { StringifyHttpError } from '../../_helpers';
 
-import { WorkflowService, AuthenticationService, ErrorService } from '../../_services';
+import { WorkflowService, AuthenticationService, ErrorService, TranslateService } from '../../_services';
 
 @Component({
   selector: 'app-actionbar',
@@ -20,7 +20,8 @@ export class ActionbarComponent {
       private http: HttpClient,
       private authentication: AuthenticationService,
       private router: Router,
-      private errors: ErrorService) { }
+      private errors: ErrorService, 
+      private translate: TranslateService) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
@@ -65,6 +66,7 @@ export class ActionbarComponent {
       }
     );
 
+    this.translate.use('en');
   }
 
   /* startPollingWorkflow

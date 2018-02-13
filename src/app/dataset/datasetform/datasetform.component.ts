@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import 'rxjs/Rx';
 
-import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
+import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
 
 @Component({
@@ -43,7 +43,8 @@ export class DatasetformComponent implements OnInit {
     private fb: FormBuilder, 
     private RedirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
-    private datePipe: DatePipe) {}
+    private datePipe: DatePipe,
+    private translate: TranslateService) {}
 
   ngOnInit() {
 
@@ -55,6 +56,7 @@ export class DatasetformComponent implements OnInit {
       this.formMode = 'read';
     }
 
+    this.translate.use('en');
     this.returnCountries();
     this.returnLanguages();
 
@@ -211,7 +213,7 @@ export class DatasetformComponent implements OnInit {
       }, (err: HttpErrorResponse) => {
 
         let error = this.errors.handleError(err);
-        this.errorMessage = `Not able to submit this dataset: ${StringifyHttpError(error)}`; 
+        this.errorMessage = `${StringifyHttpError(error)}`; 
 
       });
 
@@ -226,7 +228,7 @@ export class DatasetformComponent implements OnInit {
       }, (err: HttpErrorResponse) => {
 
         let error = this.errors.handleError(err);
-        this.errorMessage = `Not able to submit this dataset: ${StringifyHttpError(error)}`;  
+        this.errorMessage = `${StringifyHttpError(error)}`;  
 
       });
 

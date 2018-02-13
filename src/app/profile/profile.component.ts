@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, TranslateService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
 import { environment } from '../../environments/environment';
@@ -29,10 +29,12 @@ export class ProfileComponent implements OnInit {
     private authentication: AuthenticationService,
     public router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder, 
+    private translate: TranslateService) { }
 
   ngOnInit() {
     this.createForm();
+    this.translate.use('en');
   }
 
   createForm() {

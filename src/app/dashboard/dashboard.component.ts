@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, TranslateService } from '../_services';
 import { User, Notification } from '../_models';
 import { environment } from '../../environments/environment';
 
@@ -18,10 +18,12 @@ export class DashboardComponent implements OnInit {
   datasets;
 
   constructor(private authentication: AuthenticationService,
-              private router: Router) {
+              private router: Router,
+              private translate: TranslateService) {
   }
 
   ngOnInit() {
+    this.translate.use('en');
   }
 
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService } from '../../_services';
+import { WorkflowService, TranslateService } from '../../_services';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { previewSamples } from '../../_mocked';
@@ -24,7 +24,8 @@ import 'codemirror/addon/fold/comment-fold';
 export class PreviewComponent implements OnInit {
 
   constructor(private workflows: WorkflowService, 
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private translate: TranslateService) { }
 
   @Input('datasetData') datasetData;
   editorPreviewCode;
@@ -57,6 +58,8 @@ export class PreviewComponent implements OnInit {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
+    this.translate.use('en');
+    
   }
 
   getXMLSample(mode?, workflow?, keyword?) {
@@ -90,7 +93,7 @@ export class PreviewComponent implements OnInit {
     } else if (w === 'harvest_and_validation_external') {
       return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return {'name': 'No sample available', 'sample': 'No sample available'};
+      return {'name': this.translate.instant('nosample'), 'sample': this.translate.instant('nosample')};
     }
   }
 
@@ -112,7 +115,7 @@ export class PreviewComponent implements OnInit {
     } else if (keyword === '789') {
       return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return {'name': 'No sample available', 'sample': 'No sample available'};
+      return {'name': this.translate.instant('nosample'), 'sample': this.translate.instant('nosample')};
     }
   }
 

@@ -16,7 +16,8 @@ import { AuthenticationService,
          CountriesService,          
          SettingsService, 
          WorkflowService,
-         ErrorService } from './_services';
+         ErrorService,
+         TranslateService } from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
@@ -47,6 +48,8 @@ import { ReportComponent } from './dataset/report/report.component';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -73,7 +76,8 @@ import { ClickOutsideModule } from 'ng4-click-outside';
     DatasetlogComponent,
     ExecutionsComponent,
     OngoingexecutionsComponent,
-    ReportComponent
+    ReportComponent,
+    TranslatePipe
   ],
   imports: [
     BrowserModule,
@@ -95,6 +99,8 @@ import { ClickOutsideModule } from 'ng4-click-outside';
     SettingsService,
     WorkflowService,
     ErrorService,
+    TRANSLATION_PROVIDERS, 
+    TranslateService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

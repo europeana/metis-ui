@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { TranslateService } from '../../_services';
 
 @Component({
   selector: 'app-dashboardactions',
@@ -8,9 +9,10 @@ import { environment } from '../../../environments/environment';
 })
 export class DashboardactionsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private translate: TranslateService) { }
 
   ngOnInit() {
+  	this.translate.use('en');
   }
 
   gotoZoho() {
