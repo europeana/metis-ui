@@ -115,7 +115,13 @@ export class WorkflowService {
   }
 
   getWorkflows() {
-    let workflows = ['only_harvest', 'only_validation_external_mocked', 'only_validation_external', 'harvest_and_validation_external', 'harvest_and_validation_external_mocked'];
+    let workflows = ['only_harvest', 
+      'only_validation_external_mocked', 
+      'only_validation_external', 
+      'only_transformation',
+      'only_transformation_mocked',
+      'harvest_and_validation_external', 
+      'harvest_and_validation_external_mocked'];
     return workflows ;
   }
 
