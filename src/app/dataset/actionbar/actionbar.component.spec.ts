@@ -3,17 +3,18 @@ import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import {async, fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/testing';
-import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angular/http';
-import {Response, ResponseOptions} from '@angular/http';
-import {MockBackend, MockConnection} from '@angular/http/testing';
+import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BaseRequestOptions, Response, ResponseOptions, Http } from "@angular/http";
+import { MockBackend } from "@angular/http/testing";
  
-
 import { ActionbarComponent } from './actionbar.component';
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
+
+  let service: WorkflowService;
+  let backend: MockBackend;
 
   let currentWorkflow = { 
     workflowName: 'mocked';
@@ -26,23 +27,54 @@ describe('ActionbarComponent', () => {
     }
   }
 
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [ RouterTestingModule, HttpClientTestingModule ],
+      declarations: [ ActionbarComponent ],
+      providers:    [ WorkflowService, 
+        AuthenticationService, 
+        ErrorService, 
+        RedirectPreviousUrl, 
+        MockBackend, 
+        BaseRequestOptions, 
+        {
+          provide: Http,
+          useFactory: (backend, options) => new Http(backend, options),
+          deps: [MockBackend, BaseRequestOptions]
+        }]      
+    }).compileComponents();
+  }));
+
   beforeEach(() => {
 
-    TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ ActionbarComponent ],
-      providers:    [ WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl ]
-    });
+    backend = TestBed.get(MockBackend);
+    service = TestBed.get(WorkflowService);
 
     fixture = TestBed.createComponent(ActionbarComponent);
     component    = fixture.componentInstance;
-
+   
   });
 
   it('should create', () => {    
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });
+
+  it('search test workflowservice', fakeAsync(() => { 
+    let response = { 'result': 'this' };
+
+    backend.connections.subscribe(connection => {
+      connection.mockRespond(new Response(<ResponseOptions>{
+        body: JSON.stringify(response)
+      }));
+    });
+
+    component.startPollingWorkflow();
+    component.pollingWorkflow();
+    fixture.detectChanges();
+    component.subscription.unsubscribe();
+
+  }));
 
   it('should do click to show logging', fakeAsync((): void => {
     fixture.detectChanges();
