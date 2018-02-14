@@ -6,7 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { RedirectPreviousUrl } from '../_services';
+import { RedirectPreviousUrl, TranslateService } from '../_services';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -15,8 +16,15 @@ describe('LoginComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
-      declarations: [ LoginComponent ],
-      providers: [ RedirectPreviousUrl ]
+      declarations: [ LoginComponent, TranslatePipe ],
+      providers: [ RedirectPreviousUrl,
+      { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+      }]
     })
       .compileComponents();
   }));

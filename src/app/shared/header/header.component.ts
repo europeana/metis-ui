@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
 import { Router } from '@angular/router';
 import { User } from '../../_models';
 
@@ -15,7 +15,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authentication: AuthenticationService,
     public router: Router, 
-    private redirectPreviousUrl: RedirectPreviousUrl) {}
+    private redirectPreviousUrl: RedirectPreviousUrl,
+    private translate: TranslateService) {}
 
   openSignIn = false;
   openSearch = false;
@@ -26,6 +27,11 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.openSignIn = false;
     this.searchfilter = 'All';
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
+    
   }
 
   toggleSignInMenu() {

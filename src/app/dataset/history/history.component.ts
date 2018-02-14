@@ -80,7 +80,9 @@ export class HistoryComponent implements OnInit {
     if (typeof this.workflows.getWorkflows !== 'function') { return false }
     this.allWorkflows = this.workflows.getWorkflows();
 
-    this.translate.use('en');
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
 
   }
 

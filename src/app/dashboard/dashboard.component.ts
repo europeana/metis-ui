@@ -23,7 +23,9 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.translate.use('en');
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
   }
 
 

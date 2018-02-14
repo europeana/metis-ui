@@ -42,7 +42,9 @@ export class RegisterComponent implements OnInit {
       })
     });
 
-    this.translate.use('en');
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
 
   }
 

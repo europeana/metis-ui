@@ -9,16 +9,13 @@ export class TranslateService {
       return this._currentLang;
   }
 
-  // inject our translations
   constructor(@Inject(TRANSLATIONS) private _translations: any) {}
 
   public use(lang: string): void {
-    // set current language
     this._currentLang = lang;
   }
 
   private translate(key: string): string {
-    // private perform translation
     let translation = key;
 
     if (this._translations[this.currentLang] && this._translations[this.currentLang][key]) {
@@ -29,7 +26,6 @@ export class TranslateService {
   }
 
   public instant(key: string) {
-    // call translation
     return this.translate(key); 
   }
 

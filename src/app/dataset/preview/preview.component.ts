@@ -38,7 +38,8 @@ export class PreviewComponent implements OnInit {
   displaySearch: boolean = false;
   minRandom: number = 1;
   maxRandom: number = 3;
-
+  nosample: string = 'No sample';
+    
   ngOnInit() {
 
     if (this.datasetData) {
@@ -58,7 +59,13 @@ export class PreviewComponent implements OnInit {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
-    this.translate.use('en');
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
+
+    if (typeof this.translate.instant === 'function') { 
+      this.nosample = this.translate.instant('nosample');
+    }
     
   }
 
@@ -93,7 +100,7 @@ export class PreviewComponent implements OnInit {
     } else if (w === 'harvest_and_validation_external') {
       return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return {'name': this.translate.instant('nosample'), 'sample': this.translate.instant('nosample')};
+      return {'name': this.nosample, 'sample': this.nosample};
     }
   }
 
@@ -115,7 +122,7 @@ export class PreviewComponent implements OnInit {
     } else if (keyword === '789') {
       return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return {'name': this.translate.instant('nosample'), 'sample': this.translate.instant('nosample')};
+      return {'name': this.nosample, 'sample': this.nosample};
     }
   }
 

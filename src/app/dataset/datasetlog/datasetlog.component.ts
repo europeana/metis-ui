@@ -24,7 +24,9 @@ export class DatasetlogComponent implements OnInit {
 
   ngOnInit() {
   	this.returnLog();
-    this.translate.use('en');
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
   }
 
   closeLog() {

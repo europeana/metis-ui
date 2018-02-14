@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../../_services';
+import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -14,8 +15,15 @@ describe('ActionbarComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ ActionbarComponent ],
-      providers:    [ WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl ]
+      declarations: [ ActionbarComponent, TranslatePipe ],
+      providers:    [ WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl,
+      { provide: TranslateService,
+        useValue: {
+          translate: () => {
+            return {};
+          }
+        }
+      }]
     });
 
     fixture = TestBed.createComponent(ActionbarComponent);

@@ -11,8 +11,10 @@ export class DashboardactionsComponent implements OnInit {
 
   constructor(private translate: TranslateService) { }
 
-  ngOnInit() {
-  	this.translate.use('en');
+  ngOnInit() {    
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
   }
 
   gotoZoho() {

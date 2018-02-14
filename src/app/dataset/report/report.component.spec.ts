@@ -3,7 +3,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
 import { ReportComponent } from './report.component';
-import { WorkflowService, AuthenticationService } from '../../_services';
+import { WorkflowService, AuthenticationService, TranslateService } from '../../_services';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -12,8 +13,15 @@ describe('ReportComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
-      declarations: [ ReportComponent ],
-      providers: [ WorkflowService, AuthenticationService ]
+      declarations: [ ReportComponent, TranslatePipe ],
+      providers: [ WorkflowService, AuthenticationService,
+      { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+      }]
     })
     .compileComponents();
   }));

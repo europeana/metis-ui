@@ -38,7 +38,9 @@ export class LoginComponent implements OnInit {
       'password': ['', Validators.required ]
     });
 
-    this.translate.use('en');
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
 
   }
 

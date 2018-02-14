@@ -14,7 +14,9 @@ export class GeneralinfoComponent implements OnInit {
   @Input() datasetData: any;
 
   ngOnInit() {
-    this.translate.use('en');
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
   }
 
 }

@@ -10,7 +10,11 @@ export class TranslatePipe implements PipeTransform {
 
   transform(value: string, args: any[]): any {
       if (!value) return;
-      return this._translate.instant(value);
+      if (typeof this._translate.instant === 'function') { 
+      	return this._translate.instant(value);
+      } else {
+      	return '';
+      }
   }
 
 }
