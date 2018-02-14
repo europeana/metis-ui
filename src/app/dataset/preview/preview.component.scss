@@ -16,6 +16,12 @@
       color: $white;
       font-weight: normal;
       padding: 1rem;
+
+      span {
+        display: block;
+        font-size: 0.875rem;
+      }
+
     }
 
     .dropdown-specific {
