@@ -1,5 +1,6 @@
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../../_services';
+import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -46,7 +47,6 @@ describe('ActionbarComponent', () => {
   }));
 
   beforeEach(() => {
-
     backend = TestBed.get(MockBackend);
     service = TestBed.get(WorkflowService);
 

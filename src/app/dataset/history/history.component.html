@@ -1,8 +1,8 @@
 <ul class="filter" *ngIf="!inCollapsablePanel" (clickOutside)="onClickedOutside($event)">
   <li class="dropdown">
-    <a (click)="toggleFilterByWorkflow()">Workflow<span *ngIf=selectedFilterWorkflow>: {{selectedFilterWorkflow}}</span></a>
+    <a (click)="toggleFilterByWorkflow()">{{ 'workflow' | translate }}<span *ngIf=selectedFilterWorkflow>: {{selectedFilterWorkflow}}</span></a>
     <ul *ngIf="filterWorkflow">
-      <li><a (click)="selectWorkflow()">All workflows</a></li>
+      <li><a (click)="selectWorkflow()">{{ 'allworkflows' | translate }}</a></li>
       <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
     </ul>
   </li>  
@@ -17,12 +17,12 @@
   <thead>
   	<tr>
       <th colspan="2"></th>
-      <th>Workflow</th>
-      <th>Total processed</th>
-      <th>Total dataset</th>
-      <th>Status</th>
-      <th class="centered">Start date</th>
-      <th class="centered">End date</th>
+      <th>{{ 'workflow' | translate }}</th>
+      <th>{{ 'totalprocessed' | translate }}</th>
+      <th>{{ 'totaldataset' | translate }}</th>
+      <th>{{ 'status' | translate }}</th>
+      <th class="centered">{{ 'startdate' | translate }}</th>
+      <th class="centered">{{ 'enddate' | translate }}</th>
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -38,19 +38,19 @@
       <td class="centered"><span class="date">{{ex.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.finishedDate | date:'HH:mm'}}</span></td>
       <td class="buttonplaceholder nowrap">
         <a *ngIf="ex.hasReport" class="table-btn svg-icon-report" (click)="openReport(ex.metisPlugins[currentPlugin].externalTaskId, ex.metisPlugins[currentPlugin].topologyName)">         
-          Report
+          {{ 'report' | translate }}
          </a>
       </td>
-      <td class="buttonplaceholder nowrap"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">Restart</a></td>
+      <td class="buttonplaceholder nowrap"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">{{ 'restart' | translate }}</a></td>
     </tr>
     <tr class="loadmore loadmore-history" *ngIf="inCollapsablePanel">
       <td colspan="10">
-        <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">See full processing history</a>
+        <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">{{ 'fullhistory' | translate }}</a>
       </td>
     </tr>
     <tr class="loadmore" *ngIf="!inCollapsablePanel">
       <td colspan="10">
-        <a class="load-more-btn" (click)="loadNextPage()" *ngIf="nextPage > 0">Load more</a>
+        <a class="load-more-btn" (click)="loadNextPage()" *ngIf="nextPage > 0">{{ 'loadmore' | translate }}</a>
       </td>
     </tr>
   </tbody>

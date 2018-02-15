@@ -6,7 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, TranslateService } from '../_services';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('RegisterComponent', () => {
@@ -17,8 +18,15 @@ describe('RegisterComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule ],
-      declarations: [ RegisterComponent ],
-      providers: [ AuthenticationService ],
+      declarations: [ RegisterComponent, TranslatePipe ],
+      providers: [ AuthenticationService,
+      { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+      }],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
       .compileComponents();

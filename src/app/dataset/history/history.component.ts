@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { WorkflowService, ErrorService } from '../../_services';
+import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
 
 @Component({
@@ -15,7 +15,8 @@ export class HistoryComponent implements OnInit {
   constructor(private route: ActivatedRoute, 
     private workflows: WorkflowService,
     private router: Router,
-    private errors: ErrorService) { }
+    private errors: ErrorService,
+    private translate: TranslateService) { }
 
   @Input('datasetData') datasetData;
   @Input('inCollapsablePanel') inCollapsablePanel;
@@ -78,6 +79,10 @@ export class HistoryComponent implements OnInit {
 
     if (typeof this.workflows.getWorkflows !== 'function') { return false }
     this.allWorkflows = this.workflows.getWorkflows();
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
 
   }
 

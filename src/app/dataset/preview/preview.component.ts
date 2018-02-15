@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService } from '../../_services';
+import { WorkflowService, TranslateService } from '../../_services';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { previewSamples } from '../../_mocked';
@@ -24,7 +24,8 @@ import 'codemirror/addon/fold/comment-fold';
 export class PreviewComponent implements OnInit {
 
   constructor(private workflows: WorkflowService, 
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private translate: TranslateService) { }
 
   @Input('datasetData') datasetData;
   editorPreviewCode;
@@ -38,7 +39,8 @@ export class PreviewComponent implements OnInit {
   displaySearch: boolean = false;
   minRandom: number = 1;
   maxRandom: number = 3;
-
+  nosample: string = 'No sample';
+    
   ngOnInit() {
 
     if (this.datasetData) {
@@ -58,6 +60,14 @@ export class PreviewComponent implements OnInit {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
+
+    if (typeof this.translate.instant === 'function') { 
+      this.nosample = this.translate.instant('nosample');
+    }
+    
   }
 
   getXMLSample(mode?, workflow?, keyword?, index?) {
@@ -99,7 +109,7 @@ export class PreviewComponent implements OnInit {
     } else if (w === 'harvest_and_validation_external') {
       return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return {'name': 'No sample available', 'sample': 'No sample available'};
+      return {'name': this.nosample, 'sample': this.nosample};
     }
   }
 
@@ -121,7 +131,7 @@ export class PreviewComponent implements OnInit {
     } else if (keyword === '789') {
       return {'name': 'sample3', 'sample': previewSamples['sample3']};
     } else {
-      return {'name': 'No sample available', 'sample': 'No sample available'};
+      return {'name': this.nosample, 'sample': this.nosample};
     }
   }
 

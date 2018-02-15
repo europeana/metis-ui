@@ -4,7 +4,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { BaseRequestOptions, ConnectionBackend, Http, RequestOptions } from '@angular/http';
 
 import { ReportComponent } from './report.component';
-import { WorkflowService, AuthenticationService } from '../../_services';
+
+import { WorkflowService, AuthenticationService, TranslateService } from '../../_services';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 
 describe('ReportComponent', () => {
@@ -22,8 +24,16 @@ describe('ReportComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
-      declarations: [ ReportComponent ],
-      providers: [ WorkflowService, AuthenticationService, MockBackend ]
+      declarations: [ ReportComponent, TranslatePipe ],
+      providers: [ WorkflowService, AuthenticationService, MockBackend,
+      { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+      }]
+
     })
     .compileComponents();
   }));

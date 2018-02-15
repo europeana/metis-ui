@@ -3,7 +3,7 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
 
 import { DatasetformComponent } from './datasetform.component';
-import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
+import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -11,6 +11,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
 import { DatasetServiceStub } from '../../_mocked';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 
 describe('DatasetformComponent', () => {
   
@@ -27,14 +28,21 @@ describe('DatasetformComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, ReactiveFormsModule, HttpClientModule ],
-      declarations: [ DatasetformComponent ],
+      declarations: [ DatasetformComponent, TranslatePipe ],
       providers:    [ 
         {provide: ActivatedRoute, useValue: mockActivatedRoute }, 
         {provide: DatasetsService, useValue: DatasetServiceStub }, 
         AuthenticationService, 
         CountriesService,
         ErrorService, 
-        RedirectPreviousUrl ]
+        RedirectPreviousUrl,
+        { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+        } ]
     });
 
     fixture = TestBed.createComponent(DatasetformComponent);

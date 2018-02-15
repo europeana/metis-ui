@@ -1,15 +1,15 @@
 <ul class="filter" (clickOutside)="onClickedOutside($event)">
   <li class="dropdown">
-    <a (click)="toggleFilterPreview()">Workflow<span *ngIf=selectedWorkflow>: {{selectedWorkflow}}</span></a>
+    <a (click)="toggleFilterPreview()">{{ 'workflow' | translate }}<span *ngIf=selectedWorkflow>: {{selectedWorkflow}}</span></a>
   	<ul *ngIf="filterWorkflow">
       <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
     </ul>
   </li>
   <li>
-  	<a (click)="getXMLSample()" class="filter-btn">Show random</a>
+  	<a (click)="getXMLSample()" class="filter-btn">{{ 'showrandom' | translate }}</a>
   </li>
   <li class="search">
-  	<a *ngIf="!displaySearch" (click)="displaySearchBox()">Search <i class="fa fa-search"></i></a>
+  	<a *ngIf="!displaySearch" (click)="displaySearchBox()">{{ 'search' | translate }} <i class="fa fa-search"></i></a>
   	<form *ngIf="displaySearch">
   		<input type="text" #search />
   		<button class="search-submit" type="submit" (click)="getXMLSample('search', '', search.value)"><i class="fa fa-search"></i></button>
@@ -21,7 +21,7 @@
   <div class="view-sample-title">
     <h3>{{editorPreviewTitle}} <span *ngIf="selectedWorkflow || selectedWorkflowSamples[0]">{{selectedWorkflowSamples[0] ? selectedWorkflowSamples[0] : selectedWorkflow}}</span></h3>
     <div class="dropdown-specific dropdown">
-      <a (click)="toggleFilterPreviewSample()">Choose other workflow to preview</a>    
+      <a (click)="toggleFilterPreviewSample()">{{ 'chooseworkflow' | translate }}</a>    
       <ul *ngIf="filterWorkflowSample">
         <li *ngFor="let w of allWorkflows"><a (click)="getXMLSample('workflow', w, '', 0)">{{w}}</a></li>
       </ul>

@@ -6,6 +6,7 @@ import { By } from '@angular/platform-browser';
 import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angular/http';
 import {Response, ResponseOptions} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
 
@@ -31,12 +32,19 @@ describe('HistoryComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
-      declarations: [ HistoryComponent ],
+      declarations: [ HistoryComponent, TranslatePipe ],
       providers: [ DatasetsService,    
         WorkflowService,     
         RedirectPreviousUrl, 
         AuthenticationService, 
-        ErrorService ],
+        ErrorService,
+        { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+        }],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();

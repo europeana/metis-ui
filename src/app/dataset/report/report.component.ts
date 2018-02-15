@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkflowService } from '../../_services';
+import { WorkflowService, TranslateService } from '../../_services';
 
 @Component({
   selector: 'app-report',
@@ -8,7 +8,8 @@ import { WorkflowService } from '../../_services';
 })
 export class ReportComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService) { }
+  constructor(private workflows: WorkflowService,
+    private translate: TranslateService) { }
 
   report: string = '';
 
@@ -22,6 +23,9 @@ export class ReportComponent implements OnInit {
         }
         this.report += '</br>';
       }
+    }
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
     }
   }
 

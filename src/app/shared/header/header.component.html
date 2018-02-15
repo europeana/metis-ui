@@ -13,10 +13,10 @@
             <li>
               <a class="has-submenu" (click)="toggleSearchMenu()" (clickOutside)="onClickedOutsideSearch($event)">{{searchfilter}}</a>
                 <ul class="menu-sublevel caret" *ngIf="openSearch">
-                  <li><a (click)="filterSearch('Dataset');">Dataset</a></li>
-                  <li><a (click)="filterSearch('User');">User</a></li>
-                  <li><a (click)="filterSearch('Organization');">Organization</a></li>
-                  <li><a (click)="filterSearch('All');">All</a></li>
+                  <li><a (click)="filterSearch('Dataset');">{{ 'dataset' | translate }}</a></li>
+                  <li><a (click)="filterSearch('User');">{{ 'user' | translate }}</a></li>
+                  <li><a (click)="filterSearch('Organization');">{{ 'organization' | translate }}</a></li>
+                  <li><a (click)="filterSearch('All');">{{ 'all' | translate }}</a></li>
                 </ul>
             </li>
           </ul>
@@ -36,8 +36,8 @@
             <div class="metis-user" (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
-                <li><a (click)="gotoProfile()">My Profile</a></li>
-                <li><a (click)="logOut()">Log out</a></li>
+                <li><a (click)="gotoProfile()">{{ 'myprofile' | translate }}</a></li>
+                <li><a (click)="logOut()">{{ 'logout' | translate }}</a></li>
               </ul>
             </div>
           </div>
@@ -45,10 +45,10 @@
         <ng-template #loggedOut>
           <ul class="settings-menu cf nav-access">
             <li>
-              <a class="signup has-submenu" (click)="toggleSignInMenu()">Sign In</a>
+              <a class="signup has-submenu" (click)="toggleSignInMenu()">{{ 'signin' | translate }}</a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
-                <li><a (click)="gotoLogin();">Login</a></li>
-                <li><a (click)="gotoRegister();">Register</a></li>
+                <li><a (click)="gotoLogin();">{{ 'login' | translate }}</a></li>
+                <li><a (click)="gotoRegister();">{{ 'register' | translate }}</a></li>
               </ul>
             </li>
           </ul>
