@@ -19,11 +19,11 @@
 
 <div class="view-sample">
   <div class="view-sample-title">
-    <h3>{{editorPreviewTitle}}</h3>
+    <h3>{{editorPreviewTitle}} <span *ngIf="selectedWorkflow || selectedWorkflowSamples[0]">{{selectedWorkflowSamples[0] ? selectedWorkflowSamples[0] : selectedWorkflow}}</span></h3>
     <div class="dropdown-specific dropdown">
       <a (click)="toggleFilterPreviewSample()">{{ 'chooseworkflow' | translate }}</a>    
       <ul *ngIf="filterWorkflowSample">
-        <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
+        <li *ngFor="let w of allWorkflows"><a (click)="getXMLSample('workflow', w, '', 0)">{{w}}</a></li>
       </ul>
     </div>
   </div>

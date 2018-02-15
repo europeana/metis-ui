@@ -1,11 +1,6 @@
 <div class="modal-wrapper" *ngIf="report">
   <div class="modal">
-    <div class="head">{{ 'report' | translate }} <a class="btn-close" (click)="closeReport();"></a></div>
-    <div class="content">
-    	<strong>errorType:</strong> {{report.errorType !== 'null' ? report.errorType : '-'}}<br/>
-        <strong>identifiers:</strong> {{report.identifiers[0] !== 'null' ? report.identifiers[0] : '-'}}<br/>
-        <strong>message:</strong> {{report.message !== 'null' ? report.message : '-'}}<br/>
-        <strong>occurrences:</strong> {{report.occurrences !== 'null' ? report.occurrences : '-'}}<br/>
-    </div>
+    <div class="head">Report <a class="btn-close" (click)="closeReport();"></a></div>
+    <div class="content" [innerHTML]="report">
   </div>
 </div>

@@ -11,11 +11,18 @@ export class ReportComponent implements OnInit {
   constructor(private workflows: WorkflowService,
     private translate: TranslateService) { }
 
-  report;
+  report: string = '';
 
   ngOnInit() {
     if (this.workflows.getCurrentReport()) {
-      this.report = this.workflows.getCurrentReport().errors[0];
+      let reportcontent = this.workflows.getCurrentReport().errors;
+      
+      for (let i = 0; i < reportcontent.length; i++) {
+        for (let key in reportcontent[i]) {  
+          this.report += '<strong>' + key + '</strong>: ' + reportcontent[i][key] + '</br>';
+        }
+        this.report += '</br>';
+      }
     }
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 

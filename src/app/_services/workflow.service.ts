@@ -30,10 +30,16 @@ export class WorkflowService {
   */
   public triggerNewWorkflow (id, workflowName) {
   	const owner = 'owner1';
-  	const workflow = workflowName;
+  	let workflow = workflowName;
   	const priority = 0;
+    let enforce = '';
 
-  	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}`;    
+    if (workflow === 'transformation_enforce_oaipmh') {
+      workflow = 'only_transformation';
+      enforce = 'OAIPMH_HARVEST';
+    }
+
+  	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}&enforcedPluginType=${enforce}`;    
     return this.http.post(url, JSON.stringify('{}')).map(data => {   
     	if (data) {
         this.activeTopolgy = data['metisPlugins'][this.currentPlugin]['topologyName']; 
@@ -68,7 +74,7 @@ export class WorkflowService {
   getReport(taskId, topologyName) {
     const topology = topologyName;
     const externalTaskId = taskId;
-    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;   
     
     return this.http.get(url).map(data => {   
       if (data) {
@@ -115,7 +121,13 @@ export class WorkflowService {
   }
 
   getWorkflows() {
-    let workflows = ['only_harvest', 'only_validation_external_mocked', 'only_validation_external', 'harvest_and_validation_external', 'harvest_and_validation_external_mocked'];
+    let workflows = ['only_harvest', 
+      'only_validation_external_mocked', 
+      'only_validation_external', 
+      'only_transformation',
+      'only_transformation_mocked',
+      'harvest_and_validation_external', 
+      'harvest_and_validation_external_mocked'];
     return workflows ;
   }
 

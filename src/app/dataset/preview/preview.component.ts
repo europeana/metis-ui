@@ -34,6 +34,7 @@ export class PreviewComponent implements OnInit {
   allWorkflows;
   filterWorkflow: boolean = false;
   selectedWorkflow: string;
+  selectedWorkflowSamples: Array<any> = [];
   filterWorkflowSample: boolean = false;
   displaySearch: boolean = false;
   minRandom: number = 1;
@@ -69,10 +70,14 @@ export class PreviewComponent implements OnInit {
     
   }
 
-  getXMLSample(mode?, workflow?, keyword?) {
+  getXMLSample(mode?, workflow?, keyword?, index?) {
     this.editorPreviewCode = undefined;
     this.editorPreviewTitle = undefined;
-    this.selectedWorkflow = undefined;
+
+    if (typeof index !== 'number') {
+      this.selectedWorkflow = undefined;
+      this.selectedWorkflowSamples = [];
+    }
 
     let previewSample;
 
@@ -82,11 +87,15 @@ export class PreviewComponent implements OnInit {
     } else if (mode === 'workflow' && workflow !== '') {
       previewSample = this.filterPreviewWorkflow(workflow);
       this.displaySearch = false;
-      this.selectedWorkflow = workflow;
+      if (typeof index === 'number') {
+        this.selectedWorkflowSamples[index] = workflow;
+      } else {
+        this.selectedWorkflow = workflow;
+      }
     } else if (mode === 'search' && keyword != '') {
       previewSample = this.searchPreview(keyword); 
     }
-
+ 
     this.editorPreviewCode = previewSample.sample;
     this.editorPreviewTitle = previewSample.name;
     this.onClickedOutside();

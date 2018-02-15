@@ -8,7 +8,7 @@ import {Response, ResponseOptions} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 
-import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
+import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
 
 import { HistoryComponent } from './history.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -17,7 +17,6 @@ describe('HistoryComponent', () => {
   let component: HistoryComponent;
   let fixture: ComponentFixture<HistoryComponent>;
   let spy: any;
-
 
   let datasetData = { 
     datasetId: 1 
