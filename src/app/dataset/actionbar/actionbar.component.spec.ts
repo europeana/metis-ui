@@ -9,39 +9,65 @@ import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core
  
 import { ActionbarComponent } from './actionbar.component';
 
+let currentWorkflow = { 
+  workflowName: 'mocked',
+  workflowStatus: 'RUNNING',
+  updatedDate: '',
+  startedDate: '',
+  metisPlugins: [{
+    pluginStatus: 'RUNNING',
+    executionProgress: {
+      processedRecords: '1000',
+      expectedRecords: '1000'
+    }
+  }]
+}
+
+let currentDataset = { 
+  datasetId: '1'
+}
+
 class MockWorkflowService extends WorkflowService {
-  getLogs() {
+  cancelThisWorkflow() {
     return Observable.of({});
   }
+
+  getLastExecution() {
+    console.log('getLastExecution', currentWorkflow);
+    return Observable.of(currentWorkflow);
+  }
+
+  setActiveWorkflow(): void {
+    this.changeWorkflow.emit(currentWorkflow);
+  }
+
 }
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
 
-  let currentWorkflow = { 
-    workflowName: 'mocked';
-  }
-
-  const mockHttpProvider = {  
-    deps: [ MockBackend, BaseRequestOptions ],
-    useFactory: (backend: MockBackend, defaultOptions: BaseRequestOptions) => {
-      return new Http(backend, defaultOptions);
-    }
-  }
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ ActionbarComponent ],
-      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, AuthenticationService, ErrorService, RedirectPreviousUrl ]       
+      declarations: [ ActionbarComponent, TranslatePipe ],
+      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, 
+        AuthenticationService, 
+        ErrorService, 
+        RedirectPreviousUrl,
+        { provide: TranslateService,
+            useValue: {
+              translate: () => {
+                return {};
+              }
+            }
+        }]       
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
-    component    = fixture.componentInstance;
-   
+    component    = fixture.componentInstance;   
   });
 
   it('should create', () => {    
@@ -49,7 +75,25 @@ describe('ActionbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should return last execution and start polling a running execution', () => {    
+    fixture.detectChanges();
+    component.datasetData = currentDataset;
+    component.returnLastExecution();
+
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.dataset-actionbar .progressbar')).length).toBeTruthy();
+
+  });
+
+  it('should handle a finished execution', () => {    
+    fixture.detectChanges();
+    currentWorkflow.workflowStatus = 'FINISHED';
+    currentWorkflow.metisPlugins[0].pluginStatus = 'FINISHED';
+    component.returnLastExecution();
+  });
+
   it('should do click to show logging', fakeAsync((): void => {
+    component.currentWorkflow = currentWorkflow;
     fixture.detectChanges();
 
     let button = fixture.debugElement.query(By.css('.log-btn'));
@@ -61,12 +105,11 @@ describe('ActionbarComponent', () => {
       tick();
 
       expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
-
     } 
   }));
 
-  it('should open workflow filter', (): void => {   
-    
+
+  it('should open workflow filter', (): void => {       
     component.currentWorkflow = currentWorkflow;
     component.currentStatus = 'FINISHED';
     fixture.detectChanges();
@@ -88,21 +131,8 @@ describe('ActionbarComponent', () => {
     }
   });  
 
-  it('should open log', (): void => { 
-
-    component.currentWorkflow = currentWorkflow;
-    fixture.detectChanges();
-
-    expect(fixture.debugElement.query(By.css('.dataset-actionbar nav .log-btn')).length).not.toBeTruthy();
-
-    const log = fixture.debugElement.query(By.css('.dataset-actionbar nav .log-btn'));
-    log.triggerEventHandler('click', null);
-    fixture.detectChanges();
-
-  });
 
   it('should cancel', (): void => {
-
     component.currentWorkflow = currentWorkflow;
     component.currentStatus = 'RUNNING';
     fixture.detectChanges();
@@ -112,9 +142,8 @@ describe('ActionbarComponent', () => {
       cancel.triggerEventHandler('click', null);
       fixture.detectChanges();
     }
-
-
   });
+
 
   it('should have a running workflow', (): void => {
     component.currentWorkflow = currentWorkflow;
