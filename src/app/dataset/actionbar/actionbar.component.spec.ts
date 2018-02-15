@@ -85,12 +85,12 @@ describe('ActionbarComponent', () => {
 
   });
 
-  it('should handle a finished execution', () => {    
+  /*it('should handle a finished execution', () => {    
     fixture.detectChanges();
     currentWorkflow.workflowStatus = 'FINISHED';
     currentWorkflow.metisPlugins[0].pluginStatus = 'FINISHED';
     component.returnLastExecution();
-  });
+  });*/
 
   it('should do click to show logging', fakeAsync((): void => {
     component.currentWorkflow = currentWorkflow;
