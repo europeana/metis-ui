@@ -1,9 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GeneralinfoComponent } from './generalinfo.component';
-import { DatasetsService } from '../../_services';
+import { DatasetsService, TranslateService } from '../../_services';
 
 import { HttpClientModule } from '@angular/common/http';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 
 describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
@@ -12,8 +13,15 @@ describe('GeneralinfoComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ HttpClientModule],
-      declarations: [ GeneralinfoComponent ],
-      providers: [ DatasetsService ]
+      declarations: [ GeneralinfoComponent, TranslatePipe ],
+      providers: [ DatasetsService,
+      { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+      }]
     })
     .compileComponents();
   }));

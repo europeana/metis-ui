@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, TranslateService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, MatchPasswordValidator, PasswordStrength } from '../_helpers';
 import { environment } from '../../environments/environment';
@@ -27,9 +27,11 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authentication: AuthenticationService) { }
+    private authentication: AuthenticationService,
+    private translate: TranslateService) { }
 
   ngOnInit() {
+    
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       passwords: this.fb.group({
@@ -39,6 +41,11 @@ export class RegisterComponent implements OnInit {
         validator: MatchPasswordValidator
       })
     });
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
+
   }
 
   onKeyupPassword() {
@@ -55,17 +62,17 @@ export class RegisterComponent implements OnInit {
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 
-    const msg_successful = 'Registration successful, you will be redirected to the login page!';
+    const msg_successful = this.translate.instant('registrationsuccessful');
 
     if (strength <= min) {
-      this.errorMessage = 'Password is too weak';
+      this.errorMessage = this.translate.instant('passwordweakerror');
       this.loading = false;
     } else {
       this.authentication.register(email, password).subscribe(result => {
         if (result === true) {
           this.onRegistration(msg_successful);
         } else {
-          this.errorMessage = 'Registration failed: please try again later';
+          this.errorMessage = this.translate.instant('registrationfailed');
         }
         this.loading = false;
       },
@@ -87,9 +94,9 @@ export class RegisterComponent implements OnInit {
           this.notfoundMessage = errmsg || 'Unknown';
 
         } else if (err.status === 409) {
-          this.onRegistration('You are already registered, you will be redirected to the login page!');
+          this.onRegistration(this.translate.instant('registrationalready'));
         } else {
-          this.errorMessage = `Registration failed: ${StringifyHttpError(err)}`;
+          this.errorMessage = `${StringifyHttpError(err)}`;
         }
         
         this.loading = false;

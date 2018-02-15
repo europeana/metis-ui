@@ -20,7 +20,7 @@
   <nav>
 		<ul>
       <li *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
-        <a class="svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>Cancel</span></a>
+        <a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>Cancel</span></a>
       </li>
 			<li>
         <a class="log-btn svg-icon-history" data-tooltip="Log" (click)="showLog()"><span>Log</span></a>
@@ -29,9 +29,10 @@
         <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
       </li>-->
       <li *ngIf="currentStatus === 'CANCELLED' || currentStatus === 'FINISHED' || currentStatus === 'FAILED'" (clickOutside)="onClickedOutsideWorkflow($event)">
-        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
-        <ul *ngIf="isShowingWorkflowSelector">
+        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>{{ 'next action' | translate }}</span></a>
+        <ul class="workflow-selector" *ngIf="isShowingWorkflowSelector">
           <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
+          <li><a (click)="selectWorkflow('transformation_enforce_oaipmh')">transformation_enforce_oaipmh</a></li>
         </ul>
       </li> 
 		</ul>
@@ -40,12 +41,12 @@
 
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf=!currentWorkflow>
   <div class="status status-new">
-    Start your next workflow!
+    {{ 'start workflow' | translate }}
   </div>
   <nav>
     <ul>
       <li>
-        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>Next action</span></a>
+        <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>{{ 'next action' | translate }}</span></a>
         <ul *ngIf="isShowingWorkflowSelector">
           <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
         </ul>

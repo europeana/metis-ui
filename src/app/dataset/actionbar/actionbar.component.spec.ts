@@ -1,10 +1,12 @@
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../../_services';
+import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Observable } from 'rxjs/Observable';
 
+import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
+ 
 import { ActionbarComponent } from './actionbar.component';
 
 class MockWorkflowService extends WorkflowService {
@@ -17,17 +19,29 @@ describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
 
-  beforeEach(() => {
+  let currentWorkflow = { 
+    workflowName: 'mocked';
+  }
 
+  const mockHttpProvider = {  
+    deps: [ MockBackend, BaseRequestOptions ],
+    useFactory: (backend: MockBackend, defaultOptions: BaseRequestOptions) => {
+      return new Http(backend, defaultOptions);
+    }
+  }
+
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule],
+      imports: [ RouterTestingModule, HttpClientTestingModule ],
       declarations: [ ActionbarComponent ],
-      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, AuthenticationService, ErrorService, RedirectPreviousUrl ]
-    });
+      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, AuthenticationService, ErrorService, RedirectPreviousUrl ]       
+    }).compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
     component    = fixture.componentInstance;
-
+   
   });
 
   it('should create', () => {    
@@ -49,12 +63,64 @@ describe('ActionbarComponent', () => {
       expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
 
     } 
-
   }));
 
-  it('should have a running workflow', (): void => {
+  it('should open workflow filter', (): void => {   
+    
+    component.currentWorkflow = currentWorkflow;
+    component.currentStatus = 'FINISHED';
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.dataset-actionbar') === null).toBe(false);
+
+    const workflow = fixture.debugElement.query(By.css('.dataset-actionbar nav .newaction-btn'));
+    if (workflow) {
+      workflow.triggerEventHandler('click', null);
+      fixture.detectChanges();
+      expect(fixture.debugElement.queryAll(By.css('.workflow-selector')).length).toBeTruthy();
+
+      component.allWorkflows = ['mocked'];
+      const filter = fixture.debugElement.query(By.css('.workflow-selector a'));
+      filter.triggerEventHandler('click', null);
+      fixture.detectChanges();
+      expect(fixture.debugElement.queryAll(By.css('.workflow-selector')).length).not.toBeTruthy();
+
+      component.onClickedOutsideWorkflow();
+      fixture.detectChanges();
+    }
+  });  
+
+  it('should open log', (): void => { 
+
+    component.currentWorkflow = currentWorkflow;
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.query(By.css('.dataset-actionbar nav .log-btn')).length).not.toBeTruthy();
+
+    const log = fixture.debugElement.query(By.css('.dataset-actionbar nav .log-btn'));
+    log.triggerEventHandler('click', null);
+    fixture.detectChanges();
+
+  });
+
+  it('should cancel', (): void => {
+
+    component.currentWorkflow = currentWorkflow;
+    component.currentStatus = 'RUNNING';
+    fixture.detectChanges();
+
+    const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
+    if (cancel) {
+      cancel.triggerEventHandler('click', null);
+      fixture.detectChanges();
+    }
+
+
+  });
+
+  it('should have a running workflow', (): void => {
+    component.currentWorkflow = currentWorkflow;
+    component.currentStatus = 'RUNNING';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress') === null).toBe(false);
   });
 
 });

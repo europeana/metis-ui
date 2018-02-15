@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
 
-import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService, ErrorService } from '../_services';
+import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService, ErrorService, TranslateService } from '../_services';
 
 import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
@@ -32,7 +32,8 @@ export class DatasetComponent implements OnInit {
     private workflows: WorkflowService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private RedirectPreviousUrl: RedirectPreviousUrl,
-    private errors: ErrorService) { }
+    private errors: ErrorService, 
+    private translate: TranslateService) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
@@ -70,6 +71,10 @@ export class DatasetComponent implements OnInit {
         this.isCollapsed = true;
       }
     );
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
 
   }
 
@@ -129,6 +134,11 @@ export class DatasetComponent implements OnInit {
     } else  if (this.activeTab === 'dataquality') {
       return new datasetTab(QualityassuranceComponent, {});
     }
+  }
+
+  clickOutsideMessage(e?) {
+    this.errorMessage = undefined;
+    this.successMessage = undefined;
   }
 
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { WorkflowService, ErrorService } from '../../_services';
+import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
 
 @Component({
@@ -15,7 +15,8 @@ export class HistoryComponent implements OnInit {
   constructor(private route: ActivatedRoute, 
     private workflows: WorkflowService,
     private router: Router,
-    private errors: ErrorService) { }
+    private errors: ErrorService,
+    private translate: TranslateService) { }
 
   @Input('datasetData') datasetData;
   @Input('inCollapsablePanel') inCollapsablePanel;
@@ -79,6 +80,10 @@ export class HistoryComponent implements OnInit {
     if (typeof this.workflows.getWorkflows !== 'function') { return false }
     this.allWorkflows = this.workflows.getWorkflows();
 
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
+
   }
 
   /* returnAllExecutions
@@ -109,7 +114,7 @@ export class HistoryComponent implements OnInit {
       for (let i = 0; i < showTotal; i++) {
         let r = result['results'][i];
         r['hasReport'] = false;   
-         if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || r['metisPlugins'][this.currentPlugin].pluginStatus === 'FAILED') {
+        if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || r['metisPlugins'][this.currentPlugin].pluginStatus === 'FAILED') {
           if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null && r['metisPlugins'][this.currentPlugin].topologyName) {
             this.workflows.getReport(r['metisPlugins'][this.currentPlugin].externalTaskId, r['metisPlugins'][this.currentPlugin].topologyName).subscribe(report => {
               if (report['errors'].length > 0) {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService, RedirectPreviousUrl } from '../_services';
+import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../_helpers';
 
@@ -25,7 +25,8 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private authentication: AuthenticationService,
     private redirectPreviousUrl: RedirectPreviousUrl,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private translate: TranslateService) { }
 
   ngOnInit() {
 
@@ -36,6 +37,10 @@ export class LoginComponent implements OnInit {
       'email': ['', [Validators.required, Validators.email] ],
       'password': ['', Validators.required ]
     });
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
 
   }
 

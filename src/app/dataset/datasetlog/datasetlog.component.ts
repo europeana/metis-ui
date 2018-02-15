@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { WorkflowService, AuthenticationService } from '../../_services';
+import { WorkflowService, AuthenticationService, TranslateService, ErrorService } from '../../_services';
 
 @Component({
   selector: 'app-datasetlog',
@@ -13,7 +13,9 @@ export class DatasetlogComponent implements OnInit {
 
   constructor(private workflows: WorkflowService, 
     private authentication: AuthenticationService, 
-    private router: Router) { }
+    private router: Router,
+    private errors: ErrorService,
+    private translate: TranslateService) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -22,6 +24,9 @@ export class DatasetlogComponent implements OnInit {
 
   ngOnInit() {
   	this.returnLog();
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
   }
 
   closeLog() {
@@ -33,10 +38,7 @@ export class DatasetlogComponent implements OnInit {
     this.workflows.getLogs().subscribe(result => {
       this.logMessages = result;
     },(err: HttpErrorResponse) => {
-      if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
-        this.authentication.logout();
-        this.router.navigate(['/login']);
-      }
+      this.errors.handleError(err);
     });
   }
 

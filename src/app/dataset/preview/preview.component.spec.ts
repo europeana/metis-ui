@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from 'ng2-codemirror';
 
 import { PreviewComponent } from './preview.component';
-import { WorkflowService } from '../../_services';
+import { WorkflowService, TranslateService } from '../../_services';
 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -16,8 +17,15 @@ describe('PreviewComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule, FormsModule, CodemirrorModule ],
-      declarations: [ PreviewComponent ],
-      providers: [ WorkflowService ]
+      declarations: [ PreviewComponent, TranslatePipe ],
+      providers: [ WorkflowService,
+      { provide: TranslateService,
+          useValue: {
+            translate: () => {
+              return {};
+            }
+          }
+      }]
     })
     .compileComponents();
   }));
