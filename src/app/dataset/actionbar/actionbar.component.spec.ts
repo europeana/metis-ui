@@ -3,8 +3,15 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../../_services';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Observable } from 'rxjs/Observable';
 
 import { ActionbarComponent } from './actionbar.component';
+
+class MockWorkflowService extends WorkflowService {
+  getLogs() {
+    return Observable.of({});
+  }
+}
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
@@ -15,7 +22,7 @@ describe('ActionbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent ],
-      providers:    [ WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl ]
+      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, AuthenticationService, ErrorService, RedirectPreviousUrl ]
     });
 
     fixture = TestBed.createComponent(ActionbarComponent);
@@ -40,8 +47,9 @@ describe('ActionbarComponent', () => {
       tick();
 
       expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
+
     } 
-    
+
   }));
 
   it('should have a running workflow', (): void => {
