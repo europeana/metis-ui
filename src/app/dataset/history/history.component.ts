@@ -109,7 +109,7 @@ export class HistoryComponent implements OnInit {
       for (let i = 0; i < showTotal; i++) {
         let r = result['results'][i];
         r['hasReport'] = false;   
-         if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || r['metisPlugins'][this.currentPlugin].pluginStatus === 'FAILED') {
+        if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || r['metisPlugins'][this.currentPlugin].pluginStatus === 'FAILED') {
           if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null && r['metisPlugins'][this.currentPlugin].topologyName) {
             this.workflows.getReport(r['metisPlugins'][this.currentPlugin].externalTaskId, r['metisPlugins'][this.currentPlugin].topologyName).subscribe(report => {
               if (report['errors'].length > 0) {

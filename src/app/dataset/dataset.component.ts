@@ -131,4 +131,9 @@ export class DatasetComponent implements OnInit {
     }
   }
 
+  clickOutsideMessage(e?) {
+    this.errorMessage = undefined;
+    this.successMessage = undefined;
+  }
+
 }

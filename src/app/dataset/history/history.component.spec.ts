@@ -7,7 +7,6 @@ import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angu
 import {Response, ResponseOptions} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 
-
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService } from '../../_services';
 
 import { HistoryComponent } from './history.component';
@@ -17,7 +16,6 @@ describe('HistoryComponent', () => {
   let component: HistoryComponent;
   let fixture: ComponentFixture<HistoryComponent>;
   let spy: any;
-
 
   let datasetData = { 
     datasetId: 1 
