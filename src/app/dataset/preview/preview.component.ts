@@ -33,7 +33,7 @@ export class PreviewComponent implements OnInit {
   allWorkflows;
   filterWorkflow: boolean = false;
   selectedWorkflow: string;
-  selectedWorkflowSamples: array = [];
+  selectedWorkflowSamples: Array<any> = [];
   filterWorkflowSample: boolean = false;
   displaySearch: boolean = false;
   minRandom: number = 1;
@@ -89,10 +89,6 @@ export class PreviewComponent implements OnInit {
     this.editorPreviewCode = previewSample.sample;
     this.editorPreviewTitle = previewSample.name;
     this.onClickedOutside();
-  }
-
-  getXMLThisSample(, mode?, workflow?, keyword?) {
-    this.getXMLSample(mode, workflow, keyword);
   }
 
   filterPreviewWorkflow(w) {
