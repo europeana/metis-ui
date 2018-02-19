@@ -13,6 +13,8 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/comment-fold';
 
+import * as beautify from 'vkbeautify';
+
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
@@ -96,7 +98,7 @@ export class PreviewComponent implements OnInit {
       previewSample = this.searchPreview(keyword); 
     }
  
-    this.editorPreviewCode = previewSample.sample;
+    this.editorPreviewCode = beautify.xml(previewSample.sample);
     this.editorPreviewTitle = previewSample.name;
     this.onClickedOutside();
   }
