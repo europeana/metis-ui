@@ -1,3 +1,52 @@
-<p>
-  ongoingexecutions works!
-</p>
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+</div>
+
+<div class="ongoing-executions" *ngIf="ongoingFirst">
+	<h3>Ongoing executions</h3>
+
+  <div class="lastest-ongoing">
+    <div class="status">
+      <strong>{{ongoingFirst.workflowName}}</strong>
+      {{ongoingFirst.cancelling ? 'CANCELLING' : ongoingFirst.workflowStatus}}
+    </div>
+    <div class="progress">
+      <span>DDB - 2048418</span> <span>Deutsche Digitale Bibliothek - 2048418_Ag_DE_DDB_SLUB-Sub10</span>
+      <div class="progress-status">
+        <span class="progress-statusnumbers">{{ongoingFirst.metisPlugins[currentPlugin].executionProgress.processedRecords}} / {{ongoingFirst.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</span>
+      </div>
+      <div class="progressbar">
+        <div class="progressbar-done" [style.width.%]="ongoingFirst.metisPlugins[currentPlugin].executionProgress.progressPercentage"></div>
+      </div>
+    </div>
+    <div class="datetime">
+      <span class="date">{{ongoingFirst.updatedDate | date:'dd/MM/yyyy'}}</span> 
+      <span class="datedivider">-</span> 
+      <span class="time">{{ongoingFirst.updatedDate | date:'HH:mm'}}</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow(ongoingFirst.id)"></a></li>
+        <li><a class="log-btn svg-icon-log" data-tooltip="Log"></a></li>
+        <li><a class="log-btn svg-icon-history" data-tooltip="History"></a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <ul class="ongoing" *ngIf="ongoing">
+    <li *ngFor="let o of ongoing;">
+      <h4>Deutsche Digitale Bibliothek - 2048418_Ag_DE_DDB_SLUB-Sub10</h4>
+      <div class="progress">
+        <div class="progressbar">
+          <div class="progressbar-done" [style.width.%]="o.metisPlugins[currentPlugin].executionProgress.progressPercentage"></div>
+        </div>
+      </div>
+      <nav>
+        <ul>
+          <li><a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow(o.id)"></a></li>
+        </ul>
+      </nav>
+    </li>    
+  </ul>
+
+</div>

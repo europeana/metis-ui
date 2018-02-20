@@ -120,6 +120,23 @@ export class WorkflowService {
     });
   }
 
+  /* getOngoingExecutionsPerOrganisation 
+    get all ongoing (either running or inqueue) executions for the user's organisation
+  */
+  getOngoingExecutionsPerOrganisation() {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/149?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=false`;   
+    return this.http.get(url).map(data => {  
+      if (data) {
+        return data['results'];
+      } else {
+        return false;
+      }
+    });
+  }
+
+   /* getWorkflows 
+    get a list of currently available workflows
+  */
   getWorkflows() {
     let workflows = ['only_harvest', 
       'only_validation_external_mocked', 
@@ -128,7 +145,8 @@ export class WorkflowService {
       'only_transformation_mocked',
       'harvest_and_validation_external', 
       'harvest_and_validation_external_mocked'];
-    return workflows ;
+
+    return workflows;
   }
 
   /* cancelThisWorkflow
