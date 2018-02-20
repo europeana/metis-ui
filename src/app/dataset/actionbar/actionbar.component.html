@@ -20,10 +20,10 @@
   <nav>
 		<ul>
       <li *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
-        <a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>Cancel</span></a>
+        <a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>{{ 'cancel' | translate }}</span></a>
       </li>
 			<li>
-        <a class="log-btn svg-icon-log" data-tooltip="Log" (click)="showLog()"><span>Log</span></a>
+        <a class="log-btn svg-icon-log" data-tooltip="Log" (click)="showLog()"><span>{{ 'log' | translate }}</span></a>
       </li> 
       <!--<li>
         <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>

@@ -4,7 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
 import { Observable } from 'rxjs/Rx';
 
-import { WorkflowService, ErrorService } from '../../_services';
+import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 
 @Component({
   selector: 'app-ongoingexecutions',
@@ -14,7 +14,8 @@ import { WorkflowService, ErrorService } from '../../_services';
 export class OngoingexecutionsComponent {
 
   constructor(private workflows: WorkflowService, 
-    private errors: ErrorService) { }
+    private errors: ErrorService,
+    private translate: TranslateService) { }
 
   ongoingFirst;
   ongoing;
@@ -22,9 +23,16 @@ export class OngoingexecutionsComponent {
   subscription;
   intervalTimer = 2000;
   currentPlugin: number = 0;
+  cancelling;
 
   ngOnInit() {
     this.startPolling();
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+      this.cancelling = this.translate.instant('cancelling');
+    }
+
   }
 
   startPolling() {
@@ -43,7 +51,7 @@ export class OngoingexecutionsComponent {
     });
   }
 
-  cancelWorkflow(id, e) {
+  cancelWorkflow(id) {
     if (!id) { return false; }
     this.getOngoing();
     this.workflows.cancelThisWorkflow(id).subscribe(result => {

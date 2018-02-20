@@ -1,5 +1,6 @@
-import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
 import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
+import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -15,11 +16,18 @@ describe('OngoingexecutionsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ OngoingexecutionsComponent ],
+      declarations: [ OngoingexecutionsComponent, TranslatePipe ],
       providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
         ErrorService, 
         AuthenticationService, 
-        RedirectPreviousUrl ]
+        RedirectPreviousUrl,
+        { provide: TranslateService,
+            useValue: {
+              translate: () => {
+                return {};
+              }
+            }
+        }]
     })
     .compileComponents();
   }));
