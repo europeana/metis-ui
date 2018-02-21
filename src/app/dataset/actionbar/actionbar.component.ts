@@ -174,17 +174,6 @@ export class ActionbarComponent {
     this.notifyShowLogStatus.emit(true);
   }
 
-  /* returnLog
-    get the actual logs and make them available for display in the log modal window
-  */
-  returnLog() {
-    this.workflows.getLogs().subscribe(result => {
-      this.logMessages = result;
-    },(err: HttpErrorResponse) => {
-      this.errors.handleError(err);  
-    });
-  }
-
   /* openWorkflowSelector
     open up the workflow selector, now working with fixed values
   */

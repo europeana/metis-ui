@@ -76,7 +76,8 @@ export class WorkflowService {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;   
-    
+    console.log(url);
+
     return this.http.get(url).map(data => {   
       if (data) {
         return data;
