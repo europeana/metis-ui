@@ -34,6 +34,7 @@ export class PreviewComponent implements OnInit {
   editorPreviewTitle;
   editorConfig;
   allWorkflows;
+  allSamples;
   filterWorkflow: boolean = false;
   selectedWorkflow: string;
   selectedWorkflowSamples: Array<any> = [];
@@ -42,13 +43,11 @@ export class PreviewComponent implements OnInit {
   minRandom: number = 1;
   maxRandom: number = 3;
   nosample: string = 'No sample';
+  displayFilterWorkflow;
+  expandedSample;
     
   ngOnInit() {
 
-    if (this.datasetData) {
-    	this.getXMLSample();
-    }
-  
     if (typeof this.workflows.getWorkflows !== 'function') { return false }
     this.allWorkflows = this.workflows.getWorkflows();
 
@@ -70,6 +69,17 @@ export class PreviewComponent implements OnInit {
       this.nosample = this.translate.instant('nosample');
     }
     
+    if (this.datasetData) {
+      this.getXMLSamples();
+    }
+
+  }
+
+  getXMLSamples() {
+    this.allSamples = this.workflows.getWorkflowSamples();
+    if (this.allSamples.length === 1) {
+      this.expandedSample = 0;
+    }
   }
 
   getXMLSample(mode?, workflow?, keyword?, index?) {
@@ -137,7 +147,16 @@ export class PreviewComponent implements OnInit {
     }
   }
 
+  expandSample(i) {
+    if (this.expandedSample === i) {
+      this.expandedSample = undefined;
+    } else {
+      this.expandedSample = i;
+    }
+  }
+
   toggleFilterPreview() {
+    this.displayFilterWorkflow = undefined;
     if (this.filterWorkflow === false) {
       this.filterWorkflow = true;
     } else {
@@ -145,8 +164,9 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-  toggleFilterPreviewSample() {
+  toggleFilterPreviewSample(i) {
     if (this.filterWorkflowSample === false) {
+      this.displayFilterWorkflow = i;
       this.filterWorkflowSample = true;
     } else {
       this.filterWorkflowSample = false;

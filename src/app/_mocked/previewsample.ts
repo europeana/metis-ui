@@ -1,5 +1,6 @@
-export const previewSamples = {
-	sample1: `<?xml version="1.0" encoding="UTF-8"?>
+export const previewSamples = [{
+	sampletitle: 'sample1',
+	sample: `<?xml version="1.0" encoding="UTF-8"?>
 	<rdf:RDF xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -228,8 +229,9 @@ export const previewSamples = {
 	<dcterms:conformsTo rdf:resource="http://iiif.io/api/image"/>
 	<doap:implements rdf:resource="http://iiif.io/api/image/2/level1.json"/>
 	</svcs:Service>
-	</rdf:RDF>`, 
-	sample2: `<?xml version="1.0" encoding="UTF-8" ?>
+	</rdf:RDF>`}, 
+	{sampletitle: 'sample2',
+		sample: `<?xml version="1.0" encoding="UTF-8" ?>
 	<rdf:RDF
 	  xmlns:dcterms="http://purl.org/dc/terms/"
 	  xmlns:xalan="http://xml.apache.org/xalan"
@@ -293,7 +295,8 @@ export const previewSamples = {
 	    <edm:country>Austria</edm:country>
 	    <edm:language>de</edm:language>
 	  </edm:EuropeanaAggregation>
-	</rdf:RDF>`, 
-	sample3: `<?xml version="1.0"  encoding="UTF-8" ?>
+	</rdf:RDF>`}, 
+	{sampletitle: 'sample3',
+	sample: `<?xml version="1.0"  encoding="UTF-8" ?>
 <rdf:RDF xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xalan="http://xml.apache.org/xalan" xmlns:edm="http://www.europeana.eu/schemas/edm/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:odrl="http://www.w3.org/ns/odrl/2/" xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:adms="http://www.w3.org/ns/adms#" xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:crm="http://www.cidoc-crm.org/rdfs/cidoc_crm_v5.0.2_english_label.rdfs#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcat="http://www.w3.org/ns/dcat#" xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#"><edm:ProvidedCHO rdf:about="http://data.dm2e.eu/data/item/onb/codices/%2BZ103983302"/><edm:WebResource rdf:about="http://archiv.onb.ac.at:1801/webclient/DeliveryManager?pid=2937559&amp;custom_att_2=simple_viewer"><dc:format>text/html</dc:format><edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/></edm:WebResource><edm:WebResource rdf:about="http://digital.onb.ac.at/content/v1/codices/jpg/Z103983302/thumbnail"><dc:format>image/jpeg</dc:format><edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/></edm:WebResource><edm:Agent rdf:about="http://data.dm2e.eu/data/agent/onb/codices/%2BZ103983302/Verschiedene"><skos:prefLabel>Verschiedene</skos:prefLabel></edm:Agent><edm:TimeSpan rdf:about="http://data.dm2e.eu/data/timespan/onb/codices/0975-01-01T000000UG_1299-12-31T235959UG"><skos:prefLabel>0975-1299</skos:prefLabel><edm:begin>0975-01-01</edm:begin><edm:end>1299-12-31</edm:end></edm:TimeSpan><skos:Concept rdf:about="http://onto.dm2e.eu/schemas/dm2e/Manuscript"><skos:prefLabel xml:lang="en">Manuscript</skos:prefLabel><skos:note>ProvidedCHO of type manuscript, e.g. Wittgensteins brown book. Not equivalent to bibo:Manuscript.</skos:note></skos:Concept><ore:Aggregation rdf:about="http://data.dm2e.eu/data/aggregation/onb/codices/%2BZ103983302"><edm:aggregatedCHO rdf:resource="http://data.dm2e.eu/data/item/onb/codices/%2BZ103983302"/><edm:dataProvider>Österreichische Nationalbibliothek - Austrian National Library</edm:dataProvider><edm:isShownAt rdf:resource="http://archiv.onb.ac.at:1801/webclient/DeliveryManager?pid=2937559&amp;custom_att_2=simple_viewer"/><edm:object rdf:resource="http://digital.onb.ac.at/content/v1/codices/jpg/Z103983302/thumbnail"/><edm:provider>DM2E</edm:provider><edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/></ore:Aggregation><ore:Proxy rdf:about="http://data.dm2e.eu/data/item/onb/codices/%2BZ103983302"><dc:creator rdf:resource="http://data.dm2e.eu/data/agent/onb/codices/%2BZ103983302/Verschiedene"/><dc:description>Cod. 510 HAN </dc:description><dc:description>Pergament</dc:description><dc:description>Rotes Schafleder mit Streicheisenlinien und Blindstempeln über Holzdeckeln. Österreich, Göttweig, 15. Jhdt.</dc:description><dc:identifier>+Z103983302</dc:identifier><dc:language>la</dc:language><dc:source rdf:resource="http://data.dm2e.eu/data/item/onb/codices/%2BZ103983302"/><dc:title>Historische Sammelhandschrift</dc:title><dc:type rdf:resource="http://onto.dm2e.eu/schemas/dm2e/Manuscript"/><dcterms:extent>245 x 185 mm</dcterms:extent><dcterms:extent>Handschrift; 141 Bll.</dcterms:extent><dcterms:issued rdf:resource="http://data.dm2e.eu/data/timespan/onb/codices/0975-01-01T000000UG_1299-12-31T235959UG"/><dcterms:issued>13. Jhdt.; letztes Viertel 10. Jhdt.; 12. Jhdt.</dcterms:issued><edm:hasMet rdf:resource="http://d-nb.info/gnd/118726870"/><edm:hasMet rdf:resource="http://d-nb.info/gnd/2103432-1"/><edm:hasType>Manuscript</edm:hasType><edm:type>TEXT</edm:type></ore:Proxy><edm:EuropeanaAggregation rdf:about="http://data.dm2e.eu/data/aggregation/onb/codices/%2BZ103983302"><edm:aggregatedCHO rdf:resource="http://data.dm2e.eu/data/item/onb/codices/%2BZ103983302"/><edm:country>Austria</edm:country><edm:language>de</edm:language></edm:EuropeanaAggregation></rdf:RDF>`
-};
+}];

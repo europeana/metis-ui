@@ -48,6 +48,8 @@ import { ReportComponent } from './dataset/report/report.component';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
+
+import { XmlPipe }   from './_helpers';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
 
 @NgModule({
@@ -77,7 +79,8 @@ import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
     ExecutionsComponent,
     OngoingexecutionsComponent,
     ReportComponent,
-    TranslatePipe
+    TranslatePipe,
+    XmlPipe
   ],
   imports: [
     BrowserModule,

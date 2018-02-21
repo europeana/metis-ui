@@ -72,5 +72,12 @@ input[type="radio"] {
 }
 
 .CodeMirror {
-  height: 60vh;
+  height: 20vh;
+  text-align: left;
+}
+
+.view-sample-expanded {
+  .CodeMirror {
+    height: 60vh;
+  }
 }

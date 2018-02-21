@@ -6,29 +6,32 @@
     </ul>
   </li>
   <li>
-  	<a (click)="getXMLSample()" class="filter-btn">{{ 'showrandom' | translate }}</a>
+  	<a class="filter-btn">{{ 'showrandom' | translate }}</a>
   </li>
   <li class="search">
   	<a *ngIf="!displaySearch" (click)="displaySearchBox()">{{ 'search' | translate }} <i class="fa fa-search"></i></a>
   	<form *ngIf="displaySearch">
   		<input type="text" #search />
-  		<button class="search-submit" type="submit" (click)="getXMLSample('search', '', search.value)"><i class="fa fa-search"></i></button>
+  		<button class="search-submit" type="submit"><i class="fa fa-search"></i></button>
   	</form>
   </li>
 </ul>
 
-<div class="view-sample">
+<div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
-    <h3>{{editorPreviewTitle}} <span *ngIf="selectedWorkflow || selectedWorkflowSamples[0]">{{selectedWorkflowSamples[0] ? selectedWorkflowSamples[0] : selectedWorkflow}}</span></h3>
+    <h3>{{sample.sampletitle}} <span *ngIf="selectedWorkflow || selectedWorkflowSamples[i]">{{selectedWorkflowSamples[i] ? selectedWorkflowSamples[i] : selectedWorkflow}}</span></h3>
     <div class="dropdown-specific dropdown">
-      <a (click)="toggleFilterPreviewSample()">{{ 'chooseworkflow' | translate }}</a>    
-      <ul *ngIf="filterWorkflowSample">
-        <li *ngFor="let w of allWorkflows"><a (click)="getXMLSample('workflow', w, '', 0)">{{w}}</a></li>
+      <a (click)="toggleFilterPreviewSample(i)">{{ 'chooseworkflow' | translate }}</a>    
+      <ul *ngIf="filterWorkflowSample && displayFilterWorkflow === i">
+        <li *ngFor="let w of allWorkflows"><a (click)="getXMLSample('workflow', w, '', i)">{{w}}</a></li>
       </ul>
+    </div>
+    <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length-1 !== i"> 
+      <a class="" (click)="expandSample(i)">-</a>
     </div>
   </div>
   <div class="view-sample-editor">
-    <codemirror [(ngModel)]="editorPreviewCode" [config]="editorConfig"></codemirror>
+    <codemirror [ngModel]="sample.sample | beautifyXML" (ngModelChange)="sample.sample=$event" [config]="editorConfig"></codemirror>
+    <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
 </div>
-
