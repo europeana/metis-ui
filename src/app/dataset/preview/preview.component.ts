@@ -107,7 +107,8 @@ export class PreviewComponent implements OnInit {
     } else if (mode === 'search' && keyword != '') {
       previewSample = this.searchPreview(keyword); 
     }
- 
+    
+    this.filterWorkflow = false; 
     this.editorPreviewCode = beautify.xml(previewSample.sample);
     this.editorPreviewTitle = previewSample.name;
     this.onClickedOutside();

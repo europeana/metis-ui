@@ -8,6 +8,7 @@ import { WorkflowService, TranslateService } from '../../_services';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { XmlPipe }   from '../../_helpers';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -17,7 +18,7 @@ describe('PreviewComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule, FormsModule, CodemirrorModule ],
-      declarations: [ PreviewComponent, TranslatePipe ],
+      declarations: [ PreviewComponent, TranslatePipe, XmlPipe ],
       providers: [ WorkflowService,
       { provide: TranslateService,
           useValue: {
@@ -45,17 +46,14 @@ describe('PreviewComponent', () => {
   });
 
   it('should click filter options', (): void => {    
+    component.filterWorkflow = true;
+    fixture.detectChanges();
 
     const dropdown = fixture.debugElement.query(By.css('.dropdown a'));
     dropdown.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).toBeTruthy();
     
-    const search = fixture.debugElement.query(By.css('.search a'));
-    search.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.search form')).length).toBeTruthy();
-
   });
 
   it('should display editor', (): void => {     

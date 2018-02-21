@@ -33,14 +33,12 @@ class MockWorkflowService extends WorkflowService {
   }
 
   getLastExecution() {
-    console.log('getLastExecution', currentWorkflow);
     return Observable.of(currentWorkflow);
   }
 
   setActiveWorkflow(): void {
     this.changeWorkflow.emit(currentWorkflow);
   }
-
 }
 
 describe('ActionbarComponent', () => {

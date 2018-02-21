@@ -5,7 +5,7 @@
       <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
     </ul>
   </li>
-  <li>
+  <!--<li>
   	<a class="filter-btn">{{ 'showrandom' | translate }}</a>
   </li>
   <li class="search">
@@ -14,7 +14,7 @@
   		<input type="text" #search />
   		<button class="search-submit" type="submit"><i class="fa fa-search"></i></button>
   	</form>
-  </li>
+  </li>-->
 </ul>
 
 <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
