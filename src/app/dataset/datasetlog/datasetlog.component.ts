@@ -17,7 +17,7 @@ export class DatasetlogComponent implements OnInit {
     private errors: ErrorService,
     private translate: TranslateService) { }
 
-  @Input('isShowingLog') isShowingLog: boolean;
+  @Input('isShowingLog') isShowingLog;
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   logMessages;
@@ -34,8 +34,7 @@ export class DatasetlogComponent implements OnInit {
   }
 
   returnLog() {
-
-    this.workflows.getLogs().subscribe(result => {
+    this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology']).subscribe(result => {
       this.logMessages = result;
     },(err: HttpErrorResponse) => {
       this.errors.handleError(err);

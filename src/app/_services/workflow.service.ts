@@ -54,9 +54,9 @@ export class WorkflowService {
   /* getLogs
     get logging information using topology and externaltaskid
   */
-  getLogs() {
-    const topology = this.activeTopolgy;
-    const externalTaskId = this.activeExternalTaskId;
+  getLogs(taskId?, topologyName?) {
+    const topology = topologyName ? topologyName : this.activeTopolgy;
+    const externalTaskId = taskId ? taskId : this.activeExternalTaskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
     
     return this.http.get(url).map(data => {   

@@ -27,7 +27,7 @@
     <nav>
       <ul>
         <li><a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow(ongoingFirst.id)"></a></li>
-        <li><a class="log-btn svg-icon-log" data-tooltip="Log" (click)="showLog()"></a></li>
+        <li><a class="log-btn svg-icon-log" data-tooltip="Log" (click)="showLog(ongoingFirst.metisPlugins[currentPlugin].externalTaskId, ongoingFirst.metisPlugins[currentPlugin].topologyName)"></a></li>
         <li><a [routerLink]="['/dataset', 'log', ongoingFirst.datasetId]" class="log-btn svg-icon-history" data-tooltip="History"></a></li>
       </ul>
     </nav>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
@@ -17,6 +17,9 @@ export class OngoingexecutionsComponent {
     private errors: ErrorService,
     private translate: TranslateService,
     private datasets: DatasetsService) { }
+
+  @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input('isShowingLog') isShowingLog: any;
 
   ongoingFirst;
   ongoing;
@@ -74,6 +77,14 @@ export class OngoingexecutionsComponent {
       let error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
+  }
+
+  /* showLog
+    show the log for the current/last execution
+  */
+  showLog(externaltaskId, topology) {
+    let message = {'externaltaskId' : externaltaskId, 'topology' : topology};
+    this.notifyShowLogStatus.emit(message);
   }
 
 }
