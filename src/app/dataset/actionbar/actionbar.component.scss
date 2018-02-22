@@ -154,7 +154,6 @@
       }
 
       @media (max-width: $bp-xxl) {
-
         a:not(.newaction-btn)[data-tooltip] {
           cursor: pointer;
           position: relative;
@@ -177,7 +176,6 @@
           &:hover::after {
             opacity: 1;
           }
-
         }
 
         span {

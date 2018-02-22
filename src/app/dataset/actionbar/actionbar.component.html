@@ -13,7 +13,7 @@
       <span class="progress-percentage">{{workflowPercentage | number:'1.0-0' }}%</span>
     </div>
     <div class="progressbar" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
-      <div class="progressbar-done" [style.width.%]="workflowPercentage"></div>
+      <div class="progressbar-done" [style.width.%]="workflowPercentage >= 0 ? workflowPercentage : 0"></div>
     </div>
   </div>
   <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{now | date:'HH:mm'}}</span></div>

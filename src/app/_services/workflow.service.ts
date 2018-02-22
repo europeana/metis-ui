@@ -123,7 +123,7 @@ export class WorkflowService {
     get all ongoing (either running or inqueue) executions for the user's organisation
   */
   getOngoingExecutionsPerOrganisation() {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/149?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=false`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(data => {  
       if (data) {
         return data['results'];
@@ -133,7 +133,7 @@ export class WorkflowService {
     });
   }
 
-   /* getWorkflows 
+  /* getWorkflows 
     get a list of currently available workflows
   */
   getWorkflows() {
@@ -144,7 +144,6 @@ export class WorkflowService {
       'only_transformation_mocked',
       'harvest_and_validation_external', 
       'harvest_and_validation_external_mocked'];
-
     return workflows;
   }
 

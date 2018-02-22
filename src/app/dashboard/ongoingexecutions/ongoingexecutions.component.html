@@ -11,12 +11,12 @@
       {{ongoingFirst.cancelling ? cancelling : ongoingFirst.workflowStatus}}
     </div>
     <div class="progress">
-      <span>DDB - 2048418</span> <span>Deutsche Digitale Bibliothek - 2048418_Ag_DE_DDB_SLUB-Sub10</span>
+      <span>{{ongoingFirst.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoingFirst.datasetId]">{{ongoingFirst.datasetName}}</a>
       <div class="progress-status">
         <span class="progress-statusnumbers">{{ongoingFirst.metisPlugins[currentPlugin].executionProgress.processedRecords}} / {{ongoingFirst.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</span>
       </div>
       <div class="progressbar">
-        <div class="progressbar-done" [style.width.%]="ongoingFirst.metisPlugins[currentPlugin].executionProgress.progressPercentage"></div>
+        <div class="progressbar-done" [style.width.%]="ongoingFirst.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? ongoingFirst.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
       </div>
     </div>
     <div class="datetime">
@@ -27,18 +27,18 @@
     <nav>
       <ul>
         <li><a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow(ongoingFirst.id)"></a></li>
-        <li><a class="log-btn svg-icon-log" data-tooltip="Log"></a></li>
-        <li><a class="log-btn svg-icon-history" data-tooltip="History"></a></li>
+        <li><a class="log-btn svg-icon-log" data-tooltip="Log" (click)="showLog()"></a></li>
+        <li><a [routerLink]="['/dataset', 'log', ongoingFirst.datasetId]" class="log-btn svg-icon-history" data-tooltip="History"></a></li>
       </ul>
     </nav>
   </div>
 
   <ul class="ongoing" *ngIf="ongoing">
     <li *ngFor="let o of ongoing;">
-      <h4>Deutsche Digitale Bibliothek - 2048418_Ag_DE_DDB_SLUB-Sub10</h4>
+      <h4>{{o.datasetId}} <a [routerLink]="['/dataset', 'edit', o.datasetId]">{{o.datasetName}}</a></h4>
       <div class="progress">
         <div class="progressbar">
-          <div class="progressbar-done" [style.width.%]="o.metisPlugins[currentPlugin].executionProgress.progressPercentage"></div>
+          <div class="progressbar-done" [style.width.%]="o.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? o.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
         </div>
       </div>
       <nav>

@@ -4,7 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
 import { Observable } from 'rxjs/Rx';
 
-import { WorkflowService, ErrorService, TranslateService } from '../../_services';
+import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 
 @Component({
   selector: 'app-ongoingexecutions',
@@ -15,7 +15,8 @@ export class OngoingexecutionsComponent {
 
   constructor(private workflows: WorkflowService, 
     private errors: ErrorService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private datasets: DatasetsService) { }
 
   ongoingFirst;
   ongoing;
@@ -24,15 +25,14 @@ export class OngoingexecutionsComponent {
   intervalTimer = 2000;
   currentPlugin: number = 0;
   cancelling;
+  datasetNames: Array<any> = [];
 
   ngOnInit() {
     this.startPolling();
-
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
       this.cancelling = this.translate.instant('cancelling');
     }
-
   }
 
   startPolling() {
@@ -45,10 +45,25 @@ export class OngoingexecutionsComponent {
 
   getOngoing() {
     this.workflows.getOngoingExecutionsPerOrganisation().subscribe(executions => {
-      if (executions.length === 0) { this.subscription.unsubscribe(); }
-      this.ongoingFirst = executions.slice(0, 1)[0];
-      this.ongoing = executions.slice(1);
+      this.addDatasetInfo(executions);
     });
+  }
+
+  addDatasetInfo(executions) {
+    for (let i = 0; i < executions.length; i++) {
+      if (this.datasetNames[executions[i].datasetId]) {
+        executions[i].datasetName = this.datasetNames[executions[i].datasetId];
+      } else {    
+        this.datasets.getDataset(executions[i].datasetId).subscribe(result => {
+          this.datasetNames[executions[i].datasetId] = result['datasetName'];
+          executions[i].datasetName = result['datasetName'];
+        },(err: HttpErrorResponse) => {
+          this.errors.handleError(err);   
+        });
+      }
+    }
+    this.ongoingFirst = executions.slice(0, 1)[0];
+    this.ongoing = executions.slice(1);
   }
 
   cancelWorkflow(id) {

@@ -124,7 +124,7 @@ export class ActionbarComponent {
           this.totalInDataset = e['metisPlugins'][this.currentPlugin]['executionProgress'].expectedRecords;
             
           if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
-            this.workflowPercentage = (this.totalProcessed / this.totalInDataset) * 100;
+            this.workflowPercentage = e['metisPlugins'][this.currentPlugin]['executionProgress'].progressPercentage;
           }
 
           if (e['updatedDate'] === null) {

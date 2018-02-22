@@ -123,7 +123,7 @@ export class DatasetComponent implements OnInit {
     based on currently active tab
   */
   getcurrentTab() {
-    if (this.activeTab === 'new') {
+    if (this.activeTab === 'new' || this.activeTab === 'edit') {
       return new datasetTab(DatasetformComponent, this.datasetData);
     } else if (this.activeTab === 'log') {
       return new datasetTab(HistoryComponent, this.datasetData);
