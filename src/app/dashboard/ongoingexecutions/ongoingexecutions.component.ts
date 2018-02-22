@@ -18,7 +18,7 @@ export class OngoingexecutionsComponent {
     private translate: TranslateService,
     private datasets: DatasetsService) { }
 
-  @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
   @Input('isShowingLog') isShowingLog: any;
 
   ongoingFirst;
