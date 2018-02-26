@@ -21,8 +21,7 @@ export class OngoingexecutionsComponent {
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
   @Input('isShowingLog') isShowingLog: any;
 
-  ongoingFirst;
-  ongoing;
+  ongoingExecutions;
   errorMessage;
   subscription;
   intervalTimer = 2000;
@@ -78,8 +77,8 @@ export class OngoingexecutionsComponent {
         });
       }
     }
-    this.ongoingFirst = executions.slice(0, 1)[0];
-    this.ongoing = executions.slice(1);
+
+    this.ongoingExecutions = executions;
   }
 
   /* cancelWorkflow

@@ -11,44 +11,9 @@
   .lastest-ongoing {
     align-items: center;
     background: $white;
+    border-bottom: 1px solid $offwhite;
     display: flex;
-    margin-bottom: 1rem;
     padding: 0.75rem;
-  }
-
-  .ongoing {
-    background: $white;
-
-    h4 {
-      font-weight: normal;
-      margin-bottom: 0;
-    }
-
-    > li {
-      display: inline-block;
-      padding: 0.75rem;
-      width: 50%;
-
-      .progress {
-        display: inline-block;
-        padding-right: 0;
-        width: 85%;
-
-        .progressbar {
-          margin-bottom: 0;
-        }
-      }
-
-      nav {
-        display: inline-block;
-
-        .svg-icon-cancel::before {
-          top: 0;
-        }
-
-      }
-
-    }
   }
 
   .status {
@@ -60,7 +25,11 @@
 
     strong {
       display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
       text-transform: none;
+      white-space: nowrap;
+      width: 6rem;
     }
   }
 
@@ -102,6 +71,11 @@
 
   .datetime {
     white-space: nowrap;
+
+    span {
+      display: block;
+    }
+
   }
 
   nav {

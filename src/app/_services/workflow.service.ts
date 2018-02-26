@@ -123,7 +123,7 @@ export class WorkflowService {
     get all ongoing (either running or inqueue) executions for the user's organisation
   */
   getOngoingExecutionsPerOrganisation() {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=false`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=true`;   
     return this.http.get(url).map(data => {  
       if (data) {
         return data['results'];
