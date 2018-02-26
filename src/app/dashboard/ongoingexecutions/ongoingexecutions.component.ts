@@ -34,7 +34,7 @@ export class OngoingexecutionsComponent {
     this.startPolling();
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-      this.cancelling = this.translate.instant('cancelling');
+      this.cancelling = this.translate.instant('cancelling').toUpperCase();
     }
 
     if (typeof this.translate.use === 'function') { 
@@ -42,6 +42,9 @@ export class OngoingexecutionsComponent {
     }    
   }
 
+  /* startPolling
+    check for ongoing executions
+  */
   startPolling() {
     if (this.subscription) { this.subscription.unsubscribe(); }
     let timer = Observable.timer(0, this.intervalTimer);
@@ -50,12 +53,18 @@ export class OngoingexecutionsComponent {
     });
   }
 
+  /* getOngoing
+    get ongoing executions, most recent started
+  */
   getOngoing() {
     this.workflows.getOngoingExecutionsPerOrganisation().subscribe(executions => {
       this.addDatasetInfo(executions);
     });
   }
 
+  /* addDatasetInfo
+    add relevant dataset info to execution
+  */
   addDatasetInfo(executions) {
     for (let i = 0; i < executions.length; i++) {
       if (this.datasetNames[executions[i].datasetId]) {
@@ -70,9 +79,12 @@ export class OngoingexecutionsComponent {
       }
     }
     this.ongoingFirst = executions.slice(0, 1)[0];
-    this.ongoing = executions.slice(1);
+    this.ongoing = executions.slice(1, 6);
   }
 
+  /* cancelWorkflow
+    start cancellation of the datasetid with id
+  */
   cancelWorkflow(id) {
     if (!id) { return false; }
     this.getOngoing();
@@ -89,6 +101,13 @@ export class OngoingexecutionsComponent {
   showLog(externaltaskId, topology) {
     let message = {'externaltaskId' : externaltaskId, 'topology' : topology};
     this.notifyShowLogStatus.emit(message);
+  }
+
+  /* viewAll
+    scrolls to top of all executions table  / top of page
+  */
+  viewAll() {
+    window.scrollTo(0, 0);
   }
 
 }
