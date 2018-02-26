@@ -2,53 +2,38 @@
   <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
 </div>
 
-<div class="ongoing-executions" *ngIf="ongoingFirst">
+<div class="ongoing-executions" *ngIf="ongoingExecutions">
 	<h3>{{ 'ongoingexecutions' | translate }}</h3>
 
-  <div class="lastest-ongoing">
+  <div class="lastest-ongoing" *ngFor="let ongoing of ongoingExecutions;">
     <div class="status">
-      <strong>{{ongoingFirst.workflowName}}</strong>
-      {{ongoingFirst.cancelling ? cancelling : ongoingFirst.workflowStatus}}
+      <strong>{{ongoing.workflowName}}</strong>
+      {{ongoing.cancelling ? cancelling : ongoing.workflowStatus}}
     </div>
     <div class="progress">
-      <span>{{ongoingFirst.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoingFirst.datasetId]">{{ongoingFirst.datasetName}}</a>
+      <span>{{ongoing.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]">{{ongoing.datasetName}}</a>
       <div class="progress-status">
-        <span class="progress-statusnumbers">{{ongoingFirst.metisPlugins[currentPlugin].executionProgress.processedRecords}} / {{ongoingFirst.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</span>
+        <span class="progress-statusnumbers">{{ongoing.metisPlugins[currentPlugin].executionProgress.processedRecords}} / {{ongoing.metisPlugins[currentPlugin].executionProgress.expectedRecords}}
+        </span>
+        <span class="progress-percentage">{{ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage}}%</span>
       </div>
       <div class="progressbar">
-        <div class="progressbar-done" [style.width.%]="ongoingFirst.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? ongoingFirst.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
+        <div class="progressbar-done" [style.width.%]="ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
       </div>
     </div>
     <div class="datetime">
-      <span class="date">{{ongoingFirst.updatedDate | date:'dd/MM/yyyy'}}</span> 
-      <span class="datedivider">-</span> 
-      <span class="time">{{ongoingFirst.updatedDate | date:'HH:mm'}}</span>
+      <span class="date">{{ongoing.updatedDate | date:'dd/MM/yyyy'}}</span> 
+      <span class="time">{{ongoing.updatedDate | date:'HH:mm'}}</span>
     </div>
     <nav>
       <ul>
-        <li><a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(ongoingFirst.id)"></a></li>
-        <li *ngIf="ongoingFirst.workflowStatus !== 'INQUEUE'"><a class="log-btn svg-icon-log tooltip" attr.data-tooltip="{{ 'log' | translate }}" (click)="showLog(ongoingFirst.metisPlugins[currentPlugin].externalTaskId, ongoingFirst.metisPlugins[currentPlugin].topologyName)"></a></li>
-        <li><a [routerLink]="['/dataset', 'log', ongoingFirst.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>
+        <li><a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(ongoing.id)"></a></li>
+        <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'"><a class="log-btn svg-icon-log tooltip" attr.data-tooltip="{{ 'log' | translate }}" (click)="showLog(ongoing.metisPlugins[currentPlugin].externalTaskId, ongoing.metisPlugins[currentPlugin].topologyName)"></a></li>
+        <li><a [routerLink]="['/dataset', 'log', ongoing.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>
       </ul>
     </nav>
   </div>
-
-  <ul class="ongoing" *ngIf="ongoing.length > 0">
-    <li *ngFor="let o of ongoing;">
-      <h4>{{o.datasetId}} <a [routerLink]="['/dataset', 'edit', o.datasetId]">{{o.datasetName}}</a></h4>
-      <div class="progress">
-        <div class="progressbar">
-          <div class="progressbar-done" [style.width.%]="o.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? o.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
-        </div>
-      </div>
-      <nav>
-        <ul>
-          <li><a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(o.id)"></a></li>
-        </ul>
-      </nav>
-    </li>    
-  </ul>
-  <div class="loadmore" *ngIf="ongoing.length > 0">
+  <div class="loadmore">
     <a class="load-more-btn" (click)="viewAll();">{{ 'viewall' | translate }}</a>
   </div>
 </div>
