@@ -36,6 +36,10 @@ export class OngoingexecutionsComponent {
       this.translate.use('en'); 
       this.cancelling = this.translate.instant('cancelling');
     }
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }    
   }
 
   startPolling() {
