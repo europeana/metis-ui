@@ -55,10 +55,12 @@
     flex-basis: 1;
     flex-grow: 0;
     padding-right: 1.5rem;
+    text-transform: uppercase;
     white-space: nowrap;
 
     strong {
       display: block;
+      text-transform: none;
     }
   }
 

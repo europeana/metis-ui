@@ -93,6 +93,7 @@ export const LANG_EN_TRANS = {
   'user': 'User',
   'userprofile': 'User profile',
   'viewacceptance': 'View in acceptance',
+  'viewall': 'View all',
   'viewcollections': 'View in collections',
   'workflow': 'Workflow',
   'zoho': 'Go to Zoho'

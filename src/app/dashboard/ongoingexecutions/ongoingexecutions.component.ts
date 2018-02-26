@@ -34,7 +34,7 @@ export class OngoingexecutionsComponent {
     this.startPolling();
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-      this.cancelling = this.translate.instant('cancelling').toUpperCase();
+      this.cancelling = this.translate.instant('cancelling');
     }
 
     if (typeof this.translate.use === 'function') { 
@@ -79,7 +79,7 @@ export class OngoingexecutionsComponent {
       }
     }
     this.ongoingFirst = executions.slice(0, 1)[0];
-    this.ongoing = executions.slice(1, 6);
+    this.ongoing = executions.slice(1);
   }
 
   /* cancelWorkflow

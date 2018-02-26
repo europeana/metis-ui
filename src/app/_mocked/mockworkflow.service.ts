@@ -22,14 +22,14 @@ export let currentDataset = {
 export class MockWorkflowService extends WorkflowService {
   
   cancelThisWorkflow() {
-    return Observable.of({});
+    return Observable.of(false);
   }
 
   getLastExecution() {
     return Observable.of(currentWorkflow);
   }
 
-  setActiveWorkflow(): void {
+  setActiveWorkflow(workflow?): void {
     this.changeWorkflow.emit(currentWorkflow);
   }
 
