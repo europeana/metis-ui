@@ -24,8 +24,7 @@ export class DatasetsService {
   }
 
   getDataset(id: number) {
-    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/${id}`;
-    
+    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/${id}`;    
     return this.http.get(url).map(data => {   
       const dataset = data;
       if (dataset) {
@@ -36,8 +35,7 @@ export class DatasetsService {
     });    
   }
 
-  createDataset(datasetFormValues) {
-    
+  createDataset(datasetFormValues) {    
     const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;    
     return this.http.post(url, datasetFormValues).map(data => {      
       const dataset = data;
@@ -47,11 +45,9 @@ export class DatasetsService {
         return false;
       }
     });
-
   }
 
   updateDataset(datasetFormValues) {
-
     const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;    
     return this.http.put(url, datasetFormValues).map(data => {      
       const dataset = data;
@@ -61,7 +57,6 @@ export class DatasetsService {
         return false;
       }
     });
-
   }
 
 }
