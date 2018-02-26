@@ -20,13 +20,13 @@
   <nav>
 		<ul>
       <li *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
-        <a class="cancel-btn svg-icon-cancel" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>{{ 'cancel' | translate }}</span></a>
+        <a class="cancel-btn svg-icon-cancel tooltip" data-tooltip="Cancel" (click)="cancelWorkflow()"><span>{{ 'cancel' | translate }}</span></a>
       </li>
 			<li>
-        <a class="log-btn svg-icon-log" data-tooltip="Log" (click)="showLog()"><span>{{ 'log' | translate }}</span></a>
+        <a class="log-btn svg-icon-log tooltip" data-tooltip="Log" (click)="showLog()"><span>{{ 'log' | translate }}</span></a>
       </li> 
       <!--<li>
-        <a class="svg-icon-edit" data-tooltip="Workflow"><span>Workflow</span></a>
+        <a class="svg-icon-edit tooltip" data-tooltip="Workflow"><span>Workflow</span></a>
       </li>-->
       <li *ngIf="currentStatus === 'CANCELLED' || currentStatus === 'FINISHED' || currentStatus === 'FAILED'" (clickOutside)="onClickedOutsideWorkflow($event)">
         <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>{{ 'next action' | translate }}</span></a>

@@ -150,7 +150,12 @@
           }
 
         }
+      }
 
+      @media (min-width: $bp-xxl) { 
+        a::after {
+          display: none;
+        }
       }
 
       @media (max-width: $bp-xxl) {
@@ -158,24 +163,6 @@
           cursor: pointer;
           position: relative;
           z-index: 2;
-
-          &::after {
-            background: $gray-light;
-            border-radius: $border-radius;
-            bottom: 2rem;
-            color: $white;
-            content: attr(data-tooltip);
-            font-size: 0.75rem;
-            left: 50%;
-            opacity: 0;
-            padding: 0.25rem 1rem;
-            position: absolute;
-            transform: translate(-50%, 0);
-          }
-
-          &:hover::after {
-            opacity: 1;
-          }
         }
 
         span {
