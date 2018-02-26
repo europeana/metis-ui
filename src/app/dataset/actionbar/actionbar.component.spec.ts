@@ -18,7 +18,7 @@ describe('ActionbarComponent', () => {
   let backend: MockBackend;
 
   let currentWorkflow = { 
-    workflowName: 'mocked';
+    workflowName: 'mocked'
   }
 
   const mockHttpProvider = {  

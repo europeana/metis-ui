@@ -34,7 +34,6 @@ export class DatasetlogComponent implements OnInit {
   }
 
   returnLog() {
-
     this.workflows.getLogs().subscribe(result => {
       this.logMessages = result;
     },(err: HttpErrorResponse) => {
