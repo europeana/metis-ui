@@ -124,7 +124,7 @@ export class ActionbarComponent {
           this.totalInDataset = e['metisPlugins'][this.currentPlugin]['executionProgress'].expectedRecords;
             
           if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
-            this.workflowPercentage = (this.totalProcessed / this.totalInDataset) * 100;
+            this.workflowPercentage = e['metisPlugins'][this.currentPlugin]['executionProgress'].progressPercentage;
           }
 
           if (e['updatedDate'] === null) {
@@ -172,17 +172,6 @@ export class ActionbarComponent {
   */
   showLog() {
     this.notifyShowLogStatus.emit(true);
-  }
-
-  /* returnLog
-    get the actual logs and make them available for display in the log modal window
-  */
-  returnLog() {
-    this.workflows.getLogs().subscribe(result => {
-      this.logMessages = result;
-    },(err: HttpErrorResponse) => {
-      this.errors.handleError(err);  
-    });
   }
 
   /* openWorkflowSelector

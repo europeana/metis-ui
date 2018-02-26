@@ -1,3 +1,38 @@
-<p>
-  ongoingexecutions works!
-</p>
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+</div>
+<div class="ongoing-executions" *ngIf="ongoingExecutions.length > 0">
+	<h3>{{ 'ongoingexecutions' | translate }}</h3>
+
+  <div class="lastest-ongoing" *ngFor="let ongoing of ongoingExecutions;">
+    <div class="status">
+      <strong>{{ongoing.workflowName}}</strong>
+      {{ongoing.cancelling ? cancelling : ongoing.workflowStatus}}
+    </div>
+    <div class="progress">
+      <span>{{ongoing.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]">{{ongoing.datasetName}}</a>
+      <div class="progress-status">
+        <span class="progress-statusnumbers">{{ongoing.metisPlugins[currentPlugin].executionProgress.processedRecords}} / {{ongoing.metisPlugins[currentPlugin].executionProgress.expectedRecords}}
+        </span>
+        <span class="progress-percentage">{{ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage}}%</span>
+      </div>
+      <div class="progressbar">
+        <div class="progressbar-done" [style.width.%]="ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
+      </div>
+    </div>
+    <div class="datetime">
+      <span class="date">{{ongoing.updatedDate | date:'dd/MM/yyyy'}}</span> 
+      <span class="time">{{ongoing.updatedDate | date:'HH:mm'}}</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(ongoing.id)"></a></li>
+        <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'"><a class="log-btn svg-icon-log tooltip" attr.data-tooltip="{{ 'log' | translate }}" (click)="showLog(ongoing.metisPlugins[currentPlugin].externalTaskId, ongoing.metisPlugins[currentPlugin].topologyName)"></a></li>
+        <li><a [routerLink]="['/dataset', 'log', ongoing.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="loadmore">
+    <a class="load-more-btn" (click)="viewAll();">{{ 'viewall' | translate }}</a>
+  </div>
+</div>
