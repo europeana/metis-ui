@@ -46,7 +46,6 @@ describe('OngoingexecutionsComponent', () => {
   it('should get an ongoing execution', () => {
     component.getOngoing();
     fixture.detectChanges();
-    console.log();
     expect(fixture.debugElement.queryAll(By.css('.ongoing-executions')).length).toBeTruthy();
   });
 
