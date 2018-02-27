@@ -32,8 +32,6 @@ export class PreviewComponent implements OnInit {
     private errors: ErrorService) { }
 
   @Input('datasetData') datasetData;
-  editorPreviewCode;
-  editorPreviewTitle;
   editorConfig;
   allWorkflows: Array<any> = [];
   allWorkflowDates: Array<any> = [];
@@ -45,23 +43,17 @@ export class PreviewComponent implements OnInit {
   selectedWorkflow: string;
   selectedDate: string;
   selectedPlugin: string;
-  selectedWorkflowSamples: Array<any> = [];
-  filterWorkflowSample: boolean = false;
-  displaySearch: boolean = false;
-  minRandom: number = 1;
-  maxRandom: number = 3;
-  nosample: string = 'No sample';
   displayFilterWorkflow;
   displayFilterDate;
   displayFilterPlugin;
   expandedSample;
+  nosample: string;
   errorMessage: string;
   nextPage: number = 0;
   datasetHistory;
   execution: number;
 
   ngOnInit() {
-
   	this.editorConfig = { 
       mode: 'application/xml',
       lineNumbers: true,
@@ -83,7 +75,6 @@ export class PreviewComponent implements OnInit {
     if (this.datasetData) {
       this.addWorkflowFilter();
     }
-
   }
 
   addWorkflowFilter() {
@@ -122,7 +113,8 @@ export class PreviewComponent implements OnInit {
 
   addPluginFilter(execution) {
     this.onClickedOutside();
-    this.execution = execution;    
+    this.execution = execution;
+    this.selectedDate = execution['startedDate'];    
     this.nextPage = 0;
 
     for (let i = 0; i < execution['metisPlugins'].length; i++) {  
@@ -132,6 +124,7 @@ export class PreviewComponent implements OnInit {
 
   getXMLSamples(plugin) {
     this.onClickedOutside();
+    this.selectedPlugin = plugin; 
     this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
       this.allSamples = result['records']; 
       if (this.allSamples.length === 1) {
@@ -152,8 +145,7 @@ export class PreviewComponent implements OnInit {
   }
 
   toggleFilterWorkflow() {
-    this.displayFilterDate = undefined;
-    this.displayFilterPlugin = undefined;
+    this.onClickedOutside();
     if (this.filterWorkflow === false) {
       this.filterWorkflow = true;
     } else {
@@ -162,8 +154,7 @@ export class PreviewComponent implements OnInit {
   }
 
   toggleFilterDate() {
-    this.displayFilterWorkflow = undefined;
-    this.displayFilterPlugin = undefined;
+    this.onClickedOutside();
     if (this.filterDate === false) {
       this.filterDate = true;
     } else {
@@ -172,8 +163,7 @@ export class PreviewComponent implements OnInit {
   }
 
   toggleFilterPlugin() {
-    this.displayFilterWorkflow = undefined;
-    this.displayFilterDate = undefined;
+    this.onClickedOutside();
     if (this.filterPlugin === false) {
       this.filterPlugin = true;
     } else {
@@ -182,13 +172,6 @@ export class PreviewComponent implements OnInit {
   }
 
   onClickedOutside(e?) {
-    if (e !== undefined) {
-      if (e.path[0].className.indexOf('dropdown-specific') >= 0 || e.path[1].className.indexOf('dropdown-specific') >= 0) {
-        this.filterWorkflowSample = true;
-      } else {
-        this.filterWorkflowSample = false;
-      }
-    }
     this.filterWorkflow = false;  
     this.filterDate = false;   
     this.filterPlugin = false;   
