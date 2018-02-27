@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService, TranslateService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService } from '../../_services';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
+import { StringifyHttpError } from '../../_helpers';
 import { previewSamples } from '../../_mocked';
 
 import 'codemirror/mode/xml/xml';
@@ -27,16 +28,23 @@ export class PreviewComponent implements OnInit {
 
   constructor(private workflows: WorkflowService, 
     private http: HttpClient,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private errors: ErrorService) { }
 
   @Input('datasetData') datasetData;
   editorPreviewCode;
   editorPreviewTitle;
   editorConfig;
-  allWorkflows;
+  allWorkflows: Array<any> = [];
+  allWorkflowDates: Array<any> = [];
+  allPlugins: Array<any> = [];
   allSamples;
   filterWorkflow: boolean = false;
+  filterDate: boolean = false;
+  filterPlugin: boolean = false;
   selectedWorkflow: string;
+  selectedDate: string;
+  selectedPlugin: string;
   selectedWorkflowSamples: Array<any> = [];
   filterWorkflowSample: boolean = false;
   displaySearch: boolean = false;
@@ -44,12 +52,15 @@ export class PreviewComponent implements OnInit {
   maxRandom: number = 3;
   nosample: string = 'No sample';
   displayFilterWorkflow;
+  displayFilterDate;
+  displayFilterPlugin;
   expandedSample;
-    
-  ngOnInit() {
+  errorMessage: string;
+  nextPage: number = 0;
+  datasetHistory;
+  execution: number;
 
-    if (typeof this.workflows.getWorkflows !== 'function') { return false }
-    this.allWorkflows = this.workflows.getWorkflows();
+  ngOnInit() {
 
   	this.editorConfig = { 
       mode: 'application/xml',
@@ -70,82 +81,66 @@ export class PreviewComponent implements OnInit {
     }
     
     if (this.datasetData) {
-      this.getXMLSamples();
+      this.addWorkflowFilter();
     }
 
   }
 
-  getXMLSamples() {
-    this.allSamples = this.workflows.getWorkflowSamples();
-    if (this.allSamples.length === 1) {
-      this.expandedSample = 0;
-    }
-  }
-
-  getXMLSample(mode?, workflow?, keyword?, index?) {
-    this.editorPreviewCode = undefined;
-    this.editorPreviewTitle = undefined;
-
-    if (typeof index !== 'number') {
-      this.selectedWorkflow = undefined;
-      this.selectedWorkflowSamples = [];
-    }
-
-    let previewSample;
-
-    if (!mode) { 
-      previewSample = this.showRandomPreview();
-      this.displaySearch = false;
-    } else if (mode === 'workflow' && workflow !== '') {
-      previewSample = this.filterPreviewWorkflow(workflow);
-      this.displaySearch = false;
-      if (typeof index === 'number') {
-        this.selectedWorkflowSamples[index] = workflow;
-      } else {
-        this.selectedWorkflow = workflow;
+  addWorkflowFilter() {
+    this.onClickedOutside();
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
+      for (let i = 0; i < result['results'].length; i++) {
+        if (this.allWorkflows.indexOf(result['results'][i]['workflowName']) === -1) {
+          this.allWorkflows.push(result['results'][i]['workflowName']);
+        }
       }
-    } else if (mode === 'search' && keyword != '') {
-      previewSample = this.searchPreview(keyword); 
-    }
-    
-    this.filterWorkflow = false; 
-    this.editorPreviewCode = beautify.xml(previewSample.sample);
-    this.editorPreviewTitle = previewSample.name;
+      this.allWorkflows.sort();
+      this.nextPage = result['nextPage'];
+      if (this.nextPage >= 0) {
+        this.addWorkflowFilter();
+      }
+    });   
+  }
+
+  addDateFilter(workflow) {
     this.onClickedOutside();
+    this.selectedWorkflow = workflow;
+    this.nextPage = 0;
+
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage, workflow).subscribe(result => {
+      for (let i = 0; i < result['results'].length; i++) {  
+        this.allWorkflowDates.push(result['results'][i]);
+      }
+
+      this.allWorkflowDates.sort();
+      this.nextPage = result['nextPage'];
+      if (this.nextPage >= 0) {
+        this.addWorkflowFilter();
+      }
+    });     
   }
 
-  filterPreviewWorkflow(w) {
-    if (w === 'only_harvest') {
-      return {'name': 'sample1', 'sample': previewSamples['sample1']};
-    } else if (w === 'only_validation_external') {
-      return {'name': 'sample2', 'sample': previewSamples['sample2']};
-    } else if (w === 'harvest_and_validation_external') {
-      return {'name': 'sample3', 'sample': previewSamples['sample3']};
-    } else {
-      return {'name': this.nosample, 'sample': this.nosample};
-    }
-  }
-
-  showRandomPreview () {
-    let random = Math.floor(Math.random() * (this.maxRandom - this.minRandom + 1)) + this.minRandom;
-    return {'name': 'sample'+random, 'sample': previewSamples['sample'+random]};    
-  }
-
-  displaySearchBox() {
-    this.displaySearch = true;
+  addPluginFilter(execution) {
     this.onClickedOutside();
+    this.execution = execution;    
+    this.nextPage = 0;
+
+    for (let i = 0; i < execution['metisPlugins'].length; i++) {  
+      this.allPlugins.push(execution['metisPlugins'][i].pluginType);
+    }
   }
 
-  searchPreview(keyword) {
-    if (keyword === '123') {
-      return {'name': 'sample1', 'sample': previewSamples['sample1']};
-    } else if (keyword === '456') {
-      return {'name': 'sample2', 'sample': previewSamples['sample2']};
-    } else if (keyword === '789') {
-      return {'name': 'sample3', 'sample': previewSamples['sample3']};
-    } else {
-      return {'name': this.nosample, 'sample': this.nosample};
-    }
+  getXMLSamples(plugin) {
+    this.onClickedOutside();
+    this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
+      this.allSamples = result['records']; 
+      if (this.allSamples.length === 1) {
+       this.expandedSample = 0;
+      }
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
+    });
   }
 
   expandSample(i) {
@@ -156,8 +151,9 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-  toggleFilterPreview() {
-    this.displayFilterWorkflow = undefined;
+  toggleFilterWorkflow() {
+    this.displayFilterDate = undefined;
+    this.displayFilterPlugin = undefined;
     if (this.filterWorkflow === false) {
       this.filterWorkflow = true;
     } else {
@@ -165,12 +161,23 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-  toggleFilterPreviewSample(i) {
-    if (this.filterWorkflowSample === false) {
-      this.displayFilterWorkflow = i;
-      this.filterWorkflowSample = true;
+  toggleFilterDate() {
+    this.displayFilterWorkflow = undefined;
+    this.displayFilterPlugin = undefined;
+    if (this.filterDate === false) {
+      this.filterDate = true;
     } else {
-      this.filterWorkflowSample = false;
+      this.filterDate = false;
+    }
+  }
+
+  toggleFilterPlugin() {
+    this.displayFilterWorkflow = undefined;
+    this.displayFilterDate = undefined;
+    if (this.filterPlugin === false) {
+      this.filterPlugin = true;
+    } else {
+      this.filterPlugin = false;
     }
   }
 
@@ -182,7 +189,9 @@ export class PreviewComponent implements OnInit {
         this.filterWorkflowSample = false;
       }
     }
-    this.filterWorkflow = false;    
+    this.filterWorkflow = false;  
+    this.filterDate = false;   
+    this.filterPlugin = false;   
   }
 
 }

@@ -102,6 +102,22 @@ export class WorkflowService {
     });
   }
 
+  /* getAllFinishedExecutions
+    get history of finished executions for specific datasetid, possible to retrieve results for a specific page
+  */
+  getAllFinishedExecutions(id, page?, workflow?) {
+    if (workflow === undefined) { workflow = ''; }
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        this.allWorkflows = data['results'];
+        return data;
+      } else {
+        return false;
+      }
+    });
+  }
+
   /* getLastExecution
     get most recent execution for specific datasetid
   */
@@ -146,8 +162,19 @@ export class WorkflowService {
     });
   }
 
-  getWorkflowSamples() {
-    return previewSamples;
+  /* getWorkflowSamples
+    return samples based on executionid and plugintype
+  */
+  getWorkflowSamples(executionId, pluginType) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;   
+    console.log(url);
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
   }
 
   /* setCurrentReport

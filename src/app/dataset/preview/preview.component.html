@@ -1,37 +1,50 @@
-<ul class="filter" (clickOutside)="onClickedOutside($event)">
-  <li class="dropdown">
-    <a (click)="toggleFilterPreview()">{{ 'workflow' | translate }}<span *ngIf=selectedWorkflow>: {{selectedWorkflow}}</span></a>
-  	<ul *ngIf="filterWorkflow">
-      <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
-    </ul>
-  </li>
-  <!--<li>
-  	<a class="filter-btn">{{ 'showrandom' | translate }}</a>
-  </li>
-  <li class="search">
-  	<a *ngIf="!displaySearch" (click)="displaySearchBox()">{{ 'search' | translate }} <i class="fa fa-search"></i></a>
-  	<form *ngIf="displaySearch">
-  		<input type="text" #search />
-  		<button class="search-submit" type="submit"><i class="fa fa-search"></i></button>
-  	</form>
-  </li>-->
-</ul>
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+</div>
+
+<div class="filter-wrapper">
+  <ul class="filter" (clickOutside)="onClickedOutside($event)">
+    <li class="dropdown">
+      <a (click)="toggleFilterWorkflow()">{{ 'workflow' | translate }}<span *ngIf=selectedWorkflow>: {{selectedWorkflow}}</span></a>
+    	<ul *ngIf="filterWorkflow">
+        <li *ngFor="let w of allWorkflows;"><a (click)="addDateFilter(w)">{{w}}</a></li>
+      </ul>
+    </li>
+    <li class="dropdown" *ngIf="allWorkflowDates.length > 0">
+      <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate}}</span></a>
+      <ul *ngIf="filterDate">
+        <li *ngFor="let w of allWorkflowDates;"><a (click)="addPluginFilter(w)">{{w.startedDate | date:'dd/MM/yyyy - HH:mm'}}</a></li>
+      </ul>
+    </li>
+    <li class="dropdown" *ngIf="allPlugins.length > 0">
+      <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin}}</span></a>
+      <ul *ngIf="filterPlugin">
+        <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w}}</a></li>
+      </ul>
+    </li>
+    <!--<li>
+    	<a class="filter-btn">{{ 'showrandom' | translate }}</a>
+    </li>
+    <li class="search">
+    	<a *ngIf="!displaySearch" (click)="displaySearchBox()">{{ 'search' | translate }} <i class="fa fa-search"></i></a>
+    	<form *ngIf="displaySearch">
+    		<input type="text" #search />
+    		<button class="search-submit" type="submit"><i class="fa fa-search"></i></button>
+    	</form>
+    </li>-->
+  </ul>
+</div>
 
 <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
-    <h3>{{sample.sampletitle}} <span *ngIf="selectedWorkflow || selectedWorkflowSamples[i]">{{selectedWorkflowSamples[i] ? selectedWorkflowSamples[i] : selectedWorkflow}}</span></h3>
-    <div class="dropdown-specific dropdown">
-      <a (click)="toggleFilterPreviewSample(i)">{{ 'chooseworkflow' | translate }}</a>    
-      <ul *ngIf="filterWorkflowSample && displayFilterWorkflow === i">
-        <li *ngFor="let w of allWorkflows"><a (click)="getXMLSample('workflow', w, '', i)">{{w}}</a></li>
-      </ul>
-    </div>
+    <h3>{{sample.ecloudId}} <span *ngIf="selectedWorkflow || selectedWorkflowSamples[i]">{{selectedWorkflowSamples[i] ? selectedWorkflowSamples[i] : selectedWorkflow}}</span></h3>
     <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length-1 !== i"> 
       <a class="" (click)="expandSample(i)">-</a>
     </div>
   </div>
   <div class="view-sample-editor">
-    <codemirror [ngModel]="sample.sample | beautifyXML" (ngModelChange)="sample.sample=$event" [config]="editorConfig"></codemirror>
+    <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
     <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
 </div>

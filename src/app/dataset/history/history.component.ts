@@ -117,7 +117,6 @@ export class HistoryComponent implements OnInit {
         if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || r['metisPlugins'][this.currentPlugin].pluginStatus === 'FAILED') {
           if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null && r['metisPlugins'][this.currentPlugin].topologyName) {
             this.workflows.getReport(r['metisPlugins'][this.currentPlugin].externalTaskId, r['metisPlugins'][this.currentPlugin].topologyName).subscribe(report => {
-              console.log(report['errors']);
               if (report['errors'].length > 0) {
                 r['hasReport'] = true;
               } 
@@ -181,7 +180,6 @@ export class HistoryComponent implements OnInit {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
-
   }
 
   /* openReport
