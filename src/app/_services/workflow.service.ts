@@ -107,6 +107,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(data => {   
       if (data) {
+        console.log(data['results']);
         let latestWorkflow = data['results'][0];
         if (latestWorkflow) {
           this.activeTopolgy = latestWorkflow['metisPlugins'][this.currentPlugin]['topologyName']; 

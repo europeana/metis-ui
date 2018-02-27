@@ -1,7 +1,7 @@
 <div class="messages">
   <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
 </div>
-<div class="ongoing-executions" *ngIf="ongoingExecutions.length > 0">
+<div class="ongoing-executions" *ngIf="ongoingExecutions && ongoingExecutions.length > 0">
 	<h3>{{ 'ongoingexecutions' | translate }}</h3>
 
   <div class="lastest-ongoing" *ngFor="let ongoing of ongoingExecutions;">
