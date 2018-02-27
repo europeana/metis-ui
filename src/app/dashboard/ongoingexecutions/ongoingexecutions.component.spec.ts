@@ -46,16 +46,17 @@ describe('OngoingexecutionsComponent', () => {
   it('should get an ongoing execution', () => {
     component.getOngoing();
     fixture.detectChanges();
+    console.log();
     expect(fixture.debugElement.queryAll(By.css('.ongoing-executions')).length).toBeTruthy();
   });
 
   it('should cancel a workflow', () => {
-    component.ongoingFirst = currentWorkflow;
+    component.ongoingExecutions = currentWorkflow;
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.cancel-btn')).length).toBeTruthy();
 
     component.cancelWorkflow(1);
-    component.ongoingFirst = undefined;
+    component.ongoingExecutions = undefined;
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.ongoing-executions')).length).not.toBeTruthy();
   });

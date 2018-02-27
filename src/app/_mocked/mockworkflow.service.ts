@@ -1,7 +1,7 @@
 import { WorkflowService } from '../_services';
 import { Observable } from 'rxjs/Observable';
 
-export let currentWorkflow = { 
+export let currentWorkflow = [{ 
     workflowName: 'mocked',
     workflowStatus: 'RUNNING',
     updatedDate: '',
@@ -13,7 +13,7 @@ export let currentWorkflow = {
         expectedRecords: '1000'
       }
     }]
-  }
+  }];
 
 export let currentDataset = { 
     datasetId: '1'
@@ -26,15 +26,15 @@ export class MockWorkflowService extends WorkflowService {
   }
 
   getLastExecution() {
-    return Observable.of(currentWorkflow);
+    return Observable.of(currentWorkflow[0]);
   }
 
   setActiveWorkflow(workflow?): void {
-    this.changeWorkflow.emit(currentWorkflow);
+    this.changeWorkflow.emit(currentWorkflow[0]);
   }
 
   getOngoingExecutionsPerOrganisation() {
-    return Observable.of([currentWorkflow]);
+    return Observable.of(currentWorkflow);
   }
 
 }
