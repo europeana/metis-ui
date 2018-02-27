@@ -39,7 +39,7 @@
 <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
     <h3>{{sample.ecloudId}} <span *ngIf="selectedWorkflow">{{selectedPlugin}}</span></h3>
-    <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length-1 !== i"> 
+    <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i"> 
       <a class="" (click)="expandSample(i)">-</a>
     </div>
   </div>

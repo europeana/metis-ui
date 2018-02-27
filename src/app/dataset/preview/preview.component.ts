@@ -146,6 +146,8 @@ export class PreviewComponent implements OnInit {
 
   toggleFilterWorkflow() {
     this.onClickedOutside();
+    this.selectedDate = undefined;
+    this.selectedPlugin = undefined;
     if (this.filterWorkflow === false) {
       this.filterWorkflow = true;
     } else {
@@ -155,6 +157,7 @@ export class PreviewComponent implements OnInit {
 
   toggleFilterDate() {
     this.onClickedOutside();
+    this.selectedPlugin = undefined;
     if (this.filterDate === false) {
       this.filterDate = true;
     } else {
