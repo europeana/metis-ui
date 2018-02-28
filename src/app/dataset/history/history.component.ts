@@ -83,7 +83,6 @@ export class HistoryComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-
   }
 
   /* returnAllExecutions

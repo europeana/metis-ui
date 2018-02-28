@@ -49,6 +49,7 @@
         <a class="newaction-btn svg-icon-selector" (click)="openWorkflowSelector()" (clickOutside)="onClickedOutsideWorkflow($event)" [ngClass]="{'newaction-btn-open': isShowingWorkflowSelector===true}"><span>{{ 'next action' | translate }}</span></a>
         <ul *ngIf="isShowingWorkflowSelector">
           <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
+          <li><a (click)="selectWorkflow('transformation_enforce_oaipmh')">transformation_enforce_oaipmh</a></li>
         </ul>
       </li>   
     </ul>

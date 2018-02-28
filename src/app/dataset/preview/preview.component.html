@@ -54,7 +54,7 @@
   <div class="view-sample-title">
     <h3>{{nosample}}</h3>
   </div>
-  <div class="view-sample-editor">
+  <div class="view-sample-editor" *ngIf="nosample">
     <codemirror [ngModel]="nosample | beautifyXML" (ngModelChange)="nosample" [config]="editorConfig"></codemirror>
   </div>
 </div>

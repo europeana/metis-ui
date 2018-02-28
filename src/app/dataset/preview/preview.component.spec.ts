@@ -1,9 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from 'ng2-codemirror';
 
 import { PreviewComponent } from './preview.component';
-import { WorkflowService, TranslateService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -17,9 +18,9 @@ describe('PreviewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule, FormsModule, CodemirrorModule ],
+      imports: [ RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule ],
       declarations: [ PreviewComponent, TranslatePipe, XmlPipe ],
-      providers: [ WorkflowService,
+      providers: [ WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService
       { provide: TranslateService,
           useValue: {
             translate: () => {
@@ -58,8 +59,7 @@ describe('PreviewComponent', () => {
 
   it('should display editor', (): void => {     
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
-      
+    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();      
   });
 
 });

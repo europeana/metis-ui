@@ -37,7 +37,7 @@ export class PreviewComponent implements OnInit {
   allWorkflows: Array<any> = [];
   allWorkflowDates: Array<any> = [];
   allPlugins: Array<any> = [];
-  allSamples: Array<any> = [];;
+  allSamples: Array<any> = [];
   filterWorkflow: boolean = false;
   filterDate: boolean = false;
   filterPlugin: boolean = false;
