@@ -3,7 +3,6 @@ import { WorkflowService, TranslateService, ErrorService, DatasetsService } from
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
-import { previewSamples } from '../../_mocked';
 
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
