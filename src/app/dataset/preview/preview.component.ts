@@ -88,9 +88,9 @@ export class PreviewComponent implements OnInit {
   addWorkflowFilter() {
     this.onClickedOutside();
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
-      for (let i = 0; i < result['results'].length; i++) {
-        if (this.allWorkflows.indexOf(result['results'][i]['workflowName']) === -1) {
-          this.allWorkflows.push(result['results'][i]['workflowName']);
+      for (let i = 0; i < result.length; i++) {
+        if (this.allWorkflows.indexOf(result[i]['workflowName']) === -1) {
+          this.allWorkflows.push(result[i]['workflowName']);
         }
       }
       this.allWorkflows.sort();
@@ -108,13 +108,13 @@ export class PreviewComponent implements OnInit {
     this.nextPage = 0;
     this.saveTempFilterSelection('workflow', workflow);
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage, workflow).subscribe(result => {
-      for (let i = 0; i < result['results'].length; i++) {  
-        this.allWorkflowDates.push(result['results'][i]);
+      for (let i = 0; i < result.length; i++) {  
+        this.allWorkflowDates.push(result[i]);
       }
       this.allWorkflowDates.sort();
       this.nextPage = result['nextPage'];
       if (this.nextPage >= 0) {
-        this.addWorkflowFilter();
+        this.addDateFilter(workflow);
       }
     });     
   }
@@ -137,7 +137,7 @@ export class PreviewComponent implements OnInit {
     this.selectedPlugin = plugin; 
     this.saveTempFilterSelection('plugin', plugin);
     this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
-      this.allSamples = result['records']; 
+      this.allSamples = result; 
       if (this.allSamples.length === 1) {
        this.expandedSample = 0;
       }

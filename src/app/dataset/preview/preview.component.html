@@ -5,19 +5,19 @@
 
 <div class="filter-wrapper">
   <ul class="filter" (clickOutside)="onClickedOutside($event)">
-    <li class="dropdown">
+    <li class="dropdown dropdown-workflow">
       <a (click)="toggleFilterWorkflow()">{{ 'workflow' | translate }}<span *ngIf=selectedWorkflow>: {{selectedWorkflow}}</span></a>
     	<ul *ngIf="filterWorkflow">
         <li *ngFor="let w of allWorkflows;"><a (click)="addDateFilter(w)">{{w}}</a></li>
       </ul>
     </li>
-    <li class="dropdown" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
+    <li class="dropdown dropdown-date" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
       <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
       <ul *ngIf="filterDate">
         <li *ngFor="let w of allWorkflowDates;"><a (click)="addPluginFilter(w)">{{w.startedDate | date:'dd/MM/yyyy - HH:mm'}}</a></li>
       </ul>
     </li>
-    <li class="dropdown" *ngIf="allPlugins && allPlugins.length > 0">
+    <li class="dropdown dropdown-plugin" *ngIf="allPlugins && allPlugins.length > 0">
       <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin}}</span></a>
       <ul *ngIf="filterPlugin">
         <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w}}</a></li>

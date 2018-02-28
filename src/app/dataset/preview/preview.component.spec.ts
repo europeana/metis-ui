@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from 'ng2-codemirror';
+import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
 
 import { PreviewComponent } from './preview.component';
 import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
@@ -20,7 +21,11 @@ describe('PreviewComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule ],
       declarations: [ PreviewComponent, TranslatePipe, XmlPipe ],
-      providers: [ WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService
+      providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
+        ErrorService, 
+        AuthenticationService, 
+        RedirectPreviousUrl, 
+        DatasetsService,
       { provide: TranslateService,
           useValue: {
             translate: () => {
@@ -41,25 +46,46 @@ describe('PreviewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display filter', (): void => {     
+  it('should display filters and trigger', (): void => {    
+    component.datasetData = currentDataset; 
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.filter')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-workflow')).length).toBeTruthy();
+
+    component.toggleFilterWorkflow();
+    fixture.detectChanges();
+    const workflow = fixture.debugElement.query(By.css('.filter .dropdown-workflow ul a'));
+    workflow.triggerEventHandler('click', null);
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-date')).length).toBeTruthy();
+
+    component.toggleFilterDate();
+    fixture.detectChanges();
+    const date = fixture.debugElement.query(By.css('.filter .dropdown-date ul a'));
+    date.triggerEventHandler('click', null);
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-date')).length).toBeTruthy();
+
+    component.toggleFilterPlugin();
+    fixture.detectChanges();
+    const plugin = fixture.debugElement.query(By.css('.filter .dropdown-plugin ul a'));
+    plugin.triggerEventHandler('click', null);
+    fixture.detectChanges();    
+    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
+
   });
 
-  it('should click filter options', (): void => {    
-    component.filterWorkflow = true;
-    fixture.detectChanges();
-
-    const dropdown = fixture.debugElement.query(By.css('.dropdown a'));
-    dropdown.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).toBeTruthy();
-    
+  it('prefill filters', (): void => {  
+    component.datasetData = currentDataset; 
+    component.prefill = {workflow: 'mocked', date: currentWorkflow[0], plugin: 'MOCKED'};
+    component.prefillFilters();
+    fixture.detectChanges();    
   });
 
-  it('should display editor', (): void => {     
+  it('expand sample', (): void => {  
+    component.datasetData = currentDataset; 
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();      
+    component.expandSample(0);
   });
+
 
 });

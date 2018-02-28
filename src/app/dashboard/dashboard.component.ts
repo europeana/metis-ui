@@ -17,6 +17,8 @@ export class DashboardComponent implements OnInit {
   notifications: Notification[];
   datasets;
 
+  public isShowingLog = false;
+
   constructor(private authentication: AuthenticationService,
               private router: Router,
               private translate: TranslateService) {
@@ -26,6 +28,13 @@ export class DashboardComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+  }
+
+  /* onNotifyShowLogStatus
+    opens/closes the log messages 
+  */
+  onNotifyShowLogStatus(message):void {
+    this.isShowingLog = message;
   }
 
 

@@ -88,7 +88,6 @@ export class RegisterComponent implements OnInit {
             const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
             errmsg = h['errorMessage'];
           } catch (e) {
-            console.error('RegisterComponent: JSON.parse(err.error) failed', err.error);
             errmsg = null;
           }
           this.notfoundMessage = errmsg || 'Unknown';

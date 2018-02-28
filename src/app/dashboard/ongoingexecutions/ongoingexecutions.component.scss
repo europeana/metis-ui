@@ -1,0 +1,116 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
+.ongoing-executions {
+  font-size: 0.75rem;
+
+  h3 {
+    font-size: 1.125rem;
+  }
+
+  .lastest-ongoing {
+    align-items: center;
+    background: $white;
+    border-bottom: 1px solid $offwhite;
+    display: flex;
+    padding: 0.75rem;
+  }
+
+  .status {
+    flex-basis: 1;
+    flex-grow: 0;
+    padding-right: 1.5rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    strong {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: none;
+      white-space: nowrap;
+      width: 6rem;
+    }
+  }
+
+  .progress {
+    flex-basis: 1;
+    flex-grow: 2;
+    font-size: 0.75rem;
+    padding-right: 1.5rem;
+
+    .progress-status {
+      align-content: center;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-statusnumbers {
+      width: 6rem;
+    }
+
+    .progress-percentage {
+      text-align: right;
+      width: 2rem;
+    }
+
+    .progressbar {
+      background: $offwhite;
+      border-radius: 0.5rem;
+      height: 0.5rem;
+      margin-bottom: 1rem;
+      width: 100%;
+
+      .progressbar-done {
+        background: $eu-blue;
+        border-radius: 0.5rem;
+        height: 0.5rem;
+      }
+    }
+  }
+
+  .datetime {
+    white-space: nowrap;
+
+    span {
+      display: block;
+    }
+
+  }
+
+  nav {
+    flex-basis: 1;
+    flex-grow: 0;
+    white-space: nowrap;
+
+    li {
+      border-left: 1px solid $offwhite;
+      display: inline-block;
+      padding: 0.4rem;
+      position: relative;
+
+      &:first-child {
+        border-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+
+      a {
+        color: $gray-med;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem 0.25rem 1.25rem;
+      }
+    }
+  }
+
+  .loadmore {
+    background: $white;
+    display: block;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    width: 100%;
+  }
+
+}

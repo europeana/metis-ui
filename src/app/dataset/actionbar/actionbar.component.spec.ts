@@ -1,45 +1,15 @@
 import { RouterTestingModule } from '@angular/router/testing';
 import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
+import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
+
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Observable } from 'rxjs/Observable';
 
+import { Observable } from 'rxjs/Observable';
 import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
- 
 import { ActionbarComponent } from './actionbar.component';
 
-let currentWorkflow = { 
-  workflowName: 'mocked',
-  workflowStatus: 'RUNNING',
-  updatedDate: '',
-  startedDate: '',
-  metisPlugins: [{
-    pluginStatus: 'RUNNING',
-    executionProgress: {
-      processedRecords: '1000',
-      expectedRecords: '1000'
-    }
-  }]
-}
-
-let currentDataset = { 
-  datasetId: '1'
-}
-
-class MockWorkflowService extends WorkflowService {
-  cancelThisWorkflow() {
-    return Observable.of({});
-  }
-
-  getLastExecution() {
-    return Observable.of(currentWorkflow);
-  }
-
-  setActiveWorkflow(): void {
-    this.changeWorkflow.emit(currentWorkflow);
-  }
-}
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
@@ -65,7 +35,7 @@ describe('ActionbarComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
-    component    = fixture.componentInstance;   
+    component = fixture.componentInstance;   
   });
 
   it('should create', () => {    
@@ -82,13 +52,6 @@ describe('ActionbarComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.dataset-actionbar .progressbar')).length).toBeTruthy();
 
   });
-
-  /*it('should handle a finished execution', () => {    
-    fixture.detectChanges();
-    currentWorkflow.workflowStatus = 'FINISHED';
-    currentWorkflow.metisPlugins[0].pluginStatus = 'FINISHED';
-    component.returnLastExecution();
-  });*/
 
   it('should do click to show logging', fakeAsync((): void => {
     component.currentWorkflow = currentWorkflow;

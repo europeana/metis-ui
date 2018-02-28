@@ -55,9 +55,9 @@ export class WorkflowService {
   /* getLogs
     get logging information using topology and externaltaskid
   */
-  getLogs() {
-    const topology = this.activeTopolgy;
-    const externalTaskId = this.activeExternalTaskId;
+  getLogs(taskId?, topologyName?) {
+    const topology = topologyName ? topologyName : this.activeTopolgy;
+    const externalTaskId = taskId ? taskId : this.activeExternalTaskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
     
     return this.http.get(url).map(data => {   
@@ -76,7 +76,6 @@ export class WorkflowService {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;   
-    
     return this.http.get(url).map(data => {   
       if (data) {
         return data;
@@ -110,8 +109,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
-        this.allWorkflows = data['results'];
-        return data;
+        return data['results'];
       } else {
         return false;
       }
@@ -137,15 +135,34 @@ export class WorkflowService {
     });
   }
 
+  /* getOngoingExecutionsPerOrganisation 
+    get all ongoing (either running or inqueue) executions for the user's organisation
+  */
+  getOngoingExecutionsPerOrganisation() {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=true`;   
+    return this.http.get(url).map(data => {  
+      if (data) {
+        return data['results'];
+      } else {
+        return false;
+      }
+    });
+  }
+
+  /* getWorkflows 
+    get a list of currently available workflows
+  */
   getWorkflows() {
     let workflows = ['only_harvest', 
       'only_validation_external_mocked', 
       'only_validation_external', 
       'only_transformation',
       'only_transformation_mocked',
+      'only_validation_internal',
+      'only_validation_internal_mocked',
       'harvest_and_validation_external', 
       'harvest_and_validation_external_mocked'];
-    return workflows ;
+    return workflows;
   }
 
   /* cancelThisWorkflow
@@ -169,7 +186,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;   
     return this.http.get(url).map(data => {   
       if (data) {
-        return data;
+        return data['records'];
       } else {
         return false;
       }
