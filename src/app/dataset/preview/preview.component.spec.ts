@@ -63,7 +63,7 @@ describe('PreviewComponent', () => {
     const date = fixture.debugElement.query(By.css('.filter .dropdown-date ul a'));
     date.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-date')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-plugin')).length).toBeTruthy();
 
     component.toggleFilterPlugin();
     fixture.detectChanges();
@@ -79,13 +79,15 @@ describe('PreviewComponent', () => {
     component.prefill = {workflow: 'mocked', date: currentWorkflow[0], plugin: 'MOCKED'};
     component.prefillFilters();
     fixture.detectChanges();    
+    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
   });
 
   it('expand sample', (): void => {  
     component.datasetData = currentDataset; 
-    fixture.detectChanges();
+    component.prefill = {workflow: 'mocked', date: currentWorkflow[0], plugin: 'MOCKED'};
+    component.prefillFilters();
     component.expandSample(0);
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
   });
-
-
 });

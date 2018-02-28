@@ -214,5 +214,4 @@ export class PreviewComponent implements OnInit {
     this.filterDate = false;   
     this.filterPlugin = false;   
   }
-
 }
