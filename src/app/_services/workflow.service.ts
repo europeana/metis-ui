@@ -167,7 +167,6 @@ export class WorkflowService {
   */
   getWorkflowSamples(executionId, pluginType) {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;   
-    console.log(url);
     return this.http.get(url).map(data => {   
       if (data) {
         return data;

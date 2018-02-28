@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService, TranslateService, ErrorService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
@@ -29,14 +29,15 @@ export class PreviewComponent implements OnInit {
   constructor(private workflows: WorkflowService, 
     private http: HttpClient,
     private translate: TranslateService,
-    private errors: ErrorService) { }
+    private errors: ErrorService,
+    private datasets: DatasetsService) { }
 
   @Input('datasetData') datasetData;
   editorConfig;
   allWorkflows: Array<any> = [];
   allWorkflowDates: Array<any> = [];
   allPlugins: Array<any> = [];
-  allSamples;
+  allSamples: Array<any> = [];;
   filterWorkflow: boolean = false;
   filterDate: boolean = false;
   filterPlugin: boolean = false;
@@ -52,6 +53,8 @@ export class PreviewComponent implements OnInit {
   nextPage: number = 0;
   datasetHistory;
   execution: number;
+  tempFilterSelection: Array<any> = [];
+  prefill;
 
   ngOnInit() {
   	this.editorConfig = { 
@@ -75,6 +78,10 @@ export class PreviewComponent implements OnInit {
     if (this.datasetData) {
       this.addWorkflowFilter();
     }
+
+    this.prefill = this.datasets.getPreviewFilters();
+    this.prefillFilters();
+
   }
 
   addWorkflowFilter() {
@@ -95,14 +102,14 @@ export class PreviewComponent implements OnInit {
 
   addDateFilter(workflow) {
     this.onClickedOutside();
+    this.allWorkflowDates = [];
     this.selectedWorkflow = workflow;
     this.nextPage = 0;
-
+    this.saveTempFilterSelection('workflow', workflow);
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage, workflow).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {  
         this.allWorkflowDates.push(result['results'][i]);
       }
-
       this.allWorkflowDates.sort();
       this.nextPage = result['nextPage'];
       if (this.nextPage >= 0) {
@@ -113,10 +120,11 @@ export class PreviewComponent implements OnInit {
 
   addPluginFilter(execution) {
     this.onClickedOutside();
+    this.allPlugins = [];
     this.execution = execution;
     this.selectedDate = execution['startedDate'];    
     this.nextPage = 0;
-
+    this.saveTempFilterSelection('date', execution);
     for (let i = 0; i < execution['metisPlugins'].length; i++) {  
       this.allPlugins.push(execution['metisPlugins'][i].pluginType);
     }
@@ -125,6 +133,7 @@ export class PreviewComponent implements OnInit {
   getXMLSamples(plugin) {
     this.onClickedOutside();
     this.selectedPlugin = plugin; 
+    this.saveTempFilterSelection('plugin', plugin);
     this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
       this.allSamples = result['records']; 
       if (this.allSamples.length === 1) {
@@ -134,6 +143,30 @@ export class PreviewComponent implements OnInit {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
+  }
+
+  saveTempFilterSelection(filter, toSave) {
+    this.tempFilterSelection[filter] = toSave;
+    this.datasets.setPreviewFilters(this.tempFilterSelection);
+  }
+
+  prefillFilters() {
+    if (this.prefill) {
+      if (this.prefill['workflow']) {
+        this.selectedWorkflow = this.prefill['workflow'];
+        this.addDateFilter(this.prefill['workflow']);
+      }
+
+      if (this.prefill['date']) {
+        this.selectedDate = this.prefill['date'];
+        this.addPluginFilter(this.prefill['date']);
+      }
+
+      if (this.prefill['plugin']) {
+        this.selectedPlugin = this.prefill['plugin'];
+        this.getXMLSamples(this.prefill['plugin']);
+      }
+    }
   }
 
   expandSample(i) {

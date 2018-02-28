@@ -11,13 +11,13 @@
         <li *ngFor="let w of allWorkflows;"><a (click)="addDateFilter(w)">{{w}}</a></li>
       </ul>
     </li>
-    <li class="dropdown" *ngIf="allWorkflowDates.length > 0">
+    <li class="dropdown" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
       <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
       <ul *ngIf="filterDate">
         <li *ngFor="let w of allWorkflowDates;"><a (click)="addPluginFilter(w)">{{w.startedDate | date:'dd/MM/yyyy - HH:mm'}}</a></li>
       </ul>
     </li>
-    <li class="dropdown" *ngIf="allPlugins.length > 0">
+    <li class="dropdown" *ngIf="allPlugins && allPlugins.length > 0">
       <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin}}</span></a>
       <ul *ngIf="filterPlugin">
         <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w}}</a></li>
@@ -38,7 +38,7 @@
 
 <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
-    <h3>{{sample.ecloudId}} <span *ngIf="selectedWorkflow">{{selectedPlugin}}</span></h3>
+    <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin}}</span></h3>
     <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i"> 
       <a class="" (click)="expandSample(i)">-</a>
     </div>
@@ -46,5 +46,14 @@
   <div class="view-sample-editor">
     <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
     <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
+  </div>
+</div>
+
+<div class="view-sample" *ngIf="allSamples.length === 0">
+  <div class="view-sample-title">
+    <h3>{{nosample}}</h3>
+  </div>
+  <div class="view-sample-editor">
+    <codemirror [ngModel]="nosample | beautifyXML" (ngModelChange)="nosample" [config]="editorConfig"></codemirror>
   </div>
 </div>
