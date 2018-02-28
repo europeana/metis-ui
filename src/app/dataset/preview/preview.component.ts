@@ -55,6 +55,7 @@ export class PreviewComponent implements OnInit {
   execution: number;
   tempFilterSelection: Array<any> = [];
   prefill;
+  loadingSamples: boolean = false;
 
   ngOnInit() {
   	this.editorConfig = { 
@@ -131,6 +132,7 @@ export class PreviewComponent implements OnInit {
   }
 
   getXMLSamples(plugin) {
+    this.loadingSamples = true;
     this.onClickedOutside();
     this.selectedPlugin = plugin; 
     this.saveTempFilterSelection('plugin', plugin);
@@ -139,6 +141,7 @@ export class PreviewComponent implements OnInit {
       if (this.allSamples.length === 1) {
        this.expandedSample = 0;
       }
+      this.loadingSamples = false;
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
