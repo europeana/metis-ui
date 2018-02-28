@@ -50,6 +50,7 @@ export class PreviewComponent implements OnInit {
   nosample: string;
   errorMessage: string;
   nextPage: number = 0;
+  nextPageDate: number = 0;
   datasetHistory;
   execution: number;
   tempFilterSelection: Array<any> = [];
@@ -85,11 +86,15 @@ export class PreviewComponent implements OnInit {
   }
 
   addWorkflowFilter() {
-    this.onClickedOutside();
+    this.allWorkflowDates = [];
+    this.allPlugins = [];
+    this.selectedDate = undefined;
+    this.selectedPlugin = undefined;
+    this.nextPageDate = 0;
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
-      for (let i = 0; i < result.length; i++) {
-        if (this.allWorkflows.indexOf(result[i]['workflowName']) === -1) {
-          this.allWorkflows.push(result[i]['workflowName']);
+      for (let i = 0; i < result['results'].length; i++) {
+        if (this.allWorkflows.indexOf(result['results'][i]['workflowName']) === -1) {
+          this.allWorkflows.push(result['results'][i]['workflowName']);
         }
       }
       this.allWorkflows.sort();
@@ -101,29 +106,30 @@ export class PreviewComponent implements OnInit {
   }
 
   addDateFilter(workflow) {
-    this.onClickedOutside();
-    this.allWorkflowDates = [];
+    this.filterWorkflow = false;
     this.selectedWorkflow = workflow;
+    this.allPlugins = [];
+    this.selectedPlugin = undefined;
     this.nextPage = 0;
     this.saveTempFilterSelection('workflow', workflow);
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage, workflow).subscribe(result => {
-      for (let i = 0; i < result.length; i++) {  
-        this.allWorkflowDates.push(result[i]);
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPageDate, workflow).subscribe(result => {
+      for (let i = 0; i < result['results'].length; i++) {  
+        this.allWorkflowDates.push(result['results'][i]);
       }
       this.allWorkflowDates.sort();
-      this.nextPage = result['nextPage'];
-      if (this.nextPage >= 0) {
+      this.nextPageDate = result['nextPage'];
+      if (this.nextPageDate >= 0) {
         this.addDateFilter(workflow);
       }
     });     
   }
 
   addPluginFilter(execution) {
-    this.onClickedOutside();
+    this.filterDate = false;
     this.allPlugins = [];
     this.execution = execution;
     this.selectedDate = execution['startedDate'];    
-    this.nextPage = 0;
+    this.nextPageDate = 0;
     this.saveTempFilterSelection('date', execution);
     for (let i = 0; i < execution['metisPlugins'].length; i++) {  
       this.allPlugins.push(execution['metisPlugins'][i].pluginType);
