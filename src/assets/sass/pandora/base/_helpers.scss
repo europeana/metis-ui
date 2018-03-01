@@ -148,15 +148,16 @@ body {
     &:hover::after {
       border-top-color: $eu-jade;
     }
-
   }
 
   ul {
     background: $white;
     box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
     left: 1rem;
+    max-height: 10rem;
     max-width: 20rem;
     min-width: 10rem;
+    overflow: auto;
     padding: 0.5rem 0;
     position: absolute;
     top: 3rem;

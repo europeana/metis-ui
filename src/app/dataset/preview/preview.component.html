@@ -22,16 +22,6 @@
         <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w}}</a></li>
       </ul>
     </li>
-    <!--<li>
-    	<a class="filter-btn">{{ 'showrandom' | translate }}</a>
-    </li>
-    <li class="search">
-    	<a *ngIf="!displaySearch" (click)="displaySearchBox()">{{ 'search' | translate }} <i class="fa fa-search"></i></a>
-    	<form *ngIf="displaySearch">
-    		<input type="text" #search />
-    		<button class="search-submit" type="submit"><i class="fa fa-search"></i></button>
-    	</form>
-    </li>-->
   </ul>
   <i *ngIf="loadingSamples" class="fa fa-cog fa-spin"></i>
 </div>

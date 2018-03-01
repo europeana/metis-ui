@@ -86,11 +86,6 @@ export class PreviewComponent implements OnInit {
   }
 
   addWorkflowFilter() {
-    this.allWorkflowDates = [];
-    this.allPlugins = [];
-    this.selectedDate = undefined;
-    this.selectedPlugin = undefined;
-    this.nextPageDate = 0;
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {
         if (this.allWorkflows.indexOf(result['results'][i]['workflowName']) === -1) {
@@ -108,15 +103,11 @@ export class PreviewComponent implements OnInit {
   addDateFilter(workflow) {
     this.filterWorkflow = false;
     this.selectedWorkflow = workflow;
-    this.allPlugins = [];
-    this.selectedPlugin = undefined;
-    this.nextPage = 0;
     this.saveTempFilterSelection('workflow', workflow);
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPageDate, workflow).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {  
         this.allWorkflowDates.push(result['results'][i]);
       }
-      this.allWorkflowDates.sort();
       this.nextPageDate = result['nextPage'];
       if (this.nextPageDate >= 0) {
         this.addDateFilter(workflow);
@@ -187,8 +178,12 @@ export class PreviewComponent implements OnInit {
 
   toggleFilterWorkflow() {
     this.onClickedOutside();
+    this.nextPage = 0;
+    this.nextPageDate = 0;
+    this.allWorkflowDates = [];
+    this.allPlugins = [];
     this.selectedDate = undefined;
-    this.selectedPlugin = undefined;
+    this.selectedPlugin = undefined;    
     if (this.filterWorkflow === false) {
       this.filterWorkflow = true;
     } else {
@@ -198,6 +193,8 @@ export class PreviewComponent implements OnInit {
 
   toggleFilterDate() {
     this.onClickedOutside();
+    this.nextPageDate = 0;
+    this.allPlugins = [];
     this.selectedPlugin = undefined;
     if (this.filterDate === false) {
       this.filterDate = true;
