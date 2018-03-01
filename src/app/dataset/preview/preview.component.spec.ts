@@ -76,7 +76,7 @@ describe('PreviewComponent', () => {
 
   it('prefill filters', (): void => {  
     component.datasetData = currentDataset; 
-    component.prefill = {workflow: 'mocked', date: currentWorkflow[0], plugin: 'MOCKED'};
+    component.prefill = {workflow: 'mocked', date: currentWorkflow['results'][0], plugin: 'MOCKED'};
     component.prefillFilters();
     fixture.detectChanges();    
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
@@ -84,7 +84,7 @@ describe('PreviewComponent', () => {
 
   it('expand sample', (): void => {  
     component.datasetData = currentDataset; 
-    component.prefill = {workflow: 'mocked', date: currentWorkflow[0], plugin: 'MOCKED'};
+    component.prefill = {workflow: 'mocked', date: currentWorkflow['results'][0], plugin: 'MOCKED'};
     component.prefillFilters();
     component.expandSample(0);
     fixture.detectChanges();
