@@ -1,10 +1,12 @@
 <ul class="filter" *ngIf="!inCollapsablePanel" (clickOutside)="onClickedOutside($event)">
   <li class="dropdown">
     <a (click)="toggleFilterByWorkflow()">{{ 'workflow' | translate }}<span *ngIf=selectedFilterWorkflow>: {{selectedFilterWorkflow}}</span></a>
-    <ul *ngIf="filterWorkflow">
-      <li><a (click)="selectWorkflow()">{{ 'allworkflows' | translate }}</a></li>
-      <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
-    </ul>
+    <div *ngIf="filterWorkflow" class="dropdown-wrapper">
+      <ul>
+        <li><a (click)="selectWorkflow()">{{ 'allworkflows' | translate }}</a></li>
+        <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
+      </ul>
+    </div>
   </li>  
 </ul>
 

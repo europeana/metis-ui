@@ -83,7 +83,6 @@ export class HistoryComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-
   }
 
   /* returnAllExecutions
@@ -180,7 +179,6 @@ export class HistoryComponent implements OnInit {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
-
   }
 
   /* openReport

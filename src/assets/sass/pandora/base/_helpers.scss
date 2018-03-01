@@ -148,15 +148,44 @@ body {
     &:hover::after {
       border-top-color: $eu-jade;
     }
+  }
 
+  .dropdown-wrapper {
+    &::before {
+      border-bottom: 10px solid $gray-lightest;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      content: '';
+      height: 0;
+      left: 2rem;
+      position: absolute;
+      top: calc(3rem - 10px);
+      width: 0;
+      z-index: 10;
+    }
+
+    &::after {
+      border-bottom: 8px solid $white;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      content: '';
+      height: 0;
+      left: calc(2rem + 2px);
+      position: absolute;
+      top: calc(3rem - 8px);
+      width: 0;
+      z-index: 10;
+    }
   }
 
   ul {
     background: $white;
     box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
     left: 1rem;
+    max-height: 10rem;
     max-width: 20rem;
     min-width: 10rem;
+    overflow: auto;
     padding: 0.5rem 0;
     position: absolute;
     top: 3rem;
@@ -176,30 +205,6 @@ body {
       a:hover {
         text-decoration: underline;
       }
-    }
-
-    &::before {
-      border-bottom: 10px solid $gray-lightest;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      content: '';
-      height: 0;
-      left: 2rem;
-      position: absolute;
-      top: -10px;
-      width: 0;
-    }
-
-    &::after {
-      border-bottom: 8px solid $white;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      content: '';
-      height: 0;
-      left: calc(2rem + 2px);
-      position: absolute;
-      top: -8px;
-      width: 0;
     }
   }
 }

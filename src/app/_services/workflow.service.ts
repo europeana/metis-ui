@@ -1,7 +1,6 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-
 import { environment } from '../../environments/environment';
 import { apiSettings } from '../../environments/apisettings';
 
@@ -100,6 +99,21 @@ export class WorkflowService {
     });
   }
 
+  /* getAllFinishedExecutions
+    get history of finished executions for specific datasetid, possible to retrieve results for a specific page
+  */
+  getAllFinishedExecutions(id, page?, workflow?) {
+    if (workflow === undefined) { workflow = ''; }
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=STARTED_DATE&ascending=false&nextPage=${page}`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+  }
+
   /* getLastExecution
     get most recent execution for specific datasetid
   */
@@ -157,6 +171,20 @@ export class WorkflowService {
     return this.http.delete(url).map(data => {   
       if (data) {
         return data;
+      } else {
+        return false;
+      }
+    });
+  }
+
+  /* getWorkflowSamples
+    return samples based on executionid and plugintype
+  */
+  getWorkflowSamples(executionId, pluginType) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data['records'];
       } else {
         return false;
       }

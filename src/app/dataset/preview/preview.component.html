@@ -1,34 +1,55 @@
-<ul class="filter" (clickOutside)="onClickedOutside($event)">
-  <li class="dropdown">
-    <a (click)="toggleFilterPreview()">{{ 'workflow' | translate }}<span *ngIf=selectedWorkflow>: {{selectedWorkflow}}</span></a>
-  	<ul *ngIf="filterWorkflow">
-      <li *ngFor="let w of allWorkflows;"><a (click)="getXMLSample('workflow', w)">{{w}}</a></li>
-    </ul>
-  </li>
-  <li>
-  	<a (click)="getXMLSample()" class="filter-btn">{{ 'showrandom' | translate }}</a>
-  </li>
-  <li class="search">
-  	<a *ngIf="!displaySearch" (click)="displaySearchBox()">{{ 'search' | translate }} <i class="fa fa-search"></i></a>
-  	<form *ngIf="displaySearch">
-  		<input type="text" #search />
-  		<button class="search-submit" type="submit" (click)="getXMLSample('search', '', search.value)"><i class="fa fa-search"></i></button>
-  	</form>
-  </li>
-</ul>
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+</div>
 
-<div class="view-sample">
+<div class="filter-wrapper">
+  <ul class="filter" (clickOutside)="onClickedOutside($event)">
+    <li class="dropdown dropdown-workflow">
+      <a (click)="toggleFilterWorkflow()">{{ 'workflow' | translate }}<span *ngIf=selectedWorkflow>: {{selectedWorkflow}}</span></a>
+      <div *ngIf="filterWorkflow" class="dropdown-wrapper">
+        <ul>
+          <li *ngFor="let w of allWorkflows;"><a (click)="addDateFilter(w)">{{w}}</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="dropdown dropdown-date" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
+      <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
+      <div *ngIf="filterDate" class="dropdown-wrapper">
+        <ul>
+          <li *ngFor="let w of allWorkflowDates;"><a (click)="addPluginFilter(w)">{{w.startedDate | date:'dd/MM/yyyy - HH:mm'}}</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="dropdown dropdown-plugin" *ngIf="allPlugins && allPlugins.length > 0">
+      <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin}}</span></a>
+      <div *ngIf="filterPlugin" class="dropdown-wrapper">
+        <ul>
+          <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w}}</a></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+  <i *ngIf="loadingSamples" class="fa fa-cog fa-spin"></i>
+</div>
+
+<div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
-    <h3>{{editorPreviewTitle}} <span *ngIf="selectedWorkflow || selectedWorkflowSamples[0]">{{selectedWorkflowSamples[0] ? selectedWorkflowSamples[0] : selectedWorkflow}}</span></h3>
-    <div class="dropdown-specific dropdown">
-      <a (click)="toggleFilterPreviewSample()">{{ 'chooseworkflow' | translate }}</a>    
-      <ul *ngIf="filterWorkflowSample">
-        <li *ngFor="let w of allWorkflows"><a (click)="getXMLSample('workflow', w, '', 0)">{{w}}</a></li>
-      </ul>
+    <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin}}</span></h3>
+    <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i"> 
+      <a class="" (click)="expandSample(i)">-</a>
     </div>
   </div>
   <div class="view-sample-editor">
-    <codemirror [(ngModel)]="editorPreviewCode" [config]="editorConfig"></codemirror>
+    <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
+    <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
 </div>
 
+<div class="view-sample" *ngIf="allSamples.length === 0">
+  <div class="view-sample-title">
+    <h3>{{nosample}}</h3>
+  </div>
+  <div class="view-sample-editor" *ngIf="nosample">
+    <codemirror [ngModel]="nosample | beautifyXML" (ngModelChange)="nosample" [config]="editorConfig"></codemirror>
+  </div>
+</div>

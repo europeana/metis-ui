@@ -50,7 +50,7 @@ describe('OngoingexecutionsComponent', () => {
   });
 
   it('should cancel a workflow', () => {
-    component.ongoingExecutions = currentWorkflow;
+    component.ongoingExecutions = currentWorkflow['results'];
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.cancel-btn')).length).toBeTruthy();
 

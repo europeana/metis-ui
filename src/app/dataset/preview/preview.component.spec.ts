@@ -1,13 +1,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from 'ng2-codemirror';
+import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
 
 import { PreviewComponent } from './preview.component';
-import { WorkflowService, TranslateService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { XmlPipe }   from '../../_helpers';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -16,9 +19,13 @@ describe('PreviewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule, FormsModule, CodemirrorModule ],
-      declarations: [ PreviewComponent, TranslatePipe ],
-      providers: [ WorkflowService,
+      imports: [ RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule ],
+      declarations: [ PreviewComponent, TranslatePipe, XmlPipe ],
+      providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
+        ErrorService, 
+        AuthenticationService, 
+        RedirectPreviousUrl, 
+        DatasetsService,
       { provide: TranslateService,
           useValue: {
             translate: () => {
@@ -39,29 +46,48 @@ describe('PreviewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display filter', (): void => {     
+  it('should display filters and trigger', (): void => {    
+    component.datasetData = currentDataset; 
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.filter')).length).toBeTruthy();
-  });
+    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-workflow')).length).toBeTruthy();
 
-  it('should click filter options', (): void => {    
-
-    const dropdown = fixture.debugElement.query(By.css('.dropdown a'));
-    dropdown.triggerEventHandler('click', null);
+    component.toggleFilterWorkflow();
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).toBeTruthy();
-    
-    const search = fixture.debugElement.query(By.css('.search a'));
-    search.triggerEventHandler('click', null);
+    const workflow = fixture.debugElement.query(By.css('.filter .dropdown-workflow ul a'));
+    workflow.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.search form')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-date')).length).toBeTruthy();
 
-  });
-
-  it('should display editor', (): void => {     
+    component.toggleFilterDate();
     fixture.detectChanges();
+    const date = fixture.debugElement.query(By.css('.filter .dropdown-date ul a'));
+    date.triggerEventHandler('click', null);
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-plugin')).length).toBeTruthy();
+
+    component.toggleFilterPlugin();
+    fixture.detectChanges();
+    const plugin = fixture.debugElement.query(By.css('.filter .dropdown-plugin ul a'));
+    plugin.triggerEventHandler('click', null);
+    fixture.detectChanges();    
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
-      
+
   });
 
+  it('prefill filters', (): void => {  
+    component.datasetData = currentDataset; 
+    component.prefill = {workflow: 'mocked', date: currentWorkflow['results'][0], plugin: 'MOCKED'};
+    component.prefillFilters();
+    fixture.detectChanges();    
+    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
+  });
+
+  it('expand sample', (): void => {  
+    component.datasetData = currentDataset; 
+    component.prefill = {workflow: 'mocked', date: currentWorkflow['results'][0], plugin: 'MOCKED'};
+    component.prefillFilters();
+    component.expandSample(0);
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
+  });
 });

@@ -12,6 +12,7 @@ import { switchMap } from 'rxjs/operators';
 export class DatasetsService {
   private datasets = [];
   datasetMessage;
+  tempPreviewFilers;
   
   constructor(private http: HttpClient) { }
   
@@ -59,5 +60,12 @@ export class DatasetsService {
     });
   }
 
-}
+  setPreviewFilters(tempFilters) {
+    this.tempPreviewFilers = tempFilters;
+  }
 
+  getPreviewFilters() {
+    return this.tempPreviewFilers;
+  }
+
+}

@@ -8,8 +8,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { Observable } from 'rxjs/Observable';
 import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ActionbarComponent } from './actionbar.component';
+
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
@@ -35,7 +35,7 @@ describe('ActionbarComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
-    component    = fixture.componentInstance;   
+    component = fixture.componentInstance;   
   });
 
   it('should create', () => {    
