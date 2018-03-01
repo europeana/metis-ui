@@ -107,7 +107,6 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=STARTED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
-        console.log(data);
         return data;
       } else {
         return false;
