@@ -1,6 +1,6 @@
 {
-  "name": "metis",
-  "version": "0.0.1",
+  "name": "metis-ui",
+  "version": "1.0-SNAPSHOT",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
