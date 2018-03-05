@@ -17,7 +17,7 @@
   }
 
   .status {
-    flex-basis: 1;
+    flex-basis: 0;
     flex-grow: 0;
     padding-right: 1.5rem;
     text-transform: uppercase;
@@ -34,7 +34,7 @@
   }
 
   .progress {
-    flex-basis: 1;
+    flex-basis: 0;
     flex-grow: 2;
     font-size: 0.75rem;
     padding-right: 1.5rem;
@@ -79,7 +79,7 @@
   }
 
   nav {
-    flex-basis: 1;
+    flex-basis: 0;
     flex-grow: 0;
     white-space: nowrap;
 
