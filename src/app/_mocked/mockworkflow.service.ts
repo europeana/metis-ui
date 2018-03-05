@@ -80,7 +80,7 @@ export let currentWorkflow = {
         processedRecords: '1000',
         expectedRecords: '1000'
       }
-    }
+    }]
   }],  
   nextPage: -1
 };
@@ -97,10 +97,6 @@ export let currentReport = { id: 123,
     identifiers: []
   }]
 };
-
-export let currentDataset = { 
-    datasetId: '1'
-  }
 
 export class MockWorkflowService extends WorkflowService {
 
