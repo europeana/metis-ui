@@ -1,0 +1,42 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
+table {
+  .progress {
+    display: inline-block;
+    flex-basis: 0;
+    flex-grow: 2;
+    font-size: 0.75rem;
+    width: 4rem;
+
+    .progressbar {
+      background: $offwhite;
+      border-radius: 0.5rem;
+      height: 0.5rem;
+      margin-bottom: 0.5rem;
+      width: 100%;
+
+      .progressbar-done {
+        background: $eu-blue;
+        border-radius: 0.5rem;
+        height: 0.5rem;
+      }
+    }
+  }
+
+  nav {
+    display: inline-block;
+    white-space: nowrap;
+    width: auto;
+
+    ul {
+      white-space: nowrap;
+
+      li {
+        display: inline-block;
+      }
+
+    }
+
+  }
+}

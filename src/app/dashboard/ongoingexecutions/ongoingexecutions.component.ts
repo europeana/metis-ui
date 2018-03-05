@@ -57,27 +57,8 @@ export class OngoingexecutionsComponent {
   */
   getOngoing() {
     this.workflows.getOngoingExecutionsPerOrganisation().subscribe(executions => {
-      this.addDatasetInfo(executions);
+      this.ongoingExecutions = this.datasets.addDatasetNameToExecution(executions);
     });
-  }
-
-  /* addDatasetInfo
-    add relevant dataset info to execution
-  */
-  addDatasetInfo(executions) {
-    for (let i = 0; i < executions.length; i++) {
-      if (this.datasetNames[executions[i].datasetId]) {
-        executions[i].datasetName = this.datasetNames[executions[i].datasetId];
-      } else {    
-        this.datasets.getDataset(executions[i].datasetId).subscribe(result => {
-          this.datasetNames[executions[i].datasetId] = result['datasetName'];
-          executions[i].datasetName = result['datasetName'];
-        },(err: HttpErrorResponse) => {
-          this.errors.handleError(err);   
-        });
-      }
-    }
-    this.ongoingExecutions = executions;
   }
 
   /* cancelWorkflow

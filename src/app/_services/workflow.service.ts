@@ -22,7 +22,7 @@ export class WorkflowService {
   activeExternalTaskId: any;
   allWorkflows: any;
   currentPlugin: number = 0; // pick the first plugin for now
-  currentPage: number = 0;
+  currentPage: Array<any> = [];
 
   /* triggerNewWorkflow
     trigger a new workflow
@@ -147,6 +147,20 @@ export class WorkflowService {
     });
   }
 
+  /* getOngoingExecutionsPerOrganisation 
+    get all ongoing (either running or inqueue) executions for the user's organisation
+  */
+  getAllExecutionsPerOrganisation(page) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+    return this.http.get(url).map(data => {  
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+  }
+
   /* getWorkflows 
     get a list of currently available workflows
   */
@@ -208,15 +222,17 @@ export class WorkflowService {
   /* setCurrentPage
     set currentpage to current page number
   */
-  setCurrentPage(page): void {
-    this.currentPage = page;
+  setCurrentPage(page, where): void {
+    console.log('setCurrentPage', page, where);
+    this.currentPage[where] = page;
   }
 
   /* getCurrentPage
     get the current page
   */
-  getCurrentPage() {
-    return this.currentPage;
+  getCurrentPage(where) {
+    console.log('getCurrentPage', this.currentPage);
+    return this.currentPage[where];
   }
 
   /* setActiveWorkflow
