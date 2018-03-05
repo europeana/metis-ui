@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test --cc",
+    "test": "ng test --single-run --cc",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "dist": "ng build && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
