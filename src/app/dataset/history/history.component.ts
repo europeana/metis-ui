@@ -33,9 +33,8 @@ export class HistoryComponent implements OnInit {
   totalPages: number = 0;
 
   ngOnInit() { 
-
-    // only init once
-    if (this.inCollapsablePanel) {
+  
+   if (this.inCollapsablePanel) {
       this.workflows.selectedWorkflow.subscribe(
         selectedworkflow => {
           this.triggerWorkflow(selectedworkflow);

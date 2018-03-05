@@ -43,7 +43,7 @@
           {{ 'report' | translate }}
          </a>
       </td>
-      <td class="buttonplaceholder nowrap"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">{{ 'restart' | translate }}</a></td>
+      <td class="buttonplaceholder nowrap restart"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">{{ 'restart' | translate }}</a></td>
     </tr>
     <tr class="loadmore loadmore-history" *ngIf="inCollapsablePanel">
       <td colspan="10">

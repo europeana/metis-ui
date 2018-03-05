@@ -8,7 +8,7 @@
   padding: 0.75rem;
 
   .status {
-    flex-basis: 1;
+    flex-basis: 0;
     flex-grow: 0;
     font-size: 0.75rem;
     padding-left: 0.75rem;
@@ -24,7 +24,7 @@
   }
 
   .progress {
-    flex-basis: 1;
+    flex-basis: 0;
     flex-grow: 2;
     font-size: 0.75rem;
     padding-right: 1.5rem;
@@ -61,7 +61,7 @@
   }
 
   .datetime {
-    flex-basis: 1;
+    flex-basis: 0;
     flex-grow: 0;
     font-size: 0.8125rem;
     padding-right: 0.5rem;
@@ -81,7 +81,7 @@
   }
 
   nav {
-    flex-basis: 1;
+    flex-basis: 0;
     flex-grow: 0;
     white-space: nowrap;
 
