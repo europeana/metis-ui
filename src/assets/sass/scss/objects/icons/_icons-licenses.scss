@@ -14,7 +14,7 @@ html:hover [class^='icon-']{-ms-zoom: 1;}
 [class^='icon-license-']::before,
 [class*=' icon-license-']::before
 {
-  font-family:                'cc-licenses';
+  font-family:                'cc-licenses', sans-serif;
   -moz-font-feature-settings: 'liga';
   -ms-font-feature-settings:  'liga' 1;
   -o-font-feature-settings:   'liga';
