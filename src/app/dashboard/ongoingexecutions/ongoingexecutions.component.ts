@@ -24,10 +24,12 @@ export class OngoingexecutionsComponent {
   ongoingExecutions;
   errorMessage;
   subscription;
-  intervalTimer = 2000;
+  intervalTimer = 5000;
   currentPlugin: number = 0;
   cancelling;
   datasetNames: Array<any> = [];
+  viewMore: boolean = false;
+
 
   ngOnInit() {
     this.startPolling();
@@ -52,17 +54,21 @@ export class OngoingexecutionsComponent {
     });
   }
 
-  /* getOngoing
-    get ongoing executions, most recent started
+  /** getOngoing
+  /*  get ongoing executions, either in queue or running, most recent started
+  /*  showing up to 5 executions
   */
   getOngoing() {
-    this.workflows.getOngoingExecutionsPerOrganisation().subscribe(executions => {
-      this.ongoingExecutions = this.datasets.addDatasetNameToExecution(executions);
+    this.workflows.getAllExecutionsPerOrganisation(0, true).subscribe(executions => {
+      this.ongoingExecutions = this.datasets.addDatasetNameToExecution(executions['results']);
+      if (executions['nextPage'] > 0) {
+        this.viewMore = true;
+      }
     });
   }
 
   /* cancelWorkflow
-    start cancellation of the datasetid with id
+    start cancellation of the dataset with id
   */
   cancelWorkflow(id) {
     if (!id) { return false; }

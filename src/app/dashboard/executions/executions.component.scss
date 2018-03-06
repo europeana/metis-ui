@@ -2,26 +2,35 @@
 @import '../../assets/sass/pandora/settings/metis-variables';
 
 table {
+
+  tr:not(.loadmore) td a {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .maxwidth {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: none;
+    white-space: nowrap;
+    width: 6rem;
+  }
+
   .progress {
     display: inline-block;
-    flex-basis: 0;
-    flex-grow: 2;
-    font-size: 0.75rem;
+    padding-right: 0.5rem;
     width: 4rem;
 
     .progressbar {
-      background: $offwhite;
-      border-radius: 0.5rem;
-      height: 0.5rem;
       margin-bottom: 0.5rem;
-      width: 100%;
-
-      .progressbar-done {
-        background: $eu-blue;
-        border-radius: 0.5rem;
-        height: 0.5rem;
-      }
     }
+  }
+
+  .tooltip::after {
+    bottom: auto;
+    top: -2rem;
   }
 
   nav {
@@ -37,6 +46,5 @@ table {
       }
 
     }
-
   }
 }

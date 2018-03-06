@@ -104,7 +104,7 @@ export class WorkflowService {
   */
   getAllFinishedExecutions(id, page?, workflow?) {
     if (workflow === undefined) { workflow = ''; }
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=STARTED_DATE&ascending=false&nextPage=${page}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
         return data;
@@ -136,22 +136,13 @@ export class WorkflowService {
   /* getOngoingExecutionsPerOrganisation 
     get all ongoing (either running or inqueue) executions for the user's organisation
   */
-  getOngoingExecutionsPerOrganisation() {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=true`;   
-    return this.http.get(url).map(data => {  
-      if (data) {
-        return data['results'];
-      } else {
-        return false;
-      }
-    });
-  }
-
-  /* getOngoingExecutionsPerOrganisation 
-    get all ongoing (either running or inqueue) executions for the user's organisation
-  */
-  getAllExecutionsPerOrganisation(page) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+  getAllExecutionsPerOrganisation(page, ongoing?) {
+    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;  
+    if (ongoing) {
+      url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
+    } else {
+      url += '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED';
+    }
     return this.http.get(url).map(data => {  
       if (data) {
         return data;
@@ -223,7 +214,6 @@ export class WorkflowService {
     set currentpage to current page number
   */
   setCurrentPage(page, where): void {
-    console.log('setCurrentPage', page, where);
     this.currentPage[where] = page;
   }
 
@@ -231,7 +221,6 @@ export class WorkflowService {
     get the current page
   */
   getCurrentPage(where) {
-    console.log('getCurrentPage', this.currentPage);
     return this.currentPage[where];
   }
 
@@ -259,5 +248,4 @@ export class WorkflowService {
   workflowDone(status): void {
     this.workflowIsDone.emit(status);
   }
-
 }

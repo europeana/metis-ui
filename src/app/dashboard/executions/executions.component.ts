@@ -19,45 +19,80 @@ export class ExecutionsComponent implements OnInit {
     private datasets: DatasetsService) { }
 
   allExecutions:Array<any> = [];
+  ongoingExecutions: Array<any> = [];
+  ongoingExecutionsOutput: Array<any> = [];
+  ongoingExecutionsCurrentTotal: number = 0;
   currentPlugin: number = 0;
+  currentPage: number = 0;
   nextPage: number = 0;
+  nextPageOngoing: number = 0;
   gotoNextPage: number = 0;
   subscription;
-  intervalTimer: number = 2000;
+  intervalTimer: number = 5000;
   totalPagesShowing: number = 0;
+  errorMessage: string;
 
   ngOnInit() {
   	if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }  
-
     this.startPolling();
+    this.getAllExecutions();
   }
 
   /* startPolling
     check for updates on executions
   */
   startPolling() {
-    //if (this.subscription) { this.subscription.unsubscribe(); }
-    //let timer = Observable.timer(0, this.intervalTimer);
-    //this.subscription = timer.subscribe(t => {
+    if (this.ongoingExecutionsCurrentTotal !== this.ongoingExecutions.length) {
+      this.nextPage = 0;
+      this.allExecutions = []; 
       this.getAllExecutions();
-    //});
+    }
+    this.ongoingExecutionsCurrentTotal = this.ongoingExecutions.length;
+    this.nextPageOngoing = 0;
+    this.ongoingExecutions = [];
+    this.getOngoingExecutions();
+  }
+
+  /** getOngoingExecutions
+  /* get all ongoing executions, either in queue or running
+  /* datasetname needs to be added to executions for use in table
+  */
+  getOngoingExecutions() {
+    this.workflows.getAllExecutionsPerOrganisation(this.nextPageOngoing, true).subscribe(executions => {
+      this.ongoingExecutions = this.ongoingExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
+      if (executions['nextPage'] > 0) {
+        this.nextPageOngoing = executions['nextPage'];
+        this.getOngoingExecutions();
+      } else {
+        this.ongoingExecutionsOutput = this.ongoingExecutions;
+      }   
+    });
+    
+    if (this.nextPageOngoing <= 0) {
+      setTimeout(()=> {   
+        this.startPolling();
+      }, this.intervalTimer);
+    }
   }
 
   /** getAllExecutions
   /* get all executions, ordered by most recent started
   /* datasetname needs to be added to executions for use in table
   */
-  getAllExecutions() {    
+  getAllExecutions() {   
+    let thisPage = this.nextPage;
+    let currentPage = this.currentPage;
+
     this.workflows.getAllExecutionsPerOrganisation(this.nextPage).subscribe(executions => {
-      if (this.allExecutions.length === 0) {
-        this.allExecutions = this.datasets.addDatasetNameToExecution(executions['results']);
-      } else {
-        this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
-      }
+      this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
       this.nextPage = executions['nextPage'];
-    });    
+
+      if (currentPage > thisPage) {
+        this.getAllExecutions();
+      }
+    });   
   }
 
   /** loadNextPage
@@ -65,8 +100,21 @@ export class ExecutionsComponent implements OnInit {
   */
   loadNextPage() {
     if (this.nextPage !== -1) {
+      this.currentPage++;
       this.getAllExecutions();
     }
+  }
+
+  /** cancelWorkflow
+  /*  start cancellation of the dataset with id
+  */
+  cancelWorkflow(id) {
+    if (!id) { return false; }
+    this.workflows.cancelThisWorkflow(id).subscribe(result => {
+    },(err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
+    });
   }
 
 }
