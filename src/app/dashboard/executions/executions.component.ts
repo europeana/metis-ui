@@ -31,6 +31,7 @@ export class ExecutionsComponent implements OnInit {
   intervalTimer: number = 5000;
   totalPagesShowing: number = 0;
   errorMessage: string;
+  successMessage: string;
 
   ngOnInit() {
   	if (typeof this.translate.use === 'function') { 
@@ -45,6 +46,7 @@ export class ExecutionsComponent implements OnInit {
   */
   startPolling() {
     if (this.ongoingExecutionsCurrentTotal !== this.ongoingExecutions.length) {
+      this.successMessage = '';
       this.nextPage = 0;
       this.allExecutions = []; 
       this.getAllExecutions();
@@ -85,6 +87,8 @@ export class ExecutionsComponent implements OnInit {
     let thisPage = this.nextPage;
     let currentPage = this.currentPage;
 
+    if (this.nextPage === -1) { return false }
+
     this.workflows.getAllExecutionsPerOrganisation(this.nextPage).subscribe(executions => {
       this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
       this.nextPage = executions['nextPage'];
@@ -111,6 +115,11 @@ export class ExecutionsComponent implements OnInit {
   cancelWorkflow(id) {
     if (!id) { return false; }
     this.workflows.cancelThisWorkflow(id).subscribe(result => {
+      if (typeof this.translate.instant === 'function') { 
+        this.successMessage = this.translate.instant('cancelling') ': ' + id;
+      } else {
+        this.successMessage = 'Cancelling: ' + id;
+      }
     },(err: HttpErrorResponse) => {
       let error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;

@@ -45,6 +45,7 @@ describe('OngoingexecutionsComponent', () => {
 
   it('should get an ongoing execution', () => {
     component.getOngoing();
+    component.ongoingExecutions = currentWorkflow['results'];
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.ongoing-executions')).length).toBeTruthy();
   });

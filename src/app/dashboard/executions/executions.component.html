@@ -1,5 +1,6 @@
 <div class="messages">
   <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+  <div class="success-message" *ngIf="successMessage"><i class="fa fa-times"></i>{{successMessage}}</div>
 </div>
 <div class="all-executions" *ngIf="allExecutions && allExecutions.length > 0">
   <h3>All executions</h3>
