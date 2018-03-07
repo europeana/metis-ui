@@ -54,7 +54,7 @@ describe('ExecutionsComponent', () => {
   it('should cancel a workflow', () => {
     component.cancelWorkflow(1);    
     fixture.detectChanges();
-    expect(component.successMessage).not.toBe();
+    expect(component.successMessage).not.toBe('');
   });
 
 });
