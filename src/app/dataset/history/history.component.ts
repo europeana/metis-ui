@@ -43,8 +43,8 @@ export class HistoryComponent implements OnInit {
     }
 
     if (!this.inCollapsablePanel) {
-      if (typeof this.workflows.getCurrentPage !== 'function') { return false }
-      this.totalPages = this.workflows.getCurrentPage('history');
+      if (typeof this.workflows.getCurrentPageNumberForComponent !== 'function') { return false }
+      this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
       this.returnAllExecutions();
     } else {
       this.returnAllExecutions();
@@ -67,7 +67,7 @@ export class HistoryComponent implements OnInit {
           this.allExecutions = [];          
           this.nextPage = 0;
           if (!this.inCollapsablePanel) {
-            this.totalPages = this.workflows.getCurrentPage('history');
+            this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
             this.returnAllExecutions();
           } else {
             this.returnAllExecutions();
@@ -126,7 +126,7 @@ export class HistoryComponent implements OnInit {
 
       if (!this.inCollapsablePanel) {
         startPage = this.nextPage;
-        this.workflows.setCurrentPage(this.nextPage, 'history');
+        this.workflows.setCurrentPageNumberForComponent(this.nextPage, 'history');
         this.nextPage = result['nextPage'];
 
         if (totalPageNr > 0) {
@@ -205,7 +205,7 @@ export class HistoryComponent implements OnInit {
 
   selectWorkflow (w) {
     this.selectedFilterWorkflow = w;
-    this.totalPages = this.workflows.getCurrentPage('history');
+    this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
     this.nextPage = 0;
     this.allExecutions = [];
     this.returnAllExecutions();

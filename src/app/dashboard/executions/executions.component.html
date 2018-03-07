@@ -21,7 +21,7 @@
         <td class="nowrap">{{execution.datasetId}}</td>
         <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
         <td><span class="svg-icon-{{execution.workflowName}}"></span></td>
-        <td class="nowrap"><span class="maxwidth">{{execution.workflowName}}</span></td>
+        <td class="nowrap"><span class="ellipsis">{{execution.workflowName}}</span></td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</td>
         <td class="centered">
@@ -49,7 +49,7 @@
         <td class="nowrap">{{execution.datasetId}}</td>
         <td>{{execution.datasetName}}</td>
         <td><span class="svg-icon-{{execution.workflowName}}"></span></td>
-        <td class="nowrap"><span class="maxwidth">{{execution.workflowName}}</span></td>
+        <td class="nowrap"><span class="ellipsis">{{execution.workflowName}}</span></td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</td>
         <td class="centered">

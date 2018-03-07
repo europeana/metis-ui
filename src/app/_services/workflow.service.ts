@@ -210,18 +210,20 @@ export class WorkflowService {
     return this.currentReport;
   }
 
-  /* setCurrentPage
-    set currentpage to current page number
+  /* setCurrentPageNumberForComponent
+    set currentpage to current page number 
+    for a specific component
+    a page is a new set of results (pagination for list/table of results)
   */
-  setCurrentPage(page, where): void {
-    this.currentPage[where] = page;
+  setCurrentPageNumberForComponent(page, component): void {
+    this.currentPage[component] = page;
   }
 
   /* getCurrentPage
-    get the current page
+    get the current page number for the specific component
   */
-  getCurrentPage(where) {
-    return this.currentPage[where];
+  getCurrentPageNumberForComponent(component) {
+    return this.currentPage[component];
   }
 
   /* setActiveWorkflow
