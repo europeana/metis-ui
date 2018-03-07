@@ -120,8 +120,8 @@ export class MockWorkflowService extends WorkflowService {
     this.changeWorkflow.emit(currentWorkflow['results'][0]);
   }
   
-  getOngoingExecutionsPerOrganisation() {
-    return Observable.of(currentWorkflow['results']);
+  getAllExecutionsPerOrganisation() {
+    return Observable.of(currentWorkflow);
   }
 
   getAllFinishedExecutions() {
