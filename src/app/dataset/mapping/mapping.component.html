@@ -12,16 +12,16 @@
   <i *ngIf="loadingSamples" class="fa fa-cog fa-spin"></i>
 </div>
 
-<div class="view-sample" *ngIf="statistics">
+<div class="view-sample view-statistics" *ngIf="statistics" [ngClass]="{'view-sample-expanded': expandedStatistics}">
   <div class="view-sample-title">
     <h3>Statistics</h3>
     <div class="toggle-expand"> 
-      <a class="">-</a>
+      <a (click)="toggleStatistics()">-</a>
     </div>
   </div>
   <div class="view-sample-editor">
-    <codemirror [ngModel]="statistics" (ngModelChange)="statistics=$event" [config]="editorConfig"></codemirror>
-    <a class="load-more-btn">expand</a>
+    <codemirror [ngModel]="statistics" [config]="editorConfig"></codemirror>
+    <a class="load-more-btn" (click)="toggleStatistics()" *ngIf="!expandedStatistics">expand</a>
   </div>
 </div>
 

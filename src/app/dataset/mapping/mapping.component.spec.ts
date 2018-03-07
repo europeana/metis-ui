@@ -54,6 +54,12 @@ describe('MappingComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).not.toBeTruthy();
   });
 
+  it('should expand a statistics', () => {
+    component.toggleStatistics();
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-statistics.view-sample-expanded')).length).toBeTruthy();
+  });
+
   it('should expand a sample', () => {
     component.fullView = false;
     component.displayXSLT();

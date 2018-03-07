@@ -36,6 +36,7 @@ export class MappingComponent implements OnInit {
   fullView: boolean = true; 
   splitter: string = '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->';
   expandedSample: number;
+  expandedStatistics: boolean;
 
   ngOnInit() {
 
@@ -53,7 +54,7 @@ export class MappingComponent implements OnInit {
       this.translate.use('en'); 
     }
 
-    //this.loadStatistics();
+    this.loadStatistics();
     this.loadEditor();
     this.toggleFullViewMode(true);
 
@@ -66,7 +67,7 @@ export class MappingComponent implements OnInit {
   loadStatistics() {
     this.editorConfig = Object.assign(this.defaultEditorConfig);
     Object.freeze(this.defaultEditorConfig);
-    this.statistics = this.workflows.getStatistics();
+    this.statistics = JSON.stringify(this.workflows.getStatistics(), null, '\t');
   }
 
   /** loadEditor
@@ -111,6 +112,13 @@ export class MappingComponent implements OnInit {
   toggleFullViewMode(mode: boolean) {
     this.fullView = mode;
     this.displayXSLT();
+  }
+
+  /** toggleStatistics
+  /* expand statistics panel
+  */
+  toggleStatistics() {
+    this.expandedStatistics = this.expandedStatistics === true ? false : true;
   }
 
   /** expandSample
