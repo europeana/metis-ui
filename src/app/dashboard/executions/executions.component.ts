@@ -116,7 +116,7 @@ export class ExecutionsComponent implements OnInit {
     if (!id) { return false; }
     this.workflows.cancelThisWorkflow(id).subscribe(result => {
       if (typeof this.translate.instant === 'function') { 
-        this.successMessage = this.translate.instant('cancelling') ': ' + id;
+        this.successMessage = this.translate.instant('cancelling') + ': ' + id;
       } else {
         this.successMessage = 'Cancelling: ' + id;
       }
