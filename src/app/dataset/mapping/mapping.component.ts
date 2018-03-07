@@ -30,9 +30,12 @@ export class MappingComponent implements OnInit {
   editorConfig;
   editorConfigEdit;
   statistics;
-  xslt;
+  fullXSLT;
+  xslt: Array<any> = [];
   errorMessage: string;
   fullView: boolean = true; 
+  splitter: string = '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->';
+  expandedSample: number;
 
   ngOnInit() {
 
@@ -52,6 +55,7 @@ export class MappingComponent implements OnInit {
 
     //this.loadStatistics();
     this.loadEditor();
+    this.toggleFullViewMode(true);
 
   }
 
@@ -72,11 +76,50 @@ export class MappingComponent implements OnInit {
   loadEditor() {
     this.editorConfigEdit = Object.assign({}, this.defaultEditorConfig);
     this.editorConfigEdit['readOnly'] = false;
-    this.xslt = this.workflows.getXSLT();
+    
+    this.fullXSLT = this.workflows.getXSLT();
+    this.displayXSLT();
   }
 
+  /** displayXSLT
+  /* display xslt, either as one file or in individual cards
+  /* expand the sample when in full view, else start with all cards "closed" 
+  */
+  displayXSLT() {
+    this.xslt = [];
+    if (this.fullView) {
+      this.xslt.push(this.fullXSLT);
+      this.expandedSample = 0;       
+    } else {
+      this.xslt = this.splitXSLT();
+      this.expandedSample = undefined;      
+    }
+  }
+
+  /** splitXSLT
+  /* split xslt on comments to show file in individual cards
+  */
+  splitXSLT() {
+    return this.fullXSLT.split(this.splitter);
+  }
+
+  /** toggleFullViewMode
+  /* show either xslt in one card (fullView) or in individual cards
+  /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
+  /* @param {boolean} mode - fullview (true) or individual cards (false)
+  */
   toggleFullViewMode(mode: boolean) {
-    console.log('toggleFullViewMode');
+    this.fullView = mode;
+    this.displayXSLT();
+  }
+
+  /** expandSample
+  /* expand the editor, so you can view more lines of code
+  /* only one sample can be expanded
+  /* @param {number} index - index of sample to expand
+  */
+  expandSample(index: number) {
+    this.expandedSample = this.expandedSample === index ? undefined : index;
   }
 
 }

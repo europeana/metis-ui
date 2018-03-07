@@ -60,6 +60,7 @@
 
         a {
           background: $gray-med;
+          box-sizing: content-box;
           color: $white;
           display: inline-block;
           font-size: 2rem;

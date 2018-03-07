@@ -25,16 +25,15 @@
   </div>
 </div>
 
-<div class="view-sample" *ngIf="xslt" [ngClass]="{'view-sample-expanded': fullView===true}">
+<div class="view-sample" *ngFor="let card of xslt; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
     <h3>edm_external2internal_v0.3</h3>
-    <div class="toggle-expand" *ngIf="!fullView"> 
-      <a class="">-</a>
+    <div class="toggle-expand" *ngIf="expandedSample === i && xslt.length > 1"> 
+      <a (click)="expandSample(i)">-</a>
     </div>
   </div>
   <div class="view-sample-editor">
-    <codemirror [ngModel]="xslt | beautifyXML" [config]="editorConfigEdit"></codemirror>
-    <!--<a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>-->
-    <a class="load-more-btn" *ngIf="!fullView">expand</a>
+    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" [config]="editorConfigEdit"></codemirror>
+    <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
 </div>
