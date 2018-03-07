@@ -1,6 +1,16 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
 
+.filter-wrapper {
+  position: relative;
+
+  .svg-icon-spin {
+    position: absolute;
+    top: 0;
+  }
+
+}
+
 .view-sample {
   display: flex;
   margin-bottom: 2rem;
