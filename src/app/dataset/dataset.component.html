@@ -1,7 +1,7 @@
 <div class="dashboard-wrapper">
 
   <div class="messages" (clickOutside)="clickOutsideMessage($event);">
-    <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+    <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
     <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
   </div>
   

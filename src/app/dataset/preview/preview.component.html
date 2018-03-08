@@ -1,5 +1,5 @@
 <div class="messages">
-  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+  <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
 </div>
 
 <div class="filter-wrapper">
@@ -29,7 +29,7 @@
       </div>
     </li>
   </ul>
-  <i *ngIf="loadingSamples" class="fa fa-cog fa-spin"></i>
+  <span *ngIf="loadingSamples" class="svg-icon-spin"></span>
 </div>
 
 <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">

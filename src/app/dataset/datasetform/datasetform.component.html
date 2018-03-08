@@ -1,7 +1,7 @@
 <div class="metis-form metis-form-horizontal">
   <form [formGroup]="datasetForm" #formDir="ngForm">
     <div class="messages">
-      <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+      <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
       <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
     </div>
     <div class="form-fields">
