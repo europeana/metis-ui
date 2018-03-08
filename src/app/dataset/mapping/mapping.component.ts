@@ -41,7 +41,7 @@ export class MappingComponent implements OnInit {
   ngOnInit() {
 
   	 this.defaultEditorConfig = { 
-      mode: 'application/xml',
+      mode: 'application/json',
       lineNumbers: true,
       indentUnit: 2,
       foldGutter: true,
@@ -77,6 +77,7 @@ export class MappingComponent implements OnInit {
   loadEditor() {
     this.editorConfigEdit = Object.assign({}, this.defaultEditorConfig);
     this.editorConfigEdit['readOnly'] = false;
+    this.editorConfigEdit['mode'] = 'application/xml';
     
     this.fullXSLT = this.workflows.getXSLT();
     this.displayXSLT();
