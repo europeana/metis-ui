@@ -163,6 +163,8 @@ export class WorkflowService {
       'only_transformation_mocked',
       'only_validation_internal',
       'only_validation_internal_mocked',
+      'only_enrichment',
+      'only_enrichment_mocked',
       'harvest_and_validation_external', 
       'harvest_and_validation_external_mocked'];
     return workflows;
