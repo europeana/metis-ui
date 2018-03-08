@@ -186,6 +186,8 @@ export class DatasetformComponent implements OnInit {
       this.datasetForm.value['language'] = null;
     }
 
+
+
   }
 
   /* onSubmit
@@ -195,12 +197,11 @@ export class DatasetformComponent implements OnInit {
 
     this.successMessage = undefined;
     this.errorMessage = undefined;
-
     this.formatFormValues();
 
+    let datasetValues = { 'dataset': this.datasetForm.value };       
     if (this.formMode === 'update') {
-
-      this.datasets.updateDataset(this.datasetForm.value).subscribe(result => {
+      this.datasets.updateDataset(datasetValues).subscribe(result => {
 
         localStorage.removeItem('tempDatasetData');
         this.successMessage = 'Dataset updated!';
@@ -210,13 +211,10 @@ export class DatasetformComponent implements OnInit {
         this.datasetForm.controls['language'].disable();
         this.datasetForm.controls['description'].disable();
         this.datasetForm.controls['notes'].disable();
-        this.datasetForm.controls['pluginType'].disable();
-        
+        this.datasetForm.controls['pluginType'].disable();          
       }, (err: HttpErrorResponse) => {
-
         let error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`; 
-
       });
 
     } else {
