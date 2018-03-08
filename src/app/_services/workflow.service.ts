@@ -60,7 +60,11 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
     
     return this.http.get(url).map(data => {   
-      this.returnDataFromCall(data);
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
     });
   }
 
@@ -72,7 +76,11 @@ export class WorkflowService {
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;   
     return this.http.get(url).map(data => {   
-      this.returnDataFromCall(data);
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
     });
   }
 
@@ -99,7 +107,11 @@ export class WorkflowService {
     if (workflow === undefined) { workflow = ''; }
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=STARTED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
-      this.returnDataFromCall(data);
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
     });
   }
 
@@ -136,19 +148,6 @@ export class WorkflowService {
     });
   }
 
-  /** returnDataFromCall
-  /* return data retrieved from call
-  /* or false when no result
-  /* @param {object} data - returned data from call 
-  */
-  returnDataFromCall(data) {
-    if (data) {
-      return data;
-    } else {
-      return false;
-    }
-  }
-
   /* getWorkflows 
     get a list of currently available workflows
   */
@@ -171,7 +170,11 @@ export class WorkflowService {
   cancelThisWorkflow(id) {    
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}`;   
     return this.http.delete(url).map(data => {   
-      this.returnDataFromCall(data);
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
     });
   }
 
