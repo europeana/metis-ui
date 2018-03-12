@@ -13,22 +13,30 @@ export class ReportComponent implements OnInit {
 
   report: string = '';
 
+  /** ngOnInit
+  /* init this component
+  /* if report not empty, create a report object
+  /* set translation language
+  */  
   ngOnInit() {
     if (this.workflows.getCurrentReport()) {
-      let reportcontent = this.workflows.getCurrentReport().errors;
-      
-      for (let i = 0; i < reportcontent.length; i++) {
-        for (let key in reportcontent[i]) {  
-          this.report += '<strong>' + key + '</strong>: ' + reportcontent[i][key] + '</br>';
+      let reportContent = this.workflows.getCurrentReport().errors;      
+      for (let i = 0; i < reportContent.length; i++) {
+        for (let key in reportContent[i]) {  
+          this.report += '<strong>' + key + '</strong>: ' + reportContent[i][key] + '</br>';
         }
         this.report += '</br>';
       }
     }
+
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
   }
 
+  /** closeReport
+  /* set report to empty, to close the repot
+  */  
   closeReport () {
   	this.report = undefined;
   }

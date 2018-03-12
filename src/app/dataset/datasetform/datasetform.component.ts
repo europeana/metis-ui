@@ -22,7 +22,7 @@ export class DatasetformComponent implements OnInit {
   autosuggest;
   autosuggestId: string;
   datasetOptions: object;
-  formMode: string = 'create'; // create, read, update
+  formMode: string = 'create'; // possible options: create, read, update
   formSubmitted: boolean;
   errorMessage;
   successMessage;
@@ -33,7 +33,6 @@ export class DatasetformComponent implements OnInit {
   private datasetForm: FormGroup;
   private countryOptions: any;
   private languageOptions: any;
-
  
   constructor(private countries: CountriesService,
     private datasets: DatasetsService,
@@ -46,6 +45,13 @@ export class DatasetformComponent implements OnInit {
     private datePipe: DatePipe,
     private translate: TranslateService) {}
 
+  /** ngOnInit
+  /* init of this component
+  /* check for temp dataset information
+  /* set translation languages
+  /* get countries and languages
+  /* build the dataset form
+  */
   ngOnInit() {
 
     if (!this.datasetData) {      
@@ -67,8 +73,11 @@ export class DatasetformComponent implements OnInit {
     
   }
 
-  returnCountries() {
-    
+  /** returnCountries
+  /* return all countries
+  /* list can be used in form
+  */
+  returnCountries() {    
     this.countries.getCountriesLanguages('country').subscribe(result => {
       this.countryOptions = result;
       if (this.datasetData && this.countryOptions) {
@@ -83,13 +92,14 @@ export class DatasetformComponent implements OnInit {
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);     
     });
-
   }
 
+  /** returnLanguages
+  /* return all languages
+  /* list can be used in form
+  */
   returnLanguages() {
-
     this.countries.getCountriesLanguages('language').subscribe(result => {
-
       this.languageOptions = result;
       if (this.datasetData && result) {
         if (this.datasetData.language) {
@@ -103,16 +113,15 @@ export class DatasetformComponent implements OnInit {
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);     
     });
-
   }
 
-  /* buildForm
-    creates a new form
-    if datasetid exists: prefill form
-    disable/enable fields
+  /** buildForm
+  /* creates a new form
+  /* populate the form or leave empty when creating a new dataset
+  /* if datasetid exists: prefill form
+  /* disable/enable fields
   */
   buildForm() {
-     /* populated the form or leave empty when creating a new dataset */
     this.datasetForm = this.fb.group({
       datasetId: [(this.datasetData ? this.datasetData.datasetId : '')],
       datasetName: [(this.datasetData ? this.datasetData.datasetName : ''), [Validators.required]],
@@ -157,9 +166,12 @@ export class DatasetformComponent implements OnInit {
       this.datasetForm.controls['notes'].disable();
       this.datasetForm.controls['pluginType'].disable();
     }
-
   }
 
+  /** saveTempData
+  /* temporarily save form values
+  /* after blur/change
+  */
   saveTempData() {
     if (this.formMode === 'create') {
       this.formatFormValues();
@@ -168,8 +180,10 @@ export class DatasetformComponent implements OnInit {
     }
   }
 
+  /** formatFormValues
+  /* some field values need formating before sending them to the backend
+  */
   formatFormValues() {
-
     this.datasetForm.value.harvestingMetadata = {
       pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'NULL',
       mocked: false,
@@ -185,13 +199,10 @@ export class DatasetformComponent implements OnInit {
     if (!this.datasetForm.value['language']) {
       this.datasetForm.value['language'] = null;
     }
-
-
-
   }
 
-  /* onSubmit
-    submits the form and shows an error or success message
+  /** onSubmit
+  /*  submits the form and shows an error or success message
   */
   onSubmit() {
 
@@ -202,7 +213,6 @@ export class DatasetformComponent implements OnInit {
     let datasetValues = { 'dataset': this.datasetForm.value };       
     if (this.formMode === 'update') {
       this.datasets.updateDataset(datasetValues).subscribe(result => {
-
         localStorage.removeItem('tempDatasetData');
         this.successMessage = 'Dataset updated!';
         this.formMode = 'read';
@@ -216,32 +226,24 @@ export class DatasetformComponent implements OnInit {
         let error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`; 
       });
-
     } else {
-
-      this.datasets.createDataset(this.datasetForm.value).subscribe(result => {
-        
+      this.datasets.createDataset(this.datasetForm.value).subscribe(result => {        
         localStorage.removeItem('tempDatasetData');
         this.datasets.setDatasetMessage('New dataset created! Id: ' + result['datasetId']);
         this.router.navigate(['/dataset/new/' + result['datasetId']]);
-      
       }, (err: HttpErrorResponse) => {
-
         let error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;  
-
       });
-
     }
 
     window.scrollTo(0, 0);
-
   }
 
-  /* updateForm
-    update an existing dataset
-    using (new) values from the form
-    show an error or success message
+  /** updateForm
+  /* update an existing dataset
+  /* using (new) values from the form
+  /* show an error or success message
   */
   updateForm() {
     this.formMode = 'update';
@@ -256,7 +258,6 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.controls['pluginType'].enable();
     
     window.scrollTo(0, 0);
-
   }   
 
 }

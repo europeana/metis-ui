@@ -19,7 +19,6 @@ export class HomeComponent {
   bannerlinktext: string;
 
   constructor(private sanitizer: DomSanitizer) {
-
     this.heroimage = sanitizer.bypassSecurityTrustStyle('url(/assets/images/hero_metis_1600x650_jade.png)');
     this.attributiontext = 'Cyclopides metis L., Cyclopides qua... Museum Fur Naturkunde Berlin';
     this.attributionlink = sanitizer.bypassSecurityTrustUrl('https://www.europeana.eu/portal/');
@@ -28,9 +27,7 @@ export class HomeComponent {
 
     this.bannerheading = 'What can you do with Metis?';
     this.bannertext = 'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
-
     this.bannerlinktext = 'Register to Metis here';
-
   }
 
 }

@@ -13,6 +13,10 @@ export class GeneralinfoComponent implements OnInit {
 
   @Input() datasetData: any;
 
+  /** ngOnInit
+  /* init for this specific component
+  /* and set translation langugaes
+  */
   ngOnInit() {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
