@@ -5,8 +5,8 @@
     </div>
 
     <div class="messages">
-      <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
-      <div class="success-message" *ngIf="successMessage"><i class="fa fa-times"></i>{{successMessage}}</div>
+      <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
+      <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
     </div>
 
     <div class="form-fields">
@@ -27,8 +27,8 @@
       </fieldset>
      
       <div class="form-group form-group-btns">
-        <button class="login-btn" type="submit" [disabled]="!loginForm.valid || loading">
-          {{ 'signin' | translate }} <i *ngIf="loading" class="fa fa-cog fa-spin"></i>
+        <button class="login-btn" [ngClass]="{'svg-icon-spin-inbutton': loading===true}" type="submit" [disabled]="!loginForm.valid || loading">
+          {{ 'signin' | translate }}
         </button>
       </div>
     </div>

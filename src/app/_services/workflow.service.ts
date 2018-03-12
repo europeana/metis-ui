@@ -23,7 +23,7 @@ export class WorkflowService {
   activeExternalTaskId: any;
   allWorkflows: any;
   currentPlugin: number = 0; // pick the first plugin for now
-  currentPage: number = 0;
+  currentPage: Array<any> = [];
 
   /* triggerNewWorkflow
     trigger a new workflow
@@ -105,7 +105,7 @@ export class WorkflowService {
   */
   getAllFinishedExecutions(id, page?, workflow?) {
     if (workflow === undefined) { workflow = ''; }
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=STARTED_DATE&ascending=false&nextPage=${page}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowName=${workflow}&workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).map(data => {   
       if (data) {
         return data;
@@ -137,11 +137,16 @@ export class WorkflowService {
   /* getOngoingExecutionsPerOrganisation 
     get all ongoing (either running or inqueue) executions for the user's organisation
   */
-  getOngoingExecutionsPerOrganisation() {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&workflowStatus=INQUEUE&workflowStatus=RUNNING&orderField=CREATED_DATE&ascending=true`;   
+  getAllExecutionsPerOrganisation(page, ongoing?) {
+    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;  
+    if (ongoing) {
+      url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
+    } else {
+      url += '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED';
+    }
     return this.http.get(url).map(data => {  
       if (data) {
-        return data['results'];
+        return data;
       } else {
         return false;
       }
@@ -159,6 +164,8 @@ export class WorkflowService {
       'only_transformation_mocked',
       'only_validation_internal',
       'only_validation_internal_mocked',
+      'only_enrichment',
+      'only_enrichment_mocked',
       'harvest_and_validation_external', 
       'harvest_and_validation_external_mocked'];
     return workflows;
@@ -222,18 +229,20 @@ export class WorkflowService {
     return this.currentReport;
   }
 
-  /* setCurrentPage
-    set currentpage to current page number
+  /* setCurrentPageNumberForComponent
+    set currentpage to current page number 
+    for a specific component
+    a page is a new set of results (pagination for list/table of results)
   */
-  setCurrentPage(page): void {
-    this.currentPage = page;
+  setCurrentPageNumberForComponent(page, component): void {
+    this.currentPage[component] = page;
   }
 
   /* getCurrentPage
-    get the current page
+    get the current page number for the specific component
   */
-  getCurrentPage() {
-    return this.currentPage;
+  getCurrentPageNumberForComponent(component) {
+    return this.currentPage[component];
   }
 
   /* setActiveWorkflow
@@ -260,5 +269,4 @@ export class WorkflowService {
   workflowDone(status): void {
     this.workflowIsDone.emit(status);
   }
-
 }

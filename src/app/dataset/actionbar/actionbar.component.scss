@@ -1,70 +1,37 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
 
+.workflow-selector {
+  max-height: 10rem;
+  overflow: auto;
+}
+
 .dataset-actionbar {
   align-items: center;
   display: flex;
   min-height: 4rem;
-  padding: 0.75rem;
+  padding: .75rem;
 
   .status {
     flex-basis: 0;
     flex-grow: 0;
-    font-size: 0.75rem;
-    padding-left: 0.75rem;
+    font-size: .75rem;
+    padding-left: .75rem;
     padding-right: 1.5rem;
     white-space: nowrap;
 
     strong,
     &.status-new {
       display: block;
-      font-size: 0.875rem;
-    }
-
-  }
-
-  .progress {
-    flex-basis: 0;
-    flex-grow: 2;
-    font-size: 0.75rem;
-    padding-right: 1.5rem;
-
-    .progress-status {
-      align-content: center;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .progress-statusnumbers {
-      width: 6rem;
-    }
-
-    .progress-percentage {
-      text-align: right;
-      width: 3rem;
-    }
-
-    .progressbar {
-      background: $offwhite;
-      border-radius: 0.5rem;
-      height: 0.5rem;
-      margin-bottom: 1rem;
-      width: 100%;
-
-      .progressbar-done {
-        background: $eu-blue;
-        border-radius: 0.5rem;
-        height: 0.5rem;
-      }
-
+      font-size: .875rem;
     }
   }
 
   .datetime {
     flex-basis: 0;
     flex-grow: 0;
-    font-size: 0.8125rem;
-    padding-right: 0.5rem;
+    font-size: .8125rem;
+    padding-right: .5rem;
     text-align: center;
     white-space: nowrap;
 
@@ -77,103 +44,101 @@
         display: none;
       }
     }
-
   }
+}
 
-  nav {
-    flex-basis: 0;
-    flex-grow: 0;
-    white-space: nowrap;
+nav {
+  flex-basis: 0;
+  flex-grow: 0;
+  white-space: nowrap;
 
-    li {
+  li {
 
-      border-left: 1px solid $offwhite;
-      display: inline-block;
-      padding: 0.4rem;
-      position: relative;
+    border-left: 1px solid $offwhite;
+    display: inline-block;
+    padding: .4rem;
+    position: relative;
 
-      &:first-child {
-        border-left: 0;
+    &:first-child {
+      border-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+
+    @media (min-width: $bp-xxl) {
+      a:not(.newaction-btn)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: $bp-xxl) {
+      a:not(.newaction-btn)[data-tooltip] {
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
       }
 
-      &:last-child {
-        padding-right: 0;
+      span {
+        display: none;
       }
 
-      a {
-        color: $gray-med;
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem 0.25rem 1.75rem;
-
-        &:hover {
-          background: $offwhite;
-          border-radius: $border-radius;
-        }
-
-        &.newaction-btn {
-          border: 1px solid $white;
-          border-bottom: 0;
-          padding-left: 0.5rem;
-          padding-right: 1.75rem;
-        }
-
-        &.newaction-btn-open {
-          background-color: $white;
-          border: 1px solid $offwhite;
-          border-bottom: 0;
-          z-index: 9;
-        }
-
-        &.newaction-btn+ul {
-          background: $white;
-          border: 1px solid $offwhite;
-          box-shadow: rgba(77, 77, 77, 0.2) 0 1px 4px;
-          padding: 0.5rem 0;
-          position: absolute;
-          right: 0;
-          width: 16rem;
-          z-index: 8;
-
-          li {
-            display: block;
-            padding: 0 0.5rem;
-          }
-
-          a {
-            font-size: 0.75rem;
-            padding: 0;
-          }
-
-          a:hover {
-            background: none;
-            text-decoration: underline solid inherit;
-          }
-
-        }
+      .newaction-btn span {
+        display: inline-block;
       }
-
-      @media (min-width: $bp-xxl) {
-        a:not(.newaction-btn)::after {
-          display: none;
-        }
-      }
-
-      @media (max-width: $bp-xxl) {
-        a:not(.newaction-btn)[data-tooltip] {
-          cursor: pointer;
-          position: relative;
-          z-index: 2;
-        }
-
-        span {
-          display: none;
-        }
-
-        .newaction-btn span {
-          display: inline-block;
-        }
-      }
-
     }
   }
+
+  li a {
+    color: $gray-med;
+    font-size: .875rem;
+    padding: .25rem .5rem .25rem 1.75rem;
+
+    &:hover {
+      background: $offwhite;
+      border-radius: $border-radius;
+    }
+
+    &.newaction-btn {
+      border: 1px solid $white;
+      border-bottom: 0;
+      padding-left: .5rem;
+      padding-right: 1.75rem;
+    }
+
+    &.newaction-btn-open {
+      background-color: $white;
+      border: 1px solid $offwhite;
+      border-bottom: 0;
+      z-index: 9;
+    }
+  }
+
+  li a.newaction-btn+ul {
+    background: $white;
+    border: 1px solid $offwhite;
+    box-shadow: rgba(77, 77, 77, 0.2) 0 1px 4px;
+    padding: .5rem 0;
+    position: absolute;
+    right: 0;
+    width: 16rem;
+    z-index: 8;
+
+    li {
+      display: block;
+      padding: 0 .5rem;
+    }
+
+    a {
+      font-size: 0.75rem;
+      padding: 0;
+    }
+
+    a:hover {
+      background: none;
+      text-decoration: underline;
+    }
+  }
+
 }
