@@ -11,6 +11,10 @@ export class SettingsService {
 
   constructor() {}
 
+  /** returnApiHosts
+  /* return api settings
+  /* to use throughout entite application
+  */
   returnApiHosts() {
     return apiSettings;    
   }

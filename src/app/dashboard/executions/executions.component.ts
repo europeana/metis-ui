@@ -33,6 +33,12 @@ export class ExecutionsComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
 
+  /** ngOnInit
+  /* init this component:
+  /* set translation language,
+  /* start polling, checking for updates
+  /* get list of all executions 
+  */
   ngOnInit() {
   	if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
@@ -41,8 +47,10 @@ export class ExecutionsComponent implements OnInit {
     this.getAllExecutions();
   }
 
-  /* startPolling
-    check for updates on executions
+  /** startPolling
+  /* list of executions has to parts: running/inqueue ones and all other exections
+  /* check for updates on running/inqueue xecutions
+  /* if more or less running/inqueue executions than before: update overall list of executions
   */
   startPolling() {
     if (this.ongoingExecutionsCurrentTotal !== this.ongoingExecutions.length) {
@@ -111,6 +119,7 @@ export class ExecutionsComponent implements OnInit {
 
   /** cancelWorkflow
   /*  start cancellation of the dataset with id
+  /* @param {number} id - id of the dataset to cancel
   */
   cancelWorkflow(id) {
     if (!id) { return false; }

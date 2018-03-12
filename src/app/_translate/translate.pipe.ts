@@ -8,7 +8,11 @@ import { TranslateService } from '../_services';
 export class TranslatePipe implements PipeTransform {
   constructor(private _translate: TranslateService) { }
 
-  transform(value: string, args: any[]): any {
+  /** transform
+  /* use this pipe in components to translate values
+  /* @param {string} value - word or sentence to translate
+  */ 
+  transform(value: string): any {
     if (!value) return;
     if (typeof this._translate.instant === 'function') { 
     	return this._translate.instant(value);
@@ -16,4 +20,5 @@ export class TranslatePipe implements PipeTransform {
     	return '';
     }
   }
+  
 }

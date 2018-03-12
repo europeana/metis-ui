@@ -42,6 +42,13 @@ export class ActionbarComponent {
 
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+  /** ngOnInit
+  /* init for this component: 
+  /* get most recently started execution
+  /* get list of all workflows
+  /* act when workflow changed
+  /* set language to use for translations
+  */
   ngOnInit() {
     
     this.returnLastExecution();
@@ -72,8 +79,8 @@ export class ActionbarComponent {
 
   }
 
-  /* startPollingWorkflow
-    start a timer and start to check the status of a workflow
+  /** startPollingWorkflow
+  /*  start a timer and start to check the status of a workflow
   */
   startPollingWorkflow() {
     if (this.subscription) { this.subscription.unsubscribe(); }
@@ -83,8 +90,8 @@ export class ActionbarComponent {
     });
   }
 
-  /* pollingWorkflow
-    check the current status of a workflow
+  /** pollingWorkflow
+  /*  check the current status of a workflow
   */
   pollingWorkflow() {
 
@@ -139,8 +146,8 @@ export class ActionbarComponent {
 
   };
 
-  /* returnLastExecution
-    get the last action for this dataset and display its status in the progress/actionbar
+  /** returnLastExecution
+  /*  get the last action for this dataset and display its status in the progress/actionbar
   */
   returnLastExecution () {
     if (!this.datasetData) { return false }
@@ -156,8 +163,9 @@ export class ActionbarComponent {
     });
   }
 
-  /* cancelWorkflow
-    cancel a running execution
+  /** cancelWorkflow
+  /*  cancel a running execution
+  /* using id of current workflow
   */
   cancelWorkflow () {    
     this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
@@ -167,15 +175,15 @@ export class ActionbarComponent {
     });
   }
 
-  /* showLog
-    show the log for the current/last execution
+  /** showLog
+  /*  show the log for the current/last execution
   */
   showLog() {
     this.notifyShowLogStatus.emit(true);
   }
 
-  /* openWorkflowSelector
-    open up the workflow selector, now working with fixed values
+  /** openWorkflowSelector
+  /*  open up the workflow selector, now working with fixed values
   */
   openWorkflowSelector() {
     if (this.isShowingWorkflowSelector === false) {
@@ -185,16 +193,18 @@ export class ActionbarComponent {
     }
   }
 
-  /* selectWorkflow
-    select a workflow from the dropdownlist
+  /** selectWorkflow
+  /*  select a workflow from the dropdownlist
+  /* @param {string} workflow - selected workflow
   */
   selectWorkflow(workflow) {
     this.workflows.selectWorkflow(workflow);
     this.openWorkflowSelector();
   }
 
-  /* onClickedOutsideWorkflow
-    close workflow selector
+  /** onClickedOutsideWorkflow
+  /*  close workflow selector
+  /* @param {any} e - event, optional
   */  
   onClickedOutsideWorkflow(e?) {
     this.isShowingWorkflowSelector = false;

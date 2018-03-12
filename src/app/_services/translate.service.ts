@@ -11,10 +11,19 @@ export class TranslateService {
 
   constructor(@Inject(TRANSLATIONS) private _translations: any) {}
 
+  /** use
+  /*  indicate which language to use
+  /* set current language
+  /* @param {string} lang - use this language
+  */
   public use(lang: string): void {
     this._currentLang = lang;
   }
 
+  /** translate
+  /*  translate this value in current language
+  /* @param {string} key - value to translate
+  */
   private translate(key: string): string {
     let translation = key;
 
@@ -25,6 +34,10 @@ export class TranslateService {
     return translation;
   }
 
+  /** instant
+  /*  translate this value in current language
+  /* @param {string} key - value to translate
+  */
   public instant(key: string) {
     return this.translate(key); 
   }
