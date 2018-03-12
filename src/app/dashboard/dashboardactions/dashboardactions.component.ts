@@ -11,12 +11,19 @@ export class DashboardactionsComponent implements OnInit {
 
   constructor(private translate: TranslateService) { }
 
+  /** ngOnInit
+  /* init this component:
+  /* set translation language 
+  */
   ngOnInit() {    
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
   }
 
+  /** gotoZoho
+  /*  redirect to zoho url
+  */
   gotoZoho() {
   	window.location.href = environment.links.gotoZoho;
   }

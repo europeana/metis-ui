@@ -69,7 +69,7 @@ export class DatasetformComponent implements OnInit {
 
   returnCountries() {
     
-    this.countries.getCountries().subscribe(result => {
+    this.countries.getCountriesLanguages('country').subscribe(result => {
       this.countryOptions = result;
       if (this.datasetData && this.countryOptions) {
         if (this.datasetData.country) {
@@ -88,7 +88,7 @@ export class DatasetformComponent implements OnInit {
 
   returnLanguages() {
 
-    this.countries.getLanguages().subscribe(result => {
+    this.countries.getCountriesLanguages('language').subscribe(result => {
 
       this.languageOptions = result;
       if (this.datasetData && result) {
