@@ -14,10 +14,11 @@ import { ActionbarComponent } from './actionbar.component';
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
+  let service;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
+      imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent, TranslatePipe ],
       providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, 
         AuthenticationService, 
@@ -50,7 +51,6 @@ describe('ActionbarComponent', () => {
 
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dataset-actionbar .progressbar')).length).toBeTruthy();
-
   });
 
   it('should do click to show logging', fakeAsync((): void => {
@@ -68,7 +68,6 @@ describe('ActionbarComponent', () => {
       expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
     } 
   }));
-
 
   it('should open workflow filter', (): void => {       
     component.currentWorkflow = currentWorkflow;

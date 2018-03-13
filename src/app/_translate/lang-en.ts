@@ -89,6 +89,7 @@ export const LANG_EN_TRANS = {
   'submit': 'Submit',
   'totaldataset': 'Total dataset',
   'totalprocessed': 'Total processed',
+  'unknown': 'Unknown',
   'update': 'Update',
   'updateprofile': 'If you want to update your profile, send an email to',
   'url': 'URL',
