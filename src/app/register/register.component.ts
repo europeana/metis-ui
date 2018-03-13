@@ -30,8 +30,12 @@ export class RegisterComponent implements OnInit {
     private authentication: AuthenticationService,
     private translate: TranslateService) { }
 
-  ngOnInit() {
-    
+  /** ngOnInit
+  /* init for this component
+  /* create a registration form
+  /* set translation language
+  */
+  ngOnInit() {    
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       passwords: this.fb.group({
@@ -45,13 +49,20 @@ export class RegisterComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-
   }
 
+  /** onKeyupPassword
+  /* get password after keyup in form
+  */
   onKeyupPassword() {
     this.password = this.registerForm.controls.passwords.get('password').value;
   }
 
+  /** onSubmit
+  /* submit registration form
+  /* check if passwords do match
+  /* and are strict
+  */
   onSubmit() {
     this.errorMessage = undefined;
     this.loading = true;
@@ -76,8 +87,7 @@ export class RegisterComponent implements OnInit {
         }
         this.loading = false;
       },
-      (err: HttpErrorResponse) => {
-        
+      (err: HttpErrorResponse) => {        
         if (err.status === 201 ) {
           // Bug in HttpClient, a 201 is returned as error for some reason.
           this.onRegistration(msg_successful);
@@ -103,6 +113,11 @@ export class RegisterComponent implements OnInit {
     }
   }
 
+  /** onRegistration
+  /* set message after successfull registration
+  /* redirect user to login page afterwards
+  /* @param {string} msg - success message
+  */
   private onRegistration(msg) {
     this.successMessage = msg;
     setTimeout(() => {

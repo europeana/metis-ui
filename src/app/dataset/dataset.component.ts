@@ -10,7 +10,6 @@ import { DatasetformComponent } from './datasetform/datasetform.component';
 import { HistoryComponent } from './history/history.component';
 import { MappingComponent } from './mapping/mapping.component';
 import { PreviewComponent } from './preview/preview.component';
-import { QualityassuranceComponent } from './qualityassurance/qualityassurance.component';
 
 import { datasetTab } from './datasettab';
 
@@ -130,9 +129,7 @@ export class DatasetComponent implements OnInit {
       return new datasetTab(MappingComponent, {});
     } else  if (this.activeTab === 'preview') {
       return new datasetTab(PreviewComponent, this.datasetData);
-    } else  if (this.activeTab === 'dataquality') {
-      return new datasetTab(QualityassuranceComponent, {});
-    }
+    } 
   }
 
   /** clickOutsideMessage
