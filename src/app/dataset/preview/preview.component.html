@@ -36,7 +36,7 @@
   <div class="view-sample-title">
     <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin}}</span></h3>
     <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i"> 
-      <a class="" (click)="expandSample(i)">-</a>
+      <a (click)="expandSample(i)">-</a>
     </div>
   </div>
   <div class="view-sample-editor">

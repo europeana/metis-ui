@@ -32,6 +32,11 @@ export class ProfileComponent implements OnInit {
     private fb: FormBuilder, 
     private translate: TranslateService) { }
 
+  /** ngOnInit
+  /* init of this component
+  /* create the profile form
+  /* set translation language
+  */
   ngOnInit() {
     this.createForm();
     if (typeof this.translate.use === 'function') { 
@@ -39,6 +44,10 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  /** createForm
+  /* create a profile form
+  /* prefill the form with known data
+  */
   createForm() {
     const user: User = this.authentication.currentUser;
 
@@ -63,17 +72,27 @@ export class ProfileComponent implements OnInit {
         })
       });
     }
-  }
+  }  
 
+  /** toggleEditMode
+  /* switch between readonly and edit mode
+  */
   toggleEditMode() {
     this.errorMessage = undefined;
     this.editMode = !this.editMode;
   }
 
+  /** onKeyupPassword
+  /* get password when keyup
+  */
   onKeyupPassword() {
     this.password = this.profileForm.controls.passwords.get('password').value;
   }
 
+  /** onSubmit
+  /* submit current password form
+  /* which is a part of the profile form
+  */
   onSubmit() {
     this.errorMessage = undefined;
     this.loading = true;
@@ -83,7 +102,7 @@ export class ProfileComponent implements OnInit {
 
     this.authentication.updatePassword(password).subscribe(result => {
       if (result === true) {
-        this.onUpdatePassword();
+        this.successMessage = 'Update password successful!';
       } else {
         this.errorMessage = 'Update password failed, please try again later';
       }
@@ -91,17 +110,18 @@ export class ProfileComponent implements OnInit {
       this.toggleEditMode();
     },
     (err: HttpErrorResponse) => {
-
       if (err.error.errorMessage === 'Wrong access token') {
         this.authentication.logout();
         this.router.navigate(['/login']);
-      }
-      
+      }      
       this.errorMessage = `Update password failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
   }
 
+  /** onReloadProfile
+  /* get most accurate user data from zoho
+  */
   onReloadProfile() {
     this.errorMessage = undefined;
     this.loading = true;
@@ -120,7 +140,6 @@ export class ProfileComponent implements OnInit {
         this.authentication.logout();
         this.router.navigate(['/login']);
       }
-
       this.errorMessage = `Refresh failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
@@ -128,10 +147,6 @@ export class ProfileComponent implements OnInit {
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 500);   
-
   }
 
-  private onUpdatePassword() {
-    this.successMessage = 'Update password successful!';
-  }
 }

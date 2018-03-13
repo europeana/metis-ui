@@ -57,6 +57,14 @@ export class PreviewComponent implements OnInit {
   prefill;
   loadingSamples: boolean = false;
 
+  /** ngOnInit
+  /*  init this component
+  /* set values for codemirror editor
+  /* set translation language
+  /* set translation for nosmaple key
+  /* add a workflow filter if dataset is know
+  /* get prefilled values and prefill filters if available
+  */  
   ngOnInit() {
   	this.editorConfig = { 
       mode: 'application/xml',
@@ -85,6 +93,11 @@ export class PreviewComponent implements OnInit {
 
   }
 
+  /** addWorkflowFilter
+  /* populate a filter with workflows
+  /* sort it
+  /* save selection, when switching tab
+  */
   addWorkflowFilter() {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {
@@ -100,6 +113,12 @@ export class PreviewComponent implements OnInit {
     });   
   }
 
+  /** addDateFilter
+  /* populate a filter with dates based on selected workflow
+  /* sorted by date
+  /* save selection, when switching tab
+  /* @param {string} workflow - selected workflow
+  */
   addDateFilter(workflow) {
     this.filterWorkflow = false;
     this.selectedWorkflow = workflow;
@@ -115,6 +134,13 @@ export class PreviewComponent implements OnInit {
     });     
   }
 
+  /** addDateFilter
+  /* populate a filter with plugins based on selected execution/date
+  /* send complete execution object to function and not only date,
+  /* to prevent a second (duplicate) call 
+  /* save selection, when switching tab
+  /* @param {object} execution - selected execution
+  */
   addPluginFilter(execution) {
     this.filterDate = false;
     this.allPlugins = [];
@@ -127,6 +153,11 @@ export class PreviewComponent implements OnInit {
     }
   }
 
+  /** getXMLSamples
+  /* get and show samples based on plugin
+  /* show loader while fetching the samples
+  /* @param {string} plugin - selected plugin
+  */
   getXMLSamples(plugin) {
     this.loadingSamples = true;
     this.onClickedOutside();
@@ -144,11 +175,20 @@ export class PreviewComponent implements OnInit {
     });
   }
 
+  /** saveTempFilterSelection
+  /* save selected options from filters
+  /* so they can be prefilled after switching tabs
+  /* @param {filter} array - name of filter
+  /* @param {toSave} any - string or object to save temporarily
+  */
   saveTempFilterSelection(filter, toSave) {
     this.tempFilterSelection[filter] = toSave;
     this.datasets.setPreviewFilters(this.tempFilterSelection);
   }
 
+  /** prefillFilters
+  /* prefill filters, when temporarily saved options are available
+  */
   prefillFilters() {
     if (this.prefill) {
       if (this.prefill['workflow']) {
@@ -168,14 +208,18 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-  expandSample(i) {
-    if (this.expandedSample === i) {
-      this.expandedSample = undefined;
-    } else {
-      this.expandedSample = i;
-    }
+  /** expandSample
+  /* expand the editor, so you can view more lines of code
+  /* only one sample can be expanded
+  /* @param {number} index - index of sample to expand
+  */
+  expandSample(index: number) {
+    this.expandedSample = this.expandedSample === index ? undefined : index;
   }
 
+  /** toggleFilterWorkflow
+  /* show or hide worflow filter
+  */
   toggleFilterWorkflow() {
     this.onClickedOutside();
     this.nextPage = 0;
@@ -191,6 +235,9 @@ export class PreviewComponent implements OnInit {
     }
   }
 
+  /** toggleFilterDate
+  /* show or hide date filter
+  */
   toggleFilterDate() {
     this.onClickedOutside();
     this.nextPageDate = 0;
@@ -203,6 +250,9 @@ export class PreviewComponent implements OnInit {
     }
   }
 
+  /** toggleFilterPlugin
+  /* show or hide plugin filter
+  */
   toggleFilterPlugin() {
     this.onClickedOutside();
     if (this.filterPlugin === false) {
@@ -212,6 +262,9 @@ export class PreviewComponent implements OnInit {
     }
   }
 
+  /** onClickedOutside
+  /* close all open filters when click outside the filters
+  */
   onClickedOutside(e?) {
     this.filterWorkflow = false;  
     this.filterDate = false;   

@@ -22,6 +22,11 @@ export class DatasetlogComponent implements OnInit {
 
   logMessages;
 
+  /** ngOnInit
+  /* init for this specific component
+  /* return the log information
+  /* and set translation langugaes
+  */
   ngOnInit() {
   	this.returnLog();
     if (typeof this.translate.use === 'function') { 
@@ -29,10 +34,16 @@ export class DatasetlogComponent implements OnInit {
     }
   }
 
+  /** closeLog
+  /* close log modal window
+  */
   closeLog() {
   	this.notifyShowLogStatus.emit(false);
   }
 
+  /** returnLog
+  /* get content of log, based on external taskid and topology
+  */
   returnLog() {
     if (!this.isShowingLog) { return false }
     this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology']).subscribe(result => {
@@ -41,5 +52,5 @@ export class DatasetlogComponent implements OnInit {
       this.errors.handleError(err);
     });
   }
-
+  
 }

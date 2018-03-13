@@ -1,3 +1,39 @@
-<p>
-  mapping works!
-</p>
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+</div>
+
+<div class="filter-wrapper">
+  <ul class="filter">
+    <li>
+      <a *ngIf="!fullView" (click)="toggleFullViewMode(true)">View in one sheet</a>
+      <a *ngIf="fullView" (click)="toggleFullViewMode(false)">View per field</a>
+    </li>    
+  </ul>
+  <i *ngIf="loadingSamples" class="fa fa-cog fa-spin"></i>
+</div>
+
+<div class="view-sample view-statistics" *ngIf="statistics" [ngClass]="{'view-sample-expanded': expandedStatistics}">
+  <div class="view-sample-title">
+    <h3>Statistics</h3>
+    <div class="toggle-expand"> 
+      <a (click)="toggleStatistics()">-</a>
+    </div>
+  </div>
+  <div class="view-sample-editor">
+    <codemirror [ngModel]="statistics" [config]="editorConfig"></codemirror>
+    <a class="load-more-btn" (click)="toggleStatistics()" *ngIf="!expandedStatistics">expand</a>
+  </div>
+</div>
+
+<div class="view-sample" *ngFor="let card of xslt; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
+  <div class="view-sample-title">
+    <h3>edm_external2internal_v0.3</h3>
+    <div class="toggle-expand" *ngIf="expandedSample === i && xslt.length > 1"> 
+      <a (click)="expandSample(i)">-</a>
+    </div>
+  </div>
+  <div class="view-sample-editor">
+    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" [config]="editorConfigEdit"></codemirror>
+    <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
+  </div>
+</div>

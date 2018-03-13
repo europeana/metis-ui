@@ -21,17 +21,21 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 
   constructor(
-    // private route: ActivatedRoute,
     private router: Router,
     private authentication: AuthenticationService,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private fb: FormBuilder,
     private translate: TranslateService) { }
 
+  /** ngOnInit
+  /* init of this component
+  /* reset login status = logout
+  /* create a login form
+  /* set translation language
+  */
   ngOnInit() {
-
-    // reset login status
-    this.authentication.logout();
+   
+    this.authentication.logout(); // 
 
     this.loginForm = this.fb.group({
       'email': ['', [Validators.required, Validators.email] ],
@@ -41,21 +45,19 @@ export class LoginComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-
   }
 
+  /** onSubmit
+  /* submit login form
+  */
   onSubmit() {
-
     const msg_bad_credentials = 'Email or password is incorrect, please try again.';
-    const email = this.loginForm.controls.email.value;
-    const password = this.loginForm.controls.password.value;
-
+    const url = this.redirectPreviousUrl.get();
+        
     this.loading = true;
 
-    this.authentication.login(email, password).subscribe(result => {
-
+    this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
       if (result === true) {
-        const url = this.redirectPreviousUrl.get();
         if (url) {
           this.router.navigateByUrl(`/${url}`);
           this.redirectPreviousUrl.set(undefined);
@@ -66,18 +68,14 @@ export class LoginComponent implements OnInit {
         this.errorMessage = msg_bad_credentials;
       }
       this.loading = false;
-
     }, (err: HttpErrorResponse) => {
-
       if (err.status === 406) {
         this.errorMessage = msg_bad_credentials;
       } else {
         this.errorMessage = `Login failed: ${StringifyHttpError(err)}`;
-      }
-      
+      }      
       this.loading = false;
     });
-
   }
 
 }

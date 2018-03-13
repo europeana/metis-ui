@@ -24,7 +24,6 @@ import { RegisterComponent } from './register';
 import { LoginComponent } from './login';
 import { ProfileComponent } from './profile';
 import { HeaderComponent,
-         FooterComponent,
          PasswordCheckComponent } from './shared';
 import { HomeComponent } from './home';
 import { DatasetComponent,
@@ -35,8 +34,7 @@ import { DatasetComponent,
          HistoryComponent,
          ActionbarComponent,
          MappingComponent,
-         PreviewComponent,
-         QualityassuranceComponent } from './dataset';
+         PreviewComponent } from './dataset';
 import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
@@ -60,7 +58,6 @@ import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
     ProfileComponent,
     PageNotFoundComponent,
     HeaderComponent,
-    FooterComponent,
     HomeComponent,
     DatasetComponent,
     DashboardComponent,
@@ -74,7 +71,6 @@ import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
     ActionbarComponent,
     MappingComponent,
     PreviewComponent,
-    QualityassuranceComponent,
     DatasetlogComponent,
     ExecutionsComponent,
     OngoingexecutionsComponent,
@@ -91,7 +87,7 @@ import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
     CodemirrorModule,
     ClickOutsideModule 
   ],
-  entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, QualityassuranceComponent ],
+  entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent ],
   providers: [
     AuthVisitorGuard,
     AuthUserGuard,
