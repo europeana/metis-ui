@@ -30,21 +30,22 @@ export class OngoingexecutionsComponent {
   datasetNames: Array<any> = [];
   viewMore: boolean = false;
 
-
+  /** ngOnInit
+  /* init of this component: 
+  /* start polling/checking for updates
+  /* set translation languages
+  /* translate some values to use in this component
+  */
   ngOnInit() {
     this.startPolling();
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
       this.cancelling = this.translate.instant('cancelling');
-    }
-
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }    
+    } 
   }
 
-  /* startPolling
-    check for ongoing executions
+  /** startPolling
+  /*  check for ongoing executions
   */
   startPolling() {
     if (this.subscription) { this.subscription.unsubscribe(); }
@@ -67,8 +68,9 @@ export class OngoingexecutionsComponent {
     });
   }
 
-  /* cancelWorkflow
-    start cancellation of the dataset with id
+  /** cancelWorkflow
+  /*  start cancellation of the dataset with id
+  /* @param {number} id - id of the dataset to cancel
   */
   cancelWorkflow(id) {
     if (!id) { return false; }
@@ -80,16 +82,18 @@ export class OngoingexecutionsComponent {
     });
   }
 
-  /* showLog
-    show the log for the current/last execution
+  /** showLog
+  /*  show the log for the current/last execution
+  /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
+  /* @param {string} topology - name of the topology
   */
   showLog(externaltaskId, topology) {
     let message = {'externaltaskId' : externaltaskId, 'topology' : topology};
     this.notifyShowLogStatus.emit(message);
   }
 
-  /* viewAll
-    scrolls to top of all executions table  / top of page
+  /** viewAll
+  /*  scrolls to top of all executions table/top of page
   */
   viewAll() {
     window.scrollTo(0, 0);
