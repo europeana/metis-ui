@@ -26,10 +26,16 @@ export class AuthenticationService {
     }
   }
 
+  /** validatedUser
+  /* check if user is validated/allowd
+  */
   validatedUser(): boolean {
     return localStorage.getItem(this.key) !== null;
   }
 
+  /** getToken
+  /* get token from user that is already logged in
+  */  
   getToken(): string {
     const s = localStorage.getItem(this.key);
     if (!s)  {
@@ -39,32 +45,41 @@ export class AuthenticationService {
     return h.token;
   }
 
+  /** updatePassword
+  /* update password for this user
+  /* @param {string} password - password
+  */ 
   updatePassword(password: string) {
-    const fn = `updatePassword(password='${password}'`;
     const url = `${apiSettings.apiHostAuth}/${environment.apiUpdatePassword}?newPassword=${password}`;
-
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       return true;
     });
   }
 
+  /** register
+  /* register this specific user
+  /* use values from registration form
+  /* @param {string} email - email
+  /* @param {string} password - password
+  */ 
   register(email: string, password: string) {
-    const fn = `register(email='${email}',password='${password}'`;
     const url = `${apiSettings.apiHostAuth}/${environment.apiRegister}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       return true;
     });
 
   }
 
+  /** login
+  /* login of this user
+  /* use values from login form
+  /* @param {string} email - email
+  /* @param {string} password - password
+  */ 
   login(email: string, password: string) {
-
-    const fn = `login(email='${email}',password='${password}')`;
     const url = `${apiSettings.apiHostAuth}/${environment.apiLogin}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
       if (user && user.metisUserAccessToken) {
@@ -74,20 +89,26 @@ export class AuthenticationService {
         return false;
       }
     });
-
   }
 
+  /** logout
+  /* logout of this user
+  /* by setting currentUser to null
+  /* current token to null
+  /* and empty localstorage
+  */ 
   logout(): void {
-    const fn = 'logout()';
     this.currentUser = null;
     this.token = null;  
     localStorage.removeItem(this.key); // clear token remove user from local storage to log user out
   }
 
-  reloadCurrentUser(email) {
-    const fn = 'reloadCurrentUser()';
-    const url = `${apiSettings.apiHostAuth}/${environment.apiProfile}/?userEmailToUpdate=${email}`;
-    
+  /** reloadCurrentUser
+  /* get latest information from user form zoho
+  /* @param {string} email - email
+  */ 
+  reloadCurrentUser(email: string) {
+    const url = `${apiSettings.apiHostAuth}/${environment.apiProfile}/?userEmailToUpdate=${email}`;    
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       const user = <User>data;
       if (user) {
@@ -97,17 +118,24 @@ export class AuthenticationService {
         return false;
       }
     });
-
   }
 
+  /** setCurrentUser
+  /* store information about current user
+  /* in currentUser variable, 
+  /* in token variable
+  /* and in localstorage, to keep user logged in between page refreshes
+  /* @param {object} user - user related information
+  */ 
   private setCurrentUser(user: User) {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
-
-    // store email and jwt token in local storage to keep user logged in between page refreshes
     localStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
   }
 
+  /** getCurrentUser
+  /* get information from currently active user
+  */ 
   getCurrentUser() {
     return this.currentUser;
   }

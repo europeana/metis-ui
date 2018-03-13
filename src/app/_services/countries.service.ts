@@ -15,9 +15,15 @@ export class CountriesService {
     private authentication: AuthenticationService, 
     private router: Router) {}
 
-  getCountries() {
-
-    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/countries`;    
+  /** getCountriesLanguages
+  /* get a list of countries or languages
+  /* @param {boolean} type - type of values to return, either country or language
+  */
+  getCountriesLanguages(type) {
+    let url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/countries`;        
+    if (type === 'language') {
+      url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/langugaes`;  
+    }
     return this.http.get(url).map(data => {      
       if (data) {
         return data;
@@ -25,20 +31,6 @@ export class CountriesService {
         return false;
       }
     });
-
-  }
-
-  getLanguages() {
-    
-    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/languages`;    
-    return this.http.get(url).map(data => {      
-      if (data) {
-        return data;
-      } else {
-        return false;
-      }
-    });
-
   }
 
 }

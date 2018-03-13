@@ -24,14 +24,19 @@ export class DashboardComponent implements OnInit {
               private translate: TranslateService) {
   }
 
+  /** ngOnInit
+  /* init of this component
+  /* set translation language 
+  */
   ngOnInit() {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
   }
 
-  /* onNotifyShowLogStatus
-    opens/closes the log messages 
+  /** onNotifyShowLogStatus
+  /*  opens/closes the log messages 
+  /* @param {any} message - message to display in log modal
   */
   onNotifyShowLogStatus(message):void {
     this.isShowingLog = message;
