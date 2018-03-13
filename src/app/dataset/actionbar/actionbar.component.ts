@@ -76,7 +76,7 @@ export class ActionbarComponent {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-
+    
   }
 
   /** startPollingWorkflow

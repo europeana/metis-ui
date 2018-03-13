@@ -5,7 +5,7 @@ table {
 
   tr:not(.loadmore) td a {
     &:hover {
-      text-decoration: underline;
+      text-decoration: underline inherit solid;
     }
   }
 
@@ -19,12 +19,13 @@ table {
   }
 
   .progress {
+    box-sizing: border-box;
     display: inline-block;
-    padding-right: 0.5rem;
+    padding-right: 0;
     width: 4rem;
 
     .progressbar {
-      margin-bottom: 0.5rem;
+      margin-bottom: .5rem;
     }
   }
 
@@ -40,11 +41,10 @@ table {
 
     ul {
       white-space: nowrap;
+    }
 
-      li {
-        display: inline-block;
-      }
-
+    li {
+      display: inline-block;
     }
   }
 }

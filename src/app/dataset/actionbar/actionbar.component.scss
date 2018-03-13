@@ -115,10 +115,11 @@ nav {
     }
   }
 
-  li a.newaction-btn+ul {
+  li .newaction-btn+ul {
     background: $white;
     border: 1px solid $offwhite;
-    box-shadow: rgba(77, 77, 77, 0.2) 0 1px 4px;
+    box-shadow: rgba(77, 77, 77, .2) 0 1px 4px;
+    box-sizing: border-box;
     padding: .5rem 0;
     position: absolute;
     right: 0;
@@ -131,13 +132,13 @@ nav {
     }
 
     a {
-      font-size: 0.75rem;
+      font-size: .75rem;
       padding: 0;
     }
 
     a:hover {
       background: none;
-      text-decoration: underline;
+      text-decoration: underline inherit solid;
     }
   }
 
