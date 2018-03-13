@@ -32,6 +32,15 @@ export class HistoryComponent implements OnInit {
   allWorkflows;
   totalPages: number = 0;
 
+  /** ngOnInit
+  /* init for this specific component
+  /* if in collapsable panel, subscribe to selected workflow so trigger after change
+  /* if nog in collapsable panel, check for current page number and get all executions for all pages
+  /* act upon changes in workflow
+  /* act when workflow is done
+  /* get all workflows
+  /* and set translation langugaes
+  */
   ngOnInit() { 
   
    if (this.inCollapsablePanel) {
@@ -84,9 +93,9 @@ export class HistoryComponent implements OnInit {
     }
   }
 
-  /* returnAllExecutions
-    return all executions, either max 4 to display in collapsable panel of list with pagination
-    option to filter on workflow in table
+  /** returnAllExecutions
+  /*  return all executions, either max 4 to display in collapsable panel of list with pagination
+  /*  option to filter on workflow in table
   */
   returnAllExecutions() {
 
@@ -149,15 +158,16 @@ export class HistoryComponent implements OnInit {
     });
   }
 
-  /* scroll
-    scroll to specific point in page after click
+  /** scroll
+  /*  scroll to specific point in page after click
+  /* @param {any} el - scroll to defined element
   */
   scroll(el) {
   	el.scrollIntoView({behavior:'smooth'});
   }
 
-  /* loadNextPage
-    used in processing history table to display next page
+  /** loadNextPage
+  /*  used in processing history table to display next page
   */
   loadNextPage() {
     if (this.nextPage !== -1) {
@@ -165,8 +175,9 @@ export class HistoryComponent implements OnInit {
     }
   }
 
-  /* triggerWorkflow
-    trigger a workflow, based on selection in workflow dropdown or restart button
+  /** triggerWorkflow
+  /*  trigger a workflow, based on selection in workflow dropdown or restart button
+  /* @param {string} workflowName - name of workflow to trigger
   */
   triggerWorkflow(workflowName) {   
     this.errorMessage = undefined;
@@ -180,8 +191,10 @@ export class HistoryComponent implements OnInit {
     });
   }
 
-  /* openReport
-    click on link to open report, if available
+  /** openReport
+  /*  click on link to open report, if available
+  /* @param {number} taskid - id of task
+  /* @param {string} topology - name of topology
   */
   openReport (taskid, topology) {  
     this.report = undefined;
@@ -194,7 +207,9 @@ export class HistoryComponent implements OnInit {
     });
   }
 
-
+  /** toggleFilterByWorkflow
+  /*  toggle workflow dropdown
+  */
   toggleFilterByWorkflow () {
     if (this.filterWorkflow === false) {
       this.filterWorkflow = true;
@@ -203,6 +218,10 @@ export class HistoryComponent implements OnInit {
     }
   }
 
+  /** selectWorkflow
+  /*  select an option from the workflow filter
+  /* @param {string} w - name of workflow
+  */
   selectWorkflow (w) {
     this.selectedFilterWorkflow = w;
     this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
@@ -212,6 +231,9 @@ export class HistoryComponent implements OnInit {
     this.filterWorkflow = false;
   }
 
+  /** onClickedOutside
+  /*  click outside the workflow filter to close
+  */
   onClickedOutside() {
     this.filterWorkflow = false;
   }

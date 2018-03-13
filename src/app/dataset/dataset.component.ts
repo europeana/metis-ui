@@ -10,7 +10,6 @@ import { DatasetformComponent } from './datasetform/datasetform.component';
 import { HistoryComponent } from './history/history.component';
 import { MappingComponent } from './mapping/mapping.component';
 import { PreviewComponent } from './preview/preview.component';
-import { QualityassuranceComponent } from './qualityassurance/qualityassurance.component';
 
 import { datasetTab } from './datasettab';
 
@@ -47,23 +46,26 @@ export class DatasetComponent implements OnInit {
   public isShowingLog = false;
   public datasetData; 
   public activeSet: string;
-
   public workflowData;
 
+  /** ngOnInit
+  /* set current user
+  /* if id is known, go to update dataset form, else new
+  /* subscribe to workflow changes
+  /* set translation language
+  */ 
   ngOnInit() {
 
     this.user = this.authentication.currentUser;
     
     this.route.params.subscribe(params => {
-
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
-
       if (this.activeSet) {
         this.returnDataset(+params['id']);
       } else {
-        this.loadTabComponent();      }
-
+        this.loadTabComponent();
+      }
     });
 
     this.workflows.changeWorkflow.subscribe(
@@ -75,52 +77,48 @@ export class DatasetComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-
   }
 
-  /* returnDataset
-    returns all dataset information based on identifier
+  /** returnDataset
+  /*  returns all dataset information based on identifier
+  /* @param {number} id - dataset identifier
   */
   returnDataset(id) {
     this.datasets.getDataset(id).subscribe(result => {
       this.datasetData = result;
       this.loadTabComponent();
-    },
-      (err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
         let error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
-  /* onNotifyShowLogStatus
-    opens/closes the log messages 
+  /** onNotifyShowLogStatus
+  /*  opens/closes the log messages 
+  /* @param {boolean} message - show log yes/no
   */
-  onNotifyShowLogStatus(message:boolean):void {
+  onNotifyShowLogStatus(message: boolean):void {
     this.isShowingLog = message;
   }
 
-  /* loadTabComponent
-    loads the content within the placeholder
+  /** loadTabComponent
+  /*  loads the content within the placeholder
   */
   loadTabComponent() {
-
     if (!this.getcurrentTab()) {return false; }
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab().component);
-
     let viewContainerRef = this.datasetHost.viewContainerRef;
     viewContainerRef.clear();
-
     let componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.datasetData = this.getcurrentTab().data;
      
     this.successMessage = this.datasets.getDatasetMessage();
-
   }
 
-  /* getcurrentTab
-    returns the components that will be used in the component placeholder within a tab
-    based on currently active tab
+  /** getcurrentTab
+  /*  returns the components that will be used in the component placeholder within a tab
+  /*  based on currently active tab
   */
   getcurrentTab() {
     if (this.activeTab === 'new' || this.activeTab === 'edit') {
@@ -131,14 +129,15 @@ export class DatasetComponent implements OnInit {
       return new datasetTab(MappingComponent, {});
     } else  if (this.activeTab === 'preview') {
       return new datasetTab(PreviewComponent, this.datasetData);
-    } else  if (this.activeTab === 'dataquality') {
-      return new datasetTab(QualityassuranceComponent, {});
-    }
+    } 
   }
 
+  /** clickOutsideMessage
+  /*  click outside message to close it
+  /* @param {any} e - event, optional
+  */
   clickOutsideMessage(e?) {
     this.errorMessage = undefined;
     this.successMessage = undefined;
   }
-
 }

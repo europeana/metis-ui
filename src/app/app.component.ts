@@ -21,13 +21,19 @@ export class AppComponent implements OnInit {
     public router: Router) {
   }
 
-  public ngOnInit(): void {
-    
+  /** ngOnInit
+  /* init for this component
+  /* watch router events
+  /* check if user is logged in
+  /* add a body class
+  /* and margins
+  */
+  public ngOnInit(): void {    
     this.router.events.subscribe((event: any) => {
       if (!event.url) { return false; }
       if (this.router.isActive(event.url, false)) {
         this.loggedIn = this.authentication.validatedUser( );
-
+        
         this.bodyClass = event.url.split('/')[1];
         if (event.url === '/') { this.bodyClass = 'home'; }
 

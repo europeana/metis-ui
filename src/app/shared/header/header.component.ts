@@ -24,6 +24,12 @@ export class HeaderComponent implements OnInit {
 
   @Input('loggedIn') loggedIn: boolean;
 
+  /** ngOnInit
+  /* init for this component
+  /* close signin menu, wehen open
+  /* set search to default 'All'
+  /* set translation language
+  */
   ngOnInit() {
     this.openSignIn = false;
     this.searchfilter = 'All';
@@ -34,38 +40,64 @@ export class HeaderComponent implements OnInit {
     
   }
 
+  /** toggleSignInMenu
+  /* toggle sign in menu
+  */
   toggleSignInMenu() {
     this.openSignIn = !this.openSignIn;
   }
 
+  /** toggleSearchMenu
+  /* toggle search menu
+  */
   toggleSearchMenu() {
     this.openSearch = !this.openSearch;
   }
 
+  /** filterSearch
+  /* open search filter
+  /* @param {string} filter - selected filter
+  */
   filterSearch(filter) {
     this.openSearch = false;
     this.searchfilter = filter;
   }
 
+  /** gotoProfile
+  /* go to profile page
+  */
   gotoProfile() {
     this.openSignIn = false;
     this.router.navigate(['/profile']);
   }
 
-  isLoggedIn() {
-    return this.loggedIn;
-  }
-
+  /** gotoLogin
+  /* go to login page
+  */
   gotoLogin() {
     this.openSignIn = false;
     this.router.navigate(['/login']);
   }
 
+  /** gotoRegister
+  /* go to registration page
+  */
   gotoRegister() {
     this.openSignIn = false;
     this.router.navigate(['/register']);
   }
 
+  /** isLoggedIn
+  /* get logged in status of a user
+  */
+  isLoggedIn() {
+    return this.loggedIn;
+  }
+
+  /** logOut
+  /* logout user
+  /* redirect to homepage
+  */
   logOut() {
     this.authentication.logout();
     this.redirectPreviousUrl.set(undefined);
@@ -74,10 +106,18 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
+  /** onClickedOutsideUser
+  /* close sign in menu after clicking outside
+  /* @param {object} e - event, optional
+  */
   onClickedOutsideUser(e?) {
     this.openSignIn = false;
   }
 
+  /** onClickedOutsideSearch
+  /* close search menu after clicking outside
+  /* @param {object} e - event, optional
+  */
   onClickedOutsideSearch(e?) {
     this.openSearch = false;
   }

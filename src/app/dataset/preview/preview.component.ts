@@ -57,6 +57,14 @@ export class PreviewComponent implements OnInit {
   prefill;
   loadingSamples: boolean = false;
 
+  /** ngOnInit
+  /*  init this component
+  /* set values for codemirror editor
+  /* set translation language
+  /* set translation for nosmaple key
+  /* add a workflow filter if dataset is know
+  /* get prefilled values and prefill filters if available
+  */  
   ngOnInit() {
   	this.editorConfig = { 
       mode: 'application/xml',
