@@ -61,9 +61,6 @@ export class ExecutionsComponent implements OnInit {
   /* if more or less running/inqueue executions than before: update overall list of executions
   */
   startPolling() {
-
-    console.log('startPolling', this.nextPageOngoing);
-
     if (this.ongoingExecutionsCurrentTotal !== this.ongoingExecutions.length) {
       this.successMessage = '';
       this.nextPage = 0;

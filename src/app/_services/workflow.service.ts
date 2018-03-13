@@ -154,9 +154,6 @@ export class WorkflowService {
   /* @param {string} workflow - selected workflow, optional
   */
   getAllExecutionsPerOrganisation(page, ongoing?, workflow?) {
-
-    console.log('getAllExecutionsPerOrganisation', page, ongoing, workflow);
-
     let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;  
     if (ongoing) {
       url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
@@ -167,8 +164,6 @@ export class WorkflowService {
     if (workflow) {
       url += "&workflowName="+workflow;
     }
-
-    console.log(url);
 
     return this.http.get(url).map(data => {  
       if (data) {

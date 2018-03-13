@@ -54,8 +54,6 @@ describe('DatasetformComponent', () => {
     component.formMode = 'read';
     component.datasetData = currentDataset;
     fixture.detectChanges();
-    //console.log(fixture.debugElement.queryAll(By.id('dataset-name')));
-    //expect(fixture.debugElement.queryAll(By.id('dataset-name')).length).toBeTruthy();
   });
 
   it('should have an edit dataset form', () => { 
@@ -69,7 +67,6 @@ describe('DatasetformComponent', () => {
 
   it('should temp save the form', () => { 
     component.formMode = 'create';
-    //component.saveTempData();
     fixture.detectChanges();
   });
 

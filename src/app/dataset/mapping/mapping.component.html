@@ -1,5 +1,5 @@
 <div class="messages">
-  <div class="error-message" *ngIf="errorMessage"><i class="fa fa-times"></i>{{errorMessage}}</div>
+  <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
 </div>
 
 <div class="filter-wrapper">
@@ -9,7 +9,6 @@
       <a *ngIf="fullView" (click)="toggleFullViewMode(false)">View per field</a>
     </li>    
   </ul>
-  <i *ngIf="loadingSamples" class="fa fa-cog fa-spin"></i>
 </div>
 
 <div class="view-sample view-statistics" *ngIf="statistics" [ngClass]="{'view-sample-expanded': expandedStatistics}">
