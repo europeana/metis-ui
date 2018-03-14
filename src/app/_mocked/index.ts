@@ -1,3 +1,4 @@
 export * from './mockeddatasets.service';
-export * from './mockworkflow.service';
+export * from './mockedworkflow.service';
+export * from './mockedauthentication.service';
 export * from './xslt';
