@@ -42,5 +42,4 @@ export class DashboardComponent implements OnInit {
     this.isShowingLog = message;
   }
 
-
 }

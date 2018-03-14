@@ -19,9 +19,10 @@ export class OngoingexecutionsComponent {
     private datasets: DatasetsService) { }
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
-  @Input('isShowingLog') isShowingLog: any;
+  @Input('isShowingLog') isShowingLog;
 
   ongoingExecutions;
+  ongoingExecutionsTotal: number = 0;
   errorMessage;
   subscription;
   intervalTimer = 5000;
@@ -61,7 +62,11 @@ export class OngoingexecutionsComponent {
   */
   getOngoing() {
     this.workflows.getAllExecutionsPerOrganisation(0, true).subscribe(executions => {
+      if (this.ongoingExecutionsTotal != executions['listSize']) {
+        this.workflows.ongoingExecutionDone(true);
+      }
       this.ongoingExecutions = this.datasets.addDatasetNameToExecution(executions['results']);
+      this.ongoingExecutionsTotal = executions['listSize'];
       if (executions['nextPage'] > 0) {
         this.viewMore = true;
       }

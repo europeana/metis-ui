@@ -22,6 +22,7 @@ export class ExecutionsComponent implements OnInit {
   ongoingExecutions: Array<any> = [];
   ongoingExecutionsOutput: Array<any> = [];
   ongoingExecutionsCurrentTotal: number = 0;
+  ongoingExecutionDone: boolean;
   currentPlugin: number = 0;
   currentPage: number = 0;
   nextPage: number = 0;
@@ -41,7 +42,6 @@ export class ExecutionsComponent implements OnInit {
   /* set translation language,
   /* get all workflows for use in filter
   /* start polling, checking for updates
-  /* get list of all executions 
   */
   ngOnInit() {
   	if (typeof this.translate.use === 'function') { 
@@ -52,7 +52,19 @@ export class ExecutionsComponent implements OnInit {
     this.allWorkflows = this.workflows.getWorkflows();
 
     this.startPolling();
-    this.getAllExecutions();
+
+    if (this.ongoingExecutions.length === 0) {
+      this.getAllExecutions();
+    }
+
+    if (!this.workflows.ongoingExecutionIsDone) { return false; }
+    this.workflows.ongoingExecutionIsDone.subscribe(
+       status => {
+         if (status) {
+           //this.selectWorkflow();
+         }
+    });
+
   }
 
   /** startPolling
@@ -167,9 +179,12 @@ export class ExecutionsComponent implements OnInit {
     this.nextPage = 0;
     this.allExecutions = [];
 
+    if (this.ongoingExecutions.length === 0) {
+      this.getAllExecutions();
+    }
+
     clearTimeout(this.pollingTimeout);
-    this.startPolling();
-    this.getAllExecutions();
+    this.startPolling();    
   }
 
 }

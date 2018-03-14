@@ -41,6 +41,14 @@
     }
   }
 
+  .workflowname {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 10rem;
+  }
+
   .datetime {
     white-space: nowrap;
 

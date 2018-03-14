@@ -17,6 +17,8 @@ export class WorkflowService {
   @Output() changeWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() selectedWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() workflowIsDone: EventEmitter<any> = new EventEmitter();
+  @Output() ongoingExecutionIsDone: EventEmitter<any> = new EventEmitter();
+
   activeWorkflow: any;
   currentReport: any;
   activeTopolgy: any;
@@ -305,5 +307,13 @@ export class WorkflowService {
   */
   workflowDone(status): void {
     this.workflowIsDone.emit(status);
+  }
+
+  /** ongoingExecutionDone
+  /*  when ongoing execution has finished, notify other components
+  /* @param {boolean} status - status of the executions
+  */
+  ongoingExecutionDone(status): void {
+    this.ongoingExecutionIsDone.emit(status);
   }
 }
