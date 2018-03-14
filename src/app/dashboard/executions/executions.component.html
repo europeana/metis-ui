@@ -34,7 +34,7 @@
         <td class="centered nowrap">
           <div class="progress">
             <span>
-              {{execution.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0}}%
+              {{execution.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.progressPercentage : ('unknown' | translate)}}%
             </span>
             <div class="progressbar">
               <div class="progressbar-done" [style.width.%]="execution.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
