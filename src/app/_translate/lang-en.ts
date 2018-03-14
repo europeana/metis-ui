@@ -3,6 +3,7 @@ export const LANG_EN_NAME = 'en';
 export const LANG_EN_TRANS = {
   'accountrole': 'Account role',
   'all': 'All',
+  'allexecutions': 'All executions', 
   'allworkflows': 'All workflows', 
   'cancel': 'Cancel',
   'cancelling': 'Cancelling',

@@ -4,7 +4,7 @@
 </div>
 
 <div class="all-executions">
-  <h3>All executions</h3>
+  <h3>{{ 'allexecutions' | translate }}</h3>
 
   <ul class="filter" (clickOutside)="onClickedOutside()">
     <li class="dropdown">
@@ -22,11 +22,11 @@
     <thead>
     	<tr>
         <th colspan="4"></th>
-        <th>Workflow</th>
-        <th>Processed</th>
-        <th>In dataset</th>
-        <th class="centered">Start date</th>
-        <th class="centered">End date</th>
+        <th>{{ 'workflow' | translate }}</th>
+        <th>{{ 'totalprocessed' | translate }}</th>
+        <th>{{ 'totaldataset' | translate }}</th>
+        <th class="centered">{{ 'startdate' | translate }}</th>
+        <th class="centered">{{ 'enddate' | translate }}</th>
       </tr>
     </thead>
     <tbody>
