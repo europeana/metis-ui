@@ -22,7 +22,7 @@ export class ExecutionsComponent implements OnInit {
   ongoingExecutions: Array<any> = [];
   ongoingExecutionsOutput: Array<any> = [];
   ongoingExecutionsCurrentTotal: number = 0;
-  ongoingExecutionDone: boolean;
+  ongoingExecutionDone: boolean = false;
   currentPlugin: number = 0;
   currentPage: number = 0;
   nextPage: number = 0;
