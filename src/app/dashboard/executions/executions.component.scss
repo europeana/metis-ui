@@ -33,7 +33,9 @@ table {
   .progress {
     box-sizing: border-box;
     display: inline-block;
+    font-size: .6rem;
     padding-right: 0;
+    text-transform: uppercase;
     width: 4rem;
 
     .progressbar {
