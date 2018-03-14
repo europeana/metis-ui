@@ -61,7 +61,7 @@ export class ExecutionsComponent implements OnInit {
     this.workflows.ongoingExecutionIsDone.subscribe(
        status => {
          if (status) {
-           //this.selectWorkflow();
+           this.refreshExecutions();
          }
     });
 
@@ -176,15 +176,20 @@ export class ExecutionsComponent implements OnInit {
   selectWorkflow(workflow) {
     this.selectedFilterWorkflow = workflow;
     this.filterWorkflow = false;
-    this.nextPage = 0;
-    this.allExecutions = [];
-
-    if (this.ongoingExecutions.length === 0) {
-      this.getAllExecutions();
-    }
-
-    clearTimeout(this.pollingTimeout);
-    this.startPolling();    
+    this.refreshExecutions();
   }
 
+  /** refreshExecutions
+  /*  refresh list of executions
+  */
+  refreshExecutions() {
+    this.nextPage = 0;
+    this.allExecutions = [];
+    this.ongoingExecutions = [];
+    this.ongoingExecutionsCurrentTotal = 0;
+
+    this.getAllExecutions();    
+    clearTimeout(this.pollingTimeout);
+    this.startPolling();     
+  }
 }
