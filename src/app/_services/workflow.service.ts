@@ -41,6 +41,11 @@ export class WorkflowService {
       enforce = 'OAIPMH_HARVEST';
     }
 
+    if (workflow === 'enrichment_enforce_transformation') {
+      workflow = 'only_enrichment';
+      enforce = 'TRANSFORMATION';
+    }
+
   	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&workflowName=${workflow}&priority=${priority}&enforcedPluginType=${enforce}`;    
     return this.http.post(url, JSON.stringify('{}')).map(data => {   
     	if (data) {

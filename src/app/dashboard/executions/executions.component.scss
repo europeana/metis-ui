@@ -31,8 +31,9 @@ table {
   }
 
   .progress {
+    box-sizing: border-box;
     display: inline-block;
-    padding-right: .5rem;
+    padding-right: 0;
     width: 4rem;
 
     .progressbar {
@@ -52,10 +53,10 @@ table {
 
     ul {
       white-space: nowrap;
+    }
 
-      li {
-        display: inline-block;
-      }
+    li {
+      display: inline-block;
     }
   }
 }

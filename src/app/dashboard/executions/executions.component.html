@@ -37,7 +37,9 @@
         <td><span class="svg-icon-{{execution.workflowName}}"></span></td>
         <td class="nowrap"><span class="ellipsis">{{execution.workflowName}}</span></td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
-        <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</td>
+        <td class="nowrap uppercase">
+          {{execution.metisPlugins[currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
+        </td>
         <td class="centered">
           <span class="date">{{execution.createdDate | date:'dd/MM/yyyy'}}</span> 
           <span class="datedivider">-</span> 
@@ -45,7 +47,9 @@
         </td>
         <td class="centered nowrap">
           <div class="progress">
-            <span>{{execution.metisPlugins[currentPlugin].executionProgress.progressPercentage}}%</span>
+            <span>
+              {{execution.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0}}%
+            </span>
             <div class="progressbar">
               <div class="progressbar-done" [style.width.%]="execution.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
             </div>
@@ -61,11 +65,13 @@
       <tr *ngFor="let execution of allExecutions;">
         <td class="errorindicator"><span class="error" *ngIf="execution.metisPlugins[currentPlugin].executionProgress.errors !== 0"></span></td>
         <td class="nowrap">{{execution.datasetId}}</td>
-        <td>{{execution.datasetName}}</td>
+        <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
         <td><span class="svg-icon-{{execution.workflowName}}"></span></td>
         <td class="nowrap"><span class="ellipsis">{{execution.workflowName}}</span></td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
-        <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.expectedRecords}}</td>
+        <td class="nowrap uppercase">
+          {{execution.metisPlugins[currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
+        </td>
         <td class="centered">
           <span class="date">{{execution.createdDate | date:'dd/MM/yyyy'}}</span> 
           <span class="datedivider">-</span> 

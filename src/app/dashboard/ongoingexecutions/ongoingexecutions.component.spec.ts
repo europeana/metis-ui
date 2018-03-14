@@ -61,4 +61,17 @@ describe('OngoingexecutionsComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.ongoing-executions')).length).not.toBeTruthy();
   });
 
+  it('should show a log', () => {
+    spyOn(component.notifyShowLogStatus, 'emit');
+    component.showLog(1, 'mocked');
+    fixture.detectChanges();
+    expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
+  });
+
+  it('should click view all', () => {
+    component.viewAll();
+    fixture.detectChanges();
+    expect(window.pageYOffset).toBe(0);
+  });
+
 });

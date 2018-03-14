@@ -76,6 +76,10 @@
         white-space: nowrap;
       }
 
+      &.uppercase {
+        text-transform: uppercase;
+      }
+
       &.buttonplaceholder {
         padding-right: 1rem;
         padding-top: 0.3rem;
