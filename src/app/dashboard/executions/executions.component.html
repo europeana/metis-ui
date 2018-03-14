@@ -51,7 +51,7 @@
       <tr *ngFor="let execution of allExecutions;">
         <td class="errorindicator"><span class="error" *ngIf="execution.metisPlugins[currentPlugin].executionProgress.errors !== 0"></span></td>
         <td class="nowrap">{{execution.datasetId}}</td>
-        <td>{{execution.datasetName}}</td>
+        <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
         <td><span class="svg-icon-{{execution.workflowName}}"></span></td>
         <td class="nowrap"><span class="ellipsis">{{execution.workflowName}}</span></td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
