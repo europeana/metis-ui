@@ -9,7 +9,7 @@
       {{ongoing.cancelling ? cancelling : ongoing.workflowStatus}}
     </div>
     <div class="progress">
-      <span>{{ongoing.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]">{{ongoing.datasetName}}</a>
+      <span>{{ongoing.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]" class="workflowname">{{ongoing.datasetName}}</a>
       <div class="progress-status">
         <span class="progress-statusnumbers">{{ongoing.metisPlugins[currentPlugin].executionProgress.processedRecords}} / 
           {{ongoing.metisPlugins[currentPlugin].executionProgress.expectedRecords >= 0 ? ongoing.metisPlugins[currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}

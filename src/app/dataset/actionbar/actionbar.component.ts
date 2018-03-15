@@ -98,7 +98,6 @@ export class ActionbarComponent {
     if (!this.datasetData) { return false }
 
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
-
       if (execution === 0 || !execution) {
         this.currentPlugin = 0; // pick the first one for now
         this.subscription.unsubscribe();
