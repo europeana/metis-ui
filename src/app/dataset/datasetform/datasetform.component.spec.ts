@@ -5,6 +5,7 @@ import { DatasetformComponent } from './datasetform.component';
 import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 import { MockDatasetService, currentWorkflow, currentDataset } from '../../_mocked';
 
+import { By } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -50,10 +51,13 @@ describe('DatasetformComponent', () => {
     expect(component.formMode).toBe('create');
   });
 
-  it('should have a view dataset form', () => { 
+  it('should have a preview dataset form', () => { 
     component.formMode = 'read';
     component.datasetData = currentDataset;
     fixture.detectChanges();
+
+    expect(fixture.debugElement.queryAll(By.css('#dataset-name'))[0].properties.readOnly).toBe(true);
+
   });
 
   it('should have an edit dataset form', () => { 
@@ -63,11 +67,20 @@ describe('DatasetformComponent', () => {
 
     component.updateForm();
     fixture.detectChanges();
+
+    expect(fixture.debugElement.queryAll(By.css('#dataset-name'))[0].properties.readOnly).toBe(false);
   });
 
   it('should temp save the form', () => { 
+    component.datasetData = currentDataset;
+    component.buildForm();
     component.formMode = 'create';
+    component.saveTempData();
     fixture.detectChanges();
+
+    expect(localStorage.getItem('tempDatasetData')).not.toBe('');
+    localStorage.removeItem('tempDatasetData');
+    
   });
 
 
