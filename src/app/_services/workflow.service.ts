@@ -17,6 +17,8 @@ export class WorkflowService {
   @Output() changeWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() selectedWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() workflowIsDone: EventEmitter<any> = new EventEmitter();
+  @Output() ongoingExecutionIsDone: EventEmitter<any> = new EventEmitter();
+
   activeWorkflow: any;
   currentReport: any;
   activeTopolgy: any;
@@ -156,14 +158,20 @@ export class WorkflowService {
   /*  get all ongoing (either running or inqueue) executions for the user's organisation
   /* @param {number} page - number of next page
   /* @param {boolean} ongoing - ongoing executions only, optional
+  /* @param {string} workflow - selected workflow, optional
   */
-  getAllExecutionsPerOrganisation(page, ongoing?) {
+  getAllExecutionsPerOrganisation(page, ongoing?, workflow?) {
     let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;  
     if (ongoing) {
       url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
     } else {
       url += '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED';
     }
+
+    if (workflow) {
+      url += "&workflowName="+workflow;
+    }
+
     return this.http.get(url).map(data => {  
       if (data) {
         return data;
@@ -299,5 +307,13 @@ export class WorkflowService {
   */
   workflowDone(status): void {
     this.workflowIsDone.emit(status);
+  }
+
+  /** ongoingExecutionDone
+  /*  when ongoing execution has finished, notify other components
+  /* @param {boolean} status - status of the executions
+  */
+  ongoingExecutionDone(status): void {
+    this.ongoingExecutionIsDone.emit(status);
   }
 }

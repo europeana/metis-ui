@@ -3,7 +3,7 @@
 
   border: 0;
   color: $gray-light;
-  font-size: 0.8125rem;
+  font-size: .8125rem;
 
   tr {
 
@@ -21,7 +21,7 @@
     td {
       border: 0;
       color: $gray-light;
-      padding: 0.5rem 1rem;
+      padding: .5rem 1rem;
 
       &.centered {
         text-align: center;
@@ -30,7 +30,7 @@
 
     th {
       border-bottom: 1px solid $gray87;
-      font-size: 0.8125rem;
+      font-size: .8125rem;
       white-space: nowrap;
 
       &.alignleft {
@@ -53,14 +53,14 @@
   }
 
   th {
-    padding: 0.5rem 0.5rem 0.25rem;
+    padding: .5rem .5rem .25rem;
     text-align: left;
   }
 
   tr:not(.loadmore) {
 
     td {
-      padding: 0.5rem 0.5rem 0.25rem;
+      padding: .5rem .5rem .25rem;
 
       &.errorindicator {
         padding-left: 0;
@@ -68,7 +68,7 @@
         white-space: nowrap;
 
         @media (max-width: $bp-xxl) {
-          padding-top: 0.85rem;
+          padding-top: .85rem;
         }
       }
 
@@ -80,9 +80,15 @@
         text-transform: uppercase;
       }
 
+      &.iconplaceholder {
+        padding-bottom: .1rem;
+        padding-right: 0;
+        padding-top: .65rem;
+      }
+
       &.buttonplaceholder {
         padding-right: 1rem;
-        padding-top: 0.3rem;
+        padding-top: .3rem;
         text-align: center;
 
         .table-btn {
@@ -91,7 +97,7 @@
       }
 
       &:first-child {
-        padding-left: 0.5rem;
+        padding-left: .5rem;
       }
 
       &:last-child {
@@ -137,7 +143,7 @@
   color: $gray-med;
   display: flex;
   justify-content: center;
-  padding: 0.25rem 0.5rem;
+  padding: .25rem .5rem;
   width: auto;
 
   &:hover {
@@ -154,7 +160,7 @@
     white-space: nowrap;
 
     @media (max-width: $bp-xxl) {
-      padding-left: 0.5rem;
+      padding-left: .5rem;
       &::before {
         display: none;
       }
@@ -167,10 +173,10 @@
 .watchout {
   background: $error;
   border: 1px solid $error;
-  border-radius: 0.3rem;
+  border-radius: .3rem;
   display: inline-block;
-  height:  0.625rem;
-  width: 0.625rem;
+  height:  .625rem;
+  width: .625rem;
 }
 
 .watchout {

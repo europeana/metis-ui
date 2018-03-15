@@ -22,7 +22,7 @@ export class CountriesService {
   getCountriesLanguages(type) {
     let url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/countries`;        
     if (type === 'language') {
-      url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/langugaes`;  
+      url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/languages`;  
     }
     return this.http.get(url).map(data => {      
       if (data) {

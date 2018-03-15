@@ -22,29 +22,49 @@ export class ExecutionsComponent implements OnInit {
   ongoingExecutions: Array<any> = [];
   ongoingExecutionsOutput: Array<any> = [];
   ongoingExecutionsCurrentTotal: number = 0;
+  ongoingExecutionDone: boolean = false;
   currentPlugin: number = 0;
   currentPage: number = 0;
   nextPage: number = 0;
   nextPageOngoing: number = 0;
   gotoNextPage: number = 0;
-  subscription;
+  pollingTimeout;
   intervalTimer: number = 5000;
   totalPagesShowing: number = 0;
   errorMessage: string;
   successMessage: string;
+  filterWorkflow: boolean = false;
+  allWorkflows: any;
+  selectedFilterWorkflow;
 
   /** ngOnInit
   /* init this component:
   /* set translation language,
+  /* get all workflows for use in filter
   /* start polling, checking for updates
-  /* get list of all executions 
   */
   ngOnInit() {
   	if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }  
+
+    if (typeof this.workflows.getWorkflows !== 'function') { return false }
+    this.allWorkflows = this.workflows.getWorkflows();
+
     this.startPolling();
-    this.getAllExecutions();
+
+    if (this.ongoingExecutions.length === 0) {
+      this.getAllExecutions();
+    }
+
+    if (!this.workflows.ongoingExecutionIsDone) { return false; }
+    this.workflows.ongoingExecutionIsDone.subscribe(
+       status => {
+         if (status) {
+           this.refreshExecutions();
+         }
+    });
+
   }
 
   /** startPolling
@@ -70,7 +90,7 @@ export class ExecutionsComponent implements OnInit {
   /* datasetname needs to be added to executions for use in table
   */
   getOngoingExecutions() {
-    this.workflows.getAllExecutionsPerOrganisation(this.nextPageOngoing, true).subscribe(executions => {
+    this.workflows.getAllExecutionsPerOrganisation(this.nextPageOngoing, true, this.selectedFilterWorkflow).subscribe(executions => {
       this.ongoingExecutions = this.ongoingExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
       if (executions['nextPage'] > 0) {
         this.nextPageOngoing = executions['nextPage'];
@@ -81,7 +101,7 @@ export class ExecutionsComponent implements OnInit {
     });
     
     if (this.nextPageOngoing <= 0) {
-      setTimeout(()=> {   
+      this.pollingTimeout = setTimeout(()=> {   
         this.startPolling();
       }, this.intervalTimer);
     }
@@ -97,7 +117,7 @@ export class ExecutionsComponent implements OnInit {
 
     if (this.nextPage === -1) { return false }
 
-    this.workflows.getAllExecutionsPerOrganisation(this.nextPage).subscribe(executions => {
+    this.workflows.getAllExecutionsPerOrganisation(this.nextPage, false, this.selectedFilterWorkflow).subscribe(executions => {
       this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
       this.nextPage = executions['nextPage'];
 
@@ -135,4 +155,41 @@ export class ExecutionsComponent implements OnInit {
     });
   }
 
+  /** toggleFilterByWorkflow
+  /*  show/hide workflow filter
+  */
+  toggleFilterByWorkflow() {
+    this.filterWorkflow = this.filterWorkflow === false ? true : false;
+  }
+
+  /** toggleFilterByWorkflow
+  /*  show/hide workflow filter
+  */
+  onClickedOutside() {
+    this.filterWorkflow = false;
+  }
+
+  /** selectWorkflow
+  /*  select a workflow from the dropdownlist
+  /* @param {string} workflow - selected workflow
+  */
+  selectWorkflow(workflow) {
+    this.selectedFilterWorkflow = workflow;
+    this.filterWorkflow = false;
+    this.refreshExecutions();
+  }
+
+  /** refreshExecutions
+  /*  refresh list of executions
+  */
+  refreshExecutions() {
+    this.nextPage = 0;
+    this.allExecutions = [];
+    this.ongoingExecutions = [];
+    this.ongoingExecutionsCurrentTotal = 0;
+
+    this.getAllExecutions();    
+    clearTimeout(this.pollingTimeout);
+    this.startPolling();     
+  }
 }

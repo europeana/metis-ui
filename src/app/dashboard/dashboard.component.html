@@ -6,17 +6,13 @@
 
   <div class="metis-dashboard">
     <div class="metis-dashboard-left">
-
       <app-dashboardactions></app-dashboardactions>         
       <app-ongoingexecutions [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-ongoingexecutions>    
       <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
-
     </div>
 
     <div class="metis-dashboard-right">    
-
-      <app-executions></app-executions> 
-          
+      <app-executions></app-executions>           
     </div>
   </div>
 </div>
