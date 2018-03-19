@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
       if (!event.url) { return false; }
       if (this.router.isActive(event.url, false)) {
         this.loggedIn = this.authentication.validatedUser( );
-        
+
         this.bodyClass = event.url.split('/')[1];
         if (event.url === '/') { this.bodyClass = 'home'; }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../_models';
 
 @Component({
@@ -15,12 +15,14 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authentication: AuthenticationService,
     public router: Router, 
+    private route: ActivatedRoute,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private translate: TranslateService) {}
 
   openSignIn = false;
   openSearch = false;
   searchfilter;
+  currentPage;
 
   @Input('loggedIn') loggedIn: boolean;
 
@@ -36,8 +38,7 @@ export class HeaderComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-    }
-    
+    }    
   }
 
   /** toggleSignInMenu
