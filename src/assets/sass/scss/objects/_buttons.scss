@@ -6,7 +6,7 @@
   display: inline-block;
   font-weight: bold;
   line-height: 1;
-  padding: 0.8em 1.2em;
+  padding: .8em 1.2em;
   position: relative;
   text-align: center;
   text-transform: uppercase;
@@ -156,7 +156,7 @@
 
 .btn-small {
   font-size: $font-size-sm;
-  padding: 0.5em;
+  padding: .5em;
 }
 
 .btn-large {
@@ -178,7 +178,7 @@
   color: inherit;
   cursor: pointer;
   font-size: $font-size-sm;
-  padding: 0.5em 0.8em;
+  padding: .5em .8em;
   text-decoration: none;
   text-overflow: ellipsis;
   user-select: none;
@@ -210,7 +210,7 @@
       }
       .right-btn-under-text {
         bottom: 0;
-        font-size:  0.7em;
+        font-size:  .7em;
         left: 0;
         margin: auto;
         position: absolute;
