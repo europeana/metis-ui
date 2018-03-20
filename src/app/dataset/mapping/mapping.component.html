@@ -18,8 +18,7 @@
       <a (click)="toggleStatistics()">-</a>
     </div>
   </div>
-  <div class="view-sample-editor">
-    <codemirror [ngModel]="statistics" [config]="editorConfig"></codemirror>
+  <div class="view-sample-editor" [innerHTML]="statistics">
     <a class="load-more-btn" (click)="toggleStatistics()" *ngIf="!expandedStatistics">expand</a>
   </div>
 </div>

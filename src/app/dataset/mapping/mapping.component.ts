@@ -29,7 +29,7 @@ export class MappingComponent implements OnInit {
   defaultEditorConfig;
   editorConfig;
   editorConfigEdit;
-  statistics;
+  statistics: string = '';
   fullXSLT;
   xslt: Array<any> = [];
   errorMessage: string;
@@ -67,7 +67,19 @@ export class MappingComponent implements OnInit {
   loadStatistics() {
     this.editorConfig = Object.assign(this.defaultEditorConfig);
     Object.freeze(this.defaultEditorConfig);
-    this.statistics = JSON.stringify(this.workflows.getStatistics(), null, '\t');
+    //this.statistics = JSON.stringify(this.workflows.getStatistics(), null, '\t');
+
+    let stats = this.workflows.getStatistics().nodeStatistics;
+
+    for (let i = 0; i < stats.length; i++) {
+      this.statistics += '<p>';
+      this.statistics += '<strong>' + stats[i].value + '</strong><br/>';
+      this.statistics += stats[i].xpath;
+      this.statistics += '</p>';
+    }
+
+    console.log(this.statistics);
+
   }
 
   /** loadEditor
