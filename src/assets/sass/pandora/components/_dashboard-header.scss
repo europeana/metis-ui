@@ -85,17 +85,17 @@
             overflow: hidden;
             position: absolute;
             right: 0;
-            top: 0.9rem;
+            top: .9rem;
             width: 0;
           }
 
           .menu-sublevel {
             background: $white;
             border: 1px solid $gray-lighter;
-            font-size: 0.875rem;
+            font-size: .875rem;
             left: 0;
             margin-left: -1px;
-            padding: 0.4rem 0.8rem;
+            padding: .4rem .8rem;
             position: absolute;
             top: 2.4rem;
             width: 100%;
@@ -133,23 +133,23 @@
           overflow: hidden;
           position: absolute;
           right: 0;
-          top: 0.5rem;
+          top: .5rem;
           width: 0;
         }
       }
 
       .menu-sublevel {
         background: $white;
-        box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
+        box-shadow: rgba(77, 77, 77, .3) 0 1px 4px;
         max-width: 20rem;
         min-width: 10rem;
-        padding: 0.5rem 1rem;
+        padding: .5rem 1rem;
         position: absolute;
         right: 1rem;
         top: 3.5rem;
 
         li {
-          font-size: 0.875rem;
+          font-size: .875rem;
         }
 
         &::before {

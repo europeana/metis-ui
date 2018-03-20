@@ -26,8 +26,8 @@ $medium-gray: $gray30;
 
 $gray-dark: #212121; //13
 $black: #1a1a1a;
-$opacity-black: rgba(0, 0, 0, 0.7);
-$opacity-gray-light: rgba(119, 119, 119, 0.6);
+$opacity-black: rgba(0, 0, 0, .7);
+$opacity-gray-light: rgba(119, 119, 119, .6);
 
 //Europeana brand colours
 $eu-yellow: #ffae00;
@@ -104,10 +104,10 @@ $icon_primary: $accent !default;
 $error: $eu-red;
 $valid: $eu-jade;
 
-$dim02: rgba(0, 0, 0, 0.2);
-$dim: rgba(0, 0, 0, 0.5);
-$dim07: rgba(0, 0, 0, 0.7);
-$dimmer: rgba(0, 0, 0, 0.8);
+$dim02: rgba(0, 0, 0, .2);
+$dim: rgba(0, 0, 0, .5);
+$dim07: rgba(0, 0, 0, .7);
+$dimmer: rgba(0, 0, 0, .8);
 
 
 /////////////////////////////////////////////////////////
@@ -119,8 +119,8 @@ $font-secondary: "Ubuntu", "Arial", sans-serif;
 $font-code: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
 
 $font-size-norm: 1em;
-$font-size-slightly-smaller: 0.875em;
-$font-size-sm: 0.75em;
+$font-size-slightly-smaller: .875em;
+$font-size-sm: .75em;
 $font-size-med: 1.2em;
 $font-size-large: 1.6em;
 $base-font-multiplier: 1;

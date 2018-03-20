@@ -10,7 +10,7 @@ body {
 .btns-set {
   background-color: $white;
   border: 0;
-  font-size: 0.875rem;
+  font-size: .875rem;
   margin-bottom: 2rem;
   margin-right: 0;
   padding-left: 1.125rem;
@@ -32,10 +32,10 @@ body {
   background: none;
   border-radius: 0;
   color: $eu-jade;
-  font-size: 0.625rem;
+  font-size: .625rem;
   font-weight: bold;
-  line-height: 0.875rem;
-  padding-right: 0.75rem;
+  line-height: .875rem;
+  padding-right: .75rem;
   position: relative;
   text-transform: uppercase;
 
@@ -64,17 +64,17 @@ body {
   border-bottom: 1px solid $gray87;
   border-top: 1px solid $gray87;
   display: inline-block;
-  font-size: 0.875rem;
+  font-size: .875rem;
   margin-bottom: 3rem;
   margin-left: calc(-10% - 1rem);
   margin-top: -2rem;
-  padding: 0.25rem 0;
+  padding: .25rem 0;
 
   li {
     border-left: 1px solid $gray87;
     color: $gray-light;
     display: inline-block;
-    padding: 0.3rem 0.625rem;
+    padding: .3rem .625rem;
     position: relative;
 
     &:first-child {
@@ -83,7 +83,7 @@ body {
 
     a {
       color: $gray-light;
-      padding: 0.25rem 0.5rem;
+      padding: .25rem .5rem;
 
       &:hover {
         color: $eu-jade;
@@ -94,8 +94,8 @@ body {
       a {
         padding-right: 2rem;
         i {
-          margin-left: 0.5rem;
-          margin-right: 0.5rem;
+          margin-left: .5rem;
+          margin-right: .5rem;
         }
       }
 
@@ -104,15 +104,15 @@ body {
         box-shadow: none;
         color: $gray-light;
         display: inline-block;
-        padding-bottom: 0.25rem;
-        padding-top: 0.25rem;
+        padding-bottom: .25rem;
+        padding-top: .25rem;
         width: 75%;
       }
 
       button {
         background-color: $eu-jade;
         display: inline-block;
-        padding: 0.25rem 0.5rem;
+        padding: .25rem .5rem;
       }
 
     }
@@ -128,14 +128,14 @@ body {
     position: relative;
 
     &::after {
-      border-left: 0.25rem solid transparent;
-      border-right: 0.25rem solid transparent;
-      border-top: 0.25rem solid $gray-light;
+      border-left: .25rem solid transparent;
+      border-right: .25rem solid transparent;
+      border-top: .25rem solid $gray-light;
       content: '';
       height: 0;
       margin-top: -0.125rem;
       position: absolute;
-      right: 0.5rem;
+      right: .5rem;
       top: 50%;
       width: 0;
     }
@@ -181,7 +181,7 @@ body {
     max-width: 20rem;
     min-width: 10rem;
     overflow: auto;
-    padding: 0.5rem 0;
+    padding: .5rem 0;
     position: absolute;
     top: 3rem;
     z-index: 8;
@@ -189,8 +189,8 @@ body {
     li {
       border: 0;
       display: block;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
+      font-size: .75rem;
+      padding: .25rem .5rem;
       white-space: nowrap;
 
       a {
@@ -219,10 +219,10 @@ li.dropdown a {
     bottom: 2rem;
     color: $white;
     content: attr(data-tooltip);
-    font-size: 0.75rem;
+    font-size: .75rem;
     left: 50%;
     opacity: 0;
-    padding: 0.25rem 1rem;
+    padding: .25rem 1rem;
     position: absolute;
     transform: translate(-50%, 0);
   }
@@ -235,7 +235,7 @@ li.dropdown a {
 .progress {
   flex-basis: 0;
   flex-grow: 2;
-  font-size: 0.75rem;
+  font-size: .75rem;
   padding-right: 1.5rem;
 
   .progress-status {
@@ -258,15 +258,15 @@ li.dropdown a {
 
   .progressbar {
     background: $offwhite;
-    border-radius: 0.5rem;
-    height: 0.5rem;
+    border-radius: .5rem;
+    height: .5rem;
     margin-bottom: 1rem;
     width: 100%;
 
     .progressbar-done {
       background: $eu-blue;
-      border-radius: 0.5rem;
-      height: 0.5rem;
+      border-radius: .5rem;
+      height: .5rem;
     }
   }
 }

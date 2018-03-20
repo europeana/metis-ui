@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService, TranslateService } from '../_services';
+import { AuthenticationService, TranslateService, ErrorService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
 import { environment } from '../../environments/environment';
@@ -11,8 +11,7 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss'],
-  providers: [AuthenticationService]
+  styleUrls: ['./profile.component.scss']
 })
 
 export class ProfileComponent implements OnInit {
@@ -21,7 +20,6 @@ export class ProfileComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   public password;
-  public emailInfo = environment.emails.profile;
 
   profileForm: FormGroup;
 
@@ -30,7 +28,8 @@ export class ProfileComponent implements OnInit {
     public router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder, 
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private errors: ErrorService) { }
 
   /** ngOnInit
   /* init of this component
@@ -108,13 +107,9 @@ export class ProfileComponent implements OnInit {
       }
       this.loading = false;
       this.toggleEditMode();
-    },
-    (err: HttpErrorResponse) => {
-      if (err.error.errorMessage === 'Wrong access token') {
-        this.authentication.logout();
-        this.router.navigate(['/login']);
-      }      
-      this.errorMessage = `Update password failed: ${StringifyHttpError(err)}`;
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `Update password failed: ${StringifyHttpError(error)}`;
       this.loading = false;
     });
   }
@@ -134,13 +129,9 @@ export class ProfileComponent implements OnInit {
         this.errorMessage = 'Refresh failed, please try again later';
       }
       this.loading = false;
-    },
-    (err: HttpErrorResponse) => {
-      if (err.error.errorMessage === 'Wrong access token') {
-        this.authentication.logout();
-        this.router.navigate(['/login']);
-      }
-      this.errorMessage = `Refresh failed: ${StringifyHttpError(err)}`;
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `Refresh failed: ${StringifyHttpError(error)}`;
       this.loading = false;
     });
 
