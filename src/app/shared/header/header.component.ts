@@ -21,7 +21,6 @@ export class HeaderComponent implements OnInit {
   openSignIn = false;
   openSearch = false;
   searchfilter;
-  currentPage;
 
   @Input('loggedIn') loggedIn: boolean;
 
