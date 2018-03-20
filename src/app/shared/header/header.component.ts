@@ -5,8 +5,7 @@ import { User } from '../../_models';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  templateUrl: './header.component.html',  
   providers: [AuthenticationService]
 })
 
