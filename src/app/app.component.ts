@@ -5,7 +5,6 @@ import { AuthenticationService, DatasetsService } from './_services';
 @Component({
   providers: [AuthenticationService, DatasetsService],
   selector: 'app-root',
-  styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html'
 })
 
@@ -41,5 +40,4 @@ export class AppComponent implements OnInit {
       }
     });
   }
-
 }
