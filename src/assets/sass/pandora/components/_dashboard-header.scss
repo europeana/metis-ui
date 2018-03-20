@@ -16,7 +16,7 @@
 
     // logo
     .metis-logo  {
-      width: 15rem;
+      width: auto;
 
       .logo {
         background-image: url('/assets/images/europeana-metis-logo.png');
@@ -37,9 +37,14 @@
     .link-to-dashboard {
       color: $gray-med;
       font-size: 1rem;
+      margin-right: 1rem;
 
       &:hover {
         text-decoration: underline;
+      }
+
+      @media all and (max-width: $bp-large) {
+        text-indent: -9999rem;
       }
     }
 
@@ -61,6 +66,10 @@
           box-shadow: none;
           color: $gray-light;
           width: 32rem;
+        
+          @media all and (max-width: $bp-xl) {
+            width: 20rem;
+          }
         }
 
         .search-select {

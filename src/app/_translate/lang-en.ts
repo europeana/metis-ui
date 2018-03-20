@@ -11,6 +11,7 @@ export const LANG_EN_TRANS = {
   'chooseworkflow': 'Choose workflow to preview',
   'country': 'Country',
   'createdby': 'Created by',
+  'dashboard': 'Dashboard',
   'datestarted': 'Date started',
   'datecreated': 'Date Created',
   'dataprovider': 'Data Provider',

@@ -6,7 +6,7 @@
         <a routerLink="/home" class="logo ir"></a>
       </div>
 
-      <a routerLink="/dashboard" *ngIf="isLoggedIn()" class="link-to-dashboard">{{currentPage}} dashboard</a>
+      <a routerLink="/dashboard" *ngIf="isLoggedIn()" class="link-to-dashboard svg-icon-dashboard">{{ 'dashboard' | translate }}</a>
 
       <div class="dashboard-header" *ngIf="isLoggedIn()">
         <form class="search-multiterm">
