@@ -126,7 +126,7 @@ export class DatasetComponent implements OnInit {
     } else if (this.activeTab === 'log') {
       return new datasetTab(HistoryComponent, this.datasetData);
     } else  if (this.activeTab === 'mapping') {
-      return new datasetTab(MappingComponent, {});
+      return new datasetTab(MappingComponent, this.datasetData);
     } else  if (this.activeTab === 'preview') {
       return new datasetTab(PreviewComponent, this.datasetData);
     } 

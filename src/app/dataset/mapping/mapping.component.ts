@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { WorkflowService, TranslateService, ErrorService } from '../../_services';
+import { Component, OnInit, Input } from '@angular/core';
+import { WorkflowService, DatasetsService, TranslateService, ErrorService } from '../../_services';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
@@ -24,8 +24,10 @@ export class MappingComponent implements OnInit {
 
   constructor(private workflows: WorkflowService, 
     private errors: ErrorService,
+    private datasets: DatasetsService,
     private translate: TranslateService) { }
 
+  @Input() datasetData: any;
   defaultEditorConfig;
   editorConfig;
   editorConfigEdit;
@@ -78,9 +80,32 @@ export class MappingComponent implements OnInit {
     this.editorConfigEdit = Object.assign({}, this.defaultEditorConfig);
     this.editorConfigEdit['readOnly'] = false;
     this.editorConfigEdit['mode'] = 'application/xml';
-    
-    this.fullXSLT = this.workflows.getXSLT();
-    this.displayXSLT();
+  }
+
+  /** loadDefaultXSLT
+  /* load the default xslt in an editor/card
+  */
+  loadDefaultXSLT() {
+    this.datasets.getDefaultXSLT().subscribe(result => {
+      this.fullXSLT = result;
+      this.displayXSLT();
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
+    });
+  }
+
+  /** loadDefaultXSLT
+  /* load the default xslt in an editor/card
+  */
+  loadCustomXSLT() {
+    this.datasets.getCustomXSLT(this.datasetData.datasetId).subscribe(result => {
+      this.fullXSLT = result['xslt'];
+      this.displayXSLT();
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
+    });
   }
 
   /** displayXSLT

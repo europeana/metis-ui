@@ -124,4 +124,35 @@ export class DatasetsService {
     return this.tempPreviewFilers;
   }
 
+  /** getDefaultXSLT
+  /* get default xslt
+  /* the default one
+  */
+  getDefaultXSLT() {
+    const url = `${apiSettings.apiHostCore}/datasets/xslt/default`;   
+    return this.http.get(url, {responseType: 'text'}).map(data => {  
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });  
+  }
+
+  /** getIdXSLT
+  /* get custom xslt
+  /* if dataset id is specified, it will catch the custom xslt
+  /* @param {number} id - dataset id
+  */
+  getCustomXSLT(id) {
+    const url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;   
+    return this.http.get(url).map(data => {  
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });  
+  }
+
 }
