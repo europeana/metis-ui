@@ -6,8 +6,6 @@
         <a routerLink="/home" class="logo ir"></a>
       </div>
 
-      <a routerLink="/dashboard" *ngIf="isLoggedIn()" class="link-to-dashboard svg-icon-dashboard">{{ 'dashboard' | translate }}</a>
-
       <div class="dashboard-header" *ngIf="isLoggedIn()">
         <form class="search-multiterm">
           <input class="search-input" type="text" placeholder="Search for {{searchfilter}}" />
@@ -30,6 +28,7 @@
         <div *ngIf="isLoggedIn(); then loggedIn else loggedOut"></div>
         <ng-template #loggedIn>
           <div class="settings-menu cf nav-loggedin">
+            <a href="/dashboard" class="link-to-dashboard svg-icon-dashboard"></a>
             <div class="metis-user" (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
