@@ -3,4 +3,12 @@
   overflow: auto;
   padding: 1rem;
   text-align: left;
+
+  > ul > li {
+    padding-bottom: 1rem;
+  }
+
+  ul ul {
+    padding-left: 1rem;
+  }
 }

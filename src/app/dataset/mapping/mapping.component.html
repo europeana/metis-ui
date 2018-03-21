@@ -11,14 +11,24 @@
   </ul>
 </div>
 
-<div class="view-sample view-statistics" *ngIf="statistics" [ngClass]="{'view-sample-expanded': expandedStatistics}">
+<div class="view-sample view-statistics" [ngClass]="{'view-sample-expanded': expandedStatistics}">
   <div class="view-sample-title">
     <h3>Statistics</h3>
     <div class="toggle-expand"> 
       <a (click)="toggleStatistics()">-</a>
     </div>
   </div>
-  <div class="view-sample-editor" [innerHTML]="statistics">
+  <div class="view-sample-editor">
+    <ul *ngIf="statistics">
+      <li *ngFor="let s of statistics">
+        <p><strong>{{s}}</strong> {{statisticsMap.get(s).occurrence}}</p>
+        <ul *ngFor="let sa of statisticsMap.get(s).attributes">
+          <li>
+            <p>{{sa.name}} {{sa.occurrence}}</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
     <a class="load-more-btn" (click)="toggleStatistics()" *ngIf="!expandedStatistics">expand</a>
   </div>
 </div>

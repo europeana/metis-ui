@@ -29,7 +29,8 @@ export class MappingComponent implements OnInit {
   defaultEditorConfig;
   editorConfig;
   editorConfigEdit;
-  statistics: string = '';
+  statistics;
+  statisticsMap = new Map();
   fullXSLT;
   xslt: Array<any> = [];
   errorMessage: string;
@@ -67,19 +68,24 @@ export class MappingComponent implements OnInit {
   loadStatistics() {
     this.editorConfig = Object.assign(this.defaultEditorConfig);
     Object.freeze(this.defaultEditorConfig);
-    //this.statistics = JSON.stringify(this.workflows.getStatistics(), null, '\t');
-
+    
     let stats = this.workflows.getStatistics().nodeStatistics;
-
+    
     for (let i = 0; i < stats.length; i++) {
-      this.statistics += '<p>';
-      this.statistics += '<strong>' + stats[i].value + '</strong><br/>';
-      this.statistics += stats[i].xpath;
-      this.statistics += '</p>';
+      if (this.statisticsMap.has(stats[i].xpath)) {
+        let a = this.statisticsMap.get(stats[i].xpath).attributes;
+        a = a.concat(stats[i].attributesStatistics);
+        let s = {'occurrence': this.statisticsMap.get(stats[i].xpath).occurrence + stats[i].occurrence,
+          'attributes': a
+        };
+        this.statisticsMap.set(stats[i].xpath, s);
+      } else {
+        let a: Array<any> = stats[i].attributesStatistics;
+        let s = {'occurrence': stats[i].occurrence, 'attributes': a};
+        this.statisticsMap.set(stats[i].xpath, s);
+      }
     }
-
-    console.log(this.statistics);
-
+    this.statistics =  Array.from(this.statisticsMap.keys());
   }
 
   /** loadEditor
