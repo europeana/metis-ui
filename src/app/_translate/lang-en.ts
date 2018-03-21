@@ -68,6 +68,7 @@ export const LANG_EN_TRANS = {
   'preview': 'Preview',
   'processinghistory': 'Processing history',
   'provider': 'Provider',
+  'rawxml': 'Raw XML',
   'recordxpath': 'Record XPath',
   'refresh': 'Refresh',
   'register': 'Register to Metis',
