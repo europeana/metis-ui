@@ -69,8 +69,20 @@ export class MappingComponent implements OnInit {
     this.editorConfig = Object.assign(this.defaultEditorConfig);
     Object.freeze(this.defaultEditorConfig);
     
-    let stats = this.workflows.getStatistics().nodeStatistics;
-    
+    let stats;
+    this.workflows.getStatistics().subscribe(result => {
+      this.formatStatistics(result['nodeStatistics']);
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
+    });
+  }
+
+   /** formatStatistics
+  /* format output of the call, so it can be used in the templates
+  /* @param {object} stats - object with all statistics
+  */
+  formatStatistics(stats) {
     for (let i = 0; i < stats.length; i++) {
       if (this.statisticsMap.has(stats[i].xpath)) {
         let a = this.statisticsMap.get(stats[i].xpath).attributes;
@@ -81,7 +93,7 @@ export class MappingComponent implements OnInit {
         this.statisticsMap.set(stats[i].xpath, s);
       } else {
         let a: Array<any> = stats[i].attributesStatistics;
-        let s = {'occurrence': stats[i].occurrence, 'attributes': a};
+        let s = {'occurrence': stats[i].occurrence, 'attributes': a, 'value': stats[i].value};
         this.statisticsMap.set(stats[i].xpath, s);
       }
     }
