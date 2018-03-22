@@ -86,14 +86,19 @@ export class MappingComponent implements OnInit {
 
     let attrMap = new Map();
     let values = new Array();
+    let attrValues = new Array():
 
     for (let i = 0; i < stats.length; i++) {
+      
       if (this.statisticsMap.has(stats[i].xpath)) {
-        let a = this.statisticsMap.get(stats[i].xpath).attributes;
         values.push(stats[i].value);
 
         for (let j = 0; j < stats[i].attributesStatistics.length; j++) {
-          attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j]);
+          if (attrMap.has(stats[i].attributesStatistics[j].name)) {
+            attrMap.set(stats[i].attributesStatistics[j].name, attrMap.get(stats[i].attributesStatistics[j].name) + stats[i].attributesStatistics[j].occurrence);
+          } else {
+            attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j].occurrence);
+          }
         }
         
         let s = {'occurrence': this.statisticsMap.get(stats[i].xpath).occurrence + stats[i].occurrence,
@@ -103,13 +108,15 @@ export class MappingComponent implements OnInit {
         };
 
         this.statisticsMap.set(stats[i].xpath, s);
+
       } else {
-        let a: Array<any> = stats[i].attributesStatistics;
+
         attrMap = new Map();
         values = [];
+        attrValues = [];
 
         for (let j = 0; j < stats[i].attributesStatistics.length; j++) {
-          attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j]);
+          attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j].occurrence);
         }
 
         values.push(stats[i].value);
@@ -120,6 +127,7 @@ export class MappingComponent implements OnInit {
           'attributesArray': attrMap ? Array.from(attrMap.keys()) : ''
         };
         this.statisticsMap.set(stats[i].xpath, s);
+
       }
     }
     this.statistics =  Array.from(this.statisticsMap.keys());

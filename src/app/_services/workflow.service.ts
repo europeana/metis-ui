@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { environment } from '../../environments/environment';
 import { apiSettings } from '../../environments/apisettings';
-import { statistics, xslt } from '../_mocked/xslt';
+import { xslt } from '../_mocked/xslt';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -239,6 +239,8 @@ export class WorkflowService {
     const topology = topologyName ? topologyName : 'validation';
     const externalTaskId = taskId ? taskId : '8867430008884183469';
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/statistics`;   
+
+    //https://test-cloud.europeana.eu/services/validation/tasks//statistics
 
     return this.http.get(url).map(data => {   
       if (data) {

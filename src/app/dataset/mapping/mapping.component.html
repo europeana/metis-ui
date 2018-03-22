@@ -21,12 +21,11 @@
   <div class="view-sample-editor">
     <ul *ngIf="statistics">
       <li *ngFor="let s of statistics">
-        <p><strong>{{s}}</strong> {{statisticsMap.get(s).occurrence}}</p>
-        <p *ngFor="let sv of statisticsMap.get(s).value">{{sv}}</p>
-        
+        <p><strong>{{s}}</strong> - {{statisticsMap.get(s).occurrence}}</p>
+        <p *ngFor="let sv of statisticsMap.get(s).value">{{sv}}</p>        
         <ul *ngFor="let sa of statisticsMap.get(s).attributesArray">
           <li>
-            {{statisticsMap.get(s).attributes.get(sa).name}}
+            {{sa}} - {{statisticsMap.get(s).attributes.get(sa)}}
           </li>
         </ul>
       </li>
