@@ -83,17 +83,42 @@ export class MappingComponent implements OnInit {
   /* @param {object} stats - object with all statistics
   */
   formatStatistics(stats) {
+
+    let attrMap = new Map();
+    let values = new Array();
+
     for (let i = 0; i < stats.length; i++) {
       if (this.statisticsMap.has(stats[i].xpath)) {
         let a = this.statisticsMap.get(stats[i].xpath).attributes;
-        a = a.concat(stats[i].attributesStatistics);
+        values.push(stats[i].value);
+
+        for (let j = 0; j < stats[i].attributesStatistics.length; j++) {
+          attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j]);
+        }
+        
         let s = {'occurrence': this.statisticsMap.get(stats[i].xpath).occurrence + stats[i].occurrence,
-          'attributes': a
+          'value': values,
+          'attributes': attrMap,          
+          'attributesArray': attrMap ? Array.from(attrMap.keys()) : ''
         };
+
         this.statisticsMap.set(stats[i].xpath, s);
       } else {
         let a: Array<any> = stats[i].attributesStatistics;
-        let s = {'occurrence': stats[i].occurrence, 'attributes': a, 'value': stats[i].value};
+        attrMap = new Map();
+        values = [];
+
+        for (let j = 0; j < stats[i].attributesStatistics.length; j++) {
+          attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j]);
+        }
+
+        values.push(stats[i].value);
+
+        let s = {'occurrence': stats[i].occurrence, 
+          'value': values,
+          'attributes': attrMap,           
+          'attributesArray': attrMap ? Array.from(attrMap.keys()) : ''
+        };
         this.statisticsMap.set(stats[i].xpath, s);
       }
     }
