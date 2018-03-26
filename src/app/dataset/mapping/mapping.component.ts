@@ -33,7 +33,9 @@ export class MappingComponent implements OnInit {
   editorConfigEdit;
   statistics;
   fullXSLT;
+  xsltType: string = 'default';
   xslt: Array<any> = [];
+  xsltToSave: Array<any> = [];
   errorMessage: string;
   fullView: boolean = true; 
   splitter: string = '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->';
@@ -41,7 +43,6 @@ export class MappingComponent implements OnInit {
   expandedStatistics: boolean;
 
   ngOnInit() {
-
   	 this.defaultEditorConfig = { 
       mode: 'application/json',
       lineNumbers: true,
@@ -80,6 +81,7 @@ export class MappingComponent implements OnInit {
     this.editorConfigEdit = Object.assign({}, this.defaultEditorConfig);
     this.editorConfigEdit['readOnly'] = false;
     this.editorConfigEdit['mode'] = 'application/xml';
+    this.loadDefaultXSLT();
   }
 
   /** loadDefaultXSLT
@@ -88,6 +90,7 @@ export class MappingComponent implements OnInit {
   loadDefaultXSLT() {
     this.datasets.getDefaultXSLT().subscribe(result => {
       this.fullXSLT = result;
+      this.xsltType = 'default';
       this.displayXSLT();
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
@@ -101,11 +104,43 @@ export class MappingComponent implements OnInit {
   loadCustomXSLT() {
     this.datasets.getCustomXSLT(this.datasetData.datasetId).subscribe(result => {
       this.fullXSLT = result['xslt'];
+      this.xsltType = 'custom';
       this.displayXSLT();
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
+  }
+
+  /** saveXSLT
+  /* save the xslt as the custom - that is dataset specific - one
+  /* switch to fullview before saving
+  */
+  saveXSLT() {
+    let xsltValue = '';  
+
+    if (this.xsltToSave.length > 0) {
+      if (this.fullView) {
+        xsltValue = this.xsltToSave[0];
+      } else {
+        for (let i = 0; i < this.xslt.length; i++) {
+          if (this.xsltToSave[i]) {
+            xsltValue += this.xsltToSave[i];
+          } else {
+            xsltValue += (i === 0 ? '' : this.splitter) + this.xslt[i];
+          }
+        }        
+      }
+    }    
+
+    let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
+    this.datasets.updateDataset(datasetValues).subscribe(result => {
+      this.loadCustomXSLT();
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
+    });
+
   }
 
   /** displayXSLT
@@ -114,6 +149,8 @@ export class MappingComponent implements OnInit {
   */
   displayXSLT() {
     this.xslt = [];
+    this.xsltToSave = [];
+
     if (this.fullView) {
       this.xslt.push(this.fullXSLT);
       this.expandedSample = 0;       

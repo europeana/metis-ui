@@ -1,1 +1,21 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
 
+.btns-set {
+  justify-content: flex-end;
+
+  &.btns-set-save {
+    margin-top: -2.5rem;
+  }
+}
+
+.btns-set button {
+  background: $gray-light;
+  margin-left: 1rem;
+
+  &:hover,
+  &.active {
+    background: $eu-jade;
+  }
+
+}

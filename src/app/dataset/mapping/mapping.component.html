@@ -24,7 +24,10 @@
   </div>
 </div>
 
-<a (click)="loadDefaultXSLT()" class="btn">load default XSLT</a> <a (click)="loadCustomXSLT()">load custom XSLT</a>
+<div class="btns-set">
+  <button (click)="loadDefaultXSLT()" [ngClass]="{'active': xsltType === 'default' }">load default XSLT</button> 
+  <button (click)="loadCustomXSLT()" [ngClass]="{'active': xsltType === 'custom' }">load custom XSLT</button>
+</div>
 
 <div class="view-sample"  *ngFor="let card of xslt; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
@@ -34,7 +37,11 @@
     </div>
   </div>
   <div class="view-sample-editor" *ngIf="card">
-    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" [config]="editorConfigEdit"></codemirror>
+    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" (ngModelChange)="xsltToSave[i]=$event" [config]="editorConfigEdit"></codemirror>
     <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
+</div>
+
+<div class="btns-set btns-set-save">
+  <button (click)="saveXSLT()" class="active">save XSLT</button> 
 </div>
