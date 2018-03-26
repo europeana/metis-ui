@@ -163,7 +163,7 @@ export class HistoryComponent implements OnInit {
   /* @param {any} el - scroll to defined element
   */
   scroll(el) {
-  	el.scrollIntoView({behavior:'smooth'});
+    el.scrollIntoView({behavior:'smooth'});
   }
 
   /** loadNextPage

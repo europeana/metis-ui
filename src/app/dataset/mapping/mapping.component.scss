@@ -2,11 +2,16 @@
 @import '../../assets/sass/pandora/settings/metis-variables';
 
 .btns-set {
-  justify-content: flex-end;
+  justify-content: space-between;
 
   &.btns-set-save {
     margin-top: -2.5rem;
+    justify-content: flex-end;
   }
+}
+
+.filter {
+  margin: 0;
 }
 
 .btns-set button {
@@ -17,5 +22,4 @@
   &.active {
     background: $eu-jade;
   }
-
 }

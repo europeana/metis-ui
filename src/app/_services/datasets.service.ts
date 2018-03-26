@@ -124,31 +124,20 @@ export class DatasetsService {
     return this.tempPreviewFilers;
   }
 
-  /** getDefaultXSLT
+  /** getXSLT
   /* get default xslt
   /* the default one
   */
-  getDefaultXSLT() {
-    const url = `${apiSettings.apiHostCore}/datasets/xslt/default`;   
-    return this.http.get(url, {responseType: 'text'}).map(data => {  
+  getXSLT(type, id?) {
+    let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;   
+    let options =  { responseType: 'text' as 'text' };
+    if(type === 'custom') {
+      url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;   
+      options = undefined;
+    }
+    return this.http.get(url, options).map(data => {  
       if (data) {
-        return data;
-      } else {
-        return false;
-      }
-    });  
-  }
-
-  /** getIdXSLT
-  /* get custom xslt
-  /* if dataset id is specified, it will catch the custom xslt
-  /* @param {number} id - dataset id
-  */
-  getCustomXSLT(id) {
-    const url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;   
-    return this.http.get(url).map(data => {  
-      if (data) {
-        return data;
+        return (type === 'default' ? data : data['xslt']);
       } else {
         return false;
       }

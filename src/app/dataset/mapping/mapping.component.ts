@@ -36,7 +36,9 @@ export class MappingComponent implements OnInit {
   xsltType: string = 'default';
   xslt: Array<any> = [];
   xsltToSave: Array<any> = [];
+  xsltHeading: string;
   errorMessage: string;
+  successMessage: string;
   fullView: boolean = true; 
   splitter: string = '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->';
   expandedSample: number;
@@ -81,61 +83,53 @@ export class MappingComponent implements OnInit {
     this.editorConfigEdit = Object.assign({}, this.defaultEditorConfig);
     this.editorConfigEdit['readOnly'] = false;
     this.editorConfigEdit['mode'] = 'application/xml';
-    this.loadDefaultXSLT();
+    this.loadXSLT('default');
   }
 
-  /** loadDefaultXSLT
-  /* load the default xslt in an editor/card
+  /** loadXSLT
+  /* either default or custom
+  /* display XSLT
+  /* show message if no custom XSLT
   */
-  loadDefaultXSLT() {
-    this.datasets.getDefaultXSLT().subscribe(result => {
+  loadXSLT(type) {
+    this.xsltType = type;
+    this.datasets.getXSLT(this.xsltType, this.datasetData.datasetId).subscribe(result => {
       this.fullXSLT = result;
-      this.xsltType = 'default';
       this.displayXSLT();
-    }, (err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {      
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
-    });
-  }
-
-  /** loadDefaultXSLT
-  /* load the default xslt in an editor/card
-  */
-  loadCustomXSLT() {
-    this.datasets.getCustomXSLT(this.datasetData.datasetId).subscribe(result => {
-      this.fullXSLT = result['xslt'];
-      this.xsltType = 'custom';
-      this.displayXSLT();
-    }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+      if (this.xsltType === 'custom') {
+        this.xslt[0] = '';
+        this.xsltHeading = 'No custom XSLT yet';
+      }
     });
   }
 
   /** saveXSLT
   /* save the xslt as the custom - that is dataset specific - one
-  /* switch to fullview before saving
+  /* combine individual "cards" when not in full view
+  /* switch to custom view after saving
   */
   saveXSLT() {
     let xsltValue = '';  
 
-    if (this.xsltToSave.length > 0) {
-      if (this.fullView) {
-        xsltValue = this.xsltToSave[0];
-      } else {
-        for (let i = 0; i < this.xslt.length; i++) {
-          if (this.xsltToSave[i]) {
-            xsltValue += this.xsltToSave[i];
-          } else {
-            xsltValue += (i === 0 ? '' : this.splitter) + this.xslt[i];
-          }
-        }        
-      }
-    }    
+    if (this.fullView) {
+      xsltValue = this.xsltToSave[0] ? this.xsltToSave[0] : this.xslt[0];
+    } else {
+      for (let i = 0; i < this.xslt.length; i++) {
+        if (this.xsltToSave[i]) {
+          xsltValue += this.xsltToSave[i];
+        } else {
+          xsltValue += (i === 0 ? '' : this.splitter) + this.xslt[i];
+        }
+      }        
+    }
 
     let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
     this.datasets.updateDataset(datasetValues).subscribe(result => {
-      this.loadCustomXSLT();
+      this.loadXSLT('custom');
+      this.successMessage = this.translate.instant('xsltsuccessfull')
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
@@ -146,11 +140,13 @@ export class MappingComponent implements OnInit {
   /** displayXSLT
   /* display xslt, either as one file or in individual cards
   /* expand the sample when in full view, else start with all cards "closed" 
+  /* empty xsltToSave to avoid misalignments
   */
   displayXSLT() {
     this.xslt = [];
     this.xsltToSave = [];
-
+    this.xsltHeading = this.xsltType;
+    
     if (this.fullView) {
       this.xslt.push(this.fullXSLT);
       this.expandedSample = 0;       
@@ -173,6 +169,9 @@ export class MappingComponent implements OnInit {
   /* @param {boolean} mode - fullview (true) or individual cards (false)
   */
   toggleFullViewMode(mode: boolean) {
+    if (this.xsltToSave[0]) {
+      this.saveXSLT();
+    }
     this.fullView = mode;
     this.displayXSLT();
   }
@@ -191,6 +190,22 @@ export class MappingComponent implements OnInit {
   */
   expandSample(index: number) {
     this.expandedSample = this.expandedSample === index ? undefined : index;
+  }
+
+  /** scroll
+  /*  scroll to specific point in page after click
+  /* @param {any} el - scroll to defined element
+  */
+  scroll(el) {
+    el.scrollIntoView({behavior:'smooth'});
+  }
+
+  /** closeMessages
+  /*  close messagebox
+  */  
+  closeMessages() {
+    this.errorMessage = undefined;
+    this.successMessage = undefined;
   }
 
 }
