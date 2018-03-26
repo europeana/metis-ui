@@ -2,9 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
+import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset } from '../../_mocked';
 
-import { WorkflowService, TranslateService, RedirectPreviousUrl, ErrorService, AuthenticationService } from '../../_services';
+import { DatasetsService, WorkflowService, TranslateService, RedirectPreviousUrl, ErrorService, AuthenticationService } from '../../_services';
 
 import { MappingComponent } from './mapping.component';
 
@@ -22,6 +22,7 @@ describe('MappingComponent', () => {
       imports: [ RouterTestingModule, HttpClientTestingModule, CodemirrorModule, FormsModule ],
       declarations: [ MappingComponent, TranslatePipe, XmlPipe ],
       providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
+        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: TranslateService,
           useValue: {
             translate: () => {
