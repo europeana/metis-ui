@@ -28,11 +28,7 @@
         <div *ngIf="isLoggedIn(); then loggedIn else loggedOut"></div>
         <ng-template #loggedIn>
           <div class="settings-menu cf nav-loggedin">
-            <a class="notifications" routerLink="/dashboard">
-              <span class="svg-icon-notifications"></span>
-              <span class="circle">7</span>
-            </a>
-            <a routerLink="/home"> <span class="svg-icon-configuration"></span></a>
+            <a href="/dashboard" class="link-to-dashboard svg-icon-dashboard"></a>
             <div class="metis-user" (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">

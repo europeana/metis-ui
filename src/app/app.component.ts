@@ -5,7 +5,6 @@ import { AuthenticationService, DatasetsService } from './_services';
 @Component({
   providers: [AuthenticationService, DatasetsService],
   selector: 'app-root',
-  styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html'
 })
 
@@ -33,7 +32,7 @@ export class AppComponent implements OnInit {
       if (!event.url) { return false; }
       if (this.router.isActive(event.url, false)) {
         this.loggedIn = this.authentication.validatedUser( );
-        
+
         this.bodyClass = event.url.split('/')[1];
         if (event.url === '/') { this.bodyClass = 'home'; }
 
@@ -41,5 +40,4 @@ export class AppComponent implements OnInit {
       }
     });
   }
-
 }

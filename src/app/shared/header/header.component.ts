@@ -1,12 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../_models';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  templateUrl: './header.component.html',  
   providers: [AuthenticationService]
 })
 
@@ -15,6 +14,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authentication: AuthenticationService,
     public router: Router, 
+    private route: ActivatedRoute,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private translate: TranslateService) {}
 
@@ -36,8 +36,7 @@ export class HeaderComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-    }
-    
+    }    
   }
 
   /** toggleSignInMenu
