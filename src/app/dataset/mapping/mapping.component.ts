@@ -106,6 +106,32 @@ export class MappingComponent implements OnInit {
     });
   }
 
+  /** displayXSLT
+  /* display xslt, either as one file or in individual cards
+  /* expand the sample when in full view, else start with all cards "closed" 
+  /* empty xsltToSave to avoid misalignments
+  */
+  displayXSLT() {
+    this.xslt = [];
+    this.xsltToSave = [];
+    this.xsltHeading = this.xsltType;
+    
+    if (this.fullView) {
+      this.xslt.push(this.fullXSLT);
+      this.expandedSample = 0;       
+    } else {
+      this.xslt = this.splitXSLT();
+      this.expandedSample = undefined;      
+    }
+  }
+
+  /** splitXSLT
+  /* split xslt on comments to show file in individual cards
+  */
+  splitXSLT() {
+    return this.fullXSLT.split(this.splitter);
+  }
+
   /** saveXSLT
   /* save the xslt as the custom - that is dataset specific - one
   /* combine individual "cards" when not in full view
@@ -135,32 +161,6 @@ export class MappingComponent implements OnInit {
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
 
-  }
-
-  /** displayXSLT
-  /* display xslt, either as one file or in individual cards
-  /* expand the sample when in full view, else start with all cards "closed" 
-  /* empty xsltToSave to avoid misalignments
-  */
-  displayXSLT() {
-    this.xslt = [];
-    this.xsltToSave = [];
-    this.xsltHeading = this.xsltType;
-    
-    if (this.fullView) {
-      this.xslt.push(this.fullXSLT);
-      this.expandedSample = 0;       
-    } else {
-      this.xslt = this.splitXSLT();
-      this.expandedSample = undefined;      
-    }
-  }
-
-  /** splitXSLT
-  /* split xslt on comments to show file in individual cards
-  */
-  splitXSLT() {
-    return this.fullXSLT.split(this.splitter);
   }
 
   /** toggleFullViewMode
