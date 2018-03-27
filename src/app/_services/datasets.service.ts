@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
-import { environment } from '../../environments/environment';
 import { apiSettings } from '../../environments/apisettings';
 
 import 'rxjs/Rx';
@@ -40,7 +39,7 @@ export class DatasetsService {
   /* @param {number} id - datasetid
   */
   getDataset(id: number) {
-    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/${id}`;    
+    const url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}/${id}`;    
     return this.http.get(url).map(data => {   
       const dataset = data;
       if (dataset) {
@@ -56,7 +55,7 @@ export class DatasetsService {
   /* @param {array} datasetFormValues - values from dataset form
   */
   createDataset(datasetFormValues: Array<any>) {    
-    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;    
+    const url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}`;    
     return this.http.post(url, datasetFormValues).map(data => {      
       const dataset = data;
       if (dataset) {
@@ -72,7 +71,7 @@ export class DatasetsService {
   /* @param {array} datasetFormValues - values from dataset form
   */
   updateDataset(datasetFormValues) {
-    const url = `${apiSettings.apiHostCore}/${environment.apiDatasets}`;    
+    const url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}`;    
     return this.http.put(url, datasetFormValues).map(data => {      
       const dataset = data;
       if (dataset) {

@@ -1,4 +1,10 @@
 export const apiSettings = {
   apiHostCore: '',
-  apiHostAuth: ''  
+  apiHostAuth: '' ,
+  apiLogin: '',
+  apiRegister: '',
+  apiUsers: '',
+  apiProfile: '',
+  apiUpdatePassword: '',
+  apiDatasets: '' 
 };

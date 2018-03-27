@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Rx';
 import { StringifyHttpError } from '../../_helpers';
 
 import { WorkflowService, AuthenticationService, ErrorService, TranslateService } from '../../_services';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-actionbar',
@@ -29,7 +30,7 @@ export class ActionbarComponent {
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
-  intervalTimer = 2000;
+  intervalTimer = environment.intervalStatus;
   now;
   totalInDataset: number;
   totalProcessed: number = 0;

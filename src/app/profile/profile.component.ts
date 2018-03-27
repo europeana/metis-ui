@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService, TranslateService, ErrorService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile',

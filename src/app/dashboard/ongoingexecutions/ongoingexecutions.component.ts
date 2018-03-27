@@ -5,6 +5,7 @@ import { StringifyHttpError } from '../../_helpers';
 import { Observable } from 'rxjs/Rx';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-ongoingexecutions',
@@ -25,7 +26,7 @@ export class OngoingexecutionsComponent {
   ongoingExecutionsTotal: number;
   errorMessage;
   subscription;
-  intervalTimer = 5000;
+  intervalTimer = environment.intervalStatus;
   currentPlugin: number = 0;
   cancelling;
   datasetNames: Array<any> = [];
