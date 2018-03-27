@@ -86,7 +86,7 @@ export class MappingComponent implements OnInit {
 
     let attrMap = new Map();
     let values = new Array();
-    let attrValues = new Array():
+    let attrValues = new Array();
 
     for (let i = 0; i < stats.length; i++) {
       
@@ -95,16 +95,24 @@ export class MappingComponent implements OnInit {
 
         for (let j = 0; j < stats[i].attributesStatistics.length; j++) {
           if (attrMap.has(stats[i].attributesStatistics[j].name)) {
-            attrMap.set(stats[i].attributesStatistics[j].name, attrMap.get(stats[i].attributesStatistics[j].name) + stats[i].attributesStatistics[j].occurrence);
+            if (stats[i].attributesStatistics[j].value !== undefined) {
+              attrValues.push(stats[i].attributesStatistics[j].value);
+            }
+            attrMap.set(stats[i].attributesStatistics[j].name, {'occurrence': attrMap.get(stats[i].attributesStatistics[j].name).occurrence + stats[i].attributesStatistics[j].occurrence, 'values': attrValues});
           } else {
-            attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j].occurrence);
+            attrValues = [];
+            if (stats[i].attributesStatistics[j].value !== undefined) {
+              attrValues.push(stats[i].attributesStatistics[j].value);
+            }
+            attrMap.set(stats[i].attributesStatistics[j].name, {'occurrence': stats[i].attributesStatistics[j].occurrence, 'values': attrValues});
           }
         }
         
         let s = {'occurrence': this.statisticsMap.get(stats[i].xpath).occurrence + stats[i].occurrence,
           'value': values,
           'attributes': attrMap,          
-          'attributesArray': attrMap ? Array.from(attrMap.keys()) : ''
+          'attributesArray': attrMap ? Array.from(attrMap.keys()) : '',
+          'attributesValues': attrValues
         };
 
         this.statisticsMap.set(stats[i].xpath, s);
@@ -116,7 +124,10 @@ export class MappingComponent implements OnInit {
         attrValues = [];
 
         for (let j = 0; j < stats[i].attributesStatistics.length; j++) {
-          attrMap.set(stats[i].attributesStatistics[j].name, stats[i].attributesStatistics[j].occurrence);
+          if (stats[i].attributesStatistics[j].value !== undefined) {
+            attrValues.push(stats[i].attributesStatistics[j].value);
+          }
+          attrMap.set(stats[i].attributesStatistics[j].name, {'occurrence': stats[i].attributesStatistics[j].occurrence, 'values': attrValues});
         }
 
         values.push(stats[i].value);

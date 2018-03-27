@@ -25,7 +25,8 @@
         <p *ngFor="let sv of statisticsMap.get(s).value">{{sv}}</p>        
         <ul *ngFor="let sa of statisticsMap.get(s).attributesArray">
           <li>
-            {{sa}} - {{statisticsMap.get(s).attributes.get(sa)}}
+            {{sa}} - {{statisticsMap.get(s).attributes.get(sa).occurrence}}
+            <p *ngFor="let value of statisticsMap.get(s).attributes.get(sa).values" style="margin-left: 2rem;">{{value}}</p>   
           </li>
         </ul>
       </li>
