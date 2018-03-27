@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -12,8 +11,7 @@ import { StringifyHttpError } from '../_helpers';
 export class CountriesService {
 
   constructor(private http: HttpClient, 
-    private authentication: AuthenticationService, 
-    private router: Router) {}
+    private authentication: AuthenticationService) {}
 
   /** getCountriesLanguages
   /* get a list of countries or languages

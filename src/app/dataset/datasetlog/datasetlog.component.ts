@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
 
 import { WorkflowService, AuthenticationService, TranslateService, ErrorService } from '../../_services';
 
@@ -13,7 +12,6 @@ export class DatasetlogComponent implements OnInit {
 
   constructor(private workflows: WorkflowService, 
     private authentication: AuthenticationService, 
-    private router: Router,
     private errors: ErrorService,
     private translate: TranslateService) { }
 
