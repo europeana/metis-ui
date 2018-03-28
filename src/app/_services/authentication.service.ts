@@ -1,5 +1,4 @@
 ﻿import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
@@ -14,8 +13,7 @@ export class AuthenticationService {
   private token: string;
   public currentUser = null;
 
-  constructor(public router: Router,
-              private http: HttpClient) {
+  constructor(private http: HttpClient) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
     if (value) {

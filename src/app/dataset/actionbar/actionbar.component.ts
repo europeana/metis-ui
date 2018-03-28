@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Rx';
@@ -16,11 +15,9 @@ import { environment } from '../../../environments/environment';
 
 export class ActionbarComponent {
 
-  constructor(private route: ActivatedRoute, 
-      private workflows: WorkflowService,
+  constructor(private workflows: WorkflowService,
       private http: HttpClient,
       private authentication: AuthenticationService,
-      private router: Router,
       private errors: ErrorService, 
       private translate: TranslateService) { }
 
