@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthenticationService, TranslateService, ErrorService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -25,8 +23,6 @@ export class ProfileComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    public router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder, 
     private translate: TranslateService,
     private errors: ErrorService) { }

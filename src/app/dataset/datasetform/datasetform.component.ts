@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import 'rxjs/Rx';
@@ -37,7 +37,6 @@ export class DatasetformComponent implements OnInit {
   constructor(private countries: CountriesService,
     private datasets: DatasetsService,
     private authentication: AuthenticationService,
-    private route: ActivatedRoute, 
     private router: Router,
     private fb: FormBuilder, 
     private RedirectPreviousUrl: RedirectPreviousUrl,

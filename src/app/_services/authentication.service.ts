@@ -1,9 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
 import { apiSettings } from '../../environments/apisettings';
 
 import { User } from '../_models';
@@ -15,8 +13,7 @@ export class AuthenticationService {
   private token: string;
   public currentUser = null;
 
-  constructor(public router: Router,
-              private http: HttpClient) {
+  constructor(private http: HttpClient) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
     if (value) {
@@ -50,7 +47,7 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   updatePassword(password: string) {
-    const url = `${apiSettings.apiHostAuth}/${environment.apiUpdatePassword}?newPassword=${password}`;
+    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiUpdatePassword}?newPassword=${password}`;
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       return true;
     });
@@ -63,7 +60,7 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   register(email: string, password: string) {
-    const url = `${apiSettings.apiHostAuth}/${environment.apiRegister}`;
+    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiRegister}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       return true;
@@ -78,7 +75,7 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   login(email: string, password: string) {
-    const url = `${apiSettings.apiHostAuth}/${environment.apiLogin}`;
+    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiLogin}`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
@@ -108,7 +105,7 @@ export class AuthenticationService {
   /* @param {string} email - email
   */ 
   reloadCurrentUser(email: string) {
-    const url = `${apiSettings.apiHostAuth}/${environment.apiProfile}/?userEmailToUpdate=${email}`;    
+    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiProfile}/?userEmailToUpdate=${email}`;    
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       const user = <User>data;
       if (user) {

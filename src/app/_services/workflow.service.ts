@@ -1,7 +1,6 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { environment } from '../../environments/environment';
 import { apiSettings } from '../../environments/apisettings';
 import { statistics } from '../_mocked/xslt';
 

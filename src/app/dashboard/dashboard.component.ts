@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthenticationService, TranslateService } from '../_services';
 import { User, Notification } from '../_models';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,7 +18,6 @@ export class DashboardComponent implements OnInit {
   public isShowingLog = false;
 
   constructor(private authentication: AuthenticationService,
-              private router: Router,
               private translate: TranslateService) {
   }
 
