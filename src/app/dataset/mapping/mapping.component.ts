@@ -197,7 +197,6 @@ export class MappingComponent implements OnInit {
   /* expand statistics panel
   */
   toggleStatistics() {
-    console.log('toggleStatistics');
     this.expandedStatistics = this.expandedStatistics === true ? false : true;
   }
 
