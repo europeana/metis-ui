@@ -3,6 +3,7 @@ import { WorkflowService, DatasetsService, TranslateService, ErrorService } from
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
+import { environment } from '../../../environments/environment';
 
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
@@ -40,7 +41,7 @@ export class MappingComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   fullView: boolean = true; 
-  splitter: string = '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->';
+  splitter: string = environment.xsltSplitter;
   expandedSample: number;
   expandedStatistics: boolean;
 
@@ -98,9 +99,8 @@ export class MappingComponent implements OnInit {
       this.displayXSLT();
     }, (err: HttpErrorResponse) => {      
       let error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
       if (this.xsltType === 'custom') {
-        this.xslt[0] = '';
+        this.xslt[0] = undefined;
         this.xsltHeading = 'No custom XSLT yet';
       }
     });
@@ -155,7 +155,7 @@ export class MappingComponent implements OnInit {
     let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
     this.datasets.updateDataset(datasetValues).subscribe(result => {
       this.loadXSLT('custom');
-      this.successMessage = this.translate.instant('xsltsuccessfull')
+      this.successMessage = this.translate.instant('xsltsuccessful')
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   

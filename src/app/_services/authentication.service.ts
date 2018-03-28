@@ -47,7 +47,7 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   updatePassword(password: string) {
-    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiUpdatePassword}?newPassword=${password}`;
+    const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}`;
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       return true;
     });
@@ -60,7 +60,7 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   register(email: string, password: string) {
-    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiRegister}`;
+    const url = `${apiSettings.apiHostAuth}/authentication/register`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       return true;
@@ -75,7 +75,7 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   login(email: string, password: string) {
-    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiLogin}`;
+    const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
       const user = <User>data;
@@ -105,7 +105,7 @@ export class AuthenticationService {
   /* @param {string} email - email
   */ 
   reloadCurrentUser(email: string) {
-    const url = `${apiSettings.apiHostAuth}/${apiSettings.apiProfile}/?userEmailToUpdate=${email}`;    
+    const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;    
     return this.http.put(url, JSON.stringify('{}')).map(data => {
       const user = <User>data;
       if (user) {
