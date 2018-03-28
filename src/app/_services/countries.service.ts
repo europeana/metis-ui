@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
-import { environment } from '../../environments/environment';
 
 import { AuthenticationService } from '../_services/authentication.service';
 import { StringifyHttpError } from '../_helpers';
@@ -12,17 +10,16 @@ import { StringifyHttpError } from '../_helpers';
 export class CountriesService {
 
   constructor(private http: HttpClient, 
-    private authentication: AuthenticationService, 
-    private router: Router) {}
+    private authentication: AuthenticationService) {}
 
   /** getCountriesLanguages
   /* get a list of countries or languages
   /* @param {boolean} type - type of values to return, either country or language
   */
   getCountriesLanguages(type) {
-    let url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/countries`;        
+    let url = `${apiSettings.apiHostCore}/datasets/countries`;        
     if (type === 'language') {
-      url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/languages`;  
+      url = `${apiSettings.apiHostCore}/datasets/languages`;  
     }
     return this.http.get(url).map(data => {      
       if (data) {

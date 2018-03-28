@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { WorkflowService, ErrorService, TranslateService } from '../../_services';
@@ -12,9 +11,7 @@ import { StringifyHttpError } from '../../_helpers';
 })
 export class HistoryComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, 
-    private workflows: WorkflowService,
-    private router: Router,
+  constructor(private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService) { }
 
@@ -163,7 +160,7 @@ export class HistoryComponent implements OnInit {
   /* @param {any} el - scroll to defined element
   */
   scroll(el) {
-  	el.scrollIntoView({behavior:'smooth'});
+    el.scrollIntoView({behavior:'smooth'});
   }
 
   /** loadNextPage

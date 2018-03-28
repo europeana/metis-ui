@@ -1,4 +1,4 @@
 export const apiSettings = {
   apiHostCore: '',
-  apiHostAuth: ''  
+  apiHostAuth: '' ,
 };

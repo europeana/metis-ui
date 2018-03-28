@@ -114,7 +114,7 @@ export class RegisterComponent implements OnInit {
   }
 
   /** onRegistration
-  /* set message after successfull registration
+  /* set message after successful registration
   /* redirect user to login page afterwards
   /* @param {string} msg - success message
   */

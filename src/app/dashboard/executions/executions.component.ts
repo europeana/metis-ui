@@ -5,6 +5,7 @@ import { StringifyHttpError } from '../../_helpers';
 import { Observable } from 'rxjs/Rx';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-executions',
@@ -29,7 +30,7 @@ export class ExecutionsComponent implements OnInit {
   nextPageOngoing: number = 0;
   gotoNextPage: number = 0;
   pollingTimeout;
-  intervalTimer: number = 5000;
+  intervalTimer: number = environment.intervalStatus;
   totalPagesShowing: number = 0;
   errorMessage: string;
   successMessage: string;
