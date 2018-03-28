@@ -2,7 +2,7 @@ import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
-import { statistics, xslt } from '../_mocked/xslt';
+import { statistics } from '../_mocked/xslt';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -237,15 +237,7 @@ export class WorkflowService {
   getStatistics() {
     return statistics;
   }
-
-   /** getXSLT
-  /*  get xslt for a certain dataset
-  /* mocked data for now
-  */
-  getXSLT() {
-    return xslt;
-  }
-  
+ 
   /** setCurrentReport
   /* set content for selected report 
   /* @param {object} report - data of current report

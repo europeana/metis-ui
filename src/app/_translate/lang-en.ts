@@ -88,6 +88,7 @@ export const LANG_EN_TRANS = {
   'showrandom': 'Show random',
   'startdate': 'Start date',
   'start workflow': 'Start your next workflow!',
+  'statistics': 'Statistics',
   'status': 'Status',
   'submit': 'Submit',
   'totaldataset': 'Total dataset',
@@ -102,5 +103,11 @@ export const LANG_EN_TRANS = {
   'viewall': 'View all',
   'viewcollections': 'View in collections',
   'workflow': 'Workflow',
+  'xsltcards': 'View per field',
+  'xsltfull': 'View in one sheet',
+  'xsltloadcustom': 'load custom XSLT',
+  'xsltloaddefault': 'load default XSLT',
+  'xsltsave': 'Save XSLT',
+  'xsltsuccessful': 'XSLT changes have been saved successfully as custom XSLT',
   'zoho': 'Go to Zoho'
 };

@@ -7,6 +7,7 @@ export const environment = {
   passwordStrength: 0,
   intervalStatus: 5000,
   afterLoginGoto: '/dashboard',
+  xsltSplitter: '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->',
   links: {
     registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis',
     gotoZoho: 'https://www.zoho.com'

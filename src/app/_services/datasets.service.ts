@@ -39,7 +39,7 @@ export class DatasetsService {
   /* @param {number} id - datasetid
   */
   getDataset(id: number) {
-    const url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}/${id}`;    
+    const url = `${apiSettings.apiHostCore}/datasets/${id}`;    
     return this.http.get(url).map(data => {   
       const dataset = data;
       if (dataset) {
@@ -55,7 +55,7 @@ export class DatasetsService {
   /* @param {array} datasetFormValues - values from dataset form
   */
   createDataset(datasetFormValues: Array<any>) {    
-    const url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}`;    
+    const url = `${apiSettings.apiHostCore}/datasets`;    
     return this.http.post(url, datasetFormValues).map(data => {      
       const dataset = data;
       if (dataset) {
@@ -71,7 +71,7 @@ export class DatasetsService {
   /* @param {array} datasetFormValues - values from dataset form
   */
   updateDataset(datasetFormValues) {
-    const url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}`;    
+    const url = `${apiSettings.apiHostCore}/datasets`;    
     return this.http.put(url, datasetFormValues).map(data => {      
       const dataset = data;
       if (dataset) {
@@ -121,6 +121,26 @@ export class DatasetsService {
   */
   getPreviewFilters() {
     return this.tempPreviewFilers;
+  }
+
+  /** getXSLT
+  /* get default xslt
+  /* the default one
+  */
+  getXSLT(type, id?) {
+    let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;   
+    let options =  { responseType: 'text' as 'text' };
+    if(type === 'custom') {
+      url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;   
+      options = undefined;
+    }
+    return this.http.get(url, options).map(data => {  
+      if (data) {
+        return (type === 'default' ? data : data['xslt']);
+      } else {
+        return false;
+      }
+    });  
   }
 
 }

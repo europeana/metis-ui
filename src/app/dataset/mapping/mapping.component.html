@@ -1,19 +1,6 @@
-<div class="messages">
-  <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-</div>
-
-<div class="filter-wrapper">
-  <ul class="filter">
-    <li>
-      <a *ngIf="!fullView" (click)="toggleFullViewMode(true)">View in one sheet</a>
-      <a *ngIf="fullView" (click)="toggleFullViewMode(false)">View per field</a>
-    </li>    
-  </ul>
-</div>
-
 <div class="view-sample view-statistics" *ngIf="statistics" [ngClass]="{'view-sample-expanded': expandedStatistics}">
   <div class="view-sample-title">
-    <h3>Statistics</h3>
+    <h3>{{ 'statistics' | translate }}</h3>
     <div class="toggle-expand"> 
       <a (click)="toggleStatistics()">-</a>
     </div>
@@ -24,15 +11,39 @@
   </div>
 </div>
 
-<div class="view-sample" *ngFor="let card of xslt; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
+<div #messagebar class="messages" (clickOutside)="closeMessages()">
+  <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
+  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+</div>
+
+<div class="btns-set">
+  <div class="filter-wrapper">
+    <ul class="filter">
+      <li>
+        <a *ngIf="!fullView" (click)="toggleFullViewMode(true)">{{ 'xsltfull' | translate }}</a>
+        <a *ngIf="fullView" (click)="toggleFullViewMode(false)">{{ 'xsltcards' | translate }}</a>
+      </li>    
+    </ul>
+  </div>
+  <div>
+    <button (click)="loadXSLT('default')" [ngClass]="{'active': xsltType === 'default' }">{{ 'xsltloaddefault' | translate }}</button> 
+    <button (click)="loadXSLT('custom')" [ngClass]="{'active': xsltType === 'custom' }">{{ 'xsltloadcustom' | translate }}</button>
+  </div>
+</div>
+
+<div class="view-sample"  *ngFor="let card of xslt; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
-    <h3>edm_external2internal_v0.3</h3>
+    <h3>{{xsltHeading}}</h3>
     <div class="toggle-expand" *ngIf="expandedSample === i && xslt.length > 1"> 
       <a (click)="expandSample(i)">-</a>
     </div>
   </div>
-  <div class="view-sample-editor">
-    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" [config]="editorConfigEdit"></codemirror>
+  <div class="view-sample-editor" *ngIf="card">
+    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" (ngModelChange)="xsltToSave[i]=$event" [config]="editorConfigEdit"></codemirror>
     <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
+</div>
+
+<div class="btns-set btns-set-save" *ngIf="xslt[0]">
+  <button (click)="saveXSLT(); scroll(messagebar);" class="active">{{ 'xsltsave' | translate }}</button> 
 </div>

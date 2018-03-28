@@ -17,9 +17,9 @@ export class CountriesService {
   /* @param {boolean} type - type of values to return, either country or language
   */
   getCountriesLanguages(type) {
-    let url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}/countries`;        
+    let url = `${apiSettings.apiHostCore}/datasets/countries`;        
     if (type === 'language') {
-      url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}/languages`;  
+      url = `${apiSettings.apiHostCore}/datasets/languages`;  
     }
     return this.http.get(url).map(data => {      
       if (data) {
