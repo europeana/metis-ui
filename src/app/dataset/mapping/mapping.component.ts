@@ -115,7 +115,7 @@ export class MappingComponent implements OnInit {
       this.fullXSLT = result;
       this.displayXSLT();
     }, (err: HttpErrorResponse) => {      
-      let error = this.errors.handleError(err); 
+      this.errors.handleError(err); 
       if (this.xsltType === 'custom') {
         this.xslt[0] = undefined;
         this.xsltHeading = 'No custom XSLT yet';

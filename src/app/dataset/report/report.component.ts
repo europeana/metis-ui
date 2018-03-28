@@ -3,8 +3,7 @@ import { WorkflowService, TranslateService } from '../../_services';
 
 @Component({
   selector: 'app-report',
-  templateUrl: './report.component.html',
-  styleUrls: ['./report.component.scss']
+  templateUrl: './report.component.html'
 })
 export class ReportComponent implements OnInit {
 
