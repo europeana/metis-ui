@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
-import { environment } from '../../environments/environment';
 
 import { AuthenticationService } from '../_services/authentication.service';
 import { StringifyHttpError } from '../_helpers';
@@ -20,9 +19,9 @@ export class CountriesService {
   /* @param {boolean} type - type of values to return, either country or language
   */
   getCountriesLanguages(type) {
-    let url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/countries`;        
+    let url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}/countries`;        
     if (type === 'language') {
-      url = `${apiSettings.apiHostCore}/${environment.apiDatasets}/languages`;  
+      url = `${apiSettings.apiHostCore}/${apiSettings.apiDatasets}/languages`;  
     }
     return this.http.get(url).map(data => {      
       if (data) {

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService, TranslateService } from '../_services';
 import { User, Notification } from '../_models';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
