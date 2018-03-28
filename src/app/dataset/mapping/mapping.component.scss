@@ -1,8 +1,12 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
 
-.view-statistics .view-sample-editor {
-  > div {
+.view-statistics {
+  .toggle-expand {
+    display: none;
+  }
+
+  .view-sample-editor > div {
     height: 40vh;
     overflow: auto;
     padding: 1rem;
@@ -15,7 +19,17 @@
     ul ul {
       margin-left: 2rem;
     }
+  }
+}
 
+.view-statistics.view-sample-expanded {
+
+  .toggle-expand {
+    display: inline-block;
+  }
+
+  .view-sample-editor > div {
+    height: 60vh;
   }
 }
 

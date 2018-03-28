@@ -75,14 +75,22 @@ export class MappingComponent implements OnInit {
     this.editorConfig = Object.assign(this.defaultEditorConfig);
     Object.freeze(this.defaultEditorConfig);
     
-    let stats;
-    this.workflows.getStatistics().subscribe(result => {
-      this.statistics = result['nodeStatistics'];
-      console.log(this.statistics);
-    }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0, 'only_validation_external').subscribe(result => {
+      
+      let taskId: string;
+      if (result['results'].length > 0) {
+        taskId = result['results'][0]['metisPlugins'][0]['externalTaskId']; // should be updated after changes in validation
+      }
+
+      let stats;
+      this.workflows.getStatistics('validation', taskId).subscribe(result => {
+        this.statistics = result['nodeStatistics'];
+      }, (err: HttpErrorResponse) => {
+        let error = this.errors.handleError(err); 
+        this.errorMessage = `${StringifyHttpError(error)}`;   
+      });      
     });
+    
   }
 
   /** loadEditor
@@ -189,6 +197,7 @@ export class MappingComponent implements OnInit {
   /* expand statistics panel
   */
   toggleStatistics() {
+    console.log('toggleStatistics');
     this.expandedStatistics = this.expandedStatistics === true ? false : true;
   }
 
