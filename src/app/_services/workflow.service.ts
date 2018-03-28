@@ -2,7 +2,6 @@ import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
-import { statistics } from '../_mocked/xslt';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -234,8 +233,17 @@ export class WorkflowService {
   /*  get statistics for a certain dataset
   /* mocked data for now
   */
-  getStatistics() {
-    return statistics;
+  getStatistics(topologyName?, taskId?) {
+    const topology = topologyName ? topologyName : 'validation';
+    const externalTaskId = taskId ? taskId : '8867430008884183469';
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/statistics`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
   }
  
   /** setCurrentReport

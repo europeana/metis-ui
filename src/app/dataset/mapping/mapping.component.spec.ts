@@ -50,7 +50,7 @@ describe('MappingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should expand a statistics', () => {
+  it('should expand statistics', () => {
     component.toggleStatistics();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-statistics.view-sample-expanded')).length).toBeTruthy();

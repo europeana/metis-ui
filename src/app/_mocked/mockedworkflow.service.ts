@@ -90,6 +90,19 @@ export let XMLSamples = [{
  'xmlRecord': '<?xml version="1.0" encoding="UTF-8"?>'
 }];
 
+export let statistics = { nodeStatistics: 
+  [{attributesStatistics: 
+      [{name: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
+        occurrence: 2,
+        value: 'ca'
+      }],
+    occurrence: 2,
+    parentXpath: '//rdf:RDF/edm:ProvidedCHO',
+    value: 'desconegut',
+    xpath: '//rdf:RDF/edm:ProvidedCHO/dc:creator'
+  }]
+};
+
 export let currentReport = { id: 123, 
   errors: [{errorType: 'errorType', 
     message: 'errorMessage', 
@@ -135,4 +148,9 @@ export class MockWorkflowService extends WorkflowService {
   getReport(taskid, topology) {
     return Observable.of(currentReport);
   }
+
+  getStatistics() {
+    return Observable.of(statistics);
+  }
+
 }

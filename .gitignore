@@ -9,3 +9,4 @@ src/environments/apisettings.ts
 .idea
 src/.DS_Store
 src/environments/workflowparams.ts
+src/app/.DS_Store

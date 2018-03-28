@@ -40,13 +40,8 @@ export class DatasetsService {
   */
   getDataset(id: number) {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;    
-    return this.http.get(url).map(data => {   
-      const dataset = data;
-      if (dataset) {
-        return dataset;
-      } else {
-        return false;
-      }
+    return this.http.get(url).map(dataset => {   
+      return dataset ? dataset : false;
     });    
   }
 
@@ -56,13 +51,8 @@ export class DatasetsService {
   */
   createDataset(datasetFormValues: Array<any>) {    
     const url = `${apiSettings.apiHostCore}/datasets`;    
-    return this.http.post(url, datasetFormValues).map(data => {      
-      const dataset = data;
-      if (dataset) {
-        return dataset;
-      } else {
-        return false;
-      }
+    return this.http.post(url, datasetFormValues).map(newDataset => {      
+      return newDataset ? newDataset : false;
     });
   }
 
@@ -72,13 +62,8 @@ export class DatasetsService {
   */
   updateDataset(datasetFormValues) {
     const url = `${apiSettings.apiHostCore}/datasets`;    
-    return this.http.put(url, datasetFormValues).map(data => {      
-      const dataset = data;
-      if (dataset) {
-        return dataset;
-      } else {
-        return false;
-      }
+    return this.http.put(url, datasetFormValues).map(updateDataset => {      
+      return updateDataset ? updateDataset : false;
     });
   }
 
@@ -134,12 +119,9 @@ export class DatasetsService {
       url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;   
       options = undefined;
     }
+
     return this.http.get(url, options).map(data => {  
-      if (data) {
-        return (type === 'default' ? data : data['xslt']);
-      } else {
-        return false;
-      }
+      return data ? (type === 'default' ? data : data['xslt']) : false;
     });  
   }
 

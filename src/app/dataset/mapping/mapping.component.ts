@@ -29,10 +29,9 @@ export class MappingComponent implements OnInit {
     private translate: TranslateService) { }
 
   @Input() datasetData: any;
-  defaultEditorConfig;
-  editorConfig;
   editorConfigEdit;
   statistics;
+  statisticsMap = new Map();
   fullXSLT;
   xsltType: string = 'default';
   xslt: Array<any> = [];
@@ -46,13 +45,13 @@ export class MappingComponent implements OnInit {
   expandedStatistics: boolean;
 
   ngOnInit() {
-  	 this.defaultEditorConfig = { 
-      mode: 'application/json',
+  	 this.editorConfigEdit = { 
+      mode: 'application/xml',
       lineNumbers: true,
       indentUnit: 2,
       foldGutter: true,
       indentWithTabs: true,
-      readOnly: true,
+      readOnly: false,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
@@ -70,10 +69,21 @@ export class MappingComponent implements OnInit {
   /* load the data on statistics and display this in a card (=readonly editor)
   /* mocked data for now
   */
-  loadStatistics() {
-    this.editorConfig = Object.assign(this.defaultEditorConfig);
-    Object.freeze(this.defaultEditorConfig);
-    this.statistics = JSON.stringify(this.workflows.getStatistics(), null, '\t');
+  loadStatistics() {  
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0, 'only_validation_external').subscribe(result => {      
+      let taskId: string;
+      if (result['results'].length > 0) {
+        taskId = result['results'][0]['metisPlugins'][0]['externalTaskId']; // should be updated after changes in validation
+      }
+
+      let stats;
+      this.workflows.getStatistics('validation', taskId).subscribe(result => {
+        this.statistics = result['nodeStatistics'];
+      }, (err: HttpErrorResponse) => {
+        let error = this.errors.handleError(err); 
+        this.errorMessage = `${StringifyHttpError(error)}`;   
+      });      
+    });    
   }
 
   /** loadEditor
@@ -81,9 +91,6 @@ export class MappingComponent implements OnInit {
   /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
   */
   loadEditor() {
-    this.editorConfigEdit = Object.assign({}, this.defaultEditorConfig);
-    this.editorConfigEdit['readOnly'] = false;
-    this.editorConfigEdit['mode'] = 'application/xml';
     this.loadXSLT('default');
   }
 
@@ -98,7 +105,7 @@ export class MappingComponent implements OnInit {
       this.fullXSLT = result;
       this.displayXSLT();
     }, (err: HttpErrorResponse) => {      
-      let error = this.errors.handleError(err); 
+      this.errors.handleError(err); 
       if (this.xsltType === 'custom') {
         this.xslt[0] = undefined;
         this.xsltHeading = 'No custom XSLT yet';
