@@ -1,6 +1,25 @@
 <div class="modal-wrapper" *ngIf="report">
   <div class="modal">
     <div class="head">Report <a class="btn-close" (click)="closeReport();"></a></div>
-    <div class="content" [innerHTML]="report">
+    <div class="content">
+    	<ul *ngFor="let r of report">
+        <li>
+          <strong>errorType: </strong> {{r.errorType}}
+        </li>
+        <li>
+          <strong>message: </strong> {{r.message}}
+        </li>
+        <li>
+          <strong>occurrence: </strong> {{r.occurrences}}
+        </li>
+        <li>
+          <strong>errorDetails: </strong> 
+          <ul *ngFor="let er of r.errorDetails">
+            <li><strong>identifier: </strong> {{er.identifier}}</li>
+            <li><strong>additionalInfo: </strong> {{er.additionalInfo}}</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

@@ -66,6 +66,18 @@
         padding: .8rem 2rem;
       }
 
+      strong {
+        display: inline-block;
+      }
+
+      > ul {
+        margin-bottom: 1rem;
+      }
+
+      ul ul {
+        margin-left: 2rem;
+      }
+
     }
 
   }
