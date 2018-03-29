@@ -10,7 +10,7 @@ export class ReportComponent implements OnInit {
   constructor(private workflows: WorkflowService,
     private translate: TranslateService) { }
 
-  report: string = '';
+  report;
 
   /** ngOnInit
   /* init this component
@@ -18,14 +18,9 @@ export class ReportComponent implements OnInit {
   /* set translation language
   */  
   ngOnInit() {
+
     if (this.workflows.getCurrentReport()) {
-      let reportContent = this.workflows.getCurrentReport().errors;      
-      for (let i = 0; i < reportContent.length; i++) {
-        for (let key in reportContent[i]) {  
-          this.report += '<strong>' + key + '</strong>: ' + reportContent[i][key] + '</br>';
-        }
-        this.report += '</br>';
-      }
+      this.report = this.workflows.getCurrentReport().errors;  
     }
 
     if (typeof this.translate.use === 'function') { 
