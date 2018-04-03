@@ -42,7 +42,7 @@ export class DatasetComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   
-  public isShowingLog = false;
+  public isShowingLog;
   public datasetData; 
   public activeSet: string;
   public workflowData;
@@ -96,7 +96,8 @@ export class DatasetComponent implements OnInit {
   /*  opens/closes the log messages 
   /* @param {boolean} message - show log yes/no
   */
-  onNotifyShowLogStatus(message: boolean):void {
+  onNotifyShowLogStatus(message):void {
+    console.log('onNotifyShowLogStatus', message);
     this.isShowingLog = message;
   }
 

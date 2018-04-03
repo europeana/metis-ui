@@ -70,7 +70,7 @@ export class MappingComponent implements OnInit {
   /* mocked data for now
   */
   loadStatistics() {  
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0, 'only_validation_external').subscribe(result => {      
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {      
       let taskId: string;
       if (result['results'].length > 0) {
         taskId = result['results'][0]['metisPlugins'][0]['externalTaskId']; // should be updated after changes in validation

@@ -121,6 +121,7 @@ export class DatasetformComponent implements OnInit {
   /* disable/enable fields
   */
   buildForm() {
+
     this.datasetForm = this.fb.group({
       datasetId: [(this.datasetData ? this.datasetData.datasetId : '')],
       datasetName: [(this.datasetData ? this.datasetData.datasetName : ''), [Validators.required]],
@@ -142,10 +143,10 @@ export class DatasetformComponent implements OnInit {
       numberOfItemsPublished: [''],
       lastDateHarvest: [''],
       numberOfItemsHarvested: [''],
-      pluginType: ['', [Validators.required]],
-      harvestUrl: [(this.datasetData ? this.datasetData.harvestingMetadata.url : ''), [Validators.required]],
-      setSpec: [(this.datasetData ? this.datasetData.harvestingMetadata.setSpec : '')],
-      metadataFormat: [(this.datasetData ? this.datasetData.harvestingMetadata.metadataFormat : ''), [Validators.required]],
+      //pluginType: ['', [Validators.required]],
+      //harvestUrl: [(this.datasetData ? this.datasetData.harvestingMetadata.url : ''), [Validators.required]],
+      //setSpec: [(this.datasetData ? this.datasetData.harvestingMetadata.setSpec : '')],
+      //metadataFormat: [(this.datasetData ? this.datasetData.harvestingMetadata.metadataFormat : ''), [Validators.required]],
       recordXPath: [''],
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
@@ -163,7 +164,7 @@ export class DatasetformComponent implements OnInit {
       this.datasetForm.controls['language'].disable();
       this.datasetForm.controls['description'].disable();
       this.datasetForm.controls['notes'].disable();
-      this.datasetForm.controls['pluginType'].disable();
+      //this.datasetForm.controls['pluginType'].disable();
     }
   }
 
@@ -183,13 +184,13 @@ export class DatasetformComponent implements OnInit {
   /* some field values need formating before sending them to the backend
   */
   formatFormValues() {
-    this.datasetForm.value.harvestingMetadata = {
+    /*this.datasetForm.value.harvestingMetadata = {
       pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'NULL',
       mocked: false,
       url: this.datasetForm.value.harvestUrl ? this.datasetForm.value.harvestUrl : '',
       metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
       setSpec: this.datasetForm.value.setSpec ? this.datasetForm.value.setSpec : ''
-    };
+    };*/
 
     if (!this.datasetForm.value['country']) {
       this.datasetForm.value['country'] = null;
@@ -220,7 +221,7 @@ export class DatasetformComponent implements OnInit {
         this.datasetForm.controls['language'].disable();
         this.datasetForm.controls['description'].disable();
         this.datasetForm.controls['notes'].disable();
-        this.datasetForm.controls['pluginType'].disable();          
+        //this.datasetForm.controls['pluginType'].disable();          
       }, (err: HttpErrorResponse) => {
         let error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`; 
@@ -254,7 +255,7 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.controls['language'].enable();
     this.datasetForm.controls['description'].enable();
     this.datasetForm.controls['notes'].enable();
-    this.datasetForm.controls['pluginType'].enable();
+    //this.datasetForm.controls['pluginType'].enable();
     
     window.scrollTo(0, 0);
   }   

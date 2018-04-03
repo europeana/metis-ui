@@ -81,6 +81,7 @@ export const LANG_EN_TRANS = {
   'replaces': 'Replaces',
   'report': 'Report',
   'restart': 'Restart',
+  'run workflow': 'Run workflow',
   'search': 'Search',
   'setspec': 'Setspec',
   'signin': 'Sign in',

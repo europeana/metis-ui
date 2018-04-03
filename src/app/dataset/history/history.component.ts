@@ -43,7 +43,7 @@ export class HistoryComponent implements OnInit {
    if (this.inCollapsablePanel) {
       this.workflows.selectedWorkflow.subscribe(
         selectedworkflow => {
-          this.triggerWorkflow(selectedworkflow);
+          this.triggerWorkflow();
         }
       );
     }
@@ -98,15 +98,10 @@ export class HistoryComponent implements OnInit {
 
     if (!this.datasetData) { return false; }
 
-    let filterWorkflow = this.selectedFilterWorkflow;
-    if (this.inCollapsablePanel) {
-      filterWorkflow = '';
-    }
-
     let startPage = 0;
     let totalPageNr = this.totalPages;
 
-    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage, filterWorkflow).subscribe(result => {
+    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
 
       if (result['results'].length === 0) { this.nextPage = 0; return false }
 
@@ -176,10 +171,10 @@ export class HistoryComponent implements OnInit {
   /*  trigger a workflow, based on selection in workflow dropdown or restart button
   /* @param {string} workflowName - name of workflow to trigger
   */
-  triggerWorkflow(workflowName) {   
+  triggerWorkflow() {   
     this.errorMessage = undefined;
     if (!this.datasetData) { return false; }
-    this.workflows.triggerNewWorkflow(this.datasetData.datasetId, workflowName).subscribe(result => {
+    this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
       this.workflows.setActiveWorkflow(result); 
       this.workflowRunning = true;     
     }, (err: HttpErrorResponse) => {
