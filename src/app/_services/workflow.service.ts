@@ -24,6 +24,14 @@ export class WorkflowService {
   allWorkflows: any;
   currentPage: Array<any> = [];
 
+  /** createWorkflow
+  /*  create or override a workflow for specific dataset
+  /* @param {number} id - dataset identifier
+  */
+  createWorkflow (id) {
+    // next up
+  }
+
   /** triggerNewWorkflow
   /*  trigger a new workflow
   /* @param {number} id - dataset identifier
@@ -148,15 +156,6 @@ export class WorkflowService {
         return false;
       }
     });
-  }
-
-  /** getWorkflows
-  /* get a list of currently available workflows
-  /* still mocked for now
-  */
-  getWorkflows() {
-    let workflows = ['my-workflow'];
-    return workflows;
   }
 
   /** cancelThisWorkflow

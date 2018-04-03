@@ -49,9 +49,6 @@ export class ExecutionsComponent implements OnInit {
       this.translate.use('en'); 
     }  
 
-    if (typeof this.workflows.getWorkflows !== 'function') { return false }
-    this.allWorkflows = this.workflows.getWorkflows();
-
     this.startPolling();
 
     if (this.ongoingExecutions.length === 0) {

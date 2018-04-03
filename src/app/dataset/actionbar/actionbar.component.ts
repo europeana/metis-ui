@@ -23,7 +23,6 @@ export class ActionbarComponent {
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
-  allWorkflows;
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
@@ -43,24 +42,19 @@ export class ActionbarComponent {
   /** ngOnInit
   /* init for this component: 
   /* get most recently started execution
-  /* get list of all workflows
   /* act when workflow changed
   /* set language to use for translations
   */
   ngOnInit() {
     
     this.returnLastExecution();
-
-    if (typeof this.workflows.getWorkflows !== 'function') { return false }
-    this.allWorkflows = this.workflows.getWorkflows();
-    
+   
     if (!this.workflows.changeWorkflow) { return false; }
     this.workflows.changeWorkflow.subscribe(
       workflow => {
-
         if (workflow) {
           this.currentWorkflow = workflow;
-          this.getCurrentPlugin();
+          this.currentPlugin = this.getCurrentPlugin(this.currentWorkflow);
 
           this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
@@ -76,22 +70,22 @@ export class ActionbarComponent {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-    }
-    
+    }    
   }
 
   /** getCurrentPlugin
   /*  get plugin that is currently running or inqueue
   /*  no plugin running or inqueue, return latest plugin
   */
-  getCurrentPlugin() {
-    if (!this.currentWorkflow) { return false; }
-    for (let i = 0; i < this.currentWorkflow['metisPlugins'].length; i++) {
-      this.currentPlugin = i;
-      if (this.currentWorkflow['metisPlugins'][i].pluginStatus === 'INQUEUE' || this.currentWorkflow['metisPlugins'][i].pluginStatus === 'RUNNING') {
+  getCurrentPlugin(workflow) {
+    let currentPlugin = 0;
+    for (let i = 0; i < workflow['metisPlugins'].length; i++) {
+      currentPlugin = i;
+      if (workflow['metisPlugins'][i].pluginStatus === 'INQUEUE' || workflow['metisPlugins'][i].pluginStatus === 'RUNNING') {
         break;
       }
     }
+    return currentPlugin;
   }
 
   /** startPollingWorkflow
@@ -121,8 +115,7 @@ export class ActionbarComponent {
       } else {
         
         let e = execution;        
-        this.getCurrentPlugin();
-
+        
         if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {  
 
           this.currentPlugin = 0;
@@ -138,6 +131,9 @@ export class ActionbarComponent {
           this.workflows.workflowDone(true);       
 
         } else {
+
+          this.currentPlugin = this.getCurrentPlugin(e);
+          this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
 
           if (e['cancelling'] === false) {
             this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
@@ -170,15 +166,12 @@ export class ActionbarComponent {
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
       if (workflow) {
         this.currentWorkflow = workflow;
-        this.getCurrentPlugin();
-
+        this.currentPlugin = this.getCurrentPlugin(this.currentWorkflow);
         this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
         this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
-        
         if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
           this.startPollingWorkflow();
         }
-
       }
     });
   }
@@ -210,11 +203,4 @@ export class ActionbarComponent {
     this.workflows.selectWorkflow();
   }
 
-  /** onClickedOutsideWorkflow
-  /*  close workflow selector
-  /* @param {any} e - event, optional
-  */  
-  onClickedOutsideWorkflow(e?) {
-    this.isShowingWorkflowSelector = false;
-  }
 }

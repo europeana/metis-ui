@@ -58,8 +58,9 @@ export class HistoryComponent implements OnInit {
     
     this.workflows.changeWorkflow.subscribe(
       workflow => {
-        if (workflow) {          
-          if (workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
+        if (workflow) {   
+          let currentPlugin = this.getCurrentPlugin(workflow);
+          if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
             this.workflowRunning = true;
           }
         }
@@ -74,20 +75,30 @@ export class HistoryComponent implements OnInit {
           this.nextPage = 0;
           if (!this.inCollapsablePanel) {
             this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
-            this.returnAllExecutions();
-          } else {
-            this.returnAllExecutions();
-          }
+          } 
+          this.returnAllExecutions();          
         }
       }
     );
 
-    if (typeof this.workflows.getWorkflows !== 'function') { return false }
-    this.allWorkflows = this.workflows.getWorkflows();
-
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+  }
+
+  /** getCurrentPlugin
+  /*  get plugin that is currently running or inqueue
+  /*  no plugin running or inqueue, return latest plugin
+  */
+  getCurrentPlugin(workflow) {
+    let currentPlugin = 0;
+    for (let i = 0; i < workflow['metisPlugins'].length; i++) {
+      currentPlugin = i;
+      if (workflow['metisPlugins'][i].pluginStatus === 'INQUEUE' || workflow['metisPlugins'][i].pluginStatus === 'RUNNING') {
+        break;
+      }
+    }
+    return currentPlugin;
   }
 
   /** returnAllExecutions
@@ -112,17 +123,20 @@ export class HistoryComponent implements OnInit {
 
       for (let i = 0; i < showTotal; i++) {
         let r = result['results'][i];
-        r['hasReport'] = false;   
-        if (r['metisPlugins'][this.currentPlugin].pluginStatus === 'FINISHED' || r['metisPlugins'][this.currentPlugin].pluginStatus === 'FAILED') {
-          if (r['metisPlugins'][this.currentPlugin].externalTaskId !== null && r['metisPlugins'][this.currentPlugin].topologyName !== null && r['metisPlugins'][this.currentPlugin].topologyName) {
-            this.workflows.getReport(r['metisPlugins'][this.currentPlugin].externalTaskId, r['metisPlugins'][this.currentPlugin].topologyName).subscribe(report => {
-              if (report['errors'].length > 0) {
-                r['hasReport'] = true;
-              } 
-            });
+        for (let w = 0; w < r['metisPlugins'].length; w++) {
+          let ws = r['metisPlugins'][w];
+          ws['hasReport'] = false;  
+          if (r['metisPlugins'][w].pluginStatus === 'FINISHED' || r['metisPlugins'][w].pluginStatus === 'FAILED') {
+            if (r['metisPlugins'][w].externalTaskId !== null && r['metisPlugins'][w].topologyName !== null && r['metisPlugins'][w].topologyName) {
+              this.workflows.getReport(r['metisPlugins'][w].externalTaskId, r['metisPlugins'][w].topologyName).subscribe(report => {
+                if (report['errors'].length > 0) {
+                  ws['hasReport'] = true;
+                } 
+              });
+            }
           }
+          this.allExecutions.push(ws);
         }
-        this.allExecutions.push(r);
       }
 
       if (!this.inCollapsablePanel) {
@@ -139,7 +153,8 @@ export class HistoryComponent implements OnInit {
 
       this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
         if (!status) { return false; }
-        if (status['metisPlugins'][this.currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][this.currentPlugin].pluginStatus === 'INQUEUE') {
+        let currentPlugin = this.getCurrentPlugin(status);
+        if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
           this.workflowRunning = true;
         }
       });
