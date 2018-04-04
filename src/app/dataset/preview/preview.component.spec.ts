@@ -46,7 +46,7 @@ describe('PreviewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display filters and trigger', (): void => {    
+  /*it('should display filters and trigger', (): void => {    
     component.datasetData = currentDataset; 
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-workflow')).length).toBeTruthy();
@@ -71,8 +71,7 @@ describe('PreviewComponent', () => {
     plugin.triggerEventHandler('click', null);
     fixture.detectChanges();    
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
-
-  });
+  });*/
 
   it('prefill filters', (): void => {  
     component.datasetData = currentDataset; 

@@ -10,6 +10,8 @@ import { AuthenticationService, TranslateService } from '../_services';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
+import { MockAuthenticationService, currentUser } from '../_mocked';
+
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
@@ -49,6 +51,12 @@ describe('RegisterComponent', () => {
   it('should contain a disabled button at first', () => {
     submitBtn = fixture.nativeElement.querySelector('.submit-btn');
     expect(submitBtn.disabled).toBe(true);
+  });
+
+  it('should submit the form', () => {
+    component.onSubmit();
+    fixture.detectChanges();
+    //expect(submitBtn.disabled).toBe(true);
   });
 
 });

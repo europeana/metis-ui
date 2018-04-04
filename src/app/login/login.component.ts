@@ -9,8 +9,7 @@ import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
-  providers: [AuthenticationService]
+  templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
   loading = false;

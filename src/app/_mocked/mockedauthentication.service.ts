@@ -29,4 +29,8 @@ export class MockAuthenticationService extends AuthenticationService {
     return Observable.of(true);
   }
 
+  login() {
+    return Observable.of(true);
+  }
+
 }

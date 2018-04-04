@@ -1,7 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GeneralinfoComponent } from './generalinfo.component';
-import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../../_services';
+import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -15,7 +16,9 @@ describe('GeneralinfoComponent', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientModule, RouterTestingModule],
       declarations: [ GeneralinfoComponent, TranslatePipe ],
-      providers: [ DatasetsService,
+      providers: [ 
+        {provide: DatasetsService, useClass: MockDatasetService}, 
+        {provide: WorkflowService, useClass: MockWorkflowService}, 
         ErrorService,
         AuthenticationService, 
         RedirectPreviousUrl,

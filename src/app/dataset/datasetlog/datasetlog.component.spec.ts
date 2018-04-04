@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
+import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
 
 import { DatasetlogComponent } from './datasetlog.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -16,14 +17,17 @@ describe('DatasetlogComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ DatasetlogComponent, TranslatePipe ],
-      providers: [ WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl,
-      { provide: TranslateService,
+      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
+        AuthenticationService, 
+        ErrorService, 
+        RedirectPreviousUrl,
+        { provide: TranslateService,
           useValue: {
             translate: () => {
               return {};
             }
           }
-      }]
+        }]
     })
     .compileComponents();
   }));

@@ -36,7 +36,7 @@ describe('ActionbarComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
-    component = fixture.componentInstance;   
+    component = fixture.componentInstance;  
   });
 
   it('should create', () => {    
@@ -54,7 +54,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should do click to show logging', fakeAsync((): void => {
-    component.currentWorkflow = currentWorkflow;
+    component.currentWorkflow = currentWorkflow['results'][0];
     fixture.detectChanges();
 
     let button = fixture.debugElement.query(By.css('.log-btn'));
@@ -65,32 +65,9 @@ describe('ActionbarComponent', () => {
       fixture.detectChanges();
       tick();
 
-      expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
+      expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();   
     } 
   }));
-
-  it('should open workflow filter', (): void => {       
-    component.currentWorkflow = currentWorkflow;
-    component.currentStatus = 'FINISHED';
-    fixture.detectChanges();
-
-    const workflow = fixture.debugElement.query(By.css('.dataset-actionbar nav .newaction-btn'));
-    if (workflow) {
-      workflow.triggerEventHandler('click', null);
-      fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.workflow-selector')).length).toBeTruthy();
-
-      component.allWorkflows = ['mocked'];
-      const filter = fixture.debugElement.query(By.css('.workflow-selector a'));
-      filter.triggerEventHandler('click', null);
-      fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.workflow-selector')).length).not.toBeTruthy();
-
-      component.onClickedOutsideWorkflow();
-      fixture.detectChanges();
-    }
-  });  
-
 
   it('should cancel', (): void => {
     component.currentWorkflow = currentWorkflow;
@@ -100,10 +77,24 @@ describe('ActionbarComponent', () => {
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
     if (cancel) {
       cancel.triggerEventHandler('click', null);
+      component.currentStatus = 'CANCELLED';
       fixture.detectChanges();
+      expect(component.currentStatus).toBe('CANCELLED');
     }
   });
 
+  it('should run a workflow', (): void => {
+    component.currentWorkflow = currentWorkflow;
+    component.currentStatus = 'FINISHED';
+    fixture.detectChanges();
+    const run = fixture.debugElement.query(By.css('.newaction-btn'));
+    if (run) {
+      run.triggerEventHandler('click', null);
+      component.currentStatus = 'INQUEUE';
+      fixture.detectChanges();
+      expect(component.currentStatus).toBe('INQUEUE');
+    }
+  });
 
   it('should have a running workflow', (): void => {
     component.currentWorkflow = currentWorkflow;

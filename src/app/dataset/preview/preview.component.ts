@@ -84,9 +84,9 @@ export class PreviewComponent implements OnInit {
       this.nosample = this.translate.instant('nosample');
     }
     
-    if (this.datasetData) {
-      this.addWorkflowFilter();
-    }
+    //if (this.datasetData) {
+      //this.addWorkflowFilter();
+    //}
 
     this.prefill = this.datasets.getPreviewFilters();
     this.prefillFilters();
@@ -121,9 +121,7 @@ export class PreviewComponent implements OnInit {
   */
   addDateFilter(workflow) {
     this.filterWorkflow = false;
-    this.selectedWorkflow = workflow;
-    this.saveTempFilterSelection('workflow', workflow);
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPageDate, workflow).subscribe(result => {
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {  
         this.allWorkflowDates.push(result['results'][i]);
       }
