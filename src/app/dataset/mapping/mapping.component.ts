@@ -162,7 +162,9 @@ export class MappingComponent implements OnInit {
     let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
     this.datasets.updateDataset(datasetValues).subscribe(result => {
       this.loadXSLT('custom');
-      this.successMessage = this.translate.instant('xsltsuccessful')
+      if (typeof this.translate.instant === 'function') {
+        this.successMessage = this.translate.instant('xsltsuccessful');
+      }
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   

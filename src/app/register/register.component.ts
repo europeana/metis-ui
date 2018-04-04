@@ -73,6 +73,7 @@ export class RegisterComponent implements OnInit {
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 
+    if (typeof this.translate.instant !== 'function') { return false; }
     const msg_successful = this.translate.instant('registrationsuccessful');
 
     if (strength <= min) {

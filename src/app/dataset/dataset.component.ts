@@ -97,7 +97,6 @@ export class DatasetComponent implements OnInit {
   /* @param {boolean} message - show log yes/no
   */
   onNotifyShowLogStatus(message):void {
-    console.log('onNotifyShowLogStatus', message);
     this.isShowingLog = message;
   }
 

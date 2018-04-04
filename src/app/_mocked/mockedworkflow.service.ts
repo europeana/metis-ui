@@ -3,7 +3,6 @@ import { Observable } from 'rxjs/Observable';
 
 export let currentWorkflow = { 
   results: [{ 
-    workflowName: 'mocked',
     workflowStatus: 'INQUEUE',
     updatedDate: '',
     startedDate: '',
@@ -19,7 +18,6 @@ export let currentWorkflow = {
     }]
   },
   {
-  workflowName: 'mocked',
     workflowStatus: 'RUNNING',
     updatedDate: '',
     startedDate: '',
@@ -35,7 +33,6 @@ export let currentWorkflow = {
     }]
   },
   {
-  workflowName: 'mocked',
     workflowStatus: 'FAILED',
     updatedDate: '',
     startedDate: '',
@@ -51,7 +48,6 @@ export let currentWorkflow = {
     }]
   },
   {
-  workflowName: 'mocked',
     workflowStatus: 'CANCELLED',
     updatedDate: '',
     startedDate: '',
@@ -67,7 +63,6 @@ export let currentWorkflow = {
     }]
   },
   { 
-    workflowName: 'mocked',
     workflowStatus: 'FINISHED',
     updatedDate: '',
     startedDate: '',
@@ -147,6 +142,10 @@ export class MockWorkflowService extends WorkflowService {
 
   getReport(taskid, topology) {
     return Observable.of(currentReport);
+  }
+
+  getCurrentReport() {
+    return currentReport;
   }
 
   getStatistics() {
