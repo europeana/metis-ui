@@ -54,7 +54,7 @@ export class ActionbarComponent {
       workflow => {
         if (workflow) {
           this.currentWorkflow = workflow;
-          this.currentPlugin = this.getCurrentPlugin(this.currentWorkflow);
+          this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
 
           this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
@@ -71,21 +71,6 @@ export class ActionbarComponent {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }    
-  }
-
-  /** getCurrentPlugin
-  /*  get plugin that is currently running or inqueue
-  /*  no plugin running or inqueue, return latest plugin
-  */
-  getCurrentPlugin(workflow) {
-    let currentPlugin = 0;
-    for (let i = 0; i < workflow['metisPlugins'].length; i++) {
-      currentPlugin = i;
-      if (workflow['metisPlugins'][i].pluginStatus === 'INQUEUE' || workflow['metisPlugins'][i].pluginStatus === 'RUNNING') {
-        break;
-      }
-    }
-    return currentPlugin;
   }
 
   /** startPollingWorkflow
@@ -132,7 +117,7 @@ export class ActionbarComponent {
 
         } else {
 
-          this.currentPlugin = this.getCurrentPlugin(e);
+          this.currentPlugin = this.workflows.getCurrentPlugin(e);
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
 
           if (e['cancelling'] === false) {
@@ -166,7 +151,7 @@ export class ActionbarComponent {
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
       if (workflow) {
         this.currentWorkflow = workflow;
-        this.currentPlugin = this.getCurrentPlugin(this.currentWorkflow);
+        this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
         this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
         this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
         if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 

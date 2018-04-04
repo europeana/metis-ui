@@ -158,6 +158,22 @@ export class WorkflowService {
     });
   }
 
+  /** getCurrentPlugin
+  /* get plugin that is currently running for a specific dataset/workflow
+  /* in case there is no plugin running, return last plugin
+  /* @param {object} workflow - workflow for specific dataset
+  */
+  getCurrentPlugin(workflow) {
+    let currentPlugin = 0;
+    for (let i = 0; i < workflow['metisPlugins'].length; i++) {
+      currentPlugin = i;
+      if (workflow['metisPlugins'][i].pluginStatus === 'INQUEUE' || workflow['metisPlugins'][i].pluginStatus === 'RUNNING') {
+        break;
+      }
+    }
+    return currentPlugin;
+  }
+
   /** cancelThisWorkflow
   /* cancel the running execution for a datasetid
   /* @param {number} id - id of the workflow

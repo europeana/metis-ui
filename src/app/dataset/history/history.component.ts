@@ -59,7 +59,7 @@ export class HistoryComponent implements OnInit {
     this.workflows.changeWorkflow.subscribe(
       workflow => {
         if (workflow) {   
-          let currentPlugin = this.getCurrentPlugin(workflow);
+          let currentPlugin = this.workflows.getCurrentPlugin(workflow);
           if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
             this.workflowRunning = true;
           }
@@ -84,21 +84,6 @@ export class HistoryComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-  }
-
-  /** getCurrentPlugin
-  /*  get plugin that is currently running or inqueue
-  /*  no plugin running or inqueue, return latest plugin
-  */
-  getCurrentPlugin(workflow) {
-    let currentPlugin = 0;
-    for (let i = 0; i < workflow['metisPlugins'].length; i++) {
-      currentPlugin = i;
-      if (workflow['metisPlugins'][i].pluginStatus === 'INQUEUE' || workflow['metisPlugins'][i].pluginStatus === 'RUNNING') {
-        break;
-      }
-    }
-    return currentPlugin;
   }
 
   /** returnAllExecutions
@@ -153,7 +138,7 @@ export class HistoryComponent implements OnInit {
 
       this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
         if (!status) { return false; }
-        let currentPlugin = this.getCurrentPlugin(status);
+        let currentPlugin = this.workflows.getCurrentPlugin(status);
         if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
           this.workflowRunning = true;
         }
