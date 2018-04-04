@@ -49,6 +49,7 @@ import { ClickOutsideModule } from 'ng4-click-outside';
 
 import { XmlPipe }   from './_helpers';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
+import { WorkflowComponent } from './dataset/workflow/workflow.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
     OngoingexecutionsComponent,
     ReportComponent,
     TranslatePipe,
-    XmlPipe
+    XmlPipe,
+    WorkflowComponent
   ],
   imports: [
     BrowserModule,

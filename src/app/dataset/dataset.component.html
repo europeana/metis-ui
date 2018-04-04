@@ -41,6 +41,11 @@
           <span class="tab-subtitle tab-date" *ngIf="datasetData">{{datasetData.updatedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
         </a>
       </li>
+       <li [ngClass]="{'active': activeTab === 'workflow'}">
+        <a routerLink="/dataset/workflow/{{activeSet}}">
+          <span class="tab-title">{{ 'workflow' | translate }}</span>
+        </a>
+      </li>
       <li [ngClass]="{'active': activeTab === 'mapping'}">
         <a routerLink="/dataset/mapping/{{activeSet}}">
           <span class="tab-title">{{ 'mapping' | translate }}</span>
