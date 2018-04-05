@@ -98,6 +98,7 @@
         <input id="number-items-harvested" type="text" formControlName="numberOfItemsHarvested" [readonly]="true" (blur)="saveTempData()"/>
       </div>
 
+      <!--
       <div class="form-group">
         <label>{{ 'harvestprotocol' | translate }} *</label>
         <div class="form-group-radios">
@@ -142,11 +143,11 @@
       <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
         <label for="url">{{ 'url' | translate }}</label>
         <input id="url" type="text" formControlName="url" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-      </div>
+      </div>-->
 
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="submit" type="button" *ngIf="formMode !== 'read'" [disabled]="!datasetForm.valid" (click)="onSubmit()">{{ 'submit' | translate }}</button>
-        <button class="submit" type="button" *ngIf="formMode === 'read'" (click)="updateForm()">{{ 'update' | translate }}</button>
+        <button class="submit submit-submit" type="button" *ngIf="formMode !== 'read'" [disabled]="!datasetForm.valid" (click)="onSubmit()">{{ 'submit' | translate }}</button>
+        <button class="submit submit-update" type="button" *ngIf="formMode === 'read'" (click)="updateForm()">{{ 'update' | translate }}</button>
       </div>
     </div>
   </form>

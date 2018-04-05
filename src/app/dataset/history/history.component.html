@@ -19,7 +19,7 @@
   <thead>
   	<tr>
       <th colspan="2"></th>
-      <th>{{ 'workflow' | translate }}</th>
+      <th>{{ 'workflow step' | translate }}</th>
       <th>{{ 'totalprocessed' | translate }}</th>
       <th>{{ 'totaldataset' | translate }}</th>
       <th>{{ 'status' | translate }}</th>
@@ -30,22 +30,21 @@
   </thead>
   <tbody>
     <tr *ngFor="let ex of allExecutions; let i = index">
-      <td class="centered"><span class="svg-icon-{{ex.workflowName}}"></span></td>
-      <td class="errorindicator"><span class="error" *ngIf="ex.metisPlugins[currentPlugin].executionProgress.errors !== 0"></span></td>
-      <td class="nowrap">{{ex.workflowName}}</td>
-      <td class="nowrap">{{ex.metisPlugins[currentPlugin].executionProgress.processedRecords}}</td>
+      <td class="centered"><span class="svg-icon-{{ex.pluginType}}"></span></td>
+      <td class="errorindicator"><span class="error" *ngIf="ex.executionProgress.errors !== 0"></span></td>
+      <td class="nowrap">{{ex.pluginType}}</td>
+      <td class="nowrap">{{ex.executionProgress.processedRecords}}</td>
       <td class="nowrap uppercase">
-        {{ex.metisPlugins[currentPlugin].executionProgress.expectedRecords >= 0 ? ex.metisPlugins[currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
+        {{ex.executionProgress.expectedRecords >= 0 ? ex.executionProgress.expectedRecords : ('unknown' | translate)}}
       </td>
-      <td class="nowrap">{{ex.workflowStatus}}</td>
+      <td class="nowrap">{{ex.pluginStatus}}</td>
       <td class="centered"><span class="date">{{ex.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.startedDate | date:'HH:mm'}}</span></td>
       <td class="centered"><span class="date">{{ex.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.finishedDate | date:'HH:mm'}}</span></td>
       <td class="buttonplaceholder nowrap">
-        <a *ngIf="ex.hasReport" class="table-btn svg-icon-report" (click)="openReport(ex.metisPlugins[currentPlugin].externalTaskId, ex.metisPlugins[currentPlugin].topologyName)">         
+        <a *ngIf="ex.hasReport" class="table-btn svg-icon-report" (click)="openReport(ex.externalTaskId, ex.topologyName)">         
           {{ 'report' | translate }}
          </a>
       </td>
-      <td class="buttonplaceholder nowrap restart"><a class="table-btn" *ngIf="!workflowRunning" (click)="triggerWorkflow(ex.workflowName)">{{ 'restart' | translate }}</a></td>
     </tr>
     <tr class="loadmore loadmore-history" *ngIf="inCollapsablePanel">
       <td colspan="10">

@@ -73,23 +73,10 @@ describe('HistoryComponent', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).not.toBeTruthy();
   });
-
-  it('should trigger a restart', (): void => {   
-    component.datasetData = currentDataset;
-    component.allExecutions = currentWorkflow['results'];
-    component.workflowRunning = false;
-    fixture.detectChanges();
-  
-    const restart = fixture.debugElement.query(By.css('.restart a'));   
-    restart.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(component.workflowRunning).toBe(true);
-  });
   
   it('should open a report', () => {
     component.datasetData = currentDataset;
-    component.allExecutions = currentWorkflow['results'];
-    fixture.detectChanges();    
+    fixture.detectChanges(); 
 
     component.openReport(123, 'mocked');
     fixture.detectChanges();
@@ -122,6 +109,13 @@ describe('HistoryComponent', () => {
     component.loadNextPage();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
+  });
+
+  it('should run a workflow', () => {
+    component.datasetData = currentDataset;
+    component.triggerWorkflow();
+    fixture.detectChanges();
+    expect(component.workflowRunning).toBe(true);
   });
 
 });

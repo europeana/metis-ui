@@ -23,7 +23,6 @@ export class ActionbarComponent {
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
-  allWorkflows;
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
@@ -33,34 +32,32 @@ export class ActionbarComponent {
   totalProcessed: number = 0;
   currentStatus: any;
   currentWorkflow;
-  currentWorkflowName;
+  currentPluginName;
   currentPlugin = 0; // pick the first one for now
   logMessages;
   isShowingWorkflowSelector: boolean = false;
 
-  @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
   /** ngOnInit
   /* init for this component: 
   /* get most recently started execution
-  /* get list of all workflows
   /* act when workflow changed
   /* set language to use for translations
   */
   ngOnInit() {
     
     this.returnLastExecution();
-
-    if (typeof this.workflows.getWorkflows !== 'function') { return false }
-    this.allWorkflows = this.workflows.getWorkflows();
-    
+   
     if (!this.workflows.changeWorkflow) { return false; }
     this.workflows.changeWorkflow.subscribe(
       workflow => {
         if (workflow) {
           this.currentWorkflow = workflow;
+          this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
+
           this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
-          this.currentWorkflowName = this.currentWorkflow.workflowName;
+          this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
 
           if (this.currentStatus !== 'FINISHED' || this.currentStatus !== 'CANCELLED' || this.currentStatus !== 'FAILED') {
             this.startPollingWorkflow();
@@ -73,12 +70,11 @@ export class ActionbarComponent {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-    }
-    
+    }    
   }
 
   /** startPollingWorkflow
-  /*  start a timer and start to check the status of a workflow
+  /*  start a timer and start checking the status of a workflow
   */
   startPollingWorkflow() {
     if (this.subscription) { this.subscription.unsubscribe(); }
@@ -96,15 +92,17 @@ export class ActionbarComponent {
     if (!this.datasetData) { return false }
 
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
+
       if (execution === 0 || !execution) {
-        this.currentPlugin = 0; // pick the first one for now
+        this.currentPlugin = 0;
         this.subscription.unsubscribe();
         this.workflows.setActiveWorkflow();
       } else {
         
-        let e = execution;
+        let e = execution;        
+        
+        if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {  
 
-        if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {        
           this.currentPlugin = 0;
           this.now = e['finishedDate'];
           this.workflowPercentage = 0;
@@ -115,11 +113,15 @@ export class ActionbarComponent {
 
           this.subscription.unsubscribe();
           this.currentStatus = e['workflowStatus'];
-          this.workflows.workflowDone(true);          
+          this.workflows.workflowDone(true);       
+
         } else {
 
+          this.currentPlugin = this.workflows.getCurrentPlugin(e);
+          this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
+
           if (e['cancelling'] === false) {
-            this.currentStatus = e['workflowStatus'];
+            this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
           } else {
             this.currentStatus = 'CANCELLING';
           }
@@ -132,15 +134,13 @@ export class ActionbarComponent {
           }
 
           if (e['updatedDate'] === null) {
-            this.now = e['startedDate']; 
+            this.now = e['metisPlugins'][this.currentPlugin]['startedDate']; 
           } else {
-            this.now = e['updatedDate']; 
+            this.now = e['metisPlugins'][this.currentPlugin]['updatedDate']; 
           }
         }
-      }
-            
+      }            
     });
-
   };
 
   /** returnLastExecution
@@ -151,8 +151,9 @@ export class ActionbarComponent {
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
       if (workflow) {
         this.currentWorkflow = workflow;
-        this.currentWorkflowName = this.currentWorkflow.workflowName;
+        this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
         this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
+        this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
         if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
           this.startPollingWorkflow();
         }
@@ -176,34 +177,15 @@ export class ActionbarComponent {
   /*  show the log for the current/last execution
   */
   showLog() {
-    this.notifyShowLogStatus.emit(true);
-  }
-
-  /** openWorkflowSelector
-  /*  open up the workflow selector, now working with fixed values
-  */
-  openWorkflowSelector() {
-    if (this.isShowingWorkflowSelector === false) {
-      this.isShowingWorkflowSelector = true;
-    } else {
-      this.isShowingWorkflowSelector = false;
-    }
+    let message = {'externaltaskId' : this.currentWorkflow['metisPlugins'][this.currentPlugin].externalTaskId, 'topology' : this.currentWorkflow['metisPlugins'][this.currentPlugin].topologyName};
+    this.notifyShowLogStatus.emit(message);
   }
 
   /** selectWorkflow
-  /*  select a workflow from the dropdownlist
-  /* @param {string} workflow - selected workflow
+  /*  select the workflow, so it would be triggered
   */
-  selectWorkflow(workflow) {
-    this.workflows.selectWorkflow(workflow);
-    this.openWorkflowSelector();
+  selectWorkflow() {
+    this.workflows.selectWorkflow();
   }
 
-  /** onClickedOutsideWorkflow
-  /*  close workflow selector
-  /* @param {any} e - event, optional
-  */  
-  onClickedOutsideWorkflow(e?) {
-    this.isShowingWorkflowSelector = false;
-  }
 }

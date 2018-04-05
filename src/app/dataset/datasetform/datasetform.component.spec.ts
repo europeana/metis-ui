@@ -2,8 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs/Rx';
 
 import { DatasetformComponent } from './datasetform.component';
-import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
-import { MockDatasetService, currentWorkflow, currentDataset } from '../../_mocked';
+import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset } from '../../_mocked';
 
 import { By } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -24,8 +24,9 @@ describe('DatasetformComponent', () => {
       declarations: [ DatasetformComponent, TranslatePipe ],
       providers:    [         
         {provide: DatasetsService, useClass: MockDatasetService}, 
+        {provide: WorkflowService, useClass: MockWorkflowService}, 
+        {provide: CountriesService, useClass: MockCountriesService},         
         AuthenticationService, 
-        CountriesService,
         ErrorService, 
         RedirectPreviousUrl,
         { provide: TranslateService,
@@ -48,16 +49,29 @@ describe('DatasetformComponent', () => {
 
   it('should have a new dataset form', () => { 
     fixture.detectChanges();
+    component.datasetData = currentDataset;
     expect(component.formMode).toBe('create');
+  });
+
+  it('should temp save the form', () => { 
+    component.datasetData = currentDataset;
+    component.buildForm();
+    fixture.detectChanges();
+
+    component.formMode = 'update';
+    fixture.detectChanges();
+
+    component.onSubmit();
+    fixture.detectChanges();
+
+    expect(component.successMessage).not.toBe('');
   });
 
   it('should have a preview dataset form', () => { 
     component.formMode = 'read';
     component.datasetData = currentDataset;
     fixture.detectChanges();
-
     expect(fixture.debugElement.queryAll(By.css('#dataset-name'))[0].properties.readOnly).toBe(true);
-
   });
 
   it('should have an edit dataset form', () => { 
@@ -71,7 +85,7 @@ describe('DatasetformComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('#dataset-name'))[0].properties.readOnly).toBe(false);
   });
 
-  it('should temp save the form', () => { 
+  it('should submit the form', () => { 
     component.datasetData = currentDataset;
     component.buildForm();
     component.formMode = 'create';
@@ -79,8 +93,7 @@ describe('DatasetformComponent', () => {
     fixture.detectChanges();
 
     expect(localStorage.getItem('tempDatasetData')).not.toBe('');
-    localStorage.removeItem('tempDatasetData');
-    
+    localStorage.removeItem('tempDatasetData');    
   });
 
 

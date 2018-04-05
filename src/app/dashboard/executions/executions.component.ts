@@ -49,9 +49,6 @@ export class ExecutionsComponent implements OnInit {
       this.translate.use('en'); 
     }  
 
-    if (typeof this.workflows.getWorkflows !== 'function') { return false }
-    this.allWorkflows = this.workflows.getWorkflows();
-
     this.startPolling();
 
     if (this.ongoingExecutions.length === 0) {
@@ -91,7 +88,7 @@ export class ExecutionsComponent implements OnInit {
   /* datasetname needs to be added to executions for use in table
   */
   getOngoingExecutions() {
-    this.workflows.getAllExecutionsPerOrganisation(this.nextPageOngoing, true, this.selectedFilterWorkflow).subscribe(executions => {
+    this.workflows.getAllExecutionsPerOrganisation(this.nextPageOngoing, true).subscribe(executions => {
       this.ongoingExecutions = this.ongoingExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
       if (executions['nextPage'] > 0) {
         this.nextPageOngoing = executions['nextPage'];
@@ -118,7 +115,7 @@ export class ExecutionsComponent implements OnInit {
 
     if (this.nextPage === -1) { return false }
 
-    this.workflows.getAllExecutionsPerOrganisation(this.nextPage, false, this.selectedFilterWorkflow).subscribe(executions => {
+    this.workflows.getAllExecutionsPerOrganisation(this.nextPage, false).subscribe(executions => {
       this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
       this.nextPage = executions['nextPage'];
 

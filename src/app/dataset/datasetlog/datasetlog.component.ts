@@ -43,7 +43,7 @@ export class DatasetlogComponent implements OnInit {
   /* get content of log, based on external taskid and topology
   */
   returnLog() {
-    if (!this.isShowingLog) { return false }
+    if (!this.isShowingLog || !this.isShowingLog['externaltaskId'] || !this.isShowingLog['topology']) { return false; }
     this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology']).subscribe(result => {
       this.logMessages = result;
     },(err: HttpErrorResponse) => {

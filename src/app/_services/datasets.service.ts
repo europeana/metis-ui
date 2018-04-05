@@ -7,7 +7,7 @@ import 'rxjs/Rx';
 import { switchMap } from 'rxjs/operators';
 
 import { ErrorService } from './error.service';
-
+import { WorkflowService } from './workflow.service';
 
 @Injectable()
 export class DatasetsService {
@@ -17,7 +17,8 @@ export class DatasetsService {
   datasetNames: Array<any> = [];
   
   constructor(private http: HttpClient, 
-    private errors: ErrorService) { }
+    private errors: ErrorService, 
+    private workflows: WorkflowService) { }
   
   /** setDatasetMessage
   /* set message that is displayed on the dataset page
@@ -51,7 +52,7 @@ export class DatasetsService {
   */
   createDataset(datasetFormValues: Array<any>) {    
     const url = `${apiSettings.apiHostCore}/datasets`;    
-    return this.http.post(url, datasetFormValues).map(newDataset => {      
+    return this.http.post(url, datasetFormValues).map(newDataset => {  
       return newDataset ? newDataset : false;
     });
   }
