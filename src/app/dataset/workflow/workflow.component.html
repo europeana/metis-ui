@@ -69,8 +69,7 @@
 
       <div class="form-fields form-fields-buttons">  
         <div class="form-group form-group-btns user-profile-edit-btns">
-          {{workflowForm.valid}}
-          <button class="submit" type="button" (click)="onSubmit()">{{ 'submit' | translate }}</button>
+          <button class="submit" type="button" (click)="onSubmit()" [disabled]="!workflowForm.valid">{{ 'submit' | translate }}</button>
         </div>
       </div>
     </div>

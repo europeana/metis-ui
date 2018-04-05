@@ -76,13 +76,16 @@ export class WorkflowComponent implements OnInit {
     this.workflowForm.valueChanges.subscribe(() => {
       if (this.workflowForm.get('pluginHARVEST').value === true) {
         this.workflowForm.get('pluginType').setValidators([Validators.required]);
-        this.workflowForm.get('pluginType').updateValueAndValidity({onlySelf : false});
+        this.workflowForm.get('pluginType').updateValueAndValidity({onlySelf : false, emitEvent : false});
         if (this.workflowForm.get('pluginType').value === 'OAIPMH_HARVEST') {
           this.workflowForm.get('harvestUrl').setValidators([Validators.required]);
+          this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
           this.workflowForm.get('metadataFormat').setValidators([Validators.required]);
+          this.workflowForm.get('metadataFormat').updateValueAndValidity({onlySelf : false, emitEvent : false});
         } else if (this.workflowForm.get('pluginType').value === 'HTTP_HARVEST') {
           this.workflowForm.get('url').setValidators([Validators.required]);
-        }    
+          this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
+        } 
       }
     });
   }
