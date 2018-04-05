@@ -112,7 +112,7 @@ export class DatasetComponent implements OnInit {
     viewContainerRef.clear();
     let componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.datasetData = this.getCurrentTab().data;
-     
+    
     this.successMessage = this.datasets.getDatasetMessage();
   }
 
@@ -121,9 +121,6 @@ export class DatasetComponent implements OnInit {
   /*  based on currently active tab
   */
   getCurrentTab() {
-
-    console.log();
-
     if (this.activeTab === 'new' || this.activeTab === 'edit') {
       return new datasetTab(DatasetformComponent, this.datasetData);
     } else if (this.activeTab === 'log') {

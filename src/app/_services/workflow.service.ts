@@ -24,12 +24,40 @@ export class WorkflowService {
   allWorkflows: any;
   currentPage: Array<any> = [];
 
-  /** createWorkflow
-  /*  create or override a workflow for specific dataset
+  /** getWorkflowForDataset
+  /*  check if there is a workflow for this specific dataset
   /* @param {number} id - dataset identifier
   */
-  createWorkflow (id) {
-    // next up
+  getWorkflowForDataset (id) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;   
+    return this.http.get(url).map(data => {   
+      if (data) {
+        return data;
+      } else {
+        return false;
+      }
+    });
+  }
+
+  /** createWorkflowForDataset
+  /*  create or override a workflow for specific dataset
+  /* @param {number} id - dataset identifier
+  /* @param {object} values - form values
+  /* @param {boolean} newWorkflow - is this a new workflow or one to update
+  */
+  createWorkflowForDataset (id, values, newWorkflow) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;   
+
+    if (newWorkflow === false) {
+      return this.http.put(url, values).map(data => {   
+        return data ? data : false; 
+      });
+    } else {
+      return this.http.post(url, values).map(data => {   
+        return data ? data : false; 
+      });
+    }
+
   }
 
   /** triggerNewWorkflow

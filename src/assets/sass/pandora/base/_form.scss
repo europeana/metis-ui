@@ -48,11 +48,20 @@
     }
   }
 
+  .form-fields-container {
+    -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
+    box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
+  }
+
   // fields
   .form-fields {
     background-color: $offwhite;
     padding: 2rem 0;
     width: auto;
+
+    &:not(.form-fields-buttons):nth-child(2n) {
+      background-color: $gray-lightest;
+    }
 
     .form-group {
       align-items: flex-start;

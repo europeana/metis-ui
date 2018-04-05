@@ -1,3 +1,79 @@
-<p>
-  workflow works!
-</p>
+<div class="metis-form metis-form-horizontal">
+  <form [formGroup]="workflowForm" #formDir="ngForm">
+    <div class="messages" (clickOutside)="onClickedOutside()">
+      <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
+      <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+    </div>
+
+    <div class="form-fields-container">
+      <!-- IMPORT / HARVEST -->
+      <div class="form-fields">      
+        <label for="pluginImport" class="plugin">{{ 'import' | translate }} <input type="checkbox" formControlName="pluginHARVEST" id="pluginImport" /></label>    
+        <div class="form-group">
+          <label>{{ 'harvestprotocol' | translate }} *</label>
+          <div class="form-group-radios">
+            <div>
+              <label>
+                <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" [(ngModel)]="harvestprotocol" [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> {{ 'oai' | translate }}
+              </label>
+            </div>   
+            <div>
+              <label>
+                <input type="radio" formControlName="pluginType" value="HTTP_HARVEST" [(ngModel)]="harvestprotocol" [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false" />
+                {{ 'http' | translate }}
+              </label>
+            </div>          
+          </div>
+        </div>
+        <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
+          <label for="harvest-url">{{ 'harvesturl' | translate }} *</label>
+          <input id="harvest-url" type="text" formControlName="harvestUrl" />
+        </div>
+        <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
+          <label for="setspec">{{ 'setspec' | translate }}</label>
+          <input id="setspec" type="tel" formControlName="setSpec" />
+        </div>
+        <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
+          <label for="metadata-format">{{ 'metadataformat' | translate }} *</label>
+          <input id="metadata-format" type="text" formControlName="metadataFormat" />
+        </div>      
+        <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
+          <label for="url">{{ 'url' | translate }} *</label>
+          <input id="url" type="text" formControlName="url" />
+        </div>
+      </div>
+
+      <!-- VALIDATION -->
+      <div class="form-fields"> 
+        <label for="pluginValidateExternal" class="plugin">{{ 'validation external' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_EXTERNAL" id="pluginValidateExternal" /></label>
+      </div>
+
+      <!-- TRANSFORMATION -->
+      <div class="form-fields"> 
+        <label for="pluginTransform" class="plugin">{{ 'transformation' | translate }} <input type="checkbox" formControlName="pluginTRANSFORMATION" id="pluginTransform" /></label>
+        <div class="form-group">
+          <label for="customxslt">{{ 'customxslt' | translate }}</label>
+          <input id="customxslt" type="checkbox" formControlName="customxslt" />
+        </div>
+      </div>
+
+      <!-- VALIDATION -->
+      <div class="form-fields"> 
+        <label for="pluginValidateInternal" class="plugin">{{ 'validation internal' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" /></label>
+      </div>
+
+      <!-- ENRICHMENT -->
+      <div class="form-fields"> 
+        <label for="pluginEnrichment" class="plugin">{{ 'enrichment' | translate }} <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" /></label>
+      </div>
+
+      <div class="form-fields form-fields-buttons">  
+        <div class="form-group form-group-btns user-profile-edit-btns">
+          {{workflowForm.valid}}
+          <button class="submit" type="button" (click)="onSubmit()">{{ 'submit' | translate }}</button>
+        </div>
+      </div>
+    </div>
+    
+  </form>
+</div>

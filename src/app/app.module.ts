@@ -34,7 +34,8 @@ import { DatasetComponent,
          HistoryComponent,
          ActionbarComponent,
          MappingComponent,
-         PreviewComponent } from './dataset';
+         PreviewComponent,
+         WorkflowComponent } from './dataset';
 import { DashboardComponent,
          DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
@@ -46,10 +47,8 @@ import { ReportComponent } from './dataset/report/report.component';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
-
 import { XmlPipe }   from './_helpers';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
-import { WorkflowComponent } from './dataset/workflow/workflow.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +88,7 @@ import { WorkflowComponent } from './dataset/workflow/workflow.component';
     CodemirrorModule,
     ClickOutsideModule 
   ],
-  entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent ],
+  entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, WorkflowComponent ],
   providers: [
     AuthVisitorGuard,
     AuthUserGuard,
