@@ -26,13 +26,13 @@ export class DatasetComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    private route: ActivatedRoute,
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private RedirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService, 
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private route: ActivatedRoute) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
@@ -77,6 +77,7 @@ export class DatasetComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+
   }
 
   /** returnDataset

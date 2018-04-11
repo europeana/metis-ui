@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
@@ -22,7 +23,20 @@ export class WorkflowComponent implements OnInit {
     private RedirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
     private datePipe: DatePipe,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private router: Router) {
+
+      router.events.subscribe(s => {
+        if (s instanceof NavigationEnd) {
+          const tree = router.parseUrl(router.url);
+          if (tree.fragment) {
+            const element = document.querySelector("#" + tree.fragment);
+            if (element) { element.scrollIntoView(true); }
+          }
+        }
+      });
+
+    }
 
   @Input() datasetData: any;
   errorMessage: string;
@@ -31,6 +45,9 @@ export class WorkflowComponent implements OnInit {
   newWorkflow: boolean = true; 
   formIsValid: boolean = false;
   workflowForm: FormGroup;
+  selectedPredefinedWorkflow: string = 'basic';
+  fragment: string;
+  currentUrl: string;
 
   /** ngOnInit
   /* init for this component
@@ -45,6 +62,10 @@ export class WorkflowComponent implements OnInit {
 
     this.buildForm();  
     this.getWorkflow();
+    this.selectPredefinedWorkflow('basic');
+
+    this.currentUrl = this.router.url.split('#')[0];
+
   }
 
   /** buildForm
@@ -69,7 +90,7 @@ export class WorkflowComponent implements OnInit {
     });
 
     this.updateRequired();
-
+    
   }
 
   updateRequired() {
@@ -95,7 +116,7 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty
   */
   getWorkflow() {
-    
+
     if (!this.datasetData) {       
       if (typeof this.translate.instant === 'function') { 
         this.errorMessage = this.translate.instant('create dataset'); 
@@ -228,6 +249,26 @@ export class WorkflowComponent implements OnInit {
       this.errorMessage = `${StringifyHttpError(error)}`;
       this.scrollToMessageBox();
     });
+  }
+
+  /** selectPredefinedWorkflow
+  /* select one of the predefined workflows
+  /* basic is the default one
+  */
+  selectPredefinedWorkflow(workflow) {
+
+    this.selectedPredefinedWorkflow = workflow;
+
+    this.workflowForm.controls['pluginHARVEST'].setValue('true');
+    this.workflowForm.controls['pluginVALIDATION_EXTERNAL'].setValue('true');
+    this.workflowForm.controls['pluginTRANSFORMATION'].setValue('true');
+    this.workflowForm.controls['pluginVALIDATION_INTERNAL'].setValue('true');
+    this.workflowForm.controls['pluginENRICHMENT'].setValue('');
+
+    if (workflow === 'everything') {
+      this.workflowForm.controls['pluginENRICHMENT'].setValue('true');
+    }
+
   }
 
   /** onClickedOutside

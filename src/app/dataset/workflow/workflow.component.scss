@@ -1,9 +1,88 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
+.form-fields {
+  input:focus {
+    border-color: $eu-jade;
+    -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+    box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+  }
+}
+
+.form-fields.inactive {
+  background-color: $gray-lightest;
+  color: $gray-lighter;
+
+  .form-group label,
+  input {
+    border-color: $gray-lighter;
+    color: $gray-lighter;
+  }
+
+}
+
 .plugin {
   align-items: center;
   display: flex;
-  font-size: 1.5rem;  
+  font-size: 1.5rem;
 
   input {
     margin-left: 1rem;
   }
+}
+
+.predefined-workflows {
+  background: $white;
+  margin-bottom: 2rem;
+  width: 100%;
+
+  .predefined-workflows-tabs {
+    border-bottom: 4px solid $eu-jade;
+    display: flex;
+
+    li {
+      border-left: 2px solid $gray-lightest;
+      cursor: pointer;
+      flex: 1;
+      padding: 2rem;
+    }
+
+    li:first-child {
+      border-left: 0;
+    }
+
+    .active {
+      background: $eu-jade;
+      color: $white;
+    }
+  }
+
+  .predefined-steps {
+    display: flex;
+    padding: 1rem 3rem;
+
+    li {
+      padding: 0 1rem;
+    }
+
+    a {
+      color: $gray-med;
+      position: relative;
+    }
+
+    a:hover::after {
+      background: $eu-jade;
+      content: '';
+      display: block;
+      height: 0.2rem;
+      position: absolute;
+      width: 100%;
+    }
+
+    .inactive a {
+      color: $gray-lighter;
+    }
+
+  }
+
 }

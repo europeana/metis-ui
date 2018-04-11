@@ -1,13 +1,39 @@
 <div class="metis-form metis-form-horizontal">
-  <form [formGroup]="workflowForm" #formDir="ngForm">
-    <div class="messages" (clickOutside)="onClickedOutside()">
-      <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-      <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
-    </div>
 
+  <div class="messages" (clickOutside)="onClickedOutside()">
+    <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
+    <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+  </div>
+
+  <div class="predefined-workflows">
+    <ul class="predefined-workflows-tabs">
+      <li [ngClass]="{'active': selectedPredefinedWorkflow === 'basic'}" (click)="selectPredefinedWorkflow('basic')">Basic</li>
+      <li [ngClass]="{'active': selectedPredefinedWorkflow === 'everything'}" (click)="selectPredefinedWorkflow('everything')">Run everything</li>
+    </ul>
+    <ul class="predefined-steps">
+      <li [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">
+        <a [routerLink]="[currentUrl]" fragment="harvest">{{ 'import' | translate }}</a></li>
+      <li [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_EXTERNAL').value === false || workflowForm.get('pluginVALIDATION_EXTERNAL').value === ''}">
+        <a [routerLink]="[currentUrl]" fragment="validation-external">{{ 'validation external' | translate }}</a>
+      </li>
+      <li [ngClass]="{'inactive': workflowForm.get('pluginTRANSFORMATION').value === false || workflowForm.get('pluginTRANSFORMATION').value === ''}">
+        <a [routerLink]="[currentUrl]" fragment="transformation">{{ 'transformation' | translate }}</a>
+      </li>
+      <li [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}">
+        <a [routerLink]="[currentUrl]" fragment="validation-internal">{{ 'validation internal' | translate }}</a>
+      </li>
+      <li [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}">
+        <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'enrichment' | translate }}</a>
+      </li>
+    </ul>
+  </div>
+
+  <form [formGroup]="workflowForm" #formDir="ngForm">
+    
     <div class="form-fields-container">
+
       <!-- IMPORT / HARVEST -->
-      <div class="form-fields">      
+      <div id="harvest" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">      
         <label for="pluginImport" class="plugin">{{ 'import' | translate }} <input type="checkbox" formControlName="pluginHARVEST" id="pluginImport" /></label>    
         <div class="form-group">
           <label>{{ 'harvestprotocol' | translate }} *</label>
@@ -44,12 +70,12 @@
       </div>
 
       <!-- VALIDATION -->
-      <div class="form-fields"> 
+      <div id="validation-external" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_EXTERNAL').value === false || workflowForm.get('pluginVALIDATION_EXTERNAL').value === ''}"> 
         <label for="pluginValidateExternal" class="plugin">{{ 'validation external' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_EXTERNAL" id="pluginValidateExternal" /></label>
       </div>
 
       <!-- TRANSFORMATION -->
-      <div class="form-fields"> 
+      <div id="transformation" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginTRANSFORMATION').value === false || workflowForm.get('pluginTRANSFORMATION').value === ''}"> 
         <label for="pluginTransform" class="plugin">{{ 'transformation' | translate }} <input type="checkbox" formControlName="pluginTRANSFORMATION" id="pluginTransform" /></label>
         <div class="form-group">
           <label for="customxslt">{{ 'customxslt' | translate }}</label>
@@ -58,12 +84,12 @@
       </div>
 
       <!-- VALIDATION -->
-      <div class="form-fields"> 
+      <div id="validation-internal" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}"> 
         <label for="pluginValidateInternal" class="plugin">{{ 'validation internal' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" /></label>
       </div>
 
       <!-- ENRICHMENT -->
-      <div class="form-fields"> 
+      <div id="enrichment" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}"> 
         <label for="pluginEnrichment" class="plugin">{{ 'enrichment' | translate }} <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" /></label>
       </div>
 

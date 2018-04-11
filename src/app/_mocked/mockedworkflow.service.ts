@@ -152,4 +152,8 @@ export class MockWorkflowService extends WorkflowService {
     return Observable.of(statistics);
   }
 
+  getWorkflowForDataset() {
+    return Observable.of(currentWorkflow['results'][0]);
+  }
+
 }

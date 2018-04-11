@@ -59,10 +59,6 @@
     padding: 2rem 0;
     width: auto;
 
-    &:not(.form-fields-buttons):nth-child(2n) {
-      background-color: $gray-lightest;
-    }
-
     .form-group {
       align-items: flex-start;
       color: $white;
