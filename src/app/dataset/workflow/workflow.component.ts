@@ -259,14 +259,14 @@ export class WorkflowComponent implements OnInit {
 
     this.selectedPredefinedWorkflow = workflow;
 
-    this.workflowForm.controls['pluginHARVEST'].setValue('true');
-    this.workflowForm.controls['pluginVALIDATION_EXTERNAL'].setValue('true');
-    this.workflowForm.controls['pluginTRANSFORMATION'].setValue('true');
-    this.workflowForm.controls['pluginVALIDATION_INTERNAL'].setValue('true');
+    this.workflowForm.controls['pluginHARVEST'].setValue(true);
+    this.workflowForm.controls['pluginVALIDATION_EXTERNAL'].setValue(true);
+    this.workflowForm.controls['pluginTRANSFORMATION'].setValue(true);
+    this.workflowForm.controls['pluginVALIDATION_INTERNAL'].setValue(true);
     this.workflowForm.controls['pluginENRICHMENT'].setValue('');
 
     if (workflow === 'everything') {
-      this.workflowForm.controls['pluginENRICHMENT'].setValue('true');
+      this.workflowForm.controls['pluginENRICHMENT'].setValue(true);
     }
 
   }

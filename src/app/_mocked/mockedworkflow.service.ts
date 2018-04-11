@@ -1,6 +1,28 @@
 import { WorkflowService } from '../_services';
 import { Observable } from 'rxjs/Observable';
 
+export let currentWorkflowDataset = {
+  datasetId: 1,
+  id: 1,
+  metisPluginsMetadata: [{
+    enabled: true,
+    metadataFormat: 'edm',
+    pluginType: 'OAIPMH_HARVEST',
+    setSpec: 'oai_test',
+    url: 'http://www.mocked.com'
+  },
+  {
+    enabled: true,
+    pluginType: 'HTTP_HARVEST',
+    url: 'http://www.mocked.com'
+  },
+  {
+    enabled: true,
+    pluginType: 'TRANSFORMATION',
+    customXSLT: false
+  }]
+}
+
 export let currentWorkflow = { 
   results: [{ 
     workflowStatus: 'INQUEUE',
@@ -153,7 +175,11 @@ export class MockWorkflowService extends WorkflowService {
   }
 
   getWorkflowForDataset() {
-    return Observable.of(currentWorkflow['results'][0]);
+    return Observable.of(currentWorkflowDataset);
+  }
+
+  createWorkflowForDataset() {
+    return Observable.of(currentWorkflowDataset);
   }
 
 }
