@@ -56,24 +56,7 @@ describe('HistoryComponent', () => {
     component.inCollapsablePanel = false;
     fixture.detectChanges();
   });
-
-  it('should open workflow filter', (): void => {   
-    const workflow = fixture.debugElement.query(By.css('.dropdown a'));
-    workflow.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).toBeTruthy();
-
-    component.allWorkflows = ['mocked'];
-    const filter = fixture.debugElement.query(By.css('.dropdown ul a'));
-    filter.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).not.toBeTruthy();
-
-    component.onClickedOutside();
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).not.toBeTruthy();
-  });
-  
+ 
   it('should open a report', () => {
     component.datasetData = currentDataset;
     fixture.detectChanges(); 
@@ -85,7 +68,6 @@ describe('HistoryComponent', () => {
   
   it('should display history in panel', () => {
     component.datasetData = currentDataset;
-    component.selectedFilterWorkflow = 'mocked';
     component.inCollapsablePanel = true;
     component.returnAllExecutions();
     fixture.detectChanges();
@@ -94,7 +76,6 @@ describe('HistoryComponent', () => {
 
   it('should display history in tabs', () => {
     component.datasetData = currentDataset;
-    component.selectedFilterWorkflow = 'mocked';
     component.inCollapsablePanel = false;
     component.returnAllExecutions();
     fixture.detectChanges();
@@ -103,7 +84,6 @@ describe('HistoryComponent', () => {
 
   it('should load next page', () => {
     component.datasetData = currentDataset;
-    component.selectedFilterWorkflow = 'mocked';
     component.inCollapsablePanel = false;
     component.nextPage = 1;
     component.loadNextPage();

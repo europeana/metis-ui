@@ -59,7 +59,7 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
 
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
-  });
+  }));
 
 });
 
