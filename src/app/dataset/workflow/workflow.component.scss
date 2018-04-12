@@ -1,6 +1,10 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
 
+.messages {
+  margin-bottom: 2rem;
+}
+
 .form-fields {
   input:focus {
     border-color: $eu-jade;
@@ -72,6 +76,7 @@
 
     a:hover::after {
       background: $eu-jade;
+      bottom: -0.3rem;
       content: '';
       display: block;
       height: 0.2rem;
