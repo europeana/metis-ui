@@ -16,7 +16,7 @@
       <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin}}</span></a>
       <div *ngIf="filterPlugin" class="dropdown-wrapper">
         <ul>
-          <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w}}</a></li>
+          <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w | renameWorkflow}}</a></li>
         </ul>
       </div>
     </li>
@@ -26,7 +26,7 @@
 
 <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
-    <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin}}</span></h3>
+    <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin | renameWorkflow}}</span></h3>
     <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i"> 
       <a (click)="expandSample(i)">-</a>
     </div>
