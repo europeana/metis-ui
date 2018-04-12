@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
@@ -19,7 +19,7 @@ describe('HistoryComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ HistoryComponent, TranslatePipe ],
+      declarations: [ HistoryComponent, TranslatePipe, RenameWorkflowPipe ],
       providers: [ DatasetsService,    
         {provide: WorkflowService, useClass: MockWorkflowService},     
         RedirectPreviousUrl, 
