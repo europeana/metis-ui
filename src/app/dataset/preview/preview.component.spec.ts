@@ -9,7 +9,7 @@ import { WorkflowService, TranslateService, ErrorService, AuthenticationService,
 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
 import { XmlPipe }   from '../../_helpers';
 
 describe('PreviewComponent', () => {
@@ -20,7 +20,7 @@ describe('PreviewComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule ],
-      declarations: [ PreviewComponent, TranslatePipe, XmlPipe ],
+      declarations: [ PreviewComponent, TranslatePipe, XmlPipe, RenameWorkflowPipe ],
       providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
         ErrorService, 
         AuthenticationService, 
@@ -45,33 +45,6 @@ describe('PreviewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  /*it('should display filters and trigger', (): void => {    
-    component.datasetData = currentDataset; 
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-workflow')).length).toBeTruthy();
-
-    component.toggleFilterWorkflow();
-    fixture.detectChanges();
-    const workflow = fixture.debugElement.query(By.css('.filter .dropdown-workflow ul a'));
-    workflow.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-date')).length).toBeTruthy();
-
-    component.toggleFilterDate();
-    fixture.detectChanges();
-    const date = fixture.debugElement.query(By.css('.filter .dropdown-date ul a'));
-    date.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.filter .dropdown-plugin')).length).toBeTruthy();
-
-    component.toggleFilterPlugin();
-    fixture.detectChanges();
-    const plugin = fixture.debugElement.query(By.css('.filter .dropdown-plugin ul a'));
-    plugin.triggerEventHandler('click', null);
-    fixture.detectChanges();    
-    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
-  });*/
 
   it('prefill filters', (): void => {  
     component.datasetData = currentDataset; 
