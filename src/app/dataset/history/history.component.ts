@@ -24,7 +24,6 @@ export class HistoryComponent implements OnInit {
   nextPage: number = 0;
   workflowRunning: boolean = false;
   filterWorkflow: boolean = false;
-  selectedFilterWorkflow: string = '';
   allWorkflows;
   totalPages: number = 0;
 
@@ -86,7 +85,7 @@ export class HistoryComponent implements OnInit {
   }
 
   /** returnAllExecutions
-  /*  return all executions, either max 4 to display in collapsable panel of list with pagination
+  /*  return all executions, either max 1 to display in collapsable panel of list with pagination
   /*  option to filter on workflow in table
   */
   returnAllExecutions() {
@@ -101,12 +100,13 @@ export class HistoryComponent implements OnInit {
       if (result['results'].length === 0) { this.nextPage = 0; return false }
 
       let showTotal = result['results'].length;
-      if (this.inCollapsablePanel && result['results'].length >= 4 ) {
-        showTotal = 4;
+      if (this.inCollapsablePanel && result['results'].length >= 1 ) {
+        showTotal = 1;
       }
 
       for (let i = 0; i < showTotal; i++) {
         let r = result['results'][i];
+        r['metisPlugins'].reverse();
         for (let w = 0; w < r['metisPlugins'].length; w++) {
           let ws = r['metisPlugins'][w];
           ws['hasReport'] = false;  
@@ -196,37 +196,6 @@ export class HistoryComponent implements OnInit {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
-  }
-
-  /** toggleFilterByWorkflow
-  /*  toggle workflow dropdown
-  */
-  toggleFilterByWorkflow () {
-    if (this.filterWorkflow === false) {
-      this.filterWorkflow = true;
-    } else {
-      this.filterWorkflow = false;
-    }
-  }
-
-  /** selectWorkflow
-  /*  select an option from the workflow filter
-  /* @param {string} w - name of workflow
-  */
-  selectWorkflow (w) {
-    this.selectedFilterWorkflow = w;
-    this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
-    this.nextPage = 0;
-    this.allExecutions = [];
-    this.returnAllExecutions();
-    this.filterWorkflow = false;
-  }
-
-  /** onClickedOutside
-  /*  click outside the workflow filter to close
-  */
-  onClickedOutside() {
-    this.filterWorkflow = false;
   }
 
 }

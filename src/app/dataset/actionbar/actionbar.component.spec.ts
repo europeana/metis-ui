@@ -2,7 +2,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
 import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -19,7 +19,7 @@ describe('ActionbarComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ ActionbarComponent, TranslatePipe ],
+      declarations: [ ActionbarComponent, TranslatePipe, RenameWorkflowPipe ],
       providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, 
         AuthenticationService, 
         ErrorService, 

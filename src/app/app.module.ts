@@ -48,7 +48,7 @@ import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
 import { XmlPipe }   from './_helpers';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
 
 @NgModule({
   declarations: [
@@ -69,6 +69,7 @@ import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
     ActionbarComponent,
     HistoryComponent,
     ActionbarComponent,
+    WorkflowComponent,
     MappingComponent,
     PreviewComponent,
     DatasetlogComponent,
@@ -77,7 +78,7 @@ import { TRANSLATION_PROVIDERS, TranslatePipe }   from './_translate';
     ReportComponent,
     TranslatePipe,
     XmlPipe,
-    WorkflowComponent
+    RenameWorkflowPipe
   ],
   imports: [
     BrowserModule,

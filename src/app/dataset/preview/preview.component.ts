@@ -37,10 +37,8 @@ export class PreviewComponent implements OnInit {
   allWorkflowDates: Array<any> = [];
   allPlugins: Array<any> = [];
   allSamples: Array<any> = [];
-  filterWorkflow: boolean = false;
   filterDate: boolean = false;
   filterPlugin: boolean = false;
-  selectedWorkflow: string;
   selectedDate: string;
   selectedPlugin: string;
   displayFilterWorkflow;
@@ -84,34 +82,14 @@ export class PreviewComponent implements OnInit {
       this.nosample = this.translate.instant('nosample');
     }
     
-    //if (this.datasetData) {
-      //this.addWorkflowFilter();
-    //}
+    if (this.datasetData) {
+      this.addDateFilter();
+    }
 
     this.prefill = this.datasets.getPreviewFilters();
     this.prefillFilters();
 
-  }
-
-  /** addWorkflowFilter
-  /* populate a filter with workflows
-  /* sort it
-  /* save selection, when switching tab
-  */
-  addWorkflowFilter() {
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
-      for (let i = 0; i < result['results'].length; i++) {
-        if (this.allWorkflows.indexOf(result['results'][i]['workflowName']) === -1) {
-          this.allWorkflows.push(result['results'][i]['workflowName']);
-        }
-      }
-      this.allWorkflows.sort();
-      this.nextPage = result['nextPage'];
-      if (this.nextPage >= 0) {
-        this.addWorkflowFilter();
-      }
-    });   
-  }
+  }  
 
   /** addDateFilter
   /* populate a filter with dates based on selected workflow
@@ -119,15 +97,14 @@ export class PreviewComponent implements OnInit {
   /* save selection, when switching tab
   /* @param {string} workflow - selected workflow
   */
-  addDateFilter(workflow) {
-    this.filterWorkflow = false;
+  addDateFilter() {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {  
         this.allWorkflowDates.push(result['results'][i]);
       }
       this.nextPageDate = result['nextPage'];
       if (this.nextPageDate >= 0) {
-        this.addDateFilter(workflow);
+        this.addDateFilter();
       }
     });     
   }
@@ -188,12 +165,7 @@ export class PreviewComponent implements OnInit {
   /* prefill filters, when temporarily saved options are available
   */
   prefillFilters() {
-    if (this.prefill) {
-      if (this.prefill['workflow']) {
-        this.selectedWorkflow = this.prefill['workflow'];
-        this.addDateFilter(this.prefill['workflow']);
-      }
-
+    if (this.prefill) {      
       if (this.prefill['date']) {
         this.selectedDate = this.prefill['date'];
         this.addPluginFilter(this.prefill['date']);
@@ -213,24 +185,6 @@ export class PreviewComponent implements OnInit {
   */
   expandSample(index: number) {
     this.expandedSample = this.expandedSample === index ? undefined : index;
-  }
-
-  /** toggleFilterWorkflow
-  /* show or hide worflow filter
-  */
-  toggleFilterWorkflow() {
-    this.onClickedOutside();
-    this.nextPage = 0;
-    this.nextPageDate = 0;
-    this.allWorkflowDates = [];
-    this.allPlugins = [];
-    this.selectedDate = undefined;
-    this.selectedPlugin = undefined;    
-    if (this.filterWorkflow === false) {
-      this.filterWorkflow = true;
-    } else {
-      this.filterWorkflow = false;
-    }
   }
 
   /** toggleFilterDate
@@ -264,7 +218,6 @@ export class PreviewComponent implements OnInit {
   /* close all open filters when click outside the filters
   */
   onClickedOutside(e?) {
-    this.filterWorkflow = false;  
     this.filterDate = false;   
     this.filterPlugin = false;   
   }
