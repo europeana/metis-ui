@@ -45,7 +45,7 @@ export class WorkflowComponent implements OnInit {
   newWorkflow: boolean = true; 
   formIsValid: boolean = false;
   workflowForm: FormGroup;
-  selectedPredefinedWorkflow: string = 'basic';
+  selectedPredefinedWorkflow: string;
   fragment: string;
   currentUrl: string;
 
@@ -62,7 +62,7 @@ export class WorkflowComponent implements OnInit {
 
     this.buildForm();  
     this.getWorkflow();
-    this.selectPredefinedWorkflow('basic');
+    this.selectPredefinedWorkflow();
 
     this.currentUrl = this.router.url.split('#')[0];
 
@@ -132,7 +132,7 @@ export class WorkflowComponent implements OnInit {
 
       for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
         let thisWorkflow = workflow['metisPluginsMetadata'][w];
-        
+
         if (thisWorkflow.enabled === true) {
           if (thisWorkflow.pluginType === 'OAIPMH_HARVEST' || thisWorkflow.pluginType === 'HTTP_HARVEST' ) {
             this.workflowForm.controls['pluginHARVEST'].setValue(true);
@@ -144,6 +144,7 @@ export class WorkflowComponent implements OnInit {
         // import/harvest
         if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
           this.harvestprotocol = 'OAIPMH_HARVEST';
+          this.workflowForm.controls['pluginType'].setValue('OAIPMH_HARVEST');
           this.workflowForm.controls['setSpec'].setValue(thisWorkflow.setSpec);
           this.workflowForm.controls['harvestUrl'].setValue(thisWorkflow.url);
           this.workflowForm.controls['metadataFormat'].setValue(thisWorkflow.metadataFormat);
@@ -151,6 +152,7 @@ export class WorkflowComponent implements OnInit {
 
         if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
           this.harvestprotocol = 'HTTP_HARVEST';
+          this.workflowForm.controls['pluginType'].setValue('HTTP_HARVEST');
           this.workflowForm.controls['url'].setValue(thisWorkflow.url);
         }
 
@@ -237,9 +239,7 @@ export class WorkflowComponent implements OnInit {
   /* submit the form
   */
   onSubmit() {
-
     if (!this.datasetData) { return false; }
-
     this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {
       this.getWorkflow();
       this.successMessage = 'Workflow saved';
@@ -255,9 +255,14 @@ export class WorkflowComponent implements OnInit {
   /* select one of the predefined workflows
   /* basic is the default one
   */
-  selectPredefinedWorkflow(workflow) {
-
+  selectPredefinedWorkflow(workflow?) {
     this.selectedPredefinedWorkflow = workflow;
+
+    if (!workflow) { 
+      this.buildForm();  
+      this.getWorkflow();
+      return false 
+    }
 
     this.workflowForm.controls['pluginHARVEST'].setValue(true);
     this.workflowForm.controls['pluginVALIDATION_EXTERNAL'].setValue(true);
@@ -268,7 +273,6 @@ export class WorkflowComponent implements OnInit {
     if (workflow === 'everything') {
       this.workflowForm.controls['pluginENRICHMENT'].setValue(true);
     }
-
   }
 
   /** onClickedOutside

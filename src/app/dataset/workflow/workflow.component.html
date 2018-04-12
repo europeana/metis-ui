@@ -9,6 +9,7 @@
 
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">
+        <li [ngClass]="{'active': !selectedPredefinedWorkflow}" (click)="selectPredefinedWorkflow()">Current</li>
         <li [ngClass]="{'active': selectedPredefinedWorkflow === 'basic'}" (click)="selectPredefinedWorkflow('basic')">Basic</li>
         <li [ngClass]="{'active': selectedPredefinedWorkflow === 'everything'}" (click)="selectPredefinedWorkflow('everything')">Run everything</li>
       </ul>
