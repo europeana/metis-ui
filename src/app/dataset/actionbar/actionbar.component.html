@@ -4,7 +4,7 @@
 
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf=currentWorkflow>
 	<div class="status">
-    <strong>{{currentPluginName}}</strong>
+    <strong class="uppercase">{{currentPluginName|renameWorkflow}}</strong>
     {{currentStatus}}
   </div>
   <div class="progress">
