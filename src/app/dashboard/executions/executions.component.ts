@@ -34,9 +34,7 @@ export class ExecutionsComponent implements OnInit {
   totalPagesShowing: number = 0;
   errorMessage: string;
   successMessage: string;
-  filterWorkflow: boolean = false;
   allWorkflows: any;
-  selectedFilterWorkflow;
 
   /** ngOnInit
   /* init this component:
@@ -151,30 +149,6 @@ export class ExecutionsComponent implements OnInit {
       let error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
-  }
-
-  /** toggleFilterByWorkflow
-  /*  show/hide workflow filter
-  */
-  toggleFilterByWorkflow() {
-    this.filterWorkflow = this.filterWorkflow === false ? true : false;
-  }
-
-  /** toggleFilterByWorkflow
-  /*  show/hide workflow filter
-  */
-  onClickedOutside() {
-    this.filterWorkflow = false;
-  }
-
-  /** selectWorkflow
-  /*  select a workflow from the dropdownlist
-  /* @param {string} workflow - selected workflow
-  */
-  selectWorkflow(workflow) {
-    this.selectedFilterWorkflow = workflow;
-    this.filterWorkflow = false;
-    this.refreshExecutions();
   }
 
   /** refreshExecutions

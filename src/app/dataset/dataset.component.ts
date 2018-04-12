@@ -10,6 +10,7 @@ import { DatasetformComponent } from './datasetform/datasetform.component';
 import { HistoryComponent } from './history/history.component';
 import { MappingComponent } from './mapping/mapping.component';
 import { PreviewComponent } from './preview/preview.component';
+import { WorkflowComponent } from './workflow/workflow.component';
 
 import { datasetTab } from './datasettab';
 
@@ -25,13 +26,13 @@ export class DatasetComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    private route: ActivatedRoute,
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private RedirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService, 
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private route: ActivatedRoute) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
@@ -76,6 +77,7 @@ export class DatasetComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+
   }
 
   /** returnDataset
@@ -104,22 +106,22 @@ export class DatasetComponent implements OnInit {
   /*  loads the content within the placeholder
   */
   loadTabComponent() {
-    if (!this.getcurrentTab()) {return false; }
+    if (!this.getCurrentTab()) {return false; }
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getcurrentTab().component);
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);
     let viewContainerRef = this.datasetHost.viewContainerRef;
     viewContainerRef.clear();
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.datasetData = this.getcurrentTab().data;
-     
+    componentRef.instance.datasetData = this.getCurrentTab().data;
+    
     this.successMessage = this.datasets.getDatasetMessage();
   }
 
-  /** getcurrentTab
+  /** getCurrentTab
   /*  returns the components that will be used in the component placeholder within a tab
   /*  based on currently active tab
   */
-  getcurrentTab() {
+  getCurrentTab() {
     if (this.activeTab === 'new' || this.activeTab === 'edit') {
       return new datasetTab(DatasetformComponent, this.datasetData);
     } else if (this.activeTab === 'log') {
@@ -128,6 +130,8 @@ export class DatasetComponent implements OnInit {
       return new datasetTab(MappingComponent, this.datasetData);
     } else  if (this.activeTab === 'preview') {
       return new datasetTab(PreviewComponent, this.datasetData);
+    } else  if (this.activeTab === 'workflow') {
+      return new datasetTab(WorkflowComponent, this.datasetData);
     } 
   }
 

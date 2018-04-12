@@ -98,53 +98,6 @@
         <input id="number-items-harvested" type="text" formControlName="numberOfItemsHarvested" [readonly]="true" (blur)="saveTempData()"/>
       </div>
 
-      <!--
-      <div class="form-group">
-        <label>{{ 'harvestprotocol' | translate }} *</label>
-        <div class="form-group-radios">
-          <div>
-            <label>
-              <input type="radio" [readonly]="formMode === 'read' ? true : false" formControlName="pluginType" value="HTTP_HARVEST" [(ngModel)]="harvestprotocol" [checked]="datasetData && harvestprotocol === 'HTTP_HARVEST' ? true : false" (change)="saveTempData()" />
-              {{ 'http' | translate }}
-            </label>
-          </div>          
-          <div>
-            <label>
-              <input type="radio" [readonly]="formMode === 'read' ? true : false" formControlName="pluginType" value="OAIPMH_HARVEST" [(ngModel)]="harvestprotocol" [checked]="datasetData && harvestprotocol === 'OAIPMH_HARVEST' ? true : false" (change)="saveTempData()"/> {{ 'oai' | translate }}
-            </label>
-          </div>          
-        </div>
-      </div>
-
-      <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-        <label for="harvest-url">{{ 'harvesturl' | translate }} *</label>
-        <input id="harvest-url" type="text" formControlName="harvestUrl" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-        <label for="setspec">{{ 'setspec' | translate }}</label>
-        <input id="setspec" type="tel" formControlName="setSpec" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()" />
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-        <label for="metadata-format">{{ 'metadataformat' | translate }} *</label>
-        <input id="metadata-format" type="text" formControlName="metadataFormat" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
-        <label for="record-xpath">{{ 'recordxpath' | translate }}</label>
-        <input id="record-xpath" type="text" formControlName="recordXPath" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
-        <label for="ftphttpuser">{{ 'ftpuser' | translate }}</label>
-        <input id="ftphttpuser" type="text" formControlName="ftpHttpUser" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
-        <label for="ftphttppassword">{{ 'ftppassword' | translate }}</label>
-        <input id="ftphttppassword" type="text" formControlName="ftpHttpPassword" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
-        <label for="url">{{ 'url' | translate }}</label>
-        <input id="url" type="text" formControlName="url" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-      </div>-->
-
       <div class="form-group form-group-btns user-profile-edit-btns">
         <button class="submit submit-submit" type="button" *ngIf="formMode !== 'read'" [disabled]="!datasetForm.valid" (click)="onSubmit()">{{ 'submit' | translate }}</button>
         <button class="submit submit-update" type="button" *ngIf="formMode === 'read'" (click)="updateForm()">{{ 'update' | translate }}</button>

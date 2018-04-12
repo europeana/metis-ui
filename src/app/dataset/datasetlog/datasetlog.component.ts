@@ -5,8 +5,7 @@ import { WorkflowService, AuthenticationService, TranslateService, ErrorService 
 
 @Component({
   selector: 'app-datasetlog',
-  templateUrl: './datasetlog.component.html',
-  styleUrls: ['./datasetlog.component.scss']
+  templateUrl: './datasetlog.component.html'
 })
 export class DatasetlogComponent implements OnInit {
 

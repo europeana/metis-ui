@@ -3,8 +3,7 @@ import { DatasetsService, TranslateService } from '../../_services';
 
 @Component({
   selector: 'app-generalinfo',
-  templateUrl: './generalinfo.component.html',
-  styleUrls: ['./generalinfo.component.scss']
+  templateUrl: './generalinfo.component.html'
 })
 export class GeneralinfoComponent implements OnInit {
 

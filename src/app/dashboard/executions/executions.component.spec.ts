@@ -55,23 +55,6 @@ describe('ExecutionsComponent', () => {
     component.cancelWorkflow(1);    
     fixture.detectChanges();
     expect(component.successMessage).not.toBe('');
-  });
-
-  it('should open workflow filter', (): void => {   
-    const workflow = fixture.debugElement.query(By.css('.dropdown a'));
-    workflow.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).toBeTruthy();
-
-    component.allWorkflows = ['mocked'];
-    const filter = fixture.debugElement.query(By.css('.dropdown ul a'));
-    filter.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).not.toBeTruthy();
-
-    component.onClickedOutside();
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown ul')).length).not.toBeTruthy();
-  });
+  });  
 
 });

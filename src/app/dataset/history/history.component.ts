@@ -6,8 +6,7 @@ import { StringifyHttpError } from '../../_helpers';
 
 @Component({
   selector: 'app-history',
-  templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss']
+  templateUrl: './history.component.html'
 })
 export class HistoryComponent implements OnInit {
 

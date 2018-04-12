@@ -143,10 +143,6 @@ export class DatasetformComponent implements OnInit {
       numberOfItemsPublished: [''],
       lastDateHarvest: [''],
       numberOfItemsHarvested: [''],
-      //pluginType: ['', [Validators.required]],
-      //harvestUrl: [(this.datasetData ? this.datasetData.harvestingMetadata.url : ''), [Validators.required]],
-      //setSpec: [(this.datasetData ? this.datasetData.harvestingMetadata.setSpec : '')],
-      //metadataFormat: [(this.datasetData ? this.datasetData.harvestingMetadata.metadataFormat : ''), [Validators.required]],
       recordXPath: [''],
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
@@ -221,7 +217,6 @@ export class DatasetformComponent implements OnInit {
         this.datasetForm.controls['language'].disable();
         this.datasetForm.controls['description'].disable();
         this.datasetForm.controls['notes'].disable();
-        //this.datasetForm.controls['pluginType'].disable();          
       }, (err: HttpErrorResponse) => {
         let error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`; 
@@ -255,7 +250,6 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.controls['language'].enable();
     this.datasetForm.controls['description'].enable();
     this.datasetForm.controls['notes'].enable();
-    //this.datasetForm.controls['pluginType'].enable();
     
     window.scrollTo(0, 0);
   }   

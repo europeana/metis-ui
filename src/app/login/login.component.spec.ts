@@ -23,7 +23,7 @@ describe('LoginComponent', () => {
       imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
       declarations: [ LoginComponent, TranslatePipe ],
       providers: [ RedirectPreviousUrl,
-        {provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
         { provide: TranslateService,
             useValue: {
               translate: () => {
