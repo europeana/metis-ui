@@ -5,19 +5,6 @@
 
 <div class="all-executions">
   <h3>{{ 'allexecutions' | translate }}</h3>
-
-  <ul class="filter" (clickOutside)="onClickedOutside()">
-    <li class="dropdown">
-      <a (click)="toggleFilterByWorkflow()">{{ 'workflow' | translate }}<span *ngIf=selectedFilterWorkflow>: {{selectedFilterWorkflow}}</span></a>
-      <div *ngIf="filterWorkflow" class="dropdown-wrapper">
-        <ul>
-          <li><a (click)="selectWorkflow()">{{ 'allworkflows' | translate }}</a></li>
-          <li *ngFor="let w of allWorkflows;"><a (click)="selectWorkflow(w)">{{w}}</a></li>
-        </ul>
-      </div>
-    </li>  
-  </ul>
-
   <table class="table-horizontal-layout executions-table">
     <thead>
     	<tr>
