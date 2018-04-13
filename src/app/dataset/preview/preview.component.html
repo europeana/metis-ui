@@ -3,7 +3,7 @@
 </div>
 
 <div class="filter-wrapper">
-  <ul class="filter" (clickOutside)="onClickedOutside($event)">    
+  <ul class="filter" (clickOutside)="onClickedOutside($event)">
     <li class="dropdown dropdown-date" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
       <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
       <div *ngIf="filterDate" class="dropdown-wrapper">
@@ -13,7 +13,7 @@
       </div>
     </li>
     <li class="dropdown dropdown-plugin" *ngIf="allPlugins && allPlugins.length > 0">
-      <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin}}</span></a>
+      <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin | renameWorkflow}}</span></a>
       <div *ngIf="filterPlugin" class="dropdown-wrapper">
         <ul>
           <li *ngFor="let w of allPlugins;"><a (click)="getXMLSamples(w)">{{w | renameWorkflow}}</a></li>
@@ -27,7 +27,7 @@
 <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
   <div class="view-sample-title">
     <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin | renameWorkflow}}</span></h3>
-    <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i"> 
+    <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
       <a (click)="expandSample(i)">-</a>
     </div>
   </div>
