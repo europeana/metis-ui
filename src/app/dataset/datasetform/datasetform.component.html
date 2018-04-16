@@ -38,11 +38,6 @@
         <label for="date-updated">{{ 'dateupdated' | translate }}</label>
         <input id="date-updated" type="text" formControlName="dateUpdated" [readonly]="true" (blur)="saveTempData()"/>
       </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="status">{{ 'status' | translate }} *</label>
-        <input id="status" type="text" formControlName="status" [readonly]="true" (blur)="saveTempData()"/>
-      </div>
-
       <div class="form-group">
         <label for="replaces">{{ 'replaces' | translate }}</label>
         <input id="replaces" formControlName="replaces" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>   
@@ -63,7 +58,6 @@
           <option *ngFor="let l of languageOptions" [ngValue]="l">{{l.name}}</option>
         </select>
       </div>
-
       <div class="form-group">
         <label for="description">{{ 'description' | translate }}</label>
         <textarea id="description" formControlName="description" (blur)="saveTempData()"></textarea>

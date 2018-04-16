@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import 'rxjs/Rx';
 
-import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
+import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
 
 @Component({
@@ -19,6 +19,7 @@ import { StringifyHttpError } from '../../_helpers';
 export class DatasetformComponent implements OnInit {
 
   @Input() datasetData: any;
+  harvestPublicationData: any;
   autosuggest;
   autosuggestId: string;
   datasetOptions: object;
@@ -35,6 +36,7 @@ export class DatasetformComponent implements OnInit {
   private languageOptions: any;
  
   constructor(private countries: CountriesService,
+    private workflows: WorkflowService,
     private datasets: DatasetsService,
     private authentication: AuthenticationService,
     private router: Router,
@@ -47,6 +49,7 @@ export class DatasetformComponent implements OnInit {
   /** ngOnInit
   /* init of this component
   /* check for temp dataset information
+  /* if dataset exists, check for additional info on harvest and publication
   /* set translation languages
   /* get countries and languages
   /* build the dataset form
@@ -58,7 +61,13 @@ export class DatasetformComponent implements OnInit {
       this.datasetData = tempdata;
       this.formMode = 'create';
     } else {
-      this.formMode = 'read';
+      this.formMode = 'read';      
+      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
+        this.harvestPublicationData = result;
+        this.buildForm();
+      }, (err: HttpErrorResponse) => {
+        this.errors.handleError(err);     
+      });
     }
 
     if (typeof this.translate.use === 'function') { 
@@ -121,7 +130,6 @@ export class DatasetformComponent implements OnInit {
   /* disable/enable fields
   */
   buildForm() {
-
     this.datasetForm = this.fb.group({
       datasetId: [(this.datasetData ? this.datasetData.datasetId : '')],
       datasetName: [(this.datasetData ? this.datasetData.datasetName : ''), [Validators.required]],
@@ -130,7 +138,6 @@ export class DatasetformComponent implements OnInit {
       intermediateProvider: [(this.datasetData ? this.datasetData.intermediateProvider : '')],
       dateCreated: [(this.datasetData ? this.datePipe.transform(this.datasetData.createdDate, 'dd/MM/yyyy - HH:mm') : '')],
       dateUpdated: [(this.datasetData ? this.datePipe.transform(this.datasetData.updatedDate, 'dd/MM/yyyy - HH:mm') : '')],
-      status: [''],
       replaces: [(this.datasetData ? this.datasetData.replaces : '')],
       replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],
       country: [],
@@ -138,15 +145,11 @@ export class DatasetformComponent implements OnInit {
       description: [(this.datasetData ? this.datasetData.description : '')],
       notes: [(this.datasetData ? this.datasetData.notes : '')],
       createdBy: [(this.datasetData ? this.datasetData.createdByUserId : '')],
-      firstPublished: [''],
-      lastPublished: [''],
-      numberOfItemsPublished: [''],
-      lastDateHarvest: [''],
-      numberOfItemsHarvested: [''],
-      recordXPath: [''],
-      ftpHttpUser: [''],
-      ftpHttpPassword: [''],
-      url: ['']
+      firstPublished: [(this.harvestPublicationData ? this.datePipe.transform(this.harvestPublicationData.firstPublishedDate, 'dd/MM/yyyy - HH:mm') : '')],
+      lastPublished: [(this.harvestPublicationData ? this.datePipe.transform(this.harvestPublicationData.lastPublishedDate, 'dd/MM/yyyy - HH:mm')  : '')],
+      numberOfItemsPublished: [(this.harvestPublicationData ? this.harvestPublicationData.lastPublishedRecords : '')],
+      lastDateHarvest: [(this.harvestPublicationData ? this.datePipe.transform(this.harvestPublicationData.lastHarvestedDate, 'dd/MM/yyyy - HH:mm') : '')],
+      numberOfItemsHarvested: [(this.harvestPublicationData ? this.harvestPublicationData.lastHarvestedRecords : '')]
     });
 
     if (this.datasetData) {
@@ -160,7 +163,6 @@ export class DatasetformComponent implements OnInit {
       this.datasetForm.controls['language'].disable();
       this.datasetForm.controls['description'].disable();
       this.datasetForm.controls['notes'].disable();
-      //this.datasetForm.controls['pluginType'].disable();
     }
   }
 
@@ -180,14 +182,6 @@ export class DatasetformComponent implements OnInit {
   /* some field values need formating before sending them to the backend
   */
   formatFormValues() {
-    /*this.datasetForm.value.harvestingMetadata = {
-      pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'NULL',
-      mocked: false,
-      url: this.datasetForm.value.harvestUrl ? this.datasetForm.value.harvestUrl : '',
-      metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
-      setSpec: this.datasetForm.value.setSpec ? this.datasetForm.value.setSpec : ''
-    };*/
-
     if (!this.datasetForm.value['country']) {
       this.datasetForm.value['country'] = null;
     }

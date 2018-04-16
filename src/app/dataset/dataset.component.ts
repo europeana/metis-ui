@@ -47,6 +47,8 @@ export class DatasetComponent implements OnInit {
   public datasetData; 
   public activeSet: string;
   public workflowData;
+  public harvestPublicationData;
+  public lastExecutionData;
 
   /** ngOnInit
   /* set current user
@@ -88,6 +90,15 @@ export class DatasetComponent implements OnInit {
     this.datasets.getDataset(id).subscribe(result => {
       this.datasetData = result;
       this.loadTabComponent();
+      // check for harvest data
+      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
+        this.harvestPublicationData = result;
+      });
+      // check for last execution
+      this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
+        this.lastExecutionData = execution;
+      });
+
     }, (err: HttpErrorResponse) => {
         let error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
