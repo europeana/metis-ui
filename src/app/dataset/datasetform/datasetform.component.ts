@@ -160,7 +160,6 @@ export class DatasetformComponent implements OnInit {
       this.datasetForm.controls['language'].disable();
       this.datasetForm.controls['description'].disable();
       this.datasetForm.controls['notes'].disable();
-      //this.datasetForm.controls['pluginType'].disable();
     }
   }
 
@@ -180,14 +179,6 @@ export class DatasetformComponent implements OnInit {
   /* some field values need formating before sending them to the backend
   */
   formatFormValues() {
-    /*this.datasetForm.value.harvestingMetadata = {
-      pluginType: this.datasetForm.value.pluginType ? this.datasetForm.value.pluginType : 'NULL',
-      mocked: false,
-      url: this.datasetForm.value.harvestUrl ? this.datasetForm.value.harvestUrl : '',
-      metadataFormat: this.datasetForm.value.metadataFormat ? this.datasetForm.value.metadataFormat : '',
-      setSpec: this.datasetForm.value.setSpec ? this.datasetForm.value.setSpec : ''
-    };*/
-
     if (!this.datasetForm.value['country']) {
       this.datasetForm.value['country'] = null;
     }

@@ -11,9 +11,9 @@
       </div>
       <div class="form-group">
         <label for="dataset-name">{{ 'datasetname' | translate }} *</label>
-        <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9]+" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
+        <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9\\_\\]+" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
         <div class="messages" *ngIf="formMode === 'update'" [hidden]="datasetForm.controls.datasetName.valid">
-          <div class="error-message">Only A to Z and numbers are allowed.</div>
+          <div class="error-message">{{ 'datasetnamevalidator' | translate }} </div>
         </div>
       </div>
 
