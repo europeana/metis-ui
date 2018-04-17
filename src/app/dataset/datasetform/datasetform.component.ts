@@ -152,12 +152,6 @@ export class DatasetformComponent implements OnInit {
       numberOfItemsHarvested: [(this.harvestPublicationData ? this.harvestPublicationData.lastHarvestedRecords : '')]
     });
 
-    if (this.datasetData) {
-      if (this.datasetData.harvestingMetadata) {
-        this.harvestprotocol = (this.datasetData ? this.datasetData.harvestingMetadata.pluginType : '');
-      }
-    }
-
     if (this.formMode == 'read') { 
       this.datasetForm.controls['country'].disable();
       this.datasetForm.controls['language'].disable();

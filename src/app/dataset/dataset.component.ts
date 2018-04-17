@@ -19,7 +19,7 @@ import { User } from '../_models';
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss']
+  styleUrls: ['./dataset.component.scss']  
 })
 
 export class DatasetComponent implements OnInit {

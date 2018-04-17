@@ -5,6 +5,7 @@ import { DatasetsService, TranslateService, WorkflowService } from '../../_servi
   selector: 'app-generalinfo',
   templateUrl: './generalinfo.component.html'
 })
+
 export class GeneralinfoComponent implements OnInit {
 
   constructor(private datasets: DatasetsService,
@@ -16,7 +17,8 @@ export class GeneralinfoComponent implements OnInit {
 
   /** ngOnInit
   /* init for this specific component
-  /* and set translation langugaes
+  /* and set translation languages
+  /* if dataset, try to retrieve information about harvest and publication
   */
   ngOnInit() {
     if (typeof this.translate.use === 'function') { 
