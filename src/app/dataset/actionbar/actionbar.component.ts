@@ -46,7 +46,7 @@ export class ActionbarComponent {
   /* set language to use for translations
   */
   ngOnInit() {
-     
+    
     this.returnLastExecution();
      
     if (!this.workflows.changeWorkflow) { return false; }
@@ -147,9 +147,13 @@ export class ActionbarComponent {
   /*  get the last action for this dataset and display its status in the progress/actionbar
   */
   returnLastExecution () {
+    
+    console.log(this.datasetData);
 
     if (!this.datasetData) { return false }
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
+      console.log('returnLastExecution', workflow);
+      
       if (workflow) {
         this.currentWorkflow = workflow;
         this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);

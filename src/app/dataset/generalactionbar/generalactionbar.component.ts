@@ -1,0 +1,85 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { Observable } from 'rxjs/Rx';
+
+import { WorkflowService} from '../../_services';
+import { environment } from '../../../environments/environment';
+
+@Component({
+  selector: 'app-generalactionbar',
+  templateUrl: './generalactionbar.component.html',
+  styleUrls: ['./generalactionbar.component.scss']
+})
+export class GeneralactionbarComponent implements OnInit {
+
+  constructor(private workflows: WorkflowService) { }
+
+  @Input('datasetData') datasetData;
+  activeSet: string;
+  workflowInfoAvailable: boolean = false;
+  firstRun: boolean = true;
+  currentWorkflowStatus: string;
+  subscription;
+  intervalTimer: number = environment.intervalStatus;
+
+  /** ngOnInit
+  /*  init for this component
+  /* set active dataset
+  /* poll to check the status of this dataset + workflow history
+  */
+  ngOnInit() {    
+    if (!this.datasetData) { return false }
+    this.activeSet = this.datasetData.datasetId;
+    this.checkStatus();
+  }
+
+  /** checkStatus
+  /*  check status of current dataset: is there already workflow info
+  /* is there already an execution (running or not)
+  */
+  checkStatus() {
+    if (this.subscription) { this.subscription.unsubscribe(); }
+    let timer = Observable.timer(0, this.intervalTimer);
+    this.subscription = timer.subscribe(t => {
+      console.log('checkStatus', this.currentWorkflowStatus);
+      this.returnWorkflowInfo();
+    });
+  }
+
+  /** returnWorkflowInfo
+  /*  check if workflow info is already available
+  */
+  returnWorkflowInfo () {
+    if (!this.datasetData) { return false }
+    this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
+      if (workflowinfo) {
+        this.workflowInfoAvailable = true;
+        this.returnLastExecution();
+      } 
+    });
+  }
+
+  /** returnLastExecution
+  /*  get the last action for this dataset and display its status in the progress/actionbar
+  */
+  returnLastExecution () {
+    if (!this.datasetData) { return false }
+    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
+      if (workflow) {
+        this.firstRun = false;
+        this.currentWorkflowStatus = workflow['workflowStatus'];
+      } else {
+        this.firstRun = true;
+      }
+    });
+  }
+
+  /** selectWorkflow
+  /*  select the workflow, so it would be triggered
+  */
+  selectWorkflow() {
+    this.workflows.selectWorkflow();
+    this.subscription.unsubscribe();
+    this.checkStatus();
+  }
+
+}

@@ -11,6 +11,12 @@
 .collapse-block {
   margin: 1rem auto 0;
 
+  .collapse-block-sticky {
+    align-items: flex-end;
+    display: flex;
+    justify-content: space-between;
+  }
+
   .dataset-name,
   .dataset-collapse-toggle {
     display: block;
@@ -47,16 +53,7 @@
     }
   }
 
-  hr {
-    background: $gray-lighter;
-    border: 0;
-    clear: both;
-    height: 1px;
-    margin: $space 0;
-  }
-
   .dataset-collapse-blocks {
     clear: both;
   }
-
 }
