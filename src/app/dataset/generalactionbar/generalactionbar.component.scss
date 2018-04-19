@@ -15,12 +15,12 @@
 }
 
 .progress {
-  display: block;
   width: 100%;
 
   .progressbar {
     background: $gray-lighter;
     height: 1rem;
+    margin-bottom: 0;
   }
 
   .progressbar .progressbar-done {

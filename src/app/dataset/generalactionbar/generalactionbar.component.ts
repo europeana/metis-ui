@@ -18,6 +18,9 @@ export class GeneralactionbarComponent implements OnInit {
   workflowInfoAvailable: boolean = false;
   firstRun: boolean = true;
   currentWorkflowStatus: string;
+  currentPlugin: number;
+  totalPlugins: number;
+  pluginPercentage: number;
   subscription;
   intervalTimer: number = environment.intervalStatus;
 
@@ -30,6 +33,12 @@ export class GeneralactionbarComponent implements OnInit {
     if (!this.datasetData) { return false }
     this.activeSet = this.datasetData.datasetId;
     this.checkStatus();
+
+    if (!this.workflows.changeWorkflow) { return false; }
+    this.workflows.changeWorkflow.subscribe(workflow => {
+      this.checkStatus();
+    });
+
   }
 
   /** checkStatus
@@ -40,7 +49,6 @@ export class GeneralactionbarComponent implements OnInit {
     if (this.subscription) { this.subscription.unsubscribe(); }
     let timer = Observable.timer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
-      console.log('checkStatus', this.currentWorkflowStatus);
       this.returnWorkflowInfo();
     });
   }
@@ -67,6 +75,9 @@ export class GeneralactionbarComponent implements OnInit {
       if (workflow) {
         this.firstRun = false;
         this.currentWorkflowStatus = workflow['workflowStatus'];
+        this.currentPlugin = this.workflows.getCurrentPlugin(workflow);
+        this.totalPlugins = workflow.metisPlugins.length;
+        this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
       } else {
         this.firstRun = true;
       }
