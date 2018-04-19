@@ -6,7 +6,7 @@ export let currentDataset = {
     createdByUserId: '1',
     createdDate: '2018-03-30T13:49:55.607Z',
     dataProvider: 'mockedDataProvider',
-    datasetId: 1,
+    datasetId: '1',
     datasetName: 'mockedName',
     description: 'mockedDescription',
     ecloudDatasetId: 1,
