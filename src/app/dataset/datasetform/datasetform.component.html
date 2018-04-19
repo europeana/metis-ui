@@ -12,7 +12,7 @@
       <div class="form-group">
         <label for="dataset-name">{{ 'datasetname' | translate }} *</label>
         <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9\\_\\]+" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-        <div class="messages" *ngIf="!datasetForm.controls.datasetName.pristine" [hidden]="datasetForm.controls.datasetName.valid">
+        <div class="messages" *ngIf="datasetForm.controls.datasetName.dirty" [hidden]="datasetForm.controls.datasetName.valid">
           <div class="error-message">{{ 'datasetnamevalidator' | translate }} </div>
         </div>
       </div>
