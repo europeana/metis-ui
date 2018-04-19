@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick  } from '@angular/core/testing';
 import { Observable } from 'rxjs/Rx';
 
 import { DatasetformComponent } from './datasetform.component';
@@ -7,6 +7,7 @@ import { MockDatasetService, MockWorkflowService, MockCountriesService, currentW
 
 import { By } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -16,6 +17,7 @@ describe('DatasetformComponent', () => {
   
   let component: DatasetformComponent;
   let fixture: ComponentFixture<DatasetformComponent>;
+  let router: Router;
  
   beforeEach(() => {
 
@@ -40,6 +42,8 @@ describe('DatasetformComponent', () => {
 
     fixture = TestBed.createComponent(DatasetformComponent);
     component    = fixture.componentInstance;
+    router = TestBed.get(Router);
+
   });
 
   it('should create', () => {
@@ -53,19 +57,37 @@ describe('DatasetformComponent', () => {
     expect(component.formMode).toBe('create');
   });
 
-  it('should temp save the form', () => { 
+  it('should submit form and update the dataset', () => { 
     component.datasetData = currentDataset;
     component.buildForm();
     fixture.detectChanges();
 
     component.formMode = 'update';
+    component.onSubmit();
     fixture.detectChanges();
+    expect(component.successMessage).not.toBe('');
 
+    component.formMode = 'create';
     component.onSubmit();
     fixture.detectChanges();
 
-    expect(component.successMessage).not.toBe('');
   });
+
+  it('should submit form and create the dataset', fakeAsync((): void => {
+    component.datasetData = currentDataset;
+    component.buildForm();
+    fixture.detectChanges();
+
+    component.formMode = 'create';
+    spyOn(router, 'navigate').and.callFake(() => { });
+    tick(50);
+
+    component.onSubmit();    
+    fixture.detectChanges();
+    
+    expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
+
+  }));
 
   it('should have a preview dataset form', () => { 
     component.formMode = 'read';
@@ -85,7 +107,7 @@ describe('DatasetformComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('#dataset-name'))[0].properties.readOnly).toBe(false);
   });
 
-  it('should submit the form', () => { 
+  it('should temp save the form', () => { 
     component.datasetData = currentDataset;
     component.buildForm();
     component.formMode = 'create';

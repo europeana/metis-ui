@@ -20,6 +20,7 @@ export const LANG_EN_TRANS = {
   'dataset': 'Dataset',
   'datasetinformation': 'Dataset Information',
   'datasetname': 'Dataset Name',
+  'datasetnamevalidator': 'Only a to z (lower and uppercase), numbers and underscore are allowed.',
   'dateupdated': 'Date Updated',
   'description': 'Description',
   'email': 'Email',
