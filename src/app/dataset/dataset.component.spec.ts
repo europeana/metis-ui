@@ -52,7 +52,7 @@ describe('DatasetComponent', () => {
 
   it('should get dataset info', () => {
     component.activeTab = undefined;
-    component.returnDataset(1);
+    component.returnDataset('1');
     fixture.detectChanges();    
     expect(component.lastExecutionData).not.toBe(undefined);
   });
