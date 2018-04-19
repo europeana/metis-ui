@@ -64,7 +64,7 @@ export class DatasetComponent implements OnInit {
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
       if (this.activeSet) {
-        this.returnDataset(+params['id']);
+        this.returnDataset(params['id']);
       } else {
         this.loadTabComponent();
       }
@@ -84,9 +84,9 @@ export class DatasetComponent implements OnInit {
 
   /** returnDataset
   /*  returns all dataset information based on identifier
-  /* @param {number} id - dataset identifier
+  /* @param {string} id - dataset identifier
   */
-  returnDataset(id) {
+  returnDataset(id: string) {
     this.datasets.getDataset(id).subscribe(result => {
       this.datasetData = result;
       this.loadTabComponent();

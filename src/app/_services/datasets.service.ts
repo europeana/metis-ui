@@ -37,9 +37,9 @@ export class DatasetsService {
 
   /** getDataset
   /* get all information related to the dataset
-  /* @param {number} id - datasetid
+  /* @param {string} id - datasetid
   */
-  getDataset(id: number) {
+  getDataset(id: string) {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;    
     return this.http.get(url).map(dataset => {   
       return dataset ? dataset : false;
