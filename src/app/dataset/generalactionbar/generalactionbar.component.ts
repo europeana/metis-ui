@@ -89,7 +89,7 @@ export class GeneralactionbarComponent implements OnInit {
   */
   selectWorkflow() {
     this.workflows.selectWorkflow();
-    this.subscription.unsubscribe();
+    if (this.subscription) { this.subscription.unsubscribe(); }
     this.checkStatus();
   }
 

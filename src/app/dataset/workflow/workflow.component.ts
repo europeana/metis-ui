@@ -65,7 +65,6 @@ export class WorkflowComponent implements OnInit {
     this.selectPredefinedWorkflow();
 
     this.currentUrl = this.router.url.split('#')[0];
-
   }
 
   /** buildForm
@@ -90,9 +89,11 @@ export class WorkflowComponent implements OnInit {
     });
 
     this.updateRequired();
-    
   }
 
+  /** updateRequired
+  /* update required fields depending on selection
+  */
   updateRequired() {
     this.workflowForm.valueChanges.subscribe(() => {
       if (this.workflowForm.get('pluginHARVEST').value === true) {
@@ -103,10 +104,23 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
           this.workflowForm.get('metadataFormat').setValidators([Validators.required]);
           this.workflowForm.get('metadataFormat').updateValueAndValidity({onlySelf : false, emitEvent : false});
+          this.workflowForm.get('url').setValidators(null);
+          this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
         } else if (this.workflowForm.get('pluginType').value === 'HTTP_HARVEST') {
           this.workflowForm.get('url').setValidators([Validators.required]);
           this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
+          this.workflowForm.get('harvestUrl').setValidators(null);
+          this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
+          this.workflowForm.get('metadataFormat').setValidators(null);
+          this.workflowForm.get('metadataFormat').updateValueAndValidity({onlySelf : false, emitEvent : false});
         } 
+      } else {
+        this.workflowForm.get('pluginType').setValidators(null);
+        this.workflowForm.get('pluginType').updateValueAndValidity({onlySelf : false, emitEvent : false});
+        this.workflowForm.get('url').setValidators(null);
+        this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
+        this.workflowForm.get('harvestUrl').setValidators(null);
+        this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
       }
     });
   }

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -28,13 +29,23 @@ describe('GeneralactionbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should start checking the status', () => {
+  it('should check the status', () => {
     component.datasetData = currentDataset;
+    component.returnLastExecution();
     fixture.detectChanges();
-    
-    console.log(component.currentWorkflowStatus);
-    //expect(component).toBeTruthy();
+    expect(component.currentWorkflowStatus).toBe('INQUEUE');
+  });
 
+  it('should start a workflow', () => {
+    component.datasetData = currentDataset;
+    component.selectWorkflow();
+    fixture.detectChanges();
+
+    component.workflowInfoAvailable = true;
+    component.currentWorkflowStatus = 'INQUEUE';
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.queryAll(By.css('.progress')).length).toBeTruthy();
   });
 
 });
