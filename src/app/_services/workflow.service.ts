@@ -26,7 +26,7 @@ export class WorkflowService {
 
   /** getWorkflowForDataset
   /*  check if there is a workflow for this specific dataset
-  /* @param {number} id - dataset identifier
+  /* @param {string} id - dataset identifier
   */
   getWorkflowForDataset (id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;   
@@ -37,7 +37,7 @@ export class WorkflowService {
 
   /** getPublishedHarvestedData
   /*  get data about publication and harvest
-  /* @param {number} id - dataset identifier
+  /* @param {string} id - dataset identifier
   */
   getPublishedHarvestedData(id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;   
@@ -48,7 +48,7 @@ export class WorkflowService {
 
   /** createWorkflowForDataset
   /*  create or override a workflow for specific dataset
-  /* @param {number} id - dataset identifier
+  /* @param {string} id - dataset identifier
   /* @param {object} values - form values
   /* @param {boolean} newWorkflow - is this a new workflow or one to update
   */
@@ -69,7 +69,7 @@ export class WorkflowService {
 
   /** triggerNewWorkflow
   /*  trigger a new workflow
-  /* @param {number} id - dataset identifier
+  /* @param {string} id - dataset identifier
   */
   public triggerNewWorkflow (id) {
   	const owner = 'owner1';
@@ -113,7 +113,7 @@ export class WorkflowService {
 
   /** getAllExecutions
   /*  get history of executions for specific datasetid, possible to retrieve results for a specific page
-  /* @param {number} id - identifier of dataset
+  /* @param {string} id - identifier of dataset
   /* @param {number} page - number of next page, optional
   */
   getAllExecutions(id, page?) {
@@ -130,7 +130,7 @@ export class WorkflowService {
 
   /** getAllFinishedExecutions
   /*  get history of finished executions for specific datasetid, possible to retrieve results for a specific page
-  /* @param {number} id - identifier of dataset
+  /* @param {string} id - identifier of dataset
   /* @param {number} page - number of next page, optional
   */
   getAllFinishedExecutions(id, page?) {
@@ -142,7 +142,7 @@ export class WorkflowService {
 
   /** getLastExecution
   /*  get most recent execution for specific datasetid
-  /* @param {number} id - identifier of dataset
+  /* @param {string} id - identifier of dataset
   */
   getLastExecution(id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&orderField=CREATED_DATE&ascending=false`;   
