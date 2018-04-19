@@ -246,7 +246,8 @@ li.dropdown a {
 
   .progress-statusnumbers {
     text-transform: uppercase;
-    width: 6rem;
+    white-space: nowrap;
+    width: 8rem;
   }
 
   .progress-percentage {

@@ -36,12 +36,17 @@ describe('GeneralinfoComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GeneralinfoComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
+  it('should try to find publication data', () => {
+    component.datasetData = currentDataset;
+    fixture.detectChanges();
+    expect(component.harvestPublicationData).not.toBe(undefined);
+  });
 
 });

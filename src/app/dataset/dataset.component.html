@@ -37,8 +37,8 @@
       <li [ngClass]="{'active': activeTab === 'new' || activeTab === 'edit'}">
         <a routerLink="/dataset/new/{{activeSet}}">
           <span class="tab-title">{{ 'datasetinformation' | translate }}</span>
-          <span class="tab-subtitle" *ngIf="datasetData">{{ 'lastaction' | translate }}</span>
-          <span class="tab-subtitle tab-date" *ngIf="datasetData">{{datasetData.updatedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
+          <span class="tab-subtitle" *ngIf="datasetData">{{ 'lastharvest' | translate }}</span>
+          <span class="tab-subtitle tab-date" *ngIf="harvestPublicationData">{{harvestPublicationData.lastHarvestedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
         </a>
       </li>
        <li [ngClass]="{'active': activeTab === 'workflow'}">
@@ -55,7 +55,7 @@
         <a routerLink="/dataset/log/{{activeSet}}">
           <span class="tab-title">{{ 'processinghistory' | translate }}</span>
           <span class="tab-subtitle">{{ 'lastmodified' | translate }}</span>
-          <span class="tab-subtitle tab-date">11/03/2017</span>
+          <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{lastExecutionData.updatedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
         </a>
       </li>
       <li [ngClass]="{'active': activeTab === 'preview'}">

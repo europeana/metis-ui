@@ -35,6 +35,17 @@ export class WorkflowService {
     });
   }
 
+  /** getPublishedHarvestedData
+  /*  get data about publication and harvest
+  /* @param {number} id - dataset identifier
+  */
+  getPublishedHarvestedData(id) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;   
+    return this.http.get(url).map(harvestedData => {   
+      return harvestedData ? harvestedData : false;
+    });
+  }
+
   /** createWorkflowForDataset
   /*  create or override a workflow for specific dataset
   /* @param {number} id - dataset identifier

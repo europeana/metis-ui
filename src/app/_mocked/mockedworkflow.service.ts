@@ -128,6 +128,15 @@ export let currentReport = { id: 123,
   }]
 };
 
+export let harvestData = {
+  'firstPublishedDate': '2018-03-28T13:53:04.762Z',
+  'lastPublishedDate': '2018-03-30T13:53:04.762Z',
+  'lastPublishedRecords': 842,
+  'lastHarvestedDate': '2018-03-30T13:53:04.762Z',
+  'lastHarvestedRecords': 842
+}
+
+
 export class MockWorkflowService extends WorkflowService {
 
   triggerNewWorkflow() {
@@ -180,6 +189,10 @@ export class MockWorkflowService extends WorkflowService {
 
   createWorkflowForDataset() {
     return Observable.of(currentWorkflowDataset);
+  }
+
+  getPublishedHarvestedData() {
+    return Observable.of(harvestData);
   }
 
 }

@@ -6,9 +6,9 @@
     <dt>{{ 'provider' | translate }}</dt>
     <dd>{{datasetData.provider}}</dd>
     <dt>{{ 'numberpublished' | translate }}</dt>
-    <dd>{{datasetData.publishedRecords}}</dd>
+    <dd>{{harvestPublicationData && harvestPublicationData.lastPublishedRecords != 0 ? harvestPublicationData.lastPublishedRecords : ('notpublished' | translate) }}</dd>
     <dt>{{ 'lastpublished' | translate }}</dt>
-    <dd>{{datasetData.lastPublishedDate | date:'dd/MM/yyyy - HH:mm' }}</dd>     
+    <dd>{{harvestPublicationData && harvestPublicationData.lastPublishedDate != null ? (harvestPublicationData.lastPublishedDate | date:'dd/MM/yyyy - HH:mm') : ('notpublished' | translate)}}</dd>   
   </dl>
   <div class="dataset-btns">
     <div class="btns-set">
