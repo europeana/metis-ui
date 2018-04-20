@@ -51,16 +51,16 @@
           <span class="tab-title">{{ 'mapping' | translate }}</span>
         </a>
       </li>
+      <li [ngClass]="{'active': activeTab === 'preview'}">
+        <a routerLink="/dataset/preview/{{activeSet}}">
+          <span class="tab-title">{{ 'rawxml' | translate }}</span>
+        </a>
+      </li>
       <li [ngClass]="{'active': activeTab === 'log'}">
         <a routerLink="/dataset/log/{{activeSet}}">
           <span class="tab-title">{{ 'processinghistory' | translate }}</span>
           <span class="tab-subtitle">{{ 'lastmodified' | translate }}</span>
           <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{lastExecutionData.updatedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
-        </a>
-      </li>
-      <li [ngClass]="{'active': activeTab === 'preview'}">
-        <a routerLink="/dataset/preview/{{activeSet}}">
-          <span class="tab-title">{{ 'rawxml' | translate }}</span>
         </a>
       </li>
     </ul>
