@@ -2,7 +2,7 @@
   <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
 </div>
 
-<div class="metis-dataset-info-block dataset-actionbar" *ngIf=currentWorkflow>
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf="currentWorkflow">
 	<div class="status">
     <strong class="uppercase">{{currentPluginName|renameWorkflow}}</strong>
     {{currentStatus}}
@@ -34,7 +34,7 @@
 	</nav>
 </div>
 
-<div class="metis-dataset-info-block dataset-actionbar" *ngIf=!currentWorkflow>
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf="!currentWorkflow">
   <div class="status status-new">
     {{ 'start workflow' | translate }}
   </div>

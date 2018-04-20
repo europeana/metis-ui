@@ -5,30 +5,36 @@
     <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
   </div>
   
-  <div class="collapse-block" *ngIf="datasetData">
-
-    <div class="dataset-name">
-      {{datasetData.datasetName}}
-    </div>
-    <div class="collapse-toggle-block">
-      <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
-        <span class="info-toggle">
-          {{ 'expand' | translate }}
-        </span>
+  <div class="collapse-block metis-dashboard" *ngIf="datasetData">
+    <div class="metis-dashboard-left">  
+      <div class="dataset-name">
+        {{datasetData.datasetName}}
       </div>
     </div>
-
-    <hr/>
-
-    <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed">
-      <div class="metis-dashboard-left">        
-        <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
-      </div>
-      <div class="metis-dashboard-right">  
-        <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
-        <app-history [datasetData]="datasetData" [inCollapsablePanel]=true></app-history>
-        <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
-      </div>
+    <div class="metis-dashboard-right">  
+      <div class="collapse-block-sticky">
+        <div class="general-actionbar">
+          <app-generalactionbar [datasetData]="datasetData"></app-generalactionbar>
+        </div>
+        <div class="collapse-toggle-block">
+          <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
+            <span class="info-toggle">
+              {{ 'expand' | translate }}
+            </span>
+          </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+  <hr/>
+  <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed && datasetData">
+    <div class="metis-dashboard-left">        
+      <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
+    </div>
+    <div class="metis-dashboard-right">  
+      <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
+      <app-history [datasetData]="datasetData" [inCollapsablePanel]=true></app-history>
+      <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
     </div>
   </div>
 
