@@ -4,6 +4,7 @@ import { WorkflowService, DatasetsService, TranslateService, ErrorService } from
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
@@ -26,7 +27,8 @@ export class MappingComponent implements OnInit {
   constructor(private workflows: WorkflowService, 
     private errors: ErrorService,
     private datasets: DatasetsService,
-    private translate: TranslateService) { }
+    private translate: TranslateService, 
+    private router: Router) { }
 
   @Input() datasetData: any;
   editorConfigEdit;
@@ -139,13 +141,39 @@ export class MappingComponent implements OnInit {
     return this.fullXSLT.split(this.splitter);
   }
 
+  /** tryOutXSLT
+  /* transformation on the fly, so having a look before saving the xslt
+  /* switch to preview tab to have a look of the outcome
+  */
+  tryOutXSLT() {
+    this.datasets.setTempXSLT(this.getFullXSLT());
+    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
+  }
+
+  getFullXSLT() {
+    let xsltValue = '';  
+
+    if (this.fullView) {
+      xsltValue = this.xsltToSave[0] ? this.xsltToSave[0] : this.xslt[0];
+    } else {
+      for (let i = 0; i < this.xslt.length; i++) {
+        if (this.xsltToSave[i]) {
+          xsltValue += this.xsltToSave[i];
+        } else {
+          xsltValue += (i === 0 ? '' : this.splitter) + this.xslt[i];
+        }
+      }        
+    }
+    return xsltValue;
+  }
+
   /** saveXSLT
   /* save the xslt as the custom - that is dataset specific - one
   /* combine individual "cards" when not in full view
   /* switch to custom view after saving
   */
   saveXSLT() {
-    let xsltValue = '';  
+    let xsltValue = this.getFullXSLT();  
 
     if (this.fullView) {
       xsltValue = this.xsltToSave[0] ? this.xsltToSave[0] : this.xslt[0];

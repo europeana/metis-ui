@@ -54,6 +54,7 @@ export class PreviewComponent implements OnInit {
   tempFilterSelection: Array<any> = [];
   prefill;
   loadingSamples: boolean = false;
+  tempXSLT;
 
   /** ngOnInit
   /*  init this component
@@ -88,6 +89,11 @@ export class PreviewComponent implements OnInit {
 
     this.prefill = this.datasets.getPreviewFilters();
     this.prefillFilters();
+
+    this.tempXSLT = this.datasets.getTempXSLT();
+    if (this.tempXSLT) {
+      transformSamples();
+    }
 
   }  
 
@@ -148,6 +154,14 @@ export class PreviewComponent implements OnInit {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
+  }
+
+  /** transformSamples
+  /* transform samples on the fly
+  /* based on temp saved XSLT
+  */
+  transformSamples() {
+    console.log('transformSamples');
   }
 
   /** saveTempFilterSelection

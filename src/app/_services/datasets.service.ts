@@ -15,6 +15,7 @@ export class DatasetsService {
   datasetMessage;
   tempPreviewFilers;
   datasetNames: Array<any> = [];
+  tempXSLT;
   
   constructor(private http: HttpClient, 
     private errors: ErrorService, 
@@ -124,6 +125,20 @@ export class DatasetsService {
     return this.http.get(url, options).map(data => {  
       return data ? (type === 'default' ? data : data['xslt']) : false;
     });  
+  }
+
+  /** setTempXSLT
+  /* temporary save xslt to use in transformation on the fly
+  */
+  setTempXSLT(xslt) {
+    this.tempXSLT = xslt;
+  }
+
+  /** getTempXSLT
+  /* temporary save xslt to use in transformation on the fly
+  */
+  getTempXSLT() {
+    return this.tempXSLT;
   }
 
 }

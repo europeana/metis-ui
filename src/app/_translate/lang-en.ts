@@ -20,7 +20,7 @@ export const LANG_EN_TRANS = {
   'dataset': 'Dataset',
   'datasetinformation': 'Dataset Information',
   'datasetname': 'Dataset Name',
-  'datasetnamevalidator': 'Only a to z (lower and uppercase), numbers and underscore are allowed.',
+  'datasetnamevalidator': 'Only a to z (lower and uppercase), numbers and underscores are allowed.',
   'dateupdated': 'Date Updated',
   'description': 'Description',
   'email': 'Email',
@@ -88,6 +88,7 @@ export const LANG_EN_TRANS = {
   'report': 'Report',
   'restart': 'Restart',
   'run workflow': 'Run workflow',
+  'save': 'Save',
   'search': 'Search',
   'setspec': 'Setspec',
   'signin': 'Sign in',
@@ -120,5 +121,6 @@ export const LANG_EN_TRANS = {
   'xsltloaddefault': 'load default XSLT',
   'xsltsave': 'Save XSLT',
   'xsltsuccessful': 'XSLT changes have been saved successfully as custom XSLT',
+  'xslttryout': 'Try it out',
   'zoho': 'Go to Zoho'
 };

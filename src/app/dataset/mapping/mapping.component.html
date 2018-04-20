@@ -64,5 +64,6 @@
 </div>
 
 <div class="btns-set btns-set-save" *ngIf="xslt[0]">
+  <button (click)="tryOutXSLT();" class="active">{{ 'xslttryout' | translate }}</button> 
   <button (click)="saveXSLT(); scroll(messagebar);" class="active">{{ 'xsltsave' | translate }}</button> 
 </div>
