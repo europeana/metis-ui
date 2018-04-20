@@ -1,6 +1,29 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
 .messages {
   margin-left: auto;
   margin-right: auto;
   max-width: 60rem;
   width: 100%;
+}
+
+.collapse-block {
+  padding-bottom: 0;
+
+  .general-actionbar {
+    width: 75%;
+  }
+
+  .collapse-toggle-block {
+    width: 25%;
+  }
+}
+
+hr {
+  background: $gray-lighter;
+  border: 0;
+  clear: both;
+  height: 1px;
+  margin: $space 0;
 }
