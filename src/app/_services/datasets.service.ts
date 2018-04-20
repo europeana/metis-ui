@@ -127,6 +127,20 @@ export class DatasetsService {
     });  
   }
 
+  /** getXSLT
+  /* get default xslt
+  /* the default one
+  */
+  getTransform(id) {
+    console.log('getTransform');
+    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;   
+    console.log(url);
+    return this.http.get(url).map(data => {  
+      console.log(data);
+      //return data ? (type === 'default' ? data : data['xslt']) : false;
+    });  
+  }
+
   /** setTempXSLT
   /* temporary save xslt to use in transformation on the fly
   */

@@ -92,7 +92,7 @@ export class PreviewComponent implements OnInit {
 
     this.tempXSLT = this.datasets.getTempXSLT();
     if (this.tempXSLT) {
-      transformSamples();
+      this.transformSamples();
     }
 
   }  
@@ -162,6 +162,12 @@ export class PreviewComponent implements OnInit {
   */
   transformSamples() {
     console.log('transformSamples');
+    this.datasets.getTransform(this.datasetData.datasetId).subscribe(result => {
+      console.log(result);
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
+    });
   }
 
   /** saveTempFilterSelection
