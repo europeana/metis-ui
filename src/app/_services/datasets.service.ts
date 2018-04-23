@@ -127,17 +127,16 @@ export class DatasetsService {
     });  
   }
 
-  /** getXSLT
-  /* get default xslt
-  /* the default one
+  /** getTransform
+  /* get transformed samples for specific dataset
+  /* either using default xslt or custom
+  /* @param {string} id - dataset identifier
+  /* @param {object} samples - samples to transform
   */
-  getTransform(id) {
-    console.log('getTransform');
-    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;   
-    console.log(url);
-    return this.http.get(url).map(data => {  
-      console.log(data);
-      //return data ? (type === 'default' ? data : data['xslt']) : false;
+  getTransform(id, samples) {
+    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform/default`;   
+    return this.http.post(url, samples, {headers:{'Content-Type': 'application/json'}}).map(data => {  
+      return data ? data : false;
     });  
   }
 

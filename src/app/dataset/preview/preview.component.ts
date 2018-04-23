@@ -3,6 +3,7 @@ import { WorkflowService, TranslateService, ErrorService, DatasetsService } from
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
+import { Router } from '@angular/router';
 
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
@@ -29,7 +30,8 @@ export class PreviewComponent implements OnInit {
     private http: HttpClient,
     private translate: TranslateService,
     private errors: ErrorService,
-    private datasets: DatasetsService) { }
+    private datasets: DatasetsService,
+    private router: Router) { }
 
   @Input('datasetData') datasetData;
   editorConfig;
@@ -37,6 +39,7 @@ export class PreviewComponent implements OnInit {
   allWorkflowDates: Array<any> = [];
   allPlugins: Array<any> = [];
   allSamples: Array<any> = [];
+  allTransformedSamples;
   filterDate: boolean = false;
   filterPlugin: boolean = false;
   selectedDate: string;
@@ -161,9 +164,16 @@ export class PreviewComponent implements OnInit {
   /* based on temp saved XSLT
   */
   transformSamples() {
-    console.log('transformSamples');
-    this.datasets.getTransform(this.datasetData.datasetId).subscribe(result => {
-      console.log(result);
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
+      this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
+        this.allSamples = samples; 
+        this.datasets.getTransform(this.datasetData.datasetId, samples).subscribe(transformed => {
+          this.allTransformedSamples = transformed;
+        }, (err: HttpErrorResponse) => {
+          let error = this.errors.handleError(err); 
+          this.errorMessage = `${StringifyHttpError(error)}`;   
+        });
+      });
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
@@ -205,6 +215,13 @@ export class PreviewComponent implements OnInit {
   */
   expandSample(index: number) {
     this.expandedSample = this.expandedSample === index ? undefined : index;
+  }
+
+  /** gotoMapping
+  /* go to mapping tab, after transformation on the fly
+  */
+  gotoMapping() {
+    this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]); 
   }
 
   /** toggleFilterDate

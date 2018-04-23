@@ -150,6 +150,9 @@ export class MappingComponent implements OnInit {
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
   }
 
+  /** getFullXSLT
+  /* get the full xslt
+  */
   getFullXSLT() {
     let xsltValue = '';  
 
@@ -174,19 +177,6 @@ export class MappingComponent implements OnInit {
   */
   saveXSLT() {
     let xsltValue = this.getFullXSLT();  
-
-    if (this.fullView) {
-      xsltValue = this.xsltToSave[0] ? this.xsltToSave[0] : this.xslt[0];
-    } else {
-      for (let i = 0; i < this.xslt.length; i++) {
-        if (this.xsltToSave[i]) {
-          xsltValue += this.xsltToSave[i];
-        } else {
-          xsltValue += (i === 0 ? '' : this.splitter) + this.xslt[i];
-        }
-      }        
-    }
-
     let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
     this.datasets.updateDataset(datasetValues).subscribe(result => {
       this.loadXSLT('custom');
