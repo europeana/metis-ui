@@ -65,6 +65,10 @@
       margin-bottom: 0;
       padding: .4rem 1.2rem;
 
+      legend {
+        display: none;
+      }
+
       label {
         color: $gray-light;
         font-weight: bold;

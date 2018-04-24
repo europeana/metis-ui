@@ -85,6 +85,7 @@
 
       <div class="form-fields">
         <fieldset class="form-group" formGroupName="passwords">
+          <legend>{{ 'password' | translate }}</legend>
           <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}">
           <app-password-check [passwordToCheck]="password"></app-password-check>
           <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
