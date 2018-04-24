@@ -83,7 +83,7 @@
         }
 
         &.ng-invalid.ng-touched {
-          border-color: $error;
+          border-color: $eu-red;
         }
 
       }
@@ -106,7 +106,7 @@
         }
 
         &.ng-invalid.ng-touched {
-          border-color: $error;
+          border-color: $eu-red;
         }
 
         &:disabled {
@@ -309,7 +309,7 @@
         }
 
         &.ng-invalid.ng-touched {
-          border-color: $error;
+          border-color: $eu-red;
         }
       }
 

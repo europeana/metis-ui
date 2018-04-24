@@ -11,7 +11,7 @@
 //------------------------------------
 // SITE SPECIFIC VARIABLE OVERRIDES HERE
 //------------------------------------
-$accent: $eu-user;
+$accent: $eu-blue;
 $textcolour_highlight: $accent;
 
 //------------------------------------
@@ -26,7 +26,6 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/scss/base/main';
 @import 'assets/sass/scss/base/links';
 @import 'assets/sass/scss/base/headings_simple';
-@import 'assets/sass/scss/base/text';
 @import 'assets/sass/scss/base/lists';
 @import 'assets/sass/scss/base/media';
 @import 'assets/sass/scss/base/forms';
@@ -36,8 +35,6 @@ $textcolour_highlight: $accent;
 // $PAGE STRUCTURE
 //------------------------------------
 @import 'assets/sass/scss/objects/header';
-@import 'assets/sass/scss/objects/footer';
-@import 'assets/sass/scss/objects/sections';
 @import 'assets/sass/scss/objects/blocks/site-hero';
 
 //------------------------------------
@@ -50,7 +47,6 @@ $textcolour_highlight: $accent;
 // Buttons and text Styles
 //------------------------------------
 @import 'assets/sass/scss/objects/buttons';
-@import 'assets/sass/scss/objects/tags';
 @import 'assets/sass/scss/objects/attribution';
 @import 'assets/sass/scss/theme/hero-branding-v2';
 
