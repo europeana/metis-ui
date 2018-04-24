@@ -93,6 +93,11 @@
         <label for="pluginEnrichment" class="plugin">{{ 'enrichment' | translate }} <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" /></label>
       </div>
 
+      <!-- MEDIA SERVICE -->
+      <div id="mediaservice" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}"> 
+        <label for="pluginMEDIA_PROCESS" class="plugin">{{ 'mediaservice' | translate }} <input type="checkbox" formControlName="pluginMEDIA_PROCESS" id="pluginMEDIA_PROCESS" /></label>
+      </div>
+
       <div class="form-fields form-fields-buttons">  
         <div class="form-group form-group-btns user-profile-edit-btns">
           <button class="submit" type="button" (click)="onSubmit()" [disabled]="!workflowForm.valid">{{ 'submit' | translate }}</button>
