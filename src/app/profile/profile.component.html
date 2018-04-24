@@ -70,19 +70,16 @@
     </form>
   </div>
 </ng-template>
-
 <ng-template #editmode>
   <div class="metis-form-bg metis-form" *ngIf="profileForm" >
     <form [formGroup]="profileForm" #formDir="ngForm">
       <div class="form-header">
         <h2>{{ 'changepassword' | translate }}</h2>
       </div>
-
       <div class="messages">
         <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
         <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
       </div>
-
       <div class="form-fields">
         <fieldset class="form-group" formGroupName="passwords">
           <legend>{{ 'password' | translate }}</legend>
@@ -93,7 +90,6 @@
             <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
           </div>
         </fieldset>
-
          <div class="form-group form-group-btns user-profile-edit-btns">
           <button class="button" type="button" (click)="toggleEditMode()">{{ 'cancel' | translate }}</button>
           <button class="submit" type="button" [disabled]="!profileForm.valid" (click)="onSubmit()" [ngClass]="{'svg-icon-spin-inbutton': loading===true}">
@@ -104,4 +100,3 @@
     </form>
   </div>
 </ng-template>
-
