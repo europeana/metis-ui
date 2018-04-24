@@ -65,6 +65,8 @@ export class MappingComponent implements OnInit {
     this.loadEditor();
     this.toggleFullViewMode(true);
 
+    console.log();
+
   }
 
   /** loadStatistics
@@ -93,7 +95,8 @@ export class MappingComponent implements OnInit {
   /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
   */
   loadEditor() {
-    this.loadXSLT('default');
+    let type = this.datasets.getTempXSLT() ? 'custom' : 'default';
+    this.loadXSLT(type);
   }
 
   /** loadXSLT
@@ -146,8 +149,8 @@ export class MappingComponent implements OnInit {
   /* switch to preview tab to have a look of the outcome
   */
   tryOutXSLT() {
-    this.datasets.setTempXSLT(this.getFullXSLT());
-    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
+    this.datasets.setTempXSLT(true);
+    this.saveXSLT(true);
   }
 
   /** getFullXSLT
@@ -174,14 +177,18 @@ export class MappingComponent implements OnInit {
   /* save the xslt as the custom - that is dataset specific - one
   /* combine individual "cards" when not in full view
   /* switch to custom view after saving
+  /* @param {boolean} tryout - "tryout" xslt in preview tab or just save it, optional
   */
-  saveXSLT() {
+  saveXSLT(tryout?) {
     let xsltValue = this.getFullXSLT();  
     let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
     this.datasets.updateDataset(datasetValues).subscribe(result => {
       this.loadXSLT('custom');
       if (typeof this.translate.instant === 'function') {
         this.successMessage = this.translate.instant('xsltsuccessful');
+      }
+      if (tryout === true) {
+        this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
       }
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 

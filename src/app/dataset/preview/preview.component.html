@@ -2,7 +2,7 @@
   <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
 </div>
 
-<div class="filter-wrapper">
+<div class="filter-wrapper" *ngIf="!tempXSLT">
   <ul class="filter" (clickOutside)="onClickedOutside($event)">
     <li class="dropdown dropdown-date" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
       <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
@@ -47,7 +47,7 @@
     <div class="view-sample-editor">
       <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
       <codemirror *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord" [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML" (ngModelChange)="allTransformedSamples[i].xmlRecord=$event" [config]="editorConfig"></codemirror>
-      <button (click)="gotoMapping();">Go to mapping</button>
+      <button (click)="gotoMapping();">{{ 'gotomapping' | translate }}</button>
     </div>
   </div>
 </div>

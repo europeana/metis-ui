@@ -34,6 +34,7 @@ export const LANG_EN_TRANS = {
   'ftpuser': 'FTP/HTTP user',
   'fullhistory': 'See full processing history',
   'generalinfo': 'General info',
+  'gotomapping': 'Go back to Mapping',
   'harvestprotocol': 'Harvest protocol',
   'harvesturl': 'Harvest URL',
   'history': 'History',
@@ -121,6 +122,6 @@ export const LANG_EN_TRANS = {
   'xsltloaddefault': 'load default XSLT',
   'xsltsave': 'Save XSLT',
   'xsltsuccessful': 'XSLT changes have been saved successfully as custom XSLT',
-  'xslttryout': 'Try it out',
+  'xslttryout': 'Save XSLT & Try it out',
   'zoho': 'Go to Zoho'
 };

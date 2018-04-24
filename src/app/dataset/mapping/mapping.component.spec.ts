@@ -68,7 +68,7 @@ describe('MappingComponent', () => {
     component.loadXSLT('default');
     fixture.detectChanges();
     
-    const save = fixture.debugElement.query(By.css('.btns-set-save .xslt-save'));
+    const save = fixture.debugElement.query(By.css('.btns-set-save button'));
     save.triggerEventHandler('click', null);
     fixture.detectChanges();    
     expect(component.xsltType).toBe('custom');
@@ -101,7 +101,7 @@ describe('MappingComponent', () => {
     component.loadXSLT('default');
     fixture.detectChanges();
     
-    const save = fixture.debugElement.query(By.css('.btns-set-save .xslt-save'));
+    const save = fixture.debugElement.query(By.css('.btns-set-save button'));
     save.triggerEventHandler('click', null);
     fixture.detectChanges();    
     expect(component.xsltType).toBe('custom');
