@@ -117,6 +117,8 @@ export class ActionbarComponent {
 
         } else {
 
+          if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
+          
           this.currentPlugin = this.workflows.getCurrentPlugin(e);
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
 
