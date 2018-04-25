@@ -8,7 +8,7 @@
     color: $white;
     font-size: $font-size-slightly-smaller;
     line-height: 1.25rem;
-    margin-bottom: 0.6rem;
+    margin-bottom: .6rem;
     padding: .5rem 1.2rem;
 
     i {
@@ -50,164 +50,135 @@
     -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, .1);
     box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, .1);
   }
+}
 
-  // fields
-  .form-fields {
-    background-color: $offwhite;
-    padding: 2rem 0;
-    width: auto;
+// fields
+.form-fields {
+  background-color: $offwhite;
+  padding: 2rem 0;
+  width: auto;
 
-    .form-group {
-      align-items: flex-start;
-      color: $white;
+  .form-group {
+    align-items: flex-start;
+    color: $white;
+    margin-bottom: 0;
+    padding: .4rem 1.2rem;
+
+    legend {
+      display: none;
+    }
+
+    label {
+      color: $gray-light;
+      font-weight: bold;
       margin-bottom: 0;
-      padding: .4rem 1.2rem;
-
-      legend {
-        display: none;
-      }
-
-      label {
-        color: $gray-light;
-        font-weight: bold;
-        margin-bottom: 0;
-        text-align: left;
-      }
-
-      input {
-        margin-bottom: 1rem;
-        &::placeholder {
-          color: $gray-light;
-        }
-
-        &.ng-invalid.ng-touched {
-          border-color: $eu-red;
-        }
-
-      }
-
-      input[type="checkbox"],
-      input[type="radio"] {
-        box-shadow: none;
-        display: inline;
-      }
-
-      //  selection box stylings.
-      select {
-        background-color: $white;
-        border: 1px solid $gray-light;
-        color: $gray-light;
-        height: 3rem;
-
-        option {
-          color: $gray-light;
-        }
-
-        &.ng-invalid.ng-touched {
-          border-color: $eu-red;
-        }
-
-        &:disabled {
-          border-color: $opacity-gray-light;
-          color: $opacity-gray-light;
-        }
-
-      }
-
-      // icons
-      .svg-icon-form-field-calendar {
-        background-position: 98% 50%;
-        background-size: 25px 25px;
-        margin-right: 0;
-        padding-right: 48px;
-        transform: none;
-
-        &::placeholder {
-          color: $gray-light;
-        }
-      }
-
-      // buttons
-      &.form-group-btns {
-        align-items: flex-start;
-        display: flex;
-        justify-content: center;
-
-        button {
-          background: $eu-jade;
-          border-radius: 0;
-          font-size: $font-size-slightly-smaller;
-          font-weight: bold;
-          margin: 0 .6rem;
-
-          &.reset-btn {
-            background-color: $white;
-            color: $gray-dark;
-          }
-
-          &:disabled {
-            background: $black;
-          }
-
-        }
-
-        &.hidden {
-          display: none;
-        }
-      }
+      text-align: left;
     }
 
-    // extra line of text
-    .profile-form-extra,
-    .forgot-credentials,
-    .form-requirements-warning {
-      padding: 0 1.2rem 1rem;
-
-      p {
-        align-items: center;
-        color: $gray-light;
-        display: flex;
-        font-size: $font-size-slightly-smaller;
-        justify-content: flex-end;
-      }
+    input {
+      margin-bottom: 1rem;
     }
 
-    .profile-form-extra {
-      padding-right: 0;
-      padding-top: 1rem;
+    input::placeholder {
+      color: $gray-light;
     }
 
-    // autocomplete
-    .metis-autocomplete {
-      position: relative;
-
-      ul {
-        background: $white;
-        border: 1px solid $gray-light;
-        display: block;
-        left: 0;
-        position: absolute;
-        top: 2.7rem;
-        width: 100%;
-        z-index: 12;
-
-        li {
-          cursor: pointer;
-        }
-      }
+    input.ng-invalid.ng-touched {
+      border-color: $eu-red;
     }
 
-    // icons
-    .svg-icon-search {
-      background-position: 98% 50%;
-      background-size: 1.2rem;
-      margin-right: 0;
-      padding-right: 48px;
-      transform: none;
+    input[type="checkbox"],
+    input[type="radio"] {
+      box-shadow: none;
+      display: inline;
+    }
 
-      &::placeholder {
-        color: $gray-light;
-      }
+    select {
+      background-color: $white;
+      border: 1px solid $gray-light;
+      color: $gray-light;
+      height: 3rem;
+    }
+
+    select option {
+      color: $gray-light;
+    }
+
+    select.ng-invalid.ng-touched {
+      border-color: $eu-red;
+    }
+
+    select:disabled {
+      border-color: $opacity-gray-light;
+      color: $opacity-gray-light;
+    }
+  }
+
+  // buttons
+  .form-group-btns {
+    align-items: flex-start;
+    display: flex;
+    justify-content: center;
+
+    button {
+      background: $eu-jade;
+      border-radius: 0;
+      font-size: $font-size-slightly-smaller;
+      font-weight: bold;
+      margin: 0 .6rem;
+    }
+
+    button.reset-btn {
+      background-color: $white;
+      color: $gray-dark;
+    }
+
+    button:disabled {
+      background: $black;
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  // extra line of text
+  .profile-form-extra,
+  .forgot-credentials,
+  .form-requirements-warning {
+    padding: 0 1.2rem 1rem;
+
+    p {
+      align-items: center;
+      color: $gray-light;
+      display: flex;
+      font-size: $font-size-slightly-smaller;
+      justify-content: flex-end;
+    }
+  }
+
+  .profile-form-extra {
+    padding-right: 0;
+    padding-top: 1rem;
+  }
+
+  // autocomplete
+  .metis-autocomplete {
+    position: relative;
+
+    ul {
+      background: $white;
+      border: 1px solid $gray-light;
+      display: block;
+      left: 0;
+      position: absolute;
+      top: 2.7rem;
+      width: 100%;
+      z-index: 12;
+    }
+
+    li {
+      cursor: pointer;
     }
   }
 }
