@@ -3,10 +3,6 @@ body {
   background-image: none;
 }
 
-.block-with-text {
-  @include multiLineEllipsis($maxWidth: 10.3em, $lineHeight: 1.2em, $lineCount: 3);
-}
-
 .btns-set {
   background-color: $white;
   border: 0;
@@ -53,16 +49,16 @@ body {
 
   &:hover {
     color: $gray-lighter;
+  }
 
-    &::after {
-      color: $eu-jade;
-    }
+  &:hover::after {
+    color: $eu-jade;
   }
 }
 
 .filter {
-  border-bottom: 1px solid $gray87;
-  border-top: 1px solid $gray87;
+  border-bottom: 1px solid $gray-almost-lightest;
+  border-top: 1px solid $gray-almost-lightest;
   display: inline-block;
   font-size: .875rem;
   margin-bottom: 3rem;
@@ -71,7 +67,7 @@ body {
   padding: .25rem 0;
 
   li {
-    border-left: 1px solid $gray87;
+    border-left: 1px solid $gray-almost-lightest;
     color: $gray-light;
     display: inline-block;
     padding: .3rem .625rem;
@@ -84,37 +80,10 @@ body {
     a {
       color: $gray-light;
       padding: .25rem .5rem;
-
-      &:hover {
-        color: $eu-jade;
-      }
     }
 
-    &.search {
-      a {
-        padding-right: 2rem;
-        i {
-          margin-left: .5rem;
-          margin-right: .5rem;
-        }
-      }
-
-      input {
-        border: 1px solid $gray-lighter;
-        box-shadow: none;
-        color: $gray-light;
-        display: inline-block;
-        padding-bottom: .25rem;
-        padding-top: .25rem;
-        width: 75%;
-      }
-
-      button {
-        background-color: $eu-jade;
-        display: inline-block;
-        padding: .25rem .5rem;
-      }
-
+    a:hover {
+      color: $eu-jade;
     }
   }
 }
@@ -192,14 +161,14 @@ body {
       font-size: .75rem;
       padding: .25rem .5rem;
       white-space: nowrap;
+    }
 
-      a {
-        border: 0;
-      }
+    li a {
+      border: 0;
+    }
 
-      a:hover {
-        text-decoration: underline;
-      }
+    li a:hover {
+      text-decoration: underline;
     }
   }
 }

@@ -1,6 +1,9 @@
 .banner {
+  @include fontSize(18px);
   background-color: $white;
   color: $black;
+  padding: $space;
+  padding-top: $space-double;
 
   .btn.btn-light {
     border-color: $eu-jade;
