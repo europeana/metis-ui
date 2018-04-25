@@ -77,6 +77,7 @@ export class WorkflowComponent implements OnInit {
       pluginVALIDATION_EXTERNAL: [''],
       pluginENRICHMENT: [''],
       pluginVALIDATION_INTERNAL: [''],
+      pluginMEDIA_PROCESS: [''],
       pluginType: [''],
       harvestUrl: [''],
       setSpec: [''],
@@ -236,6 +237,14 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value['pluginENRICHMENT'] === true) {
       plugins.push({
         'pluginType': 'ENRICHMENT',
+        'mocked': false
+      });
+    }
+
+    // mediaservice
+    if (this.workflowForm.value['pluginMEDIA_PROCESS'] === true) {
+      plugins.push({
+        'pluginType': 'MEDIA_PROCESS',
         'mocked': false
       });
     }

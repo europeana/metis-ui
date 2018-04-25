@@ -28,6 +28,9 @@
         <li [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'enrichment' | translate }}</a>
         </li>
+        <li [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}">
+          <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'mediaservice' | translate }}</a>
+        </li>
       </ul>
     </div>
 
@@ -91,6 +94,11 @@
       <!-- ENRICHMENT -->
       <div id="enrichment" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}"> 
         <label for="pluginEnrichment" class="plugin">{{ 'enrichment' | translate }} <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" /></label>
+      </div>
+
+      <!-- MEDIA SERVICE -->
+      <div id="mediaservice" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}"> 
+        <label for="pluginMEDIA_PROCESS" class="plugin">{{ 'mediaservice' | translate }} <input type="checkbox" formControlName="pluginMEDIA_PROCESS" id="pluginMEDIA_PROCESS" /></label>
       </div>
 
       <div class="form-fields form-fields-buttons">  

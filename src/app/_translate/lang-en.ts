@@ -52,6 +52,7 @@ export const LANG_EN_TRANS = {
   'login': 'Log in',
   'logout': 'Log out',
   'mapping': 'Mapping',
+  'mediaservice': 'Media Service',
   'metadataformat': 'Metadata format',
   'myprofile': 'My profile',
   'networkmember': 'Europeana Network Association Member',
