@@ -152,8 +152,8 @@ export class ActionbarComponent {
       if (workflow) {
         this.currentWorkflow = workflow;
         this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
-        this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
-        this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
+        this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin] ? this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus : '-';
+        this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin] ? this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType : '-';
         if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
           this.startPollingWorkflow();
         }

@@ -136,7 +136,7 @@ export class HistoryComponent implements OnInit {
       }
 
       this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
-        if (!status) { return false; }
+        if (!status || !status['metisPlugins'][currentPlugin]) { return false; }
         let currentPlugin = this.workflows.getCurrentPlugin(status);
         if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
           this.workflowRunning = true;
