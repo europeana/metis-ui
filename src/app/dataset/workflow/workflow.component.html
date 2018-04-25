@@ -28,6 +28,9 @@
         <li [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'enrichment' | translate }}</a>
         </li>
+        <li [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}">
+          <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'mediaservice' | translate }}</a>
+        </li>
       </ul>
     </div>
 
