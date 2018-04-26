@@ -8,7 +8,7 @@
       <strong>{{ongoing.workflowName}}</strong>
       {{ongoing.cancelling ? cancelling : ongoing.workflowStatus}}
     </div>
-    <div class="progress">
+    <div class="progress" *ngIf="ongoing.metisPlugins[currentPlugin]">
       <span>{{ongoing.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]" class="workflowname">{{ongoing.datasetName}}</a>
       <div class="progress-status">
         <span class="progress-statusnumbers">{{ongoing.metisPlugins[currentPlugin].executionProgress.processedRecords}} / 
