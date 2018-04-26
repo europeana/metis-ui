@@ -77,6 +77,7 @@ export class GeneralactionbarComponent implements OnInit {
   returnLastExecution () {
     if (!this.datasetData) { return false }
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
+      console.log('returnLastExecution', workflow);
       if (workflow) {
         this.firstRun = false;
         this.currentWorkflowStatus = workflow['workflowStatus'];

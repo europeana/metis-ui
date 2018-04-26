@@ -76,9 +76,8 @@ export class WorkflowService {
   	const priority = 0;
     let enforce = '';   
 
-    console.log('triggerNewWorkflow');
-
   	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&priority=${priority}&enforcedPluginType=${enforce}`;    
+    console.log('triggerNewWorkflow', url);
     return this.http.post(url, JSON.stringify('{}')).map(newWorkflowExecution => {   
       console.log('triggerNewWorkflow', newWorkflowExecution);
     	return newWorkflowExecution ? newWorkflowExecution : false;
@@ -148,8 +147,10 @@ export class WorkflowService {
   /* @param {string} id - identifier of dataset
   */
   getLastExecution(id) {
+    console.log('getLastExecution');
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(lastExecution => {   
+      console.log('getLastExecution', lastExecution);
       return lastExecution ? lastExecution['results'][0] : false;
     });
   }
