@@ -4,6 +4,7 @@ import { WorkflowService, DatasetsService, TranslateService, ErrorService } from
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
@@ -26,7 +27,8 @@ export class MappingComponent implements OnInit {
   constructor(private workflows: WorkflowService, 
     private errors: ErrorService,
     private datasets: DatasetsService,
-    private translate: TranslateService) { }
+    private translate: TranslateService, 
+    private router: Router) { }
 
   @Input() datasetData: any;
   editorConfigEdit;
@@ -63,6 +65,8 @@ export class MappingComponent implements OnInit {
     this.loadEditor();
     this.toggleFullViewMode(true);
 
+    console.log();
+
   }
 
   /** loadStatistics
@@ -91,7 +95,8 @@ export class MappingComponent implements OnInit {
   /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
   */
   loadEditor() {
-    this.loadXSLT('default');
+    let type = this.datasets.getTempXSLT() ? 'custom' : 'default';
+    this.loadXSLT(type);
   }
 
   /** loadXSLT
@@ -139,12 +144,19 @@ export class MappingComponent implements OnInit {
     return this.fullXSLT.split(this.splitter);
   }
 
-  /** saveXSLT
-  /* save the xslt as the custom - that is dataset specific - one
-  /* combine individual "cards" when not in full view
-  /* switch to custom view after saving
+  /** tryOutXSLT
+  /* transformation on the fly, so having a look before saving the xslt
+  /* switch to preview tab to have a look of the outcome
   */
-  saveXSLT() {
+  tryOutXSLT() {
+    this.datasets.setTempXSLT(true);
+    this.saveXSLT(true);
+  }
+
+  /** getFullXSLT
+  /* get the full xslt
+  */
+  getFullXSLT() {
     let xsltValue = '';  
 
     if (this.fullView) {
@@ -158,12 +170,25 @@ export class MappingComponent implements OnInit {
         }
       }        
     }
+    return xsltValue;
+  }
 
+  /** saveXSLT
+  /* save the xslt as the custom - that is dataset specific - one
+  /* combine individual "cards" when not in full view
+  /* switch to custom view after saving
+  /* @param {boolean} tryout - "tryout" xslt in preview tab or just save it, optional
+  */
+  saveXSLT(tryout?) {
+    let xsltValue = this.getFullXSLT();  
     let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
     this.datasets.updateDataset(datasetValues).subscribe(result => {
       this.loadXSLT('custom');
       if (typeof this.translate.instant === 'function') {
         this.successMessage = this.translate.instant('xsltsuccessful');
+      }
+      if (tryout === true) {
+        this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
       }
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 

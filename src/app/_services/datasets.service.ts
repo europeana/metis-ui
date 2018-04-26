@@ -15,6 +15,7 @@ export class DatasetsService {
   datasetMessage;
   tempPreviewFilers;
   datasetNames: Array<any> = [];
+  tempXSLT;
   
   constructor(private http: HttpClient, 
     private errors: ErrorService, 
@@ -124,6 +125,33 @@ export class DatasetsService {
     return this.http.get(url, options).map(data => {  
       return data ? (type === 'default' ? data : data['xslt']) : false;
     });  
+  }
+
+  /** getTransform
+  /* get transformed samples for specific dataset
+  /* either using default xslt or custom
+  /* @param {string} id - dataset identifier
+  /* @param {object} samples - samples to transform
+  */
+  getTransform(id, samples) {
+    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform/default`;   
+    return this.http.post(url, samples, {headers:{'Content-Type': 'application/json'}}).map(data => {  
+      return data ? data : false;
+    });  
+  }
+
+  /** setTempXSLT
+  /* temporary save xslt to use in transformation on the fly
+  */
+  setTempXSLT(xslt) {
+    this.tempXSLT = xslt;
+  }
+
+  /** getTempXSLT
+  /* temporary save xslt to use in transformation on the fly
+  */
+  getTempXSLT() {
+    return this.tempXSLT;
   }
 
 }

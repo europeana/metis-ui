@@ -53,4 +53,8 @@ export class MockDatasetService extends DatasetsService {
     return Observable.of(currentDataset);
   }
 
+  getTransform() {
+    return Observable.of(xslt);
+  }
+
 }

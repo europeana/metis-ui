@@ -96,7 +96,7 @@ describe('MappingComponent', () => {
     expect(component.expandedSample).toBe(1);
   });
 
-  it('should save xslt', () => {
+  it('should create and save one xslt after viewing per field', () => {
     component.fullView = false;
     component.loadXSLT('default');
     fixture.detectChanges();
@@ -107,5 +107,10 @@ describe('MappingComponent', () => {
     expect(component.xsltType).toBe('custom');
   });
 
+  it('should try out the xslt', () => {
+    component.fullView = false;
+    component.tryOutXSLT();
+    fixture.detectChanges();   
+  });
 
 });

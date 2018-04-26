@@ -81,3 +81,10 @@ input[type="radio"] {
     height: 60vh;
   }
 }
+
+.view-sample-transformed {
+  .CodeMirror {
+    display: inline-block;
+    width: 49.8%;
+  }
+}

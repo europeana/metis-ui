@@ -2,7 +2,7 @@
   <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
 </div>
 
-<div class="filter-wrapper">
+<div class="filter-wrapper" *ngIf="!tempXSLT">
   <ul class="filter" (clickOutside)="onClickedOutside($event)">
     <li class="dropdown dropdown-date" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
       <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
@@ -24,16 +24,31 @@
   <span *ngIf="loadingSamples" class="svg-icon-spin"></span>
 </div>
 
-<div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
-  <div class="view-sample-title">
-    <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin | renameWorkflow}}</span></h3>
-    <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
-      <a (click)="expandSample(i)">-</a>
+<div *ngIf="!allTransformedSamples">
+  <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
+    <div class="view-sample-title">
+      <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin | renameWorkflow}}</span></h3>
+      <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
+        <a (click)="expandSample(i)">-</a>
+      </div>
+    </div>
+    <div class="view-sample-editor">
+      <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
+      <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
     </div>
   </div>
-  <div class="view-sample-editor">
-    <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
-    <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
+</div>
+
+<div *ngIf="allTransformedSamples && allSamples">
+  <div class="view-sample view-sample-expanded view-sample-transformed" *ngFor="let sample of allSamples; let i = index;">
+    <div class="view-sample-title">
+      <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin | renameWorkflow}}</span></h3>
+    </div>
+    <div class="view-sample-editor">
+      <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
+      <codemirror *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord" [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML" (ngModelChange)="allTransformedSamples[i].xmlRecord=$event" [config]="editorConfig"></codemirror>
+      <button (click)="gotoMapping();">{{ 'gotomapping' | translate }}</button>
+    </div>
   </div>
 </div>
 
