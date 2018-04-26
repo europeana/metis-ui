@@ -36,6 +36,7 @@ export class ActionbarComponent {
   currentPlugin = 0; // pick the first one for now
   logMessages;
   isShowingWorkflowSelector: boolean = false;
+  workflowInfoAvailable: boolean = false;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
@@ -71,6 +72,18 @@ export class ActionbarComponent {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }    
+  }
+
+  /** returnWorkflowInfo
+  /*  check if workflow info is already available
+  */
+  returnWorkflowInfo () {
+    if (!this.datasetData) { return false }
+    this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
+      if (workflowinfo) {
+        this.workflowInfoAvailable = true;
+      } 
+    });
   }
 
   /** startPollingWorkflow

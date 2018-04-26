@@ -38,7 +38,7 @@
   <div class="status status-new">
     {{ 'start workflow' | translate }}
   </div>
-  <nav>
+  <nav *ngIf="workflowInfoAvailable">
     <ul>
       <li>
         <a class="newaction-btn" (click)="selectWorkflow()">
