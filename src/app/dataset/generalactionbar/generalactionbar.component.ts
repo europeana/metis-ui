@@ -15,6 +15,7 @@ export class GeneralactionbarComponent implements OnInit {
 
   @Input('datasetData') datasetData;
   activeSet: string;
+  addWorkflow: boolean = false;
   workflowInfoAvailable: boolean = false;
   firstRun: boolean = true;
   currentWorkflowStatus: string;
@@ -62,7 +63,9 @@ export class GeneralactionbarComponent implements OnInit {
       if (workflowinfo) {
         this.workflowInfoAvailable = true;
         this.returnLastExecution();
-      } 
+      } else {
+        this.addWorkflow = true;
+      }
     });
   }
 
