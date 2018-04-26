@@ -21,9 +21,8 @@
   svg {
     fill: $accent;
   }
-
 }
-// Text
+
 .brand-text-wrapper,
 .brand-text {
   svg {
@@ -31,7 +30,7 @@
   }
 }
 
-.brand-text-wrapper{
+.brand-text-wrapper {
   height: 20%;
   max-width: 900px;
   min-height: 13em;
@@ -43,13 +42,13 @@
   width: 60%;
 }
 
-.brand-text-wrapper-inner{
+.brand-text-wrapper-inner {
   height: 100%;
   position: relative;
   width: 100%;
 }
 
-.brand-text{
+.brand-text {
   height: 100%;
   position: absolute;
   right: -30px;

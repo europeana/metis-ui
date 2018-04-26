@@ -73,6 +73,14 @@ describe('WorkflowComponent', () => {
 
   it('should submit the changes', () => {
     component.datasetData = currentDataset;
+    component.workflowForm.get('pluginHARVEST').setValue(true);
+    component.workflowForm.get('pluginType').setValue('OAIPMH_HARVEST');
+    component.workflowForm.get('pluginTRANSFORMATION').setValue(true);
+    component.workflowForm.get('customxslt').setValue('mocked');
+    component.workflowForm.get('pluginVALIDATION_EXTERNAL').setValue(true);
+    component.workflowForm.get('pluginVALIDATION_INTERNAL').setValue(true);
+    component.workflowForm.get('pluginENRICHMENT').setValue(true);
+    component.workflowForm.get('pluginMEDIA_PROCESS').setValue(true);
     component.onSubmit();
     fixture.detectChanges();
   });

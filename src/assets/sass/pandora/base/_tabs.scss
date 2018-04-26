@@ -30,17 +30,16 @@
       color: $gray-light;
       font-size: .75rem;
     }
+  }
 
-    &:hover,
-    &.active {
-      background: $eu-jade;
-      color: $white;
+  li:hover,
+  li.active {
+    background: $eu-jade;
+    color: $white;
 
-      a,
-      span {
-        color: inherit;
-      }
-
+    a,
+    span {
+      color: inherit;
     }
   }
 }

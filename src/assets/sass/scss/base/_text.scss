@@ -12,11 +12,6 @@ hr {
   margin: $space-double 0;
 }
 
-abbr {
-  border-bottom: 1px dotted $textcolour_heavy;
-  cursor: help;
-}
-
-small{
+small {
   font-size: $font-size-sm;
 }

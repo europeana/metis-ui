@@ -11,6 +11,10 @@
     -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, .3);
     box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, .3);
   }
+
+ .form-group label + input[type="checkbox"] {
+    flex: initial;
+ }
 }
 
 .form-fields.inactive {
@@ -27,7 +31,7 @@
 
 .plugin {
   align-items: center;
-  display: flex;
+  display: inline-flex;
   font-size: 1.5rem;
 
   input {

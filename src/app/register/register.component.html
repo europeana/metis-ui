@@ -12,6 +12,7 @@
     <div class="form-fields">
 
       <fieldset class="form-group">
+        <legend>{{ 'email' | translate }}</legend>
         <label for="email">{{ 'email' | translate }}:</label>
         <input id="email" formControlName="email" placeholder="your@email.com">
         <div class="messages" *ngIf="registerForm.controls['email'].touched && !registerForm.controls['email'].valid">
@@ -20,6 +21,7 @@
       </fieldset>
 
        <fieldset class="form-group" formGroupName="passwords">
+        <legend>{{ 'password' | translate }}</legend>
         <label for="password">{{ 'password' | translate }}:</label>
         <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}">
         <app-password-check [passwordToCheck]="password"></app-password-check>

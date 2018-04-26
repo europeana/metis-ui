@@ -48,6 +48,7 @@ export class WorkflowComponent implements OnInit {
   selectedPredefinedWorkflow: string;
   fragment: string;
   currentUrl: string;
+  selectedSteps: boolean = true;
 
   /** ngOnInit
   /* init for this component
@@ -77,6 +78,7 @@ export class WorkflowComponent implements OnInit {
       pluginVALIDATION_EXTERNAL: [''],
       pluginENRICHMENT: [''],
       pluginVALIDATION_INTERNAL: [''],
+      pluginMEDIA_PROCESS: [''],
       pluginType: [''],
       harvestUrl: [''],
       setSpec: [''],
@@ -95,6 +97,7 @@ export class WorkflowComponent implements OnInit {
   /* update required fields depending on selection
   */
   updateRequired() {
+    
     this.workflowForm.valueChanges.subscribe(() => {
       if (this.workflowForm.get('pluginHARVEST').value === true) {
         this.workflowForm.get('pluginType').setValidators([Validators.required]);
@@ -122,6 +125,16 @@ export class WorkflowComponent implements OnInit {
         this.workflowForm.get('harvestUrl').setValidators(null);
         this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
       }
+
+      this.selectedSteps = false;
+      Object.keys(this.workflowForm.controls).forEach(key => {
+        if (key.includes('plugin') && key !== 'pluginType') {
+          if (this.workflowForm.get(key).value) {
+            this.selectedSteps = true;
+          } 
+        }
+      });
+
     });
   }
 
@@ -176,8 +189,8 @@ export class WorkflowComponent implements OnInit {
         }
       }
     },(err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
+      let errorGetWorkflow = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(errorGetWorkflow)}`;
       this.scrollToMessageBox();
     });
   }
@@ -240,6 +253,14 @@ export class WorkflowComponent implements OnInit {
       });
     }
 
+    // mediaservice
+    if (this.workflowForm.value['pluginMEDIA_PROCESS'] === true) {
+      plugins.push({
+        'pluginType': 'MEDIA_PROCESS',
+        'mocked': false
+      });
+    }
+
     let values = {
       'workflowOwner': 'owner1',
       'metisPluginsMetadata': plugins
@@ -259,8 +280,8 @@ export class WorkflowComponent implements OnInit {
       this.successMessage = 'Workflow saved';
       this.scrollToMessageBox();  
     },(err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
+      let errorSubmit = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
       this.scrollToMessageBox();
     });
   }

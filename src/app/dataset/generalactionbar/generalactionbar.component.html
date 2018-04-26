@@ -1,11 +1,11 @@
-<a class="btn" routerLink="/dataset/workflow/{{activeSet}}" *ngIf="!workflowInfoAvailable">Add workflow info</a>
+<a class="btn" routerLink="/dataset/workflow/{{activeSet}}" *ngIf="!workflowInfoAvailable && addWorkflow">{{ 'addworkflow' | translate }}</a>
 <a class="btn" *ngIf="workflowInfoAvailable && currentWorkflowStatus !== 'INQUEUE' && currentWorkflowStatus !== 'RUNNING'" (click)="selectWorkflow()">Run workflow</a>
-<a class="btn" routerLink="/dataset/workflow/{{activeSet}}" *ngIf="workflowInfoAvailable && !firstRun && currentWorkflowStatus !== 'INQUEUE' && currentWorkflowStatus !== 'RUNNING'">Run specific action</a>
+<a class="btn" routerLink="/dataset/workflow/{{activeSet}}" *ngIf="workflowInfoAvailable && !firstRun && currentWorkflowStatus !== 'INQUEUE' && currentWorkflowStatus !== 'RUNNING'">{{ 'runaction' | translate }}</a>
 
 <div class="progress" *ngIf="workflowInfoAvailable && (currentWorkflowStatus === 'INQUEUE' || currentWorkflowStatus === 'RUNNING')">
 	<div class="progress-status">
-	  <span class="progress-statusnumbers">Overall progress</span>
-	  <span class="progress-percentage">step {{currentPlugin}}/{{totalPlugins}}</span>
+	  <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
+	  <span class="progress-percentage">{{ 'step' | translate }} {{currentPlugin}}/{{totalPlugins}}</span>
 	</div>
 	<div class="progressbar">
 	  <div class="progressbar-done" [style.width.%]="pluginPercentage >= 0 ? pluginPercentage : 0"></div>

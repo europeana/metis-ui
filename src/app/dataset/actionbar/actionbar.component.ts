@@ -36,6 +36,7 @@ export class ActionbarComponent {
   currentPlugin = 0; // pick the first one for now
   logMessages;
   isShowingWorkflowSelector: boolean = false;
+  workflowInfoAvailable: boolean = false;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
@@ -71,6 +72,18 @@ export class ActionbarComponent {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }    
+  }
+
+  /** returnWorkflowInfo
+  /*  check if workflow info is already available
+  */
+  returnWorkflowInfo () {
+    if (!this.datasetData) { return false }
+    this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
+      if (workflowinfo) {
+        this.workflowInfoAvailable = true;
+      } 
+    });
   }
 
   /** startPollingWorkflow
@@ -117,6 +130,8 @@ export class ActionbarComponent {
 
         } else {
 
+          if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
+          
           this.currentPlugin = this.workflows.getCurrentPlugin(e);
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
 
@@ -152,8 +167,8 @@ export class ActionbarComponent {
       if (workflow) {
         this.currentWorkflow = workflow;
         this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
-        this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
-        this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
+        this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin] ? this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus : '-';
+        this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin] ? this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType : '-';
         if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
           this.startPollingWorkflow();
         }
