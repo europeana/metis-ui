@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
 
 import { WorkflowService, TranslateService } from '../../_services';
 import { GeneralactionbarComponent } from './generalactionbar.component';
@@ -14,8 +15,15 @@ describe('GeneralactionbarComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ GeneralactionbarComponent ],
-      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService} ]
+      declarations: [ GeneralactionbarComponent, TranslatePipe ],
+      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService},
+      { provide: TranslateService,
+            useValue: {
+              translate: () => {
+                return {};
+              }
+            }
+        }]
     })
     .compileComponents();
   }));

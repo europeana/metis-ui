@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 
-import { WorkflowService} from '../../_services';
+import { WorkflowService, TranslateService} from '../../_services';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -11,7 +11,8 @@ import { environment } from '../../../environments/environment';
 })
 export class GeneralactionbarComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService) { }
+  constructor(private workflows: WorkflowService,
+    private translate: TranslateService) { }
 
   @Input('datasetData') datasetData;
   activeSet: string;
@@ -40,6 +41,9 @@ export class GeneralactionbarComponent implements OnInit {
       this.checkStatus();
     });
 
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    } 
   }
 
   /** checkStatus
