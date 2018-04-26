@@ -86,6 +86,11 @@
         </div>
       </div>
 
+      <!-- NORMALISATION -->
+      <div id="validation-normalisation" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginNORMALISATION').value === false || workflowForm.get('pluginNORMALISATION').value === ''}"> 
+        <label for="pluginNORMALISATION" class="plugin">{{ 'normalise' | translate }}<input type="checkbox" formControlName="pluginNORMALISATION" id="pluginNORMALISATION" /></label>
+      </div>
+
       <!-- VALIDATION -->
       <div id="validation-internal" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}"> 
         <label for="pluginValidateInternal" class="plugin">{{ 'validation internal' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" /></label>
