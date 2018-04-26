@@ -172,7 +172,6 @@ export class HistoryComponent implements OnInit {
   /* @param {string} workflowName - name of workflow to trigger
   */
   triggerWorkflow() {   
-    console.log('triggerWorkflow');
     this.errorMessage = undefined;
     if (!this.datasetData) { return false; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {

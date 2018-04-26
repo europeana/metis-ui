@@ -37,7 +37,6 @@ export class GeneralactionbarComponent implements OnInit {
 
     if (!this.workflows.changeWorkflow) { return false; }
     this.workflows.changeWorkflow.subscribe(workflow => {
-      console.log('changeWorkflow');
       this.checkStatus();
     });
 
@@ -62,7 +61,6 @@ export class GeneralactionbarComponent implements OnInit {
     if (!this.datasetData) { return false }
     this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
       if (workflowinfo) {
-        console.log('returnWorkflowInfo', workflowinfo);
         this.workflowInfoAvailable = true;
         this.returnLastExecution();
       } else {
@@ -77,7 +75,6 @@ export class GeneralactionbarComponent implements OnInit {
   returnLastExecution () {
     if (!this.datasetData) { return false }
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
-      console.log('returnLastExecution', workflow);
       if (workflow) {
         this.firstRun = false;
         this.currentWorkflowStatus = workflow['workflowStatus'];
@@ -94,7 +91,6 @@ export class GeneralactionbarComponent implements OnInit {
   /*  select the workflow, so it would be triggered
   */
   selectWorkflow() {
-    console.log('selectWorkflow');
     this.workflows.selectWorkflow();
     if (this.subscription) { this.subscription.unsubscribe(); }
     this.checkStatus();
