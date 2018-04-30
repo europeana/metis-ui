@@ -59,7 +59,7 @@ export const LANG_EN_TRANS = {
   'new dataset': 'New dataset',
   'new organization': 'New organization',
   'next action': 'Next action',
-  'normalise': 'Normalise',
+  'normalize': 'Normalise',
   'nosample': 'No sample available yet, try using the filter',
   'notes': 'Notes', 
   'notpublished': 'Not published yet',

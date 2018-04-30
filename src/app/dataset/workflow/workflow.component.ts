@@ -79,7 +79,7 @@ export class WorkflowComponent implements OnInit {
       pluginENRICHMENT: [''],
       pluginVALIDATION_INTERNAL: [''],
       pluginMEDIA_PROCESS: [''],
-      pluginNORMALISATION: [''],
+      pluginNORMALIZATION: [''],
       pluginType: [''],
       harvestUrl: [''],
       setSpec: [''],
@@ -246,10 +246,10 @@ export class WorkflowComponent implements OnInit {
       });
     }
 
-    // normalisation
-    if (this.workflowForm.value['pluginNORMALISATION'] === true) {
+    // normalization
+    if (this.workflowForm.value['pluginNORMALIZATION'] === true) {
       plugins.push({
-        'pluginType': 'NORMALISATION',
+        'pluginType': 'NORMALIZATION',
         'mocked': false
       });
     }
@@ -313,7 +313,7 @@ export class WorkflowComponent implements OnInit {
     this.workflowForm.controls['pluginTRANSFORMATION'].setValue(true);
     this.workflowForm.controls['pluginVALIDATION_INTERNAL'].setValue(true);
     this.workflowForm.controls['pluginENRICHMENT'].setValue('');
-    this.workflowForm.controls['pluginNORMALISATION'].setValue('');
+    this.workflowForm.controls['pluginNORMALIZATION'].setValue('');
 
     if (workflow === 'everything') {
       this.workflowForm.controls['pluginENRICHMENT'].setValue(true);

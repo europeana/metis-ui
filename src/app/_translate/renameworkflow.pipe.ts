@@ -8,7 +8,7 @@ let workflowNames = {
   VALIDATION_INTERNAL: 'Validate',
   ENRICHMENT: 'Enrich',
   MEDIA_PROCESS: 'Process Media',
-  NORMALISE: 'Normalise'
+  NORMALIZATION: 'Normalise'
 }; 
 
 @Pipe({
