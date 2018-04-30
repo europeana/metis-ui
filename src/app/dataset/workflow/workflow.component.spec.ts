@@ -79,6 +79,7 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('customxslt').setValue('mocked');
     component.workflowForm.get('pluginVALIDATION_EXTERNAL').setValue(true);
     component.workflowForm.get('pluginVALIDATION_INTERNAL').setValue(true);
+    component.workflowForm.get('pluginNORMALIZATION').setValue(true);
     component.workflowForm.get('pluginENRICHMENT').setValue(true);
     component.workflowForm.get('pluginMEDIA_PROCESS').setValue(true);
     component.onSubmit();
