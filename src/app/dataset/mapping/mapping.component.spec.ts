@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks } from '@angular/core/testing';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,6 +9,7 @@ import { DatasetsService, WorkflowService, TranslateService, RedirectPreviousUrl
 import { MappingComponent } from './mapping.component';
 
 import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 import { XmlPipe }   from '../../_helpers';
@@ -16,6 +17,7 @@ import { XmlPipe }   from '../../_helpers';
 describe('MappingComponent', () => {
   let component: MappingComponent;
   let fixture: ComponentFixture<MappingComponent>;
+  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -42,7 +44,7 @@ describe('MappingComponent', () => {
     fixture = TestBed.createComponent(MappingComponent);
     component = fixture.componentInstance;
     component.datasetData = currentDataset;
-    fixture.detectChanges();
+    router = TestBed.get(Router);
   });
 
   it('should create', () => {
@@ -82,6 +84,7 @@ describe('MappingComponent', () => {
   });
 
   it('should display xslt in cards', () => {
+    fixture.detectChanges();
     component.fullView = false;
     component.loadXSLT('default');
     fixture.detectChanges();      
@@ -107,10 +110,15 @@ describe('MappingComponent', () => {
     expect(component.xsltType).toBe('custom');
   });
 
-  it('should try out the xslt', () => {
+  it('should try out the xslt', fakeAsync((): void => {
     component.fullView = false;
+    
+    spyOn(router, 'navigate').and.callFake(() => { });
+    tick();
+    
     component.tryOutXSLT();
-    fixture.detectChanges();   
-  });
+    expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
+
+  }));
 
 });
