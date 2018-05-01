@@ -76,7 +76,7 @@ export class WorkflowService {
   	const priority = 0;
     let enforce = '';   
 
-  	const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&priority=${priority}&enforcedPluginType=${enforce}`;    
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&priority=${priority}&enforcedPluginType=${enforce}`;    
     return this.http.post(url, JSON.stringify('{}')).map(newWorkflowExecution => {   
       return newWorkflowExecution ? newWorkflowExecution : false;
     });
