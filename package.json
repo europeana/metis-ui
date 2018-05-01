@@ -43,6 +43,7 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.102",
     "directory-encoder": "^0.9.2",
+    "hoek": "^4.2.1",
     "jasmine-core": "^2.99.1",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "^1.7.1",
