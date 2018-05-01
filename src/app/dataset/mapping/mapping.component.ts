@@ -64,9 +64,6 @@ export class MappingComponent implements OnInit {
     this.loadStatistics();
     this.loadEditor();
     this.toggleFullViewMode(true);
-
-    console.log();
-
   }
 
   /** loadStatistics
