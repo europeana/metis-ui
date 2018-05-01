@@ -9,9 +9,7 @@
 
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">
-        <li [ngClass]="{'active': !selectedPredefinedWorkflow}" (click)="selectPredefinedWorkflow()">Current</li>
-        <li [ngClass]="{'active': selectedPredefinedWorkflow === 'basic'}" (click)="selectPredefinedWorkflow('basic')">Basic</li>
-        <li [ngClass]="{'active': selectedPredefinedWorkflow === 'everything'}" (click)="selectPredefinedWorkflow('everything')">Run everything</li>
+        <li class="active">Current workflow</li>
       </ul>
       <ul class="predefined-steps">
         <li [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">
@@ -80,7 +78,7 @@
       <!-- TRANSFORMATION -->
       <div id="transformation" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginTRANSFORMATION').value === false || workflowForm.get('pluginTRANSFORMATION').value === ''}"> 
         <label for="pluginTransform" class="plugin">{{ 'transformation' | translate }} <input type="checkbox" formControlName="pluginTRANSFORMATION" id="pluginTransform" /></label>
-        <div class="form-group">
+        <div class="form-group form-group-checkbox">
           <label for="customxslt">{{ 'customxslt' | translate }}</label>
           <input id="customxslt" type="checkbox" formControlName="customxslt" />
         </div>
