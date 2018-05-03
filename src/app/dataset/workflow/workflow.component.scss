@@ -125,10 +125,11 @@
 
   .predefined-steps {
     display: flex;
-    padding: 1rem 3rem;
+    padding: 1rem 1rem;
 
     li {
-      padding: 0 1rem;
+      font-size: 0.8rem;
+      padding: 0 0.5rem;
     }
 
     a {

@@ -106,7 +106,7 @@ export const LANG_EN_TRANS = {
   'status': 'Status',
   'step': 'step',
   'submit': 'Submit',
-  'totaldataset': 'Total dataset',
+  'totaldataset': 'Total records',
   'totalprocessed': 'Total processed',
   'transformation': 'Transform',
   'unknown': 'Unknown',

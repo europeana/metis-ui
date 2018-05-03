@@ -1,14 +1,18 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 let workflowNames = { 
-  HTTP_HARVEST: 'Import HTTP',
-  OAIPMH_HARVEST: 'Import OAI-PMH', 
-  TRANSFORMATION: 'Transform',
-  VALIDATION_EXTERNAL: 'Validate',
-  VALIDATION_INTERNAL: 'Validate',
   ENRICHMENT: 'Enrich',
+  HARVEST: 'Import',
+  HTTP_HARVEST: 'Import HTTP',
+  LINK_CHECKING: 'Check Links',
   MEDIA_PROCESS: 'Process Media',
-  NORMALIZATION: 'Normalise'
+  NORMALIZATION: 'Normalise',
+  OAIPMH_HARVEST: 'Import OAI-PMH',
+  PUBLISH_PREVIEW: 'Preview', 
+  PUBLISH_PUBLISH: 'Publish', 
+  TRANSFORMATION: 'Transform',
+  VALIDATION_EXTERNAL: 'Validate (EDM external)',
+  VALIDATION_INTERNAL: 'Validate (EDM internal)'
 }; 
 
 @Pipe({
