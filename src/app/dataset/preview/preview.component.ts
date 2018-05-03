@@ -166,7 +166,7 @@ export class PreviewComponent implements OnInit {
   */
   transformSamples(type) {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
-      if (!result['results']) { return false; }
+      if (!result['results'][0]) { return false; }
       this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
         this.allSamples = samples; 
         this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
