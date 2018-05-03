@@ -133,8 +133,11 @@ export class DatasetsService {
   /* @param {string} id - dataset identifier
   /* @param {object} samples - samples to transform
   */
-  getTransform(id, samples) {
-    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform/default`;   
+  getTransform(id, samples, type) {
+    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;   
+    if (type === 'default') {
+      url += '/default';
+    }
     return this.http.post(url, samples, {headers:{'Content-Type': 'application/json'}}).map(data => {  
       return data ? data : false;
     });  
@@ -143,8 +146,8 @@ export class DatasetsService {
   /** setTempXSLT
   /* temporary save xslt to use in transformation on the fly
   */
-  setTempXSLT(xslt) {
-    this.tempXSLT = xslt;
+  setTempXSLT(xslttype) {
+    this.tempXSLT = xslttype;
   }
 
   /** getTempXSLT

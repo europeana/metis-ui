@@ -87,7 +87,21 @@
 .view-sample-transformed {
   button {
     background: $eu-jade;
+    border: 1px solid $eu-jade;
     font-size: .875rem;
-    margin: .5rem 1rem 1rem 0;
+    margin: 0.5rem 1rem 1rem 0;
+
+    &:hover,
+    &.active {
+      background: $white;
+      color: $eu-jade;
+    }
+
+    &:active,
+    &:focus {
+      background: $eu-jade;
+      color: $white;
+    }
+
   }
 }

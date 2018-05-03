@@ -8,8 +8,8 @@ let workflowNames = {
   MEDIA_PROCESS: 'Process Media',
   NORMALIZATION: 'Normalise',
   OAIPMH_HARVEST: 'Import OAI-PMH',
-  PUBLISH_PREVIEW: 'Preview', 
-  PUBLISH_PUBLISH: 'Publish', 
+  PREVIEW: 'Preview', 
+  PUBLISH: 'Publish', 
   TRANSFORMATION: 'Transform',
   VALIDATION_EXTERNAL: 'Validate (EDM external)',
   VALIDATION_INTERNAL: 'Validate (EDM internal)'
