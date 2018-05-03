@@ -77,6 +77,7 @@ export class WorkflowComponent implements OnInit {
       pluginENRICHMENT: [''],
       pluginVALIDATION_INTERNAL: [''],
       pluginMEDIA_PROCESS: [''],
+      pluginNORMALIZATION: [''],
       pluginType: [''],
       harvestUrl: [''],
       setSpec: [''],
@@ -243,6 +244,14 @@ export class WorkflowComponent implements OnInit {
       });
     }
 
+    // normalization
+    if (this.workflowForm.value['pluginNORMALIZATION'] === true) {
+      plugins.push({
+        'pluginType': 'NORMALIZATION',
+        'mocked': false
+      });
+    }
+
     // enrichment
     if (this.workflowForm.value['pluginENRICHMENT'] === true) {
       plugins.push({
@@ -297,5 +306,4 @@ export class WorkflowComponent implements OnInit {
   scrollToMessageBox() {
     window.scrollTo(0, 0);
   }
-
 }

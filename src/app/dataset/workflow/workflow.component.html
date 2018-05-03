@@ -23,6 +23,9 @@
         <li [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="validation-internal">{{ 'validation internal' | translate }}</a>
         </li>
+        <li [ngClass]="{'inactive': workflowForm.get('pluginNORMALIZATION').value === false || workflowForm.get('pluginNORMALIZATION').value === ''}">
+          <a [routerLink]="[currentUrl]" fragment="normalization">{{ 'normalize' | translate }}</a>
+        </li>
         <li [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'enrichment' | translate }}</a>
         </li>
@@ -87,6 +90,11 @@
       <!-- VALIDATION -->
       <div id="validation-internal" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}"> 
         <label for="pluginValidateInternal" class="plugin">{{ 'validation internal' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" /></label>
+      </div>
+
+       <!-- NORMALIZATION -->
+      <div id="validation-normalization" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginNORMALIZATION').value === false || workflowForm.get('pluginNORMALIZATION').value === ''}"> 
+        <label for="pluginNORMALIZATION" class="plugin">{{ 'normalize' | translate }}<input type="checkbox" formControlName="pluginNORMALIZATION" id="pluginNORMALIZATION" /></label>
       </div>
 
       <!-- ENRICHMENT -->
