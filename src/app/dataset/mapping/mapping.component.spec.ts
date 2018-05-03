@@ -116,7 +116,7 @@ describe('MappingComponent', () => {
     spyOn(router, 'navigate').and.callFake(() => { });
     tick();
     
-    component.tryOutXSLT();
+    component.tryOutXSLT('default');
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
 
   }));

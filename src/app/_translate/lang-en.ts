@@ -128,6 +128,7 @@ export const LANG_EN_TRANS = {
   'xsltloaddefault': 'load default XSLT',
   'xsltsave': 'Save XSLT',
   'xsltsuccessful': 'XSLT changes have been saved successfully as custom XSLT',
+  'xslttryoutdefault': 'Try out with default XSLT',
   'xslttryout': 'Save XSLT & Try it out',
   'zoho': 'Go to Zoho'
 };

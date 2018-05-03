@@ -95,7 +95,7 @@ export class PreviewComponent implements OnInit {
 
     this.tempXSLT = this.datasets.getTempXSLT();
     if (this.tempXSLT) {
-      this.transformSamples();
+      this.transformSamples(this.tempXSLT);
     }
 
   }  
@@ -162,12 +162,13 @@ export class PreviewComponent implements OnInit {
   /** transformSamples
   /* transform samples on the fly
   /* based on temp saved XSLT
+  /* @param {string} type - either default or custom
   */
-  transformSamples() {
+  transformSamples(type) {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
         this.allSamples = samples; 
-        this.datasets.getTransform(this.datasetData.datasetId, samples).subscribe(transformed => {
+        this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
           this.allTransformedSamples = transformed;
         }, (err: HttpErrorResponse) => {
           let error = this.errors.handleError(err); 

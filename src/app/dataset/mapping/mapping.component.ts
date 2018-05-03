@@ -92,7 +92,10 @@ export class MappingComponent implements OnInit {
   /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
   */
   loadEditor() {
-    let type = this.datasets.getTempXSLT() ? 'custom' : 'default';
+    let type = this.datasets.getTempXSLT();
+    if (!type) {
+      type = 'default';
+    }
     this.loadXSLT(type);
   }
 
@@ -144,9 +147,10 @@ export class MappingComponent implements OnInit {
   /** tryOutXSLT
   /* transformation on the fly, so having a look before saving the xslt
   /* switch to preview tab to have a look of the outcome
+  /* @param {string} type - either custom or default
   */
-  tryOutXSLT() {
-    this.datasets.setTempXSLT(true);
+  tryOutXSLT(type) {
+    this.datasets.setTempXSLT(type);
     this.saveXSLT(true);
   }
 

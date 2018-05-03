@@ -77,7 +77,7 @@ describe('PreviewComponent', () => {
 
   it('should get transformed samples', () => {
     component.datasetData = currentDataset; 
-    component.transformSamples();
+    component.transformSamples('default');
     fixture.detectChanges();  
   });
 
