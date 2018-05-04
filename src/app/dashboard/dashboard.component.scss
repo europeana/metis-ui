@@ -13,12 +13,10 @@
         margin: 0;
         width: 100%;
       }
-    }
 
-    .metis-dashboard-left {
-      display: flex;
-      flex-basis: 100%;
+      .metis-dashboard-right {
+        clear: both;
+      }
     }
-
   }
 }
