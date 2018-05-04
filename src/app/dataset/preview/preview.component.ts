@@ -107,7 +107,7 @@ export class PreviewComponent implements OnInit {
   /* @param {string} workflow - selected workflow
   */
   addDateFilter() {
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
+    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {  
         this.allWorkflowDates.push(result['results'][i]);
       }
@@ -133,7 +133,15 @@ export class PreviewComponent implements OnInit {
     this.nextPageDate = 0;
     this.saveTempFilterSelection('date', execution);
     for (let i = 0; i < execution['metisPlugins'].length; i++) {  
-      this.allPlugins.push(execution['metisPlugins'][i].pluginType);
+      if (execution['metisPlugins'][i]['pluginStatus'] === 'FINISHED') {
+        this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
+      } else {
+        if (execution['metisPlugins'][i]['executionProgress']['processedRecords'] > execution['metisPlugins'][i]['executionProgress']['errors']) {
+          this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
+        } else {
+          this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': true});
+        }
+      }
     }
   }
 

@@ -15,7 +15,7 @@ export const LANG_EN_TRANS = {
   'createdby': 'Created by',
   'customxslt': 'Custom XSLT',
   'dashboard': 'Dashboard',
-  'datestarted': 'Date started',
+  'datestarted': 'Workflow started on',
   'datecreated': 'Date Created',
   'dataprovider': 'Data Provider',
   'dataset': 'Dataset',

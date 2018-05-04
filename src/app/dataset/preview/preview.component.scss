@@ -8,6 +8,13 @@
     position: absolute;
     top: 0;
   }
+
+  .notavailable {
+    color: $gray-lighter;
+    display: inline-block;
+    padding-left: 0.5rem;
+  }
+
 }
 
 .view-sample {
