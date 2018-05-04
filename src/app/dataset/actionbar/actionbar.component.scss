@@ -8,13 +8,12 @@
 
 .dataset-actionbar {
   align-items: center;
-  display: flex;
+  display: inline-flex;
   min-height: 4rem;
   padding: .75rem;
+  width: 100%;
 
   .status {
-    flex-basis: 0;
-    flex-grow: 0;
     font-size: .75rem;
     padding-left: .75rem;
     padding-right: 1.5rem;
@@ -28,8 +27,6 @@
   }
 
   .datetime {
-    flex-basis: 0;
-    flex-grow: 0;
     font-size: .8125rem;
     padding-right: .5rem;
     text-align: center;
@@ -48,8 +45,6 @@
 }
 
 nav {
-  flex-basis: 0;
-  flex-grow: 0;
   white-space: nowrap;
 
   li {
