@@ -20,14 +20,12 @@
     align-items: center;
     background: $white;
     border-bottom: 1px solid $offwhite;
-    display: flex;
+    display: inline-flex;
     padding: .75rem;
     width: 100%;
   }
 
   .status {
-    flex-basis: 0;
-    flex-grow: 0;
     padding-right: 1rem;
     text-transform: uppercase;
     white-space: nowrap;
@@ -69,8 +67,6 @@
   }
 
   nav {
-    flex-basis: 0;
-    flex-grow: 0;
     white-space: nowrap;
 
     li {
