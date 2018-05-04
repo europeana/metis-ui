@@ -3,7 +3,7 @@
   <div class="messages">
     <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
   </div>    
-  <div class="lastest-ongoing" *ngFor="let ongoing of ongoingExecutions;">
+  <div class="latest-ongoing" *ngFor="let ongoing of ongoingExecutions;">
     <div class="status">
       <strong>{{ongoing.workflowName}}</strong>
       {{ongoing.cancelling ? cancelling : ongoing.workflowStatus}}

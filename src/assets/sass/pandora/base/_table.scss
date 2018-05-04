@@ -14,27 +14,32 @@
     &.loadmore {
       text-align: center;
     }
+  }
 
-    th,
-    td {
-      border: 0;
-      color: $gray-light;
-      padding: .5rem 1rem;
+  th,
+  td {
+    border: 0;
+    color: $gray-light;
+    padding: .5rem 1rem;
 
-      &.centered {
-        text-align: center;
-      }
+    &.centered {
+      text-align: center;
+    }
+  }
+
+  th {
+    border-bottom: 1px solid $gray-almost-lightest;
+    font-size: .8125rem;
+    white-space: nowrap;
+
+    &.alignleft {
+      text-align: left;
     }
 
-    th {
-      border-bottom: 1px solid $gray-almost-lightest;
-      font-size: .8125rem;
-      white-space: nowrap;
-
-      &.alignleft {
-        text-align: left;
-      }
+    @media (max-width: $bp-xxl) {
+      white-space: normal;
     }
+
   }
 }
 
@@ -164,7 +169,7 @@
     &.svg-icon-report {
       padding-left: .5rem;
     }
-    &.svg-icon-report ::before {
+    &.svg-icon-report::before {
       display: none;
     }
   }
