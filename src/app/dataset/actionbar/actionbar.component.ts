@@ -49,6 +49,7 @@ export class ActionbarComponent {
   ngOnInit() {
     
     this.returnLastExecution();
+    this.returnWorkflowInfo();
      
     if (!this.workflows.changeWorkflow) { return false; }
     this.workflows.changeWorkflow.subscribe(

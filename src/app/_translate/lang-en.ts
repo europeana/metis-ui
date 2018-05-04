@@ -13,6 +13,7 @@ export const LANG_EN_TRANS = {
   'country': 'Country',
   'create dataset': 'Create a dataset first',
   'createdby': 'Created by',
+  'currentworkflow': 'Current workflow',
   'customxslt': 'Custom XSLT',
   'dashboard': 'Dashboard',
   'datestarted': 'Date started',

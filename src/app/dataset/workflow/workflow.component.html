@@ -9,7 +9,7 @@
 
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">
-        <li class="active">Current workflow</li>
+        <li class="active">{{ 'currentworkflow' | translate }}</li>
       </ul>
       <ul class="predefined-steps">
         <li [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">
