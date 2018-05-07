@@ -78,6 +78,8 @@ export class WorkflowComponent implements OnInit {
       pluginVALIDATION_INTERNAL: [''],
       pluginMEDIA_PROCESS: [''],
       pluginNORMALIZATION: [''],
+      pluginPREVIEW: [''],
+      pluginPUBLISH: [''],
       pluginType: [''],
       harvestUrl: [''],
       setSpec: [''],
@@ -264,6 +266,22 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value['pluginMEDIA_PROCESS'] === true) {
       plugins.push({
         'pluginType': 'MEDIA_PROCESS',
+        'mocked': false
+      });
+    }
+
+    // publish to preview
+    if (this.workflowForm.value['pluginPREVIEW'] === true) {
+      plugins.push({
+        'pluginType': 'PREVIEW',
+        'mocked': false
+      });
+    }
+
+    // publish to publish
+    if (this.workflowForm.value['pluginPUBLISH'] === true) {
+      plugins.push({
+        'pluginType': 'PUBLISH',
         'mocked': false
       });
     }

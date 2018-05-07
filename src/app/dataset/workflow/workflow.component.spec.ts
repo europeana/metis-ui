@@ -82,6 +82,8 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('pluginNORMALIZATION').setValue(true);
     component.workflowForm.get('pluginENRICHMENT').setValue(true);
     component.workflowForm.get('pluginMEDIA_PROCESS').setValue(true);
+    component.workflowForm.get('pluginPREVIEW').setValue(true);
+    component.workflowForm.get('pluginPUBLISH').setValue(true);
     component.onSubmit();
     fixture.detectChanges();
   });

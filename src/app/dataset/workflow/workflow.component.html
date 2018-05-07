@@ -32,10 +32,10 @@
         <li [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="media">{{ 'MEDIA_PROCESS' | renameWorkflow }}</a>
         </li>
-        <li class="inactive">
+        <li [ngClass]="{'inactive': workflowForm.get('pluginPREVIEW').value === false || workflowForm.get('pluginPREVIEW').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="preview">{{ 'PREVIEW' | renameWorkflow }}</a>
         </li>
-        <li class="inactive">
+        <li [ngClass]="{'inactive': workflowForm.get('pluginPUBLISH').value === false || workflowForm.get('pluginPUBLISH').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="publish">{{ 'PUBLISH' | renameWorkflow }}</a>
         </li>
         <li class="inactive">
@@ -117,13 +117,13 @@
       </div>
 
       <!-- PUBLISH TO PREVIEW -->
-      <div id="preview" class="form-fields inactive"> 
-        <label for="" class="plugin">{{ 'PREVIEW' | renameWorkflow }} <input type="checkbox" /></label>
+      <div id="preview" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginPREVIEW').value === false || workflowForm.get('pluginPREVIEW').value === ''}"> 
+        <label for="pluginPREVIEW" class="plugin">{{ 'PREVIEW' | renameWorkflow }} <input type="checkbox" formControlName="pluginPREVIEW" id="pluginPREVIEW" /></label>
       </div>
 
       <!-- PUBLISH TO PUBLISH -->
-      <div id="publish" class="form-fields inactive"> 
-        <label for="" class="plugin">{{ 'PUBLISH' | renameWorkflow }} <input type="checkbox" /></label>
+      <div id="publish" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginPUBLISH').value === false || workflowForm.get('pluginPUBLISH').value === ''}"> 
+        <label for="pluginPUBLISH" class="plugin">{{ 'PUBLISH' | renameWorkflow }} <input type="checkbox" formControlName="pluginPUBLISH" id="pluginPUBLISH"/></label>
       </div>
 
        <!-- LINK CHECKING -->
