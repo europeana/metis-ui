@@ -45,7 +45,6 @@ export class WorkflowComponent implements OnInit {
   newWorkflow: boolean = true; 
   formIsValid: boolean = false;
   workflowForm: FormGroup;
-  selectedPredefinedWorkflow: string;
   fragment: string;
   currentUrl: string;
   selectedSteps: boolean = true;
@@ -63,7 +62,6 @@ export class WorkflowComponent implements OnInit {
 
     this.buildForm();  
     this.getWorkflow();
-    this.selectPredefinedWorkflow();
 
     this.currentUrl = this.router.url.split('#')[0];
   }
@@ -295,31 +293,6 @@ export class WorkflowComponent implements OnInit {
     });
   }
 
-  /** selectPredefinedWorkflow
-  /* select one of the predefined workflows
-  /* basic is the default one
-  */
-  selectPredefinedWorkflow(workflow?) {
-    this.selectedPredefinedWorkflow = workflow;
-
-    if (!workflow) { 
-      this.buildForm();  
-      this.getWorkflow();
-      return false 
-    }
-
-    this.workflowForm.controls['pluginHARVEST'].setValue(true);
-    this.workflowForm.controls['pluginVALIDATION_EXTERNAL'].setValue(true);
-    this.workflowForm.controls['pluginTRANSFORMATION'].setValue(true);
-    this.workflowForm.controls['pluginVALIDATION_INTERNAL'].setValue(true);
-    this.workflowForm.controls['pluginENRICHMENT'].setValue('');
-    this.workflowForm.controls['pluginNORMALIZATION'].setValue('');
-
-    if (workflow === 'everything') {
-      this.workflowForm.controls['pluginENRICHMENT'].setValue(true);
-    }
-  }
-
   /** onClickedOutside
   /* click outside the message = remove messages
   */
@@ -333,5 +306,4 @@ export class WorkflowComponent implements OnInit {
   scrollToMessageBox() {
     window.scrollTo(0, 0);
   }
-
 }

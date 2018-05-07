@@ -9,38 +9,45 @@
 
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">
-        <li [ngClass]="{'active': !selectedPredefinedWorkflow}" (click)="selectPredefinedWorkflow()">Current</li>
-        <li [ngClass]="{'active': selectedPredefinedWorkflow === 'basic'}" (click)="selectPredefinedWorkflow('basic')">Basic</li>
-        <li [ngClass]="{'active': selectedPredefinedWorkflow === 'everything'}" (click)="selectPredefinedWorkflow('everything')">Run everything</li>
+        <li class="active">{{ 'currentworkflow' | translate }}</li>
       </ul>
       <ul class="predefined-steps">
         <li [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">
-          <a [routerLink]="[currentUrl]" fragment="harvest">{{ 'import' | translate }}</a></li>
+          <a [routerLink]="[currentUrl]" fragment="import">{{ 'HARVEST' | renameWorkflow }}</a></li>
         <li [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_EXTERNAL').value === false || workflowForm.get('pluginVALIDATION_EXTERNAL').value === ''}">
-          <a [routerLink]="[currentUrl]" fragment="validation-external">{{ 'validation external' | translate }}</a>
+          <a [routerLink]="[currentUrl]" fragment="validate-external">{{ 'VALIDATION_EXTERNAL' | renameWorkflow }}</a>
         </li>
         <li [ngClass]="{'inactive': workflowForm.get('pluginTRANSFORMATION').value === false || workflowForm.get('pluginTRANSFORMATION').value === ''}">
-          <a [routerLink]="[currentUrl]" fragment="transformation">{{ 'transformation' | translate }}</a>
+          <a [routerLink]="[currentUrl]" fragment="transform">{{ 'TRANSFORMATION' | renameWorkflow }}</a>
         </li>
         <li [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}">
-          <a [routerLink]="[currentUrl]" fragment="validation-internal">{{ 'validation internal' | translate }}</a>
+          <a [routerLink]="[currentUrl]" fragment="validate-internal">{{ 'VALIDATION_INTERNAL' | renameWorkflow }}</a>
         </li>
         <li [ngClass]="{'inactive': workflowForm.get('pluginNORMALIZATION').value === false || workflowForm.get('pluginNORMALIZATION').value === ''}">
-          <a [routerLink]="[currentUrl]" fragment="normalization">{{ 'normalize' | translate }}</a>
+          <a [routerLink]="[currentUrl]" fragment="normalise">{{ 'NORMALIZATION' | renameWorkflow }}</a>
         </li>
         <li [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}">
-          <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'enrichment' | translate }}</a>
+          <a [routerLink]="[currentUrl]" fragment="enrich">{{ 'ENRICHMENT' | renameWorkflow }}</a>
         </li>
         <li [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}">
-          <a [routerLink]="[currentUrl]" fragment="enrichment">{{ 'mediaservice' | translate }}</a>
+          <a [routerLink]="[currentUrl]" fragment="media">{{ 'MEDIA_PROCESS' | renameWorkflow }}</a>
+        </li>
+        <li class="inactive">
+          <a [routerLink]="[currentUrl]" fragment="preview">{{ 'PREVIEW' | renameWorkflow }}</a>
+        </li>
+        <li class="inactive">
+          <a [routerLink]="[currentUrl]" fragment="publish">{{ 'PUBLISH' | renameWorkflow }}</a>
+        </li>
+        <li class="inactive">
+          <a [routerLink]="[currentUrl]" fragment="linkchecking">{{ 'LINK_CHECKING' | renameWorkflow }}</a>
         </li>
       </ul>
     </div>
 
     <div class="form-fields-container">
       <!-- IMPORT / HARVEST -->
-      <div id="harvest" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">      
-        <label for="pluginImport" class="plugin">{{ 'import' | translate }} <input type="checkbox" formControlName="pluginHARVEST" id="pluginImport" /></label>    
+      <div id="import" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">      
+        <label for="pluginImport" class="plugin">{{ 'HARVEST' | renameWorkflow }} <input type="checkbox" formControlName="pluginHARVEST" id="pluginImport" /></label>    
         <div class="form-group">
           <label>{{ 'harvestprotocol' | translate }} *</label>
           <div class="form-group-radios">
@@ -76,37 +83,52 @@
       </div>
 
       <!-- VALIDATION -->
-      <div id="validation-external" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_EXTERNAL').value === false || workflowForm.get('pluginVALIDATION_EXTERNAL').value === ''}"> 
-        <label for="pluginValidateExternal" class="plugin">{{ 'validation external' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_EXTERNAL" id="pluginValidateExternal" /></label>
+      <div id="validate-external" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_EXTERNAL').value === false || workflowForm.get('pluginVALIDATION_EXTERNAL').value === ''}"> 
+        <label for="pluginValidateExternal" class="plugin">{{ 'VALIDATION_EXTERNAL' | renameWorkflow }}<input type="checkbox" formControlName="pluginVALIDATION_EXTERNAL" id="pluginValidateExternal" /></label>
       </div>
 
       <!-- TRANSFORMATION -->
-      <div id="transformation" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginTRANSFORMATION').value === false || workflowForm.get('pluginTRANSFORMATION').value === ''}"> 
-        <label for="pluginTransform" class="plugin">{{ 'transformation' | translate }} <input type="checkbox" formControlName="pluginTRANSFORMATION" id="pluginTransform" /></label>
-        <div class="form-group">
+      <div id="transform" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginTRANSFORMATION').value === false || workflowForm.get('pluginTRANSFORMATION').value === ''}"> 
+        <label for="pluginTransform" class="plugin">{{ 'TRANSFORMATION' | renameWorkflow }} <input type="checkbox" formControlName="pluginTRANSFORMATION" id="pluginTransform" /></label>
+        <div class="form-group form-group-checkbox">
           <label for="customxslt">{{ 'customxslt' | translate }}</label>
           <input id="customxslt" type="checkbox" formControlName="customxslt" />
         </div>
       </div>
 
       <!-- VALIDATION -->
-      <div id="validation-internal" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}"> 
-        <label for="pluginValidateInternal" class="plugin">{{ 'validation internal' | translate }}<input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" /></label>
+      <div id="validate-internal" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}"> 
+        <label for="pluginValidateInternal" class="plugin">{{ 'VALIDATION_INTERNAL' | renameWorkflow }}<input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" /></label>
       </div>
 
        <!-- NORMALIZATION -->
-      <div id="validation-normalization" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginNORMALIZATION').value === false || workflowForm.get('pluginNORMALIZATION').value === ''}"> 
-        <label for="pluginNORMALIZATION" class="plugin">{{ 'normalize' | translate }}<input type="checkbox" formControlName="pluginNORMALIZATION" id="pluginNORMALIZATION" /></label>
+      <div id="normalise" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginNORMALIZATION').value === false || workflowForm.get('pluginNORMALIZATION').value === ''}"> 
+        <label for="pluginNORMALIZATION" class="plugin">{{ 'NORMALIZATION' | renameWorkflow }}<input type="checkbox" formControlName="pluginNORMALIZATION" id="pluginNORMALIZATION" /></label>
       </div>
 
       <!-- ENRICHMENT -->
-      <div id="enrichment" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}"> 
-        <label for="pluginEnrichment" class="plugin">{{ 'enrichment' | translate }} <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" /></label>
+      <div id="enrich" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}"> 
+        <label for="pluginEnrichment" class="plugin">{{ 'ENRICHMENT' | renameWorkflow }} <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" /></label>
       </div>
 
       <!-- MEDIA SERVICE -->
-      <div id="mediaservice" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}"> 
-        <label for="pluginMEDIA_PROCESS" class="plugin">{{ 'mediaservice' | translate }} <input type="checkbox" formControlName="pluginMEDIA_PROCESS" id="pluginMEDIA_PROCESS" /></label>
+      <div id="media" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}"> 
+        <label for="pluginMEDIA_PROCESS" class="plugin">{{ 'MEDIA_PROCESS' | renameWorkflow }} <input type="checkbox" formControlName="pluginMEDIA_PROCESS" id="pluginMEDIA_PROCESS" /></label>
+      </div>
+
+      <!-- PUBLISH TO PREVIEW -->
+      <div id="preview" class="form-fields inactive"> 
+        <label for="" class="plugin">{{ 'PREVIEW' | renameWorkflow }} <input type="checkbox" /></label>
+      </div>
+
+      <!-- PUBLISH TO PUBLISH -->
+      <div id="publish" class="form-fields inactive"> 
+        <label for="" class="plugin">{{ 'PUBLISH' | renameWorkflow }} <input type="checkbox" /></label>
+      </div>
+
+       <!-- LINK CHECKING -->
+      <div id="linkchecking" class="form-fields inactive"> 
+        <label for="" class="plugin">{{ 'LINK_CHECKING' | renameWorkflow }} <input type="checkbox" /></label>
       </div>
 
       <div class="form-fields form-fields-buttons">  

@@ -9,7 +9,7 @@ import { DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorServi
 import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset } from '../../_mocked';
 
 import { WorkflowComponent } from './workflow.component';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
 
 describe('WorkflowComponent', () => {
   let component: WorkflowComponent;
@@ -19,7 +19,7 @@ describe('WorkflowComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, ReactiveFormsModule, HttpClientModule ],
-      declarations: [ WorkflowComponent, TranslatePipe ], 
+      declarations: [ WorkflowComponent, TranslatePipe, RenameWorkflowPipe ], 
       providers:    [         
         { provide: DatasetsService, useClass: MockDatasetService }, 
         { provide: WorkflowService, useClass: MockWorkflowService },        
