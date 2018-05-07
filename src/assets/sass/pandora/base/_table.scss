@@ -64,7 +64,7 @@
     display: none;
   }
 
-  th {
+  th:not(.centered) {
     padding: .5rem .5rem .25rem;
     text-align: left;
   }
