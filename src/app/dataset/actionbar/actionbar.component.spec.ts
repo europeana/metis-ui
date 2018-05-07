@@ -40,6 +40,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should create', () => {    
+    component.datasetData = currentDataset;
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });

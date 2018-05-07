@@ -99,41 +99,22 @@ nav {
       border: 1px solid $white;
       border-bottom: 0;
       padding-left: .5rem;
+      transition: all .5s ease;
     }
 
-    &.newaction-btn-open {
-      background-color: $white;
-      border: 1px solid $offwhite;
-      border-bottom: 0;
-      z-index: 9;
-    }
-  }
-
-  li .newaction-btn+ul {
-    background: $white;
-    border: 1px solid $offwhite;
-    box-shadow: rgba(77, 77, 77, .2) 0 1px 4px;
-    box-sizing: border-box;
-    padding: .5rem 0;
-    position: absolute;
-    right: 0;
-    width: 16rem;
-    z-index: 8;
-
-    li {
-      display: block;
-      padding: 0 .5rem;
+    &.newaction-btn:hover {
+      background: $eu-jade;
+      border: 1px solid $eu-jade;
+      border-radius: $border-radius;
+      color: $white;
+      font-size: .875rem;
     }
 
-    a {
-      font-size: .75rem;
-      padding: 0;
-    }
-
-    a:hover {
-      background: none;
-      text-decoration: underline;
+    &.newaction-btn:focus,
+    &.newaction-btn:active {
+      background: $white;
+      border: 1px solid $eu-jade;
+      color: $eu-jade;
     }
   }
-
 }
