@@ -9,7 +9,6 @@
     <thead>
     	<tr>
         <th colspan="4"></th>
-        <th>{{ 'workflow' | translate }}</th>
         <th>{{ 'totalprocessed' | translate }}</th>
         <th>{{ 'totaldataset' | translate }}</th>
         <th class="centered">{{ 'startdate' | translate }}</th>
@@ -22,7 +21,6 @@
         <td class="nowrap">{{execution.datasetId}}</td>
         <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
         <td class="iconplaceholder"><span class="svg-icon-{{execution.workflowName}}"></span></td>
-        <td class="nowrap"><span class="ellipsis">{{execution.workflowName}}</span></td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin] ? execution.metisPlugins[currentPlugin].executionProgress.processedRecords : '-'}}</td>
         <td class="nowrap uppercase">
           {{execution.metisPlugins[currentPlugin] && execution.metisPlugins[currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
@@ -54,7 +52,6 @@
         <td class="nowrap">{{execution.datasetId}}</td>
         <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
         <td class="iconplaceholder"><span class="svg-icon-{{execution.workflowName}}"></span></td>
-        <td class="nowrap"><span class="ellipsis">{{execution.workflowName}}</span></td>
         <td class="nowrap">{{execution.metisPlugins[currentPlugin] ? execution.metisPlugins[currentPlugin].executionProgress.processedRecords : '-'}}</td>
         <td class="nowrap uppercase">
           {{execution.metisPlugins[currentPlugin] && execution.metisPlugins[currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}

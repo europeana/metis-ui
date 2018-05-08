@@ -1,23 +1,6 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
 
-.btn {
-  background: $eu-jade;
-  border: 0;
-  border-radius: 2px;
-  color: $white;
-  display: inline-block;
-  font-size: .875em;
-  font-weight: bold;
-  margin: 0;
-  padding: .8rem 5rem;
-  text-transform: none;
-
-  @media (max-width: $bp-xxl) {
-    padding: .8rem 2rem;
-  }
-}
-
 .progress {
   width: 100%;
 

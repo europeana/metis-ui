@@ -122,10 +122,23 @@
 
     button {
       background: $eu-jade;
-      border-radius: 0;
-      font-size: $font-size-slightly-smaller;
+      border: 1px solid $eu-jade;
+      border-radius: 2px;
+      color: $white;
+      display: inline-block;
+      font-size: .875em;
       font-weight: bold;
       margin: 0 .6rem;
+      padding: 0.5rem 1rem;
+      text-transform: none;
+      transition: all .5s ease;
+    }
+
+    button:hover,
+    button:focus {
+      background: transparent;
+      border-color: $eu-jade;
+      color: $eu-jade;
     }
 
     button.reset-btn {
@@ -133,8 +146,12 @@
       color: $gray-dark;
     }
 
-    button:disabled {
+    button:disabled,
+    button:disabled:hover,
+    button:disabled:focus {
       background: $black;
+      border-color: $black;
+      color: $white;
     }
 
     &.hidden {
@@ -288,8 +305,6 @@
         margin-bottom: 0;
 
         button {
-          border-radius: 2px;
-          color: $white;
           display: inline-block;
           margin: 0;
           margin-left: 1rem;
