@@ -151,7 +151,11 @@ export class MappingComponent implements OnInit {
   */
   tryOutXSLT(type) {
     this.datasets.setTempXSLT(type);
-    this.saveXSLT(true);
+    if (type === 'default') { // no need to save, but move to preview directly
+      this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
+    } else {
+      this.saveXSLT(true);
+    }
   }
 
   /** getFullXSLT
