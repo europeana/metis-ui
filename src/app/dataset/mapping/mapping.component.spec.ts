@@ -65,16 +65,15 @@ describe('MappingComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
   });
 
-  /*it('should save xslt', () => {
+  it('should save xslt', () => {
     component.fullView = true;
     component.loadXSLT('default');
     fixture.detectChanges();
-    
-    const save = fixture.debugElement.query(By.css('.btns-set-save button'));
-    save.triggerEventHandler('click', null);
+     
+    component.saveXSLT();
     fixture.detectChanges();    
     expect(component.xsltType).toBe('custom');
-  });*/
+  });
 
   it('should not display messages', () => {
     component.successMessage = 'test';
@@ -99,16 +98,15 @@ describe('MappingComponent', () => {
     expect(component.expandedSample).toBe(1);
   });
 
-  /*it('should create and save one xslt after viewing per field', () => {
+  it('should create and save one xslt after viewing per field', () => {
     component.fullView = false;
     component.loadXSLT('default');
     fixture.detectChanges();
     
-    const save = fixture.debugElement.query(By.css('.btns-set-save button'));
-    save.triggerEventHandler('click', null);
+    component.saveXSLT();
     fixture.detectChanges();    
     expect(component.xsltType).toBe('custom');
-  });*/
+  });
 
   it('should try out the xslt', fakeAsync((): void => {
     component.fullView = false;
