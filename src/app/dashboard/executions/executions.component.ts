@@ -24,7 +24,6 @@ export class ExecutionsComponent implements OnInit {
   ongoingExecutionsOutput: Array<any> = [];
   ongoingExecutionsCurrentTotal: number = 0;
   ongoingExecutionDone: boolean = false;
-  currentPlugin: number = 0;
   currentPage: number = 0;
   nextPage: number = 0;
   nextPageOngoing: number = 0;
@@ -87,7 +86,7 @@ export class ExecutionsComponent implements OnInit {
   */
   getOngoingExecutions() {
     this.workflows.getAllExecutionsPerOrganisation(this.nextPageOngoing, true).subscribe(executions => {
-      this.ongoingExecutions = this.ongoingExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
+      this.ongoingExecutions = this.ongoingExecutions.concat(this.datasets.addDatasetNameAndCurrentPlugin(executions['results']));
       if (executions['nextPage'] > 0) {
         this.nextPageOngoing = executions['nextPage'];
         this.getOngoingExecutions();
@@ -114,7 +113,7 @@ export class ExecutionsComponent implements OnInit {
     if (this.nextPage === -1) { return false }
 
     this.workflows.getAllExecutionsPerOrganisation(this.nextPage, false).subscribe(executions => {
-      this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameToExecution(executions['results']));
+      this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameAndCurrentPlugin(executions['results']));
       this.nextPage = executions['nextPage'];
 
       if (currentPage > thisPage) {

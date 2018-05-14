@@ -27,8 +27,8 @@ export class OngoingexecutionsComponent {
   errorMessage;
   subscription;
   intervalTimer = environment.intervalStatus;
-  currentPlugin: number = 0;
   cancelling;
+  currentPlugin = 0;
   datasetNames: Array<any> = [];
   viewMore: boolean = false;
 
@@ -66,7 +66,7 @@ export class OngoingexecutionsComponent {
       if (this.ongoingExecutionsTotal != executions['listSize'] && this.ongoingExecutionsTotal) {
         this.workflows.ongoingExecutionDone(true);
       }
-      this.ongoingExecutions = this.datasets.addDatasetNameToExecution(executions['results']);
+      this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions['results']);
       this.ongoingExecutionsTotal = executions['listSize'];
       if (executions['nextPage'] > 0) {
         this.viewMore = true;
