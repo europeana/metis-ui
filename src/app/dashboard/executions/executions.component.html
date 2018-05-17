@@ -30,9 +30,9 @@
           {{execution.metisPlugins[execution.currentPlugin] && execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
         </td>
         <td class="centered">
-          <span class="date">{{execution.createdDate | date:'dd/MM/yyyy'}}</span> 
+          <span class="date">{{execution.startedDate | date:'dd/MM/yyyy'}}</span> 
           <span class="datedivider">-</span> 
-          <span class="time">{{execution.createdDate | date:'HH:mm'}}</span>
+          <span class="time">{{execution.startedDate | date:'HH:mm'}}</span>
         </td>
         <td class="centered nowrap">
           <div class="progress">
@@ -64,9 +64,9 @@
           {{execution.metisPlugins[execution.currentPlugin] && execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
         </td>
         <td class="centered">
-          <span class="date">{{execution.createdDate | date:'dd/MM/yyyy'}}</span> 
+          <span class="date">{{execution.startedDate | date:'dd/MM/yyyy'}}</span> 
           <span class="datedivider">-</span> 
-          <span class="time">{{execution.createdDate | date:'HH:mm'}}</span>
+          <span class="time">{{execution.startedDate | date:'HH:mm'}}</span>
         </td>
         <td class="centered">
           <span class="date">{{execution.finishedDate | date:'dd/MM/yyyy'}}</span> 

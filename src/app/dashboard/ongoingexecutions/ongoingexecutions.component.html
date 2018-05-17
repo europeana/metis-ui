@@ -8,18 +8,6 @@
       <strong>{{ongoing.metisPlugins[ongoing.currentPlugin].pluginType}}</strong>
       {{ongoing.cancelling ? cancelling : ongoing.workflowStatus}}
     </div>
-    <!--<div class="progress" *ngIf="ongoing.metisPlugins[currentPlugin]">
-      <span>{{ongoing.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]" class="workflowname">{{ongoing.datasetName}}</a>
-      <div class="progress-status">
-        <span class="progress-statusnumbers">{{ongoing.metisPlugins[currentPlugin].executionProgress.processedRecords}} / 
-          {{ongoing.metisPlugins[currentPlugin].executionProgress.expectedRecords >= 0 ? ongoing.metisPlugins[currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
-        </span>
-        <span class="progress-percentage">{{ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage : ('unknown' | translate)}}%</span>
-      </div>
-      <div class="progressbar">
-        <div class="progressbar-done" [style.width.%]="ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage >= 0 ? ongoing.metisPlugins[currentPlugin].executionProgress.progressPercentage : 0"></div>
-      </div>
-    </div>-->
     <div class="progress">
       <div class="progress-status">
         <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
