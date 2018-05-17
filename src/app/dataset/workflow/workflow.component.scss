@@ -37,7 +37,31 @@
     label {
       max-width: 10rem;
     }
+  }
 
+  .form-group-connections > div {
+    display: inline-block;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    width: 65%;
+  }
+
+  .form-group-connections > div:nth-child(2) {
+    width: 25%;
+  }
+
+  .form-group-connections:first-child > div {
+    margin-top: 1rem;
+  }
+
+  .form-group-connections > a {
+    display: inline-block;
+    height: 1.2rem;
+    margin: 0 0.5rem;
+  }
+
+  .svg-icon-plus::before {
+    top: 0;
   }
 
   > label + .form-group {

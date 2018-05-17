@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, FormArray, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { WorkflowService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 
@@ -78,6 +78,7 @@ export class WorkflowComponent implements OnInit {
       pluginVALIDATION_INTERNAL: [''],
       pluginMEDIA_PROCESS: [''],
       pluginNORMALIZATION: [''],
+      pluginLINK_CHECKING: [''],
       pluginPREVIEW: [''],
       pluginPUBLISH: [''],
       pluginType: [''],
@@ -88,7 +89,13 @@ export class WorkflowComponent implements OnInit {
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
       url: [''],
-      customxslt: ['']
+      customxslt: [''],
+      limitConnectionsLINK_CHECKING: this.fb.array([
+        this.initLimitConnections()
+      ]),
+      limitConnectionsMEDIA_PROCESS: this.fb.array([
+        this.initLimitConnections()
+      ])
     });
 
     this.updateRequired();
@@ -137,6 +144,33 @@ export class WorkflowComponent implements OnInit {
       });
 
     });
+  }
+
+  initLimitConnections() {
+    return this.fb.group({
+      host: [''],
+      connections: ['']
+    });
+  }
+
+  addConnection(type: string) {
+    if (type === 'LINK_CHECKING') {
+      const control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control.push(this.initLimitConnections());
+    } else if (type === 'MEDIA_PROCESS') {
+      const control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control.push(this.initLimitConnections());
+    }
+  }
+
+  removeConnection(type: string, i: number) {
+    if (type === 'LINK_CHECKING') {
+      const control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control.removeAt(i);
+    } else if (type === 'MEDIA_PROCESS') {
+      const control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control.removeAt(i);
+    }
   }
 
   /** getWorkflow
@@ -202,6 +236,8 @@ export class WorkflowComponent implements OnInit {
   formatFormValues() {
 
     let plugins = [];
+
+    console.log('formatFormValues', this.workflowForm.value);
 
     // import/harvest
     if (this.workflowForm.value['pluginHARVEST'] === true) {
@@ -283,6 +319,20 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         'pluginType': 'PUBLISH',
         'mocked': false
+      });
+    }
+
+    // link checking
+    if (this.workflowForm.value['pluginLINK_CHECKING'] === true) {
+      let connectionsLinkChecking = {};
+      for (let c = 0; c < this.workflowForm.value['limitConnectionsLINK_CHECKING'].length; c++) {
+        connectionsLinkChecking[this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['host']] = this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['connections'];
+      }
+
+      plugins.push({
+        'pluginType': 'LINK_CHECKING',
+        'mocked': false,
+        'connectionLimitToDomains': connectionsLinkChecking
       });
     }
 
