@@ -104,8 +104,7 @@ export class WorkflowComponent implements OnInit {
   /** updateRequired
   /* update required fields depending on selection
   */
-  updateRequired() {
-    
+  updateRequired() {    
     this.workflowForm.valueChanges.subscribe(() => {
       if (this.workflowForm.get('pluginHARVEST').value === true) {
         this.workflowForm.get('pluginType').setValidators([Validators.required]);
@@ -142,10 +141,12 @@ export class WorkflowComponent implements OnInit {
           } 
         }
       });
-
     });
   }
 
+  /** initLimitConnections
+  /* add new host/connections form group to the list
+  */
   initLimitConnections() {
     return this.fb.group({
       host: [''],
@@ -153,6 +154,10 @@ export class WorkflowComponent implements OnInit {
     });
   }
 
+  /** addConnection
+  /* add new host/connection to form
+  /* @param {string} type - either link checking or media processing
+  */
   addConnection(type: string) {
     if (type === 'LINK_CHECKING') {
       const control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
@@ -163,6 +168,11 @@ export class WorkflowComponent implements OnInit {
     }
   }
 
+  /** removeConnection
+  /* remove host/connection from form
+  /* @param {string} type - either link checking or media processing
+  /* @param {number} i - host/connections combination in the list
+  */
   removeConnection(type: string, i: number) {
     if (type === 'LINK_CHECKING') {
       const control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
@@ -237,8 +247,6 @@ export class WorkflowComponent implements OnInit {
 
     let plugins = [];
 
-    console.log('formatFormValues', this.workflowForm.value);
-
     // import/harvest
     if (this.workflowForm.value['pluginHARVEST'] === true) {
       if (this.workflowForm.value['pluginType'] === 'OAIPMH_HARVEST') {
@@ -300,9 +308,14 @@ export class WorkflowComponent implements OnInit {
 
     // mediaservice
     if (this.workflowForm.value['pluginMEDIA_PROCESS'] === true) {
+      let connectionsMediaProcess = {};
+      for (let c = 0; c < this.workflowForm.value['limitConnectionsMEDIA_PROCESS'].length; c++) {
+        connectionsMediaProcess[this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['host']] = this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['connections'];
+      }
       plugins.push({
         'pluginType': 'MEDIA_PROCESS',
-        'mocked': false
+        'mocked': false,
+        'connectionLimitToDomains': connectionsMediaProcess
       });
     }
 
@@ -328,7 +341,6 @@ export class WorkflowComponent implements OnInit {
       for (let c = 0; c < this.workflowForm.value['limitConnectionsLINK_CHECKING'].length; c++) {
         connectionsLinkChecking[this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['host']] = this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['connections'];
       }
-
       plugins.push({
         'pluginType': 'LINK_CHECKING',
         'mocked': false,

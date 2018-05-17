@@ -71,6 +71,32 @@ describe('WorkflowComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('#url')).length).toBe(1);
   });
 
+  it('should get the workflow for this dataset', () => {
+    component.datasetData = currentDataset;
+    component.getWorkflow();
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('#url')).length).toBe(1);
+  });
+
+  it('should add and remove host/connections to form', () => {
+    component.datasetData = currentDataset;
+    component.addConnection('LINK_CHECKING');
+    fixture.detectChanges();
+    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(2);
+
+    component.removeConnection('LINK_CHECKING');
+    fixture.detectChanges();
+    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(1);
+
+    component.addConnection('MEDIA_PROCESS');
+    fixture.detectChanges();
+    expect(component.workflowForm.controls.limitConnectionsMEDIA_PROCESS.value.length).toBe(2);
+
+    component.removeConnection('MEDIA_PROCESS');
+    fixture.detectChanges();
+    expect(component.workflowForm.controls.limitConnectionsMEDIA_PROCESS.value.length).toBe(1);
+  });
+
   it('should submit the changes', () => {
     component.datasetData = currentDataset;
     component.workflowForm.get('pluginHARVEST').setValue(true);
@@ -84,6 +110,7 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('pluginMEDIA_PROCESS').setValue(true);
     component.workflowForm.get('pluginPREVIEW').setValue(true);
     component.workflowForm.get('pluginPUBLISH').setValue(true);
+    component.workflowForm.get('pluginLINK_CHECKING').setValue(true);
     component.onSubmit();
     fixture.detectChanges();
   });
