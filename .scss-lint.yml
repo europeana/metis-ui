@@ -96,8 +96,8 @@ linters:
     width: 2
 
   LeadingZero:
-    enabled: false
-    style: include_zero # or 'exclude_zero'
+    enabled: true
+    style: exclude_zero # or 'include_zero'
 
   MergeableSelector:
     enabled: false
