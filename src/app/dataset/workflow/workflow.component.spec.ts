@@ -84,7 +84,7 @@ describe('WorkflowComponent', () => {
     fixture.detectChanges();
     expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(2);
 
-    component.removeConnection('LINK_CHECKING');
+    component.removeConnection('LINK_CHECKING', 0);
     fixture.detectChanges();
     expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(1);    
   });
@@ -94,7 +94,7 @@ describe('WorkflowComponent', () => {
     fixture.detectChanges();
     expect(component.workflowForm.controls.limitConnectionsMEDIA_PROCESS.value.length).toBe(2);
 
-    component.removeConnection('MEDIA_PROCESS');
+    component.removeConnection('MEDIA_PROCESS', 0);
     fixture.detectChanges();
     expect(component.workflowForm.controls.limitConnectionsMEDIA_PROCESS.value.length).toBe(1);
   });
