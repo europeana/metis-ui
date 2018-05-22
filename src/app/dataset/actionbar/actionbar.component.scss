@@ -22,7 +22,7 @@
     strong,
     &.status-new {
       display: block;
-      font-size: .875rem;
+      font-size: $font-size-slightly-smaller;
     }
   }
 
@@ -87,7 +87,7 @@ nav {
 
   li a {
     color: $gray-med;
-    font-size: .875rem;
+    font-size: $font-size-slightly-smaller;
     padding: .25rem .5rem .25rem 1.75rem;
 
     &:hover {
@@ -107,7 +107,7 @@ nav {
       border: 1px solid $eu-jade;
       border-radius: $border-radius;
       color: $white;
-      font-size: .875rem;
+      font-size: $font-size-slightly-smaller;
     }
 
     &.newaction-btn:focus,

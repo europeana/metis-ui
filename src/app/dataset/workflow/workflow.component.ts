@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, FormArray, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { WorkflowService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 
@@ -78,6 +78,7 @@ export class WorkflowComponent implements OnInit {
       pluginVALIDATION_INTERNAL: [''],
       pluginMEDIA_PROCESS: [''],
       pluginNORMALIZATION: [''],
+      pluginLINK_CHECKING: [''],
       pluginPREVIEW: [''],
       pluginPUBLISH: [''],
       pluginType: [''],
@@ -88,7 +89,13 @@ export class WorkflowComponent implements OnInit {
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
       url: [''],
-      customxslt: ['']
+      customxslt: [''],
+      limitConnectionsLINK_CHECKING: this.fb.array([
+        this.initLimitConnections()
+      ]),
+      limitConnectionsMEDIA_PROCESS: this.fb.array([
+        this.initLimitConnections()
+      ])
     });
 
     this.updateRequired();
@@ -97,8 +104,7 @@ export class WorkflowComponent implements OnInit {
   /** updateRequired
   /* update required fields depending on selection
   */
-  updateRequired() {
-    
+  updateRequired() {    
     this.workflowForm.valueChanges.subscribe(() => {
       if (this.workflowForm.get('pluginHARVEST').value === true) {
         this.workflowForm.get('pluginType').setValidators([Validators.required]);
@@ -135,8 +141,63 @@ export class WorkflowComponent implements OnInit {
           } 
         }
       });
-
     });
+  }
+
+  /** initLimitConnections
+  /* add new host/connections form group to the list
+  */
+  initLimitConnections(host?, connections?) {
+    return this.fb.group({
+      host: [host ? host : ''],
+      connections: [connections ? connections : '']
+    });
+  }
+
+  /** addConnection
+  /* add new host/connection to form
+  /* @param {string} type - either link checking or media processing
+  */
+  addConnection(type: string, host?, connections?) {
+    let control;
+    if (type === 'LINK_CHECKING') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+    } else if (type === 'MEDIA_PROCESS') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+    }
+    control.push(this.initLimitConnections(host, connections));
+  }
+
+  /** removeConnection
+  /* remove host/connection from form
+  /* @param {string} type - either link checking or media processing
+  /* @param {number} i - host/connections combination in the list
+  */
+  removeConnection(type: string, i: number) {
+    let control;
+    if (type === 'LINK_CHECKING') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+    } else if (type === 'MEDIA_PROCESS') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+    }
+    control.removeAt(i);
+  }
+
+  /** removeAllConnections
+  /* remove all host/connection 
+  /* @param {string} type - either link checking or media processing
+  */
+  removeAllConnections(type: string) {
+    let control;
+    if (type === 'LINK_CHECKING') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+    } else if (type === 'MEDIA_PROCESS') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+    }
+
+    while (control.length !== 0) {
+      control.removeAt(0)
+    }
   }
 
   /** getWorkflow
@@ -155,12 +216,11 @@ export class WorkflowComponent implements OnInit {
     this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
 
       if (workflow === false) { return false; }
-
       this.newWorkflow = false;
 
       for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
         let thisWorkflow = workflow['metisPluginsMetadata'][w];
-
+        
         if (thisWorkflow.enabled === true) {
           if (thisWorkflow.pluginType === 'OAIPMH_HARVEST' || thisWorkflow.pluginType === 'HTTP_HARVEST' ) {
             this.workflowForm.controls['pluginHARVEST'].setValue(true);
@@ -188,6 +248,24 @@ export class WorkflowComponent implements OnInit {
         if (thisWorkflow.pluginType === 'TRANSFORMATION') {
           this.workflowForm.controls['customxslt'].setValue(thisWorkflow.customxslt);
         }
+
+        // media processing
+        if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
+          this.removeAllConnections(thisWorkflow.pluginType);
+          let connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
+          for (let lc = 0; lc < connectionDomains.length; lc++) {
+            let host = connectionDomains[lc];
+            let connections = thisWorkflow.connectionLimitToDomains[host];
+            if (host !== '') {
+              this.addConnection(thisWorkflow.pluginType, host, connections);
+            } else {
+              if (connectionDomains.length === 1) {
+                this.addConnection(thisWorkflow.pluginType);
+              }
+            }
+          }
+        }        
+
       }
     },(err: HttpErrorResponse) => {
       let errorGetWorkflow = this.errors.handleError(err);   
@@ -264,9 +342,14 @@ export class WorkflowComponent implements OnInit {
 
     // mediaservice
     if (this.workflowForm.value['pluginMEDIA_PROCESS'] === true) {
+      let connectionsMediaProcess = {};
+      for (let c = 0; c < this.workflowForm.value['limitConnectionsMEDIA_PROCESS'].length; c++) {
+        connectionsMediaProcess[this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['host']] = this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['connections'];
+      }
       plugins.push({
         'pluginType': 'MEDIA_PROCESS',
-        'mocked': false
+        'mocked': false,
+        'connectionLimitToDomains': connectionsMediaProcess
       });
     }
 
@@ -283,6 +366,19 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         'pluginType': 'PUBLISH',
         'mocked': false
+      });
+    }
+
+    // link checking
+    if (this.workflowForm.value['pluginLINK_CHECKING'] === true) {
+      let connectionsLinkChecking = {};
+      for (let c = 0; c < this.workflowForm.value['limitConnectionsLINK_CHECKING'].length; c++) {
+        connectionsLinkChecking[this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['host']] = this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['connections'];
+      }
+      plugins.push({
+        'pluginType': 'LINK_CHECKING',
+        'mocked': false,
+        'connectionLimitToDomains': connectionsLinkChecking
       });
     }
 

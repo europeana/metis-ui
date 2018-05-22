@@ -111,7 +111,7 @@
           .menu-sublevel {
             background: $white;
             border: 1px solid $gray-lighter;
-            font-size: .875rem;
+            font-size: $font-size-slightly-smaller;
             left: 0;
             margin-left: -1px;
             padding: .4rem .8rem;
@@ -168,7 +168,7 @@
         top: 3.5rem;
 
         li {
-          font-size: .875rem;
+          font-size: $font-size-slightly-smaller;
         }
 
         &::before {
