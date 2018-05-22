@@ -23,7 +23,7 @@
     </div>
     <nav>
       <ul>
-        <li *ngIf="!ongoing.cancelling && ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'PREVIEW' && ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'PUBLISH'">
+        <li *ngIf="!ongoing.cancelling && ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'PREVIEW' && ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'PUBLISH' && ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'LINK_CHECKING' && ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'MEDIA_PROCESS'">
           <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(ongoing.id)"></a>
         </li>
         <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'">
