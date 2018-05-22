@@ -57,4 +57,12 @@ describe('ExecutionsComponent', () => {
     expect(component.successMessage).not.toBe('');
   });  
 
+  it('should try to refresh a workflow', () => {
+    fixture.detectChanges();
+    component.nextPage = 1;    
+    component.refreshExecutions();
+    fixture.detectChanges();
+    expect(component.nextPage).not.toBe(1);
+  });  
+
 });

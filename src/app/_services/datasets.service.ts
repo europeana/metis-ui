@@ -69,16 +69,16 @@ export class DatasetsService {
     });
   }
 
-  /** addDatasetInfo
+  /** addDatasetNameAndCurrentPlugin
   /* add relevant dataset info to execution
   /* use a name that was retrieved before, or
   /* make a call to get dataset name and store it in the array
   /* @param {object} executions - the executions retrieved from a call
   */
-  addDatasetNameToExecution(executions) {
+  addDatasetNameAndCurrentPlugin(executions) {
     let updatedExecutions: Array<any> = [];
-
     for (let i = 0; i < executions.length; i++) {
+      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
       if (this.datasetNames[executions[i].datasetId]) {
         executions[i].datasetName = this.datasetNames[executions[i].datasetId];
       } else {    
@@ -91,7 +91,6 @@ export class DatasetsService {
       }
       updatedExecutions.push(executions[i]);
     }
-
     return updatedExecutions;
   }
 

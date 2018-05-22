@@ -6,8 +6,12 @@
   padding-top: $space-double;
 
   .btn.btn-light {
+    background-color: $white;
     border-color: $eu-jade;
+    border-width: 6px;
     color: $eu-jade;
+    padding: .8em 1.2em;
+    text-transform: uppercase;
 
     &:hover {
       background-color: $eu-jade;
