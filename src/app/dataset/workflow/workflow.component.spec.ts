@@ -78,7 +78,7 @@ describe('WorkflowComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('#url')).length).toBe(1);
   });
 
-  it('should add and remove host/connections to form', () => {
+  it('should add and remove host/connections for link checking', () => {
     component.datasetData = currentDataset;
     component.addConnection('LINK_CHECKING');
     fixture.detectChanges();
@@ -86,8 +86,10 @@ describe('WorkflowComponent', () => {
 
     component.removeConnection('LINK_CHECKING');
     fixture.detectChanges();
-    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(1);
+    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(1);    
+  });
 
+  it('should add and remove host/connections for media processing', () => {
     component.addConnection('MEDIA_PROCESS');
     fixture.detectChanges();
     expect(component.workflowForm.controls.limitConnectionsMEDIA_PROCESS.value.length).toBe(2);

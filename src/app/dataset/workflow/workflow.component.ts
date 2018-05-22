@@ -250,36 +250,21 @@ export class WorkflowComponent implements OnInit {
         }
 
         // media processing
-        if (thisWorkflow.pluginType === 'MEDIA_PROCESS') {
-          this.removeAllConnections('MEDIA_PROCESS');
-          for (let lc = 0; lc < Object.keys(thisWorkflow.connectionLimitToDomains).length; lc++) {
-            let host = Object.keys(thisWorkflow.connectionLimitToDomains)[lc];
+        if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
+          this.removeAllConnections(thisWorkflow.pluginType);
+          let connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
+          for (let lc = 0; lc < connectionDomains.length; lc++) {
+            let host = connectionDomains[lc];
             let connections = thisWorkflow.connectionLimitToDomains[host];
             if (host !== '') {
-              this.addConnection('MEDIA_PROCESS', host, connections);
+              this.addConnection(thisWorkflow.pluginType, host, connections);
             } else {
-              if (Object.keys(thisWorkflow.connectionLimitToDomains).length === 1) {
-                this.addConnection('MEDIA_PROCESS');
+              if (connectionDomains.length === 1) {
+                this.addConnection(thisWorkflow.pluginType);
               }
             }
           }
-        }
-
-        // link checking
-        if (thisWorkflow.pluginType === 'LINK_CHECKING') {          
-         this.removeAllConnections('LINK_CHECKING');
-          for (let lc = 0; lc < Object.keys(thisWorkflow.connectionLimitToDomains).length; lc++) {
-            let host = Object.keys(thisWorkflow.connectionLimitToDomains)[lc];
-            let connections = thisWorkflow.connectionLimitToDomains[host];
-            if (host !== '') {
-              this.addConnection('LINK_CHECKING', host, connections);
-            } else {
-              if (Object.keys(thisWorkflow.connectionLimitToDomains).length === 1) {
-                this.addConnection('LINK_CHECKING');
-              }
-            }
-          }
-        }
+        }        
 
       }
     },(err: HttpErrorResponse) => {
