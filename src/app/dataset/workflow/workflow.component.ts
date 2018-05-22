@@ -147,10 +147,10 @@ export class WorkflowComponent implements OnInit {
   /** initLimitConnections
   /* add new host/connections form group to the list
   */
-  initLimitConnections() {
+  initLimitConnections(host?, connections?) {
     return this.fb.group({
-      host: [''],
-      connections: ['']
+      host: [host ? host : ''],
+      connections: [connections ? connections : '']
     });
   }
 
@@ -158,14 +158,14 @@ export class WorkflowComponent implements OnInit {
   /* add new host/connection to form
   /* @param {string} type - either link checking or media processing
   */
-  addConnection(type: string) {
+  addConnection(type: string, host?, connections?) {
+    let control;
     if (type === 'LINK_CHECKING') {
-      const control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
-      control.push(this.initLimitConnections());
+      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
     } else if (type === 'MEDIA_PROCESS') {
-      const control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
-      control.push(this.initLimitConnections());
+      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
     }
+    control.push(this.initLimitConnections(host, connections));
   }
 
   /** removeConnection
@@ -174,12 +174,29 @@ export class WorkflowComponent implements OnInit {
   /* @param {number} i - host/connections combination in the list
   */
   removeConnection(type: string, i: number) {
+    let control;
     if (type === 'LINK_CHECKING') {
-      const control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
-      control.removeAt(i);
+      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
     } else if (type === 'MEDIA_PROCESS') {
-      const control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
-      control.removeAt(i);
+      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+    }
+    control.removeAt(i);
+  }
+
+  /** removeAllConnections
+  /* remove all host/connection 
+  /* @param {string} type - either link checking or media processing
+  */
+  removeAllConnections(type: string) {
+    let control;
+    if (type === 'LINK_CHECKING') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+    } else if (type === 'MEDIA_PROCESS') {
+      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+    }
+
+    while (control.length !== 0) {
+      control.removeAt(0)
     }
   }
 
@@ -199,12 +216,11 @@ export class WorkflowComponent implements OnInit {
     this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
 
       if (workflow === false) { return false; }
-
       this.newWorkflow = false;
 
       for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
         let thisWorkflow = workflow['metisPluginsMetadata'][w];
-
+        
         if (thisWorkflow.enabled === true) {
           if (thisWorkflow.pluginType === 'OAIPMH_HARVEST' || thisWorkflow.pluginType === 'HTTP_HARVEST' ) {
             this.workflowForm.controls['pluginHARVEST'].setValue(true);
@@ -232,6 +248,39 @@ export class WorkflowComponent implements OnInit {
         if (thisWorkflow.pluginType === 'TRANSFORMATION') {
           this.workflowForm.controls['customxslt'].setValue(thisWorkflow.customxslt);
         }
+
+        // media processing
+        if (thisWorkflow.pluginType === 'MEDIA_PROCESS') {
+          this.removeAllConnections('MEDIA_PROCESS');
+          for (let lc = 0; lc < Object.keys(thisWorkflow.connectionLimitToDomains).length; lc++) {
+            let host = Object.keys(thisWorkflow.connectionLimitToDomains)[lc];
+            let connections = thisWorkflow.connectionLimitToDomains[host];
+            if (host !== '') {
+              this.addConnection('MEDIA_PROCESS', host, connections);
+            } else {
+              if (Object.keys(thisWorkflow.connectionLimitToDomains).length === 1) {
+                this.addConnection('MEDIA_PROCESS');
+              }
+            }
+          }
+        }
+
+        // link checking
+        if (thisWorkflow.pluginType === 'LINK_CHECKING') {          
+         this.removeAllConnections('LINK_CHECKING');
+          for (let lc = 0; lc < Object.keys(thisWorkflow.connectionLimitToDomains).length; lc++) {
+            let host = Object.keys(thisWorkflow.connectionLimitToDomains)[lc];
+            let connections = thisWorkflow.connectionLimitToDomains[host];
+            if (host !== '') {
+              this.addConnection('LINK_CHECKING', host, connections);
+            } else {
+              if (Object.keys(thisWorkflow.connectionLimitToDomains).length === 1) {
+                this.addConnection('LINK_CHECKING');
+              }
+            }
+          }
+        }
+
       }
     },(err: HttpErrorResponse) => {
       let errorGetWorkflow = this.errors.handleError(err);   
