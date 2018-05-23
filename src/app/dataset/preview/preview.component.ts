@@ -80,9 +80,6 @@ export class PreviewComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-    }
-
-    if (typeof this.translate.instant === 'function') { 
       this.nosample = this.translate.instant('nosample');
     }
     
