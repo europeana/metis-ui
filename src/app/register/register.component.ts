@@ -19,6 +19,10 @@ export class RegisterComponent implements OnInit {
   successMessage: string;
   notfoundMessage: string;
   linkRegister: string = environment.links.registerMetis;
+  msgSuccess: string;
+  msgPasswordWeak: string;
+  msgRegistrationFailed: string;
+  msgAlreadyRegistered: string;
 
   public password;
 
@@ -48,6 +52,10 @@ export class RegisterComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
+      this.msgSuccess = this.translate.instant('registrationsuccessful');
+      this.msgPasswordWeak = this.translate.instant('passwordweakerror');
+      this.msgRegistrationFailed = this.translate.instant('registrationfailed');
+      this.msgAlreadyRegistered = this.translate.instant('registrationalready');
     }
   }
 
@@ -73,27 +81,21 @@ export class RegisterComponent implements OnInit {
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 
-    if (typeof this.translate.instant !== 'function') { return false; }
-    const msg_successful = this.translate.instant('registrationsuccessful');
-
     if (strength <= min) {
-      this.errorMessage = this.translate.instant('passwordweakerror');
+      this.errorMessage = this.msgPasswordWeak;
       this.loading = false;
     } else {
       this.authentication.register(email, password).subscribe(result => {
         if (result === true) {
-          this.onRegistration(msg_successful);
+          this.onRegistration(this.msgSuccess);
         } else {
-          this.errorMessage = this.translate.instant('registrationfailed');
+          this.errorMessage = this.msgRegistrationFailed;
         }
         this.loading = false;
-      },
-      (err: HttpErrorResponse) => {        
+      }, (err: HttpErrorResponse) => {        
         if (err.status === 201 ) {
-          // Bug in HttpClient, a 201 is returned as error for some reason.
-          this.onRegistration(msg_successful);
-        } else if (err.status === 404 || err.status === 406) {
-          
+          this.onRegistration(this.msgSuccess);
+        } else if (err.status === 404 || err.status === 406) {          
           let errmsg: string;
           try {
             const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
@@ -102,9 +104,8 @@ export class RegisterComponent implements OnInit {
             errmsg = null;
           }
           this.notfoundMessage = errmsg || 'Unknown';
-
         } else if (err.status === 409) {
-          this.onRegistration(this.translate.instant('registrationalready'));
+          this.onRegistration(this.msgAlreadyRegistered);
         } else {
           this.errorMessage = `${StringifyHttpError(err)}`;
         }

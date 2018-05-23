@@ -45,7 +45,7 @@ export class DatasetlogComponent implements OnInit {
     if (!this.isShowingLog || !this.isShowingLog['externaltaskId'] || !this.isShowingLog['topology']) { return false; }
     this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology']).subscribe(result => {
       this.logMessages = result;
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
   }

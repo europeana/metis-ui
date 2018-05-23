@@ -194,4 +194,8 @@ export class MockWorkflowService extends WorkflowService {
   getPublishedHarvestedData() {
     return Observable.of(harvestData);
   }
+
+  getLogs() {
+    return Observable.of('mocked');
+  }
 }

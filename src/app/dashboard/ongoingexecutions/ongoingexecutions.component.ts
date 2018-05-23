@@ -73,6 +73,9 @@ export class OngoingexecutionsComponent {
       } else {
         this.viewMore = false;
       }
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -84,7 +87,7 @@ export class OngoingexecutionsComponent {
     if (!id) { return false; }
     this.getOngoing();
     this.workflows.cancelThisWorkflow(id).subscribe(result => {
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });

@@ -57,6 +57,7 @@ export const LANG_EN_TRANS = {
   'mapping': 'Mapping',
   'mediaservice': 'Process Media',
   'metadataformat': 'Metadata format',
+  'msgbadcredentials': 'Email or password is incorrect, please try again.',
   'myprofile': 'My profile',
   'networkmember': 'Europeana Network Association Member',
   'new dataset': 'New dataset',

@@ -267,7 +267,7 @@ export class WorkflowComponent implements OnInit {
         }        
 
       }
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       let errorGetWorkflow = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorGetWorkflow)}`;
       this.scrollToMessageBox();
@@ -400,7 +400,7 @@ export class WorkflowComponent implements OnInit {
       this.getWorkflow();
       this.successMessage = 'Workflow saved';
       this.scrollToMessageBox();  
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       let errorSubmit = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
       this.scrollToMessageBox();

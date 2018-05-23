@@ -4,9 +4,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
 
-import { WorkflowService, TranslateService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { GeneralactionbarComponent } from './generalactionbar.component';
-import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset } from '../../_mocked';
+import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, currentUser } from '../../_mocked';
 
 describe('GeneralactionbarComponent', () => {
   let component: GeneralactionbarComponent;
@@ -17,13 +17,16 @@ describe('GeneralactionbarComponent', () => {
       imports: [ RouterTestingModule, HttpClientTestingModule ],
       declarations: [ GeneralactionbarComponent, TranslatePipe ],
       providers:    [ {provide: WorkflowService, useClass: MockWorkflowService},
-      { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
+        ErrorService,
+        RedirectPreviousUrl,
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: TranslateService,
+              useValue: {
+                translate: () => {
+                  return {};
+                }
               }
-            }
-        }]
+          }]
     })
     .compileComponents();
   }));

@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
   successMessage: string;
   returnUrl: string;
   loginForm: FormGroup;
+  msgBadCredentials: string;
 
   constructor(
     private router: Router,
@@ -42,6 +43,8 @@ export class LoginComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
+      this.msgBadCredentials = this.translate.instant('msgbadcredentials');
+
     }
   }
 
@@ -49,9 +52,7 @@ export class LoginComponent implements OnInit {
   /* submit login form
   */
   onSubmit() {
-    const msg_bad_credentials = 'Email or password is incorrect, please try again.';
     const url = this.redirectPreviousUrl.get();
-        
     this.loading = true;
 
     this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
@@ -63,12 +64,12 @@ export class LoginComponent implements OnInit {
           this.router.navigate([`${environment.afterLoginGoto}`]);
         }
       } else {
-        this.errorMessage = msg_bad_credentials;
+        this.errorMessage = this.msgBadCredentials;
       }
       this.loading = false;
     }, (err: HttpErrorResponse) => {
       if (err.status === 406) {
-        this.errorMessage = msg_bad_credentials;
+        this.errorMessage = this.msgBadCredentials;
       } else {
         this.errorMessage = `Login failed: ${StringifyHttpError(err)}`;
       }      

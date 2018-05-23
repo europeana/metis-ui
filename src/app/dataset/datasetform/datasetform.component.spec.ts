@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Rx';
 
 import { DatasetformComponent } from './datasetform.component';
 import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset } from '../../_mocked';
+import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser} from '../../_mocked';
 
 import { By } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -28,7 +28,7 @@ describe('DatasetformComponent', () => {
         {provide: DatasetsService, useClass: MockDatasetService}, 
         {provide: WorkflowService, useClass: MockWorkflowService}, 
         {provide: CountriesService, useClass: MockCountriesService},         
-        AuthenticationService, 
+        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
         ErrorService, 
         RedirectPreviousUrl,
         { provide: TranslateService,

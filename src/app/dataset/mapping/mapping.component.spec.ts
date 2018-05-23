@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks
 import { CodemirrorModule } from 'ng2-codemirror';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, xslt } from '../../_mocked';
+import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, xslt, MockAuthenticationService, currentUser } from '../../_mocked';
 
 import { DatasetsService, WorkflowService, TranslateService, RedirectPreviousUrl, ErrorService, AuthenticationService } from '../../_services';
 
@@ -34,7 +34,7 @@ describe('MappingComponent', () => {
         },
         RedirectPreviousUrl,
         ErrorService,
-        AuthenticationService
+        { provide: AuthenticationService, useClass: MockAuthenticationService}
       ]
     })
     .compileComponents();
@@ -65,16 +65,14 @@ describe('MappingComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
   });
 
-  /*it('should save xslt', () => {
+  it('should save xslt', () => {
     component.fullView = true;
     component.loadXSLT('default');
     fixture.detectChanges();
-    
-    const save = fixture.debugElement.query(By.css('.btns-set-save button'));
-    save.triggerEventHandler('click', null);
+    component.saveXSLT();
     fixture.detectChanges();    
     expect(component.xsltType).toBe('custom');
-  });*/
+  });
 
   it('should not display messages', () => {
     component.successMessage = 'test';
@@ -99,16 +97,13 @@ describe('MappingComponent', () => {
     expect(component.expandedSample).toBe(1);
   });
 
-  /*it('should create and save one xslt after viewing per field', () => {
-    component.fullView = false;
+  it('should create a full xslt after viewing cards', () => {
     component.loadXSLT('default');
-    fixture.detectChanges();
-    
-    const save = fixture.debugElement.query(By.css('.btns-set-save button'));
-    save.triggerEventHandler('click', null);
-    fixture.detectChanges();    
+    component.fullView = false;
+    component.getFullXSLT();
+    component.saveXSLT();
     expect(component.xsltType).toBe('custom');
-  });*/
+  });
 
   it('should try out the xslt', fakeAsync((): void => {
     component.fullView = false;
