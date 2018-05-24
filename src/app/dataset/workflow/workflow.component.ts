@@ -287,14 +287,14 @@ export class WorkflowComponent implements OnInit {
         plugins.push({
           'pluginType': this.workflowForm.value['pluginType'],
           'setSpec': this.workflowForm.value['setSpec'],
-          'url': this.workflowForm.value['harvestUrl'],
+          'url': this.workflowForm.value['harvestUrl'].trim(),
           'metadataFormat': this.workflowForm.value['metadataFormat'],
           'mocked': false
         });
       } else if (this.workflowForm.value['pluginType'] === 'HTTP_HARVEST') {
         plugins.push({
           'pluginType': this.workflowForm.value['pluginType'],
-          'url': this.workflowForm.value['url'],
+          'url': this.workflowForm.value['url'].trim(),
           'mocked': false
         });
       }      
