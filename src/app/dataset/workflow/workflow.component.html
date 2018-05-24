@@ -67,6 +67,12 @@
         <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
           <label for="harvest-url">{{ 'harvesturl' | translate }} *</label>
           <input id="harvest-url" type="text" formControlName="harvestUrl" />
+          <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validWhitespace">
+            <div class="error-message">Whitespace is not allowed</div>
+          </div>
+          <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validParameter">
+            <div class="error-message">Parameters are not allowed</div>
+          </div>
         </div>
         <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
           <label for="setspec">{{ 'setspec' | translate }}</label>
@@ -79,6 +85,12 @@
         <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
           <label for="url">{{ 'url' | translate }} *</label>
           <input id="url" type="text" formControlName="url" />
+          <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validWhitespace">
+            <div class="error-message">Whitespace is not allowed</div>
+          </div>
+          <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validParameter">
+            <div class="error-message">Parameters are not allowed</div>
+          </div>
         </div>
       </div>
 

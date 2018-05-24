@@ -147,7 +147,6 @@ export class WorkflowService {
   getLastExecution(id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).map(lastExecution => {   
-      console.log(lastExecution);
       return lastExecution ? lastExecution['results'][0] : false;
     });
   }
