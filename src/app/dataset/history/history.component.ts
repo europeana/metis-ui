@@ -6,7 +6,8 @@ import { StringifyHttpError } from '../../_helpers';
 
 @Component({
   selector: 'app-history',
-  templateUrl: './history.component.html'
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.scss']
 })
 export class HistoryComponent implements OnInit {
 
@@ -107,6 +108,7 @@ export class HistoryComponent implements OnInit {
       for (let i = 0; i < showTotal; i++) {
         let r = result['results'][i];
         r['metisPlugins'].reverse();
+        this.allExecutions.push(r);
         for (let w = 0; w < r['metisPlugins'].length; w++) {
           let ws = r['metisPlugins'][w];
           ws['hasReport'] = false;  

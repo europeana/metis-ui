@@ -122,6 +122,7 @@ export const LANG_EN_TRANS = {
   'viewall': 'View all',
   'viewcollections': 'View in collections',
   'workflow': 'Workflow',
+  'workflowcreated': 'Workflow created on',
   'workflow step': 'Workflow step',
   'xsltcards': 'View per field',
   'xsltfull': 'View in one sheet',
