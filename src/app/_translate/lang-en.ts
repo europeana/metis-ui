@@ -29,6 +29,8 @@ export const LANG_EN_TRANS = {
   'emailerror': 'Please enter a valid email address',  
   'enddate': 'End date',  
   'enrichment': 'Enrich', 
+  'errorharvestparameters': 'Parameters are not allowed',
+  'errorharvesturl': 'This is not a valid URL',
   'expand': 'Expand info',
   'firstname': 'First name',
   'firstpublished': 'First published',
