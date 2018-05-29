@@ -45,7 +45,7 @@
           </div>
           <nav>
             <ul>
-              <li *ngIf="!execution.cancelling && execution.metisPlugins[execution.currentPlugin].pluginType !== 'PREVIEW' && execution.metisPlugins[execution.currentPlugin].pluginType !== 'PUBLISH' && execution.metisPlugins[execution.currentPlugin].pluginType !== 'LINK_CHECKING' && execution.metisPlugins[execution.currentPlugin].pluginType !== 'MEDIA_PROCESS'">
+              <li *ngIf="!execution.cancelling && execution.metisPlugins[execution.currentPlugin].pluginType !== 'PREVIEW' && execution.metisPlugins[execution.currentPlugin].pluginType !== 'PUBLISH' && execution.metisPlugins[execution.currentPlugin].pluginType !== 'MEDIA_PROCESS'">
                 <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(execution.id)"></a>
               </li>
               <li><a [routerLink]="['/dataset', 'log', execution.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>

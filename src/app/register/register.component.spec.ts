@@ -21,8 +21,9 @@ describe('RegisterComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule ],
       declarations: [ RegisterComponent, TranslatePipe ],
-      providers: [ AuthenticationService,
-      { provide: TranslateService,
+      providers: [ 
+        {provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: TranslateService,
           useValue: {
             translate: () => {
               return {};
@@ -54,9 +55,12 @@ describe('RegisterComponent', () => {
   });
 
   it('should submit the form', () => {
+    component.registerForm.controls.email.setValue('test@mocked.com');
+    component.registerForm.controls.passwords['controls'].password.setValue('!Passw0rd123');
+    component.registerForm.controls.passwords['controls'].confirm.setValue('!Passw0rd123');
     component.onSubmit();
     fixture.detectChanges();
-    //expect(submitBtn.disabled).toBe(true);
+    expect(submitBtn.disabled).toBe(true);
   });
 
 });

@@ -20,6 +20,16 @@ export let currentWorkflowDataset = {
     enabled: true,
     pluginType: 'TRANSFORMATION',
     customXSLT: false
+  },
+  {
+    enabled: true,
+    pluginType: 'MEDIA_PROCESS',
+    connectionLimitToDomains: { 'mocked': 1 }
+  },
+  {
+    enabled: true,
+    pluginType: 'LINK_CHECKING',
+    connectionLimitToDomains: { 'mocked': 1 }   
   }]
 }
 
@@ -193,5 +203,9 @@ export class MockWorkflowService extends WorkflowService {
 
   getPublishedHarvestedData() {
     return Observable.of(harvestData);
+  }
+
+  getLogs() {
+    return Observable.of('mocked');
   }
 }

@@ -249,8 +249,9 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.controls['customxslt'].setValue(thisWorkflow.customxslt);
         }
 
-        // media processing
+        // media processing + link checking
         if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
+          if (!thisWorkflow.connectionLimitToDomains) { return false; }
           this.removeAllConnections(thisWorkflow.pluginType);
           let connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
           for (let lc = 0; lc < connectionDomains.length; lc++) {
@@ -267,7 +268,7 @@ export class WorkflowComponent implements OnInit {
         }        
 
       }
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       let errorGetWorkflow = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorGetWorkflow)}`;
       this.scrollToMessageBox();
@@ -400,7 +401,7 @@ export class WorkflowComponent implements OnInit {
       this.getWorkflow();
       this.successMessage = 'Workflow saved';
       this.scrollToMessageBox();  
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       let errorSubmit = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
       this.scrollToMessageBox();

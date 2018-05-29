@@ -6,7 +6,7 @@ import { By } from '@angular/platform-browser';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
-import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
+import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
 
 import { HistoryComponent } from './history.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -23,7 +23,7 @@ describe('HistoryComponent', () => {
       providers: [ DatasetsService,    
         {provide: WorkflowService, useClass: MockWorkflowService},     
         RedirectPreviousUrl, 
-        AuthenticationService, 
+        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
         ErrorService,
         { provide: TranslateService,
           useValue: {

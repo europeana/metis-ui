@@ -7,7 +7,7 @@ import { ReportComponent } from './report.component';
 
 import { WorkflowService, AuthenticationService, TranslateService } from '../../_services';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
-import { MockWorkflowService, currentWorkflow, currentDataset } from '../../_mocked';
+import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -19,7 +19,7 @@ describe('ReportComponent', () => {
       declarations: [ ReportComponent, TranslatePipe ],
       providers: [ 
       {provide: WorkflowService, useClass: MockWorkflowService}, 
-      AuthenticationService, 
+      { provide: AuthenticationService, useClass: MockAuthenticationService }, 
       { provide: TranslateService,
           useValue: {
             translate: () => {

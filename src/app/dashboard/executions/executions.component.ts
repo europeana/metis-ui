@@ -34,6 +34,7 @@ export class ExecutionsComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   allWorkflows: any;
+  msgCancelling: string;
 
   /** ngOnInit
   /* init this component:
@@ -44,6 +45,7 @@ export class ExecutionsComponent implements OnInit {
   ngOnInit() {
   	if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
+      this.msgCancelling = this.translate.instant('cancelling');
     }  
 
     this.startPolling();
@@ -93,6 +95,9 @@ export class ExecutionsComponent implements OnInit {
       } else {
         this.ongoingExecutionsOutput = this.ongoingExecutions;
       }   
+    },(err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
     
     if (this.nextPageOngoing <= 0) {
@@ -119,7 +124,10 @@ export class ExecutionsComponent implements OnInit {
       if (currentPage > thisPage) {
         this.getAllExecutions();
       }
-    });   
+    },(err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
+    });  
   }
 
   /** loadNextPage
@@ -139,11 +147,7 @@ export class ExecutionsComponent implements OnInit {
   cancelWorkflow(id) {
     if (!id) { return false; }
     this.workflows.cancelThisWorkflow(id).subscribe(result => {
-      if (typeof this.translate.instant === 'function') { 
-        this.successMessage = this.translate.instant('cancelling') + ': ' + id;
-      } else {
-        this.successMessage = 'Cancelling: ' + id;
-      }
+      this.successMessage = this.msgCancelling + ': ' + id;
     },(err: HttpErrorResponse) => {
       let error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;

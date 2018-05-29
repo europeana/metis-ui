@@ -80,9 +80,6 @@ export class PreviewComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-    }
-
-    if (typeof this.translate.instant === 'function') { 
       this.nosample = this.translate.instant('nosample');
     }
     
@@ -115,6 +112,8 @@ export class PreviewComponent implements OnInit {
       if (this.nextPageDate >= 0) {
         this.addDateFilter();
       }
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err); 
     });     
   }
 
@@ -183,6 +182,8 @@ export class PreviewComponent implements OnInit {
           let error = this.errors.handleError(err); 
           this.errorMessage = `${StringifyHttpError(error)}`;   
         });
+      }, (err: HttpErrorResponse) => {
+        this.errors.handleError(err);         
       });
     }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 

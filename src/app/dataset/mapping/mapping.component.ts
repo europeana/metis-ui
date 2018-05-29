@@ -45,6 +45,7 @@ export class MappingComponent implements OnInit {
   splitter: string = environment.xsltSplitter;
   expandedSample: number;
   expandedStatistics: boolean;
+  msgXSLTSuccess: string;
 
   ngOnInit() {
   	 this.editorConfigEdit = { 
@@ -59,6 +60,7 @@ export class MappingComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
+      this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     }
 
     this.loadStatistics();
@@ -84,7 +86,9 @@ export class MappingComponent implements OnInit {
         let error = this.errors.handleError(err); 
         this.errorMessage = `${StringifyHttpError(error)}`;   
       });      
-    });    
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err); 
+    });   
   }
 
   /** loadEditor
@@ -189,9 +193,7 @@ export class MappingComponent implements OnInit {
     let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
     this.datasets.updateDataset(datasetValues).subscribe(result => {
       this.loadXSLT('custom');
-      if (typeof this.translate.instant === 'function') {
-        this.successMessage = this.translate.instant('xsltsuccessful');
-      }
+      this.successMessage = this.msgXSLTSuccess;
       if (tryout === true) {
         this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
       }
@@ -199,7 +201,6 @@ export class MappingComponent implements OnInit {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
-
   }
 
   /** toggleFullViewMode

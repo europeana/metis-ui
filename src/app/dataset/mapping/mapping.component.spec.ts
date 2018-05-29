@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks
 import { CodemirrorModule } from 'ng2-codemirror';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, xslt } from '../../_mocked';
+import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, xslt, MockAuthenticationService, currentUser } from '../../_mocked';
 
 import { DatasetsService, WorkflowService, TranslateService, RedirectPreviousUrl, ErrorService, AuthenticationService } from '../../_services';
 
@@ -34,7 +34,7 @@ describe('MappingComponent', () => {
         },
         RedirectPreviousUrl,
         ErrorService,
-        AuthenticationService
+        { provide: AuthenticationService, useClass: MockAuthenticationService}
       ]
     })
     .compileComponents();
@@ -69,7 +69,7 @@ describe('MappingComponent', () => {
     component.fullView = true;
     component.loadXSLT('default');
     fixture.detectChanges();
-     
+
     component.saveXSLT();
     fixture.detectChanges();    
     expect(component.xsltType).toBe('custom');
@@ -98,13 +98,11 @@ describe('MappingComponent', () => {
     expect(component.expandedSample).toBe(1);
   });
 
-  it('should create and save one xslt after viewing per field', () => {
-    component.fullView = false;
+  it('should create a full xslt after viewing cards', () => {
     component.loadXSLT('default');
-    fixture.detectChanges();
-    
+    component.fullView = false;
+    component.getFullXSLT();
     component.saveXSLT();
-    fixture.detectChanges();    
     expect(component.xsltType).toBe('custom');
   });
 
