@@ -86,32 +86,13 @@ export class RegisterComponent implements OnInit {
       this.loading = false;
     } else {
       this.authentication.register(email, password).subscribe(result => {
-        if (result === true) {
+        if (result === true) { 
           this.onRegistration(this.msgSuccess);
-        } else {
-          this.errorMessage = this.msgRegistrationFailed;
-        }
-        this.loading = false;
+        } 
       }, (err: HttpErrorResponse) => {        
-        if (err.status === 201 ) {
-          this.onRegistration(this.msgSuccess);
-        } else if (err.status === 404 || err.status === 406) {          
-          let errmsg: string;
-          try {
-            const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
-            errmsg = h['errorMessage'];
-          } catch (e) {
-            errmsg = null;
-          }
-          this.notfoundMessage = errmsg || 'Unknown';
-        } else if (err.status === 409) {
-          this.onRegistration(this.msgAlreadyRegistered);
-        } else {
-          this.errorMessage = `${StringifyHttpError(err)}`;
-        }
-        
-        this.loading = false;
+        this.errorMessage = `${StringifyHttpError(err)}`;
       });
+      this.loading = false;
     }
   }
 

@@ -63,9 +63,9 @@ export class AuthenticationService {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
+      console.log(data);
       return true;
     });
-
   }
 
   /** login
