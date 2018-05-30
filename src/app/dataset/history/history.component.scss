@@ -5,7 +5,7 @@
   background-color: $white;
 }
 
-.table-in-tab tbody tr:hover td:first-child::before {
+.table-in-tab tr:hover td:first-child::before {
   display: none;
 }
 
