@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DatasetsService, TranslateService, WorkflowService } from '../../_services';
+import { HttpErrorResponse } from '@angular/common/http';
+import { DatasetsService, TranslateService, WorkflowService, ErrorService } from '../../_services';
 
 @Component({
   selector: 'app-generalinfo',
@@ -10,7 +11,8 @@ export class GeneralinfoComponent implements OnInit {
 
   constructor(private datasets: DatasetsService,
     private workflows: WorkflowService,
-  	private translate: TranslateService) { }
+  	private translate: TranslateService,
+    private errors: ErrorService) { }
 
   @Input() datasetData: any;
   harvestPublicationData: any;
@@ -28,6 +30,8 @@ export class GeneralinfoComponent implements OnInit {
     if (this.datasetData) {
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
+      }, (err: HttpErrorResponse) => {
+        this.errors.handleError(err);   
       });
     }
   }

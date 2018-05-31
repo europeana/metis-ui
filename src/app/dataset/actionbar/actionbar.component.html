@@ -19,7 +19,7 @@
   <div class="datetime"><span class="date">{{now | date:'dd/MM/yyyy'}}</span> <span class="datedivider" *ngIf="now">-</span> <span class="time">{{now | date:'HH:mm'}}</span></div>
   <nav>
 		<ul>
-      <li *ngIf="(currentStatus === 'RUNNING' || currentStatus === 'INQUEUE') && (currentPluginName !== 'PREVIEW' && currentPluginName !== 'PUBLISH' && currentPluginName !== 'LINK_CHECKING' && currentPluginName !== 'MEDIA_PROCESS')">
+      <li *ngIf="(currentStatus === 'RUNNING' || currentStatus === 'INQUEUE') && (currentPluginName !== 'PREVIEW' && currentPluginName !== 'PUBLISH' && currentPluginName !== 'MEDIA_PROCESS')">
         <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow()"><span>{{ 'cancel' | translate }}</span></a>
       </li>
 			<li>

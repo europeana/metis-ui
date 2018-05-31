@@ -118,6 +118,8 @@ export class HistoryComponent implements OnInit {
                 if (report['errors'].length > 0) {
                   ws['hasReport'] = true;
                 } 
+              }, (err: HttpErrorResponse) => {
+                this.errors.handleError(err);        
               });
             }
           }
@@ -144,9 +146,11 @@ export class HistoryComponent implements OnInit {
         if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
           this.workflowRunning = true;
         }
+      }, (err: HttpErrorResponse) => {
+        this.errors.handleError(err);        
       });
 
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;  
     });

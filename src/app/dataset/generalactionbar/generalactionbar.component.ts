@@ -2,7 +2,7 @@
 import {timer as observableTimer, Observable} from 'rxjs';
 import { Component, OnInit, Input } from '@angular/core';
 
-import { WorkflowService, TranslateService} from '../../_services';
+import { WorkflowService, TranslateService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -13,7 +13,8 @@ import { environment } from '../../../environments/environment';
 export class GeneralactionbarComponent implements OnInit {
 
   constructor(private workflows: WorkflowService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private errors: ErrorService) { }
 
   @Input('datasetData') datasetData;
   activeSet: string;
@@ -71,6 +72,8 @@ export class GeneralactionbarComponent implements OnInit {
       } else {
         this.addWorkflow = true;
       }
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);   
     });
   }
 
@@ -89,6 +92,8 @@ export class GeneralactionbarComponent implements OnInit {
       } else {
         this.firstRun = true;
       }
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);   
     });
   }
 

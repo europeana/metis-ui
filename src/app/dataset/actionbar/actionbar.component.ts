@@ -86,6 +86,9 @@ export class ActionbarComponent {
       if (workflowinfo) {
         this.workflowInfoAvailable = true;
       } 
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -159,6 +162,9 @@ export class ActionbarComponent {
           }
         }
       }            
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   };
 
@@ -177,6 +183,9 @@ export class ActionbarComponent {
           this.startPollingWorkflow();
         }
       }
+    }, (err: HttpErrorResponse) => {
+      let error = this.errors.handleError(err);   
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -186,7 +195,7 @@ export class ActionbarComponent {
   */
   cancelWorkflow () {    
     this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
-    },(err: HttpErrorResponse) => {
+    }, (err: HttpErrorResponse) => {
       let error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });

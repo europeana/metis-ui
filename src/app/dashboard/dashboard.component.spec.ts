@@ -8,6 +8,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { MockAuthenticationService, currentUser } from '../_mocked';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -17,7 +18,7 @@ describe('DashboardComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule ],
       declarations: [ DashboardComponent, TranslatePipe ], 
-      providers: [ AuthenticationService, 
+      providers: [ { provide: AuthenticationService, useClass: MockAuthenticationService}, 
         DatasetsService, 
         { provide: TranslateService,
           useValue: {
@@ -41,4 +42,10 @@ describe('DashboardComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should open log messages', () => {
+    component.onNotifyShowLogStatus('mocked message');
+    expect(component.isShowingLog).not.toBe(false);
+  });
+
 });

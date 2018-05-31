@@ -6,7 +6,7 @@ import { DatasetformComponent } from './datasetform/datasetform.component';
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../_services';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset } from '../_mocked';
+import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../_mocked';
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -26,7 +26,7 @@ describe('DatasetComponent', () => {
         {provide: DatasetsService, useClass: MockDatasetService}, 
         {provide: WorkflowService, useClass: MockWorkflowService}, 
         ErrorService,
-        AuthenticationService, 
+        { provide: AuthenticationService, useClass: MockAuthenticationService},  
         RedirectPreviousUrl,
         { provide: TranslateService,
             useValue: {

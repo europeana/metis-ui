@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset } from '../../_mocked';
+import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
 
 import { WorkflowComponent } from './workflow.component';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
@@ -23,7 +23,7 @@ describe('WorkflowComponent', () => {
       providers:    [         
         { provide: DatasetsService, useClass: MockDatasetService }, 
         { provide: WorkflowService, useClass: MockWorkflowService },        
-        AuthenticationService, 
+        { provide: AuthenticationService, useClass: MockAuthenticationService }, 
         ErrorService, 
         RedirectPreviousUrl,
         { provide: TranslateService,
