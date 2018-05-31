@@ -215,7 +215,7 @@ export class WorkflowService {
 
   getStatistics(topologyName, taskId) {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;   
-    return this.http.get(url).map(statistics => {   
+    return this.http.get(url).pipe(map(statistics => {   
       return statistics ? statistics : false;  
     }));
   }
