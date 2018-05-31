@@ -1,5 +1,6 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
 import { AuthenticationService } from '../_services';
-import { Observable } from 'rxjs/Observable';
 
 export let currentUser = {
   accountRole: 'user',
@@ -22,15 +23,15 @@ export class MockAuthenticationService extends AuthenticationService {
   currentUser = currentUser;
 
   reloadCurrentUser() {
-    return Observable.of(true);
+    return observableOf(true);
   }
 
   updatePassword() {
-    return Observable.of(true);
+    return observableOf(true);
   }
 
   login() {
-    return Observable.of(true);
+    return observableOf(true);
   }
 
 }

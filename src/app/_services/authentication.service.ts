@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
@@ -48,9 +48,9 @@ export class AuthenticationService {
   */ 
   updatePassword(password: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}`;
-    return this.http.put(url, JSON.stringify('{}')).map(data => {
+    return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
       return true;
-    });
+    }));
   }
 
   /** register
@@ -62,9 +62,9 @@ export class AuthenticationService {
   register(email: string, password: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
+    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
       return true;
-    });
+    }));
 
   }
 
@@ -77,7 +77,7 @@ export class AuthenticationService {
   login(email: string, password: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).map(data => {
+    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
       const user = <User>data;
       if (user && user.metisUserAccessToken) {
         this.setCurrentUser(user);
@@ -85,7 +85,7 @@ export class AuthenticationService {
       } else {
         return false;
       }
-    });
+    }));
   }
 
   /** logout
@@ -106,7 +106,7 @@ export class AuthenticationService {
   */ 
   reloadCurrentUser(email: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;    
-    return this.http.put(url, JSON.stringify('{}')).map(data => {
+    return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
       const user = <User>data;
       if (user) {
         this.setCurrentUser(user);
@@ -114,7 +114,7 @@ export class AuthenticationService {
       } else {
         return false;
       }
-    });
+    }));
   }
 
   /** setCurrentUser
