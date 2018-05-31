@@ -1,10 +1,11 @@
+
+import {map,  switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
 
-import 'rxjs/Rx';
-import { switchMap } from 'rxjs/operators';
+import 'rxjs';
 
 import { ErrorService } from './error.service';
 import { WorkflowService } from './workflow.service';
@@ -42,9 +43,9 @@ export class DatasetsService {
   */
   getDataset(id: string) {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;    
-    return this.http.get(url).map(dataset => {   
+    return this.http.get(url).pipe(map(dataset => {   
       return dataset ? dataset : false;
-    });    
+    }));    
   }
 
   /** createDataset
@@ -53,9 +54,9 @@ export class DatasetsService {
   */
   createDataset(datasetFormValues: Array<any>) {    
     const url = `${apiSettings.apiHostCore}/datasets`;    
-    return this.http.post(url, datasetFormValues).map(newDataset => {  
+    return this.http.post(url, datasetFormValues).pipe(map(newDataset => {  
       return newDataset ? newDataset : false;
-    });
+    }));
   }
 
   /** updateDataset
@@ -64,21 +65,21 @@ export class DatasetsService {
   */
   updateDataset(datasetFormValues) {
     const url = `${apiSettings.apiHostCore}/datasets`;    
-    return this.http.put(url, datasetFormValues).map(updateDataset => {      
+    return this.http.put(url, datasetFormValues).pipe(map(updateDataset => {      
       return updateDataset ? updateDataset : false;
-    });
+    }));
   }
 
-  /** addDatasetInfo
+  /** addDatasetNameAndCurrentPlugin
   /* add relevant dataset info to execution
   /* use a name that was retrieved before, or
   /* make a call to get dataset name and store it in the array
   /* @param {object} executions - the executions retrieved from a call
   */
-  addDatasetNameToExecution(executions) {
+  addDatasetNameAndCurrentPlugin(executions) {
     let updatedExecutions: Array<any> = [];
-
     for (let i = 0; i < executions.length; i++) {
+      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
       if (this.datasetNames[executions[i].datasetId]) {
         executions[i].datasetName = this.datasetNames[executions[i].datasetId];
       } else {    
@@ -91,7 +92,6 @@ export class DatasetsService {
       }
       updatedExecutions.push(executions[i]);
     }
-
     return updatedExecutions;
   }
 
@@ -122,9 +122,9 @@ export class DatasetsService {
       options = undefined;
     }
 
-    return this.http.get(url, options).map(data => {  
+    return this.http.get(url, options).pipe(map(data => {  
       return data ? (type === 'default' ? data : data['xslt']) : false;
-    });  
+    }));  
   }
 
   /** getTransform
@@ -138,9 +138,9 @@ export class DatasetsService {
     if (type === 'default') {
       url += '/default';
     }
-    return this.http.post(url, samples, {headers:{'Content-Type': 'application/json'}}).map(data => {  
+    return this.http.post(url, samples, {headers:{'Content-Type': 'application/json'}}).pipe(map(data => {  
       return data ? data : false;
-    });  
+    }));  
   }
 
   /** setTempXSLT

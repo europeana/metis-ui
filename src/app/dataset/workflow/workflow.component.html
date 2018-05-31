@@ -38,7 +38,7 @@
         <li [ngClass]="{'inactive': workflowForm.get('pluginPUBLISH').value === false || workflowForm.get('pluginPUBLISH').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="publish">{{ 'PUBLISH' | renameWorkflow }}</a>
         </li>
-        <li class="inactive">
+        <li [ngClass]="{'inactive': workflowForm.get('pluginLINK_CHECKING').value === false || workflowForm.get('pluginLINK_CHECKING').value === ''}">
           <a [routerLink]="[currentUrl]" fragment="linkchecking">{{ 'LINK_CHECKING' | renameWorkflow }}</a>
         </li>
       </ul>
@@ -53,12 +53,12 @@
           <div class="form-group-radios">
             <div>
               <label>
-                <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" [(ngModel)]="harvestprotocol" [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> {{ 'oai' | translate }}
+                <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" (change)="changeHarvestProtocol('OAIPMH_HARVEST')" [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> {{ 'oai' | translate }}
               </label>
             </div>   
             <div>
               <label>
-                <input type="radio" formControlName="pluginType" value="HTTP_HARVEST" [(ngModel)]="harvestprotocol" [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false" />
+                <input type="radio" formControlName="pluginType" value="HTTP_HARVEST" (change)="changeHarvestProtocol('HTTP_HARVEST')" [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false" />
                 {{ 'http' | translate }}
               </label>
             </div>          
@@ -66,7 +66,13 @@
         </div>
         <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
           <label for="harvest-url">{{ 'harvesturl' | translate }} *</label>
-          <input id="harvest-url" type="text" formControlName="harvestUrl" />
+          <input id="harvest-url" type="text" formControlName="harvestUrl"/>
+          <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validParameter">
+            <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
+          </div>
+          <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validUrl">
+            <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+          </div>
         </div>
         <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
           <label for="setspec">{{ 'setspec' | translate }}</label>
@@ -79,6 +85,12 @@
         <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
           <label for="url">{{ 'url' | translate }} *</label>
           <input id="url" type="text" formControlName="url" />
+          <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validParameter">
+            <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
+          </div>
+          <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validUrl">
+            <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+          </div>
         </div>
       </div>
 
@@ -114,6 +126,28 @@
       <!-- MEDIA SERVICE -->
       <div id="media" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}"> 
         <label for="pluginMEDIA_PROCESS" class="plugin">{{ 'MEDIA_PROCESS' | renameWorkflow }} <input type="checkbox" formControlName="pluginMEDIA_PROCESS" id="pluginMEDIA_PROCESS" /></label>
+
+        <div class="form-group">
+          <label>Limit connections</label>
+          
+          <div formArrayName="limitConnectionsMEDIA_PROCESS">
+            <div *ngFor="let connection of workflowForm.controls.limitConnectionsMEDIA_PROCESS.controls; let i=index">              
+              <div class="form-group-connections" [formGroupName]="i">
+                <div>
+                  <label>Host</label>
+                  <input type="text" formControlName="host">
+                </div>
+                <div>
+                  <label>Connections</label>
+                  <input type="text" formControlName="connections">
+                </div>
+                <a *ngIf="workflowForm.controls.limitConnectionsMEDIA_PROCESS.controls.length > 1 && workflowForm.get('pluginMEDIA_PROCESS').value ===true" (click)="removeConnection('MEDIA_PROCESS', i)" class="svg-icon-cancel"></a>
+              </div>
+
+            </div>
+          </div>
+          <a class="svg-icon-plus" *ngIf="workflowForm.get('pluginMEDIA_PROCESS').value ===true" (click)="addConnection('MEDIA_PROCESS')">Add connection </a>
+        </div>
       </div>
 
       <!-- PUBLISH TO PREVIEW -->
@@ -127,8 +161,29 @@
       </div>
 
        <!-- LINK CHECKING -->
-      <div id="linkchecking" class="form-fields inactive"> 
-        <label for="" class="plugin">{{ 'LINK_CHECKING' | renameWorkflow }} <input type="checkbox" /></label>
+      <div id="linkchecking" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginLINK_CHECKING').value === false || workflowForm.get('pluginLINK_CHECKING').value === ''}"> 
+        <label for="pluginLINK_CHECKING" class="plugin">{{ 'LINK_CHECKING' | renameWorkflow }} <input type="checkbox" formControlName="pluginLINK_CHECKING" id="pluginLINK_CHECKING"/></label>
+        <div class="form-group">
+          <label>Limit connections</label>
+          
+          <div formArrayName="limitConnectionsLINK_CHECKING">
+            <div *ngFor="let connection of workflowForm.controls.limitConnectionsLINK_CHECKING.controls; let i=index">              
+              <div class="form-group-connections" [formGroupName]="i">
+                <div>
+                  <label>Host</label>
+                  <input type="text" formControlName="host">
+                </div>
+                <div>
+                  <label>Connections</label>
+                  <input type="text" formControlName="connections">
+                </div>
+                <a *ngIf="workflowForm.controls.limitConnectionsLINK_CHECKING.controls.length > 1 && workflowForm.get('pluginLINK_CHECKING').value === true" (click)="removeConnection('LINK_CHECKING', i)" class="svg-icon-cancel"></a>
+              </div>
+
+            </div>
+          </div>
+          <a class="svg-icon-plus" *ngIf="workflowForm.get('pluginLINK_CHECKING').value === true" (click)="addConnection('LINK_CHECKING')">Add connection </a>
+        </div>
       </div>
 
       <div class="form-fields form-fields-buttons">  

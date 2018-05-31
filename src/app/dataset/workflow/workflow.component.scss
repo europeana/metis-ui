@@ -37,7 +37,31 @@
     label {
       max-width: 10rem;
     }
+  }
 
+  .form-group-connections > div {
+    display: inline-block;
+    font-size: $font-size-slightly-smaller;
+    margin: 0 .1rem 1rem;
+    width: 65%;
+  }
+
+  .form-group-connections > div:nth-child(2) {
+    width: 25%;
+  }
+
+  .form-group-connections:first-child > div {
+    margin-top: 1rem;
+  }
+
+  .form-group-connections > a {
+    display: inline-block;
+    height: 1.2rem;
+    margin: 0 .5rem;
+  }
+
+  .svg-icon-plus::before {
+    top: 0;
   }
 
   > label + .form-group {
@@ -45,7 +69,7 @@
   }
 
   .form-group-radios label {
-    padding: 0.5rem 2rem 0.5rem 0;
+    padding: .5rem 2rem .5rem 0;
   }
 
   .form-group label + input[type='checkbox'] {
@@ -152,7 +176,7 @@
 
     a:hover::after {
       background: $eu-jade;
-      bottom: -0.3rem;
+      bottom: -.3rem;
       content: '';
       display: block;
       height: .2rem;

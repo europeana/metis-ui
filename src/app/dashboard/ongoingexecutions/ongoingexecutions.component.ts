@@ -1,8 +1,10 @@
+
+import {timer as observableTimer} from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
@@ -27,8 +29,8 @@ export class OngoingexecutionsComponent {
   errorMessage;
   subscription;
   intervalTimer = environment.intervalStatus;
-  currentPlugin: number = 0;
   cancelling;
+  currentPlugin = 0;
   datasetNames: Array<any> = [];
   viewMore: boolean = false;
 
@@ -51,7 +53,7 @@ export class OngoingexecutionsComponent {
   */
   startPolling() {
     if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = Observable.timer(0, this.intervalTimer);
+    let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.getOngoing();
     });
@@ -66,7 +68,7 @@ export class OngoingexecutionsComponent {
       if (this.ongoingExecutionsTotal != executions['listSize'] && this.ongoingExecutionsTotal) {
         this.workflows.ongoingExecutionDone(true);
       }
-      this.ongoingExecutions = this.datasets.addDatasetNameToExecution(executions['results']);
+      this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions['results']);
       this.ongoingExecutionsTotal = executions['listSize'];
       if (executions['nextPage'] > 0) {
         this.viewMore = true;

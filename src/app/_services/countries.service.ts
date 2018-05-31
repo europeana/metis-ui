@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
@@ -21,13 +23,13 @@ export class CountriesService {
     if (type === 'language') {
       url = `${apiSettings.apiHostCore}/datasets/languages`;  
     }
-    return this.http.get(url).map(data => {      
+    return this.http.get(url).pipe(map(data => {      
       if (data) {
         return data;
       } else {
         return false;
       }
-    });
+    }));
   }
 
 }

@@ -1,20 +1,26 @@
 .btn {
   @include font-size(1);
-  background: transparent;
-  border: solid 6px $black;
-  color: $black;
+  background: $eu-jade;
+  border: 1px solid $eu-jade;
+  border-radius: 2px;
+  color: $white;
   display: inline-block;
+  font-size: .875em;
   font-weight: bold;
-  line-height: 1;
-  padding: .8em 1.2em;
-  position: relative;
-  text-align: center;
-  text-transform: uppercase;
+  margin: 0;
+  padding: .8rem 5rem;
+  text-transform: none;
+  transition: all .5s ease;
+
+  @media (max-width: $bp-xxl) {
+    padding: .8rem 2rem;
+  }
 
   &:hover,
   &:focus {
-    border-color: $textcolour_highlight;
-    color: $textcolour_highlight;
+    background: transparent;
+    border-color: $eu-jade;
+    color: $eu-jade;
   }
 
   &.disabled,
@@ -39,39 +45,40 @@
       border-color: $textcolour_highlight;
     }
   }
+}
 
-  &.btn-left,
-  &.btn-right {
-    border: solid 1px $white;
-    color: $gray-light;
-    float: left;
-    font-weight: 500;
-    padding: 1em 2.4em;
-    text-transform: none;
+.btn.btn-left,
+.btn.btn-right {
+  border: solid 1px $white;
+  color: $gray-light;
+  float: left;
+  font-weight: 500;
+  padding: 1em 2.4em;
+  text-transform: none;
 
-    &:hover {
-      background: $offwhite;
-      color: $eu_jade;
-      transition: .4s linear;
-      &.btn-left::after {
-        display: none;
-      }
-      .right-btn-under-text {
-        opacity: 0;
-        transition: opacity .4s linear;
-      }
+  &:hover {
+    background: $offwhite;
+    color: $eu_jade;
+    transition: .4s linear;
+    &.btn-left::after {
+      display: none;
+    }
+    .right-btn-under-text {
+      opacity: 0;
+      transition: opacity .4s linear;
     }
   }
-  &.btn-left::after{
-    background-color: #ccc;
-    content: '';
-    display: block;
-    height: 2.6rem;
-    left: 101%;
-    position: absolute;
-    top: 3px;
-    width: 1px;
-  }
+}
+
+.btn.btn-left::after {
+  background-color: #ccc;
+  content: '';
+  display: block;
+  height: 2.6rem;
+  left: 101%;
+  position: absolute;
+  top: 3px;
+  width: 1px;
 }
 
 .btn.cta,
@@ -137,8 +144,8 @@
   }
 }
 
-.btn{
-  .btn-light{
+.btn {
+  .btn-light {
     border-color: $white;
     color: $white;
 
@@ -150,7 +157,7 @@
   }
 }
 
-.pill{
+.pill {
   border-radius: 300px;
 }
 
@@ -204,18 +211,27 @@
   width: 30rem;
 
   .btn-padding{
-    a {
-      i {
-        padding-right: 10px;
-      }
-      .right-btn-under-text {
-        bottom: 0;
-        font-size:  .7em;
-        left: 0;
-        margin: auto;
-        position: absolute;
-        right: 0;
-      }
+    .btn {
+      background: transparent;
+      position: relative;
+      text-align: center;
+    }
+
+    .btn:hover,
+    .btn:focus {
+      background: $offwhite;
+    }
+
+    i {
+      padding-right: 10px;
+    }
+    .right-btn-under-text {
+      bottom: 0;
+      font-size:  .7em;
+      left: 0;
+      margin: auto;
+      position: absolute;
+      right: 0;
     }
   }
 }
