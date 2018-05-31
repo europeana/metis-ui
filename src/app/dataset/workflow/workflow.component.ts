@@ -144,6 +144,13 @@ export class WorkflowComponent implements OnInit {
     });
   }
 
+  /** changeHarvestProtocol
+  /* update form according to selected protocol
+  */
+  changeHarvestProtocol(protocol) {
+    this.harvestprotocol = protocol;
+  }
+
   /** initLimitConnections
   /* add new host/connections form group to the list
   */
