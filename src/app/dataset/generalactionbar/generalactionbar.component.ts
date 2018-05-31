@@ -4,6 +4,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { WorkflowService, TranslateService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-generalactionbar',

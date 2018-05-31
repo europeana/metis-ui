@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks
 import { CodemirrorModule } from 'ng2-codemirror';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, xslt, MockAuthenticationService, currentUser } from '../../_mocked';
+import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, xslt, MockAuthenticationService, currentUser, statistics } from '../../_mocked';
 import { DatasetsService, WorkflowService, TranslateService, RedirectPreviousUrl, ErrorService, AuthenticationService } from '../../_services';
 
 import { MappingComponent } from './mapping.component';
