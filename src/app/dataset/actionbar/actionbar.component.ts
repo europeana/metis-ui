@@ -1,7 +1,9 @@
+
+import {timer as observableTimer} from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { StringifyHttpError } from '../../_helpers';
 
 import { WorkflowService, AuthenticationService, ErrorService, TranslateService } from '../../_services';
@@ -95,7 +97,7 @@ export class ActionbarComponent {
   */
   startPollingWorkflow() {
     if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = Observable.timer(0, this.intervalTimer);
+    let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.pollingWorkflow();
     });

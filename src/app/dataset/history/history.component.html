@@ -3,7 +3,7 @@
   <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
 </div>
 
-<table class="table-horizontal-layout history-table" *ngIf="datasetData">
+<table *ngIf="datasetData" class="table-horizontal-layout history-table" [ngClass]="{'table-in-tab': !inCollapsablePanel}">
   <thead>
   	<tr>
       <th colspan="2"></th>
@@ -17,22 +17,26 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let ex of allExecutions; let i = index">
-      <td class="centered"><span class="svg-icon-{{ex.pluginType}}"></span></td>
-      <td class="errorindicator"><span class="error" *ngIf="ex.executionProgress.errors !== 0"></span></td>
-      <td class="nowrap uppercase">{{ex.pluginType | renameWorkflow}}</td>
-      <td class="nowrap">{{ex.executionProgress.processedRecords}}</td>
-      <td class="nowrap uppercase">
+    <tr *ngFor="let ex of allExecutions; let i = index">  
+      <td *ngIf="ex.createdDate && !inCollapsablePanel" colspan="9" class="workflow-head">
+        <div class="head-whitespace"></div>
+        <div class="head-text">{{ 'workflowcreated' | translate }} {{ex.createdDate | date:'dd/MM/yyyy HH:mm' }}</div>
+      </td>  
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="centered"><span class="svg-icon-{{ex.pluginType}}"></span></td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="errorindicator"><span class="error" *ngIf="ex.executionProgress.errors !== 0"></span></td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase">{{ex.pluginType | renameWorkflow}} {{ex.workflowCreated}}</td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress"class="nowrap">{{ex.executionProgress.processedRecords}}</td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase">
         {{ex.executionProgress.expectedRecords >= 0 ? ex.executionProgress.expectedRecords : ('unknown' | translate)}}
       </td>
-      <td class="nowrap">{{ex.pluginStatus}}</td>
-      <td class="centered"><span class="date">{{ex.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.startedDate | date:'HH:mm'}}</span></td>
-      <td class="centered"><span class="date">{{ex.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.finishedDate | date:'HH:mm'}}</span></td>
-      <td class="buttonplaceholder nowrap">
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap">{{ex.pluginStatus}}</td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="centered"><span class="date">{{ex.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.startedDate | date:'HH:mm'}}</span></td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="centered"><span class="date">{{ex.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{ex.finishedDate | date:'HH:mm'}}</span></td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="buttonplaceholder nowrap">
         <a *ngIf="ex.hasReport" class="table-btn svg-icon-report" (click)="openReport(ex.externalTaskId, ex.topologyName)">         
           {{ 'report' | translate }}
          </a>
-      </td>
+      </td>        
     </tr>
     <tr class="loadmore loadmore-history" *ngIf="inCollapsablePanel">
       <td colspan="10">

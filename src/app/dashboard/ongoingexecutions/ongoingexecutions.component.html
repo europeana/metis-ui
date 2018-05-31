@@ -9,6 +9,7 @@
       {{ongoing.cancelling ? cancelling : ongoing.metisPlugins[ongoing.currentPlugin].pluginStatus}}
     </div>
     <div class="progress">
+      <span>{{ongoing.datasetId}}</span> <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]" class="workflowname">{{ongoing.datasetName}}</a>
       <div class="progress-status">
         <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
         <span class="progress-percentage">{{ 'step' | translate }} {{ongoing.currentPlugin}}/{{ongoing.metisPlugins.length}}</span>
@@ -18,8 +19,8 @@
       </div>
     </div>
     <div class="datetime">
-      <span class="date">{{ongoing.updatedDate | date:'dd/MM/yyyy'}}</span> 
-      <span class="time">{{ongoing.updatedDate | date:'HH:mm'}}</span>
+      <span class="date">{{ongoing.startedDate | date:'dd/MM/yyyy'}}</span> 
+      <span class="time">{{ongoing.startedDate | date:'HH:mm'}}</span>
     </div>
     <nav>
       <ul>

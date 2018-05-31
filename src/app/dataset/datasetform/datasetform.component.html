@@ -48,13 +48,13 @@
       </div>
       <div class="form-group">
         <label for="country">{{ 'country' | translate }}</label>
-        <select id="country" formControlName="country" [ngModel]="selectedCountry" (blur)="saveTempData()"> 
+        <select id="country" formControlName="country" (blur)="saveTempData()"> 
           <option *ngFor="let c of countryOptions" [ngValue]="c">{{c.name}}</option> 
         </select>
       </div>
        <div class="form-group">
         <label for="language">{{ 'language' | translate }}</label>
-        <select id="language" formControlName="language" [ngModel]="selectedLanguage" (blur)="saveTempData()">
+        <select id="language" formControlName="language" (blur)="saveTempData()">
           <option *ngFor="let l of languageOptions" [ngValue]="l">{{l.name}}</option>
         </select>
       </div>

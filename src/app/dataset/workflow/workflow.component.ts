@@ -6,7 +6,7 @@ import { FormControl, FormGroup, FormBuilder, FormArray, Validators, AbstractCon
 import { WorkflowService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { StringifyHttpError } from '../../_helpers';
+import { StringifyHttpError, harvestValidator } from '../../_helpers';
 
 @Component({
   selector: 'app-workflow',
@@ -110,14 +110,14 @@ export class WorkflowComponent implements OnInit {
         this.workflowForm.get('pluginType').setValidators([Validators.required]);
         this.workflowForm.get('pluginType').updateValueAndValidity({onlySelf : false, emitEvent : false});
         if (this.workflowForm.get('pluginType').value === 'OAIPMH_HARVEST') {
-          this.workflowForm.get('harvestUrl').setValidators([Validators.required]);
+          this.workflowForm.get('harvestUrl').setValidators([Validators.required, harvestValidator]);
           this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
           this.workflowForm.get('metadataFormat').setValidators([Validators.required]);
           this.workflowForm.get('metadataFormat').updateValueAndValidity({onlySelf : false, emitEvent : false});
           this.workflowForm.get('url').setValidators(null);
           this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
         } else if (this.workflowForm.get('pluginType').value === 'HTTP_HARVEST') {
-          this.workflowForm.get('url').setValidators([Validators.required]);
+          this.workflowForm.get('url').setValidators([Validators.required, harvestValidator]);
           this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
           this.workflowForm.get('harvestUrl').setValidators(null);
           this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
@@ -142,6 +142,13 @@ export class WorkflowComponent implements OnInit {
         }
       });
     });
+  }
+
+  /** changeHarvestProtocol
+  /* update form according to selected protocol
+  */
+  changeHarvestProtocol(protocol) {
+    this.harvestprotocol = protocol;
   }
 
   /** initLimitConnections
@@ -234,7 +241,7 @@ export class WorkflowComponent implements OnInit {
           this.harvestprotocol = 'OAIPMH_HARVEST';
           this.workflowForm.controls['pluginType'].setValue('OAIPMH_HARVEST');
           this.workflowForm.controls['setSpec'].setValue(thisWorkflow.setSpec);
-          this.workflowForm.controls['harvestUrl'].setValue(thisWorkflow.url);
+          this.workflowForm.controls['harvestUrl'].setValue(thisWorkflow.url.trim().split('?')[0]);
           this.workflowForm.controls['metadataFormat'].setValue(thisWorkflow.metadataFormat);
         }
 
@@ -288,14 +295,14 @@ export class WorkflowComponent implements OnInit {
         plugins.push({
           'pluginType': this.workflowForm.value['pluginType'],
           'setSpec': this.workflowForm.value['setSpec'],
-          'url': this.workflowForm.value['harvestUrl'],
+          'url': this.workflowForm.value['harvestUrl'].trim(),
           'metadataFormat': this.workflowForm.value['metadataFormat'],
           'mocked': false
         });
       } else if (this.workflowForm.value['pluginType'] === 'HTTP_HARVEST') {
         plugins.push({
           'pluginType': this.workflowForm.value['pluginType'],
-          'url': this.workflowForm.value['url'],
+          'url': this.workflowForm.value['url'].trim(),
           'mocked': false
         });
       }      
