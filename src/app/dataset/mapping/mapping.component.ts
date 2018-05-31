@@ -74,9 +74,15 @@ export class MappingComponent implements OnInit {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {      
       let taskId: string;
       if (result['results'].length > 0) {
-        taskId = result['results'][0]['metisPlugins'][0]['externalTaskId']; // should be updated after changes in validation
+        // find validation in the latest run, and if available, find taskid
+        for (var i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
+          if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
+            taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
+          }
+        }
       }
 
+      if (!taskId) { return false; }
       let stats;
       this.workflows.getStatistics('validation', taskId).subscribe(result => {
         this.statistics = result['nodeStatistics'];
