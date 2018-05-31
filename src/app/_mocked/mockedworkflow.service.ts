@@ -1,5 +1,6 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
 import { WorkflowService } from '../_services';
-import { Observable } from 'rxjs/Observable';
 
 export let currentWorkflowDataset = {
   datasetId: '1',
@@ -140,19 +141,19 @@ export let harvestData = {
 export class MockWorkflowService extends WorkflowService {
 
   triggerNewWorkflow() {
-    return Observable.of(currentWorkflow['results'][0]);
+    return observableOf(currentWorkflow['results'][0]);
   }
 
   cancelThisWorkflow() {
-    return Observable.of(false);
+    return observableOf(false);
   }
 
   getAllExecutions() {
-    return Observable.of(currentWorkflow);
+    return observableOf(currentWorkflow);
   }
 
   getLastExecution() {
-    return Observable.of(currentWorkflow['results'][0]);
+    return observableOf(currentWorkflow['results'][0]);
   }
 
   setActiveWorkflow(workflow?): void {
@@ -160,19 +161,19 @@ export class MockWorkflowService extends WorkflowService {
   }
   
   getAllExecutionsPerOrganisation() {
-    return Observable.of(currentWorkflow);
+    return observableOf(currentWorkflow);
   }
 
   getAllFinishedExecutions() {
-    return Observable.of(currentWorkflow);
+    return observableOf(currentWorkflow);
   }
 
   getWorkflowSamples() {
-    return Observable.of(XMLSamples);
+    return observableOf(XMLSamples);
   }
 
   getReport(taskid, topology) {
-    return Observable.of(currentReport);
+    return observableOf(currentReport);
   }
 
   getCurrentReport() {
@@ -180,18 +181,18 @@ export class MockWorkflowService extends WorkflowService {
   }
 
   getStatistics() {
-    return Observable.of(statistics);
+    return observableOf(statistics);
   }
 
   getWorkflowForDataset() {
-    return Observable.of(currentWorkflowDataset);
+    return observableOf(currentWorkflowDataset);
   }
 
   createWorkflowForDataset() {
-    return Observable.of(currentWorkflowDataset);
+    return observableOf(currentWorkflowDataset);
   }
 
   getPublishedHarvestedData() {
-    return Observable.of(harvestData);
+    return observableOf(harvestData);
   }
 }

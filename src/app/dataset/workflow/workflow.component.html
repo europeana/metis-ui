@@ -53,12 +53,12 @@
           <div class="form-group-radios">
             <div>
               <label>
-                <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" [(ngModel)]="harvestprotocol" [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> {{ 'oai' | translate }}
+                <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" (change)="changeHarvestProtocol('OAIPMH_HARVEST')" [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> {{ 'oai' | translate }}
               </label>
             </div>   
             <div>
               <label>
-                <input type="radio" formControlName="pluginType" value="HTTP_HARVEST" [(ngModel)]="harvestprotocol" [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false" />
+                <input type="radio" formControlName="pluginType" value="HTTP_HARVEST" (change)="changeHarvestProtocol('HTTP_HARVEST')" [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false" />
                 {{ 'http' | translate }}
               </label>
             </div>          

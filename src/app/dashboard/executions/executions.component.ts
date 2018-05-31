@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
