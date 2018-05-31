@@ -77,7 +77,7 @@ export class MappingComponent implements OnInit {
         // find validation in the latest run, and if available, find taskid
         for (var i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
           if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
-            taskId = result['results'][0]['metisPlugins'][0]['externalTaskId'];
+            taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
           }
         }
       }
