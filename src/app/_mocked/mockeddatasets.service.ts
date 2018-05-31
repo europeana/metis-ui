@@ -1,5 +1,6 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
 import { DatasetsService } from '../_services';
-import { Observable } from 'rxjs/Observable';
 
 export let currentDataset = { 
     country: {enum: 'CHINA', name: 'China', isoCode: 'CN'},
@@ -38,23 +39,23 @@ export let xslt = `<?xml version="1.0" encoding="UTF-8"?>
 export class MockDatasetService extends DatasetsService {
 
 	getXSLT() {
-		return Observable.of(xslt);
+		return observableOf(xslt);
 	}
 
   getDataset() {
-    return Observable.of(currentDataset);
+    return observableOf(currentDataset);
   }
 
   updateDataset() {
-    return Observable.of(true);
+    return observableOf(true);
   }
 
   createDataset(datasetFormValues: Array<any>) {    
-    return Observable.of(currentDataset);
+    return observableOf(currentDataset);
   }
 
   getTransform() {
-    return Observable.of(xslt);
+    return observableOf(xslt);
   }
 
 }

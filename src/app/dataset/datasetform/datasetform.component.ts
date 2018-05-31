@@ -4,7 +4,7 @@ import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, Valid
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import 'rxjs/Rx';
+import 'rxjs';
 
 import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';

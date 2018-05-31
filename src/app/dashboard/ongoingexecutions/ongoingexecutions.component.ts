@@ -1,8 +1,10 @@
+
+import {timer as observableTimer} from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
@@ -51,7 +53,7 @@ export class OngoingexecutionsComponent {
   */
   startPolling() {
     if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = Observable.timer(0, this.intervalTimer);
+    let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.getOngoing();
     });

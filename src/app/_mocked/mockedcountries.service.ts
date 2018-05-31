@@ -1,5 +1,6 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
 import { CountriesService } from '../_services';
-import { Observable } from 'rxjs/Observable';
 
 
 export let mockedCountries = [
@@ -9,6 +10,6 @@ export let mockedCountries = [
 
 export class MockCountriesService extends CountriesService {
   getCountriesLanguages() {
-    return Observable.of(mockedCountries);
+    return observableOf(mockedCountries);
   }
 }

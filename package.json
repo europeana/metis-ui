@@ -32,7 +32,6 @@
     "ng2-password-strength-bar": "^1.2.0",
     "ng4-click-outside": "^1.0.1",
     "rxjs": "^6.2.0",
-    "rxjs-compat": "^6.2.0",
     "vkbeautify": "^0.99.3",
     "zone.js": "^0.8.26"
   },
