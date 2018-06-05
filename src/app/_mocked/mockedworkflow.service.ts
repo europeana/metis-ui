@@ -2,7 +2,7 @@
 import {of as observableOf,  Observable } from 'rxjs';
 import { WorkflowService } from '../_services';
 
-export let currentWorkflowDataset = {
+export const currentWorkflowDataset = {
   datasetId: '1',
   id: 1,
   metisPluginsMetadata: [{

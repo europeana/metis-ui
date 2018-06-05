@@ -2,7 +2,7 @@
 import {of as observableOf,  Observable } from 'rxjs';
 import { AuthenticationService } from '../_services';
 
-export let currentUser = {
+export const currentUser = {
   accountRole: 'user',
   country: 'Netherlands',
   createdDate: '',
