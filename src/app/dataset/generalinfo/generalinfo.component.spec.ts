@@ -45,6 +45,7 @@ describe('GeneralinfoComponent', () => {
 
   it('should try to find publication data', () => {
     component.datasetData = currentDataset;
+    component.getDatasetInformation();
     fixture.detectChanges();
     expect(component.harvestPublicationData).not.toBe(undefined);
   });

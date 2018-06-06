@@ -21,6 +21,11 @@ body {
       flex-grow: 1;
       font-size: $font-size-slightly-smaller;
     }
+
+    .btn-disabled {
+      background: $offwhite;
+      color: $gray-lighter;
+    }
   }
 }
 

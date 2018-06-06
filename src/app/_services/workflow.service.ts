@@ -1,11 +1,11 @@
+
+import {map} from 'rxjs/operators';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import 'rxjs/Rx';
+import { Observable ,  of } from 'rxjs';
 
 @Injectable()
 export class WorkflowService {
@@ -30,9 +30,9 @@ export class WorkflowService {
   */
   getWorkflowForDataset (id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;   
-    return this.http.get(url).map(workflowData => {   
+    return this.http.get(url).pipe(map(workflowData => {   
       return workflowData ? workflowData : false;
-    });
+    }));
   }
 
   /** getPublishedHarvestedData
@@ -41,9 +41,9 @@ export class WorkflowService {
   */
   getPublishedHarvestedData(id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;   
-    return this.http.get(url).map(harvestedData => {   
+    return this.http.get(url).pipe(map(harvestedData => {   
       return harvestedData ? harvestedData : false;
-    });
+    }));
   }
 
   /** createWorkflowForDataset
@@ -56,13 +56,13 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;   
 
     if (newWorkflow === false) {
-      return this.http.put(url, values).map(newWorkflowData => {   
+      return this.http.put(url, values).pipe(map(newWorkflowData => {   
         return newWorkflowData ? newWorkflowData : false; 
-      });
+      }));
     } else {
-      return this.http.post(url, values).map(updatedWorkflowData => {   
+      return this.http.post(url, values).pipe(map(updatedWorkflowData => {   
         return updatedWorkflowData ? updatedWorkflowData : false; 
-      });
+      }));
     }
 
   }
@@ -77,9 +77,9 @@ export class WorkflowService {
     let enforce = '';   
 
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&priority=${priority}&enforcedPluginType=${enforce}`;    
-    return this.http.post(url, JSON.stringify('{}')).map(newWorkflowExecution => {   
+    return this.http.post(url, JSON.stringify('{}')).pipe(map(newWorkflowExecution => {   
       return newWorkflowExecution ? newWorkflowExecution : false;
-    });
+    }));
   }
 
   /** getLogs
@@ -92,9 +92,9 @@ export class WorkflowService {
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=1&to=100`;   
     
-    return this.http.get(url).map(logData => {  
+    return this.http.get(url).pipe(map(logData => {  
       return logData ? logData : false;  
-    });
+    }));
   }
 
   /** getReport
@@ -106,9 +106,9 @@ export class WorkflowService {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;   
-    return this.http.get(url).map(reportData => {   
+    return this.http.get(url).pipe(map(reportData => {   
       return reportData ? reportData : false;  
-    });
+    }));
   }
 
   /** getAllExecutions
@@ -118,14 +118,14 @@ export class WorkflowService {
   */
   getAllExecutions(id, page?) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
-    return this.http.get(url).map(allExecutions => {   
+    return this.http.get(url).pipe(map(allExecutions => {   
       if (allExecutions) {
         this.allWorkflows = allExecutions['results'];
         return allExecutions;
       } else {
         return false;
       }
-    });
+    }));
   }
 
   /** getAllFinishedExecutions
@@ -135,9 +135,9 @@ export class WorkflowService {
   */
   getAllFinishedExecutions(id, page?) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
-    return this.http.get(url).map(finishedExecutions => {  
+    return this.http.get(url).pipe(map(finishedExecutions => {  
       return finishedExecutions ? finishedExecutions : false;   
-    });
+    }));
   }
 
   /** getLastExecution
@@ -146,9 +146,9 @@ export class WorkflowService {
   */
   getLastExecution(id) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&orderField=CREATED_DATE&ascending=false`;   
-    return this.http.get(url).map(lastExecution => {   
+    return this.http.get(url).pipe(map(lastExecution => {   
       return lastExecution ? lastExecution['results'][0] : false;
-    });
+    }));
   }
 
   /** getOngoingExecutionsPerOrganisation
@@ -164,9 +164,9 @@ export class WorkflowService {
       url += '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED';
     }
 
-    return this.http.get(url).map(executionsOrganisation => {  
+    return this.http.get(url).pipe(map(executionsOrganisation => {  
       return executionsOrganisation ? executionsOrganisation : false;
-    });
+    }));
   }
 
   /** getCurrentPlugin
@@ -191,9 +191,9 @@ export class WorkflowService {
   */
   cancelThisWorkflow(id) {    
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}`;   
-    return this.http.delete(url).map(canceledWorkflow => {   
+    return this.http.delete(url).pipe(map(canceledWorkflow => {   
       return canceledWorkflow ? canceledWorkflow : false;
-    });
+    }));
   }
 
   /** getWorkflowSamples
@@ -203,22 +203,21 @@ export class WorkflowService {
   */
   getWorkflowSamples(executionId, pluginType) {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;   
-    return this.http.get(url).map(samples => {   
+    return this.http.get(url).pipe(map(samples => {   
       return samples ? samples['records'] : false;  
-    });
+    }));
   }
 
   /** getStatistics
   /*  get statistics for a certain dataset
   /* mocked data for now
   */
-  getStatistics(topologyName?, taskId?) {
-    const topology = topologyName ? topologyName : 'validation';
-    const externalTaskId = taskId ? taskId : '8867430008884183469';
-    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/statistics`;   
-    return this.http.get(url).map(statistics => {   
+
+  getStatistics(topologyName, taskId) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;   
+    return this.http.get(url).pipe(map(statistics => {   
       return statistics ? statistics : false;  
-    });
+    }));
   }
  
   /** setCurrentReport

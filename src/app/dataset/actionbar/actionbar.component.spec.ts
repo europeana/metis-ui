@@ -6,7 +6,7 @@ import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../.
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionbarComponent } from './actionbar.component';
 

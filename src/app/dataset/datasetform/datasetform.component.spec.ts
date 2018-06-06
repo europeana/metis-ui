@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick  } from '@angular/core/testing';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 
 import { DatasetformComponent } from './datasetform.component';
 import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';

@@ -1,9 +1,11 @@
+
+import {timer as observableTimer, Observable} from 'rxjs';
 import { Component, OnInit, Input } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { WorkflowService, TranslateService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-generalactionbar',
@@ -54,7 +56,7 @@ export class GeneralactionbarComponent implements OnInit {
   */
   checkStatus() {
     if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = Observable.timer(0, this.intervalTimer);
+    let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.returnWorkflowInfo();
     });
