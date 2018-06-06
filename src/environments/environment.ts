@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   passwordStrength: 0,
   intervalStatus: 5000,
+  intervalStatusLong: 60000,
   afterLoginGoto: '/dashboard',
   xsltSplitter: '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->',
   links: {
