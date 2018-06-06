@@ -65,7 +65,6 @@ export class AuthenticationService {
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
       return true;
     }));
-
   }
 
   /** login

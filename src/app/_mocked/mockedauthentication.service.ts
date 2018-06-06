@@ -38,4 +38,8 @@ export class MockAuthenticationService extends AuthenticationService {
     return observableOf(true);
   }
 
+  register() {
+    return Observable.of(true);
+  }
+
 }

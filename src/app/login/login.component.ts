@@ -68,11 +68,7 @@ export class LoginComponent implements OnInit {
       }
       this.loading = false;
     }, (err: HttpErrorResponse) => {
-      if (err.status === 406) {
-        this.errorMessage = this.msgBadCredentials;
-      } else {
-        this.errorMessage = `Login failed: ${StringifyHttpError(err)}`;
-      }      
+      this.errorMessage = err.status === 406 ? this.msgBadCredentials : `Login failed: ${StringifyHttpError(err)}`;   
       this.loading = false;
     });
   }

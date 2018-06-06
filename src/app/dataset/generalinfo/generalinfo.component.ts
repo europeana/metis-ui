@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DatasetsService, TranslateService, WorkflowService, ErrorService } from '../../_services';
-
 import { Observable, timer as observableTimer } from 'rxjs';
 import { environment } from '../../../environments/environment';
 

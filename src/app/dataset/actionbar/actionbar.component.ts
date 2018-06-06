@@ -17,7 +17,7 @@ import { environment } from '../../../environments/environment';
 
 export class ActionbarComponent {
 
-  constructor(private workflows: WorkflowService,
+  constructor(public workflows: WorkflowService,
       private http: HttpClient,
       private authentication: AuthenticationService,
       private errors: ErrorService, 

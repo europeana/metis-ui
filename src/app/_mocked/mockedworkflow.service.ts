@@ -149,7 +149,7 @@ export let harvestData = {
 
 
 export class MockWorkflowService extends WorkflowService {
-
+  
   triggerNewWorkflow() {
     return observableOf(currentWorkflow['results'][0]);
   }
@@ -208,5 +208,9 @@ export class MockWorkflowService extends WorkflowService {
 
   getLogs() {
     return observableOf('mocked');
+  }
+
+  getLogs() {
+    return Observable.of('mocked');
   }
 }

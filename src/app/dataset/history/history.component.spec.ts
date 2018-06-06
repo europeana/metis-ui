@@ -98,5 +98,28 @@ describe('HistoryComponent', () => {
     expect(component.workflowRunning).toBe(true);
   });
 
+  /*it('should update after workflow change', async(() => {
+    //spyOn(component.workflows.changeWorkflow, 'emit').and.returnValue(currentWorkflow['results'][0]);
+    //console.log(component.workflowRunning);
+    //expect(component.workflows.changeWorkflow.emit).toHaveBeenCalled();
+
+    component.workflows.changeWorkflow.subscribe(workflow => {
+      console.log(workflow)
+    });
+
+    component.ngOnInit();
+    fixture.detectChanges();
+    
+    console.log(component.workflowRunning);
+
+  }));*/
+
+  it('should select a workflow', async(() => {
+    component.inCollapsablePanel = true;
+    component.ngOnInit();
+    fixture.detectChanges();
+    spyOn(component.workflows.selectedWorkflow, 'emit');
+  }));
+
 });
 
