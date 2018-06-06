@@ -209,8 +209,4 @@ export class MockWorkflowService extends WorkflowService {
   getLogs() {
     return observableOf('mocked');
   }
-
-  getLogs() {
-    return Observable.of('mocked');
-  }
 }
