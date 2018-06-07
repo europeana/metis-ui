@@ -75,6 +75,8 @@ export class PreviewComponent implements OnInit {
       readOnly: true,
       foldGutter: true,
       indentWithTabs: true,
+      viewportMargin: Infinity,
+      lineWrapping: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 

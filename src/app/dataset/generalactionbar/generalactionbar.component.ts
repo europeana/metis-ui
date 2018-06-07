@@ -1,10 +1,10 @@
 
 import {timer as observableTimer, Observable} from 'rxjs';
 import { Component, OnInit, Input } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { WorkflowService, TranslateService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-generalactionbar',

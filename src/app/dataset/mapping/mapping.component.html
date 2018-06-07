@@ -32,7 +32,7 @@
 
 <div #messagebar class="messages" (clickOutside)="closeMessages()">
   <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+  <div class="success-message" *ngIf="successMessage"><span class="svg-icon-spin-inbutton" *ngIf="!statistics"></span> {{successMessage}}</div>
 </div>
 
 <div class="btns-set">
@@ -58,7 +58,9 @@
     </div>
   </div>
   <div class="view-sample-editor" *ngIf="card">
-    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" (ngModelChange)="xsltToSave[i]=$event" [config]="editorConfigEdit"></codemirror>
+    <div class="view-sample-editor-codemirror">
+      <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" (ngModelChange)="xsltToSave[i]=$event" [config]="editorConfigEdit"></codemirror>
+    </div>
     <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
 </div>

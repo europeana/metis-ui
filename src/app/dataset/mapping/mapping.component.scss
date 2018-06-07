@@ -1,12 +1,20 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
 
+.success-message .svg-icon-spin-inbutton {
+  padding-left: 0;
+  &::after {
+    top: -.1rem;
+  }
+}
+
 .view-statistics {
   .toggle-expand {
     display: none;
   }
 
   .view-sample-editor > div {
+    border-bottom: 1px solid $offwhite;
     box-sizing: border-box;
     height: 40vh;
     overflow: auto;
@@ -31,6 +39,13 @@
   .view-sample-editor > div {
     height: 60vh;
   }
+}
+
+.view-sample-editor-codemirror {
+  border-bottom: 1px solid $offwhite;
+  height: 60vh;
+  overflow: auto;
+  width: 100%;
 }
 
 .btns-set {

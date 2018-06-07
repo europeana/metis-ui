@@ -55,6 +55,8 @@ export class MappingComponent implements OnInit {
       foldGutter: true,
       indentWithTabs: true,
       readOnly: false,
+      viewportMargin: Infinity,
+      lineWrapping: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
@@ -85,8 +87,10 @@ export class MappingComponent implements OnInit {
       }
 
       if (!taskId) { return false; }
+      this.successMessage = 'Loading statistics';
       this.workflows.getStatistics('validation', taskId).subscribe(result => {
         this.statistics = result['nodeStatistics'];
+        this.successMessage = undefined;
       }, (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err); 
         this.errorMessage = `${StringifyHttpError(error)}`;   

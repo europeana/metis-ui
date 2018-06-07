@@ -11,7 +11,7 @@ import { StringifyHttpError } from '../../_helpers';
 })
 export class HistoryComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService,
+  constructor(public workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService) { }
 
