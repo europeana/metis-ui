@@ -104,7 +104,7 @@ export class ProfileComponent implements OnInit {
       this.loading = false;
       this.toggleEditMode();
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `Update password failed: ${StringifyHttpError(error)}`;
       this.loading = false;
     });
@@ -126,7 +126,7 @@ export class ProfileComponent implements OnInit {
       }
       this.loading = false;
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `Refresh failed: ${StringifyHttpError(error)}`;
       this.loading = false;
     });

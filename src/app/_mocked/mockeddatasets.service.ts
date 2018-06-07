@@ -2,7 +2,7 @@
 import {of as observableOf,  Observable } from 'rxjs';
 import { DatasetsService } from '../_services';
 
-export let currentDataset = { 
+export const currentDataset = { 
     country: {enum: 'CHINA', name: 'China', isoCode: 'CN'},
     createdByUserId: '1',
     createdDate: '2018-03-30T13:49:55.607Z',
@@ -24,7 +24,7 @@ export let currentDataset = {
     xsltId: null
   };
 
-export let xslt = `<?xml version="1.0" encoding="UTF-8"?>
+export const xslt = `<?xml version="1.0" encoding="UTF-8"?>
   <xsl:stylesheet version="2.0">
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <xsl:template match="/">

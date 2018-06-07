@@ -260,10 +260,10 @@ export class WorkflowComponent implements OnInit {
         if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
           if (!thisWorkflow.connectionLimitToDomains) { return false; }
           this.removeAllConnections(thisWorkflow.pluginType);
-          let connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
+          const connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
           for (let lc = 0; lc < connectionDomains.length; lc++) {
-            let host = connectionDomains[lc];
-            let connections = thisWorkflow.connectionLimitToDomains[host];
+            const host = connectionDomains[lc];
+            const connections = thisWorkflow.connectionLimitToDomains[host];
             if (host !== '') {
               this.addConnection(thisWorkflow.pluginType, host, connections);
             } else {
@@ -276,7 +276,7 @@ export class WorkflowComponent implements OnInit {
 
       }
     }, (err: HttpErrorResponse) => {
-      let errorGetWorkflow = this.errors.handleError(err);   
+      const errorGetWorkflow = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorGetWorkflow)}`;
       this.scrollToMessageBox();
     });
@@ -409,7 +409,7 @@ export class WorkflowComponent implements OnInit {
       this.successMessage = 'Workflow saved';
       this.scrollToMessageBox();  
     }, (err: HttpErrorResponse) => {
-      let errorSubmit = this.errors.handleError(err);   
+      const errorSubmit = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
       this.scrollToMessageBox();
     });

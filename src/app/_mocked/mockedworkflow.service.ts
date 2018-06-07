@@ -2,7 +2,7 @@
 import {of as observableOf,  Observable } from 'rxjs';
 import { WorkflowService } from '../_services';
 
-export let currentWorkflowDataset = {
+export const currentWorkflowDataset = {
   datasetId: '1',
   id: 1,
   metisPluginsMetadata: [{
@@ -34,7 +34,7 @@ export let currentWorkflowDataset = {
   }]
 }
 
-export let currentWorkflow = { 
+export const currentWorkflow = { 
   results: [{ 
     workflowStatus: 'INQUEUE',
     updatedDate: '',
@@ -113,12 +113,12 @@ export let currentWorkflow = {
   nextPage: -1
 };
 
-export let XMLSamples = [{ 
+export const XMLSamples = [{ 
  'ecloudId': 1,
  'xmlRecord': '<?xml version="1.0" encoding="UTF-8"?>'
 }];
 
-export let statistics = { nodeStatistics: 
+export const statistics = { nodeStatistics: 
   [{attributesStatistics: 
       [{name: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
         occurrence: 2,
@@ -131,7 +131,7 @@ export let statistics = { nodeStatistics:
   }]
 };
 
-export let currentReport = { id: 123, 
+export const currentReport = { id: 123, 
   errors: [{errorType: 'errorType', 
     message: 'errorMessage', 
     occurrences: 9, 
@@ -139,7 +139,7 @@ export let currentReport = { id: 123,
   }]
 };
 
-export let harvestData = {
+export const harvestData = {
   'firstPublishedDate': '2018-03-28T13:53:04.762Z',
   'lastPublishedDate': '2018-03-30T13:53:04.762Z',
   'lastPublishedRecords': 842,
