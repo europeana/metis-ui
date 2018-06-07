@@ -14,7 +14,6 @@
     display: inline-block;
     padding-left: .5rem;
   }
-
 }
 
 .view-sample {
@@ -50,6 +49,12 @@
     a {
       margin-right: 1rem;
     }
+  }
+
+  .view-sample-editor-codemirror {
+    border-bottom: 1px solid $gray-lightest;
+    height: 20vh;
+    overflow: auto;
   }
 }
 
@@ -88,6 +93,10 @@
       height: 100%;
       padding: 0 1.5rem;
     }
+  }
+
+  .view-sample-editor-codemirror {
+    height: 60vh;
   }
 }
 

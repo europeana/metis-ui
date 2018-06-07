@@ -58,7 +58,9 @@
     </div>
   </div>
   <div class="view-sample-editor" *ngIf="card">
-    <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" (ngModelChange)="xsltToSave[i]=$event" [config]="editorConfigEdit"></codemirror>
+    <div class="view-sample-editor-codemirror">
+      <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" (ngModelChange)="xsltToSave[i]=$event" [config]="editorConfigEdit"></codemirror>
+    </div>
     <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
   </div>
 </div>
