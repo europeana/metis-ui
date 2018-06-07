@@ -55,6 +55,8 @@ export class MappingComponent implements OnInit {
       foldGutter: true,
       indentWithTabs: true,
       readOnly: false,
+      viewportMargin: Infinity,
+      lineWrapping: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
