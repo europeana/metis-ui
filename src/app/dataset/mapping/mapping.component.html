@@ -32,7 +32,7 @@
 
 <div #messagebar class="messages" (clickOutside)="closeMessages()">
   <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+  <div class="success-message" *ngIf="successMessage"><span class="svg-icon-spin-inbutton" *ngIf="!statistics"></span> {{successMessage}}</div>
 </div>
 
 <div class="btns-set">
