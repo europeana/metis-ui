@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-let workflowNames = { 
+const workflowNames = { 
   ENRICHMENT: 'Enrich',
   HARVEST: 'Import',
   HTTP_HARVEST: 'Import HTTP',

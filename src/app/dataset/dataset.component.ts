@@ -100,7 +100,7 @@ export class DatasetComponent implements OnInit {
       });
 
     }, (err: HttpErrorResponse) => {
-        let error = this.errors.handleError(err);
+        const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }

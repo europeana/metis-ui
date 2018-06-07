@@ -87,7 +87,7 @@ export class ActionbarComponent {
         this.workflowInfoAvailable = true;
       } 
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
@@ -163,7 +163,7 @@ export class ActionbarComponent {
         }
       }            
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
   };
@@ -184,7 +184,7 @@ export class ActionbarComponent {
         }
       }
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
@@ -196,7 +196,7 @@ export class ActionbarComponent {
   cancelWorkflow () {    
     this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }

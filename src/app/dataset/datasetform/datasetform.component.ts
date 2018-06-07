@@ -206,7 +206,7 @@ export class DatasetformComponent implements OnInit {
         this.datasetForm.controls['description'].disable();
         this.datasetForm.controls['notes'].disable();
       }, (err: HttpErrorResponse) => {
-        let error = this.errors.handleError(err);
+        const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`; 
       });
     } else {
@@ -215,7 +215,7 @@ export class DatasetformComponent implements OnInit {
         this.datasets.setDatasetMessage('New dataset created! Id: ' + result['datasetId']);
         this.router.navigate(['/dataset/new/' + result['datasetId']]);
       }, (err: HttpErrorResponse) => {
-        let error = this.errors.handleError(err);
+        const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;  
       });
     }

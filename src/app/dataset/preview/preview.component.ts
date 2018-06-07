@@ -162,7 +162,7 @@ export class PreviewComponent implements OnInit {
       }
       this.loadingSamples = false;
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err); 
+      const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
   }
@@ -180,14 +180,14 @@ export class PreviewComponent implements OnInit {
         this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
           this.allTransformedSamples = transformed;
         }, (err: HttpErrorResponse) => {
-          let error = this.errors.handleError(err); 
+          const error = this.errors.handleError(err); 
           this.errorMessage = `${StringifyHttpError(error)}`;   
         });
       }, (err: HttpErrorResponse) => {
         this.errors.handleError(err);         
       });
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err); 
+      const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
   }

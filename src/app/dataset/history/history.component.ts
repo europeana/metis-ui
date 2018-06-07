@@ -58,7 +58,7 @@ export class HistoryComponent implements OnInit {
     this.workflows.changeWorkflow.subscribe(
       workflow => {
         if (workflow) {   
-          let currentPlugin = this.workflows.getCurrentPlugin(workflow);
+          const currentPlugin = this.workflows.getCurrentPlugin(workflow);
           if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
             this.workflowRunning = true;
           }
@@ -94,7 +94,7 @@ export class HistoryComponent implements OnInit {
     if (!this.datasetData) { return false; }
 
     let startPage = 0;
-    let totalPageNr = this.totalPages;
+    const totalPageNr = this.totalPages;
 
     this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
 
@@ -141,7 +141,7 @@ export class HistoryComponent implements OnInit {
 
       this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
         if (!status) { return false; }
-        let currentPlugin = this.workflows.getCurrentPlugin(status);
+        const currentPlugin = this.workflows.getCurrentPlugin(status);
         if (!status['metisPlugins'][currentPlugin]) { return false; }
         if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
           this.workflowRunning = true;
@@ -151,7 +151,7 @@ export class HistoryComponent implements OnInit {
       });
 
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err); 
+      const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;  
     });
   }
@@ -184,7 +184,7 @@ export class HistoryComponent implements OnInit {
       this.workflows.setActiveWorkflow(result); 
       this.workflowRunning = true;     
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err); 
+      const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
   }
@@ -200,7 +200,7 @@ export class HistoryComponent implements OnInit {
       this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err); 
+      const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
   }

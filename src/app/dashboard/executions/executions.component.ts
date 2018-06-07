@@ -96,7 +96,7 @@ export class ExecutionsComponent implements OnInit {
         this.ongoingExecutionsOutput = this.ongoingExecutions;
       }   
     },(err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
     
@@ -125,7 +125,7 @@ export class ExecutionsComponent implements OnInit {
         this.getAllExecutions();
       }
     },(err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });  
   }
@@ -149,7 +149,7 @@ export class ExecutionsComponent implements OnInit {
     this.workflows.cancelThisWorkflow(id).subscribe(result => {
       this.successMessage = this.msgCancelling + ': ' + id;
     },(err: HttpErrorResponse) => {
-      let error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
