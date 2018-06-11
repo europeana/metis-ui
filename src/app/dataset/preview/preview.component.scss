@@ -53,6 +53,7 @@
 
   .view-sample-editor-codemirror {
     border-bottom: 1px solid $gray-lightest;
+    box-sizing: border-box;
     height: 20vh;
     overflow: auto;
   }

@@ -43,6 +43,7 @@
 
 .view-sample-editor-codemirror {
   border-bottom: 1px solid $offwhite;
+  box-sizing: border-box;
   height: 60vh;
   overflow: auto;
   width: 100%;
