@@ -140,8 +140,8 @@ export class DatasetformComponent implements OnInit {
       dateUpdated: [(this.datasetData ? this.datePipe.transform(this.datasetData.updatedDate, 'dd/MM/yyyy - HH:mm') : '')],
       replaces: [(this.datasetData ? this.datasetData.replaces : '')],
       replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],
-      country: [],
-      language: [(this.datasetData ? this.datasetData.language : '')],
+      country: ['', [Validators.required]],
+      language: ['', [Validators.required]],
       description: [(this.datasetData ? this.datasetData.description : '')],
       notes: [(this.datasetData ? this.datasetData.notes : '')],
       createdBy: [(this.datasetData ? this.datasetData.createdByUserId : '')],
@@ -151,6 +151,9 @@ export class DatasetformComponent implements OnInit {
       lastDateHarvest: [(this.harvestPublicationData ? this.datePipe.transform(this.harvestPublicationData.lastHarvestedDate, 'dd/MM/yyyy - HH:mm') : '')],
       numberOfItemsHarvested: [(this.harvestPublicationData ? this.harvestPublicationData.lastHarvestedRecords : '')]
     });
+
+    this.datasetForm.patchValue({country: this.selectedCountry});
+    this.datasetForm.patchValue({language: this.selectedLanguage})
 
     if (this.formMode == 'read') { 
       this.datasetForm.controls['country'].disable();
