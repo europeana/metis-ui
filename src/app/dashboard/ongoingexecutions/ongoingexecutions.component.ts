@@ -1,10 +1,9 @@
 
-import {timer as observableTimer} from 'rxjs';
+import {timer as observableTimer, Observable} from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
-import { Observable } from 'rxjs';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
@@ -33,6 +32,7 @@ export class OngoingexecutionsComponent {
   currentPlugin = 0;
   datasetNames: Array<any> = [];
   viewMore: boolean = false;
+  logIsOpen;
 
   /** ngOnInit
   /* init of this component: 
@@ -42,6 +42,16 @@ export class OngoingexecutionsComponent {
   */
   ngOnInit() {
     this.startPolling();
+    if (!this.datasets.updateLog) { return false; }
+    this.datasets.updateLog.subscribe(
+      log => {
+        if (this.isShowingLog) {
+          this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen);
+        } else {
+          this.logIsOpen = undefined;
+        }
+    });
+
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
       this.cancelling = this.translate.instant('cancelling');
@@ -68,7 +78,7 @@ export class OngoingexecutionsComponent {
       if (this.ongoingExecutionsTotal != executions['listSize'] && this.ongoingExecutionsTotal) {
         this.workflows.ongoingExecutionDone(true);
       }
-      this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions['results']);
+      this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions['results'], this.logIsOpen);
       this.ongoingExecutionsTotal = executions['listSize'];
       if (executions['nextPage'] > 0) {
         this.viewMore = true;
@@ -100,8 +110,9 @@ export class OngoingexecutionsComponent {
   /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
   /* @param {string} topology - name of the topology
   */
-  showLog(externaltaskId, topology) {
-    let message = {'externaltaskId' : externaltaskId, 'topology' : topology};
+  showLog(externaltaskId, topology, plugin, datasetId?) {
+    let message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin};
+    this.logIsOpen = datasetId;
     this.notifyShowLogStatus.emit(message);
   }
 

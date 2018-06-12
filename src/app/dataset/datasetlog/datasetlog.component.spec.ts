@@ -43,10 +43,11 @@ describe('DatasetlogComponent', () => {
   });
 
   it('should open and close the logs', () => {
-    component.isShowingLog = {'externaltaskId' : 'mocked', 'topology' : 'mocked'};
+    component.isShowingLog = {'externaltaskId' : 'mocked', 'topology' : 'mocked', 'plugin': 'testplugin'};
     fixture.detectChanges();
-    component.returnLog();    
-    expect(component).toBeTruthy();
+    component.returnLog();  
+    expect(component.logMessages).toBe('mocked');
+    component.closeLog();
   });
 
 });

@@ -66,6 +66,7 @@ export const LANG_EN_TRANS = {
   'new organization': 'New organization',
   'next action': 'Next action',
   'normalize': 'Normalise',
+  'nologs': 'No logs found',
   'nosample': 'No sample available yet, try using the filter',
   'notes': 'Notes', 
   'notpublished': 'Not published yet',

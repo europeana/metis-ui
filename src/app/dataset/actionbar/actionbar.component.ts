@@ -35,6 +35,8 @@ export class ActionbarComponent {
   currentStatus: any;
   currentWorkflow;
   currentPluginName;
+  currentExternalTaskId;
+  currentTopology;
   currentPlugin = 0; // pick the first one for now
   logMessages;
   isShowingWorkflowSelector: boolean = false;
@@ -62,6 +64,9 @@ export class ActionbarComponent {
 
           this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus;
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
+
+          this.currentExternalTaskId = this.currentWorkflow['metisPlugins'][this.currentPlugin].externalTaskId;
+          this.currentTopology = this.currentWorkflow['metisPlugins'][this.currentPlugin].topologyName;
 
           if (this.currentStatus !== 'FINISHED' || this.currentStatus !== 'CANCELLED' || this.currentStatus !== 'FAILED') {
             this.startPollingWorkflow();
@@ -138,19 +143,30 @@ export class ActionbarComponent {
 
           if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
           
+          if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
+            let t = this.workflows.getCurrentPlugin(e);
+            this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName);
+          }
+
           this.currentPlugin = this.workflows.getCurrentPlugin(e);
           this.workflowPercentage = 0;
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
-
+          
           if (e['cancelling'] === false) {
             this.currentStatus = e['metisPlugins'][this.currentPlugin].pluginStatus;
           } else {
             this.currentStatus = 'CANCELLING';
           }
 
+          this.currentExternalTaskId = e['metisPlugins'][this.currentPlugin].externalTaskId;
+          this.currentTopology = e['metisPlugins'][this.currentPlugin].topologyName;
+
           this.totalProcessed = e['metisPlugins'][this.currentPlugin]['executionProgress'].processedRecords;
           this.totalInDataset = e['metisPlugins'][this.currentPlugin]['executionProgress'].expectedRecords;
-            
+          
+          this.currentExternalTaskId = e['metisPlugins'][this.currentPlugin].externalTaskId;
+          this.currentTopology = e['metisPlugins'][this.currentPlugin].topologyName;
+
           if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
             this.workflowPercentage = e['metisPlugins'][this.currentPlugin]['executionProgress'].progressPercentage;
           }
@@ -179,6 +195,9 @@ export class ActionbarComponent {
         this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
         this.currentStatus = this.currentWorkflow['metisPlugins'][this.currentPlugin] ? this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginStatus : '-';
         this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin] ? this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType : '-';
+        this.currentExternalTaskId = this.currentWorkflow['metisPlugins'][this.currentPlugin].externalTaskId;
+          this.currentTopology = this.currentWorkflow['metisPlugins'][this.currentPlugin].topologyName;
+
         if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
           this.startPollingWorkflow();
         }
@@ -204,8 +223,8 @@ export class ActionbarComponent {
   /** showLog
   /*  show the log for the current/last execution
   */
-  showLog() {
-    let message = {'externaltaskId' : this.currentWorkflow['metisPlugins'][this.currentPlugin].externalTaskId, 'topology' : this.currentWorkflow['metisPlugins'][this.currentPlugin].topologyName};
+  showLog(taskid, topology) {
+    let message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': this.currentPluginName};
     this.notifyShowLogStatus.emit(message);
   }
 
