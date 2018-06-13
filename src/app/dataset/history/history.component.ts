@@ -27,6 +27,7 @@ export class HistoryComponent implements OnInit {
   filterWorkflow: boolean = false;
   allWorkflows;
   totalPages: number = 0;
+  contentCopied: boolean = false;
 
   /** ngOnInit
   /* init for this specific component
@@ -149,7 +150,6 @@ export class HistoryComponent implements OnInit {
       }, (err: HttpErrorResponse) => {
         this.errors.handleError(err);        
       });
-
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;  
@@ -205,4 +205,30 @@ export class HistoryComponent implements OnInit {
     });
   }
 
+  /** copyExecutionAndTaskId
+  /*  after double clicking, copy the execution and task id to the clipboard
+  /* a bit dirty
+  /* @param {string} msg - a message with the execution and task id
+  */
+  copyExecutionAndTaskId (type, id1, id2) {
+    let selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    if (type === 'plugin') {
+      selBox.value = 'externalTaskId: ' + id1 + ', id: ' + id2;
+    } else {
+      selBox.value = 'id: ' + id1 + ', ecloudDatasetId: ' + id2;
+    }
+
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+
+    this.contentCopied = true;
+  }
 }
