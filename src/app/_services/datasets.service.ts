@@ -1,6 +1,6 @@
 
-import {map,  switchMap } from 'rxjs/operators';
-import { Injectable } from '@angular/core';
+import { map,  switchMap } from 'rxjs/operators';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -12,11 +12,15 @@ import { WorkflowService } from './workflow.service';
 
 @Injectable()
 export class DatasetsService {
+  
+  @Output() updateLog: EventEmitter<any> = new EventEmitter();
+
   private datasets = [];
   datasetMessage;
   tempPreviewFilers;
   datasetNames: Array<any> = [];
   tempXSLT;
+  currentTaskId;
   
   constructor(private http: HttpClient, 
     private errors: ErrorService, 
@@ -76,10 +80,24 @@ export class DatasetsService {
   /* make a call to get dataset name and store it in the array
   /* @param {object} executions - the executions retrieved from a call
   */
-  addDatasetNameAndCurrentPlugin(executions) {
+  addDatasetNameAndCurrentPlugin(executions, currentDatasetId?) {
     let updatedExecutions: Array<any> = [];
     for (let i = 0; i < executions.length; i++) {
-      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
+      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);      
+      
+      let thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin];
+
+      if (executions[i].datasetId === currentDatasetId) {
+        if (this.currentTaskId !== thisPlugin['externalTaskId']) {
+          let message = {
+            'externaltaskId' : thisPlugin['externalTaskId'], 
+            'topology' : thisPlugin['topologyName'], 
+            'plugin': thisPlugin['pluginType']};
+          this.updateLog.emit(message);
+        }
+        this.currentTaskId = thisPlugin['externalTaskId'];
+      }
+
       if (this.datasetNames[executions[i].datasetId]) {
         executions[i].datasetName = this.datasetNames[executions[i].datasetId];
       } else {    
