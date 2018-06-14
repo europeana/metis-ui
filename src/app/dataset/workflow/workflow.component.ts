@@ -48,6 +48,8 @@ export class WorkflowComponent implements OnInit {
   fragment: string;
   currentUrl: string;
   selectedSteps: boolean = true;
+  showLimitConnectionMedia: boolean = false;
+  showLimitConnectionLinkChecking: boolean = false;
 
   /** ngOnInit
   /* init for this component

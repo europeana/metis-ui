@@ -29,6 +29,18 @@
       font-weight: normal;
     }
 
+    .connections {
+      cursor: pointer;
+    }
+
+    .connections::after {
+      content: '\25bc';
+      display: inline-block;
+      font-size: .5rem;
+      height: 1rem;
+      text-align: center;
+      width: 1rem;
+    }
   }
 
   .form-group.form-group-checkbox {
