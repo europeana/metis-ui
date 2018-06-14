@@ -25,6 +25,7 @@ export const LANG_EN_TRANS = {
   'datasetnamevalidator': 'Only a to z (lower and uppercase), numbers and underscores are allowed.',
   'dateupdated': 'Date Updated',
   'description': 'Description',
+  'doubleclicktocopy': 'Double click to copy id\'s',
   'email': 'Email',
   'emailerror': 'Please enter a valid email address',  
   'enddate': 'End date',  
