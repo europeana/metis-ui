@@ -162,6 +162,10 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(currentWorkflow);
   }
 
+  getAllExecutionsEveryStatus() {
+    return observableOf(currentWorkflow);
+  }
+
   getLastExecution() {
     return observableOf(currentWorkflow['results'][0]);
   }
