@@ -71,11 +71,9 @@ export class DatasetlogComponent implements OnInit {
   /* get content of log, based on external taskid and topology
   */
   returnLog() {
-    let log = this.this.isShowingLog;
-
-    if (!log || !log['externaltaskId'] || !log['topology']) { return false; }
-    this.logPlugin = log['plugin']
-    this.workflows.getLogs(log['externaltaskId'], log['topology'], this.logFrom, this.logTo).subscribe(result => {
+    if (!this.isShowingLog || !this.isShowingLog['externaltaskId'] || !this.isShowingLog['topology']) { return false; }
+    this.logPlugin = this.isShowingLog['plugin']
+    this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.logFrom, this.logTo).subscribe(result => {
       if (result && (<any>result).length > 0) {
         this.logMessages = result;
         if ((<any>result).length === (this.logPerStep * this.logStep)) {
