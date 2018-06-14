@@ -72,11 +72,10 @@ export class WorkflowService {
   /* @param {string} id - dataset identifier
   */
   public triggerNewWorkflow (id) {
-  	const owner = 'owner1';
   	const priority = 0;
     let enforce = '';   
 
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?workflowOwner=${owner}&priority=${priority}&enforcedPluginType=${enforce}`;    
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;    
     return this.http.post(url, JSON.stringify('{}')).pipe(map(newWorkflowExecution => {   
       return newWorkflowExecution ? newWorkflowExecution : false;
     }));
@@ -119,7 +118,7 @@ export class WorkflowService {
   /* @param {number} page - number of next page, optional
   */
   getAllExecutions(id, page?) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).pipe(map(allExecutions => {   
       if (allExecutions) {
         this.allWorkflows = allExecutions['results'];
@@ -152,7 +151,7 @@ export class WorkflowService {
   /* @param {number} page - number of next page, optional
   */
   getAllFinishedExecutions(id, page?) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).pipe(map(finishedExecutions => {  
       return finishedExecutions ? finishedExecutions : false;   
     }));
@@ -163,7 +162,7 @@ export class WorkflowService {
   /* @param {string} id - identifier of dataset
   */
   getLastExecution(id) {
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowOwner=&orderField=CREATED_DATE&ascending=false`;   
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).pipe(map(lastExecution => {   
       return lastExecution ? lastExecution['results'][0] : false;
     }));
@@ -175,7 +174,7 @@ export class WorkflowService {
   /* @param {boolean} ongoing - ongoing executions only, optional
   */
   getAllExecutionsPerOrganisation(page, ongoing?) {
-    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?workflowOwner=&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;  
+    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;  
     if (ongoing) {
       url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
     } else {

@@ -391,7 +391,6 @@ export class WorkflowComponent implements OnInit {
     }
 
     let values = {
-      'workflowOwner': 'owner1',
       'metisPluginsMetadata': plugins
     };
 
