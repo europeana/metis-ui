@@ -148,7 +148,7 @@ export class ActionbarComponent {
 
           if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
             let t = this.workflows.getCurrentPlugin(e);
-            this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName);
+            this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType);
           }
 
           this.currentPlugin = this.workflows.getCurrentPlugin(e);
@@ -215,8 +215,8 @@ export class ActionbarComponent {
   /** showLog
   /*  show the log for the current/last execution
   */
-  showLog(taskid, topology) {
-    let message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': this.currentPluginName};
+  showLog(taskid, topology, plugin) {
+    let message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': plugin};
     this.notifyShowLogStatus.emit(message);
   }
 

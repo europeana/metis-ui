@@ -23,11 +23,11 @@
         <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow()"><span>{{ 'cancel' | translate }}</span></a>
       </li>
       <li>
-        <a class="log-btn svg-icon-log tooltip" attr.data-tooltip="{{ 'log' | translate }}" (click)="showLog(currentExternalTaskId, currentTopology)" *ngIf="currentStatus !== 'INQUEUE' && currentExternalTaskId && currentTopology"><span>{{ 'log' | translate }}</span></a>
+        <a class="log-btn svg-icon-log tooltip" attr.data-tooltip="{{ 'log' | translate }}" (click)="showLog(currentExternalTaskId, currentTopology, currentPluginName)" *ngIf="currentStatus !== 'INQUEUE' && currentExternalTaskId && currentTopology"><span>{{ 'log' | translate }}</span></a>
       </li> 
       <li *ngIf="currentStatus === 'CANCELLED' || currentStatus === 'FINISHED' || currentStatus === 'FAILED'">
         <a class="newaction-btn" (click)="selectWorkflow()">
-          <span>{{ 'run workflow' | translate }}</span>
+          <span>{{ 'run workflow' | translate }}</span>s
         </a>
       </li> 
     </ul>
