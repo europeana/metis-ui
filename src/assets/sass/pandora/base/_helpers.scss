@@ -194,15 +194,14 @@ li.dropdown a {
     color: $white;
     content: attr(data-tooltip);
     font-size: .75rem;
-    left: -50%;
+    left: -9999rem;
     opacity: 0;
     padding: .25rem 1rem;
     position: absolute;
-    transform: translate(-50%, 0);
   }
 
   &:hover::after {
-    left: 50%;
+    left: 75%;
     opacity: 1;
   }
 }
