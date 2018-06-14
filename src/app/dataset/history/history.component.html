@@ -20,11 +20,15 @@
     <tr *ngFor="let ex of allExecutions; let i = index">  
       <td *ngIf="ex.createdDate && !inCollapsablePanel" colspan="9" class="workflow-head">
         <div class="head-whitespace"></div>
-        <div class="head-text" (dblclick)="copyExecutionAndTaskId('execution', ex.id, ex.ecloudDatasetId);">{{ 'workflowcreated' | translate }} {{ex.createdDate | date:'dd/MM/yyyy HH:mm' }}</div>
+        <div class="head-text" (dblclick)="copyExecutionAndTaskId('execution', ex.id, ex.ecloudDatasetId);">
+          <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}">{{ 'workflowcreated' | translate }} {{ex.createdDate | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
       </td>  
       <td *ngIf="!ex.createdDate && ex.executionProgress" class="centered"><span class="svg-icon-{{ex.pluginType}}"></span></td>
       <td *ngIf="!ex.createdDate && ex.executionProgress" class="errorindicator"><span class="error" *ngIf="ex.executionProgress.errors !== 0"></span></td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase" (dblclick)="copyExecutionAndTaskId('plugin', ex.externalTaskId, ex.id);">{{ex.pluginType | renameWorkflow}} {{ex.workflowCreated}}</td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase" (dblclick)="copyExecutionAndTaskId('plugin', ex.externalTaskId, ex.id);">
+        <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}">{{ex.pluginType | renameWorkflow}} {{ex.workflowCreated}}</span>
+      </td>
       <td *ngIf="!ex.createdDate && ex.executionProgress"class="nowrap">{{ex.executionProgress.processedRecords}}</td>
       <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase">
         {{ex.executionProgress.expectedRecords >= 0 ? ex.executionProgress.expectedRecords : ('unknown' | translate)}}
