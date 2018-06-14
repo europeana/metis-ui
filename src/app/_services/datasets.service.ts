@@ -85,15 +85,17 @@ export class DatasetsService {
     for (let i = 0; i < executions.length; i++) {
       executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);      
       
+      let thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin];
+
       if (executions[i].datasetId === currentDatasetId) {
-        if (this.currentTaskId !== executions[i]['metisPlugins'][executions[i].currentPlugin]['externalTaskId']) {
+        if (this.currentTaskId !== thisPlugin['externalTaskId']) {
           let message = {
-            'externaltaskId' : executions[i]['metisPlugins'][executions[i].currentPlugin]['externalTaskId'], 
-            'topology' : executions[i]['metisPlugins'][executions[i].currentPlugin]['topologyName'], 
-            'plugin': executions[i]['metisPlugins'][executions[i].currentPlugin]['pluginType']};
+            'externaltaskId' : thisPlugin['externalTaskId'], 
+            'topology' : thisPlugin['topologyName'], 
+            'plugin': thisPlugin['pluginType']};
           this.updateLog.emit(message);
         }
-        this.currentTaskId = executions[i]['metisPlugins'][executions[i].currentPlugin]['externalTaskId'];
+        this.currentTaskId = thisPlugin['externalTaskId'];
       }
 
       if (this.datasetNames[executions[i].datasetId]) {
