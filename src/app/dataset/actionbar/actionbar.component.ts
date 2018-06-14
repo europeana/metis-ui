@@ -6,7 +6,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StringifyHttpError } from '../../_helpers';
 
-import { WorkflowService, AuthenticationService, ErrorService, TranslateService } from '../../_services';
+import { WorkflowService, AuthenticationService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -18,6 +18,7 @@ import { environment } from '../../../environments/environment';
 export class ActionbarComponent {
 
   constructor(public workflows: WorkflowService,
+      public datasets: DatasetsService,
       private http: HttpClient,
       private authentication: AuthenticationService,
       private errors: ErrorService, 
@@ -41,6 +42,7 @@ export class ActionbarComponent {
   logMessages;
   isShowingWorkflowSelector: boolean = false;
   workflowInfoAvailable: boolean = false;
+  logIsOpen: boolean = false;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
@@ -148,7 +150,9 @@ export class ActionbarComponent {
 
           if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
             let t = this.workflows.getCurrentPlugin(e);
-            this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType);
+            if (this.isShowingLog) {
+              this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType);
+            }
           }
 
           this.currentPlugin = this.workflows.getCurrentPlugin(e);
