@@ -130,6 +130,22 @@ export class WorkflowService {
     }));
   }
 
+  /** getAllExecutionsEveryStatus
+  /*  get history of executions for specific datasetid, every status
+  /* @param {string} id - identifier of dataset
+  /* @param {number} page - number of next page, optional
+  */
+  getAllExecutionsEveryStatus(id, page?) {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
+    return this.http.get(url).pipe(map(allExecutionsStatus => {   
+      if (allExecutionsStatus) {
+        return allExecutionsStatus;
+      } else {
+        return false;
+      }
+    }));
+  }
+
   /** getAllFinishedExecutions
   /*  get history of finished executions for specific datasetid, possible to retrieve results for a specific page
   /* @param {string} id - identifier of dataset

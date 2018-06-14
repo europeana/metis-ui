@@ -107,7 +107,7 @@ export class PreviewComponent implements OnInit {
   /* @param {string} workflow - selected workflow
   */
   addDateFilter() {
-    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
+    this.workflows.getAllExecutionsEveryStatus(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {  
         this.allWorkflowDates.push(result['results'][i]);
       }

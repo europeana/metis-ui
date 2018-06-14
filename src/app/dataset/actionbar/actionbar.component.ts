@@ -160,8 +160,6 @@ export class ActionbarComponent {
           this.currentPluginName = this.currentWorkflow['metisPlugins'][this.currentPlugin].pluginType;
           this.currentStatus = e['cancelling'] === false ? thisPlugin.pluginStatus : 'CANCELLING';
 
-          console.log(this.currentPluginName, this.currentStatus);
-
           this.currentExternalTaskId = thisPlugin.externalTaskId;
           this.currentTopology = thisPlugin.topologyName;
           this.totalProcessed = thisPlugin['executionProgress'].processedRecords;
