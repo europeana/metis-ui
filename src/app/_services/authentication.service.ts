@@ -46,8 +46,8 @@ export class AuthenticationService {
   /* update password for this user
   /* @param {string} password - password
   */ 
-  updatePassword(password: string) {
-    const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}`;
+  updatePassword(password: string, oldpassword: string) {
+    const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
     return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
       return true;
     }));

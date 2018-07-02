@@ -80,6 +80,7 @@ export const LANG_EN_TRANS = {
   'password': 'Password',
   'passworderror': 'Please enter a valid password',
   'passwordmatcherror': 'Password do not match',
+  'passwordold': 'Old password',
   'passwordweakerror': 'Password is too weak',
   'plugin': 'Plugin',
   'preview': 'Preview',
