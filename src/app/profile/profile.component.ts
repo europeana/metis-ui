@@ -60,6 +60,7 @@ export class ProfileComponent implements OnInit {
         'created-date': [{value: new Date(user.createdDate), disabled: true}],
         'updated-date': [{value: new Date(user.updatedDate), disabled: true}],
         passwords: this.fb.group({
+          oldpassword: ['', Validators.required ],
           password: ['', Validators.required ],
           confirm: ['', Validators.required ]
         }, {
@@ -94,8 +95,9 @@ export class ProfileComponent implements OnInit {
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
     const password = passwords.get('password').value;
+    const oldpassword = passwords.get('oldpassword').value;
 
-    this.authentication.updatePassword(password).subscribe(result => {
+    this.authentication.updatePassword(password, oldpassword).subscribe(result => {
       if (result === true) {
         this.successMessage = 'Update password successful!';
       } else {

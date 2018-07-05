@@ -80,12 +80,18 @@
         <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
         <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
       </div>
-      <div class="form-fields">
+      <div class="form-fields">        
         <fieldset class="form-group" formGroupName="passwords">
           <legend>{{ 'password' | translate }}</legend>
-          <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}">
+          <input id="oldpassword" type="password" formControlName="oldpassword" placeholder="{{ 'passwordold' | translate }}" />
+          <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}" />
           <app-password-check [passwordToCheck]="password"></app-password-check>
-          <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
+          <div class="messages" *ngIf="profileForm.controls['passwords'].get('password').touched && !profileForm.controls['passwords'].get('password').valid">
+            <div class="error-message">{{ 'passwordolderror' | translate }}</div>
+          </div>
+          
+          <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password" />
+          {{profileForm.controls['passwords'].errors}}
           <div class="messages" *ngIf="profileForm.controls['passwords'].get('confirm').touched && !profileForm.controls['passwords'].get('confirm').valid">
             <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
           </div>
