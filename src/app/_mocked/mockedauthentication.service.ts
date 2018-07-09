@@ -22,6 +22,10 @@ export class MockAuthenticationService extends AuthenticationService {
 
   currentUser = currentUser;
 
+  validatedUser() {    
+    return true;
+  }
+
   reloadCurrentUser() {
     return observableOf(true);
   }

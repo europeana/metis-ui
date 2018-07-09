@@ -90,12 +90,13 @@ export class ActionbarComponent {
   /*  check if workflow info is already available
   */
   returnWorkflowInfo () {
-    if (!this.datasetData) { return false }
+    if (!this.datasetData || !this.authentication.validatedUser()) { return false }
     this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
       if (workflowinfo) {
         this.workflowInfoAvailable = true;
       } 
     }, (err: HttpErrorResponse) => {
+      if (this.subscription) { this.subscription.unsubscribe(); }
       const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
@@ -105,7 +106,7 @@ export class ActionbarComponent {
   /*  start a timer and start checking the status of a workflow
   */
   startPollingWorkflow() {
-    if (this.subscription) { this.subscription.unsubscribe(); }
+    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.pollingWorkflow();
@@ -117,7 +118,7 @@ export class ActionbarComponent {
   */
   pollingWorkflow() {
 
-    if (!this.datasetData) { return false }
+    if (!this.datasetData || !this.authentication.validatedUser()) { return false }
 
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
 
@@ -174,6 +175,7 @@ export class ActionbarComponent {
         }
       }            
     }, (err: HttpErrorResponse) => {
+      if (this.subscription) { this.subscription.unsubscribe(); }
       const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
@@ -200,6 +202,7 @@ export class ActionbarComponent {
         }
       }
     }, (err: HttpErrorResponse) => {
+      if (this.subscription) { this.subscription.unsubscribe(); }
       const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });

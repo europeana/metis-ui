@@ -5,7 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
-import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
+import { WorkflowService, ErrorService, TranslateService, DatasetsService, AuthenticationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -17,6 +17,7 @@ export class OngoingexecutionsComponent {
 
   constructor(private workflows: WorkflowService, 
     private errors: ErrorService,
+    private authentication: AuthenticationService,
     private translate: TranslateService,
     private datasets: DatasetsService) { }
 
@@ -63,7 +64,7 @@ export class OngoingexecutionsComponent {
   /*  check for ongoing executions
   */
   startPolling() {
-    if (this.subscription) { this.subscription.unsubscribe(); }
+    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.getOngoing();
@@ -75,6 +76,7 @@ export class OngoingexecutionsComponent {
   /*  showing up to 5 executions
   */
   getOngoing() {
+    if (!this.authentication.validatedUser()) { return false; }
     this.workflows.getAllExecutionsPerOrganisation(0, true).subscribe(executions => {
       if (this.ongoingExecutionsTotal != executions['listSize'] && this.ongoingExecutionsTotal) {
         this.workflows.ongoingExecutionDone(true);
@@ -87,6 +89,7 @@ export class OngoingexecutionsComponent {
         this.viewMore = false;
       }
     }, (err: HttpErrorResponse) => {
+      if (this.subscription) { this.subscription.unsubscribe(); }
       const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
