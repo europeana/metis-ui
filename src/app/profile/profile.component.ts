@@ -74,8 +74,15 @@ export class ProfileComponent implements OnInit {
   /* switch between readonly and edit mode
   */
   toggleEditMode() {
+    this.profileForm.controls.passwords.reset();
+
     this.errorMessage = undefined;
     this.editMode = !this.editMode;
+
+    if (this.editMode) {
+      this.successMessage = undefined;
+    }
+
   }
 
   /** onKeyupPassword
