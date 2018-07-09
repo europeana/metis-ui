@@ -3,7 +3,7 @@ import {timer as observableTimer, Observable} from 'rxjs';
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { WorkflowService, TranslateService, ErrorService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService, AuthenticationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -15,6 +15,7 @@ export class GeneralactionbarComponent implements OnInit {
 
   constructor(private workflows: WorkflowService,
     private translate: TranslateService,
+    private authentication: AuthenticationService,
     private errors: ErrorService) { }
 
   @Input('datasetData') datasetData;
@@ -54,7 +55,7 @@ export class GeneralactionbarComponent implements OnInit {
   /* is there already an execution (running or not)
   */
   checkStatus() {
-    if (this.subscription) { this.subscription.unsubscribe(); }
+    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.returnWorkflowInfo();
@@ -65,7 +66,7 @@ export class GeneralactionbarComponent implements OnInit {
   /*  check if workflow info is already available
   */
   returnWorkflowInfo () {
-    if (!this.datasetData) { return false }
+    if (!this.datasetData || !this.authentication.validatedUser()) { return false }
     this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
       if (workflowinfo) {
         this.workflowInfoAvailable = true;
@@ -74,6 +75,7 @@ export class GeneralactionbarComponent implements OnInit {
         this.addWorkflow = true;
       }
     }, (err: HttpErrorResponse) => {
+      if (this.subscription) { this.subscription.unsubscribe(); }
       this.errors.handleError(err);   
     });
   }
@@ -94,6 +96,7 @@ export class GeneralactionbarComponent implements OnInit {
         this.firstRun = true;
       }
     }, (err: HttpErrorResponse) => {
+      if (this.subscription) { this.subscription.unsubscribe(); }
       this.errors.handleError(err);   
     });
   }

@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 import { Observable } from 'rxjs';
 
-import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
+import { WorkflowService, ErrorService, TranslateService, DatasetsService, AuthenticationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -17,6 +17,7 @@ export class ExecutionsComponent implements OnInit {
   constructor(private workflows: WorkflowService, 
     private errors: ErrorService,
     private translate: TranslateService,
+    private authentication: AuthenticationService,
     private datasets: DatasetsService) { }
 
   allExecutions:Array<any> = [];
@@ -88,6 +89,7 @@ export class ExecutionsComponent implements OnInit {
   /* datasetname needs to be added to executions for use in table
   */
   getOngoingExecutions() {
+    if (!this.authentication.validatedUser()) { return false; }
     this.workflows.getAllExecutionsPerOrganisation(this.nextPageOngoing, true).subscribe(executions => {
       this.ongoingExecutions = this.ongoingExecutions.concat(this.datasets.addDatasetNameAndCurrentPlugin(executions['results']));
       if (executions['nextPage'] > 0) {
@@ -96,16 +98,18 @@ export class ExecutionsComponent implements OnInit {
       } else {
         this.ongoingExecutionsOutput = this.ongoingExecutions;
       }   
+
+      if (this.nextPageOngoing <= 0) {
+        this.pollingTimeout = setTimeout(()=> {   
+          this.startPolling();
+        }, this.intervalTimer);
+      }
+
     },(err: HttpErrorResponse) => {
+      clearTimeout(this.pollingTimeout);
       const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
-    
-    if (this.nextPageOngoing <= 0) {
-      this.pollingTimeout = setTimeout(()=> {   
-        this.startPolling();
-      }, this.intervalTimer);
-    }
   }
 
   /** getAllExecutions
@@ -116,8 +120,7 @@ export class ExecutionsComponent implements OnInit {
     let thisPage = this.nextPage;
     let currentPage = this.currentPage;
 
-    if (this.nextPage === -1) { return false }
-
+    if (this.nextPage === -1 || !this.authentication.validatedUser()) { return false }
     this.workflows.getAllExecutionsPerOrganisation(this.nextPage, false).subscribe(executions => {
       this.allExecutions = this.allExecutions.concat(this.datasets.addDatasetNameAndCurrentPlugin(executions['results']));
       this.nextPage = executions['nextPage'];
@@ -126,6 +129,7 @@ export class ExecutionsComponent implements OnInit {
         this.getAllExecutions();
       }
     },(err: HttpErrorResponse) => {
+      clearTimeout(this.pollingTimeout);
       const error = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(error)}`;
     });  
