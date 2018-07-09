@@ -90,9 +90,9 @@
             <div class="error-message">{{ 'passwordolderror' | translate }}</div>
           </div>
           
-          <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password" />
+          <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password" (keyup)="checkMatchingPasswords()" />
           {{profileForm.controls['passwords'].errors}}
-          <div class="messages" *ngIf="profileForm.controls['passwords'].get('confirm').touched && !profileForm.controls['passwords'].get('confirm').valid">
+          <div class="messages" *ngIf="(profileForm.controls['passwords'].get('confirm').touched && !profileForm.controls['passwords'].get('confirm').valid) || confirmPasswordError">
             <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
           </div>
         </fieldset>

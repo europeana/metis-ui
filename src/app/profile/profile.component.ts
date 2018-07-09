@@ -18,6 +18,7 @@ export class ProfileComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   public password;
+  confirmPasswordError: boolean = false;
 
   profileForm: FormGroup;
 
@@ -83,7 +84,6 @@ export class ProfileComponent implements OnInit {
     if (this.editMode) {
       this.successMessage = undefined;
     }
-
   }
 
   /** onKeyupPassword
@@ -91,6 +91,14 @@ export class ProfileComponent implements OnInit {
   */
   onKeyupPassword() {
     this.password = this.profileForm.controls.passwords.get('password').value;
+  }
+
+  checkMatchingPasswords() {
+    if (MatchPasswordValidator(this.profileForm.controls.passwords) !== null) {
+      this.confirmPasswordError = true;
+    } else {
+      this.confirmPasswordError = false;
+    }
   }
 
   /** onSubmit
