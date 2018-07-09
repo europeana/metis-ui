@@ -108,7 +108,7 @@ describe('HistoryComponent', () => {
   }));
 
   it('should copy something to the clipboard', () => {
-    component.copyExecutionAndTaskId('plugin', 1, 2);
+    component.copyInformation('plugin', 1, 2);
     expect(component.contentCopied).toBe(true);
   });
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { StringifyHttpError } from '../../_helpers';
+import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 import { Observable } from 'rxjs';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
@@ -35,6 +35,7 @@ export class ExecutionsComponent implements OnInit {
   successMessage: string;
   allWorkflows: any;
   msgCancelling: string;
+  contentCopied: boolean = false;
 
   /** ngOnInit
   /* init this component:
@@ -167,4 +168,16 @@ export class ExecutionsComponent implements OnInit {
     clearTimeout(this.pollingTimeout);
     this.startPolling();     
   }
+
+  /*** copyInformation
+  /* after double clicking, copy the execution and task id to the clipboard
+  /* @param {string} type - execution or plugin
+  /* @param {string} id1 - an id, depending on type
+  /* @param {string} id2 - an id, depending on type
+  */
+  copyInformation (type, id1, id2) {
+    copyExecutionAndTaskId(type, id1, id2);
+    this.contentCopied = true;
+  }
+
 }
