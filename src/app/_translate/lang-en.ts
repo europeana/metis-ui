@@ -79,7 +79,7 @@ export const LANG_EN_TRANS = {
   'overallprogress': 'Overall Progress',
   'password': 'Password',
   'passworderror': 'Please enter a valid password',
-  'passwordmatcherror': 'Password do not match',
+  'passwordmatcherror': 'Passwords do not match',
   'passwordold': 'Old password',
   'passwordolderror': 'The new password cannot be the same as the old password',
   'passwordweakerror': 'Password is too weak',
