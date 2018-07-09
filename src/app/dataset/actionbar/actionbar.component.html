@@ -4,7 +4,7 @@
 
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf="currentWorkflow">
   <div class="status">
-    <strong class="uppercase">{{currentPluginName|renameWorkflow}}</strong>
+    <strong class="uppercase tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', currentExternalTaskId, currentWorkflow.id+'-'+currentPluginName);">{{currentPluginName|renameWorkflow}}</strong>
     {{currentStatus}}
   </div>
   <div class="progress">

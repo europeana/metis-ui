@@ -4,7 +4,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
-import { StringifyHttpError } from '../../_helpers';
+import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, AuthenticationService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
@@ -43,6 +43,7 @@ export class ActionbarComponent {
   isShowingWorkflowSelector: boolean = false;
   workflowInfoAvailable: boolean = false;
   logIsOpen: boolean = false;
+  contentCopied: boolean = false;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
@@ -229,6 +230,17 @@ export class ActionbarComponent {
   */
   selectWorkflow() {
     this.workflows.selectWorkflow();
+  }
+
+  /** copyInformation
+  /* after double clicking, copy the execution and task id to the clipboard
+  /* @param {string} type - execution or plugin
+  /* @param {string} id1 - an id, depending on type
+  /* @param {string} id2 - an id, depending on type
+  */
+  copyInformation (type, id1, id2) {
+    copyExecutionAndTaskId(type, id1, id2);
+    this.contentCopied = true;
   }
 
 }

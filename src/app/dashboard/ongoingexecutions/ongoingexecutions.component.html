@@ -5,7 +5,9 @@
   </div>    
   <div class="latest-ongoing" *ngFor="let ongoing of ongoingExecutions;">
     <div class="status">
-      <strong>{{ongoing.metisPlugins[ongoing.currentPlugin].pluginType}}</strong>
+      <strong class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', ongoing.metisPlugins[ongoing.currentPlugin].externalTaskId, ongoing.metisPlugins[ongoing.currentPlugin].id);">
+          <span>{{ongoing.metisPlugins[ongoing.currentPlugin].pluginType}}</span>
+      </strong>
       {{ongoing.cancelling ? cancelling : ongoing.metisPlugins[ongoing.currentPlugin].pluginStatus}}
     </div>
     <div class="progress">

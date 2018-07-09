@@ -3,7 +3,7 @@ import {timer as observableTimer, Observable} from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { StringifyHttpError } from '../../_helpers';
+import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
@@ -33,6 +33,7 @@ export class OngoingexecutionsComponent {
   datasetNames: Array<any> = [];
   viewMore: boolean = false;
   logIsOpen;
+  contentCopied: boolean = false;
 
   /** ngOnInit
   /* init of this component: 
@@ -121,6 +122,17 @@ export class OngoingexecutionsComponent {
   */
   viewAll() {
     window.scrollTo(0, 0);
+  }
+
+  /*** copyInformation
+  /* after double clicking, copy the execution and task id to the clipboard
+  /* @param {string} type - execution or plugin
+  /* @param {string} id1 - an id, depending on type
+  /* @param {string} id2 - an id, depending on type
+  */
+  copyInformation (type, id1, id2) {
+    copyExecutionAndTaskId(type, id1, id2);
+    this.contentCopied = true;
   }
 
 }

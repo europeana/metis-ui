@@ -7,6 +7,10 @@
   font-size: .75rem;
   width: 100%;
 
+  .tooltip {
+    cursor: pointer;
+  }
+
   @media (max-width: $bp-xxl) {
     margin-left: 1rem;
     width: 63%;
@@ -31,7 +35,7 @@
     text-transform: uppercase;
     white-space: nowrap;
 
-    strong {
+    strong span {
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -39,6 +43,12 @@
       white-space: nowrap;
       width: auto;
     }
+
+    .tooltip::after {
+      bottom: 2.5rem;
+      transform: translate(0, 0);
+    }
+
   }
 
   .progress {
