@@ -79,6 +79,7 @@ export class ProfileComponent implements OnInit {
     this.onKeyupPassword();
 
     this.errorMessage = undefined;
+    this.confirmPasswordError = false
     this.editMode = !this.editMode;
 
     if (this.editMode) {
