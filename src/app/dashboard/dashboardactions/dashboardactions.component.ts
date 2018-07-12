@@ -11,6 +11,8 @@ export class DashboardactionsComponent implements OnInit {
 
   constructor(private translate: TranslateService) { }
 
+  linkToZoho: string = environment.links.gotoZoho;
+
   /** ngOnInit
   /* init this component:
   /* set translation language 
@@ -20,12 +22,4 @@ export class DashboardactionsComponent implements OnInit {
       this.translate.use('en'); 
     }
   }
-
-  /** gotoZoho
-  /*  redirect to zoho url
-  */
-  gotoZoho() {
-  	window.location.href = environment.links.gotoZoho;
-  }
-
 }
