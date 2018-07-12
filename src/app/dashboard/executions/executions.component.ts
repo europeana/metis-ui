@@ -63,7 +63,6 @@ export class ExecutionsComponent implements OnInit {
            this.refreshExecutions();
          }
     });
-
   }
 
   /** startPolling
@@ -128,6 +127,7 @@ export class ExecutionsComponent implements OnInit {
       if (currentPage > thisPage) {
         this.getAllExecutions();
       }
+
     },(err: HttpErrorResponse) => {
       clearTimeout(this.pollingTimeout);
       const error = this.errors.handleError(err);   

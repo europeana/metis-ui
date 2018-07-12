@@ -74,4 +74,10 @@ describe('OngoingexecutionsComponent', () => {
     expect(window.pageYOffset).toBe(0);
   });
 
+  it('should copy information', () => {
+    component.copyInformation('plugin', '1', '2');
+    fixture.detectChanges();
+    expect(component.contentCopied).toBe(true);
+  });
+
 });

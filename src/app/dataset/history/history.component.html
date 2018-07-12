@@ -29,7 +29,7 @@
       <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase" (dblclick)="copyInformation('plugin', ex.externalTaskId, ex.id);">
         <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}">{{ex.pluginType | renameWorkflow}} {{ex.workflowCreated}}</span>
       </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress"class="nowrap">{{ex.executionProgress.processedRecords}}</td>
+      <td *ngIf="!ex.createdDate && ex.executionProgress"class="nowrap">{{ex.executionProgress.processedRecords}} <span class="errors" *ngIf="ex.executionProgress.errors > 0">({{ex.executionProgress.errors}})</span></td>
       <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase">
         {{ex.executionProgress.expectedRecords >= 0 ? ex.executionProgress.expectedRecords : ('unknown' | translate)}}
       </td>
