@@ -128,8 +128,6 @@ export class HistoryComponent implements OnInit {
         }
       }
 
-      console.log(this.allExecutions);
-
       if (!this.inCollapsablePanel) {
         startPage = this.nextPage;
         this.workflows.setCurrentPageNumberForComponent(this.nextPage, 'history');
