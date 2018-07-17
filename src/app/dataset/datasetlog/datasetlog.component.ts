@@ -45,6 +45,11 @@ export class DatasetlogComponent implements OnInit {
       this.translate.use('en'); 
       this.noLogs = this.translate.instant('nologs'); 
     }
+
+    if (this.isShowingLog && this.isShowingLog['processed'] && this.isShowingLog['status'] === 'RUNNING') {
+      this.logTo = this.isShowingLog['processed'];
+      this.logStep = Math.floor(this.isShowingLog['processed'] / this.logPerStep);
+    }
   }
 
   /** closeLog
@@ -72,7 +77,10 @@ export class DatasetlogComponent implements OnInit {
   */
   returnLog() {
     if (!this.isShowingLog || !this.isShowingLog['externaltaskId'] || !this.isShowingLog['topology']) { return false; }
-    this.logPlugin = this.isShowingLog['plugin']
+    this.logPlugin = this.isShowingLog['plugin'];
+    if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED') || (this.isShowingLog['status'] === 'CANCELLED') || (this.isShowingLog['status'] === 'FAILED')) { 
+      this.logTo = this.isShowingLog['processed']; 
+    }
     this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.logFrom, this.logTo).subscribe(result => {
       if (result && (<any>result).length > 0) {
         this.logMessages = result;
@@ -80,7 +88,7 @@ export class DatasetlogComponent implements OnInit {
           this.logTo = (<any>result).length + this.logPerStep;
           this.logStep += 1;
           this.returnLog();
-        }
+        } 
       } else {
         this.noLogMessage = this.noLogs;
         return false;

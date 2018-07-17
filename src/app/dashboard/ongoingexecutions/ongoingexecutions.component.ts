@@ -48,7 +48,7 @@ export class OngoingexecutionsComponent {
     this.datasets.updateLog.subscribe(
       log => {
         if (this.isShowingLog) {
-          this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen);
+          this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen, log['processed'], log['status']);
         } else {
           this.logIsOpen = undefined;
         }
@@ -114,8 +114,8 @@ export class OngoingexecutionsComponent {
   /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
   /* @param {string} topology - name of the topology
   */
-  showLog(externaltaskId, topology, plugin, datasetId?) {
-    let message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin};
+  showLog(externaltaskId, topology, plugin, datasetId?, processed?, status?) {
+    let message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
     this.logIsOpen = datasetId;
     this.notifyShowLogStatus.emit(message);
   }

@@ -92,7 +92,10 @@ export class DatasetsService {
           let message = {
             'externaltaskId' : thisPlugin['externalTaskId'], 
             'topology' : thisPlugin['topologyName'], 
-            'plugin': thisPlugin['pluginType']};
+            'plugin': thisPlugin['pluginType'],
+            'processed': thisPlugin['executionProgress'].processedRecords,
+            'status': thisPlugin['pluginStatus']
+          };
           this.updateLog.emit(message);
         }
         this.currentTaskId = thisPlugin['externalTaskId'];

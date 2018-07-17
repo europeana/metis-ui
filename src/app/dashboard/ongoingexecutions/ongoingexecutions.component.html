@@ -30,7 +30,7 @@
           <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(ongoing.id)"></a>
         </li>
         <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'">
-          <a class="log-btn svg-icon-log tooltip" attr.data-tooltip="{{ 'log' | translate }}" (click)="showLog(ongoing.metisPlugins[ongoing.currentPlugin].externalTaskId, ongoing.metisPlugins[ongoing.currentPlugin].topologyName, ongoing.metisPlugins[ongoing.currentPlugin].pluginType, ongoing.datasetId)"></a>
+          <a class="log-btn svg-icon-log tooltip" attr.data-tooltip="{{ 'log' | translate }}" (click)="showLog(ongoing.metisPlugins[ongoing.currentPlugin].externalTaskId, ongoing.metisPlugins[ongoing.currentPlugin].topologyName, ongoing.metisPlugins[ongoing.currentPlugin].pluginType, ongoing.datasetId, ongoing.metisPlugins[ongoing.currentPlugin]['executionProgress'].processedRecords, ongoing.metisPlugins[ongoing.currentPlugin].pluginStatus)"></a>
         </li>
         <li><a [routerLink]="['/dataset', 'log', ongoing.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>
       </ul>
