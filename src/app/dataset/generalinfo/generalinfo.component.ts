@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DatasetsService, TranslateService, WorkflowService, ErrorService, AuthenticationService } from '../../_services';
 import { Observable, timer as observableTimer } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { apiSettings } from '../../../environments/apisettings';
 
 @Component({
   selector: 'app-generalinfo',
@@ -21,6 +22,8 @@ export class GeneralinfoComponent implements OnInit {
   harvestPublicationData: any;
   subscription;
   intervalTimer = environment.intervalStatusLong;
+  viewPreview;
+  viewCollections;
 
   /** ngOnInit
   /* init for this specific component
@@ -34,7 +37,7 @@ export class GeneralinfoComponent implements OnInit {
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
-         this.getDatasetInformation();
+        this.getDatasetInformation();
       }
     );
 
@@ -43,12 +46,17 @@ export class GeneralinfoComponent implements OnInit {
     this.subscription = timer.subscribe(t => {
       this.getDatasetInformation();
     });
-
   }
 
   getDatasetInformation () {
     if (!this.authentication.validatedUser()) { return false; }
     if (this.datasetData) {
+
+      if (!this.viewPreview) {
+        this.viewPreview = apiSettings.viewPreview + this.datasetData.datasetId + '_' + this.datasetData.datasetName;
+        this.viewCollections = apiSettings.viewCollections + this.datasetData.datasetId + '_' +  this.datasetData.datasetName;  
+      }
+
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
       }, (err: HttpErrorResponse) => {
