@@ -58,7 +58,7 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit() {
-  	if (typeof this.translate.use === 'function') { 
+    if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
 
@@ -352,18 +352,10 @@ export class WorkflowComponent implements OnInit {
 
     // mediaservice
     if (this.workflowForm.value['pluginMEDIA_PROCESS'] === true) {
-      let connectionsMediaProcess = {};
-      console.log('limitConnectionsMEDIA_PROCESS', this.workflowForm.value['limitConnectionsMEDIA_PROCESS'].length);
-      for (let c = 0; c < this.workflowForm.value['limitConnectionsMEDIA_PROCESS'].length; c++) {
-        if (this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['host'] && this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['connections']) {
-          connectionsMediaProcess[this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['host']] = this.workflowForm.value['limitConnectionsMEDIA_PROCESS'][c]['connections'];
-        }
-      }
-
       plugins.push({
         'pluginType': 'MEDIA_PROCESS',
         'mocked': false,
-        'connectionLimitToDomains': connectionsMediaProcess
+        'connectionLimitToDomains': this.returnConnections(this.workflowForm.value['limitConnectionsMEDIA_PROCESS'])
       });
     }
 
@@ -385,17 +377,10 @@ export class WorkflowComponent implements OnInit {
 
     // link checking
     if (this.workflowForm.value['pluginLINK_CHECKING'] === true) {
-      let connectionsLinkChecking = {};
-      for (let c = 0; c < this.workflowForm.value['limitConnectionsLINK_CHECKING'].length; c++) {
-        if (this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['host'] && this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['connections']) {
-          connectionsLinkChecking[this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['host']] = this.workflowForm.value['limitConnectionsLINK_CHECKING'][c]['connections'];
-        }
-      }
-
       plugins.push({
         'pluginType': 'LINK_CHECKING',
         'mocked': false,
-        'connectionLimitToDomains': connectionsLinkChecking
+        'connectionLimitToDomains': this.returnConnections(this.workflowForm.value['limitConnectionsLINK_CHECKING'])
       });
     }
 
@@ -405,6 +390,21 @@ export class WorkflowComponent implements OnInit {
 
     return values;
   }
+
+  /** returnConnections
+  /* build a map with connections
+  /* @param {object} formValuesConnections - connection values from form
+  */
+  returnConnections (formValuesConnections) {
+    let connections = {};
+    for (let c = 0; c < formValuesConnections.length; c++) {
+      if (formValuesConnections[c]['host'] && formValuesConnections[c]['connections']) {
+        connections[formValuesConnections[c]['host']] = Number(formValuesConnections[c]['connections']);
+      }
+    }
+    return connections;
+  }
+
 
   /** onSubmit
   /* cannot submit when there is no dataset yet
