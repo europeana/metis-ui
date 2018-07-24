@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let execution of ongoingExecutions" app-executiontable [execution]="execution" [plugin]="execution.metisPlugins[execution.currentPlugin]"></tr>
+      <tr *ngFor="let execution of ongoingExecutionsOutput" app-executiontable [execution]="execution" [plugin]="execution.metisPlugins[execution.currentPlugin]"></tr>
       <tr *ngFor="let execution of allExecutions" app-executiontable [execution]="execution" [plugin]="execution.metisPlugins[execution.currentPlugin]"></tr>
       <tr class="loadmore">
         <td colspan="9">
