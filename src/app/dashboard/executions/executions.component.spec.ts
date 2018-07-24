@@ -8,6 +8,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { By } from '@angular/platform-browser';
 
 import { ExecutionsComponent } from './executions.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ExecutionsComponent', () => {
   let component: ExecutionsComponent;
@@ -17,6 +18,7 @@ describe('ExecutionsComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule ],
       declarations: [ ExecutionsComponent, TranslatePipe ],
+      schemas: [ NO_ERRORS_SCHEMA ],
       providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
         DatasetsService,
         ErrorService, 
@@ -50,12 +52,6 @@ describe('ExecutionsComponent', () => {
     fixture.detectChanges();
     expect(component.allExecutions.length).not.toBe(0);
   });
-
-  it('should cancel a workflow', () => {
-    component.cancelWorkflow(1);    
-    fixture.detectChanges();
-    expect(component.successMessage).not.toBe('');
-  });  
 
   it('should try to refresh a workflow', () => {
     fixture.detectChanges();

@@ -35,7 +35,6 @@ export class ExecutionsComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   allWorkflows: any;
-  msgCancelling: string;
   contentCopied: boolean = false;
 
   /** ngOnInit
@@ -47,7 +46,6 @@ export class ExecutionsComponent implements OnInit {
   ngOnInit() {
   	if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
-      this.msgCancelling = this.translate.instant('cancelling');
     }  
 
     this.startPolling();
@@ -145,20 +143,6 @@ export class ExecutionsComponent implements OnInit {
     }
   }
 
-  /** cancelWorkflow
-  /*  start cancellation of the dataset with id
-  /* @param {number} id - id of the dataset to cancel
-  */
-  cancelWorkflow(id) {
-    if (!id) { return false; }
-    this.workflows.cancelThisWorkflow(id).subscribe(result => {
-      this.successMessage = this.msgCancelling + ': ' + id;
-    },(err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
-  }
-
   /** refreshExecutions
   /*  refresh list of executions
   */
@@ -172,16 +156,4 @@ export class ExecutionsComponent implements OnInit {
     clearTimeout(this.pollingTimeout);
     this.startPolling();     
   }
-
-  /*** copyInformation
-  /* after double clicking, copy the execution and task id to the clipboard
-  /* @param {string} type - execution or plugin
-  /* @param {string} id1 - an id, depending on type
-  /* @param {string} id2 - an id, depending on type
-  */
-  copyInformation (type, id1, id2) {
-    copyExecutionAndTaskId(type, id1, id2);
-    this.contentCopied = true;
-  }
-
 }

@@ -50,6 +50,7 @@ import { ClickOutsideModule } from 'ng4-click-outside';
 import { XmlPipe }   from './_helpers';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
 import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
+import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { GeneralactionbarComponent } from './dataset/generalactionbar/generalact
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe,
-    GeneralactionbarComponent
+    GeneralactionbarComponent,
+    ExecutiontableComponent
   ],
   imports: [
     BrowserModule,

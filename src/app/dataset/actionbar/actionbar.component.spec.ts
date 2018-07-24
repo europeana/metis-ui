@@ -109,6 +109,6 @@ describe('ActionbarComponent', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
-  }));
+  });
 
 });

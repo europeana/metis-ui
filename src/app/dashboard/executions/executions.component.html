@@ -5,6 +5,7 @@
 
 <div class="all-executions">
   <h3>{{ 'allexecutions' | translate }}</h3>
+  
   <table class="table-horizontal-layout executions-table">
     <thead>
     	<tr>
@@ -17,86 +18,13 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let execution of ongoingExecutionsOutput;">
-        <td class="errorindicator">
-          <span class="error" *ngIf="execution.metisPlugins[execution.currentPlugin] && execution.metisPlugins[execution.currentPlugin].executionProgress.errors !== 0"></span>
-        </td>
-        <td class="nowrap">{{execution.datasetId}}</td>
-        <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
-        <td class="iconplaceholder"><span class="svg-icon-{{execution.workflowName}}"></span></td>
-        <td>
-          <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', execution.metisPlugins[execution.currentPlugin].externalTaskId, execution.metisPlugins[execution.currentPlugin].id);">
-            {{execution.metisPlugins[execution.currentPlugin].pluginType}}
-          </span>
-        </td>
-        <td class="nowrap">
-          {{execution.metisPlugins[execution.currentPlugin] ? execution.metisPlugins[execution.currentPlugin].executionProgress.processedRecords - execution.metisPlugins[execution.currentPlugin].executionProgress.errors : '-'}} 
-          <span class="errors" *ngIf="execution.metisPlugins[execution.currentPlugin].executionProgress.errors > 0">
-            ({{execution.metisPlugins[execution.currentPlugin].executionProgress.errors}})
-          </span>
-        </td>
-        <td class="nowrap uppercase">
-          {{execution.metisPlugins[execution.currentPlugin] && execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
-        </td>
-        <td class="centered">
-          <span class="date">{{execution.startedDate | date:'dd/MM/yyyy'}}</span> 
-          <span class="datedivider">-</span> 
-          <span class="time">{{execution.startedDate | date:'HH:mm'}}</span>
-        </td>
-        <td class="centered nowrap">
-          <div class="progress">
-            <div class="progress-status">
-              <span class="progress-percentage">{{ 'step' | translate }} {{execution.currentPlugin}}/{{execution.metisPlugins.length}}</span>
-            </div>
-            <div class="progressbar">
-              <div class="progressbar-done" [style.width.%]="execution.currentPlugin / execution.metisPlugins.length * 100 >= 0 ? execution.currentPlugin / execution.metisPlugins.length * 100 : 0"></div>
-            </div>
-          </div>
-          <nav>
-            <ul>
-              <li *ngIf="!execution.cancelling && execution.metisPlugins[execution.currentPlugin].pluginType !== 'PREVIEW' && execution.metisPlugins[execution.currentPlugin].pluginType !== 'PUBLISH' && execution.metisPlugins[execution.currentPlugin].pluginType !== 'MEDIA_PROCESS'">
-                <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(execution.id)"></a>
-              </li>
-              <li><a [routerLink]="['/dataset', 'log', execution.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>
-            </ul>
-          </nav>
-        </td>    
-      </tr>
-      <tr *ngFor="let execution of allExecutions;">
-        <td class="errorindicator"><span class="error" *ngIf="execution.metisPlugins[execution.currentPlugin] && execution.metisPlugins[execution.currentPlugin].executionProgress.errors !== 0"></span></td>
-        <td class="nowrap">{{execution.datasetId}}</td>
-        <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
-        <td class="iconplaceholder"><span class="svg-icon-{{execution.workflowName}}"></span></td>
-        <td>
-          <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', execution.metisPlugins[execution.currentPlugin].externalTaskId, execution.metisPlugins[execution.currentPlugin].id);">
-            {{execution.metisPlugins[execution.currentPlugin].pluginType}}
-          </span>
-        </td>
-        <td class="nowrap">
-          {{execution.metisPlugins[execution.currentPlugin] ? execution.metisPlugins[execution.currentPlugin].executionProgress.processedRecords - execution.metisPlugins[execution.currentPlugin].executionProgress.errors : '-'}} 
-          <span class="errors" *ngIf="execution.metisPlugins[execution.currentPlugin].executionProgress.errors > 0">
-            ({{execution.metisPlugins[execution.currentPlugin].executionProgress.errors}})
-          </span>
-        </td>
-        <td class="nowrap uppercase">
-          {{execution.metisPlugins[execution.currentPlugin] && execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords >= 0 ? execution.metisPlugins[execution.currentPlugin].executionProgress.expectedRecords : ('unknown' | translate)}}
-        </td>
-        <td class="centered">
-          <span class="date">{{execution.startedDate | date:'dd/MM/yyyy'}}</span> 
-          <span class="datedivider">-</span> 
-          <span class="time">{{execution.startedDate | date:'HH:mm'}}</span>
-        </td>
-        <td class="centered">
-          <span class="date">{{execution.finishedDate | date:'dd/MM/yyyy'}}</span> 
-          <span class="datedivider">-</span> 
-          <span class="time">{{execution.finishedDate | date:'HH:mm'}}</span>
-        </td>  
-      </tr>
+      <tr *ngFor="let execution of ongoingExecutions" app-executiontable [execution]="execution" [plugin]="execution.metisPlugins[execution.currentPlugin]"></tr>
+      <tr *ngFor="let execution of allExecutions" app-executiontable [execution]="execution" [plugin]="execution.metisPlugins[execution.currentPlugin]"></tr>
       <tr class="loadmore">
         <td colspan="9">
           <a class="load-more-btn" (click)="loadNextPage()" *ngIf="nextPage > 0">{{ 'loadmore' | translate }}</a>
         </td>
       </tr>
-    </tbody>
+    </tbody>      
   </table>
 </div>
