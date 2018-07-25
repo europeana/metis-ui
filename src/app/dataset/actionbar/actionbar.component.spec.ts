@@ -105,8 +105,10 @@ describe('ActionbarComponent', () => {
     expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress') === null).toBe(false);
   });
 
-  /*it('should update after workflow change', async(() => {
-    spyOn(component.workflows.changeWorkflow, 'emit').and.returnValue(currentWorkflow['results'][0]);
-  }));*/
+  it('should copy information', (): void => {
+    component.copyInformation('plugin', '1', '2');
+    fixture.detectChanges();
+    expect(component.contentCopied).toBe(true);
+  });
 
 });

@@ -18,51 +18,9 @@
 }
 
 table {
-
   tr:not(.loadmore) td a {
     &:hover {
       text-decoration: underline;
-    }
-  }
-
-  .ellipsis {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: none;
-    white-space: nowrap;
-    width: 6rem;
-  }
-
-  .progress {
-    box-sizing: border-box;
-    display: inline-block;
-    font-size: .6rem;
-    padding-right: 0;
-    text-transform: uppercase;
-    width: 4rem;
-
-    .progressbar {
-      margin-bottom: .5rem;
-    }
-  }
-
-  .tooltip::after {
-    bottom: auto;
-    top: -2rem;
-  }
-
-  nav {
-    display: inline-block;
-    white-space: nowrap;
-    width: auto;
-
-    ul {
-      white-space: nowrap;
-    }
-
-    li {
-      display: inline-block;
     }
   }
 }
