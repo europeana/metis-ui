@@ -49,8 +49,8 @@ export class DatasetlogComponent implements OnInit {
 
     if (this.isShowingLog && this.isShowingLog['processed'] && this.isShowingLog['status'] === 'RUNNING') {
       this.logTo = this.isShowingLog['processed'];
-      this.logFrom = (this.logTo - this.logPerStep) >= 1 ? (this.logTo - this.logPerStep) + 1 : 1;
-      this.logStep = Math.floor(this.isShowingLog['processed'] / this.logPerStep);
+      this.logFrom = this.getLogFrom();
+      this.logStep = Math.ceil(this.isShowingLog['processed'] / this.logPerStep);
     }
   }
 
@@ -89,16 +89,15 @@ export class DatasetlogComponent implements OnInit {
 
     this.logPlugin = this.isShowingLog['plugin'];
 
-    if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED') || (this.isShowingLog['status'] === 'CANCELLED') || (this.isShowingLog['status'] === 'FAILED')) { 
+    if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED' || this.isShowingLog['status'] === 'CANCELLED' || this.isShowingLog['status'] === 'FAILED')) { 
       this.logTo = this.isShowingLog['processed']; 
-      this.logFrom = (this.logTo - this.logPerStep) >= 1 ? (this.logTo - this.logPerStep) : 1;
+      this.logFrom = this.getLogFrom();
       if (this.subscription) { this.subscription.unsubscribe(); }
     }
 
     this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.logFrom, this.logTo).subscribe(result => {
       if (result && (<any>result).length > 0) {
         this.logMessages = result;
-
         if ((<any>result).length === this.logPerStep) {
           this.logFrom = this.logTo + 1;
           this.logTo = ((<any>result).length * this.logStep) + this.logPerStep;
@@ -114,6 +113,14 @@ export class DatasetlogComponent implements OnInit {
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
+  }
+
+  /** getLogFrom
+  /* calculate from
+  /* used to get logs  
+  */
+  getLogFrom() {
+    return (this.logTo - this.logPerStep) >= 1 ? (this.logTo - this.logPerStep) + 1 : 1;
   }
   
 }

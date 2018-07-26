@@ -50,4 +50,11 @@ describe('DatasetlogComponent', () => {
     component.closeLog();
   });
 
+  it('should get a from number', () => {
+    component.logTo = 200;
+    component.logPerStep = 100;
+    fixture.detectChanges();
+    expect(component.getLogFrom()).toBe(101);
+  });
+
 });
