@@ -57,12 +57,15 @@ describe('DatasetformComponent', () => {
     expect(component.formMode).toBe('create');
   });
 
-  it('should submit form and update the dataset', () => { 
+  it('should submit form and update the dataset', fakeAsync((): void => {
     component.datasetData = currentDataset;
     component.buildForm();
     fixture.detectChanges();
 
     component.formMode = 'update';
+    spyOn(router, 'navigate').and.callFake(() => { });
+    tick(50);
+    
     component.onSubmit();
     fixture.detectChanges();
     expect(component.successMessage).not.toBe('');
@@ -71,7 +74,7 @@ describe('DatasetformComponent', () => {
     component.onSubmit();
     fixture.detectChanges();
 
-  });
+  }));
 
   it('should submit form and create the dataset', fakeAsync((): void => {
     component.datasetData = currentDataset;
@@ -117,6 +120,4 @@ describe('DatasetformComponent', () => {
     expect(localStorage.getItem('tempDatasetData')).not.toBe('');
     localStorage.removeItem('tempDatasetData');    
   });
-
-
 });
