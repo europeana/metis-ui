@@ -228,7 +228,13 @@ export class PreviewComponent implements OnInit {
   /* @param {number} index - index of sample to expand
   */
   expandSample(index: number) {
+    let sample = this.allSamples[index]['xmlRecord'];
+    let samples = this.allSamples;
+    this.allSamples[index]['xmlRecord'] = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
+    setTimeout(function() {
+      samples[index]['xmlRecord'] = sample;
+    }, 500);
   }
 
   /** gotoMapping
