@@ -16,6 +16,7 @@ export class WorkflowService {
   @Output() selectedWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() workflowIsDone: EventEmitter<any> = new EventEmitter();
   @Output() ongoingExecutionIsDone: EventEmitter<any> = new EventEmitter();
+  @Output() updateHistoryPanel: EventEmitter<any> = new EventEmitter();
 
   activeWorkflow: any;
   currentReport: any;
@@ -306,4 +307,13 @@ export class WorkflowService {
   ongoingExecutionDone(status): void {
     this.ongoingExecutionIsDone.emit(status);
   }
+
+  /** updateHistory
+  /*  update history in the collapsible panel after finishing a task/plugin
+  /* @param {any} workflow - status of current workflow
+  */
+  updateHistory(workflow): void {
+    this.updateHistoryPanel.emit(workflow);
+  }
+
 }
