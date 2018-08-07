@@ -186,8 +186,6 @@ export class HistoryComponent implements OnInit {
         } 
       }
 
-      this.getLatestExecution();
-
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;  

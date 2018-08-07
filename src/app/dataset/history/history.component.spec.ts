@@ -107,6 +107,12 @@ describe('HistoryComponent', () => {
     expect(component.workflowRunning).toBe(true);
   }));
 
+  it('should update history panel', () => {
+    component.updateExecutionHistoryPanel(currentWorkflow.results[4]);
+    fixture.detectChanges();
+    expect(component.historyInPanel).not.toBe('');
+  });
+
   it('should copy something to the clipboard', () => {
     component.copyInformation('plugin', 1, 2);
     expect(component.contentCopied).toBe(true);
