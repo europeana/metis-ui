@@ -104,15 +104,13 @@ export class HistoryComponent implements OnInit {
   /* @param {any} workflow - current running workflow
   */
   updateExecutionHistoryPanel(workflow) {
-    console.log('updateExecutionHistoryPanel');
-
     let r = workflow;
     r['metisPlugins'].reverse();
     
     this.historyInPanel = [];
 
     for (let w = 0; w < r['metisPlugins'].length; w++) { // loop through all plugins
-      if (r['metisPlugins'][w].pluginStatus === 'FINISHED') { // if finished, add to panel
+      if (r['metisPlugins'][w].pluginStatus === 'FINISHED' || r['metisPlugins'][w].pluginStatus === 'FAILED' || r['metisPlugins'][w].pluginStatus === 'CANCELLED') { // if finished, add to panel
         let ws = r['metisPlugins'][w];
         ws['hasReport'] = false;  
        
@@ -204,8 +202,8 @@ export class HistoryComponent implements OnInit {
       if (!status['metisPlugins'][currentPlugin]) { return false; }
       if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
         this.workflowRunning = true;
-        this.updateExecutionHistoryPanel(status);
       }
+      this.updateExecutionHistoryPanel(status);
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);        
     });
