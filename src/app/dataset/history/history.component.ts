@@ -110,7 +110,7 @@ export class HistoryComponent implements OnInit {
     this.historyInPanel = [];
 
     for (let w = 0; w < r['metisPlugins'].length; w++) { 
-      if (r['metisPlugins'][w].pluginStatus === 'FINISHED' || r['metisPlugins'][w].pluginStatus === 'FAILED' || r['metisPlugins'][w].pluginStatus === 'CANCELLED') { 
+      if(['FINISHED', 'FAILED', 'CANCELLED'].indexOf(r['metisPlugins'][w].pluginStatus) > -1) {
         this.historyInPanel.push(this.getReport(r['metisPlugins'][w]));      
       }            
     }
