@@ -109,21 +109,9 @@ export class HistoryComponent implements OnInit {
     
     this.historyInPanel = [];
 
-    for (let w = 0; w < r['metisPlugins'].length; w++) { // loop through all plugins
-      if (r['metisPlugins'][w].pluginStatus === 'FINISHED' || r['metisPlugins'][w].pluginStatus === 'FAILED' || r['metisPlugins'][w].pluginStatus === 'CANCELLED') { // if finished, add to panel
-        let ws = r['metisPlugins'][w];
-        ws['hasReport'] = false;  
-       
-        if (r['metisPlugins'][w].externalTaskId !== null && r['metisPlugins'][w].topologyName !== null && r['metisPlugins'][w].topologyName) { // check for report
-          this.workflows.getReport(r['metisPlugins'][w].externalTaskId, r['metisPlugins'][w].topologyName).subscribe(report => {
-            if (report['errors'].length > 0) {
-              ws['hasReport'] = true;
-            } 
-          }, (err: HttpErrorResponse) => {
-            this.errors.handleError(err);        
-          });
-        }
-        this.historyInPanel.push(ws);      
+    for (let w = 0; w < r['metisPlugins'].length; w++) { 
+      if (r['metisPlugins'][w].pluginStatus === 'FINISHED' || r['metisPlugins'][w].pluginStatus === 'FAILED' || r['metisPlugins'][w].pluginStatus === 'CANCELLED') { 
+        this.historyInPanel.push(this.getReport(r['metisPlugins'][w]));      
       }            
     }
 
@@ -157,20 +145,7 @@ export class HistoryComponent implements OnInit {
         r['metisPlugins'].reverse();
         this.allExecutions.push(r);
         for (let w = 0; w < r['metisPlugins'].length; w++) {
-          let ws = r['metisPlugins'][w];
-          ws['hasReport'] = false;  
-          if (r['metisPlugins'][w].pluginStatus === 'FINISHED' || r['metisPlugins'][w].pluginStatus === 'FAILED') {
-            if (r['metisPlugins'][w].externalTaskId !== null && r['metisPlugins'][w].topologyName !== null && r['metisPlugins'][w].topologyName) {
-              this.workflows.getReport(r['metisPlugins'][w].externalTaskId, r['metisPlugins'][w].topologyName).subscribe(report => {
-                if (report['errors'].length > 0) {
-                  ws['hasReport'] = true;
-                } 
-              }, (err: HttpErrorResponse) => {
-                this.errors.handleError(err);        
-              });
-            }
-          }
-          this.allExecutions.push(ws);
+          this.allExecutions.push(this.getReport(r['metisPlugins'][w]));
         }
       }
 
@@ -192,7 +167,31 @@ export class HistoryComponent implements OnInit {
     });
   }
 
+  /** getReport
+  /*  check if the execution is finished/failed
+  /*  add a report when available
+  */
+  getReport(w) {
+    let ws = w;
+    ws['hasReport'] = false;  
+    if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED') {
+      if (w.externalTaskId !== null && w.topologyName !== null && w.topologyName) {
+        this.workflows.getReport(w.externalTaskId, w.topologyName).subscribe(report => {
+          if (report['errors'].length > 0) {
+            ws['hasReport'] = true;
+          } 
+        }, (err: HttpErrorResponse) => {
+          this.errors.handleError(err);        
+        });
+      }
+    }
+    return ws;
+  }
 
+  /** getLatestExecution
+  /*  get last execution, set status to running if it indeed does run or is inqueue
+  /*  and update the history panel with the most recent details
+  */
   getLatestExecution() {
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
       if (!status) { return false; }
