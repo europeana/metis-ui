@@ -149,6 +149,7 @@ export class ActionbarComponent {
           if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
           
           if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
+            this.workflows.updateHistory(e);
             let t = this.workflows.getCurrentPlugin(e);
             if (this.isShowingLog) {
               this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType, e['metisPlugins'][t]['executionProgress'].processedRecords, e['metisPlugins'][t].pluginStatus);

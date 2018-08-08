@@ -21,6 +21,8 @@ export class HistoryComponent implements OnInit {
   errorMessage: string;
   report;
   allExecutions: Array<any> = [];
+  allExecutionsPanel: Array<any> = [];
+  historyInPanel: Array<any> = [];
   currentPlugin: number = 0;
   nextPage: number = 0;
   workflowRunning: boolean = false;
@@ -44,6 +46,9 @@ export class HistoryComponent implements OnInit {
       this.workflows.selectedWorkflow.subscribe(
         selectedworkflow => {
           this.triggerWorkflow();
+          if (this.inCollapsablePanel) {
+            this.allExecutions = [];
+          }
         }
       );
     }
@@ -53,7 +58,7 @@ export class HistoryComponent implements OnInit {
       this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
       this.returnAllExecutions();
     } else {
-      this.returnAllExecutions();
+      this.getLatestExecution();
     }
     
     this.workflows.changeWorkflow.subscribe(
@@ -63,6 +68,14 @@ export class HistoryComponent implements OnInit {
           if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
             this.workflowRunning = true;
           }
+        }
+      }
+    );
+
+    this.workflows.updateHistoryPanel.subscribe(
+      workflow => {
+        if (workflow) {   
+          this.updateExecutionHistoryPanel(workflow);
         }
       }
     );
@@ -83,6 +96,27 @@ export class HistoryComponent implements OnInit {
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
+    }
+  }
+
+  /** updateExecutionHistoryPanel
+  /*  update execution information in history panel specific
+  /* @param {any} workflow - current running workflow
+  */
+  updateExecutionHistoryPanel(workflow) {
+    let r = workflow;
+    r['metisPlugins'].reverse();
+    
+    this.historyInPanel = [];
+
+    for (let w = 0; w < r['metisPlugins'].length; w++) { 
+      if(['FINISHED', 'FAILED', 'CANCELLED'].indexOf(r['metisPlugins'][w].pluginStatus) > -1) {
+        this.historyInPanel.push(this.getReport(r['metisPlugins'][w]));      
+      }            
+    }
+
+    if (this.inCollapsablePanel) {
+      this.allExecutions = this.historyInPanel;
     }
   }
 
@@ -111,20 +145,7 @@ export class HistoryComponent implements OnInit {
         r['metisPlugins'].reverse();
         this.allExecutions.push(r);
         for (let w = 0; w < r['metisPlugins'].length; w++) {
-          let ws = r['metisPlugins'][w];
-          ws['hasReport'] = false;  
-          if (r['metisPlugins'][w].pluginStatus === 'FINISHED' || r['metisPlugins'][w].pluginStatus === 'FAILED') {
-            if (r['metisPlugins'][w].externalTaskId !== null && r['metisPlugins'][w].topologyName !== null && r['metisPlugins'][w].topologyName) {
-              this.workflows.getReport(r['metisPlugins'][w].externalTaskId, r['metisPlugins'][w].topologyName).subscribe(report => {
-                if (report['errors'].length > 0) {
-                  ws['hasReport'] = true;
-                } 
-              }, (err: HttpErrorResponse) => {
-                this.errors.handleError(err);        
-              });
-            }
-          }
-          this.allExecutions.push(ws);
+          this.allExecutions.push(this.getReport(r['metisPlugins'][w]));
         }
       }
 
@@ -140,19 +161,48 @@ export class HistoryComponent implements OnInit {
         } 
       }
 
-      this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
-        if (!status) { return false; }
-        const currentPlugin = this.workflows.getCurrentPlugin(status);
-        if (!status['metisPlugins'][currentPlugin]) { return false; }
-        if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
-          this.workflowRunning = true;
-        }
-      }, (err: HttpErrorResponse) => {
-        this.errors.handleError(err);        
-      });
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;  
+    });
+  }
+
+  /** getReport
+  /*  check if the execution is finished/failed
+  /*  add a report when available
+  */
+  getReport(w) {
+    let ws = w;
+    ws['hasReport'] = false;  
+    if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED') {
+      if (w.externalTaskId !== null && w.topologyName !== null && w.topologyName) {
+        this.workflows.getReport(w.externalTaskId, w.topologyName).subscribe(report => {
+          if (report['errors'].length > 0) {
+            ws['hasReport'] = true;
+          } 
+        }, (err: HttpErrorResponse) => {
+          this.errors.handleError(err);        
+        });
+      }
+    }
+    return ws;
+  }
+
+  /** getLatestExecution
+  /*  get last execution, set status to running if it indeed does run or is inqueue
+  /*  and update the history panel with the most recent details
+  */
+  getLatestExecution() {
+    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
+      if (!status) { return false; }
+      const currentPlugin = this.workflows.getCurrentPlugin(status);
+      if (!status['metisPlugins'][currentPlugin]) { return false; }
+      if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
+        this.workflowRunning = true;
+      }
+      this.updateExecutionHistoryPanel(status);
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);        
     });
   }
 
