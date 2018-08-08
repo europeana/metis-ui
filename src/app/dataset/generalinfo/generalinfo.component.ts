@@ -24,6 +24,8 @@ export class GeneralinfoComponent implements OnInit {
   intervalTimer = environment.intervalStatusLong;
   viewPreview;
   viewCollections;
+  buttonClassPreview = 'btn-disabled';
+  buttonClassCollections = 'btn-disabled';
 
   /** ngOnInit
   /* init for this specific component
@@ -59,6 +61,8 @@ export class GeneralinfoComponent implements OnInit {
 
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
+        this.buttonClassPreview = this.harvestPublicationData.lastPreviewRecordsReadyForViewing ? '' : 'btn-disabled';
+        this.buttonClassCollections = this.harvestPublicationData.lastPublishedRecordsReadyForViewing ? '' : 'btn-disabled';             
       }, (err: HttpErrorResponse) => {
         if (this.subscription) { this.subscription.unsubscribe(); }
         this.errors.handleError(err);   

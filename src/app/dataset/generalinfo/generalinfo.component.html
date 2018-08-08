@@ -13,10 +13,10 @@
   <div class="dataset-btns">
     <div class="btns-set">
       <span class="btn-padding">
-        <a class="btn btn-left" [attr.href]="harvestPublicationData && !harvestPublicationData.lastPreviewRecordsReadyForViewing ? null : viewPreview" target="_blank" [ngClass]="{'btn-disabled' : harvestPublicationData && !harvestPublicationData.lastPreviewRecordsReadyForViewing}">
+        <a class="btn btn-left" [attr.href]="harvestPublicationData && !harvestPublicationData.lastPreviewRecordsReadyForViewing ? null : viewPreview" target="_blank" [ngClass]="buttonClassPreview">
           {{ 'viewpreview' | translate }}
         </a>
-        <a class="btn btn-right" [attr.href]="harvestPublicationData && !harvestPublicationData.lastPreviewRecordsReadyForViewing ? null : viewCollections" target="_blank" [ngClass]="{'btn-disabled' : harvestPublicationData && !harvestPublicationData.lastPublishedRecordsReadyForViewing}">
+        <a class="btn btn-right" [attr.href]="harvestPublicationData && !harvestPublicationData.lastPreviewRecordsReadyForViewing ? null : viewCollections" target="_blank" [ngClass]="buttonClassCollections">
           {{ 'viewcollections' | translate }}
           <span class="right-btn-under-text"></span>
         </a>
