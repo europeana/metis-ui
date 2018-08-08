@@ -23,6 +23,7 @@ export class WorkflowService {
   activeExternalTaskId: any;
   allWorkflows: any;
   currentPage: Array<any> = [];
+  currentProcessing: any;
 
   /** getWorkflowForDataset
   /*  check if there is a workflow for this specific dataset
@@ -250,6 +251,21 @@ export class WorkflowService {
   */
   getCurrentReport() {
     return this.currentReport;
+  }
+
+  /** setCurrentReport
+  /* set information about the currently processing topology 
+  /* @param {object} report - data of current report
+  */
+  setCurrentProcessed(processed, topology): void {
+    this.currentProcessing = {'processed': processed, 'topology': topology};
+  }
+
+  /** getCurrentProcessed
+  /* get information about currently processing topology
+  */
+  getCurrentProcessed() {
+    return this.currentProcessing;
   }
 
   /** setCurrentPageNumberForComponent

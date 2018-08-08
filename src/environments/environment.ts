@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   passwordStrength: 0,
-  intervalStatus: 5000,
+  intervalStatus: 2500,
   intervalStatusLong: 60000,
   afterLoginGoto: '/dashboard',
   xsltSplitter: '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->',
