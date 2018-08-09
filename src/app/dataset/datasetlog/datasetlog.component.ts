@@ -38,19 +38,11 @@ export class DatasetlogComponent implements OnInit {
   /* and set translation langugaes
   */
   ngOnInit() {
-    this.logStep = 1;
-    this.logTo = this.logStep * this.logPerStep;
     this.startPolling();
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
       this.noLogs = this.translate.instant('nologs'); 
-    }
-
-    if (this.isShowingLog && this.isShowingLog['processed'] && this.isShowingLog['status'] === 'RUNNING') {
-      this.logTo = this.isShowingLog['processed'];
-      this.logFrom = this.getLogFrom();
-      this.logStep = Math.ceil(this.isShowingLog['processed'] / this.logPerStep);
     }
   }
 
@@ -69,7 +61,6 @@ export class DatasetlogComponent implements OnInit {
     if (this.subscription) { this.subscription.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
-      this.noLogMessage = undefined;
       this.returnLog();
     });
   }
@@ -79,40 +70,37 @@ export class DatasetlogComponent implements OnInit {
   */
   returnLog() {
 
-    if (!this.isShowingLog || !this.isShowingLog['externaltaskId'] || !this.isShowingLog['topology']) { return false; }
-      
-    if (this.logPlugin !== this.isShowingLog['plugin'] && this.isShowingLog['processed'] === 0) {
-      this.logFrom = 1;
-      this.logTo = this.logPerStep;
-      this.logStep = 1;
-    }
-
-    this.logPlugin = this.isShowingLog['plugin'];
+    let currentProcessed = this.workflows.getCurrentProcessed();
+    this.logTo = currentProcessed ? currentProcessed.processed : this.isShowingLog['processed'];
+    this.logPlugin = currentProcessed ? currentProcessed.topology : this.isShowingLog['plugin'];
 
     if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED' || this.isShowingLog['status'] === 'CANCELLED' || this.isShowingLog['status'] === 'FAILED')) { 
-      this.logTo = this.isShowingLog['processed']; 
-      this.logFrom = this.getLogFrom();
       if (this.subscription) { this.subscription.unsubscribe(); }
     }
 
-    this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.logFrom, this.logTo).subscribe(result => {
+    if (this.logTo <= 1) {
+      this.showWindowOutput(this.noLogs, undefined);
+      return false;
+    }
+
+    this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.getLogFrom(), this.logTo).subscribe(result => {
       if (result && (<any>result).length > 0) {
-        this.logMessages = result;
-        if ((<any>result).length === this.logPerStep) {
-          this.logFrom = this.logTo + 1;
-          this.logTo = ((<any>result).length * this.logStep) + this.logPerStep;
-          this.logStep += 1;
-          this.returnLog();
-        } 
+        this.showWindowOutput(undefined, result);
       } else {
-        if ((<any>result).length === 0) {
-          this.noLogMessage = this.noLogs;
-          return false;
-        }
+        this.showWindowOutput(this.noLogs, undefined);
       }
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
+  }
+
+  /** showWindowOutput
+  /* show correct information in log modal window
+  /* this good be a "no logs found" message or the actual log
+  */
+  showWindowOutput(nolog, log) {
+    this.noLogMessage = nolog;
+    this.logMessages = log;
   }
 
   /** getLogFrom

@@ -167,6 +167,7 @@ export class ActionbarComponent {
           this.currentTopology = thisPlugin.topologyName;
           this.totalProcessed = thisPlugin['executionProgress'].processedRecords;
           this.totalInDataset = thisPlugin['executionProgress'].expectedRecords;
+          this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
 
           if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
             this.workflowPercentage = thisPlugin['executionProgress'].progressPercentage;
