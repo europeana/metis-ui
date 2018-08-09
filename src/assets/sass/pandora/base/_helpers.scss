@@ -25,6 +25,7 @@ body {
     .btn-disabled {
       background: $offwhite;
       color: $gray-lighter;
+      cursor: default;
     }
   }
 }
