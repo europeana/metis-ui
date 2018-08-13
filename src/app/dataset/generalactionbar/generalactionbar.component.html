@@ -1,6 +1,5 @@
 <a class="btn" routerLink="/dataset/workflow/{{activeSet}}" *ngIf="!workflowInfoAvailable && addWorkflow">{{ 'addworkflow' | translate }}</a>
-<a class="btn" *ngIf="workflowInfoAvailable && currentWorkflowStatus !== 'INQUEUE' && currentWorkflowStatus !== 'RUNNING'" (click)="selectWorkflow()">Run workflow</a>
-<a class="btn" routerLink="/dataset/workflow/{{activeSet}}" *ngIf="workflowInfoAvailable && !firstRun && currentWorkflowStatus !== 'INQUEUE' && currentWorkflowStatus !== 'RUNNING'">{{ 'runaction' | translate }}</a>
+<a class="btn" *ngIf="workflowInfoAvailable && currentWorkflowStatus !== 'INQUEUE' && currentWorkflowStatus !== 'RUNNING'" (click)="selectWorkflow()">{{ 'run workflow' | translate }}</a>
 
 <div class="progress" *ngIf="workflowInfoAvailable && (currentWorkflowStatus === 'INQUEUE' || currentWorkflowStatus === 'RUNNING')">
 	<div class="progress-status">
