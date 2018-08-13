@@ -33,6 +33,7 @@ export class ActionbarComponent {
   now;
   totalInDataset: number;
   totalProcessed: number = 0;
+  totalErrors: number = 0;
   currentStatus: any;
   currentWorkflow;
   currentPluginName;
@@ -166,6 +167,7 @@ export class ActionbarComponent {
           this.currentExternalTaskId = thisPlugin.externalTaskId;
           this.currentTopology = thisPlugin.topologyName;
           this.totalProcessed = thisPlugin['executionProgress'].processedRecords;
+          this.totalErrors = thisPlugin['executionProgress'].errors;
           this.totalInDataset = thisPlugin['executionProgress'].expectedRecords;
           this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
 
@@ -199,6 +201,7 @@ export class ActionbarComponent {
         this.currentExternalTaskId = thisPlugin.externalTaskId;
         this.currentTopology = thisPlugin.topologyName;
         this.totalProcessed = thisPlugin['executionProgress'].processedRecords;
+        this.totalErrors = thisPlugin['executionProgress'].errors;
         
         if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
           this.startPollingWorkflow();
