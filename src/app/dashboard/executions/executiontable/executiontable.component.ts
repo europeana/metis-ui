@@ -40,12 +40,7 @@ export class ExecutiontableComponent implements OnInit {
   */
   cancelWorkflow(id) {
     if (!id) { return false; }
-    this.workflows.cancelThisWorkflow(id).subscribe(result => {
-      this.successMessage = this.msgCancelling + ': ' + id;
-    },(err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+    this.workflows.promptCancelThisWorkflow(id);  
   }
 
   /*** copyInformation

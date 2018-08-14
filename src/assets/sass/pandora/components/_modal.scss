@@ -16,6 +16,16 @@
     transform: translate(-50%, -50%);
     width: 50vw;
 
+    &.modal-small {
+      width: 20vw;
+
+      .content {
+        height: 10rem;
+        overflow: auto;
+        text-align: center;
+      }
+    }
+
     .head {
       background: $eu-jade;
       color: $white;
@@ -62,7 +72,7 @@
         border-radius: 2px;
         color: $white;
         display: inline-block;
-        margin: 1rem 0 0;
+        margin: 1rem 1rem 0 0;
         padding: .8rem 2rem;
       }
 
