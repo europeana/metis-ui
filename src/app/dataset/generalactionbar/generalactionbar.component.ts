@@ -22,7 +22,6 @@ export class GeneralactionbarComponent implements OnInit {
   activeSet: string;
   addWorkflow: boolean = false;
   workflowInfoAvailable: boolean = false;
-  firstRun: boolean = true;
   currentWorkflowStatus: string;
   currentPlugin: number;
   totalPlugins: number;
@@ -87,14 +86,11 @@ export class GeneralactionbarComponent implements OnInit {
     if (!this.datasetData) { return false }
     this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
       if (workflow) {
-        this.firstRun = false;
         this.currentWorkflowStatus = workflow['workflowStatus'];
         this.currentPlugin = this.workflows.getCurrentPlugin(workflow);
         this.totalPlugins = workflow.metisPlugins.length;
         this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
-      } else {
-        this.firstRun = true;
-      }
+      } 
     }, (err: HttpErrorResponse) => {
       if (this.subscription) { this.subscription.unsubscribe(); }
       this.errors.handleError(err);   
