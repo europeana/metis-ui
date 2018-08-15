@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkflowService, AuthenticationService, DatasetsService, ErrorService } from './_services';
+import { WorkflowService, AuthenticationService, DatasetsService, ErrorService, TranslateService } from './_services';
 import { StringifyHttpError } from './_helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -23,7 +23,8 @@ export class AppComponent implements OnInit {
     public workflows: WorkflowService,
     private authentication: AuthenticationService,
     private errors: ErrorService, 
-    public router: Router) {
+    public router: Router,
+    private translate: TranslateService) {
   }
 
   /** ngOnInit
@@ -53,6 +54,10 @@ export class AppComponent implements OnInit {
         this.showWrapper = true;
       }
     });
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
 
   }
 

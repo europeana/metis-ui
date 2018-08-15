@@ -7,6 +7,7 @@ export const LANG_EN_TRANS = {
   'allexecutions': 'All executions', 
   'allworkflows': 'All workflows', 
   'cancel': 'Cancel',
+  'cancelareyousure': 'Are you sure you want to cancel?',
   'cancelling': 'Cancelling',
   'changepassword': 'Change password',
   'chooseworkflow': 'Choose workflow to preview',
@@ -66,6 +67,7 @@ export const LANG_EN_TRANS = {
   'new dataset': 'New dataset',
   'new organization': 'New organization',
   'next action': 'Next action',
+  'no': 'No',
   'normalize': 'Normalise',
   'nologs': 'No logs found',
   'nosample': 'No sample available yet, try using the filter',
@@ -139,5 +141,6 @@ export const LANG_EN_TRANS = {
   'xsltsuccessful': 'XSLT changes have been saved successfully as custom XSLT',
   'xslttryoutdefault': 'Try out with default XSLT',
   'xslttryout': 'Save XSLT & Try it out',
+  'yes': 'Yes',
   'zoho': 'Go to Zoho'
 };
