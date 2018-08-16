@@ -98,6 +98,7 @@ export class DatasetsService {
           };
           this.updateLog.emit(message);
         }
+        this.workflows.setCurrentProcessed(thisPlugin['executionProgress'].processedRecords, thisPlugin['pluginType']);
         this.currentTaskId = thisPlugin['externalTaskId'];
       }
 

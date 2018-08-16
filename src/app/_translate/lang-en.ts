@@ -69,7 +69,7 @@ export const LANG_EN_TRANS = {
   'next action': 'Next action',
   'no': 'No',
   'normalize': 'Normalise',
-  'nologs': 'No logs found',
+  'nologs': 'No logs found (yet)',
   'nosample': 'No sample available yet, try using the filter',
   'notes': 'Notes', 
   'notpublished': 'Not published yet',
