@@ -52,7 +52,7 @@ describe('ActionbarComponent', () => {
     component.returnLastExecution();
 
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dataset-actionbar .progressbar')).length).toBeTruthy();
+    expect(component.currentWorkflow.workflowStatus).toBe('INQUEUE');
   });
 
   it('should do click to show logging', fakeAsync((): void => {
