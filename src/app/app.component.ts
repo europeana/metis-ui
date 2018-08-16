@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService, DatasetsService } from './_services';
+import { WorkflowService, AuthenticationService, DatasetsService, ErrorService, TranslateService } from './_services';
+import { StringifyHttpError } from './_helpers';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   providers: [AuthenticationService, DatasetsService],
@@ -13,11 +15,16 @@ export class AppComponent implements OnInit {
   title = 'Metis-UI';
   isLessMargin = false;
   bodyClass: string;
+  showWrapper: boolean = false;
+  currentWorkflowId;
   public loggedIn = false;
 
   constructor(
+    public workflows: WorkflowService,
     private authentication: AuthenticationService,
-    public router: Router) {
+    private errors: ErrorService, 
+    public router: Router,
+    private translate: TranslateService) {
   }
 
   /** ngOnInit
@@ -27,7 +34,8 @@ export class AppComponent implements OnInit {
   /* add a body class
   /* and margins
   */
-  public ngOnInit(): void {    
+  public ngOnInit(): void {  
+
     this.router.events.subscribe((event: any) => {
       if (!event.url) { return false; }
       if (this.router.isActive(event.url, false)) {
@@ -39,5 +47,37 @@ export class AppComponent implements OnInit {
         this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
       }
     });
+
+    this.workflows.promptCancelWorkflow.subscribe(workflow => {
+      if (workflow) {
+        this.currentWorkflowId = workflow;
+        this.showWrapper = true;
+      }
+    });
+
+    if (typeof this.translate.use === 'function') { 
+      this.translate.use('en'); 
+    }
+
   }
+
+  /** closePrompt
+  /*  as the name suggests, this one closes the prompt or modal window
+  */
+  closePrompt () {
+    this.showWrapper = false;
+  }
+
+  /** cancelWorkflow
+  /*  cancels the workflow using the currentWorkflow id
+  */
+  cancelWorkflow () {
+    this.workflows.cancelThisWorkflow(this.currentWorkflowId).subscribe(result => {
+      this.showWrapper = false;
+      this.workflows.setWorkflowCancelled();
+    }, (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);   
+    });    
+  }
+
 }

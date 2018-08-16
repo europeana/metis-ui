@@ -17,6 +17,8 @@ export class WorkflowService {
   @Output() workflowIsDone: EventEmitter<any> = new EventEmitter();
   @Output() ongoingExecutionIsDone: EventEmitter<any> = new EventEmitter();
   @Output() updateHistoryPanel: EventEmitter<any> = new EventEmitter();
+  @Output() promptCancelWorkflow: EventEmitter<any> = new EventEmitter();
+  @Output() workflowCancelled: EventEmitter<any> = new EventEmitter();
 
   activeWorkflow: any;
   currentReport: any;
@@ -213,6 +215,22 @@ export class WorkflowService {
     return this.http.delete(url).pipe(map(canceledWorkflow => {   
       return canceledWorkflow ? canceledWorkflow : false;
     }));
+  }
+
+  /** promptCancelThisWorkflow
+  /* show a prompt to cancel workflow
+  /* @param {number} id - id of the workflow
+  */
+  promptCancelThisWorkflow(id) {
+    if (!id) { id = false; }
+    this.promptCancelWorkflow.emit(id);
+  }
+
+  /** setWorkflowCancelled
+  /* set cancelled to true
+  */
+  setWorkflowCancelled(): void {
+    this.workflowCancelled.emit(true);
   }
 
   /** getWorkflowSamples

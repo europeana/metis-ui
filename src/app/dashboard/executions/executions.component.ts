@@ -61,6 +61,15 @@ export class ExecutionsComponent implements OnInit {
            this.refreshExecutions();
          }
     });
+
+    if (!this.workflows.workflowCancelled) { return false; }
+    this.workflows.workflowCancelled.subscribe(
+      status => {
+         if (status) {
+           this.refreshExecutions();
+         }
+    });
+
   }
 
   /** startPolling

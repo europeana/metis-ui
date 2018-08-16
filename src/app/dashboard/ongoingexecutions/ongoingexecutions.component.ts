@@ -102,11 +102,7 @@ export class OngoingexecutionsComponent {
   cancelWorkflow(id) {
     if (!id) { return false; }
     this.getOngoing();
-    this.workflows.cancelThisWorkflow(id).subscribe(result => {
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+    this.workflows.promptCancelThisWorkflow(id);  
   }
 
   /** showLog

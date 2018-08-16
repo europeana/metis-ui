@@ -104,9 +104,8 @@ export class HistoryComponent implements OnInit {
   /* @param {any} workflow - current running workflow
   */
   updateExecutionHistoryPanel(workflow) {
+
     let r = workflow;
-    r['metisPlugins'].reverse();
-    
     this.historyInPanel = [];
 
     for (let w = 0; w < r['metisPlugins'].length; w++) { 
@@ -116,7 +115,8 @@ export class HistoryComponent implements OnInit {
     }
 
     if (this.inCollapsablePanel) {
-      this.allExecutions = this.historyInPanel;
+      let history = this.historyInPanel.reverse()
+      this.allExecutions = history;
     }
   }
 

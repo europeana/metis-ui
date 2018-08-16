@@ -203,12 +203,8 @@ export class ActionbarComponent {
   /*  cancel a running execution
   /* using id of current workflow
   */
-  cancelWorkflow () {    
-    this.workflows.cancelThisWorkflow(this.currentWorkflow.id).subscribe(result => {
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+  cancelWorkflow () {   
+    this.workflows.promptCancelThisWorkflow(this.currentWorkflow.id);
   }
 
   /** showLog
