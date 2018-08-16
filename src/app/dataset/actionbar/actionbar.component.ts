@@ -159,7 +159,9 @@ export class ActionbarComponent {
 
           this.workflowPercentage = 0;
           this.currentPlugin = this.workflows.getCurrentPlugin(e);
-          this.setCurrentPluginInfo(e['metisPlugins'][this.currentPlugin]); 
+          
+          let thisPlugin = e['metisPlugins'][this.currentPlugin];
+          this.setCurrentPluginInfo(thisPlugin); 
 
           this.currentStatus = e['cancelling'] === false ? thisPlugin.pluginStatus : 'CANCELLING';
           this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
