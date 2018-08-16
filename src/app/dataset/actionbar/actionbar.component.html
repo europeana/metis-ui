@@ -9,7 +9,7 @@
   </div>
   <div class="progress">
     <div class="progress-status" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
-      <span class="progress-statusnumbers">{{totalProcessed}} <span class="errors" *ngIf=totalErrors>({{totalErrors}})</span> / {{totalInDataset >= 0 ? totalInDataset : ('unknown' | translate)}}</span>
+      <span class="progress-statusnumbers">{{totalProcessed}} <span class="errors" *ngIf="totalErrors">({{totalErrors}})</span> / {{totalInDataset >= 0 ? totalInDataset : ('unknown' | translate)}}</span>
       <span class="progress-percentage">{{workflowPercentage >= 0 ? (workflowPercentage | number:'1.0-0') : ('unknown' | translate)}}%</span>
     </div>
     <div class="progressbar" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
