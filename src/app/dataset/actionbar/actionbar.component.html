@@ -5,11 +5,11 @@
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf="currentWorkflow">
   <div class="status">
     <strong class="uppercase tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', currentExternalTaskId, currentWorkflow['metisPlugins'][currentPlugin].id);">{{currentPluginName|renameWorkflow}}</strong>
-    {{currentStatus}}
+    {{currentStatus | uppercase}}
   </div>
   <div class="progress">
     <div class="progress-status" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
-      <span class="progress-statusnumbers">{{totalProcessed}} / {{totalInDataset >= 0 ? totalInDataset : ('unknown' | translate)}}</span>
+      <span class="progress-statusnumbers">{{totalProcessed}} <span class="errors" *ngIf="totalErrors">({{totalErrors}})</span> / {{totalInDataset >= 0 ? totalInDataset : ('unknown' | translate)}}</span>
       <span class="progress-percentage">{{workflowPercentage >= 0 ? (workflowPercentage | number:'1.0-0') : ('unknown' | translate)}}%</span>
     </div>
     <div class="progressbar" *ngIf="currentStatus === 'RUNNING' || currentStatus === 'INQUEUE'">
