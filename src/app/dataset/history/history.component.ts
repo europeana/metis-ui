@@ -116,8 +116,8 @@ export class HistoryComponent implements OnInit {
 
     if (this.inCollapsablePanel) {
       let history = this.historyInPanel;
-      let historyReversed = history.reverse();
-      this.allExecutions = historyReversed;
+      history.reverse();
+      this.allExecutions = history;
     }
   }
 
