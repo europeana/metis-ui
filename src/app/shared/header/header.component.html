@@ -14,7 +14,7 @@
               <a class="has-submenu" (click)="toggleSignInMenu()"><span class="svg-icon-loggedin-user"></span></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li><a (click)="gotoProfile()">{{ 'myprofile' | translate }}</a></li>
-                <li><a (click)="logOut()">{{ 'logout' | translate }}</a></li>
+                <li><a (click)="logOut()">{{ 'signout' | translate }}</a></li>
               </ul>
             </div>
           </div>
@@ -24,7 +24,7 @@
             <li>
               <a class="signup has-submenu" (click)="toggleSignInMenu()">{{ 'signin' | translate }}</a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
-                <li><a (click)="gotoLogin();">{{ 'login' | translate }}</a></li>
+                <li><a (click)="gotoLogin();">{{ 'signin' | translate }}</a></li>
                 <li><a (click)="gotoRegister();">{{ 'register' | translate }}</a></li>
               </ul>
             </li>

@@ -17,11 +17,11 @@ export class AuthUserGuard implements CanActivate {
         return true;
     }
 
-    // save original url to be redirected to after login
+    // save original url to be redirected to after signin
     this.redirectPreviousUrl.set(this.document.location.href.split('/')[3]);
 
-    // not logged in so redirect to login page
-    this.router.navigate(['/login']);
+    // not logged in so redirect to signin page
+    this.router.navigate(['/signin']);
     return false;
   }
 }

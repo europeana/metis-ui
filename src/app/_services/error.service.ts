@@ -29,12 +29,12 @@ export class ErrorService {
   /** expiredToken
   /* if token expired: remember current url,
   /* logout,
-  /* navigato to login page
+  /* navigato to signin page
   */ 
   expiredToken() {
   	this.RedirectPreviousUrl.set(this.router.url);
     this.authentication.logout();
-    this.router.navigate(['/login']);    
+    this.router.navigate(['/signin']);    
   }
 
 }

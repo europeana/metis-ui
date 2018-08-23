@@ -98,13 +98,13 @@ export class RegisterComponent implements OnInit {
 
   /** onRegistration
   /* set message after successful registration
-  /* redirect user to login page afterwards
+  /* redirect user to signin page afterwards
   /* @param {string} msg - success message
   */
   private onRegistration(msg) {
     this.successMessage = msg;
     setTimeout(() => {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/signin']);
     }, 3000);
   }
 }

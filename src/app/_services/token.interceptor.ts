@@ -22,7 +22,7 @@ export class TokenInterceptor implements HttpInterceptor {
   /* @param {httphandler} next 
   */
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!request.url.match(/login|register/)) {
+    if (!request.url.match(/signin|register/)) {
       const auth = this.inj.get(AuthenticationService);
       const token = auth.getToken();
 

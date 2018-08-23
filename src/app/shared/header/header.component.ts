@@ -71,11 +71,11 @@ export class HeaderComponent implements OnInit {
   }
 
   /** gotoLogin
-  /* go to login page
+  /* go to login(=signin) page
   */
   gotoLogin() {
     this.openSignIn = false;
-    this.router.navigate(['/login']);
+    this.router.navigate(['/signin']);
   }
 
   /** gotoRegister
