@@ -76,7 +76,7 @@ export class AppComponent implements OnInit {
       this.showWrapper = false;
       this.workflows.setWorkflowCancelled();
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
+      this.errors.handleError(err);   
     });    
   }
 
