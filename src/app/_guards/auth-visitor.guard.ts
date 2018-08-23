@@ -13,7 +13,7 @@ export class AuthVisitorGuard implements CanActivate {
   	if (this.authentication.validatedUser() === false) {
   		return true;
   	} else {
-      // user is loggedin: useless to visit eg login and registrationpage again, so redirect to profile
+      // user is loggedin: useless to visit eg signin and registrationpage again, so redirect to profile
       this.router.navigate(['/profile']);
     }
 
