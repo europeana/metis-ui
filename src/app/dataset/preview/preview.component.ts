@@ -158,7 +158,7 @@ export class PreviewComponent implements OnInit {
     this.selectedPlugin = plugin; 
     this.saveTempFilterSelection('plugin', plugin);
     this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
-      this.allSamples = result; 
+      this.allSamples = this.undoNewLines(result); 
       if (this.allSamples.length === 1) {
        this.expandedSample = 0;
       }
@@ -178,9 +178,9 @@ export class PreviewComponent implements OnInit {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       if (!result['results'][0]) { return false; }
       this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
-        this.allSamples = samples; 
+        this.allSamples = this.undoNewLines(samples); 
         this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
-          this.allTransformedSamples = transformed;
+          this.allTransformedSamples = this.undoNewLines(transformed);
         }, (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err); 
           this.errorMessage = `${StringifyHttpError(error)}`;   
@@ -192,6 +192,15 @@ export class PreviewComponent implements OnInit {
       const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
+  }
+
+
+  undoNewLines(samples) {
+    let clearSamples = samples;    
+    for (let i = 0; i < samples.length; i++) {  
+      clearSamples[i]['xmlRecord'] = samples[i]['xmlRecord'].replace(/[\r\n]/g, '').trim();
+    }
+    return clearSamples
   }
 
   /** saveTempFilterSelection
@@ -229,7 +238,7 @@ export class PreviewComponent implements OnInit {
   */
   expandSample(index: number) {
     let sample = this.allSamples[index]['xmlRecord'];
-    let samples = this.allSamples;
+    let samples = this.undoNewLines(this.allSamples);
     this.allSamples[index]['xmlRecord'] = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
     setTimeout(function() {
