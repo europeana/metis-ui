@@ -36,7 +36,7 @@ export const xslt = `<?xml version="1.0" encoding="UTF-8"?>
     </xsl:template>
   </xsl:stylesheet>`;
 
-export const XMLSamples = [{ 
+export const XMLTransformSamples = [{ 
  'ecloudId': 1,
  'xmlRecord': '<?xml version="1.0" encoding="UTF-8"?>'
 }];
@@ -60,7 +60,7 @@ export class MockDatasetService extends DatasetsService {
   }
 
   getTransform() {
-    return observableOf(XMLSamples);
+    return observableOf(XMLTransformSamples);
   }
 
 }
