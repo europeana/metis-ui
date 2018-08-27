@@ -11,6 +11,7 @@ export const environment = {
   xsltSplitter: '<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->',
   links: {
     registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis',
-    gotoZoho: 'https://www.zoho.com'
+    gotoZoho: 'https://www.zoho.com',
+    updateProfileMain: 'content@europeana.eu'
   }
 };
