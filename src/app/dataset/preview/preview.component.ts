@@ -158,7 +158,7 @@ export class PreviewComponent implements OnInit {
     this.selectedPlugin = plugin; 
     this.saveTempFilterSelection('plugin', plugin);
     this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
-      this.allSamples = this.undoNewLines(result); 
+      this.allSamples = this.undoNewLines(result);  
       if (this.allSamples.length === 1) {
        this.expandedSample = 0;
       }
@@ -192,15 +192,6 @@ export class PreviewComponent implements OnInit {
       const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
-  }
-
-
-  undoNewLines(samples) {
-    let clearSamples = samples;    
-    for (let i = 0; i < samples.length; i++) {  
-      clearSamples[i]['xmlRecord'] = samples[i]['xmlRecord'].replace(/[\r\n]/g, '').trim();
-    }
-    return clearSamples
   }
 
   /** saveTempFilterSelection
@@ -244,6 +235,14 @@ export class PreviewComponent implements OnInit {
     setTimeout(function() {
       samples[index]['xmlRecord'] = sample;
     }, 500);
+  }
+
+  undoNewLines(samples) {
+    let clearSamples = samples;    
+    for (let i = 0; i < samples.length; i++) {  
+      clearSamples[i]['xmlRecord'] = samples[i]['xmlRecord'].replace(/[\r\n]/g, '').trim();
+    }
+    return clearSamples
   }
 
   /** gotoMapping
