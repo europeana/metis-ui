@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthenticationService, TranslateService, ErrorService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -19,7 +20,7 @@ export class ProfileComponent implements OnInit {
   successMessage: string;
   public password;
   confirmPasswordError: boolean = false;
-
+  emailInfo: string = environment.links.updateProfileMain;
   profileForm: FormGroup;
 
   constructor(private http: HttpClient,
