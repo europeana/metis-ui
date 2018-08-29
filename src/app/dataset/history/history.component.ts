@@ -16,6 +16,7 @@ export class HistoryComponent implements OnInit {
     private translate: TranslateService) { }
 
   @Input('datasetData') datasetData;
+  @Input('lastExecutionData') lastExecutionData;
   @Input('inCollapsablePanel') inCollapsablePanel;
   
   errorMessage: string;
@@ -30,6 +31,7 @@ export class HistoryComponent implements OnInit {
   allWorkflows;
   totalPages: number = 0;
   contentCopied: boolean = false;
+  workflowHasFinished: boolean = false; 
 
   /** ngOnInit
   /* init for this specific component
@@ -42,7 +44,7 @@ export class HistoryComponent implements OnInit {
   */
   ngOnInit() { 
   
-   if (this.inCollapsablePanel) {
+    if (this.inCollapsablePanel) {
       this.workflows.selectedWorkflow.subscribe(
         selectedworkflow => {
           this.triggerWorkflow();
@@ -82,10 +84,11 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
-        if (workflowstatus) {
+        if (workflowstatus && this.workflowHasFinished === false) {
           this.workflowRunning = false;
           this.allExecutions = [];          
           this.nextPage = 0;
+          this.workflowHasFinished = true;
           if (!this.inCollapsablePanel) {
             this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
           } 
@@ -194,17 +197,15 @@ export class HistoryComponent implements OnInit {
   /*  and update the history panel with the most recent details
   */
   getLatestExecution() {
-    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(status => {
-      if (!status) { return false; }
-      const currentPlugin = this.workflows.getCurrentPlugin(status);
-      if (!status['metisPlugins'][currentPlugin]) { return false; }
-      if (status['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || status['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
-        this.workflowRunning = true;
-      }
-      this.updateExecutionHistoryPanel(status);
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);        
-    });
+    console.log('getLatestExecution', this.lastExecutionData);
+    let workflow = this.lastExecutionData;
+    if (!workflow) { return false; }
+    const currentPlugin = this.workflows.getCurrentPlugin(workflow);
+    if (!workflow['metisPlugins'][currentPlugin]) { return false; }
+    if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
+      this.workflowRunning = true;
+    }
+    this.updateExecutionHistoryPanel(workflow);
   }
 
   /** scroll
@@ -232,6 +233,7 @@ export class HistoryComponent implements OnInit {
     this.errorMessage = undefined;
     if (!this.datasetData) { return false; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
+      this.workflowHasFinished = false;
       this.workflows.setActiveWorkflow(result); 
       this.workflowRunning = true;     
     }, (err: HttpErrorResponse) => {
