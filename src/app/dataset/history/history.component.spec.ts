@@ -98,15 +98,6 @@ describe('HistoryComponent', () => {
     expect(component.workflowRunning).toBe(true);
   });
 
-  it('should select a workflow', async(() => {
-    component.inCollapsablePanel = true;
-    component.datasetData = currentDataset;
-    component.ngOnInit();
-    fixture.detectChanges();
-    spyOn(component.workflows.selectedWorkflow, 'emit');
-    expect(component.workflowRunning).toBe(true);
-  }));
-
   it('should update history panel', () => {
     component.updateExecutionHistoryPanel(currentWorkflow.results[4]);
     fixture.detectChanges();

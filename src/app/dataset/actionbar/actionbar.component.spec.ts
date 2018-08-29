@@ -46,10 +46,21 @@ describe('ActionbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should return last execution and start polling a running execution', () => {    
+  it('should start polling, finished workflow', () => {    
     fixture.detectChanges();
     component.datasetData = currentDataset;
-    component.returnLastExecution();
+    component.lastExecutionData = currentWorkflow['results'][4];
+    component.ngOnChanges();
+
+    fixture.detectChanges();
+    expect(component.currentWorkflow.workflowStatus).toBe('FINISHED');
+  });
+
+  it('should start polling', () => {    
+    fixture.detectChanges();
+    component.datasetData = currentDataset;
+    component.lastExecutionData = currentWorkflow['results'][0];
+    component.ngOnChanges();
 
     fixture.detectChanges();
     expect(component.currentWorkflow.workflowStatus).toBe('INQUEUE');
