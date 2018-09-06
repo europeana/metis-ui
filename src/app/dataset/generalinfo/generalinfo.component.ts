@@ -55,8 +55,8 @@ export class GeneralinfoComponent implements OnInit {
     if (this.datasetData) {
 
       if (!this.viewPreview) {
-        this.viewPreview = apiSettings.viewPreview + this.datasetData.datasetId + '_*';
-        this.viewCollections = apiSettings.viewCollections + this.datasetData.datasetId + '_*';  
+        this.viewPreview = apiSettings.viewPreview + this.escapeURL(this.datasetData.datasetId + '_') + '*';
+        this.viewCollections = apiSettings.viewCollections + this.escapeURL(this.datasetData.datasetId + '_') + '*';  
       }
 
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
@@ -70,4 +70,8 @@ export class GeneralinfoComponent implements OnInit {
     }
   }
 
+  escapeURL(url) {
+    let pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
+    return encodeURIComponent(url.replace(pattern, '\\$1'));
+  }
 }
