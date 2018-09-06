@@ -55,8 +55,8 @@ export class GeneralinfoComponent implements OnInit {
     if (this.datasetData) {
 
       if (!this.viewPreview) {
-        this.viewPreview = apiSettings.viewPreview + this.datasetData.datasetId + '_' + this.datasetData.datasetName;
-        this.viewCollections = apiSettings.viewCollections + this.datasetData.datasetId + '_' +  this.datasetData.datasetName;  
+        this.viewPreview = apiSettings.viewPreview + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
+        this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');  
       }
 
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
@@ -70,4 +70,8 @@ export class GeneralinfoComponent implements OnInit {
     }
   }
 
+  escapeSolr(url) {
+    let pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
+    return url.replace(pattern, '\\$1');
+  }
 }
