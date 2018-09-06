@@ -26,10 +26,11 @@ export class ActionbarComponent {
 
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
+  @Input('lastExecutionData') lastExecutionData;
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
-  intervalTimer = environment.intervalStatus;
+  intervalTimer = environment.intervalStatusShort;
   now;
   totalInDataset: number;
   totalProcessed: number = 0;
@@ -56,37 +57,26 @@ export class ActionbarComponent {
   /* set language to use for translations
   */
   ngOnInit() {
-    
-    this.returnLastExecution();
     this.returnWorkflowInfo();
-     
-    if (!this.workflows.changeWorkflow) { return false; }
-    this.workflows.changeWorkflow.subscribe(
-      workflow => {
-        if (workflow) {
-          this.currentWorkflow = workflow;
-          this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
-
-          let thisPlugin = this.currentWorkflow['metisPlugins'][this.currentPlugin];
-
-          this.currentStatus = thisPlugin.pluginStatus;
-          this.currentPluginName = thisPlugin.pluginType;
-          this.currentExternalTaskId = thisPlugin.externalTaskId;
-          this.currentTopology = thisPlugin.topologyName;
-
-          if (this.currentStatus !== 'FINISHED' || this.currentStatus !== 'CANCELLED' || this.currentStatus !== 'FAILED') {
-            this.startPollingWorkflow();
-          }
-        } else {
-          this.currentWorkflow = undefined;
-        }
-      }
-    );
-
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
       this.cancelling = this.translate.instant('cancelling');
     }    
+  }
+
+  /** ngOnChanges
+  /*  look for changes, and more specific the lastExecutionData
+  */
+  ngOnChanges() {    
+    if (!this.lastExecutionData) {return false; }
+    if (!this.subscription || this.subscription.closed) {
+      this.currentWorkflow = this.lastExecutionData;
+      this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
+
+      let thisPlugin = this.currentWorkflow['metisPlugins'][this.currentPlugin];
+      this.setCurrentPluginInfo(thisPlugin);
+      this.startPollingWorkflow();
+    }
   }
 
   /** returnWorkflowInfo
@@ -122,83 +112,55 @@ export class ActionbarComponent {
   pollingWorkflow() {
 
     if (!this.datasetData || !this.authentication.validatedUser()) { return false }
+    
+    let execution = this.lastExecutionData;  
+    if (execution === 0 || !execution) {
+      this.currentPlugin = 0;
+      this.subscription.unsubscribe();
+      this.workflows.setActiveWorkflow();
+    } else {
+      
+      let e = execution;        
+      
+      if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {  
 
-    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
-
-      if (execution === 0 || !execution) {
         this.currentPlugin = 0;
-        this.subscription.unsubscribe();
-        this.workflows.setActiveWorkflow();
+        this.now = e['finishedDate'];
+        this.workflowPercentage = 0;
+
+        if (e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {
+          this.now = e['updatedDate'];
+        }
+
+        this.currentStatus = e['workflowStatus'];
+        this.workflows.workflowDone(true);       
+
       } else {
+
+        if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
         
-        let e = execution;        
+        if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
+          this.workflows.updateHistory(e);
+          let t = this.workflows.getCurrentPlugin(e);
+          if (this.isShowingLog) {
+            this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType, e['metisPlugins'][t]['executionProgress'].processedRecords, e['metisPlugins'][t].pluginStatus);
+          }
+        }
+
+        this.workflowPercentage = 0;
+        this.currentPlugin = this.workflows.getCurrentPlugin(e);
         
-        if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {  
+        let thisPlugin = e['metisPlugins'][this.currentPlugin];
+        this.setCurrentPluginInfo(thisPlugin, e['cancelling']); 
+        this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
 
-          this.currentPlugin = 0;
-          this.now = e['finishedDate'];
-          this.workflowPercentage = 0;
-
-          if (e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {
-            this.now = e['updatedDate'];
-          }
-
-          this.subscription.unsubscribe();
-          this.currentStatus = e['workflowStatus'];
-          this.workflows.workflowDone(true);       
-
-        } else {
-
-          if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
-          
-          if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
-            this.workflows.updateHistory(e);
-            let t = this.workflows.getCurrentPlugin(e);
-            if (this.isShowingLog) {
-              this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType, e['metisPlugins'][t]['executionProgress'].processedRecords, e['metisPlugins'][t].pluginStatus);
-            }
-          }
-
-          this.workflowPercentage = 0;
-          this.currentPlugin = this.workflows.getCurrentPlugin(e);
-          
-          let thisPlugin = e['metisPlugins'][this.currentPlugin];
-          this.setCurrentPluginInfo(thisPlugin, e['cancelling']); 
-          this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
-
-          if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
-            this.workflowPercentage = thisPlugin['executionProgress'].progressPercentage;
-          }
-
-          this.now = e['updatedDate'] === null ? thisPlugin['startedDate'] : thisPlugin['updatedDate'];
+        if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
+          this.workflowPercentage = thisPlugin['executionProgress'].progressPercentage;
         }
-      }            
-    }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
-  };
 
-  /** returnLastExecution
-  /*  get the last action for this dataset and display its status in the progress/actionbar
-  */
-  returnLastExecution () {
-    if (!this.datasetData) { return false }
-    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
-      if (workflow) {
-        this.currentWorkflow = workflow;        
-        this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
-        this.setCurrentPluginInfo(this.currentWorkflow['metisPlugins'][this.currentPlugin]);        
-        if (this.currentStatus !== 'FINISHED' && this.currentStatus !== 'CANCELLED' && this.currentStatus !== 'FAILED') { 
-          this.startPollingWorkflow();
-        }
+        this.now = e['updatedDate'] === null ? thisPlugin['startedDate'] : thisPlugin['updatedDate'];
       }
-    }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+    } 
   }
 
   /** cancelWorkflow

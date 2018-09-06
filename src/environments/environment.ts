@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   passwordStrength: 0,
+  intervalStatusShort: 1000,
   intervalStatus: 2500,
   intervalStatusLong: 60000,
   afterLoginGoto: '/dashboard',

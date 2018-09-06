@@ -19,6 +19,7 @@ export class GeneralactionbarComponent implements OnInit {
     private errors: ErrorService) { }
 
   @Input('datasetData') datasetData;
+  @Input('lastExecutionData') lastExecutionData;
   activeSet: string;
   addWorkflow: boolean = false;
   workflowInfoAvailable: boolean = false;
@@ -27,22 +28,17 @@ export class GeneralactionbarComponent implements OnInit {
   totalPlugins: number;
   pluginPercentage: number;
   subscription;
-  intervalTimer: number = environment.intervalStatus;
+  intervalTimer: number = environment.intervalStatusShort;
 
   /** ngOnInit
   /*  init for this component
   /* set active dataset
   /* poll to check the status of this dataset + workflow history
   */
-  ngOnInit() {    
+  ngOnInit() {   
     if (!this.datasetData) { return false }
     this.activeSet = this.datasetData.datasetId;
     this.checkStatus();
-
-    if (!this.workflows.changeWorkflow) { return false; }
-    this.workflows.changeWorkflow.subscribe(workflow => {
-      this.checkStatus();
-    });
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
@@ -84,17 +80,13 @@ export class GeneralactionbarComponent implements OnInit {
   */
   returnLastExecution () {
     if (!this.datasetData) { return false }
-    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
-      if (workflow) {
-        this.currentWorkflowStatus = workflow['workflowStatus'];
-        this.currentPlugin = this.workflows.getCurrentPlugin(workflow);
-        this.totalPlugins = workflow.metisPlugins.length;
-        this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
-      } 
-    }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      this.errors.handleError(err);   
-    });
+    let workflow = this.lastExecutionData;
+    if (workflow) {
+      this.currentWorkflowStatus = workflow['workflowStatus'];
+      this.currentPlugin = this.workflows.getCurrentPlugin(workflow);
+      this.totalPlugins = workflow.metisPlugins.length;
+      this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
+    } 
   }
 
   /** selectWorkflow

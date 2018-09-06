@@ -42,6 +42,7 @@ describe('GeneralactionbarComponent', () => {
 
   it('should check the status', () => {
     component.datasetData = currentDataset;
+    component.lastExecutionData = currentWorkflow['results'][0];
     component.returnLastExecution();
     fixture.detectChanges();
     expect(component.currentWorkflowStatus).toBe('INQUEUE');

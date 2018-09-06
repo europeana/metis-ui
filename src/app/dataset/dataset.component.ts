@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
+import { environment } from '../../environments/environment';
+import {timer as observableTimer, Observable} from 'rxjs';
 
 import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService, ErrorService, TranslateService } from '../_services';
 
@@ -42,6 +44,8 @@ export class DatasetComponent implements OnInit {
   user: User;
   errorMessage: string;
   successMessage: string;
+  subscription;
+  intervalTimer: number = environment.intervalStatus;
   
   public isShowingLog;
   public datasetData; 
@@ -94,11 +98,19 @@ export class DatasetComponent implements OnInit {
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
       });
-      // check for last execution
-      this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
-        this.lastExecutionData = execution;
-      });
 
+      // check for last execution every x seconds
+      if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
+      let timer = observableTimer(0, this.intervalTimer);
+      this.subscription = timer.subscribe(t => {
+        this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
+          this.lastExecutionData = execution;
+        }, (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.errorMessage = `${StringifyHttpError(error)}`;
+          this.subscription.unsubscribe();
+        });
+      });
     }, (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
