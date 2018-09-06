@@ -30,7 +30,7 @@ export class ActionbarComponent {
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
-  intervalTimer = environment.intervalStatus;
+  intervalTimer = environment.intervalStatusShort;
   now;
   totalInDataset: number;
   totalProcessed: number = 0;

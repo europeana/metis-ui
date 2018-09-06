@@ -109,5 +109,13 @@ describe('HistoryComponent', () => {
     expect(component.contentCopied).toBe(true);
   });
 
+  it('should get the last execution', () => {
+    component.datasetData = currentDataset;
+    component.lastExecutionData = currentWorkflow['results'][4];
+    component.getLatestExecution();
+    fixture.detectChanges();
+    expect(component.workflowRunning).toBe(false);
+  });  
+
 });
 

@@ -28,7 +28,7 @@ export class GeneralactionbarComponent implements OnInit {
   totalPlugins: number;
   pluginPercentage: number;
   subscription;
-  intervalTimer: number = environment.intervalStatus;
+  intervalTimer: number = environment.intervalStatusShort;
 
   /** ngOnInit
   /*  init for this component
