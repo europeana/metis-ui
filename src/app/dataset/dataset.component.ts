@@ -45,7 +45,7 @@ export class DatasetComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   subscription;
-  intervalTimer: number = environment.intervalStatus;
+  intervalTimer: number = environment.intervalStatusShort;
   
   public isShowingLog;
   public datasetData; 
