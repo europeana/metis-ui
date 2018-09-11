@@ -34,6 +34,7 @@ export class HistoryComponent implements OnInit {
   workflowHasFinished: boolean = false; 
   subscription;
   intervalTimer = environment.intervalStatusShort;
+  checkStatusStarted: boolean = false;
 
   /** ngOnInit
   /* init for this specific component
@@ -47,7 +48,7 @@ export class HistoryComponent implements OnInit {
   ngOnInit() { 
 
     this.checkStatus();
-
+    
     if (this.inCollapsablePanel) {
       this.workflows.selectedWorkflow.subscribe(
         selectedworkflow => {
@@ -78,6 +79,13 @@ export class HistoryComponent implements OnInit {
           } 
           this.returnAllExecutions();    
           if (this.subscription) { this.subscription.unsubscribe(); }
+          this.checkStatusStarted = false;
+        } else if (!workflowstatus) {
+          if (!this.checkStatusStarted) {
+            this.checkStatus();
+            this.checkStatusStarted = true;
+            this.workflowHasFinished = false;
+          }
         }
       }
     );
@@ -105,7 +113,7 @@ export class HistoryComponent implements OnInit {
   updateExecutionHistoryPanel(workflow) {
 
     if (!workflow) { return false; }
-    if (this.historyInPanel.length === this.workflows.getCurrentPlugin(workflow)) { return false; }
+    if (this.historyInPanel.length === this.workflows.getCurrentPlugin(workflow) && this.historyInPanel.length && this.historyInPanel.length > 0 && this.workflows.getCurrentPlugin(workflow) > 0) { return false; }
     
     this.historyInPanel = [];
     let r = workflow;
@@ -229,8 +237,7 @@ export class HistoryComponent implements OnInit {
   /*  trigger a workflow, based on selection in workflow dropdown or restart button
   /* @param {string} workflowName - name of workflow to trigger
   */
-  triggerWorkflow() {   
-    if (this.subscription) { this.subscription.unsubscribe(); }
+  triggerWorkflow() {  
     this.errorMessage = undefined;
     if (!this.datasetData) { return false; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {

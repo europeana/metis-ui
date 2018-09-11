@@ -163,7 +163,10 @@ export class ActionbarComponent {
         }
 
         this.now = e['updatedDate'] === null ? thisPlugin['startedDate'] : thisPlugin['updatedDate'];
+        
+        this.workflows.workflowDone(false); 
         this.workflowIsDone = false;
+        
       }
     } 
   }
