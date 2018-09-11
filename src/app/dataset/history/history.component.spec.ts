@@ -95,7 +95,7 @@ describe('HistoryComponent', () => {
     component.datasetData = currentDataset;
     component.triggerWorkflow();
     fixture.detectChanges();
-    expect(component.workflowRunning).toBe(true);
+    expect(component.workflowHasFinished).toBe(false);
   });
 
   it('should update history panel', () => {
@@ -114,7 +114,7 @@ describe('HistoryComponent', () => {
     component.lastExecutionData = currentWorkflow['results'][4];
     component.getLatestExecution();
     fixture.detectChanges();
-    expect(component.workflowRunning).toBe(false);
+    expect(component.workflowHasFinished).toBe(true);
   });  
 
 });

@@ -196,14 +196,16 @@ export class HistoryComponent implements OnInit {
   /*  and update the history panel with the most recent details
   */
   getLatestExecution() {
-    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
-      if (!workflow) { return false; }
-      const currentPlugin = this.workflows.getCurrentPlugin(workflow);
-      if (!workflow['metisPlugins'][currentPlugin]) { return false; }
-      this.updateExecutionHistoryPanel(workflow);
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);        
-    });
+    let workflow = this.lastExecutionData;
+    if (!workflow) { return false; }
+    const currentPlugin = this.workflows.getCurrentPlugin(workflow);
+    if (!workflow['metisPlugins'][currentPlugin]) { return false; }
+    if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
+      this.workflowHasFinished = false;
+    } else {
+      this.workflowHasFinished = true;
+    }
+    this.updateExecutionHistoryPanel(workflow);
   }
 
   /** scroll
