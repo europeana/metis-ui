@@ -29,9 +29,6 @@ export class HistoryComponent implements OnInit {
   historyInPanel: Array<any> = [];
   currentPlugin: number = 0;
   nextPage: number = 0;
-  workflowRunning: boolean = false;
-  filterWorkflow: boolean = false;
-  allWorkflows;
   totalPages: number = 0;
   contentCopied: boolean = false;
   workflowHasFinished: boolean = false; 
@@ -48,6 +45,8 @@ export class HistoryComponent implements OnInit {
   /* and set translation langugaes
   */
   ngOnInit() { 
+
+    this.checkStatus();
 
     if (this.inCollapsablePanel) {
       this.workflows.selectedWorkflow.subscribe(
@@ -68,28 +67,9 @@ export class HistoryComponent implements OnInit {
       this.getLatestExecution();  
     }
     
-    if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      this.updateExecutionHistoryPanel(this.lastExecutionData);
-    }); 
-
-    this.workflows.changeWorkflow.subscribe(
-      workflow => {
-        if (workflow) {   
-          this.historyInPanel = [];
-          const currentPlugin = this.workflows.getCurrentPlugin(workflow);
-          if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
-            this.workflowRunning = true;
-          }
-        }
-      }
-    );
-
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
         if (workflowstatus && this.workflowHasFinished === false) {
-          this.workflowRunning = false;
           this.allExecutions = [];          
           this.nextPage = 0;
           this.workflowHasFinished = true;
@@ -97,6 +77,7 @@ export class HistoryComponent implements OnInit {
             this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
           } 
           this.returnAllExecutions();    
+          if (this.subscription) { this.subscription.unsubscribe(); }
         }
       }
     );
@@ -106,6 +87,17 @@ export class HistoryComponent implements OnInit {
     }
   }
 
+  /** checkStatus
+  /*  start checking the status of the workflow
+  */
+  checkStatus () {
+    if (this.subscription) { this.subscription.unsubscribe(); }
+    let timer = observableTimer(0, this.intervalTimer);
+    this.subscription = timer.subscribe(t => {
+      this.updateExecutionHistoryPanel(this.lastExecutionData);
+    }); 
+  }
+
   /** updateExecutionHistoryPanel
   /*  update execution information in history panel specific
   /* @param {any} workflow - current running workflow
@@ -113,7 +105,7 @@ export class HistoryComponent implements OnInit {
   updateExecutionHistoryPanel(workflow) {
 
     if (!workflow) { return false; }
-    if (this.historyInPanel.length - 1 === this.workflows.getCurrentPlugin(workflow)) { return false; }
+    if (this.historyInPanel.length === this.workflows.getCurrentPlugin(workflow)) { return false; }
     
     this.historyInPanel = [];
     let r = workflow;
@@ -204,14 +196,14 @@ export class HistoryComponent implements OnInit {
   /*  and update the history panel with the most recent details
   */
   getLatestExecution() {
-    let workflow = this.lastExecutionData;
-    if (!workflow) { return false; }
-    const currentPlugin = this.workflows.getCurrentPlugin(workflow);
-    if (!workflow['metisPlugins'][currentPlugin]) { return false; }
-    if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
-      this.workflowRunning = true;
-    }
-    this.updateExecutionHistoryPanel(workflow);
+    this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(workflow => {
+      if (!workflow) { return false; }
+      const currentPlugin = this.workflows.getCurrentPlugin(workflow);
+      if (!workflow['metisPlugins'][currentPlugin]) { return false; }
+      this.updateExecutionHistoryPanel(workflow);
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);        
+    });
   }
 
   /** scroll
@@ -236,12 +228,20 @@ export class HistoryComponent implements OnInit {
   /* @param {string} workflowName - name of workflow to trigger
   */
   triggerWorkflow() {   
+    if (this.subscription) { this.subscription.unsubscribe(); }
     this.errorMessage = undefined;
     if (!this.datasetData) { return false; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
       this.workflowHasFinished = false;
       this.workflows.setActiveWorkflow(result); 
-      this.workflowRunning = true;     
+      this.historyInPanel = [];
+      this.workflows.workflowDone(false); 
+      
+      // delay the check status a bit
+      setTimeout(() => {
+        this.checkStatus();
+      }, 5000);
+
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   

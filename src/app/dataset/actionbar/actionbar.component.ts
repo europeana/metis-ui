@@ -47,6 +47,7 @@ export class ActionbarComponent {
   workflowInfoAvailable: boolean = false;
   logIsOpen: boolean = false;
   contentCopied: boolean = false;
+  workflowIsDone: boolean = false;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
@@ -133,7 +134,10 @@ export class ActionbarComponent {
         }
 
         this.currentStatus = e['workflowStatus'];
-        this.workflows.workflowDone(true);       
+        if (!this.workflowIsDone) {
+          this.workflows.workflowDone(true); 
+          this.workflowIsDone = true;
+        }
 
       } else {
 
@@ -159,6 +163,7 @@ export class ActionbarComponent {
         }
 
         this.now = e['updatedDate'] === null ? thisPlugin['startedDate'] : thisPlugin['updatedDate'];
+        this.workflowIsDone = false;
       }
     } 
   }
