@@ -1,4 +1,3 @@
-
 import {timer as observableTimer, Observable} from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -23,6 +22,7 @@ export class OngoingexecutionsComponent {
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
   @Input('isShowingLog') isShowingLog;
+  @Input('ongoingExecutionDataOutput') ongoingExecutionDataOutput;
 
   ongoingExecutions;
   ongoingExecutionsTotal: number;
@@ -77,22 +77,21 @@ export class OngoingexecutionsComponent {
   */
   getOngoing() {
     if (!this.authentication.validatedUser()) { return false; }
-    this.workflows.getAllExecutionsPerOrganisation(0, true).subscribe(executions => {
-      if (this.ongoingExecutionsTotal != executions['listSize'] && this.ongoingExecutionsTotal) {
-        this.workflows.ongoingExecutionDone(true);
-      }
-      this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions['results'], this.logIsOpen);
-      this.ongoingExecutionsTotal = executions['listSize'];
-      if (executions['nextPage'] > 0) {
-        this.viewMore = true;
-      } else {
-        this.viewMore = false;
-      }
-    }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+
+    let executions = this.ongoingExecutionDataOutput;
+    let max = 5;
+    if (!executions) { return false; }
+
+    if (this.ongoingExecutionsTotal != executions['listSize'] && this.ongoingExecutionsTotal) {
+      this.workflows.ongoingExecutionDone(true);
+    }
+
+    this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen);
+    if (executions.length > max) {
+      this.viewMore = true;
+    } else {
+      this.viewMore = false;
+    }
   }
 
   /** cancelWorkflow
