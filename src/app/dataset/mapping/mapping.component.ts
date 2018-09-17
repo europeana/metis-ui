@@ -109,6 +109,7 @@ export class MappingComponent implements OnInit {
     if (!type) {
       type = 'default';
     }
+    this.datasets.setTempXSLT(null);
     this.loadXSLT(type);
   }
 
