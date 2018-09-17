@@ -334,14 +334,6 @@ export class WorkflowService {
     this.workflowIsDone.emit(status);
   }
 
-  /** ongoingExecutionDone
-  /*  when ongoing execution has finished, notify other components
-  /* @param {boolean} status - status of the executions
-  */
-  ongoingExecutionDone(status): void {
-    this.ongoingExecutionIsDone.emit(status);
-  }
-
   /** updateHistory
   /*  update history in the collapsible panel after finishing a task/plugin
   /* @param {any} workflow - status of current workflow
@@ -349,5 +341,4 @@ export class WorkflowService {
   updateHistory(workflow): void {
     this.updateHistoryPanel.emit(workflow);
   }
-
 }

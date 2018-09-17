@@ -22,7 +22,7 @@ export class OngoingexecutionsComponent {
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
   @Input('isShowingLog') isShowingLog;
-  @Input('ongoingExecutionDataOutput') ongoingExecutionDataOutput;
+  @Input('runningExecutionDataOutput') ongoingExecutionDataOutput;
 
   ongoingExecutions;
   ongoingExecutionsTotal: number;
@@ -81,10 +81,6 @@ export class OngoingexecutionsComponent {
     let executions = this.ongoingExecutionDataOutput;
     let max = 5;
     if (!executions) { return false; }
-
-    if (this.ongoingExecutionsTotal != executions['listSize'] && this.ongoingExecutionsTotal) {
-      this.workflows.ongoingExecutionDone(true);
-    }
 
     this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen);
     if (executions.length > max) {

@@ -7,12 +7,12 @@
   <div class="metis-dashboard">
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>         
-      <app-ongoingexecutions [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)" [ongoingExecutionDataOutput]="ongoingExecutionDataOutput"></app-ongoingexecutions>    
+      <app-ongoingexecutions [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)" [runningExecutionDataOutput]="ongoingExecutionDataOutput"></app-ongoingexecutions>    
       <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
     </div>
 
     <div class="metis-dashboard-right">    
-      <app-executions [ongoingExecutionDataOutput]="ongoingExecutionDataOutput"></app-executions>           
+      <app-executions [runningExecutionDataOutput]="ongoingExecutionDataOutput" [executionDataOutput]="executionDataOutput" (nextPage)="getNextPage($event)"></app-executions>           
     </div>
   </div>
 </div>

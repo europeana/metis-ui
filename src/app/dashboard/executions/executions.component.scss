@@ -24,3 +24,19 @@ table {
     }
   }
 }
+
+.loadmore div {
+  align-items: center;
+  display: flex;
+  height: 1.5rem;
+  justify-content: center;
+
+  .load-more-btn::after {
+    top: -4px;
+  }
+
+  .svg-icon-spin {
+    height: 23px;
+    transform: scale(0.7);
+  }
+}
