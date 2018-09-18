@@ -91,7 +91,7 @@ export class WorkflowComponent implements OnInit {
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
       url: [''],
-      customxslt: [''],
+      customXslt: [''],
       limitConnectionsLINK_CHECKING: this.fb.array([
         this.initLimitConnections()
       ]),
@@ -255,7 +255,7 @@ export class WorkflowComponent implements OnInit {
 
         // transformation
         if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-          this.workflowForm.controls['customxslt'].setValue(thisWorkflow.customxslt);
+          this.workflowForm.controls['customXslt'].setValue(thisWorkflow.customXslt);
         }
 
         // media processing + link checking
@@ -314,7 +314,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value['pluginTRANSFORMATION'] === true) {
       plugins.push({
         'pluginType': 'TRANSFORMATION',
-        'customxslt': this.workflowForm.value['customxslt'] ? this.workflowForm.value['customxslt'] : false,
+        'customXslt': this.workflowForm.value['customXslt'] ? this.workflowForm.value['customXslt'] : false,
         'mocked': false
       });
     }
