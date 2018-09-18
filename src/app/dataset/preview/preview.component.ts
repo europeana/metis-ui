@@ -95,7 +95,6 @@ export class PreviewComponent implements OnInit {
     this.tempXSLT = this.datasets.getTempXSLT();
     if (this.tempXSLT) {
       this.transformSamples(this.tempXSLT);
-      this.datasets.setTempXSLT(null);
     }
 
   }  
