@@ -54,14 +54,6 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('pluginHARVEST').setValue(true);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('#harvest-url')).length).toBe(0);
-
-    /*component.workflowForm.get('pluginType').setValue('OAIPMH_HARVEST');
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('#harvest-url')).length).toBe(1);
-
-    component.workflowForm.get('pluginType').setValue('HTTP_HARVEST');
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('#url')).length).toBe(1);*/
   });
 
   it('should get the workflow for this dataset', () => {
@@ -104,7 +96,7 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('pluginHARVEST').setValue(true);
     component.workflowForm.get('pluginType').setValue('OAIPMH_HARVEST');
     component.workflowForm.get('pluginTRANSFORMATION').setValue(true);
-    component.workflowForm.get('customxslt').setValue('mocked');
+    component.workflowForm.get('customXslt').setValue('mocked');
     component.workflowForm.get('pluginVALIDATION_EXTERNAL').setValue(true);
     component.workflowForm.get('pluginVALIDATION_INTERNAL').setValue(true);
     component.workflowForm.get('pluginNORMALIZATION').setValue(true);
