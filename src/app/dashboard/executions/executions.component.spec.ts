@@ -45,20 +45,4 @@ describe('ExecutionsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load a next page', () => {
-    component.nextPage = 1;
-    component.loadNextPage();
-    component.nextPage = -1;
-    fixture.detectChanges();
-    expect(component.allExecutions.length).not.toBe(0);
-  });
-
-  it('should try to refresh a workflow', () => {
-    fixture.detectChanges();
-    component.nextPage = 1;    
-    component.refreshExecutions();
-    fixture.detectChanges();
-    expect(component.nextPage).not.toBe(1);
-  });  
-
 });

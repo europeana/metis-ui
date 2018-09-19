@@ -43,24 +43,6 @@ describe('OngoingexecutionsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get an ongoing execution', () => {
-    component.getOngoing();
-    component.ongoingExecutions = currentWorkflow['results'];
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.ongoing-executions')).length).toBeTruthy();
-  });
-
-  it('should cancel a workflow', () => {
-    component.ongoingExecutions = currentWorkflow['results'];
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.cancel-btn')).length).toBeTruthy();
-
-    component.cancelWorkflow(1);
-    component.ongoingExecutions = undefined;
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.ongoing-executions')).length).not.toBeTruthy();
-  });
-
   it('should show a log', () => {
     spyOn(component.notifyShowLogStatus, 'emit');
     component.showLog(1, 'mocked', 'testplugin');
@@ -78,6 +60,13 @@ describe('OngoingexecutionsComponent', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
+  });
+
+  it('should get ongoing executions', () => {
+    component.ongoingExecutionsTotal = 1;
+    component.ongoingExecutionDataOutput = [currentWorkflow['results'][1]];
+    component.getOngoing();
+    fixture.detectChanges();
   });
 
 });
