@@ -52,6 +52,9 @@ export class LoginComponent implements OnInit {
   /* submit login form
   */
   onSubmit() {
+    
+    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; } 
+
     const url = this.redirectPreviousUrl.get();
     this.loading = true;
 

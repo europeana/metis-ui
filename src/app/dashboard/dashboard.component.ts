@@ -105,8 +105,9 @@ export class DashboardComponent implements OnInit {
         this.checkStatusOngoingExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);
       if (this.subscription) { this.subscription.unsubscribe(); }
+      if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
+      this.errors.handleError(err);      
     });
   }
 
@@ -125,8 +126,9 @@ export class DashboardComponent implements OnInit {
         this.checkStatusExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);
+      if (this.subscription) { this.subscription.unsubscribe(); }
       if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
+      this.errors.handleError(err);      
     });
   }
 
