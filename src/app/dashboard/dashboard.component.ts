@@ -22,8 +22,8 @@ export class DashboardComponent implements OnInit {
   ongoingExecutionDataOutput;
   executionData:Array<any> = [];
   executionDataOutput;
-  subscription;
-  subscriptionHistory;
+  ts;
+  tsO;
   intervalTimer: number = environment.intervalStatusMedium;
   currentPageHistory: number = 0;
   stopChecking: boolean = true;
@@ -51,13 +51,10 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  /** ngOnDestroy
-  /* cancel subscription, so it does not keep checking the status after leaving the dashboard
-  */
-  ngOnDestroy () {
+  ngOnDestroy() {
+    clearTimeout(this.ts);
+    clearTimeout(this.tsO);
     this.stopChecking = true;
-    if (this.subscription) { this.subscription.unsubscribe(); }
-    if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
   }
 
   /** onNotifyShowLogStatus
@@ -81,13 +78,10 @@ export class DashboardComponent implements OnInit {
   */
   checkStatusOngoingExecutions() {
     if (this.stopChecking) { return false; }
-    if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      this.runningExecutionData = [];
-      this.getOngoingExecutions();
-      this.subscription.unsubscribe();
-    });
+    this.tsO = setTimeout(() => {
+        this.runningExecutionData = [];
+        this.getOngoingExecutions();
+    }, this.intervalTimer);
   }
 
   /** checkStatusExecutions
@@ -95,13 +89,10 @@ export class DashboardComponent implements OnInit {
   */
   checkStatusExecutions() {
     if (this.stopChecking) { return false; }
-    if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscriptionHistory = timer.subscribe(t => {
-      this.executionData = [];
-      this.getExecutions();
-      this.subscriptionHistory.unsubscribe();
-    });
+    this.ts = setTimeout(() => {
+        this.executionData = [];
+        this.getExecutions();
+    }, this.intervalTimer);
   }
 
   /** getOngoingExecutions
@@ -117,8 +108,6 @@ export class DashboardComponent implements OnInit {
         this.checkStatusOngoingExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
       this.errors.handleError(err);      
     });
   }
@@ -138,8 +127,6 @@ export class DashboardComponent implements OnInit {
         this.checkStatusExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
       this.errors.handleError(err);      
     });
   }

@@ -14,11 +14,6 @@ export const currentWorkflowDataset = {
   },
   {
     enabled: true,
-    pluginType: 'HTTP_HARVEST',
-    url: 'http://www.mocked.com'
-  },
-  {
-    enabled: true,
     pluginType: 'TRANSFORMATION',
     customXSLT: false
   },

@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
+import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset, currentWorkflowDataset, MockAuthenticationService, currentUser } from '../../_mocked';
 
 import { WorkflowComponent } from './workflow.component';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
@@ -58,16 +58,10 @@ describe('WorkflowComponent', () => {
 
   it('should get the workflow for this dataset', () => {
     component.datasetData = currentDataset;
+    component.workflowData = currentWorkflowDataset;
     component.getWorkflow();
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('#url')).length).toBe(1);
-  });
-
-  it('should get the workflow for this dataset', () => {
-    component.datasetData = currentDataset;
-    component.getWorkflow();
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('#url')).length).toBe(1);
+    expect(component.harvestprotocol).toBe('OAIPMH_HARVEST');
   });
 
   it('should add and remove host/connections for link checking', () => {

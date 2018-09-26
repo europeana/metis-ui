@@ -398,22 +398,19 @@ export class WorkflowComponent implements OnInit {
     return connections;
   }
 
-
   /** onSubmit
   /* cannot submit when there is no dataset yet
   /* submit the form
   */
   onSubmit() {
     if (!this.datasetData) { return false; }
-    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {
-      
+    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {      
       this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
         this.workflowData = workflow; 
         this.getWorkflow();
         this.successMessage = 'Workflow saved';
         this.scrollToMessageBox(); 
-      });
-       
+      });       
     }, (err: HttpErrorResponse) => {
       const errorSubmit = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorSubmit)}`;

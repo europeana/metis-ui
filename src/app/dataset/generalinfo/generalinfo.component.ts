@@ -50,6 +50,17 @@ export class GeneralinfoComponent implements OnInit {
     });
   }
 
+  /** ngOnDestroy
+  /* cancel subscriptions to check for current available dataset information
+  */  
+  ngOnDestroy() {
+    if (this.subscription) { this.subscription.unsubscribe(); }
+  }
+
+  /** getDatasetInformation
+  /* get information about dataset
+  /* including links to preview and collections
+  */ 
   getDatasetInformation () {
     if (!this.authentication.validatedUser()) { return false; }
     if (this.datasetData) {
@@ -70,6 +81,9 @@ export class GeneralinfoComponent implements OnInit {
     }
   }
 
+  /** escapeSolr
+  /* format urls to link and preview
+  */ 
   escapeSolr(url) {
     let pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
     return url.replace(pattern, '\\$1');
