@@ -215,6 +215,13 @@ export class ActionbarComponent {
     this.workflows.selectWorkflow();
   }
 
+  /** getReport
+  /*  get the report for a specific workflow step
+  */
+  getReport() {
+
+  }
+
   /** copyInformation
   /* after double clicking, copy the execution and task id to the clipboard
   /* @param {string} type - execution or plugin
