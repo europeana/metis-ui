@@ -112,6 +112,7 @@ export class DatasetComponent implements OnInit {
         });
       });
     }, (err: HttpErrorResponse) => {
+        if (this.subscription) { this.subscription.unsubscribe(); }
         const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
     });

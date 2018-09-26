@@ -52,12 +52,15 @@ export class LoginComponent implements OnInit {
   /* submit login form
   */
   onSubmit() {
+    
+    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; } 
+
     const url = this.redirectPreviousUrl.get();
     this.loading = true;
 
     this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
       if (result === true) {
-        if (url) {
+        if (url && url !== 'login') {
           this.router.navigateByUrl(`/${url}`);
           this.redirectPreviousUrl.set(undefined);
         } else {
