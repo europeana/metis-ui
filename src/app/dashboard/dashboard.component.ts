@@ -24,8 +24,9 @@ export class DashboardComponent implements OnInit {
   executionDataOutput;
   subscription;
   subscriptionHistory;
-  intervalTimer: number = environment.intervalStatusShort;
+  intervalTimer: number = environment.intervalStatusMedium;
   currentPageHistory: number = 0;
+  stopChecking: boolean = true;
 
   public isShowingLog = false;
 
@@ -41,13 +42,22 @@ export class DashboardComponent implements OnInit {
   /* set translation language 
   */
   ngOnInit() {
-
+    this.stopChecking = false;
     this.getOngoingExecutions();
     this.getExecutions();
     
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+  }
+
+  /** ngOnDestroy
+  /* cancel subscription, so it does not keep checking the status after leaving the dashboard
+  */
+  ngOnDestroy () {
+    this.stopChecking = true;
+    if (this.subscription) { this.subscription.unsubscribe(); }
+    if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
   }
 
   /** onNotifyShowLogStatus
@@ -70,6 +80,7 @@ export class DashboardComponent implements OnInit {
   /*  get the current status of the ongoing executions
   */
   checkStatusOngoingExecutions() {
+    if (this.stopChecking) { return false; }
     if (this.subscription) { this.subscription.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
@@ -83,6 +94,7 @@ export class DashboardComponent implements OnInit {
   /*  get the current status of the executions
   */
   checkStatusExecutions() {
+    if (this.stopChecking) { return false; }
     if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscriptionHistory = timer.subscribe(t => {

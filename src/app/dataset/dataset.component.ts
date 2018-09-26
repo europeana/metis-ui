@@ -45,8 +45,10 @@ export class DatasetComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   subscription;
-  intervalTimer: number = environment.intervalStatusShort;
-  
+  subscriptionWorkflow;
+  intervalTimer: number = environment.intervalStatus;
+  tabsLoaded: boolean = false;
+
   public isShowingLog;
   public datasetData; 
   public activeSet: string;
@@ -61,17 +63,17 @@ export class DatasetComponent implements OnInit {
   /* set translation language
   */ 
   ngOnInit() {
-
     this.user = this.authentication.currentUser;
     
     this.route.params.subscribe(params => {
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
-      if (this.activeSet) {
-        this.returnDataset(params['id']);
-      } else {
-        this.loadTabComponent();
+      this.returnDataset(this.activeSet);
+
+      if (this.tabsLoaded) {
+        this.loadTabComponent(); 
       }
+
     });
 
     this.workflows.changeWorkflow.subscribe(
@@ -83,17 +85,27 @@ export class DatasetComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+  }
 
+  ngOnDestroy() {
+    if (this.subscription) { this.subscription.unsubscribe(); }
+    if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
   }
 
   /** returnDataset
   /*  returns all dataset information based on identifier
   /* @param {string} id - dataset identifier
   */
-  returnDataset(id: string) {
+  returnDataset(id?: string) {
+
+    if (!id) { 
+      this.loadTabComponent(); 
+      return false;
+    }
+    
     this.datasets.getDataset(id).subscribe(result => {
+
       this.datasetData = result;
-      this.loadTabComponent();
       // check for harvest data
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
@@ -111,6 +123,23 @@ export class DatasetComponent implements OnInit {
           this.subscription.unsubscribe();
         });
       });
+
+      // check workflow for every x seconds
+      if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
+      this.subscriptionWorkflow = timer.subscribe(t => {
+        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
+          this.workflowData = workflow;
+          if (this.workflowData && !this.tabsLoaded) {
+            this.loadTabComponent();
+            this.tabsLoaded = true;
+          }
+        }, (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.errorMessage = `${StringifyHttpError(error)}`;
+          this.subscriptionWorkflow.unsubscribe();
+        });
+      });
+
     }, (err: HttpErrorResponse) => {
         if (this.subscription) { this.subscription.unsubscribe(); }
         const error = this.errors.handleError(err);
@@ -137,6 +166,7 @@ export class DatasetComponent implements OnInit {
     viewContainerRef.clear();
     let componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.datasetData = this.getCurrentTab().data;
+    componentRef.instance.workflowData = this.getCurrentTab().data2;
     
     this.successMessage = this.datasets.getDatasetMessage();
   }
@@ -147,15 +177,15 @@ export class DatasetComponent implements OnInit {
   */
   getCurrentTab() {
     if (this.activeTab === 'new' || this.activeTab === 'edit') {
-      return new datasetTab(DatasetformComponent, this.datasetData);
+      return new datasetTab(DatasetformComponent, this.datasetData, this.workflowData);
     } else if (this.activeTab === 'log') {
-      return new datasetTab(HistoryComponent, this.datasetData);
+      return new datasetTab(HistoryComponent, this.datasetData, this.workflowData);
     } else  if (this.activeTab === 'mapping') {
-      return new datasetTab(MappingComponent, this.datasetData);
+      return new datasetTab(MappingComponent, this.datasetData, this.workflowData);
     } else  if (this.activeTab === 'preview') {
-      return new datasetTab(PreviewComponent, this.datasetData);
+      return new datasetTab(PreviewComponent, this.datasetData, this.workflowData);
     } else  if (this.activeTab === 'workflow') {
-      return new datasetTab(WorkflowComponent, this.datasetData);
+      return new datasetTab(WorkflowComponent, this.datasetData, this.workflowData);
     } 
   }
 
