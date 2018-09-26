@@ -108,7 +108,9 @@ export class DashboardComponent implements OnInit {
         this.checkStatusOngoingExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);      
+      this.errors.handleError(err);  
+      clearTimeout(this.ts);
+      clearTimeout(this.tsO);    
     });
   }
 
@@ -127,7 +129,9 @@ export class DashboardComponent implements OnInit {
         this.checkStatusExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);      
+      this.errors.handleError(err);   
+      clearTimeout(this.ts);
+      clearTimeout(this.tsO);   
     });
   }
 
