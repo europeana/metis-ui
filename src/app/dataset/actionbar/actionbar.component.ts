@@ -72,7 +72,7 @@ export class ActionbarComponent {
   ngOnChanges() { 
     if (this.workflowData && !this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
 
-    if (!this.lastExecutionData) {return false; }
+    if (!this.lastExecutionData) { return false; }
     if (!this.subscription || this.subscription.closed) {
       this.currentWorkflow = this.lastExecutionData;
       this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
@@ -109,7 +109,6 @@ export class ActionbarComponent {
   /*  check the current status of a workflow
   */
   pollingWorkflow() {
-
     if (!this.datasetData || !this.authentication.validatedUser()) { return false }
     
     let execution = this.lastExecutionData;  

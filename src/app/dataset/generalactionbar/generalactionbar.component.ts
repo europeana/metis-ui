@@ -23,6 +23,8 @@ export class GeneralactionbarComponent implements OnInit {
   @Input('workflowData') workflowData;
   activeSet: string;
   addWorkflow: boolean = false;
+  statusCheck: number;
+  displayWorkflowButton: boolean = false;
   workflowInfoAvailable: boolean = false;
   currentWorkflowStatus: string;
   currentPlugin: number;
@@ -54,6 +56,7 @@ export class GeneralactionbarComponent implements OnInit {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
+      this.statusCheck = t;
       this.returnWorkflowInfo();
     });
   }
@@ -63,13 +66,16 @@ export class GeneralactionbarComponent implements OnInit {
   */
   returnWorkflowInfo () {
     if (!this.datasetData || !this.authentication.validatedUser()) { return false }    
-    let workflowinfo = this.workflowData;    
+    let workflowinfo = this.workflowData;   
     if (workflowinfo) {
       this.workflowInfoAvailable = true;
       this.returnLastExecution();
     } else {
       this.addWorkflow = true;
     }
+
+    if (this.statusCheck > 1) { this.displayWorkflowButton = true; }
+    
   }
 
   /** returnLastExecution
