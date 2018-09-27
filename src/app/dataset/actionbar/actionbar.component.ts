@@ -27,6 +27,7 @@ export class ActionbarComponent {
   @Input('isShowingLog') isShowingLog: boolean;
   @Input('datasetData') datasetData;
   @Input('lastExecutionData') lastExecutionData;
+  @Input('workflowData') workflowData;
   errorMessage;
   workflowPercentage: number = 0;
   subscription;
@@ -68,7 +69,9 @@ export class ActionbarComponent {
   /** ngOnChanges
   /*  look for changes, and more specific the lastExecutionData
   */
-  ngOnChanges() {    
+  ngOnChanges() { 
+    if (this.workflowData && !this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
+
     if (!this.lastExecutionData) {return false; }
     if (!this.subscription || this.subscription.closed) {
       this.currentWorkflow = this.lastExecutionData;
@@ -76,7 +79,7 @@ export class ActionbarComponent {
 
       let thisPlugin = this.currentWorkflow['metisPlugins'][this.currentPlugin];
       this.setCurrentPluginInfo(thisPlugin);
-      this.startPollingWorkflow();
+      this.startPollingWorkflow();      
     }
   }
 
@@ -84,16 +87,10 @@ export class ActionbarComponent {
   /*  check if workflow info is already available
   */
   returnWorkflowInfo () {
-    if (!this.datasetData || !this.authentication.validatedUser()) { return false }
-    this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
-      if (workflowinfo) {
-        this.workflowInfoAvailable = true;
-      } 
-    }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+    let workflowinfo = this.workflowData;
+    if (workflowinfo) {
+      this.workflowInfoAvailable = true;
+    }
   }
 
   /** startPollingWorkflow
@@ -103,6 +100,7 @@ export class ActionbarComponent {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     let timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
+      if (!this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
       this.pollingWorkflow();
     });
   }

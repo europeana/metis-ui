@@ -14,7 +14,7 @@
     <div class="metis-dashboard-right">  
       <div class="collapse-block-sticky">
         <div class="general-actionbar">
-          <app-generalactionbar [datasetData]="datasetData" [lastExecutionData]="lastExecutionData"></app-generalactionbar>
+          <app-generalactionbar [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" [workflowData]="workflowData"></app-generalactionbar>
         </div>
         <div class="collapse-toggle-block">
           <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
@@ -32,7 +32,7 @@
       <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
     </div>
     <div class="metis-dashboard-right">  
-      <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
+      <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" [workflowData]="workflowData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
       <app-history [datasetData]="datasetData" [inCollapsablePanel]=true [lastExecutionData]="lastExecutionData"></app-history>
       <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
     </div>

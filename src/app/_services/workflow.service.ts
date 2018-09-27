@@ -58,7 +58,6 @@ export class WorkflowService {
   */
   createWorkflowForDataset (id, values, newWorkflow) {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;   
-
     if (newWorkflow === false) {
       return this.http.put(url, values).pipe(map(newWorkflowData => {   
         return newWorkflowData ? newWorkflowData : false; 
@@ -68,7 +67,6 @@ export class WorkflowService {
         return updatedWorkflowData ? updatedWorkflowData : false; 
       }));
     }
-
   }
 
   /** triggerNewWorkflow

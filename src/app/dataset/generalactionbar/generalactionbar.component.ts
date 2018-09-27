@@ -20,6 +20,7 @@ export class GeneralactionbarComponent implements OnInit {
 
   @Input('datasetData') datasetData;
   @Input('lastExecutionData') lastExecutionData;
+  @Input('workflowData') workflowData;
   activeSet: string;
   addWorkflow: boolean = false;
   workflowInfoAvailable: boolean = false;
@@ -61,18 +62,14 @@ export class GeneralactionbarComponent implements OnInit {
   /*  check if workflow info is already available
   */
   returnWorkflowInfo () {
-    if (!this.datasetData || !this.authentication.validatedUser()) { return false }
-    this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowinfo => {
-      if (workflowinfo) {
-        this.workflowInfoAvailable = true;
-        this.returnLastExecution();
-      } else {
-        this.addWorkflow = true;
-      }
-    }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      this.errors.handleError(err);   
-    });
+    if (!this.datasetData || !this.authentication.validatedUser()) { return false }    
+    let workflowinfo = this.workflowData;    
+    if (workflowinfo) {
+      this.workflowInfoAvailable = true;
+      this.returnLastExecution();
+    } else {
+      this.addWorkflow = true;
+    }
   }
 
   /** returnLastExecution

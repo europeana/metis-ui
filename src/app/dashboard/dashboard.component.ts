@@ -22,10 +22,11 @@ export class DashboardComponent implements OnInit {
   ongoingExecutionDataOutput;
   executionData:Array<any> = [];
   executionDataOutput;
-  subscription;
-  subscriptionHistory;
-  intervalTimer: number = environment.intervalStatusShort;
+  ts;
+  tsO;
+  intervalTimer: number = environment.intervalStatusMedium;
   currentPageHistory: number = 0;
+  stopChecking: boolean = true;
 
   public isShowingLog = false;
 
@@ -41,13 +42,19 @@ export class DashboardComponent implements OnInit {
   /* set translation language 
   */
   ngOnInit() {
-
+    this.stopChecking = false;
     this.getOngoingExecutions();
     this.getExecutions();
     
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+  }
+
+  ngOnDestroy() {
+    clearTimeout(this.ts);
+    clearTimeout(this.tsO);
+    this.stopChecking = true;
   }
 
   /** onNotifyShowLogStatus
@@ -70,26 +77,22 @@ export class DashboardComponent implements OnInit {
   /*  get the current status of the ongoing executions
   */
   checkStatusOngoingExecutions() {
-    if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      this.runningExecutionData = [];
-      this.getOngoingExecutions();
-      this.subscription.unsubscribe();
-    });
+    if (this.stopChecking) { return false; }
+    this.tsO = setTimeout(() => {
+        this.runningExecutionData = [];
+        this.getOngoingExecutions();
+    }, this.intervalTimer);
   }
 
   /** checkStatusExecutions
   /*  get the current status of the executions
   */
   checkStatusExecutions() {
-    if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscriptionHistory = timer.subscribe(t => {
-      this.executionData = [];
-      this.getExecutions();
-      this.subscriptionHistory.unsubscribe();
-    });
+    if (this.stopChecking) { return false; }
+    this.ts = setTimeout(() => {
+        this.executionData = [];
+        this.getExecutions();
+    }, this.intervalTimer);
   }
 
   /** getOngoingExecutions
@@ -105,9 +108,9 @@ export class DashboardComponent implements OnInit {
         this.checkStatusOngoingExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
-      this.errors.handleError(err);      
+      this.errors.handleError(err);  
+      clearTimeout(this.ts);
+      clearTimeout(this.tsO);    
     });
   }
 
@@ -126,9 +129,9 @@ export class DashboardComponent implements OnInit {
         this.checkStatusExecutions();
       }
     }, (err: HttpErrorResponse) => {
-      if (this.subscription) { this.subscription.unsubscribe(); }
-      if (this.subscriptionHistory) { this.subscriptionHistory.unsubscribe(); }
-      this.errors.handleError(err);      
+      this.errors.handleError(err);   
+      clearTimeout(this.ts);
+      clearTimeout(this.tsO);   
     });
   }
 

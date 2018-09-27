@@ -39,6 +39,7 @@ export class WorkflowComponent implements OnInit {
     }
 
   @Input() datasetData: any;
+  @Input() workflowData: any;
   errorMessage: string;
   successMessage: string;
   harvestprotocol;
@@ -64,7 +65,6 @@ export class WorkflowComponent implements OnInit {
 
     this.buildForm();  
     this.getWorkflow();
-
     this.currentUrl = this.router.url.split('#')[0];
   }
 
@@ -221,67 +221,60 @@ export class WorkflowComponent implements OnInit {
       }
       return false;
     }
+    
+    let workflow = this.workflowData;
+    if (!workflow) { return false; }
+    this.newWorkflow = false;
 
-    this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
+    for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
+      let thisWorkflow = workflow['metisPluginsMetadata'][w];
+      
+      if (thisWorkflow.enabled === true) {
+        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST' || thisWorkflow.pluginType === 'HTTP_HARVEST' ) {
+          this.workflowForm.controls['pluginHARVEST'].setValue(true);
+        } else {
+          this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
+        }
+      }
 
-      if (workflow === false) { return false; }
-      this.newWorkflow = false;
+      // import/harvest
+      if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+        this.harvestprotocol = 'OAIPMH_HARVEST';
+        this.workflowForm.controls['pluginType'].setValue('OAIPMH_HARVEST');
+        this.workflowForm.controls['setSpec'].setValue(thisWorkflow.setSpec);
+        this.workflowForm.controls['harvestUrl'].setValue(thisWorkflow.url.trim().split('?')[0]);
+        this.workflowForm.controls['metadataFormat'].setValue(thisWorkflow.metadataFormat);
+      }
 
-      for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
-        let thisWorkflow = workflow['metisPluginsMetadata'][w];
-        
-        if (thisWorkflow.enabled === true) {
-          if (thisWorkflow.pluginType === 'OAIPMH_HARVEST' || thisWorkflow.pluginType === 'HTTP_HARVEST' ) {
-            this.workflowForm.controls['pluginHARVEST'].setValue(true);
+      if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+        this.harvestprotocol = 'HTTP_HARVEST';
+        this.workflowForm.controls['pluginType'].setValue('HTTP_HARVEST');
+        this.workflowForm.controls['url'].setValue(thisWorkflow.url);
+      }
+
+      // transformation
+      if (thisWorkflow.pluginType === 'TRANSFORMATION') {
+        this.workflowForm.controls['customXslt'].setValue(thisWorkflow.customXslt);
+      }
+
+      // media processing + link checking
+      if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
+        if (!thisWorkflow.connectionLimitToDomains) { return false; }
+        this.removeAllConnections(thisWorkflow.pluginType);
+        const connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
+        for (let lc = 0; lc < connectionDomains.length; lc++) {
+          const host = connectionDomains[lc];
+          const connections = thisWorkflow.connectionLimitToDomains[host];
+          if (host !== '') {
+            this.addConnection(thisWorkflow.pluginType, host, connections);
           } else {
-            this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-          }
-        }
-
-        // import/harvest
-        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-          this.harvestprotocol = 'OAIPMH_HARVEST';
-          this.workflowForm.controls['pluginType'].setValue('OAIPMH_HARVEST');
-          this.workflowForm.controls['setSpec'].setValue(thisWorkflow.setSpec);
-          this.workflowForm.controls['harvestUrl'].setValue(thisWorkflow.url.trim().split('?')[0]);
-          this.workflowForm.controls['metadataFormat'].setValue(thisWorkflow.metadataFormat);
-        }
-
-        if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
-          this.harvestprotocol = 'HTTP_HARVEST';
-          this.workflowForm.controls['pluginType'].setValue('HTTP_HARVEST');
-          this.workflowForm.controls['url'].setValue(thisWorkflow.url);
-        }
-
-        // transformation
-        if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-          this.workflowForm.controls['customXslt'].setValue(thisWorkflow.customXslt);
-        }
-
-        // media processing + link checking
-        if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
-          if (!thisWorkflow.connectionLimitToDomains) { return false; }
-          this.removeAllConnections(thisWorkflow.pluginType);
-          const connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
-          for (let lc = 0; lc < connectionDomains.length; lc++) {
-            const host = connectionDomains[lc];
-            const connections = thisWorkflow.connectionLimitToDomains[host];
-            if (host !== '') {
-              this.addConnection(thisWorkflow.pluginType, host, connections);
-            } else {
-              if (connectionDomains.length === 1) {
-                this.addConnection(thisWorkflow.pluginType);
-              }
+            if (connectionDomains.length === 1) {
+              this.addConnection(thisWorkflow.pluginType);
             }
           }
-        }        
-
-      }
-    }, (err: HttpErrorResponse) => {
-      const errorGetWorkflow = this.errors.handleError(err);   
-      this.errorMessage = `${StringifyHttpError(errorGetWorkflow)}`;
-      this.scrollToMessageBox();
-    });
+        }
+      }    
+    }    
   }
 
   /** formatFormValues
@@ -405,17 +398,19 @@ export class WorkflowComponent implements OnInit {
     return connections;
   }
 
-
   /** onSubmit
   /* cannot submit when there is no dataset yet
   /* submit the form
   */
   onSubmit() {
     if (!this.datasetData) { return false; }
-    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {
-      this.getWorkflow();
-      this.successMessage = 'Workflow saved';
-      this.scrollToMessageBox();  
+    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {      
+      this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
+        this.workflowData = workflow; 
+        this.getWorkflow();
+        this.successMessage = 'Workflow saved';
+        this.scrollToMessageBox(); 
+      });       
     }, (err: HttpErrorResponse) => {
       const errorSubmit = this.errors.handleError(err);   
       this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
