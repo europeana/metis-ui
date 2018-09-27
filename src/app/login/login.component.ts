@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   loginForm: FormGroup;
   msgBadCredentials: string;
+  checkLogin: boolean = true;
 
   constructor(
     private router: Router,
@@ -33,8 +34,15 @@ export class LoginComponent implements OnInit {
   /* set translation language
   */
   ngOnInit() {
-   
-    this.authentication.logout(); // 
+    
+    console.log(this.authentication.validatedUser());
+    // already logged in, then redirect 
+    if (this.authentication.validatedUser() && this.checkLogin) {
+      this.redirectAfterLogin();
+    }
+
+    // else make sure the user is logged out properly and show the form
+    this.authentication.logout(); 
 
     this.loginForm = this.fb.group({
       'email': ['', [Validators.required, Validators.email] ],
@@ -44,7 +52,6 @@ export class LoginComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
       this.msgBadCredentials = this.translate.instant('msgbadcredentials');
-
     }
   }
 
@@ -55,17 +62,10 @@ export class LoginComponent implements OnInit {
     
     if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; } 
 
-    const url = this.redirectPreviousUrl.get();
     this.loading = true;
-
     this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
       if (result === true) {
-        if (url && url !== 'login') {
-          this.router.navigateByUrl(`/${url}`);
-          this.redirectPreviousUrl.set(undefined);
-        } else {
-          this.router.navigate([`${environment.afterLoginGoto}`]);
-        }
+        this.redirectAfterLogin();
       } else {
         this.errorMessage = this.msgBadCredentials;
       }
@@ -74,6 +74,19 @@ export class LoginComponent implements OnInit {
       this.errorMessage = err.status === 406 ? this.msgBadCredentials : `Signin failed: ${StringifyHttpError(err)}`;   
       this.loading = false;
     });
+  }
+
+  /** redirectAfterLogin
+  /* redirect to previous page after login or default page
+  */
+  redirectAfterLogin () {
+    const url = this.redirectPreviousUrl.get();
+    if (url && url !== 'login') {
+      this.router.navigateByUrl(`/${url}`);
+      this.redirectPreviousUrl.set(undefined);
+    } else {
+      this.router.navigate([`${environment.afterLoginGoto}`]);
+    }
   }
 
 }
