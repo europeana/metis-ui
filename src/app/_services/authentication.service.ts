@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
 
 import { apiSettings } from '../../environments/apisettings';
+import { environment } from '../../environments/environment';
 
 import { User } from '../_models';
 
@@ -13,7 +16,10 @@ export class AuthenticationService {
   private token: string;
   public currentUser = null;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private redirectPreviousUrl: RedirectPreviousUrl) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
     if (value) {
@@ -74,7 +80,15 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   login(email: string, password: string) {
-    if (this.currentUser) { return true; } // check beforehand if there is already an user
+    if (this.currentUser) { // check beforehand if there is already an user
+      const url = this.redirectPreviousUrl.get();
+      if (url && url !== 'login') {
+        this.router.navigateByUrl(`/${url}`);
+        this.redirectPreviousUrl.set(undefined);
+      } else {
+        this.router.navigate([`${environment.afterLoginGoto}`]);
+      }
+    } 
     
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
