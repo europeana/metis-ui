@@ -41,6 +41,7 @@ describe('LoginComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+    component.checkLogin = false;
     fixture.detectChanges();
   });
 
@@ -49,6 +50,7 @@ describe('LoginComponent', () => {
   });
 
   it('should login', fakeAsync((): void => {
+
     component.loginForm.controls.email.setValue('mocked@mocked.com');
     component.loginForm.controls.password.setValue('mocked123');
     
