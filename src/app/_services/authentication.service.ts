@@ -24,7 +24,7 @@ export class AuthenticationService {
   }
 
   /** validatedUser
-  /* check if user is validated/allowd
+  /* check if user is validated/allowed
   */
   validatedUser(): boolean {
     return localStorage.getItem(this.key) !== null;
@@ -74,6 +74,8 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   login(email: string, password: string) {
+    if (this.currentUser) { return true; } // check beforehand if there is already an user
+    
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
