@@ -53,6 +53,7 @@ describe('GeneralactionbarComponent', () => {
     component.selectWorkflow();
     fixture.detectChanges();
 
+    component.displayWorkflowButton = true;
     component.workflowInfoAvailable = true;
     component.currentWorkflowStatus = 'INQUEUE';
     fixture.detectChanges();
