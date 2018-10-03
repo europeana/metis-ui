@@ -19,7 +19,6 @@ export class ReportComponent implements OnInit {
   /* set translation language
   */  
   ngOnInit() {
-
     if (this.workflows.getCurrentReport()) {
       this.reportKeys = Object.keys; 
       this.report = this.workflows.getCurrentReport().errors; 
