@@ -70,6 +70,8 @@ describe('ActionbarComponent', () => {
 
   it('should do click to show logging', fakeAsync((): void => {
     component.currentWorkflow = currentWorkflow['results'][0];
+    component.currentExternalTaskId = '1';
+    component.currentTopology = 'mocked';
     fixture.detectChanges();
 
     let button = fixture.debugElement.query(By.css('.log-btn'));
@@ -116,6 +118,17 @@ describe('ActionbarComponent', () => {
     component.currentStatus = 'RUNNING';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress') === null).toBe(false);
+  });
+
+  it('should show a report button and open report', (): void => {
+    component.currentWorkflow = currentWorkflow;
+    component.totalErrors = 10;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.svg-icon-report') === null).toBe(false);
+
+    const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
+    reportBtn.triggerEventHandler('click', null);
+    expect(component.report).not.toBe(undefined);
   });
 
   it('should copy information', (): void => {
