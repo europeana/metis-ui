@@ -80,6 +80,9 @@ export class AuthenticationService {
   /* @param {string} password - password
   */ 
   login(email: string, password: string) {
+
+    console.log(localStorage.getItem('currentUser'));
+
     if (this.currentUser) { // check beforehand if there is already an user
       const url = this.redirectPreviousUrl.get();
       if (url && url !== 'login') {
@@ -110,6 +113,9 @@ export class AuthenticationService {
   /* and empty localstorage
   */ 
   logout(): void {
+
+    console.log('logout');
+
     this.currentUser = null;
     this.token = null;  
     localStorage.removeItem(this.key); // clear token remove user from local storage to log user out

@@ -27,7 +27,7 @@ export class ExecutionsComponent implements OnInit {
   ongoingExecutionsOutput: Array<any> = [];
   ongoingExecutionsCurrentTotal: number = 0;
   currentPage: number = 0;
-  intervalTimer: number = environment.intervalStatus;
+  intervalTimer: number = 0;
   errorMessage: string;
   successMessage: string;
   subscription;
