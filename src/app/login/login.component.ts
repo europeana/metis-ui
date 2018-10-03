@@ -87,7 +87,7 @@ export class LoginComponent implements OnInit {
     const url = this.redirectPreviousUrl.get();
     console.log('redirectAfterLogin', url);
     
-    if (url && url !== 'signin') {
+    if (url && url !== '/signin') {
       this.router.navigateByUrl(`/${url}`);
       this.redirectPreviousUrl.set(undefined);
     } else {
