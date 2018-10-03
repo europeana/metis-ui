@@ -185,7 +185,8 @@ export class HistoryComponent implements OnInit {
   getReport(w) {
     let ws = w;
     ws['hasReport'] = false;  
-    if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED') {
+
+    if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED' || w.pluginStatus === 'CANCELLED') {
       if (w.externalTaskId !== null && w.topologyName !== null && w.topologyName) {
         this.workflows.getReport(w.externalTaskId, w.topologyName).subscribe(report => {
           if (report['errors'].length > 0) {

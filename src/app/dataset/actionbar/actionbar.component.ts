@@ -49,6 +49,7 @@ export class ActionbarComponent {
   logIsOpen: boolean = false;
   contentCopied: boolean = false;
   workflowIsDone: boolean = false;
+  report;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
@@ -210,6 +211,20 @@ export class ActionbarComponent {
   */
   selectWorkflow() {
     this.workflows.selectWorkflow();
+  }
+
+  /** getReport
+  /*  get the report for a specific workflow step
+  */
+  openReport(taskid, topology) {
+    this.report = undefined;
+    this.workflows.getReport(taskid, topology).subscribe(result => {
+      this.workflows.setCurrentReport(result);
+      this.report = result;
+    }, (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err); 
+      this.errorMessage = `${StringifyHttpError(error)}`;   
+    });
   }
 
   /** copyInformation

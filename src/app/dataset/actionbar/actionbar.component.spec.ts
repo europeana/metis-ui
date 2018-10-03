@@ -9,6 +9,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Observable } from 'rxjs';
 import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionbarComponent } from './actionbar.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 
 describe('ActionbarComponent', () => {
@@ -31,7 +32,8 @@ describe('ActionbarComponent', () => {
                 return {};
               }
             }
-        }]       
+        }],
+        schemas: [ NO_ERRORS_SCHEMA ]       
     }).compileComponents();
   }));
 
