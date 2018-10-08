@@ -163,8 +163,6 @@ export class DatasetComponent implements OnInit {
   */
   loadTabComponent() {
 
-    console.log('loadTabComponent', this.getCurrentTab());
-
     if (!this.getCurrentTab()) {return false; }
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);
