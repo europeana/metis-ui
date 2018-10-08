@@ -64,7 +64,7 @@ export class DatasetComponent implements OnInit {
   */ 
   ngOnInit() {
     this.user = this.authentication.currentUser;
-    
+
     this.route.params.subscribe(params => {
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
@@ -73,8 +73,12 @@ export class DatasetComponent implements OnInit {
       if (this.tabsLoaded) {
         this.loadTabComponent(); 
       }
-
     });
+
+    if (!this.tabsLoaded && !this.workflowData) {
+      this.loadTabComponent(); 
+      this.tabsLoaded = true;
+    }
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
@@ -104,7 +108,6 @@ export class DatasetComponent implements OnInit {
     }
     
     this.datasets.getDataset(id).subscribe(result => {
-
       this.datasetData = result;
       // check for harvest data
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
@@ -127,7 +130,7 @@ export class DatasetComponent implements OnInit {
       // check workflow for every x seconds
       if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
       this.subscriptionWorkflow = timer.subscribe(t => {
-        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
+        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {          
           this.workflowData = workflow;
           if (this.workflowData && !this.tabsLoaded) {
             this.loadTabComponent();
@@ -159,6 +162,9 @@ export class DatasetComponent implements OnInit {
   /*  loads the content within the placeholder
   */
   loadTabComponent() {
+
+    console.log('loadTabComponent', this.getCurrentTab());
+
     if (!this.getCurrentTab()) {return false; }
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);
