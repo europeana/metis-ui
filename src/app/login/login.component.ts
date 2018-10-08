@@ -34,8 +34,6 @@ export class LoginComponent implements OnInit {
   /* set translation language
   */
   ngOnInit() {
-    
-    console.log('ngOnInit', this.authentication.validatedUser());
     // already logged in, then redirect 
     if (this.authentication.validatedUser() && this.checkLogin) {
       console.log('he');
@@ -44,7 +42,6 @@ export class LoginComponent implements OnInit {
     }
 
     // else make sure the user is logged out properly and show the form
-    console.log('show form');
     this.authentication.logout(); 
 
     this.loginForm = this.fb.group({
@@ -67,7 +64,6 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
     this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {      
-      console.log('onSubmit', result);
       if (result === true) {
         this.redirectAfterLogin();
       } else {
@@ -85,7 +81,6 @@ export class LoginComponent implements OnInit {
   */
   redirectAfterLogin () {
     const url = this.redirectPreviousUrl.get();
-    console.log('redirectAfterLogin', url);
     
     if (url && url !== '/signin') {
       this.router.navigateByUrl(`/${url}`);
