@@ -73,7 +73,7 @@ export class AppComponent implements OnInit {
   */
   cancelWorkflow () {
     this.workflows.cancelThisWorkflow(this.currentWorkflowId).subscribe(result => {
-      this.showWrapper = false;
+      this.closePrompt();
       this.workflows.setWorkflowCancelled();
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);   

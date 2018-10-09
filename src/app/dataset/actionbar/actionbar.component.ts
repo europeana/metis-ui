@@ -113,6 +113,7 @@ export class ActionbarComponent {
     if (!this.datasetData || !this.authentication.validatedUser()) { return false }
     
     let execution = this.lastExecutionData;  
+    this.currentWorkflow = this.lastExecutionData;
     if (execution === 0 || !execution) {
       this.currentPlugin = 0;
       this.subscription.unsubscribe();
