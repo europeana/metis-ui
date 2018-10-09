@@ -74,11 +74,8 @@ export class DatasetformComponent implements OnInit {
       this.translate.use('en'); 
     }
     
-    this.returnCountries();
-    this.returnLanguages();
-
-    this.buildForm();
-    
+    this.returnCountries();   
+    this.buildForm(); 
   }
 
   /** returnCountries
@@ -97,6 +94,7 @@ export class DatasetformComponent implements OnInit {
           }
         }
       }
+      this.returnLanguages();
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);     
     });
@@ -109,7 +107,7 @@ export class DatasetformComponent implements OnInit {
   returnLanguages() {
     this.countries.getCountriesLanguages('language').subscribe(result => {
       this.languageOptions = result;
-      if (this.datasetData && result) {
+      if (this.datasetData && this.languageOptions) {
         if (this.datasetData.language) {
           for (let i = 0; i < this.languageOptions.length; i++) {
             if (this.languageOptions[i].enum === this.datasetData.language.enum) {
@@ -118,6 +116,7 @@ export class DatasetformComponent implements OnInit {
           }
         }
       }
+      this.buildForm();
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);     
     });
