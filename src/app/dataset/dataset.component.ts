@@ -73,12 +73,7 @@ export class DatasetComponent implements OnInit {
       if (this.tabsLoaded) {
         this.loadTabComponent(); 
       }
-    });
-
-    if (!this.tabsLoaded && !this.workflowData) {
-      this.loadTabComponent(); 
-      this.tabsLoaded = true;
-    }
+    });    
 
     this.workflows.changeWorkflow.subscribe(
       workflow => {
@@ -127,10 +122,11 @@ export class DatasetComponent implements OnInit {
         });
       });
 
+
       // check workflow for every x seconds
       if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
       this.subscriptionWorkflow = timer.subscribe(t => {
-        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {          
+        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {  
           this.workflowData = workflow;
           if (this.workflowData && !this.tabsLoaded) {
             this.loadTabComponent();
@@ -142,6 +138,12 @@ export class DatasetComponent implements OnInit {
           this.subscriptionWorkflow.unsubscribe();
         });
       });
+
+      // no execution yet?
+      if (!this.lastExecutionData && !this.workflowData) {
+        this.loadTabComponent();
+        this.tabsLoaded = true;
+      }
 
     }, (err: HttpErrorResponse) => {
         if (this.subscription) { this.subscription.unsubscribe(); }
@@ -162,7 +164,6 @@ export class DatasetComponent implements OnInit {
   /*  loads the content within the placeholder
   */
   loadTabComponent() {
-
     if (!this.getCurrentTab()) {return false; }
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);
