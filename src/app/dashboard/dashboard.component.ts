@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit {
   executionDataOutput;
   ts;
   tsO;
-  intervalTimer: number = environment.intervalStatusMedium;
+  intervalTimer: number = environment.intervalStatusShort;
   currentPageHistory: number = 0;
   stopChecking: boolean = true;
 

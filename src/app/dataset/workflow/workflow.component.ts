@@ -66,12 +66,18 @@ export class WorkflowComponent implements OnInit {
     this.buildForm();  
     this.getWorkflow();
     this.currentUrl = this.router.url.split('#')[0];
+
+    console.log('ngOnInit', this.currentUrl);
+
   }
 
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
   */
   buildForm() {
+
+    console.log('buildForm');
+
     this.workflowForm = this.fb.group({
       pluginHARVEST: [''],
       pluginTRANSFORMATION: [''],
@@ -214,14 +220,13 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty
   */
   getWorkflow() {
-
     if (!this.datasetData) {       
       if (typeof this.translate.instant === 'function') { 
         this.errorMessage = this.translate.instant('create dataset'); 
       }
       return false;
     }
-    
+
     let workflow = this.workflowData;
     if (!workflow) { return false; }
     this.newWorkflow = false;
