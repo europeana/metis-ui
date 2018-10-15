@@ -18,7 +18,7 @@ export class ErrorService {
   /* @param {object} err - details of error
   */  
   handleError(err) {
-  	if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+    if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
   		this.expiredToken();
       return false;
   	} else {

@@ -27,11 +27,13 @@ export class ExecutionsComponent implements OnInit {
   ongoingExecutionsOutput: Array<any> = [];
   ongoingExecutionsCurrentTotal: number = 0;
   currentPage: number = 0;
-  intervalTimer: number = 0;
+  perPage: number = 5;
+  intervalTimer: number = environment.intervalStatus;
   errorMessage: string;
   successMessage: string;
   subscription;
   isLoading = true;
+  currentNumberOfRecords: number = 0;
 
   @Output() nextPage: EventEmitter<any> = new EventEmitter();
 
@@ -60,6 +62,10 @@ export class ExecutionsComponent implements OnInit {
     this.subscription = timer.subscribe(t => {
       this.getOngoingExecutions();
       this.getAllExecutions();
+
+      if (this.currentNumberOfRecords > (this.currentPage * this.perPage)) {
+        this.isLoading = false;
+      }
     });
   }
 
@@ -78,10 +84,10 @@ export class ExecutionsComponent implements OnInit {
   /* get all executions, ordered by most recent started
   /* datasetname needs to be added to executions for use in table
   */
-  getAllExecutions() {       
+  getAllExecutions() {    
     if (!this.executionDataOutput) { return false; }
     this.allExecutions = this.datasets.addDatasetNameAndCurrentPlugin(this.executionDataOutput);
-    this.isLoading = false;    
+    this.currentNumberOfRecords = this.allExecutions.length;
   }
 
   /** loadNextPage

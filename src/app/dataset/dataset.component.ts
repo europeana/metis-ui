@@ -63,6 +63,7 @@ export class DatasetComponent implements OnInit {
   /* set translation language
   */ 
   ngOnInit() {
+
     this.user = this.authentication.currentUser;
 
     this.route.params.subscribe(params => {
@@ -84,6 +85,8 @@ export class DatasetComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+
+    console.log('ngOnInit', this.activeTab, this.activeSet);
   }
 
   ngOnDestroy() {
@@ -96,6 +99,8 @@ export class DatasetComponent implements OnInit {
   /* @param {string} id - dataset identifier
   */
   returnDataset(id?: string) {
+
+    console.log('returnDataset');
 
     if (!id) { 
       this.loadTabComponent(); 
@@ -142,7 +147,6 @@ export class DatasetComponent implements OnInit {
       // no execution yet?
       if (!this.lastExecutionData && !this.workflowData) {
         this.loadTabComponent();
-        this.tabsLoaded = true;
       }
 
     }, (err: HttpErrorResponse) => {
@@ -164,6 +168,7 @@ export class DatasetComponent implements OnInit {
   /*  loads the content within the placeholder
   */
   loadTabComponent() {
+
     if (!this.getCurrentTab()) {return false; }
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);

@@ -28,7 +28,7 @@ export class OngoingexecutionsComponent {
   ongoingExecutionsTotal: number;
   errorMessage;
   subscription;
-  intervalTimer = environment.intervalStatus;
+  intervalTimer = environment.intervalStatusShort;
   cancelling;
   currentPlugin = 0;
   datasetNames: Array<any> = [];
