@@ -40,7 +40,6 @@ export class DatasetComponent implements OnInit {
 
   activeTab: string = 'new';
   prevTab: string;
-  isCollapsed: boolean = true;
   showLog: boolean = false;
   user: User;
   errorMessage: string;
@@ -77,12 +76,6 @@ export class DatasetComponent implements OnInit {
         this.loadTabComponent(); 
       }
     });    
-
-    this.workflows.changeWorkflow.subscribe(
-      workflow => {
-        this.isCollapsed = true;
-      }
-    );
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 

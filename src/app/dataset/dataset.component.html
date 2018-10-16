@@ -16,18 +16,11 @@
         <div class="general-actionbar">
           <app-generalactionbar [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" [workflowData]="workflowData"></app-generalactionbar>
         </div>
-        <div class="collapse-toggle-block">
-          <div class="dataset-collapse-toggle" (click)="isCollapsed = isCollapsed ? false : true">
-            <span class="info-toggle">
-              {{ 'expand' | translate }}
-            </span>
-          </div>
-        </div>
       </div> 
     </div>
   </div>
   <hr/>
-  <div class="dataset-collapse-blocks metis-dashboard" *ngIf="isCollapsed && datasetData">
+  <div class="dataset-collapse-blocks metis-dashboard" *ngIf="datasetData">
     <div class="metis-dashboard-left">        
       <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
     </div>
