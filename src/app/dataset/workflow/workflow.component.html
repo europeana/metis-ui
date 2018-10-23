@@ -46,14 +46,15 @@
 
     <div class="form-fields-container">
       <!-- IMPORT / HARVEST -->
-      <div id="import" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginHARVEST').value === false || workflowForm.get('pluginHARVEST').value === ''}">      
-        <label for="pluginImport" class="plugin">{{ 'HARVEST' | renameWorkflow }} <input type="checkbox" formControlName="pluginHARVEST" id="pluginImport" /></label>    
-        <div class="form-group">
+      <div id="import" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginHARVEST').value, 'disabled': workflowForm.get('pluginHARVEST').disabled}">      
+        <label for="pluginImport" class="plugin">{{ 'HARVEST' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginHARVEST" id="pluginImport" (change)="workflowStepAllowed('pluginHARVEST')" /></label>    
+        <div class="form-group" *ngIf="!workflowForm.get('pluginHARVEST').disabled && workflowForm.get('pluginHARVEST').value">
           <label>{{ 'harvestprotocol' | translate }} *</label>
           <div class="form-group-radios">
             <div>
               <label>
-                <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" (change)="changeHarvestProtocol('OAIPMH_HARVEST')" [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false" /> {{ 'oai' | translate }}
+                <input type="radio" formControlName="pluginType" value="OAIPMH_HARVEST" (change)="changeHarvestProtocol('OAIPMH_HARVEST')" [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false"  (click)="workflowStepAllowed('pluginHARVEST')" /> {{ 'oai' | translate }}
               </label>
             </div>   
             <div>
@@ -64,70 +65,84 @@
             </div>          
           </div>
         </div>
-        <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-          <label for="harvest-url">{{ 'harvesturl' | translate }} *</label>
-          <input id="harvest-url" type="text" formControlName="harvestUrl"/>
-          <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validParameter">
-            <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
+        <div *ngIf="!workflowForm.get('pluginHARVEST').disabled && workflowForm.get('pluginHARVEST').value">
+          <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
+            <label for="harvest-url">{{ 'harvesturl' | translate }} *</label>
+            <input id="harvest-url" type="text" formControlName="harvestUrl"/>
+            <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validParameter">
+              <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
+            </div>
+            <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validUrl">
+              <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+            </div>
           </div>
-          <div class="messages" *ngIf="workflowForm.get('harvestUrl').errors && workflowForm.get('harvestUrl').dirty && workflowForm.get('harvestUrl').errors.validUrl">
-            <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+          <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
+            <label for="setspec">{{ 'setspec' | translate }}</label>
+            <input id="setspec" type="tel" formControlName="setSpec" />
           </div>
-        </div>
-        <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-          <label for="setspec">{{ 'setspec' | translate }}</label>
-          <input id="setspec" type="tel" formControlName="setSpec" />
-        </div>
-        <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
-          <label for="metadata-format">{{ 'metadataformat' | translate }} *</label>
-          <input id="metadata-format" type="text" formControlName="metadataFormat" />
-        </div>      
-        <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
-          <label for="url">{{ 'url' | translate }} *</label>
-          <input id="url" type="text" formControlName="url" />
-          <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validParameter">
-            <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
-          </div>
-          <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validUrl">
-            <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+          <div class="form-group" *ngIf="harvestprotocol === 'OAIPMH_HARVEST'">
+            <label for="metadata-format">{{ 'metadataformat' | translate }} *</label>
+            <input id="metadata-format" type="text" formControlName="metadataFormat" />
+          </div>      
+          <div class="form-group" *ngIf="harvestprotocol === 'HTTP_HARVEST'">
+            <label for="url">{{ 'url' | translate }} *</label>
+            <input id="url" type="text" formControlName="url" />
+            <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validParameter">
+              <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
+            </div>
+            <div class="messages" *ngIf="workflowForm.get('url').errors && workflowForm.get('url').dirty && workflowForm.get('url').errors.validUrl">
+              <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- VALIDATION -->
-      <div id="validate-external" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_EXTERNAL').value === false || workflowForm.get('pluginVALIDATION_EXTERNAL').value === ''}"> 
-        <label for="pluginValidateExternal" class="plugin">{{ 'VALIDATION_EXTERNAL' | renameWorkflow }}<input type="checkbox" formControlName="pluginVALIDATION_EXTERNAL" id="pluginValidateExternal" /></label>
+      <div id="validate-external" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginVALIDATION_EXTERNAL').value, 'disabled': workflowForm.get('pluginVALIDATION_EXTERNAL').disabled}"> 
+        <label for="pluginValidateExternal" class="plugin">{{ 'VALIDATION_EXTERNAL' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginVALIDATION_EXTERNAL" id="pluginValidateExternal" (change)="workflowStepAllowed('pluginVALIDATION_EXTERNAL')" />
+        </label>
       </div>
 
       <!-- TRANSFORMATION -->
-      <div id="transform" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginTRANSFORMATION').value === false || workflowForm.get('pluginTRANSFORMATION').value === ''}"> 
-        <label for="pluginTransform" class="plugin">{{ 'TRANSFORMATION' | renameWorkflow }} <input type="checkbox" formControlName="pluginTRANSFORMATION" id="pluginTransform" /></label>
-        <div class="form-group form-group-checkbox">
+      <div id="transform" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginTRANSFORMATION').value, 'disabled': workflowForm.get('pluginTRANSFORMATION').disabled}"> 
+        <label for="pluginTransform" class="plugin">{{ 'TRANSFORMATION' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginTRANSFORMATION" id="pluginTransform" (change)="workflowStepAllowed('pluginTRANSFORMATION')" />
+        </label>
+        <div class="form-group form-group-checkbox" *ngIf="!workflowForm.get('pluginTRANSFORMATION').disabled && workflowForm.get('pluginTRANSFORMATION').value">
           <label for="customxslt">{{ 'customxslt' | translate }}</label>
           <input id="customxslt" type="checkbox" formControlName="customXslt" />
         </div>
       </div>
 
       <!-- VALIDATION -->
-      <div id="validate-internal" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginVALIDATION_INTERNAL').value === false || workflowForm.get('pluginVALIDATION_INTERNAL').value === ''}"> 
-        <label for="pluginValidateInternal" class="plugin">{{ 'VALIDATION_INTERNAL' | renameWorkflow }}<input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" /></label>
+      <div id="validate-internal" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginVALIDATION_INTERNAL').value, 'disabled': workflowForm.get('pluginVALIDATION_INTERNAL').disabled}"> 
+        <label for="pluginValidateInternal" class="plugin">{{ 'VALIDATION_INTERNAL' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginVALIDATION_INTERNAL" id="pluginValidateInternal" (change)="workflowStepAllowed('pluginVALIDATION_INTERNAL')" />
+        </label>
       </div>
 
        <!-- NORMALIZATION -->
-      <div id="normalise" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginNORMALIZATION').value === false || workflowForm.get('pluginNORMALIZATION').value === ''}"> 
-        <label for="pluginNORMALIZATION" class="plugin">{{ 'NORMALIZATION' | renameWorkflow }}<input type="checkbox" formControlName="pluginNORMALIZATION" id="pluginNORMALIZATION" /></label>
+      <div id="normalise" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginNORMALIZATION').value, 'disabled': workflowForm.get('pluginNORMALIZATION').disabled}"> 
+        <label for="pluginNORMALIZATION" class="plugin">{{ 'NORMALIZATION' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginNORMALIZATION" id="pluginNORMALIZATION" (change)="workflowStepAllowed('pluginNORMALIZATION')"  />
+        </label>
       </div>
 
       <!-- ENRICHMENT -->
-      <div id="enrich" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginENRICHMENT').value === false || workflowForm.get('pluginENRICHMENT').value === ''}"> 
-        <label for="pluginEnrichment" class="plugin">{{ 'ENRICHMENT' | renameWorkflow }} <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" /></label>
+      <div id="enrich" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginENRICHMENT').value, 'disabled': workflowForm.get('pluginENRICHMENT').disabled}"> 
+        <label for="pluginEnrichment" class="plugin">{{ 'ENRICHMENT' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginENRICHMENT" id="pluginEnrichment" (change)="workflowStepAllowed('pluginENRICHMENT')" />
+        </label>
       </div>
 
       <!-- MEDIA SERVICE -->
-      <div id="media" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginMEDIA_PROCESS').value === false || workflowForm.get('pluginMEDIA_PROCESS').value === ''}"> 
-        <label for="pluginMEDIA_PROCESS" class="plugin">{{ 'MEDIA_PROCESS' | renameWorkflow }} <input type="checkbox" formControlName="pluginMEDIA_PROCESS" id="pluginMEDIA_PROCESS" /></label>
+      <div id="media" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginMEDIA_PROCESS').value, 'disabled': workflowForm.get('pluginMEDIA_PROCESS').disabled}"> 
+        <label for="pluginMEDIA_PROCESS" class="plugin">{{ 'MEDIA_PROCESS' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginMEDIA_PROCESS" id="pluginMEDIA_PROCESS" (change)="workflowStepAllowed('pluginMEDIA_PROCESS')" />
+        </label>
 
-        <div class="form-group">
+        <div class="form-group" *ngIf="!workflowForm.get('pluginMEDIA_PROCESS').disabled && workflowForm.get('pluginMEDIA_PROCESS').value">
           <label (click)="showLimitConnectionMedia = true" class="connections">Limit connections</label>
           
           <div formArrayName="limitConnectionsMEDIA_PROCESS" *ngIf="showLimitConnectionMedia">
@@ -146,24 +161,28 @@
             </div>
 
           </div>
-          <a class="svg-icon-plus" *ngIf="showLimitConnectionMedia && workflowForm.get('pluginMEDIA_PROCESS').value ===true" (click)="addConnection('MEDIA_PROCESS')">Add connection </a>
+          <a class="svg-icon-plus" *ngIf="showLimitConnectionMedia && workflowForm.get('pluginMEDIA_PROCESS').value ===true" (change)="addConnection('MEDIA_PROCESS')">Add connection </a>
         </div>
       </div>
 
       <!-- PUBLISH TO PREVIEW -->
-      <div id="preview" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginPREVIEW').value === false || workflowForm.get('pluginPREVIEW').value === ''}"> 
-        <label for="pluginPREVIEW" class="plugin">{{ 'PREVIEW' | renameWorkflow }} <input type="checkbox" formControlName="pluginPREVIEW" id="pluginPREVIEW" /></label>
+      <div id="preview" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginPREVIEW').value, 'disabled': workflowForm.get('pluginPREVIEW').disabled}"> 
+        <label for="pluginPREVIEW" class="plugin">{{ 'PREVIEW' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginPREVIEW" id="pluginPREVIEW" (change)="workflowStepAllowed('pluginPREVIEW')" />
+        </label>
       </div>
 
       <!-- PUBLISH TO PUBLISH -->
-      <div id="publish" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginPUBLISH').value === false || workflowForm.get('pluginPUBLISH').value === ''}"> 
-        <label for="pluginPUBLISH" class="plugin">{{ 'PUBLISH' | renameWorkflow }} <input type="checkbox" formControlName="pluginPUBLISH" id="pluginPUBLISH"/></label>
+      <div id="publish" class="form-fields" [ngClass]="{'inactive': !workflowForm.get('pluginPUBLISH').value, 'disabled': workflowForm.get('pluginPUBLISH').disabled}"> 
+        <label for="pluginPUBLISH" class="plugin">{{ 'PUBLISH' | renameWorkflow }}
+          <input type="checkbox" formControlName="pluginPUBLISH" id="pluginPUBLISH" (change)="workflowStepAllowed('pluginPUBLISH')"/>
+        </label>
       </div>
 
        <!-- LINK CHECKING -->
       <div id="linkchecking" class="form-fields" [ngClass]="{'inactive': workflowForm.get('pluginLINK_CHECKING').value === false || workflowForm.get('pluginLINK_CHECKING').value === ''}"> 
         <label for="pluginLINK_CHECKING" class="plugin">{{ 'LINK_CHECKING' | renameWorkflow }} <input type="checkbox" formControlName="pluginLINK_CHECKING" id="pluginLINK_CHECKING"/></label>
-        <div class="form-group">
+        <div class="form-group" *ngIf="!workflowForm.get('pluginLINK_CHECKING').disabled && workflowForm.get('pluginLINK_CHECKING').value">
           <label (click)="showLimitConnectionLinkChecking = true" class="connections">Limit connections</label>
           
           <div formArrayName="limitConnectionsLINK_CHECKING" *ngIf="showLimitConnectionLinkChecking">

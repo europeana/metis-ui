@@ -98,7 +98,10 @@
     border-color: $gray-lighter;
     color: $gray-lighter;
   }
+}
 
+.form-fields.disabled {
+  background-color: $gray-almost-lightest;
 }
 
 .plugin {
