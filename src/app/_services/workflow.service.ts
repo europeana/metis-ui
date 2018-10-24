@@ -6,11 +6,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { apiSettings } from '../../environments/apisettings';
 
 import { Observable ,  of } from 'rxjs';
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class WorkflowService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private errors: ErrorService) { }
 
   @Output() changeWorkflow: EventEmitter<any> = new EventEmitter();
   @Output() selectedWorkflow: EventEmitter<any> = new EventEmitter();
@@ -36,7 +38,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;   
     return this.http.get(url).pipe(map(workflowData => {   
       return workflowData ? workflowData : false;
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getPublishedHarvestedData
@@ -47,7 +49,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;   
     return this.http.get(url).pipe(map(harvestedData => {   
       return harvestedData ? harvestedData : false;
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** createWorkflowForDataset
@@ -61,11 +63,11 @@ export class WorkflowService {
     if (newWorkflow === false) {
       return this.http.put(url, values).pipe(map(newWorkflowData => {   
         return newWorkflowData ? newWorkflowData : false; 
-      }));
+      })).pipe(this.errors.handleRetry()); 
     } else {
       return this.http.post(url, values).pipe(map(updatedWorkflowData => {   
         return updatedWorkflowData ? updatedWorkflowData : false; 
-      }));
+      })).pipe(this.errors.handleRetry()); 
     }
   }
 
@@ -80,7 +82,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;    
     return this.http.post(url, JSON.stringify('{}')).pipe(map(newWorkflowExecution => {   
       return newWorkflowExecution ? newWorkflowExecution : false;
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getLogs
@@ -97,7 +99,7 @@ export class WorkflowService {
     
     return this.http.get(url).pipe(map(logData => {  
       return logData ? logData : false;  
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getReport
@@ -111,7 +113,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;   
     return this.http.get(url).pipe(map(reportData => {   
       return reportData ? reportData : false;  
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getAllExecutions
@@ -128,7 +130,7 @@ export class WorkflowService {
       } else {
         return false;
       }
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getAllExecutionsEveryStatus
@@ -144,7 +146,7 @@ export class WorkflowService {
       } else {
         return false;
       }
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getAllFinishedExecutions
@@ -156,7 +158,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;   
     return this.http.get(url).pipe(map(finishedExecutions => {  
       return finishedExecutions ? finishedExecutions : false;   
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getLastExecution
@@ -167,7 +169,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?&orderField=CREATED_DATE&ascending=false`;   
     return this.http.get(url).pipe(map(lastExecution => {   
       return lastExecution ? lastExecution['results'][0] : false;
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getOngoingExecutionsPerOrganisation
@@ -185,7 +187,7 @@ export class WorkflowService {
 
     return this.http.get(url).pipe(map(executionsOrganisation => {  
       return executionsOrganisation ? executionsOrganisation : false;
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getCurrentPlugin
@@ -240,7 +242,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;   
     return this.http.get(url).pipe(map(samples => {   
       return samples ? samples['records'] : false;  
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getStatistics
@@ -252,7 +254,7 @@ export class WorkflowService {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;   
     return this.http.get(url).pipe(map(statistics => {   
       return statistics ? statistics : false;  
-    }));
+    })).pipe(this.errors.handleRetry()); 
   }
  
   /** setCurrentReport

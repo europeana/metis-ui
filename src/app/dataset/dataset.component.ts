@@ -85,8 +85,6 @@ export class DatasetComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
-
-    console.log('ngOnInit', this.activeTab, this.activeSet);
   }
 
   ngOnDestroy() {
@@ -99,9 +97,6 @@ export class DatasetComponent implements OnInit {
   /* @param {string} id - dataset identifier
   */
   returnDataset(id?: string) {
-
-    console.log('returnDataset');
-
     if (!id) { 
       this.loadTabComponent(); 
       return false;

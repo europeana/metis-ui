@@ -4,12 +4,13 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
 
 import { Router } from '@angular/router';
+import { retryWhen, delay, take, flatMap, concat } from 'rxjs/operators';
+import {of as observableOf,  Observable, throwError } from 'rxjs';
 
 @Injectable()
 export class ErrorService {
 
-  constructor(private authentication: AuthenticationService,
-    private router: Router,
+  constructor(private router: Router,
     private RedirectPreviousUrl: RedirectPreviousUrl) { }
 
   /** handleError
@@ -26,6 +27,22 @@ export class ErrorService {
   	}
   }
 
+  /** handleRetry
+  /* retry http call
+  /* check and retry for a specific error
+  */  
+  handleRetry() {
+    return retryWhen(error => {
+      return error.pipe(flatMap((error: any) => {
+        if(error.status  === 0) {
+          return observableOf(error.status).pipe(delay(1000))
+        }
+        throw error;
+      })).pipe(take(1))
+        .pipe(concat(throwError({ status: 0, error {errorMessage: 'Retry failed'}})));
+    })
+  }
+
   /** expiredToken
   /* if token expired: remember current url,
   /* logout,
@@ -33,7 +50,7 @@ export class ErrorService {
   */ 
   expiredToken() {
   	this.RedirectPreviousUrl.set(this.router.url);
-    this.authentication.logout();
+    this.AuthenticationService.logout();
     this.router.navigate(['/signin']);    
   }
 

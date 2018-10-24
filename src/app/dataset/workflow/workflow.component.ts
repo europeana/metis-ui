@@ -66,18 +66,12 @@ export class WorkflowComponent implements OnInit {
     this.buildForm();  
     this.getWorkflow();
     this.currentUrl = this.router.url.split('#')[0];
-
-    console.log('ngOnInit', this.currentUrl);
-
   }
 
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
   */
   buildForm() {
-
-    console.log('buildForm');
-
     this.workflowForm = this.fb.group({
       pluginHARVEST: [''],
       pluginTRANSFORMATION: [''],
