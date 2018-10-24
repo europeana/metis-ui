@@ -9,6 +9,9 @@ import { environment } from '../../environments/environment';
 
 import { User } from '../_models';
 
+import { Observable, of as observableOf } from 'rxjs';
+import { retryWhen, flatMap, delay, take } from 'rxjs/operators';
+
 @Injectable()
 export class AuthenticationService {
 
@@ -54,9 +57,19 @@ export class AuthenticationService {
   */ 
   updatePassword(password: string, oldpassword: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
-    return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
-      return true;
-    }));
+    return this.http.put(url, JSON.stringify('{}'))
+      .pipe(map(data => {
+        return true;
+      }))
+      .pipe(retryWhen(error => {
+         return error.pipe(flatMap((error: any) => {
+             if(error.status  === 0) {
+               return observableOf(error.status).pipe(delay(1000))
+             }
+             return Observable.throw({error: 'No retry'});
+          }))
+          .pipe(take(1));
+      }));
   }
 
   /** register
@@ -68,9 +81,19 @@ export class AuthenticationService {
   register(email: string, password: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
-      return true;
-    }));
+    return this.http.post(url, JSON.stringify('{}'), { headers: headers })
+      .pipe(map(data => {
+        return true;
+      }))
+      .pipe(retryWhen(error => {
+         return error.pipe(flatMap((error: any) => {
+             if(error.status  === 0) {
+               return observableOf(error.status).pipe(delay(1000))
+             }
+             return Observable.throw({error: 'No retry'});
+          }))
+          .pipe(take(1));
+      }));
   }
 
   /** login
@@ -92,15 +115,25 @@ export class AuthenticationService {
     
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
-      const user = <User>data;
-      if (user && user.metisUserAccessToken) {
-        this.setCurrentUser(user);
-        return true;
-      } else {
-        return false;
-      }
-    }));
+    return this.http.post(url, JSON.stringify('{}'), { headers: headers })
+      .pipe(map(data => {
+        const user = <User>data;
+        if (user && user.metisUserAccessToken) {
+          this.setCurrentUser(user);
+          return true;
+        } else {
+          return false;
+        }
+      }))
+      .pipe(retryWhen(error => {
+         return error.pipe(flatMap((error: any) => {
+          if(error.status  === 0) {
+            return observableOf(error.status).pipe(delay(1000))
+          }
+          return Observable.throw({error: 'No retry'});
+        }))
+        .pipe(take(1));
+      }));
   }
 
   /** logout
