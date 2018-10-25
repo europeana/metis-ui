@@ -39,7 +39,7 @@ export class DatasetComponent implements OnInit {
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
   activeTab: string = 'new';
-  isCollapsed: boolean = true;
+  prevTab: string;
   showLog: boolean = false;
   user: User;
   errorMessage: string;
@@ -67,6 +67,7 @@ export class DatasetComponent implements OnInit {
     this.user = this.authentication.currentUser;
 
     this.route.params.subscribe(params => {
+      this.prevTab = this.activeTab;
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
       this.returnDataset(this.activeSet);
@@ -75,12 +76,6 @@ export class DatasetComponent implements OnInit {
         this.loadTabComponent(); 
       }
     });    
-
-    this.workflows.changeWorkflow.subscribe(
-      workflow => {
-        this.isCollapsed = true;
-      }
-    );
 
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
@@ -174,6 +169,12 @@ export class DatasetComponent implements OnInit {
     componentRef.instance.workflowData = this.getCurrentTab().data2;
     
     this.successMessage = this.datasets.getDatasetMessage();
+
+    if (this.activeTab === 'preview' && this.prevTab === 'mapping') {
+      this.datasets.setTempXSLT(this.datasets.getTempXSLT());
+    } else {
+      this.datasets.setTempXSLT(null);
+    }
   }
 
   /** getCurrentTab

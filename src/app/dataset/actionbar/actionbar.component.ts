@@ -201,8 +201,8 @@ export class ActionbarComponent {
       this.currentPluginName = thisPlugin.pluginType ? thisPlugin.pluginType : '-';
       this.currentExternalTaskId = thisPlugin.externalTaskId;
       this.currentTopology = thisPlugin.topologyName;
-      this.totalProcessed = thisPlugin['executionProgress'].processedRecords;
       this.totalErrors = thisPlugin['executionProgress'].errors;
+      this.totalProcessed = thisPlugin['executionProgress'].processedRecords - this.totalErrors;
       this.totalInDataset = thisPlugin['executionProgress'].expectedRecords;
     }
   }

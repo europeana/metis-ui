@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, FormBuilder, FormArray, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
@@ -51,6 +51,11 @@ export class WorkflowComponent implements OnInit {
   selectedSteps: boolean = true;
   showLimitConnectionMedia: boolean = false;
   showLimitConnectionLinkChecking: boolean = false;
+  pluginsOrdered: Array<string> = ['pluginHARVEST', 'pluginVALIDATION_EXTERNAL', 
+    'pluginTRANSFORMATION', 'pluginVALIDATION_INTERNAL', 
+    'pluginNORMALIZATION', 'pluginENRICHMENT', 
+    'pluginMEDIA_PROCESS', 'pluginPREVIEW', 
+    'pluginPUBLISH'];
 
   /** ngOnInit
   /* init for this component
@@ -146,6 +151,41 @@ export class WorkflowComponent implements OnInit {
     });
   }
 
+  /** workflowStepAllowed
+  /* make step before and after available for selection 
+  */
+  workflowStepAllowed(selectedPlugin) {  
+    let plugin = this.pluginsOrdered.findIndex(function(element) {
+      return element === selectedPlugin;
+    });
+
+    let hasValue = 0;
+
+    this.pluginsOrdered.forEach((value, index) => {
+      this.workflowForm.get(value).disable();
+      hasValue = 0;
+    }); 
+
+    this.pluginsOrdered.forEach((value, index) => {
+      if (this.workflowForm.get(value).value) {
+        hasValue++;
+        if ((index - 1) >= 0) {
+          this.workflowForm.get(this.pluginsOrdered[index - 1]).enable();
+        }
+        this.workflowForm.get(this.pluginsOrdered[index]).enable();
+        if ((index + 1) < this.pluginsOrdered.length) {
+          this.workflowForm.get(this.pluginsOrdered[index + 1]).enable();
+        }
+      }
+    });
+
+    if (hasValue === 0) {
+      this.pluginsOrdered.forEach((value, index) => {
+        this.workflowForm.get(value).enable();
+      }); 
+    }
+  }
+
   /** changeHarvestProtocol
   /* update form according to selected protocol
   */
@@ -231,8 +271,10 @@ export class WorkflowComponent implements OnInit {
       if (thisWorkflow.enabled === true) {
         if (thisWorkflow.pluginType === 'OAIPMH_HARVEST' || thisWorkflow.pluginType === 'HTTP_HARVEST' ) {
           this.workflowForm.controls['pluginHARVEST'].setValue(true);
+          this.workflowStepAllowed('pluginHARVEST');
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
+          this.workflowStepAllowed('plugin' + thisWorkflow.pluginType);
         }
       }
 

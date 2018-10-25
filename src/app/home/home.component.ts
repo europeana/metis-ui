@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -18,16 +17,15 @@ export class HomeComponent {
   bannertext: string;
   bannerlinktext: string;
 
-  constructor(private sanitizer: DomSanitizer) {
-    this.heroimage = sanitizer.bypassSecurityTrustStyle('url(/assets/images/hero_metis_1600x650_jade.png)');
+  constructor() {
+    this.heroimage = 'url(/assets/images/hero_metis_1600x650_jade.png)';
     this.attributiontext = 'Cyclopides metis L., Cyclopides qua... Museum Fur Naturkunde Berlin';
-    this.attributionlink = sanitizer.bypassSecurityTrustUrl('https://www.europeana.eu/portal/');
+    this.attributionlink = 'https://www.europeana.eu/portal/';
     this.attributionrights = 'CC0';
-    this.attributionrightslink = sanitizer.bypassSecurityTrustUrl('https://creativecommons.org/publicdomain/zero/1.0/');
+    this.attributionrightslink = 'https://creativecommons.org/publicdomain/zero/1.0/';
 
     this.bannerheading = 'What can you do with Metis?';
     this.bannertext = 'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
     this.bannerlinktext = 'Register to Metis here';
   }
-
 }
