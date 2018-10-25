@@ -11,7 +11,7 @@ export class ErrorService {
   constructor(private router: Router,
     private RedirectPreviousUrl: RedirectPreviousUrl) { }
 
-  numberOfRetries: number = 1;
+  numberOfRetries: number = 5;
   retryDelay: number = 1000;
 
   /** handleError
@@ -35,7 +35,7 @@ export class ErrorService {
   handleRetry() {
     return retryWhen(error => {
       return error.pipe(flatMap((error: any) => {
-        if(error.status  === 0) {
+        if(error.status  === 0 || error.message  === 'Http failure response for (unknown url): 0 Unknown Error') {
           return observableOf(error.status).pipe(delay(this.retryDelay))
         }
         throw error;
