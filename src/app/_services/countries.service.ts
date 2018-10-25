@@ -7,11 +7,13 @@ import { apiSettings } from '../../environments/apisettings';
 
 import { AuthenticationService } from '../_services/authentication.service';
 import { StringifyHttpError } from '../_helpers';
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class CountriesService {
 
   constructor(private http: HttpClient, 
+    private errors: ErrorService,
     private authentication: AuthenticationService) {}
 
   /** getCountriesLanguages
@@ -29,7 +31,7 @@ export class CountriesService {
       } else {
         return false;
       }
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
 }

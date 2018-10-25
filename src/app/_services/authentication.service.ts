@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
+import { ErrorService } from '../_services/error.service';
 
 import { apiSettings } from '../../environments/apisettings';
 import { environment } from '../../environments/environment';
@@ -19,6 +20,7 @@ export class AuthenticationService {
   constructor(
     private http: HttpClient, 
     private router: Router,
+    private errors: ErrorService,
     private redirectPreviousUrl: RedirectPreviousUrl) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
@@ -26,6 +28,9 @@ export class AuthenticationService {
       const hash = JSON.parse(value);
       this.currentUser = hash.user;
       this.token = hash.token;
+    } else {
+      this.currentUser = null;
+      this.token = null;  
     }
   }
 
@@ -56,7 +61,7 @@ export class AuthenticationService {
     const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
     return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
       return true;
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** register
@@ -70,7 +75,7 @@ export class AuthenticationService {
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
       return true;
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** login
@@ -100,7 +105,7 @@ export class AuthenticationService {
       } else {
         return false;
       }
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** logout
@@ -129,7 +134,7 @@ export class AuthenticationService {
       } else {
         return false;
       }
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** setCurrentUser

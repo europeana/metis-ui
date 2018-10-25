@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AuthenticationService, TranslateService, RedirectPreviousUrl } from '../_services';
+import { AuthenticationService, TranslateService, RedirectPreviousUrl, ErrorService } from '../_services';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -22,7 +22,8 @@ describe('RegisterComponent', () => {
       imports: [ RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule ],
       declarations: [ RegisterComponent, TranslatePipe ],
       providers: [ 
-        RedirectPreviousUrl,
+        RedirectPreviousUrl, 
+        ErrorService,
         {provide: AuthenticationService, useClass: MockAuthenticationService},
         { provide: TranslateService,
           useValue: {

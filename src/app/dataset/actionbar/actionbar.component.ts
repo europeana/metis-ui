@@ -224,7 +224,11 @@ export class ActionbarComponent {
       this.report = result;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+      if (error === 'retry') {
+        this.openReport(taskid, topology);
+      } else {
+        this.errorMessage = `${StringifyHttpError(error)}`;  
+      } 
     });
   }
 

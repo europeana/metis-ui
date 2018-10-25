@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 
-import { RedirectPreviousUrl } from '../_services';
+import { RedirectPreviousUrl, ErrorService } from '../_services';
 
 import { currentUser } from '../_mocked';
 import { apiSettings } from '../../environments/apisettings';
@@ -17,21 +17,23 @@ describe('AuthenticationService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let router: Router;
+  let errors;
   let redirect: RedirectPreviousUrl;
 
    beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule ],
-      providers: [ RedirectPreviousUrl, HttpTestingController]
+      providers: [ RedirectPreviousUrl, HttpTestingController, ErrorService]
     })
     .compileComponents();
 
     router = TestBed.get(Router);
     redirect = TestBed.get(RedirectPreviousUrl);
     httpClient = TestBed.get(HttpClient);
+    errors = TestBed.get(ErrorService);
     httpTestingController = TestBed.get(HttpTestingController);
 
-    service = new AuthenticationService(httpClient, router, redirect); 
+    service = new AuthenticationService(httpClient, router, errors, redirect); 
 
   }));
 

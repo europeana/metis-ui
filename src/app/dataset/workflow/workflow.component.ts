@@ -77,7 +77,6 @@ export class WorkflowComponent implements OnInit {
   /* set up a reactive form for creating and editing a workflow
   */
   buildForm() {
-
     this.workflowForm = this.fb.group({
       pluginHARVEST: [''],
       pluginTRANSFORMATION: [''],

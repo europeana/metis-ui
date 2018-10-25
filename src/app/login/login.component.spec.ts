@@ -8,7 +8,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { RedirectPreviousUrl, TranslateService, AuthenticationService } from '../_services';
+import { RedirectPreviousUrl, TranslateService, AuthenticationService, ErrorService } from '../_services';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
 
 import { MockAuthenticationService, currentUser } from '../_mocked';
@@ -22,7 +22,7 @@ describe('LoginComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
       declarations: [ LoginComponent, TranslatePipe ],
-      providers: [ RedirectPreviousUrl,
+      providers: [ RedirectPreviousUrl, ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService},
         { provide: TranslateService,
             useValue: {

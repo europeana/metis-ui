@@ -1,5 +1,6 @@
-
 import { map,  switchMap } from 'rxjs/operators';
+import {of as observableOf,  Observable, throwError } from 'rxjs';
+
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
@@ -46,10 +47,11 @@ export class DatasetsService {
   /* @param {string} id - datasetid
   */
   getDataset(id: string) {
-    const url = `${apiSettings.apiHostCore}/datasets/${id}`;    
-    return this.http.get(url).pipe(map(dataset => {   
-      return dataset ? dataset : false;
-    }));    
+    const url = `${apiSettings.apiHostCore}/datasets/${id}`; 
+    return this.http.get(url)
+      .pipe(map(dataset => {   
+        return dataset ? dataset : false;
+      })).pipe(this.errors.handleRetry());      
   }
 
   /** createDataset
@@ -60,7 +62,7 @@ export class DatasetsService {
     const url = `${apiSettings.apiHostCore}/datasets`;    
     return this.http.post(url, datasetFormValues).pipe(map(newDataset => {  
       return newDataset ? newDataset : false;
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** updateDataset
@@ -71,7 +73,7 @@ export class DatasetsService {
     const url = `${apiSettings.apiHostCore}/datasets`;    
     return this.http.put(url, datasetFormValues).pipe(map(updateDataset => {      
       return updateDataset ? updateDataset : false;
-    }));
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** addDatasetNameAndCurrentPlugin
@@ -146,7 +148,7 @@ export class DatasetsService {
 
     return this.http.get(url, options).pipe(map(data => {  
       return data ? (type === 'default' ? data : data['xslt']) : false;
-    }));  
+    })).pipe(this.errors.handleRetry()); 
   }
 
   /** getTransform
@@ -162,7 +164,7 @@ export class DatasetsService {
     }
     return this.http.post(url, samples, {headers:{'Content-Type': 'application/json'}}).pipe(map(data => {  
       return data ? data : false;
-    }));  
+    })).pipe(this.errors.handleRetry());  
   }
 
   /** setTempXSLT

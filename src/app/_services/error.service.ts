@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
-
-import { AuthenticationService } from '../_services/authentication.service';
 import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
 
 import { Router } from '@angular/router';
+import { retryWhen, delay, take, flatMap, concat } from 'rxjs/operators';
+import {of as observableOf,  Observable, throwError } from 'rxjs';
 
 @Injectable()
 export class ErrorService {
 
-  constructor(private authentication: AuthenticationService,
-    private router: Router,
+  constructor(private router: Router,
     private RedirectPreviousUrl: RedirectPreviousUrl) { }
+
+  numberOfRetries: number = 5;
+  retryDelay: number = 1000;
 
   /** handleError
   /* default error handler
@@ -26,6 +28,22 @@ export class ErrorService {
   	}
   }
 
+  /** handleRetry
+  /* retry http call
+  /* check and retry for a specific error
+  */  
+  handleRetry() {
+    return retryWhen(error => {
+      return error.pipe(flatMap((error: any) => {
+        if(error.status  === 0 || error.message  === 'Http failure response for (unknown url): 0 Unknown Error') {
+          return observableOf(error.status).pipe(delay(this.retryDelay))
+        }
+        throw error;
+      })).pipe(take(this.numberOfRetries))
+        .pipe(concat(throwError({ status: 0, error: {errorMessage: 'Retry failed'}})));
+    })
+  }
+
   /** expiredToken
   /* if token expired: remember current url,
   /* logout,
@@ -33,7 +51,7 @@ export class ErrorService {
   */ 
   expiredToken() {
   	this.RedirectPreviousUrl.set(this.router.url);
-    this.authentication.logout();
+    localStorage.removeItem('currentUser');
     this.router.navigate(['/signin']);    
   }
 
