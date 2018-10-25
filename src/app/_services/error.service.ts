@@ -11,6 +11,9 @@ export class ErrorService {
   constructor(private router: Router,
     private RedirectPreviousUrl: RedirectPreviousUrl) { }
 
+  numberOfRetries: number = 1;
+  retryDelay: number = 1000;
+
   /** handleError
   /* default error handler
   /* check for specific error message, and act upon
@@ -33,10 +36,10 @@ export class ErrorService {
     return retryWhen(error => {
       return error.pipe(flatMap((error: any) => {
         if(error.status  === 0) {
-          return observableOf(error.status).pipe(delay(1000))
+          return observableOf(error.status).pipe(delay(this.retryDelay))
         }
         throw error;
-      })).pipe(take(1))
+      })).pipe(take(this.numberOfRetries))
         .pipe(concat(throwError({ status: 0, error: {errorMessage: 'Retry failed'}})));
     })
   }
