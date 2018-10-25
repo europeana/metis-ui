@@ -5,7 +5,7 @@ import { BaseRequestOptions, ConnectionBackend, Http, RequestOptions } from '@an
 
 import { ReportComponent } from './report.component';
 
-import { WorkflowService, AuthenticationService, TranslateService } from '../../_services';
+import { WorkflowService, AuthenticationService, TranslateService, ErrorService, RedirectPreviousUrl } from '../../_services';
 import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
 import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
 
@@ -26,7 +26,9 @@ describe('ReportComponent', () => {
               return {};
             }
           }
-      }]
+      }, 
+      ErrorService,
+      RedirectPreviousUrl]
 
     })
     .compileComponents();

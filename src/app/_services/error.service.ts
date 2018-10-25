@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-
-import { AuthenticationService } from '../_services/authentication.service';
 import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
 
 import { Router } from '@angular/router';
@@ -39,7 +37,7 @@ export class ErrorService {
         }
         throw error;
       })).pipe(take(1))
-        .pipe(concat(throwError({ status: 0, error {errorMessage: 'Retry failed'}})));
+        .pipe(concat(throwError({ status: 0, error: {errorMessage: 'Retry failed'}})));
     })
   }
 
@@ -50,7 +48,7 @@ export class ErrorService {
   */ 
   expiredToken() {
   	this.RedirectPreviousUrl.set(this.router.url);
-    this.AuthenticationService.logout();
+    localStorage.removeItem('currentUser');
     this.router.navigate(['/signin']);    
   }
 

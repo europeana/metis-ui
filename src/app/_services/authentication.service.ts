@@ -28,6 +28,9 @@ export class AuthenticationService {
       const hash = JSON.parse(value);
       this.currentUser = hash.user;
       this.token = hash.token;
+    } else {
+      this.currentUser = null;
+      this.token = null;  
     }
   }
 
