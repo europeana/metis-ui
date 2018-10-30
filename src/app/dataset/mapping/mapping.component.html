@@ -36,18 +36,8 @@
 </div>
 
 <div class="btns-set">
-  <div class="filter-wrapper">
-    <ul class="filter">
-      <li>
-        <a *ngIf="!fullView" (click)="toggleFullViewMode(true)">{{ 'xsltfull' | translate }}</a>
-        <a *ngIf="fullView" (click)="toggleFullViewMode(false)">{{ 'xsltcards' | translate }}</a>
-      </li>    
-    </ul>
-  </div>
-  <div>
-    <button (click)="loadXSLT('default')" [ngClass]="{'active': xsltType === 'default' }">{{ 'xsltloaddefault' | translate }}</button> 
-    <button (click)="loadXSLT('custom')" [ngClass]="{'active': xsltType === 'custom' }">{{ 'xsltloadcustom' | translate }}</button>
-  </div>
+  <button (click)="loadXSLT('default')" [ngClass]="{'active': xsltType === 'default' }">{{ 'xsltloaddefault' | translate }}</button> 
+  <button (click)="loadXSLT('custom')" [ngClass]="{'active': xsltType === 'custom' }">{{ 'xsltloadcustom' | translate }}</button>
 </div>
 
 <div class="view-sample"  *ngFor="let card of xslt; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">

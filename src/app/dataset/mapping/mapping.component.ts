@@ -67,7 +67,6 @@ export class MappingComponent implements OnInit {
 
     this.loadStatistics();
     this.loadEditor();
-    this.toggleFullViewMode(true);
   }
 
   /** loadStatistics
@@ -211,19 +210,6 @@ export class MappingComponent implements OnInit {
       const error = this.errors.handleError(err); 
       this.errorMessage = `${StringifyHttpError(error)}`;   
     });
-  }
-
-  /** toggleFullViewMode
-  /* show either xslt in one card (fullView) or in individual cards
-  /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
-  /* @param {boolean} mode - fullview (true) or individual cards (false)
-  */
-  toggleFullViewMode(mode: boolean) {
-    if (this.xsltToSave[0]) {
-      this.saveXSLT();
-    }
-    this.fullView = mode;
-    this.displayXSLT();
   }
 
   /** toggleStatistics

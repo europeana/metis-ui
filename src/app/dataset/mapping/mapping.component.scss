@@ -50,10 +50,9 @@
 }
 
 .btns-set {
-  justify-content: space-between;
+  justify-content: flex-end;
 
   &.btns-set-save {
-    justify-content: flex-end;
     margin-top: -2.5rem;
   }
 }
