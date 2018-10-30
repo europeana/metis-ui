@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
@@ -14,16 +14,15 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 describe('HistoryComponent', () => {
   let component: HistoryComponent;
   let fixture: ComponentFixture<HistoryComponent>;
-  let spy: any;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ HistoryComponent, TranslatePipe, RenameWorkflowPipe ],
-      providers: [ DatasetsService,    
-        {provide: WorkflowService, useClass: MockWorkflowService},     
-        RedirectPreviousUrl, 
-        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
+      providers: [ DatasetsService,
+        {provide: WorkflowService, useClass: MockWorkflowService},
+        RedirectPreviousUrl,
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
         ErrorService,
         { provide: TranslateService,
           useValue: {
@@ -56,16 +55,16 @@ describe('HistoryComponent', () => {
     component.inCollapsablePanel = false;
     fixture.detectChanges();
   });
- 
+
   it('should open a report', () => {
     component.datasetData = currentDataset;
-    fixture.detectChanges(); 
+    fixture.detectChanges();
 
     component.openReport(123, 'mocked');
     fixture.detectChanges();
     expect(component.report).not.toBe('');
   });
-  
+
   it('should display history in panel', () => {
     component.datasetData = currentDataset;
     component.inCollapsablePanel = true;
@@ -115,7 +114,5 @@ describe('HistoryComponent', () => {
     component.getLatestExecution();
     fixture.detectChanges();
     expect(component.workflowHasFinished).toBe(true);
-  });  
-
+  });
 });
-

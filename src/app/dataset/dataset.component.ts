@@ -14,14 +14,14 @@ import { MappingComponent } from './mapping/mapping.component';
 import { PreviewComponent } from './preview/preview.component';
 import { WorkflowComponent } from './workflow/workflow.component';
 
-import { datasetTab } from './datasettab';
+import { DatasetTab } from './datasettab';
 
 import { User } from '../_models';
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss']  
+  styleUrls: ['./dataset.component.scss']
 })
 
 export class DatasetComponent implements OnInit {
@@ -32,25 +32,25 @@ export class DatasetComponent implements OnInit {
     private workflows: WorkflowService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private RedirectPreviousUrl: RedirectPreviousUrl,
-    private errors: ErrorService, 
+    private errors: ErrorService,
     private translate: TranslateService,
     private route: ActivatedRoute) { }
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
-  activeTab: string = 'new';
+  activeTab = 'new';
   prevTab: string;
-  showLog: boolean = false;
+  showLog = false;
   user: User;
   errorMessage: string;
   successMessage: string;
   subscription;
   subscriptionWorkflow;
   intervalTimer: number = environment.intervalStatus;
-  tabsLoaded: boolean = false;
+  tabsLoaded = false;
 
   public isShowingLog;
-  public datasetData; 
+  public datasetData;
   public activeSet: string;
   public workflowData;
   public harvestPublicationData;
@@ -61,7 +61,7 @@ export class DatasetComponent implements OnInit {
   /* if id is known, go to update dataset form, else new
   /* subscribe to workflow changes
   /* set translation language
-  */ 
+  */
   ngOnInit() {
 
     this.user = this.authentication.currentUser;
@@ -73,12 +73,12 @@ export class DatasetComponent implements OnInit {
       this.returnDataset(this.activeSet);
 
       if (this.tabsLoaded) {
-        this.loadTabComponent(); 
+        this.loadTabComponent();
       }
-    });    
+    });
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
   }
 
@@ -92,21 +92,21 @@ export class DatasetComponent implements OnInit {
   /* @param {string} id - dataset identifier
   */
   returnDataset(id?: string) {
-    if (!id) { 
-      this.loadTabComponent(); 
+    if (!id) {
+      this.loadTabComponent();
       return false;
     }
-    
+
     this.datasets.getDataset(id).subscribe(result => {
       this.datasetData = result;
       // check for harvest data
-      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
-        this.harvestPublicationData = result;
+      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(resultHarvest => {
+        this.harvestPublicationData = resultHarvest;
       });
 
       // check for last execution every x seconds
       if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-      let timer = observableTimer(0, this.intervalTimer);
+      const timer = observableTimer(0, this.intervalTimer);
       this.subscription = timer.subscribe(t => {
         this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
           this.lastExecutionData = execution;
@@ -121,7 +121,7 @@ export class DatasetComponent implements OnInit {
       // check workflow for every x seconds
       if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
       this.subscriptionWorkflow = timer.subscribe(t => {
-        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {  
+        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
           this.workflowData = workflow;
           if (this.workflowData && !this.tabsLoaded) {
             this.loadTabComponent();
@@ -147,10 +147,10 @@ export class DatasetComponent implements OnInit {
   }
 
   /** onNotifyShowLogStatus
-  /*  opens/closes the log messages 
+  /*  opens/closes the log messages
   /* @param {boolean} message - show log yes/no
   */
-  onNotifyShowLogStatus(message):void {
+  onNotifyShowLogStatus(message): void {
     this.isShowingLog = message;
   }
 
@@ -161,13 +161,13 @@ export class DatasetComponent implements OnInit {
 
     if (!this.getCurrentTab()) {return false; }
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);
-    let viewContainerRef = this.datasetHost.viewContainerRef;
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);
+    const viewContainerRef = this.datasetHost.viewContainerRef;
     viewContainerRef.clear();
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.datasetData = this.getCurrentTab().data;
     componentRef.instance.workflowData = this.getCurrentTab().data2;
-    
+
     this.successMessage = this.datasets.getDatasetMessage();
 
     if (this.activeTab === 'preview' && this.prevTab === 'mapping') {
@@ -192,7 +192,7 @@ export class DatasetComponent implements OnInit {
       return new datasetTab(PreviewComponent, this.datasetData, this.workflowData);
     } else  if (this.activeTab === 'workflow') {
       return new datasetTab(WorkflowComponent, this.datasetData, this.workflowData);
-    } 
+    }
   }
 
   /** clickOutsideMessage

@@ -1,4 +1,3 @@
-
 import {of as observableOf,  Observable } from 'rxjs';
 import { AuthenticationService } from '../_services';
 
@@ -15,14 +14,14 @@ export const currentUser = {
   organizationId: 1,
   organizationName: 'organization',
   updatedDate: '',
-  userId: 1 
-}; 
+  userId: 1
+};
 
 export class MockAuthenticationService extends AuthenticationService {
 
   currentUser = currentUser;
 
-  validatedUser() {    
+  validatedUser() {
     return true;
   }
 

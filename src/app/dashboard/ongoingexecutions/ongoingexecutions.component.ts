@@ -14,7 +14,7 @@ import { environment } from '../../../environments/environment';
 })
 export class OngoingexecutionsComponent {
 
-  constructor(private workflows: WorkflowService, 
+  constructor(private workflows: WorkflowService,
     private errors: ErrorService,
     private authentication: AuthenticationService,
     private translate: TranslateService,
@@ -32,12 +32,12 @@ export class OngoingexecutionsComponent {
   cancelling;
   currentPlugin = 0;
   datasetNames: Array<any> = [];
-  viewMore: boolean = false;
+  viewMore = false;
   logIsOpen;
-  contentCopied: boolean = false;
+  contentCopied = false;
 
   /** ngOnInit
-  /* init of this component: 
+  /* init of this component:
   /* start polling/checking for updates
   /* set translation languages
   /* translate some values to use in this component
@@ -54,10 +54,10 @@ export class OngoingexecutionsComponent {
         }
     });
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
       this.cancelling = this.translate.instant('cancelling');
-    } 
+    }
   }
 
   /** startPolling
@@ -65,7 +65,7 @@ export class OngoingexecutionsComponent {
   */
   startPolling() {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
+    const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.getOngoing();
     });
@@ -78,8 +78,8 @@ export class OngoingexecutionsComponent {
   getOngoing() {
     if (!this.authentication.validatedUser()) { return false; }
 
-    let executions = this.ongoingExecutionDataOutput;
-    let max = 5;
+    const executions = this.ongoingExecutionDataOutput;
+    const max = 5;
     if (!executions) { return false; }
 
     this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen);
@@ -97,7 +97,7 @@ export class OngoingexecutionsComponent {
   cancelWorkflow(id) {
     if (!id) { return false; }
     this.getOngoing();
-    this.workflows.promptCancelThisWorkflow(id);  
+    this.workflows.promptCancelThisWorkflow(id);
   }
 
   /** showLog
@@ -106,7 +106,7 @@ export class OngoingexecutionsComponent {
   /* @param {string} topology - name of the topology
   */
   showLog(externaltaskId, topology, plugin, datasetId?, processed?, status?) {
-    let message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
+    const message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
     this.logIsOpen = datasetId;
     this.notifyShowLogStatus.emit(message);
   }

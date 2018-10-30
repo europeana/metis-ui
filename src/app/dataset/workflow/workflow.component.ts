@@ -19,7 +19,7 @@ export class WorkflowComponent implements OnInit {
   constructor(private datasets: DatasetsService,
     private workflows: WorkflowService,
     private authentication: AuthenticationService,
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private RedirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
     private datePipe: DatePipe,
@@ -30,7 +30,7 @@ export class WorkflowComponent implements OnInit {
         if (s instanceof NavigationEnd) {
           const tree = router.parseUrl(router.url);
           if (tree.fragment) {
-            const element = document.querySelector("#" + tree.fragment);
+            const element = document.querySelector('#' + tree.fragment);
             if (element) { element.scrollIntoView(true); }
           }
         }
@@ -43,18 +43,18 @@ export class WorkflowComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   harvestprotocol;
-  newWorkflow: boolean = true; 
-  formIsValid: boolean = false;
+  newWorkflow = true;
+  formIsValid = false;
   workflowForm: FormGroup;
   fragment: string;
   currentUrl: string;
-  selectedSteps: boolean = true;
-  showLimitConnectionMedia: boolean = false;
-  showLimitConnectionLinkChecking: boolean = false;
-  pluginsOrdered: Array<string> = ['pluginHARVEST', 'pluginVALIDATION_EXTERNAL', 
-    'pluginTRANSFORMATION', 'pluginVALIDATION_INTERNAL', 
-    'pluginNORMALIZATION', 'pluginENRICHMENT', 
-    'pluginMEDIA_PROCESS', 'pluginPREVIEW', 
+  selectedSteps = true;
+  showLimitConnectionMedia = false;
+  showLimitConnectionLinkChecking = false;
+  pluginsOrdered: Array<string> = ['pluginHARVEST', 'pluginVALIDATION_EXTERNAL',
+    'pluginTRANSFORMATION', 'pluginVALIDATION_INTERNAL',
+    'pluginNORMALIZATION', 'pluginENRICHMENT',
+    'pluginMEDIA_PROCESS', 'pluginPREVIEW',
     'pluginPUBLISH'];
 
   /** ngOnInit
@@ -64,11 +64,11 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit() {
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
 
-    this.buildForm();  
+    this.buildForm();
     this.getWorkflow();
     this.currentUrl = this.router.url.split('#')[0];
   }
@@ -111,7 +111,7 @@ export class WorkflowComponent implements OnInit {
   /** updateRequired
   /* update required fields depending on selection
   */
-  updateRequired() {    
+  updateRequired() {
     this.workflowForm.valueChanges.subscribe(() => {
       if (this.workflowForm.get('pluginHARVEST').value === true) {
         this.workflowForm.get('pluginType').setValidators([Validators.required]);
@@ -130,7 +130,7 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
           this.workflowForm.get('metadataFormat').setValidators(null);
           this.workflowForm.get('metadataFormat').updateValueAndValidity({onlySelf : false, emitEvent : false});
-        } 
+        }
       } else {
         this.workflowForm.get('pluginType').setValidators(null);
         this.workflowForm.get('pluginType').updateValueAndValidity({onlySelf : false, emitEvent : false});
@@ -145,17 +145,17 @@ export class WorkflowComponent implements OnInit {
         if (key.includes('plugin') && key !== 'pluginType') {
           if (this.workflowForm.get(key).value) {
             this.selectedSteps = true;
-          } 
+          }
         }
       });
     });
   }
 
   /** workflowStepAllowed
-  /* make step before and after available for selection 
+  /* make step before and after available for selection
   */
-  workflowStepAllowed(selectedPlugin) {  
-    let plugin = this.pluginsOrdered.findIndex(function(element) {
+  workflowStepAllowed(selectedPlugin) {
+    const plugin = this.pluginsOrdered.findIndex(function(element) {
       return element === selectedPlugin;
     });
 
@@ -164,7 +164,7 @@ export class WorkflowComponent implements OnInit {
     this.pluginsOrdered.forEach((value, index) => {
       this.workflowForm.get(value).disable();
       hasValue = 0;
-    }); 
+    });
 
     this.pluginsOrdered.forEach((value, index) => {
       if (this.workflowForm.get(value).value) {
@@ -182,7 +182,7 @@ export class WorkflowComponent implements OnInit {
     if (hasValue === 0) {
       this.pluginsOrdered.forEach((value, index) => {
         this.workflowForm.get(value).enable();
-      }); 
+      });
     }
   }
 
@@ -233,7 +233,7 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** removeAllConnections
-  /* remove all host/connection 
+  /* remove all host/connection
   /* @param {string} type - either link checking or media processing
   */
   removeAllConnections(type: string) {
@@ -245,7 +245,7 @@ export class WorkflowComponent implements OnInit {
     }
 
     while (control.length !== 0) {
-      control.removeAt(0)
+      control.removeAt(0);
     }
   }
 
@@ -254,20 +254,20 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty
   */
   getWorkflow() {
-    if (!this.datasetData) {       
-      if (typeof this.translate.instant === 'function') { 
-        this.errorMessage = this.translate.instant('create dataset'); 
+    if (!this.datasetData) {
+      if (typeof this.translate.instant === 'function') {
+        this.errorMessage = this.translate.instant('create dataset');
       }
       return false;
     }
 
-    let workflow = this.workflowData;
+    const workflow = this.workflowData;
     if (!workflow) { return false; }
     this.newWorkflow = false;
 
     for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
-      let thisWorkflow = workflow['metisPluginsMetadata'][w];
-      
+      const thisWorkflow = workflow['metisPluginsMetadata'][w];
+
       if (thisWorkflow.enabled === true) {
         if (thisWorkflow.pluginType === 'OAIPMH_HARVEST' || thisWorkflow.pluginType === 'HTTP_HARVEST' ) {
           this.workflowForm.controls['pluginHARVEST'].setValue(true);
@@ -314,8 +314,8 @@ export class WorkflowComponent implements OnInit {
             }
           }
         }
-      }    
-    }    
+      }
+    }
   }
 
   /** formatFormValues
@@ -323,7 +323,7 @@ export class WorkflowComponent implements OnInit {
   */
   formatFormValues() {
 
-    let plugins = [];
+    const plugins = [];
 
     // import/harvest
     if (this.workflowForm.value['pluginHARVEST'] === true) {
@@ -341,7 +341,7 @@ export class WorkflowComponent implements OnInit {
           'url': this.workflowForm.value['url'].trim(),
           'mocked': false
         });
-      }      
+      }
     }
 
     // transformation
@@ -418,7 +418,7 @@ export class WorkflowComponent implements OnInit {
       });
     }
 
-    let values = {
+    const values = {
       'metisPluginsMetadata': plugins
     };
 
@@ -430,7 +430,7 @@ export class WorkflowComponent implements OnInit {
   /* @param {object} formValuesConnections - connection values from form
   */
   returnConnections (formValuesConnections) {
-    let connections = {};
+    const connections = {};
     for (let c = 0; c < formValuesConnections.length; c++) {
       if (formValuesConnections[c]['host'] && formValuesConnections[c]['connections']) {
         connections[formValuesConnections[c]['host']] = Number(formValuesConnections[c]['connections']);
@@ -445,15 +445,15 @@ export class WorkflowComponent implements OnInit {
   */
   onSubmit() {
     if (!this.datasetData) { return false; }
-    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {      
-      this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
-        this.workflowData = workflow; 
+    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {
+      this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowDataset => {
+        this.workflowData = workflowDataset;
         this.getWorkflow();
         this.successMessage = 'Workflow saved';
-        this.scrollToMessageBox(); 
-      });       
+        this.scrollToMessageBox();
+      });
     }, (err: HttpErrorResponse) => {
-      const errorSubmit = this.errors.handleError(err);   
+      const errorSubmit = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
       this.scrollToMessageBox();
     });

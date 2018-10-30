@@ -10,7 +10,7 @@ import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDatase
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -22,11 +22,11 @@ describe('DatasetComponent', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientModule, RouterTestingModule],
       declarations: [ DatasetComponent, TranslatePipe ],
-      providers: [ 
-        {provide: DatasetsService, useClass: MockDatasetService}, 
-        {provide: WorkflowService, useClass: MockWorkflowService}, 
+      providers: [
+        {provide: DatasetsService, useClass: MockDatasetService},
+        {provide: WorkflowService, useClass: MockWorkflowService},
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},  
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
         RedirectPreviousUrl,
         { provide: TranslateService,
             useValue: {
@@ -53,36 +53,36 @@ describe('DatasetComponent', () => {
   it('should get dataset info', () => {
     component.activeTab = undefined;
     component.returnDataset('1');
-    fixture.detectChanges();    
+    fixture.detectChanges();
     expect(component.subscription.closed).not.toBe(undefined);
   });
 
   it('should switch tabs', () => {
-    fixture.detectChanges();  
+    fixture.detectChanges();
 
     component.activeTab = 'edit';
     component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'workflow';
     component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'mapping';
     component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'preview';
     component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'log';
     component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
   });
@@ -97,5 +97,4 @@ describe('DatasetComponent', () => {
     expect(component.errorMessage).toBe(undefined);
 
   });
-
 });

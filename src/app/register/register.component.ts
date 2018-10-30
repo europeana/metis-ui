@@ -13,7 +13,6 @@ import { environment } from '../../environments/environment';
 })
 
 export class RegisterComponent implements OnInit {
-  
   loading = false;
   errorMessage: string;
   successMessage: string;
@@ -39,7 +38,7 @@ export class RegisterComponent implements OnInit {
   /* create a registration form
   /* set translation language
   */
-  ngOnInit() {    
+  ngOnInit() {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       passwords: this.fb.group({
@@ -50,8 +49,8 @@ export class RegisterComponent implements OnInit {
       })
     });
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
       this.msgSuccess = this.translate.instant('registrationsuccessful');
       this.msgPasswordWeak = this.translate.instant('passwordweakerror');
       this.msgRegistrationFailed = this.translate.instant('registrationfailed');
@@ -86,10 +85,10 @@ export class RegisterComponent implements OnInit {
       this.loading = false;
     } else {
       this.authentication.register(email, password).subscribe(result => {
-        if (result === true) { 
+        if (result === true) {
           this.onRegistration(this.msgSuccess);
-        } 
-      }, (err: HttpErrorResponse) => {        
+        }
+      }, (err: HttpErrorResponse) => {
         this.errorMessage = `${StringifyHttpError(err)}`;
       });
       this.loading = false;

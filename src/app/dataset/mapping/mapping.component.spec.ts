@@ -11,8 +11,8 @@ import { MappingComponent } from './mapping.component';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
-import { XmlPipe }   from '../../_helpers';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
+import { XmlPipe } from '../../_helpers';
 
 describe('MappingComponent', () => {
   let component: MappingComponent;
@@ -23,7 +23,7 @@ describe('MappingComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, CodemirrorModule, FormsModule ],
       declarations: [ MappingComponent, TranslatePipe, XmlPipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
+      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: TranslateService,
           useValue: {
@@ -64,7 +64,7 @@ describe('MappingComponent', () => {
   it('should display xslt', () => {
     component.loadXSLT('default');
     component.fullView = true;
-    fixture.detectChanges();    
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
   });
 
@@ -73,14 +73,14 @@ describe('MappingComponent', () => {
     component.loadXSLT('default');
     fixture.detectChanges();
     component.saveXSLT();
-    fixture.detectChanges();    
+    fixture.detectChanges();
     expect(component.xsltType).toBe('custom');
   });
 
   it('should not display messages', () => {
     component.successMessage = 'test';
     component.closeMessages();
-    fixture.detectChanges(); 
+    fixture.detectChanges();
     expect(component.successMessage).toBe(undefined);
   });
 
@@ -88,15 +88,15 @@ describe('MappingComponent', () => {
     fixture.detectChanges();
     component.fullView = false;
     component.loadXSLT('default');
-    fixture.detectChanges();      
+    fixture.detectChanges();
     expect(component.xslt.length).not.toBe(1);
   });
 
   it('should expand xslt card', () => {
     component.fullView = false;
     component.loadXSLT('default');
-    fixture.detectChanges();    
-    component.expandSample(1);    
+    fixture.detectChanges();
+    component.expandSample(1);
     expect(component.expandedSample).toBe(1);
   });
 
@@ -110,10 +110,10 @@ describe('MappingComponent', () => {
 
   it('should try out the xslt', fakeAsync((): void => {
     component.fullView = false;
-    
+
     spyOn(router, 'navigate').and.callFake(() => { });
     tick();
-    
+
     component.tryOutXSLT('default');
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
 

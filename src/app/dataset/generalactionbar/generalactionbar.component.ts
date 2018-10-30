@@ -22,10 +22,10 @@ export class GeneralactionbarComponent implements OnInit {
   @Input('lastExecutionData') lastExecutionData;
   @Input('workflowData') workflowData;
   activeSet: string;
-  addWorkflow: boolean = false;
+  addWorkflow = false;
   statusCheck: number;
-  displayWorkflowButton: boolean = false;
-  workflowInfoAvailable: boolean = false;
+  displayWorkflowButton = false;
+  workflowInfoAvailable = false;
   currentWorkflowStatus: string;
   currentPlugin: number;
   totalPlugins: number;
@@ -38,14 +38,14 @@ export class GeneralactionbarComponent implements OnInit {
   /* set active dataset
   /* poll to check the status of this dataset + workflow history
   */
-  ngOnInit() {   
-    if (!this.datasetData) { return false }
+  ngOnInit() {
+    if (!this.datasetData) { return false; }
     this.activeSet = this.datasetData.datasetId;
     this.checkStatus();
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    } 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
+    }
   }
 
   /** checkStatus
@@ -54,7 +54,7 @@ export class GeneralactionbarComponent implements OnInit {
   */
   checkStatus() {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
+    const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.statusCheck = t;
       this.returnWorkflowInfo();
@@ -65,8 +65,8 @@ export class GeneralactionbarComponent implements OnInit {
   /*  check if workflow info is already available
   */
   returnWorkflowInfo () {
-    if (!this.datasetData || !this.authentication.validatedUser()) { return false }    
-    let workflowinfo = this.workflowData;   
+    if (!this.datasetData || !this.authentication.validatedUser()) { return false; }
+    const workflowinfo = this.workflowData;
     if (workflowinfo) {
       this.workflowInfoAvailable = true;
       this.returnLastExecution();
@@ -75,21 +75,20 @@ export class GeneralactionbarComponent implements OnInit {
     }
 
     if (this.statusCheck > 1) { this.displayWorkflowButton = true; }
-    
   }
 
   /** returnLastExecution
   /*  get the last action for this dataset and display its status in the progress/actionbar
   */
   returnLastExecution () {
-    if (!this.datasetData) { return false }
-    let workflow = this.lastExecutionData;
+    if (!this.datasetData) { return false; }
+    const workflow = this.lastExecutionData;
     if (workflow) {
       this.currentWorkflowStatus = workflow['workflowStatus'];
       this.currentPlugin = this.workflows.getCurrentPlugin(workflow);
       this.totalPlugins = workflow.metisPlugins.length;
       this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
-    } 
+    }
   }
 
   /** selectWorkflow

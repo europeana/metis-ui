@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   loginForm: FormGroup;
   msgBadCredentials: string;
-  checkLogin: boolean = true;
+  checkLogin = true;
 
   constructor(
     private router: Router,
@@ -34,22 +34,22 @@ export class LoginComponent implements OnInit {
   /* set translation language
   */
   ngOnInit() {
-    // already logged in, then redirect 
+    // already logged in, then redirect
     if (this.authentication.validatedUser() && this.checkLogin) {
       this.checkLogin = true;
       this.redirectAfterLogin();
     }
 
     // else make sure the user is logged out properly and show the form
-    this.authentication.logout(); 
+    this.authentication.logout();
 
     this.loginForm = this.fb.group({
       'email': ['', [Validators.required, Validators.email] ],
       'password': ['', Validators.required ]
     });
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
       this.msgBadCredentials = this.translate.instant('msgbadcredentials');
     }
   }
@@ -58,11 +58,10 @@ export class LoginComponent implements OnInit {
   /* submit login form
   */
   onSubmit() {
-    
-    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; } 
+    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; }
 
     this.loading = true;
-    this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {      
+    this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
       if (result === true) {
         this.redirectAfterLogin();
       } else {
@@ -70,7 +69,7 @@ export class LoginComponent implements OnInit {
       }
       this.loading = false;
     }, (err: HttpErrorResponse) => {
-      this.errorMessage = err.status === 406 ? this.msgBadCredentials : `Signin failed: ${StringifyHttpError(err)}`;   
+      this.errorMessage = err.status === 406 ? this.msgBadCredentials : `Signin failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
   }
@@ -80,7 +79,7 @@ export class LoginComponent implements OnInit {
   */
   redirectAfterLogin () {
     const url = this.redirectPreviousUrl.get();
-    
+
     if (url && url !== '/signin') {
       this.router.navigateByUrl(`/${url}`);
       this.redirectPreviousUrl.set(undefined);

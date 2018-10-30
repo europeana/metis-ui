@@ -24,10 +24,10 @@ import * as beautify from 'vkbeautify';
 })
 export class MappingComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService, 
+  constructor(private workflows: WorkflowService,
     private errors: ErrorService,
     private datasets: DatasetsService,
-    private translate: TranslateService, 
+    private translate: TranslateService,
     private router: Router) { }
 
   @Input() datasetData: any;
@@ -35,20 +35,20 @@ export class MappingComponent implements OnInit {
   statistics;
   statisticsMap = new Map();
   fullXSLT;
-  xsltType: string = 'default';
+  xsltType = 'default';
   xslt: Array<any> = [];
   xsltToSave: Array<any> = [];
   xsltHeading: string;
   errorMessage: string;
   successMessage: string;
-  fullView: boolean = true; 
+  fullView = true;
   splitter: string = environment.xsltSplitter;
   expandedSample: number;
   expandedStatistics: boolean;
   msgXSLTSuccess: string;
 
   ngOnInit() {
-  	 this.editorConfigEdit = { 
+    this.editorConfigEdit = {
       mode: 'application/xml',
       lineNumbers: true,
       indentUnit: 2,
@@ -60,8 +60,8 @@ export class MappingComponent implements OnInit {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
       this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     }
 
@@ -73,12 +73,12 @@ export class MappingComponent implements OnInit {
   /* load the data on statistics and display this in a card (=readonly editor)
   /* mocked data for now
   */
-  loadStatistics() {  
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {      
+  loadStatistics() {
+    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       let taskId: string;
       if (result['results'].length > 0) {
         // find validation in the latest run, and if available, find taskid
-        for (var i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
+        for (let i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
           if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
             taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
           }
@@ -87,16 +87,16 @@ export class MappingComponent implements OnInit {
 
       if (!taskId) { return false; }
       this.successMessage = 'Loading statistics';
-      this.workflows.getStatistics('validation', taskId).subscribe(result => {
-        this.statistics = result['nodeStatistics'];
+      this.workflows.getStatistics('validation', taskId).subscribe(resultStatistics => {
+        this.statistics = resultStatistics['nodeStatistics'];
         this.successMessage = undefined;
       }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err); 
-        this.errorMessage = `${StringifyHttpError(error)}`;   
-      });      
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+      });
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err); 
-    });   
+      this.errors.handleError(err);
+    });
   }
 
   /** loadEditor
@@ -122,8 +122,8 @@ export class MappingComponent implements OnInit {
     this.datasets.getXSLT(this.xsltType, this.datasetData.datasetId).subscribe(result => {
       this.fullXSLT = result;
       this.displayXSLT();
-    }, (err: HttpErrorResponse) => {      
-      this.errors.handleError(err); 
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);
       if (this.xsltType === 'custom') {
         this.xslt[0] = undefined;
         this.xsltHeading = 'No custom XSLT yet';
@@ -133,20 +133,20 @@ export class MappingComponent implements OnInit {
 
   /** displayXSLT
   /* display xslt, either as one file or in individual cards
-  /* expand the sample when in full view, else start with all cards "closed" 
+  /* expand the sample when in full view, else start with all cards "closed"
   /* empty xsltToSave to avoid misalignments
   */
   displayXSLT() {
     this.xslt = [];
     this.xsltToSave = [];
     this.xsltHeading = this.xsltType;
-    
+
     if (this.fullView) {
       this.xslt.push(this.fullXSLT);
-      this.expandedSample = 0;       
+      this.expandedSample = 0;
     } else {
       this.xslt = this.splitXSLT();
-      this.expandedSample = undefined;      
+      this.expandedSample = undefined;
     }
   }
 
@@ -165,7 +165,7 @@ export class MappingComponent implements OnInit {
   tryOutXSLT(type) {
     this.datasets.setTempXSLT(type);
     if (type === 'default') { // no need to save, but move to preview directly
-      this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
+      this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
     } else {
       this.saveXSLT(true);
     }
@@ -175,7 +175,7 @@ export class MappingComponent implements OnInit {
   /* get the full xslt
   */
   getFullXSLT() {
-    let xsltValue = '';  
+    let xsltValue = '';
 
     if (this.fullView) {
       xsltValue = this.xsltToSave[0] ? this.xsltToSave[0] : this.xslt[0];
@@ -186,7 +186,7 @@ export class MappingComponent implements OnInit {
         } else {
           xsltValue += (i === 0 ? '' : this.splitter) + this.xslt[i];
         }
-      }        
+      }
     }
     return xsltValue;
   }
@@ -198,17 +198,17 @@ export class MappingComponent implements OnInit {
   /* @param {boolean} tryout - "tryout" xslt in preview tab or just save it, optional
   */
   saveXSLT(tryout?) {
-    let xsltValue = this.getFullXSLT();  
-    let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
+    const xsltValue = this.getFullXSLT();
+    const datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };
     this.datasets.updateDataset(datasetValues).subscribe(result => {
       this.loadXSLT('custom');
       this.successMessage = this.msgXSLTSuccess;
       if (tryout === true) {
-        this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
+        this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
       }
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -233,12 +233,12 @@ export class MappingComponent implements OnInit {
   /* @param {any} el - scroll to defined element
   */
   scroll(el) {
-    el.scrollIntoView({behavior:'smooth'});
+    el.scrollIntoView({behavior: 'smooth'});
   }
 
   /** closeMessages
   /*  close messagebox
-  */  
+  */
   closeMessages() {
     this.errorMessage = undefined;
     this.successMessage = undefined;

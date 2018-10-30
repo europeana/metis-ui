@@ -1,9 +1,6 @@
-
-import {timer as observableTimer} from 'rxjs';
+import {timer as observableTimer,  Observable } from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
-import { Observable } from 'rxjs';
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, AuthenticationService, ErrorService, TranslateService, DatasetsService } from '../../_services';
@@ -21,7 +18,7 @@ export class ActionbarComponent {
       public datasets: DatasetsService,
       private http: HttpClient,
       private authentication: AuthenticationService,
-      private errors: ErrorService, 
+      private errors: ErrorService,
       private translate: TranslateService) { }
 
   @Input('isShowingLog') isShowingLog: boolean;
@@ -29,48 +26,48 @@ export class ActionbarComponent {
   @Input('lastExecutionData') lastExecutionData;
   @Input('workflowData') workflowData;
   errorMessage;
-  workflowPercentage: number = 0;
+  workflowPercentage = 0;
   subscription;
   intervalTimer = environment.intervalStatusShort;
   now;
-  totalInDataset: number;
-  totalProcessed: number = 0;
-  totalErrors: number = 0;
+  totalInDataset;
+  totalProcessed = 0;
+  totalErrors = 0;
   cancelling: string;
   currentStatus: any;
   currentWorkflow;
   currentPluginName;
   currentExternalTaskId;
   currentTopology;
-  currentPlugin = 0; // pick the first one for now
+  currentPlugin = 0;
   logMessages;
-  isShowingWorkflowSelector: boolean = false;
-  workflowInfoAvailable: boolean = false;
-  logIsOpen: boolean = false;
-  contentCopied: boolean = false;
-  workflowIsDone: boolean = false;
+  isShowingWorkflowSelector = false;
+  workflowInfoAvailable = false;
+  logIsOpen = false;
+  contentCopied = false;
+  workflowIsDone = false;
   report;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
   /** ngOnInit
-  /* init for this component: 
+  /* init for this component:
   /* get most recently started execution
   /* act when workflow changed
   /* set language to use for translations
   */
   ngOnInit() {
     this.returnWorkflowInfo();
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
       this.cancelling = this.translate.instant('cancelling');
-    }    
+    }
   }
 
   /** ngOnChanges
   /*  look for changes, and more specific the lastExecutionData
   */
-  ngOnChanges() { 
+  ngOnChanges() {
     if (this.workflowData && !this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
 
     if (!this.lastExecutionData) { return false; }
@@ -78,9 +75,9 @@ export class ActionbarComponent {
       this.currentWorkflow = this.lastExecutionData;
       this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
 
-      let thisPlugin = this.currentWorkflow['metisPlugins'][this.currentPlugin];
+      const thisPlugin = this.currentWorkflow['metisPlugins'][this.currentPlugin];
       this.setCurrentPluginInfo(thisPlugin);
-      this.startPollingWorkflow();      
+      this.startPollingWorkflow();
     }
   }
 
@@ -88,7 +85,7 @@ export class ActionbarComponent {
   /*  check if workflow info is already available
   */
   returnWorkflowInfo () {
-    let workflowinfo = this.workflowData;
+    const workflowinfo = this.workflowData;
     if (workflowinfo) {
       this.workflowInfoAvailable = true;
     }
@@ -99,7 +96,7 @@ export class ActionbarComponent {
   */
   startPollingWorkflow() {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
+    const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       if (!this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
       this.pollingWorkflow();
@@ -110,19 +107,18 @@ export class ActionbarComponent {
   /*  check the current status of a workflow
   */
   pollingWorkflow() {
-    if (!this.datasetData || !this.authentication.validatedUser()) { return false }
-    
-    let execution = this.lastExecutionData;  
+    if (!this.datasetData || !this.authentication.validatedUser()) { return false; }
+
+    const execution = this.lastExecutionData;
     this.currentWorkflow = this.lastExecutionData;
     if (execution === 0 || !execution) {
       this.currentPlugin = 0;
       this.subscription.unsubscribe();
       this.workflows.setActiveWorkflow();
     } else {
-      
-      let e = execution;        
-      
-      if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {  
+
+      const e = execution;
+      if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {
 
         this.currentPlugin = 0;
         this.now = e['finishedDate'];
@@ -134,27 +130,31 @@ export class ActionbarComponent {
 
         this.currentStatus = e['workflowStatus'];
         if (!this.workflowIsDone) {
-          this.workflows.workflowDone(true); 
+          this.workflows.workflowDone(true);
           this.workflowIsDone = true;
         }
 
       } else {
 
         if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
-        
+
         if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
           this.workflows.updateHistory(e);
-          let t = this.workflows.getCurrentPlugin(e);
+          const t = this.workflows.getCurrentPlugin(e);
           if (this.isShowingLog) {
-            this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType, e['metisPlugins'][t]['executionProgress'].processedRecords, e['metisPlugins'][t].pluginStatus);
+            this.showLog(e['metisPlugins'][t].externalTaskId,
+              e['metisPlugins'][t].topologyName,
+              e['metisPlugins'][t].pluginType,
+              e['metisPlugins'][t]['executionProgress'].processedRecords,
+              e['metisPlugins'][t].pluginStatus);
           }
         }
 
         this.workflowPercentage = 0;
         this.currentPlugin = this.workflows.getCurrentPlugin(e);
-        
-        let thisPlugin = e['metisPlugins'][this.currentPlugin];
-        this.setCurrentPluginInfo(thisPlugin, e['cancelling']); 
+
+        const thisPlugin = e['metisPlugins'][this.currentPlugin];
+        this.setCurrentPluginInfo(thisPlugin, e['cancelling']);
         this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
 
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
@@ -162,19 +162,18 @@ export class ActionbarComponent {
         }
 
         this.now = e['updatedDate'] === null ? thisPlugin['startedDate'] : thisPlugin['updatedDate'];
-        
-        this.workflows.workflowDone(false); 
+
+        this.workflows.workflowDone(false);
         this.workflowIsDone = false;
-        
       }
-    } 
+    }
   }
 
   /** cancelWorkflow
   /*  cancel a running execution
   /* using id of current workflow
   */
-  cancelWorkflow () {   
+  cancelWorkflow () {
     this.workflows.promptCancelThisWorkflow(this.currentWorkflow.id);
   }
 
@@ -182,7 +181,7 @@ export class ActionbarComponent {
   /*  show the log for the current/last execution
   */
   showLog(taskid, topology, plugin, processed, status) {
-    let message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
+    const message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
     this.notifyShowLogStatus.emit(message);
   }
 
@@ -223,12 +222,12 @@ export class ActionbarComponent {
       this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
+      const error = this.errors.handleError(err);
       if (error === 'retry') {
         this.openReport(taskid, topology);
       } else {
-        this.errorMessage = `${StringifyHttpError(error)}`;  
-      } 
+        this.errorMessage = `${StringifyHttpError(error)}`;
+      }
     });
   }
 

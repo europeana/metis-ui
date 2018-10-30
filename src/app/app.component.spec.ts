@@ -8,13 +8,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService } from './_services';
 import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, currentUser } from './_mocked';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from './_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
 
 // Can't bind to 'loggedIn' since it isn't a known property of 'app-header'.
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
-  
   let fixture;
   let app;
 
@@ -23,8 +22,8 @@ describe('AppComponent', () => {
       imports: [ RouterTestingModule, HttpClientTestingModule ],
       declarations: [ AppComponent, TranslatePipe ],
       schemas: [ NO_ERRORS_SCHEMA ],
-      providers: [ 
-        { provide: WorkflowService, useClass: MockWorkflowService }, 
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
@@ -46,22 +45,21 @@ describe('AppComponent', () => {
   });
 
 
-  it('should create', () => {    
-    fixture.detectChanges(); 
+  it('should create', () => {
+    fixture.detectChanges();
     expect(app).toBeTruthy();
   });
 
-  it('open a prompt', () => {  
-    app.showWrapper = true;  
-    app.closePrompt();  
-    fixture.detectChanges();     
+  it('open a prompt', () => {
+    app.showWrapper = true;
+    app.closePrompt();
+    fixture.detectChanges();
     expect(app.showWrapper).toBe(false);
   });
 
-  it('cancel a workflow', () => {  
-    app.cancelWorkflow();  
-    fixture.detectChanges();  
-    expect(app.showWrapper).toBe(false); 
+  it('cancel a workflow', () => {
+    app.cancelWorkflow();
+    fixture.detectChanges();
+    expect(app.showWrapper).toBe(false);
   });
-
 });

@@ -11,15 +11,15 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../../_helpers';
 })
 export class ExecutiontableComponent implements OnInit {
 
-	@Input() execution: any;
+  @Input() execution: any;
   @Input() plugin: any;
 
-  contentCopied: boolean = false;
+  contentCopied = false;
   msgCancelling: string;
   errorMessage: string;
   successMessage: string;
 
-  constructor(private workflows: WorkflowService, 
+  constructor(private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService) { }
 
@@ -28,10 +28,10 @@ export class ExecutiontableComponent implements OnInit {
   /* set translation language,
   */
   ngOnInit() {
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
       this.msgCancelling = this.translate.instant('cancelling');
-    } 
+    }
   }
 
   /** cancelWorkflow
@@ -40,7 +40,7 @@ export class ExecutiontableComponent implements OnInit {
   */
   cancelWorkflow(id) {
     if (!id) { return false; }
-    this.workflows.promptCancelThisWorkflow(id);  
+    this.workflows.promptCancelThisWorkflow(id);
   }
 
   /*** copyInformation
@@ -52,6 +52,5 @@ export class ExecutiontableComponent implements OnInit {
   copyInformation (type, id1, id2) {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
-  }  
-
+  }
 }

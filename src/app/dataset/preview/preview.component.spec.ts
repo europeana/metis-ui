@@ -9,23 +9,23 @@ import { WorkflowService, TranslateService, ErrorService, AuthenticationService,
 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
-import { XmlPipe }   from '../../_helpers';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
+import { XmlPipe } from '../../_helpers';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
-  let tempWorkflowService;
+  const tempWorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule ],
       declarations: [ PreviewComponent, TranslatePipe, XmlPipe, RenameWorkflowPipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
+      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
         {provide: DatasetsService, useClass: MockDatasetService},
-        ErrorService, 
-        { provide: AuthenticationService, useClass: MockAuthenticationService }, 
-        RedirectPreviousUrl, 
+        ErrorService,
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        RedirectPreviousUrl,
         { provide: TranslateService,
           useValue: {
             translate: () => {
@@ -47,15 +47,15 @@ describe('PreviewComponent', () => {
   });
 
   it('should prefill filters', (): void => {
-    component.datasetData = currentDataset; 
+    component.datasetData = currentDataset;
     component.prefill = {date: currentWorkflow['results'][0], plugin: 'MOCKED'};
     component.prefillFilters();
-    fixture.detectChanges();   
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
   });
 
-  it('should expand sample', (): void => {  
-    component.datasetData = currentDataset; 
+  it('should expand sample', (): void => {
+    component.datasetData = currentDataset;
     component.prefill = {date: currentWorkflow['results'][0], plugin: 'MOCKED'};
     component.prefillFilters();
     component.expandSample(0);
@@ -64,21 +64,21 @@ describe('PreviewComponent', () => {
   });
 
   it('should toggle filters', () => {
-    component.datasetData = currentDataset; 
+    component.datasetData = currentDataset;
     component.toggleFilterDate();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length).toBeTruthy();
 
     component.allPlugins = ['mocked'];
     component.toggleFilterPlugin();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length).toBeTruthy();
   });
 
   it('should get transformed samples', () => {
-    component.datasetData = currentDataset; 
+    component.datasetData = currentDataset;
     component.transformSamples('default');
-    fixture.detectChanges();  
+    fixture.detectChanges();
   });
 
 });

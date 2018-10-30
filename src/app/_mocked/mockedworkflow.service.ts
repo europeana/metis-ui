@@ -25,12 +25,12 @@ export const currentWorkflowDataset = {
   {
     enabled: true,
     pluginType: 'LINK_CHECKING',
-    connectionLimitToDomains: { 'mocked': 1 }   
+    connectionLimitToDomains: { 'mocked': 1 }
   }]
-}
+};
 
-export const currentWorkflow = { 
-  results: [{ 
+export const currentWorkflow = {
+  results: [{
     workflowStatus: 'INQUEUE',
     updatedDate: '',
     startedDate: '',
@@ -90,7 +90,7 @@ export const currentWorkflow = {
       }
     }]
   },
-  { 
+  {
     workflowStatus: 'FINISHED',
     updatedDate: '',
     startedDate: '',
@@ -104,17 +104,17 @@ export const currentWorkflow = {
         expectedRecords: '1000'
       }
     }]
-  }],  
+  }],
   nextPage: -1
 };
 
-export const XMLSamples = [{ 
+export const XMLSamples = [{
  'ecloudId': 1,
  'xmlRecord': '<?xml version="1.0" encoding="UTF-8"?>'
 }];
 
-export const statistics = { nodeStatistics: 
-  [{attributesStatistics: 
+export const statistics = { nodeStatistics:
+  [{attributesStatistics:
       [{name: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
         occurrence: 2,
         value: 'ca'
@@ -126,10 +126,10 @@ export const statistics = { nodeStatistics:
   }]
 };
 
-export const currentReport = { id: 123, 
-  errors: [{errorType: 'errorType', 
-    message: 'errorMessage', 
-    occurrences: 9, 
+export const currentReport = { id: 123,
+  errors: [{errorType: 'errorType',
+    message: 'errorMessage',
+    occurrences: 9,
     identifiers: []
   }]
 };
@@ -140,11 +140,10 @@ export const harvestData = {
   'lastPublishedRecords': 842,
   'lastHarvestedDate': '2018-03-30T13:53:04.762Z',
   'lastHarvestedRecords': 842
-}
-
+};
 
 export class MockWorkflowService extends WorkflowService {
-  
+
   triggerNewWorkflow() {
     return observableOf(currentWorkflow['results'][0]);
   }
@@ -168,7 +167,7 @@ export class MockWorkflowService extends WorkflowService {
   setActiveWorkflow(workflow?): void {
     this.changeWorkflow.emit(currentWorkflow['results'][0]);
   }
-  
+
   getAllExecutionsPerOrganisation() {
     return observableOf(currentWorkflow);
   }

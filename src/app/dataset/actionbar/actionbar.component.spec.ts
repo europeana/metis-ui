@@ -2,7 +2,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
 import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, currentUser } from '../../_mocked';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -15,16 +15,15 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
-  let service;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent, TranslatePipe, RenameWorkflowPipe ],
-      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, 
-        {provide: DatasetsService, useClass: MockDatasetService}, 
-        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
-        ErrorService, 
+      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService},
+        {provide: DatasetsService, useClass: MockDatasetService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService,
             useValue: {
@@ -33,22 +32,22 @@ describe('ActionbarComponent', () => {
               }
             }
         }],
-        schemas: [ NO_ERRORS_SCHEMA ]       
+        schemas: [ NO_ERRORS_SCHEMA ]
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
-    component = fixture.componentInstance;  
+    component = fixture.componentInstance;
   });
 
-  it('should create', () => {    
+  it('should create', () => {
     component.datasetData = currentDataset;
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should start polling, finished workflow', () => {    
+  it('should start polling, finished workflow', () => {
     fixture.detectChanges();
     component.datasetData = currentDataset;
     component.lastExecutionData = currentWorkflow['results'][4];
@@ -58,7 +57,7 @@ describe('ActionbarComponent', () => {
     expect(component.currentWorkflow.workflowStatus).toBe('FINISHED');
   });
 
-  it('should start polling', () => {    
+  it('should start polling', () => {
     fixture.detectChanges();
     component.datasetData = currentDataset;
     component.lastExecutionData = currentWorkflow['results'][0];
@@ -74,7 +73,7 @@ describe('ActionbarComponent', () => {
     component.currentTopology = 'mocked';
     fixture.detectChanges();
 
-    let button = fixture.debugElement.query(By.css('.log-btn'));
+    const button = fixture.debugElement.query(By.css('.log-btn'));
     if (button) {
       spyOn(component.notifyShowLogStatus, 'emit');
       button.nativeElement.click();
@@ -82,8 +81,8 @@ describe('ActionbarComponent', () => {
       fixture.detectChanges();
       tick();
 
-      expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();   
-    } 
+      expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
+    }
   }));
 
   it('should cancel', (): void => {

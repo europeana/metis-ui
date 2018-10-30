@@ -1,6 +1,6 @@
 import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService, DatasetsService } from '../../_services';
 import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -19,10 +19,10 @@ describe('ExecutionsComponent', () => {
       imports: [ RouterTestingModule, HttpClientTestingModule ],
       declarations: [ ExecutionsComponent, TranslatePipe ],
       schemas: [ NO_ERRORS_SCHEMA ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
+      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
         DatasetsService,
-        ErrorService, 
-        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
+        ErrorService,
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
         RedirectPreviousUrl,
         { provide: TranslateService,
             useValue: {

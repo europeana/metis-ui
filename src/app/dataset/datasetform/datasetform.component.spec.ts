@@ -11,25 +11,24 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
 
 describe('DatasetformComponent', () => {
-  
+
   let component: DatasetformComponent;
   let fixture: ComponentFixture<DatasetformComponent>;
   let router: Router;
- 
-  beforeEach(() => {
 
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, ReactiveFormsModule, HttpClientModule ],
       declarations: [ DatasetformComponent, TranslatePipe ],
-      providers:    [         
-        {provide: DatasetsService, useClass: MockDatasetService}, 
-        {provide: WorkflowService, useClass: MockWorkflowService}, 
-        {provide: CountriesService, useClass: MockCountriesService},         
-        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
-        ErrorService, 
+      providers: [
+        {provide: DatasetsService, useClass: MockDatasetService},
+        {provide: WorkflowService, useClass: MockWorkflowService},
+        {provide: CountriesService, useClass: MockCountriesService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService,
           useValue: {
@@ -51,7 +50,7 @@ describe('DatasetformComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have a new dataset form', () => { 
+  it('should have a new dataset form', () => {
     fixture.detectChanges();
     component.datasetData = currentDataset;
     expect(component.formMode).toBe('create');
@@ -65,7 +64,7 @@ describe('DatasetformComponent', () => {
     component.formMode = 'update';
     spyOn(router, 'navigate').and.callFake(() => { });
     tick(50);
-    
+
     component.onSubmit();
     fixture.detectChanges();
     expect(component.successMessage).not.toBe('');
@@ -85,21 +84,20 @@ describe('DatasetformComponent', () => {
     spyOn(router, 'navigate').and.callFake(() => { });
     tick(50);
 
-    component.onSubmit();    
+    component.onSubmit();
     fixture.detectChanges();
-    
-    expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
 
+    expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
   }));
 
-  it('should have a preview dataset form', () => { 
+  it('should have a preview dataset form', () => {
     component.formMode = 'read';
     component.datasetData = currentDataset;
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('#dataset-name'))[0].properties.readOnly).toBe(true);
   });
 
-  it('should have an edit dataset form', () => { 
+  it('should have an edit dataset form', () => {
     component.datasetData = currentDataset;
     component.buildForm();
     fixture.detectChanges();
@@ -110,7 +108,7 @@ describe('DatasetformComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('#dataset-name'))[0].properties.readOnly).toBe(false);
   });
 
-  it('should temp save the form', () => { 
+  it('should temp save the form', () => {
     component.datasetData = currentDataset;
     component.buildForm();
     component.formMode = 'create';
@@ -118,6 +116,6 @@ describe('DatasetformComponent', () => {
     fixture.detectChanges();
 
     expect(localStorage.getItem('tempDatasetData')).not.toBe('');
-    localStorage.removeItem('tempDatasetData');    
+    localStorage.removeItem('tempDatasetData');
   });
 });

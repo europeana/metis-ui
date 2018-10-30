@@ -6,27 +6,27 @@ import { BaseRequestOptions, ConnectionBackend, Http, RequestOptions } from '@an
 import { ReportComponent } from './report.component';
 
 import { WorkflowService, AuthenticationService, TranslateService, ErrorService, RedirectPreviousUrl } from '../../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
 import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
   let fixture: ComponentFixture<ReportComponent>;
-  
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule],
       declarations: [ ReportComponent, TranslatePipe ],
-      providers: [ 
-      {provide: WorkflowService, useClass: MockWorkflowService}, 
-      { provide: AuthenticationService, useClass: MockAuthenticationService }, 
+      providers: [
+      {provide: WorkflowService, useClass: MockWorkflowService},
+      { provide: AuthenticationService, useClass: MockAuthenticationService },
       { provide: TranslateService,
           useValue: {
             translate: () => {
               return {};
             }
           }
-      }, 
+      },
       ErrorService,
       RedirectPreviousUrl]
 

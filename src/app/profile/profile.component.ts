@@ -19,13 +19,13 @@ export class ProfileComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   public password;
-  confirmPasswordError: boolean = false;
+  confirmPasswordError = false;
   emailInfo: string = environment.links.updateProfileMain;
   profileForm: FormGroup;
 
   constructor(private http: HttpClient,
     private authentication: AuthenticationService,
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private translate: TranslateService,
     private errors: ErrorService) { }
 
@@ -36,8 +36,8 @@ export class ProfileComponent implements OnInit {
   */
   ngOnInit() {
     this.createForm();
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
   }
 
@@ -70,7 +70,7 @@ export class ProfileComponent implements OnInit {
         })
       });
     }
-  }  
+  }
 
   /** toggleEditMode
   /* switch between readonly and edit mode
@@ -80,7 +80,7 @@ export class ProfileComponent implements OnInit {
     this.onKeyupPassword();
 
     this.errorMessage = undefined;
-    this.confirmPasswordError = false
+    this.confirmPasswordError = false;
     this.editMode = !this.editMode;
 
     if (this.editMode) {
@@ -124,7 +124,7 @@ export class ProfileComponent implements OnInit {
       this.loading = false;
       this.toggleEditMode();
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);
       this.errorMessage = `Update password failed: ${StringifyHttpError(error)}`;
       this.loading = false;
     });
@@ -146,14 +146,14 @@ export class ProfileComponent implements OnInit {
       }
       this.loading = false;
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
+      const error = this.errors.handleError(err);
       this.errorMessage = `Refresh failed: ${StringifyHttpError(error)}`;
       this.loading = false;
     });
 
     setTimeout(() => {
       window.scrollTo(0, 0);
-    }, 500);   
+    }, 500);
   }
 
 }
