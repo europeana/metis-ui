@@ -13,7 +13,7 @@ import { WorkflowService } from './workflow.service';
 
 @Injectable()
 export class DatasetsService {
-  
+
   @Output() updateLog: EventEmitter<any> = new EventEmitter();
 
   private datasets = [];
@@ -22,11 +22,11 @@ export class DatasetsService {
   datasetNames: Array<any> = [];
   tempXSLT;
   currentTaskId;
-  
-  constructor(private http: HttpClient, 
-    private errors: ErrorService, 
+
+  constructor(private http: HttpClient,
+    private errors: ErrorService,
     private workflows: WorkflowService) { }
-  
+
   /** setDatasetMessage
   /* set message that is displayed on the dataset page
   /* @param {string} message - text to display
@@ -47,22 +47,22 @@ export class DatasetsService {
   /* @param {string} id - datasetid
   */
   getDataset(id: string) {
-    const url = `${apiSettings.apiHostCore}/datasets/${id}`; 
+    const url = `${apiSettings.apiHostCore}/datasets/${id}`;
     return this.http.get(url)
-      .pipe(map(dataset => {   
+      .pipe(map(dataset => {
         return dataset ? dataset : false;
-      })).pipe(this.errors.handleRetry());      
+      })).pipe(this.errors.handleRetry());
   }
 
   /** createDataset
   /* create a new dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
-  createDataset(datasetFormValues: Array<any>) {    
-    const url = `${apiSettings.apiHostCore}/datasets`;    
-    return this.http.post(url, datasetFormValues).pipe(map(newDataset => {  
+  createDataset(datasetFormValues: Array<any>) {
+    const url = `${apiSettings.apiHostCore}/datasets`;
+    return this.http.post(url, datasetFormValues).pipe(map(newDataset => {
       return newDataset ? newDataset : false;
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
 
   /** updateDataset
@@ -70,10 +70,10 @@ export class DatasetsService {
   /* @param {array} datasetFormValues - values from dataset form
   */
   updateDataset(datasetFormValues) {
-    const url = `${apiSettings.apiHostCore}/datasets`;    
-    return this.http.put(url, datasetFormValues).pipe(map(updateDataset => {      
+    const url = `${apiSettings.apiHostCore}/datasets`;
+    return this.http.put(url, datasetFormValues).pipe(map(updateDataset => {
       return updateDataset ? updateDataset : false;
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
 
   /** addDatasetNameAndCurrentPlugin
@@ -83,17 +83,17 @@ export class DatasetsService {
   /* @param {object} executions - the executions retrieved from a call
   */
   addDatasetNameAndCurrentPlugin(executions, currentDatasetId?) {
-    let updatedExecutions: Array<any> = [];
+    const updatedExecutions: Array<any> = [];
     for (let i = 0; i < executions.length; i++) {
-      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);      
-      
-      let thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin];
+      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
+
+      const thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin];
 
       if (executions[i].datasetId === currentDatasetId) {
         if (this.currentTaskId !== thisPlugin['externalTaskId']) {
-          let message = {
-            'externaltaskId' : thisPlugin['externalTaskId'], 
-            'topology' : thisPlugin['topologyName'], 
+          const message = {
+            'externaltaskId' : thisPlugin['externalTaskId'],
+            'topology' : thisPlugin['topologyName'],
             'plugin': thisPlugin['pluginType'],
             'processed': thisPlugin['executionProgress'].processedRecords,
             'status': thisPlugin['pluginStatus']
@@ -106,12 +106,12 @@ export class DatasetsService {
 
       if (this.datasetNames[executions[i].datasetId]) {
         executions[i].datasetName = this.datasetNames[executions[i].datasetId];
-      } else {    
+      } else {
         this.getDataset(executions[i].datasetId).subscribe(result => {
           this.datasetNames[executions[i].datasetId] = result['datasetName'];
           executions[i].datasetName = result['datasetName'];
-        },(err: HttpErrorResponse) => {
-          this.errors.handleError(err);   
+        }, (err: HttpErrorResponse) => {
+          this.errors.handleError(err);
         });
       }
       updatedExecutions.push(executions[i]);
@@ -139,16 +139,16 @@ export class DatasetsService {
   /* the default one
   */
   getXSLT(type, id?) {
-    let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;   
+    let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
     let options =  { responseType: 'text' as 'text' };
-    if(type === 'custom') {
-      url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;   
+    if (type === 'custom') {
+      url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;
       options = undefined;
     }
 
-    return this.http.get(url, options).pipe(map(data => {  
+    return this.http.get(url, options).pipe(map(data => {
       return data ? (type === 'default' ? data : data['xslt']) : false;
-    })).pipe(this.errors.handleRetry()); 
+    })).pipe(this.errors.handleRetry());
   }
 
   /** getTransform
@@ -158,13 +158,13 @@ export class DatasetsService {
   /* @param {object} samples - samples to transform
   */
   getTransform(id, samples, type) {
-    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;   
+    let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;
     if (type === 'default') {
       url += '/default';
     }
-    return this.http.post(url, samples, {headers:{'Content-Type': 'application/json'}}).pipe(map(data => {  
+    return this.http.post(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(map(data => {
       return data ? data : false;
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
 
   /** setTempXSLT

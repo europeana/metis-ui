@@ -19,7 +19,7 @@ export class TokenInterceptor implements HttpInterceptor {
   /* insert authorization header into all outgoing calls
   /*
   /* @param {httprequest} request - identify the http request, url
-  /* @param {httphandler} next 
+  /* @param {httphandler} next
   */
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
@@ -31,9 +31,8 @@ export class TokenInterceptor implements HttpInterceptor {
         request = request.clone({
           setHeaders: headers
         });
-      } 
-    } 
-
+      }
+    }
     return next.handle(request);
   }
 }

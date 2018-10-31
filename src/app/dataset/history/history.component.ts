@@ -69,7 +69,7 @@ export class HistoryComponent implements OnInit {
     this.workflows.workflowIsDone.subscribe(
       workflowstatus => {
         if (workflowstatus && this.workflowHasFinished === false) {
-          this.allExecutions = [];    
+          this.allExecutions = [];
           this.nextPage = 0;
           this.workflowHasFinished = true;
           if (!this.inCollapsablePanel) {
@@ -98,7 +98,7 @@ export class HistoryComponent implements OnInit {
   */
   checkStatus () {
     if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
+    const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.updateExecutionHistoryPanel(this.lastExecutionData);
     });
@@ -119,16 +119,16 @@ export class HistoryComponent implements OnInit {
       }
 
     this.historyInPanel = [];
-    let r = workflow;
+    const r = workflow;
 
     for (let w = 0; w < r['metisPlugins'].length; w++) {
-      if(['FINISHED', 'FAILED', 'CANCELLED'].indexOf(r['metisPlugins'][w].pluginStatus) > -1) {
+      if (['FINISHED', 'FAILED', 'CANCELLED'].indexOf(r['metisPlugins'][w].pluginStatus) > -1) {
         this.historyInPanel.push(this.getReport(r['metisPlugins'][w]));
       }
     }
 
     if (this.inCollapsablePanel) {
-      let history = this.historyInPanel;
+      const history = this.historyInPanel;
       history.reverse();
       this.allExecutions = history;
     }
@@ -147,7 +147,7 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
 
-      if (result['results'].length === 0) { this.nextPage = 0; return false }
+      if (result['results'].length === 0) { this.nextPage = 0; return false; }
 
       let showTotal = result['results'].length;
       if (this.inCollapsablePanel && result['results'].length >= 1 ) {
@@ -155,7 +155,7 @@ export class HistoryComponent implements OnInit {
       }
 
       for (let i = 0; i < showTotal; i++) {
-        let r = result['results'][i];
+        const r = result['results'][i];
         r['metisPlugins'].reverse();
         this.allExecutions.push(r);
         for (let w = 0; w < r['metisPlugins'].length; w++) {
@@ -172,12 +172,12 @@ export class HistoryComponent implements OnInit {
           if (startPage < totalPageNr) {
             this.loadNextPage();
           }
-        } 
+        }
       }
 
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;  
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -186,17 +186,17 @@ export class HistoryComponent implements OnInit {
   /*  add a report when available
   */
   getReport(w) {
-    let ws = w;
-    ws['hasReport'] = false;  
+    const ws = w;
+    ws['hasReport'] = false;
 
     if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED' || w.pluginStatus === 'CANCELLED') {
       if (w.externalTaskId !== null && w.topologyName !== null && w.topologyName) {
         this.workflows.getReport(w.externalTaskId, w.topologyName).subscribe(report => {
           if (report['errors'].length > 0) {
             ws['hasReport'] = true;
-          } 
+          }
         }, (err: HttpErrorResponse) => {
-          this.errors.handleError(err);        
+          this.errors.handleError(err);
         });
       }
     }
@@ -208,7 +208,7 @@ export class HistoryComponent implements OnInit {
   /*  and update the history panel with the most recent details
   */
   getLatestExecution() {
-    let workflow = this.lastExecutionData;
+    const workflow = this.lastExecutionData;
     if (!workflow) { return false; }
     const currentPlugin = this.workflows.getCurrentPlugin(workflow);
     if (!workflow['metisPlugins'][currentPlugin]) { return false; }
@@ -225,7 +225,7 @@ export class HistoryComponent implements OnInit {
   /* @param {any} el - scroll to defined element
   */
   scroll(el) {
-    el.scrollIntoView({behavior:'smooth'});
+    el.scrollIntoView({behavior: 'smooth'});
   }
 
   /** loadNextPage
@@ -241,23 +241,23 @@ export class HistoryComponent implements OnInit {
   /*  trigger a workflow, based on selection in workflow dropdown or restart button
   /* @param {string} workflowName - name of workflow to trigger
   */
-  triggerWorkflow() {  
+  triggerWorkflow() {
     this.errorMessage = undefined;
     if (!this.datasetData) { return false; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
       this.workflowHasFinished = false;
-      this.workflows.setActiveWorkflow(result); 
+      this.workflows.setActiveWorkflow(result);
       this.historyInPanel = [];
-      this.workflows.workflowDone(false); 
-      
+      this.workflows.workflowDone(false);
+
       // delay the check status a bit
       setTimeout(() => {
         this.checkStatus();
       }, 5000);
 
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -266,14 +266,14 @@ export class HistoryComponent implements OnInit {
   /* @param {number} taskid - id of task
   /* @param {string} topology - name of topology
   */
-  openReport (taskid, topology) {  
+  openReport (taskid, topology) {
     this.report = undefined;
     this.workflows.getReport(taskid, topology).subscribe(result => {
       this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 

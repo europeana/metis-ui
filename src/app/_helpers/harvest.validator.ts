@@ -5,7 +5,7 @@ export function harvestValidator(control: AbstractControl) {
     return {'validParameter': true };
   }
 
-  var regex = /(http(s?))\:\/\//g;
+  const regex = /(http(s?))\:\/\//g;
   if (!regex.test(control.value)) {
     return {'validUrl': true };
   }

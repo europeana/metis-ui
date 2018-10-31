@@ -183,15 +183,15 @@ export class DatasetComponent implements OnInit {
   */
   getCurrentTab() {
     if (this.activeTab === 'new' || this.activeTab === 'edit') {
-      return new datasetTab(DatasetformComponent, this.datasetData, this.workflowData);
+      return new DatasetTab(DatasetformComponent, this.datasetData, this.workflowData);
     } else if (this.activeTab === 'log') {
-      return new datasetTab(HistoryComponent, this.datasetData, this.workflowData);
+      return new DatasetTab(HistoryComponent, this.datasetData, this.workflowData);
     } else  if (this.activeTab === 'mapping') {
-      return new datasetTab(MappingComponent, this.datasetData, this.workflowData);
+      return new DatasetTab(MappingComponent, this.datasetData, this.workflowData);
     } else  if (this.activeTab === 'preview') {
-      return new datasetTab(PreviewComponent, this.datasetData, this.workflowData);
+      return new DatasetTab(PreviewComponent, this.datasetData, this.workflowData);
     } else  if (this.activeTab === 'workflow') {
-      return new datasetTab(WorkflowComponent, this.datasetData, this.workflowData);
+      return new DatasetTab(WorkflowComponent, this.datasetData, this.workflowData);
     }
   }
 

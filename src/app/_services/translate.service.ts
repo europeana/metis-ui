@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { TRANSLATIONS } from '../_translate/translation'; 
+import { TRANSLATIONS } from '../_translate/translation';
 
 @Injectable()
 export class TranslateService {
@@ -25,12 +25,10 @@ export class TranslateService {
   /* @param {string} key - value to translate
   */
   private translate(key: string): string {
-    let translation = key;
-
+    const translation = key;
     if (this._translations[this.currentLang] && this._translations[this.currentLang][key]) {
         return this._translations[this.currentLang][key];
     }
-
     return translation;
   }
 
@@ -39,7 +37,6 @@ export class TranslateService {
   /* @param {string} key - value to translate
   */
   public instant(key: string) {
-    return this.translate(key); 
+    return this.translate(key);
   }
-
 }

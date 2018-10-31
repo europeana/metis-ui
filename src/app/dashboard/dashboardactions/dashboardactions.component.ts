@@ -15,11 +15,11 @@ export class DashboardactionsComponent implements OnInit {
 
   /** ngOnInit
   /* init this component:
-  /* set translation language 
+  /* set translation language
   */
-  ngOnInit() {    
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+  ngOnInit() {
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
   }
 }

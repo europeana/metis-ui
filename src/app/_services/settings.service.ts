@@ -16,7 +16,6 @@ export class SettingsService {
   /* to use throughout entite application
   */
   returnApiHosts() {
-    return apiSettings;    
+    return apiSettings;
   }
-
 }

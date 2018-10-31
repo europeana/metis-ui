@@ -6,7 +6,7 @@
 */
 
 export function copyExecutionAndTaskId(type, id1, id2) {
-  let selBox = document.createElement('textarea');
+  const selBox = document.createElement('textarea');
   selBox.style.position = 'fixed';
   selBox.style.left = '0';
   selBox.style.top = '0';

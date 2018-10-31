@@ -18,7 +18,7 @@ export class AuthenticationService {
   public currentUser = null;
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private router: Router,
     private errors: ErrorService,
     private redirectPreviousUrl: RedirectPreviousUrl) {
@@ -30,7 +30,7 @@ export class AuthenticationService {
       this.token = hash.token;
     } else {
       this.currentUser = null;
-      this.token = null;  
+      this.token = null;
     }
   }
 
@@ -43,7 +43,7 @@ export class AuthenticationService {
 
   /** getToken
   /* get token from user that is already logged in
-  */  
+  */
   getToken(): string {
     const s = localStorage.getItem(this.key);
     if (!s)  {
@@ -56,12 +56,12 @@ export class AuthenticationService {
   /** updatePassword
   /* update password for this user
   /* @param {string} password - password
-  */ 
+  */
   updatePassword(password: string, oldpassword: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
     return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
       return true;
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
 
   /** register
@@ -69,13 +69,13 @@ export class AuthenticationService {
   /* use values from registration form
   /* @param {string} email - email
   /* @param {string} password - password
-  */ 
+  */
   register(email: string, password: string) {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
       return true;
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
 
   /** login
@@ -83,7 +83,7 @@ export class AuthenticationService {
   /* use values from login form
   /* @param {string} email - email
   /* @param {string} password - password
-  */ 
+  */
   login(email: string, password: string) {
     if (this.currentUser) { // check beforehand if there is already an user
       const url = this.redirectPreviousUrl.get();
@@ -93,8 +93,8 @@ export class AuthenticationService {
       } else {
         this.router.navigate([`${environment.afterLoginGoto}`]);
       }
-    } 
-    
+    }
+
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
     return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
@@ -105,7 +105,7 @@ export class AuthenticationService {
       } else {
         return false;
       }
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
 
   /** logout
@@ -113,19 +113,19 @@ export class AuthenticationService {
   /* by setting currentUser to null
   /* current token to null
   /* and empty localstorage
-  */ 
+  */
   logout(): void {
     this.currentUser = null;
-    this.token = null;  
+    this.token = null;
     localStorage.removeItem(this.key); // clear token remove user from local storage to log user out
   }
 
   /** reloadCurrentUser
   /* get latest information from user form zoho
   /* @param {string} email - email
-  */ 
+  */
   reloadCurrentUser(email: string) {
-    const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;    
+    const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;
     return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
       const user = <User>data;
       if (user) {
@@ -134,16 +134,16 @@ export class AuthenticationService {
       } else {
         return false;
       }
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
 
   /** setCurrentUser
   /* store information about current user
-  /* in currentUser variable, 
+  /* in currentUser variable,
   /* in token variable
   /* and in localstorage, to keep user logged in between page refreshes
   /* @param {object} user - user related information
-  */ 
+  */
   private setCurrentUser(user: User) {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
@@ -152,7 +152,7 @@ export class AuthenticationService {
 
   /** getCurrentUser
   /* get information from currently active user
-  */ 
+  */
   getCurrentUser() {
     return this.currentUser;
   }

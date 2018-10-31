@@ -12,7 +12,7 @@ import { ErrorService } from './error.service';
 @Injectable()
 export class CountriesService {
 
-  constructor(private http: HttpClient, 
+  constructor(private http: HttpClient,
     private errors: ErrorService,
     private authentication: AuthenticationService) {}
 
@@ -21,18 +21,16 @@ export class CountriesService {
   /* @param {boolean} type - type of values to return, either country or language
   */
   getCountriesLanguages(type) {
-    let url = `${apiSettings.apiHostCore}/datasets/countries`;        
+    let url = `${apiSettings.apiHostCore}/datasets/countries`;
     if (type === 'language') {
-      url = `${apiSettings.apiHostCore}/datasets/languages`;  
+      url = `${apiSettings.apiHostCore}/datasets/languages`;
     }
-    return this.http.get(url).pipe(map(data => {      
+    return this.http.get(url).pipe(map(data => {
       if (data) {
         return data;
       } else {
         return false;
       }
-    })).pipe(this.errors.handleRetry());  
+    })).pipe(this.errors.handleRetry());
   }
-
 }
-
