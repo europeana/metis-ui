@@ -73,9 +73,7 @@ export class GeneralactionbarComponent implements OnInit {
     } else {
       this.addWorkflow = true;
     }
-
-    if (this.statusCheck > 1) { this.displayWorkflowButton = true; }
-    
+    if (this.statusCheck > 1) { this.displayWorkflowButton = true; }    
   }
 
   /** returnLastExecution
@@ -96,6 +94,7 @@ export class GeneralactionbarComponent implements OnInit {
   /*  select the workflow, so it would be triggered
   */
   selectWorkflow() {
+    console.log('selectWorkflow generalactionbar');
     this.workflows.selectWorkflow();
     if (this.subscription) { this.subscription.unsubscribe(); }
     this.checkStatus();
