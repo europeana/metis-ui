@@ -1,8 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import {timer as observableTimer} from 'rxjs';
+import { timer as observableTimer } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ActivatedRoute } from '@angular/router';
 
 import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
@@ -16,7 +17,8 @@ export class HistoryComponent implements OnInit {
 
   constructor(public workflows: WorkflowService,
     private errors: ErrorService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private route: ActivatedRoute) { }
 
   @Input('datasetData') datasetData;
   @Input('lastExecutionData') lastExecutionData;
@@ -35,6 +37,8 @@ export class HistoryComponent implements OnInit {
   subscription;
   intervalTimer = environment.intervalStatusShort;
   checkStatusStarted: boolean = false;
+  thisDatasetId;
+  checkTrigger;
 
   /** ngOnInit
   /* init for this specific component
@@ -47,12 +51,16 @@ export class HistoryComponent implements OnInit {
   */
   ngOnInit() { 
 
+    this.route.params.subscribe(params => {
+      this.thisDatasetId = params['id']; // if no id defined, let's create a new dataset
+    });
+
     this.checkStatus();
     
     if (this.inCollapsablePanel) {
-      this.workflows.selectedWorkflow.subscribe(
+      this.checkTrigger = this.workflows.selectedWorkflow.subscribe(
         selectedworkflow => {
-          this.triggerWorkflow();
+          this.triggerWorkflow();    
           if (this.inCollapsablePanel) {
             this.allExecutions = [];
           }
@@ -93,6 +101,10 @@ export class HistoryComponent implements OnInit {
     if (typeof this.translate.use === 'function') { 
       this.translate.use('en'); 
     }
+  }
+
+  ngOnDestroy() {
+    if (this.checkTrigger) { this.checkTrigger.unsubscribe(); }
   }
 
   /** checkStatus
@@ -239,6 +251,9 @@ export class HistoryComponent implements OnInit {
   /* @param {string} workflowName - name of workflow to trigger
   */
   triggerWorkflow() {  
+
+    if (this.datasetData.datasetId !== this.thisDatasetId) { return false; }
+
     this.errorMessage = undefined;
     if (!this.datasetData) { return false; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
