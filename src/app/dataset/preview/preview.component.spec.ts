@@ -15,7 +15,6 @@ import { XmlPipe } from '../../_helpers';
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
-  const tempWorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
