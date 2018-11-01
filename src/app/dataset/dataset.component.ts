@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
 import { environment } from '../../environments/environment';
-import {timer as observableTimer, Observable} from 'rxjs';
+import { timer as observableTimer, Observable } from 'rxjs';
 
 import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService, ErrorService, TranslateService } from '../_services';
 

@@ -73,7 +73,7 @@ export class GeneralactionbarComponent implements OnInit {
     } else {
       this.addWorkflow = true;
     }
-
+    
     if (this.statusCheck > 1) { this.displayWorkflowButton = true; }
   }
 
