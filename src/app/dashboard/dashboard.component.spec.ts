@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardComponent } from './dashboard.component';
 import { AuthenticationService, DatasetsService, TranslateService, WorkflowService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
 
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -17,11 +17,11 @@ describe('DashboardComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule ],
-      declarations: [ DashboardComponent, TranslatePipe ], 
-      providers: [ { provide: AuthenticationService, useClass: MockAuthenticationService}, 
-        {provide: WorkflowService, useClass: MockWorkflowService}, 
-        DatasetsService, 
-        ErrorService, 
+      declarations: [ DashboardComponent, TranslatePipe ],
+      providers: [ { provide: AuthenticationService, useClass: MockAuthenticationService},
+        {provide: WorkflowService, useClass: MockWorkflowService},
+        DatasetsService,
+        ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService,
           useValue: {

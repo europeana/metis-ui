@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthUserGuard] },
   { path: 'dataset/:tab/:id', component: DatasetComponent, canActivate: [AuthUserGuard] },
   { path: 'dataset/:tab', component: DatasetComponent, canActivate: [AuthUserGuard] },
-  { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' }, 
+  { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'signin', component: LoginComponent, canActivate: [AuthVisitorGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthUserGuard] },

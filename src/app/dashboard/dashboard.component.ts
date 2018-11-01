@@ -18,20 +18,20 @@ export class DashboardComponent implements OnInit {
   user: User;
   userName: string;
   datasets;
-  runningExecutionData:Array<any> = [];
+  runningExecutionData: Array<any> = [];
   ongoingExecutionDataOutput;
-  executionData:Array<any> = [];
+  executionData: Array<any> = [];
   executionDataOutput;
   ts;
   tsO;
-  intervalTimer: number = environment.intervalStatusShort;
-  currentPageHistory: number = 0;
-  stopChecking: boolean = true;
+  intervalTimer = environment.intervalStatusShort;
+  currentPageHistory = 0;
+  stopChecking = true;
 
   public isShowingLog = false;
 
   constructor(private authentication: AuthenticationService,
-              private translate: TranslateService, 
+              private translate: TranslateService,
               private workflows: WorkflowService,
               private errors: ErrorService) {
   }
@@ -39,15 +39,15 @@ export class DashboardComponent implements OnInit {
   /** ngOnInit
   /* init of this component
   /* start checking the status of ongoing executions
-  /* set translation language 
+  /* set translation language
   */
   ngOnInit() {
     this.stopChecking = false;
     this.getOngoingExecutions();
     this.getExecutions();
-    
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
   }
 
@@ -58,18 +58,18 @@ export class DashboardComponent implements OnInit {
   }
 
   /** onNotifyShowLogStatus
-  /*  opens/closes the log messages 
+  /*  opens/closes the log messages
   /* @param {any} message - message to display in log modal
   */
-  onNotifyShowLogStatus(message):void {
+  onNotifyShowLogStatus(message): void {
     this.isShowingLog = message;
   }
 
   /** onNotifyShowLogStatus
-  /*  opens/closes the log messages 
+  /*  opens/closes the log messages
   /* @param {any} message - message to display in log modal
   */
-  getNextPage(page):void {
+  getNextPage(page): void {
     this.currentPageHistory = page;
   }
 
@@ -110,7 +110,7 @@ export class DashboardComponent implements OnInit {
     }, (err: HttpErrorResponse) => {
       clearTimeout(this.ts);
       clearTimeout(this.tsO);
-      this.errors.handleError(err);  
+      this.errors.handleError(err);
     });
   }
 
@@ -118,7 +118,7 @@ export class DashboardComponent implements OnInit {
   /*  get history of all executions (finished, cancelled, failed) and start polling again
   */
   getExecutions(page?) {
-    page = (page ? page : 0);    
+    page = (page ? page : 0);
     this.workflows.getAllExecutionsPerOrganisation(page, false).subscribe(executions => {
       this.executionData = this.executionData.concat(executions['results']);
       if (this.currentPageHistory > 0 && page < this.currentPageHistory) {
@@ -130,8 +130,8 @@ export class DashboardComponent implements OnInit {
       }
     }, (err: HttpErrorResponse) => {
       clearTimeout(this.ts);
-      clearTimeout(this.tsO);   
-      this.errors.handleError(err);  
+      clearTimeout(this.tsO);
+      this.errors.handleError(err);
     });
   }
 

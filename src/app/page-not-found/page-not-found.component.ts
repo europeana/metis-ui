@@ -8,9 +8,8 @@ import { Router } from '@angular/router';
 
 export class PageNotFoundComponent {
   public badurl: string;
-  
+
   constructor(router: Router) {
     this.badurl = router.url;
   }
-  
 }

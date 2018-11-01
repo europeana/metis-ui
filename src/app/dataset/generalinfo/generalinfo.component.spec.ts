@@ -6,7 +6,7 @@ import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDatase
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
 
 describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
@@ -16,11 +16,11 @@ describe('GeneralinfoComponent', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientModule, RouterTestingModule],
       declarations: [ GeneralinfoComponent, TranslatePipe ],
-      providers: [ 
-        {provide: DatasetsService, useClass: MockDatasetService}, 
-        {provide: WorkflowService, useClass: MockWorkflowService}, 
+      providers: [
+        {provide: DatasetsService, useClass: MockDatasetService},
+        {provide: WorkflowService, useClass: MockWorkflowService},
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
+        { provide: AuthenticationService, useClass: MockAuthenticationService},
         RedirectPreviousUrl,
         { provide: TranslateService,
             useValue: {
@@ -49,5 +49,4 @@ describe('GeneralinfoComponent', () => {
     fixture.detectChanges();
     expect(component.harvestPublicationData).not.toBe(undefined);
   });
-
 });

@@ -5,17 +5,15 @@ import { AuthenticationService } from '../_services';
 @Injectable()
 export class AuthVisitorGuard implements CanActivate {
 
-  constructor( private router: Router, 
+  constructor( private router: Router,
     private authentication: AuthenticationService ) {}
 
   canActivate() {
-  	
-  	if (this.authentication.validatedUser() === false) {
-  		return true;
-  	} else {
+    if (this.authentication.validatedUser() === false) {
+      return true;
+    } else {
       // user is loggedin: useless to visit eg signin and registrationpage again, so redirect to profile
       this.router.navigate(['/profile']);
     }
-
-  }    
+  }
 }

@@ -9,7 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { RedirectPreviousUrl, TranslateService, AuthenticationService, ErrorService } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
 
 import { MockAuthenticationService, currentUser } from '../_mocked';
 
@@ -53,7 +53,7 @@ describe('LoginComponent', () => {
 
     component.loginForm.controls.email.setValue('mocked@mocked.com');
     component.loginForm.controls.password.setValue('mocked123');
-    
+
     spyOn(router, 'navigate').and.callFake(() => { });
     tick(50);
 

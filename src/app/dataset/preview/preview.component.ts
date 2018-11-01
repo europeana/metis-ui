@@ -26,7 +26,7 @@ import * as beautify from 'vkbeautify';
 
 export class PreviewComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService, 
+  constructor(private workflows: WorkflowService,
     private http: HttpClient,
     private translate: TranslateService,
     private errors: ErrorService,
@@ -40,8 +40,8 @@ export class PreviewComponent implements OnInit {
   allPlugins: Array<any> = [];
   allSamples: Array<any> = [];
   allTransformedSamples;
-  filterDate: boolean = false;
-  filterPlugin: boolean = false;
+  filterDate = false;
+  filterPlugin = false;
   selectedDate: string;
   selectedPlugin: string;
   displayFilterWorkflow;
@@ -50,13 +50,13 @@ export class PreviewComponent implements OnInit {
   expandedSample;
   nosample: string;
   errorMessage: string;
-  nextPage: number = 0;
-  nextPageDate: number = 0;
+  nextPage = 0;
+  nextPageDate = 0;
   datasetHistory;
   execution: number;
   tempFilterSelection: Array<any> = [];
   prefill;
-  loadingSamples: boolean = false;
+  loadingSamples = false;
   tempXSLT;
 
   /** ngOnInit
@@ -66,9 +66,9 @@ export class PreviewComponent implements OnInit {
   /* set translation for nosmaple key
   /* add a workflow filter if dataset is know
   /* get prefilled values and prefill filters if available
-  */  
+  */
   ngOnInit() {
-  	this.editorConfig = { 
+    this.editorConfig = {
       mode: 'application/xml',
       lineNumbers: true,
       indentUnit: 2,
@@ -80,11 +80,11 @@ export class PreviewComponent implements OnInit {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
       this.nosample = this.translate.instant('nosample');
     }
-    
+
     if (this.datasetData) {
       this.addDateFilter();
     }
@@ -96,8 +96,7 @@ export class PreviewComponent implements OnInit {
     if (this.tempXSLT) {
       this.transformSamples(this.tempXSLT);
     }
-
-  }  
+  }
 
   /** addDateFilter
   /* populate a filter with dates based on selected workflow
@@ -107,7 +106,7 @@ export class PreviewComponent implements OnInit {
   */
   addDateFilter() {
     this.workflows.getAllExecutionsEveryStatus(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
-      for (let i = 0; i < result['results'].length; i++) {  
+      for (let i = 0; i < result['results'].length; i++) {
         this.allWorkflowDates.push(result['results'][i]);
       }
       this.nextPageDate = result['nextPage'];
@@ -115,14 +114,14 @@ export class PreviewComponent implements OnInit {
         this.addDateFilter();
       }
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err); 
-    });     
+      this.errors.handleError(err);
+    });
   }
 
   /** addDateFilter
   /* populate a filter with plugins based on selected execution/date
   /* send complete execution object to function and not only date,
-  /* to prevent a second (duplicate) call 
+  /* to prevent a second (duplicate) call
   /* save selection, when switching tab
   /* @param {object} execution - selected execution
   */
@@ -130,10 +129,10 @@ export class PreviewComponent implements OnInit {
     this.filterDate = false;
     this.allPlugins = [];
     this.execution = execution;
-    this.selectedDate = execution['startedDate'];    
+    this.selectedDate = execution['startedDate'];
     this.nextPageDate = 0;
     this.saveTempFilterSelection('date', execution);
-    for (let i = 0; i < execution['metisPlugins'].length; i++) {  
+    for (let i = 0; i < execution['metisPlugins'].length; i++) {
       if (execution['metisPlugins'][i]['pluginStatus'] === 'FINISHED') {
         this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
       } else {
@@ -154,17 +153,17 @@ export class PreviewComponent implements OnInit {
   getXMLSamples(plugin) {
     this.loadingSamples = true;
     this.onClickedOutside();
-    this.selectedPlugin = plugin; 
+    this.selectedPlugin = plugin;
     this.saveTempFilterSelection('plugin', plugin);
     this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
-      this.allSamples = this.undoNewLines(result);  
+      this.allSamples = this.undoNewLines(result);
       if (this.allSamples.length === 1) {
        this.expandedSample = 0;
       }
       this.loadingSamples = false;
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -177,19 +176,19 @@ export class PreviewComponent implements OnInit {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       if (!result['results'][0]) { return false; }
       this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
-        this.allSamples = this.undoNewLines(samples); 
+        this.allSamples = this.undoNewLines(samples);
         this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
           this.allTransformedSamples = this.undoNewLines(transformed);
         }, (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err); 
-          this.errorMessage = `${StringifyHttpError(error)}`;   
+          const error = this.errors.handleError(err);
+          this.errorMessage = `${StringifyHttpError(error)}`;
         });
       }, (err: HttpErrorResponse) => {
-        this.errors.handleError(err);         
+        this.errors.handleError(err);
       });
     }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
   }
 
@@ -208,7 +207,7 @@ export class PreviewComponent implements OnInit {
   /* prefill filters, when temporarily saved options are available
   */
   prefillFilters() {
-    if (this.prefill) {      
+    if (this.prefill) {
       if (this.prefill['date']) {
         this.selectedDate = this.prefill['date'];
         this.addPluginFilter(this.prefill['date']);
@@ -227,8 +226,8 @@ export class PreviewComponent implements OnInit {
   /* @param {number} index - index of sample to expand
   */
   expandSample(index: number) {
-    let sample = this.allSamples[index]['xmlRecord'];
-    let samples = this.undoNewLines(this.allSamples);
+    const sample = this.allSamples[index]['xmlRecord'];
+    const samples = this.undoNewLines(this.allSamples);
     this.allSamples[index]['xmlRecord'] = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
     setTimeout(function() {
@@ -237,18 +236,18 @@ export class PreviewComponent implements OnInit {
   }
 
   undoNewLines(samples) {
-    let clearSamples = samples;    
-    for (let i = 0; i < samples.length; i++) {  
+    const clearSamples = samples;
+    for (let i = 0; i < samples.length; i++) {
       clearSamples[i]['xmlRecord'] = samples[i]['xmlRecord'].replace(/[\r\n]/g, '').trim();
     }
-    return clearSamples
+    return clearSamples;
   }
 
   /** gotoMapping
   /* go to mapping tab, after transformation on the fly
   */
   gotoMapping() {
-    this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]); 
+    this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]);
   }
 
   /** toggleFilterDate
@@ -282,7 +281,7 @@ export class PreviewComponent implements OnInit {
   /* close all open filters when click outside the filters
   */
   onClickedOutside(e?) {
-    this.filterDate = false;   
-    this.filterPlugin = false;   
+    this.filterDate = false;
+    this.filterPlugin = false;
   }
 }

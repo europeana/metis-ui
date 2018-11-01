@@ -12,9 +12,10 @@ import { environment } from '../../../environments/environment';
   templateUrl: './executions.component.html',
   styleUrls: ['./executions.component.scss']
 })
+
 export class ExecutionsComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService, 
+  constructor(private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService,
     private authentication: AuthenticationService,
@@ -23,17 +24,17 @@ export class ExecutionsComponent implements OnInit {
   @Input('runningExecutionDataOutput') ongoingExecutionDataOutput;
   @Input('executionDataOutput') executionDataOutput;
 
-  allExecutions:Array<any> = [];
+  allExecutions: Array<any> = [];
   ongoingExecutionsOutput: Array<any> = [];
-  ongoingExecutionsCurrentTotal: number = 0;
-  currentPage: number = 0;
-  perPage: number = 5;
-  intervalTimer: number = environment.intervalStatus;
+  ongoingExecutionsCurrentTotal = 0;
+  currentPage = 0;
+  perPage = 5;
+  intervalTimer = environment.intervalStatus;
   errorMessage: string;
   successMessage: string;
   subscription;
   isLoading = true;
-  currentNumberOfRecords: number = 0;
+  currentNumberOfRecords = 0;
 
   @Output() nextPage: EventEmitter<any> = new EventEmitter();
 
@@ -44,9 +45,9 @@ export class ExecutionsComponent implements OnInit {
   /* start polling, checking for updates
   */
   ngOnInit() {
-  	if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }  
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
+    }
 
     this.startPolling();
   }
@@ -58,7 +59,7 @@ export class ExecutionsComponent implements OnInit {
   */
   startPolling() {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
+    const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.getOngoingExecutions();
       this.getAllExecutions();
@@ -73,9 +74,9 @@ export class ExecutionsComponent implements OnInit {
   /* get all ongoing executions, either in queue or running
   /* datasetname needs to be added to executions for use in table
   */
-  getOngoingExecutions() {    
+  getOngoingExecutions() {
     if (!this.authentication.validatedUser()) { return false; }
-    let executions = this.ongoingExecutionDataOutput;
+    const executions = this.ongoingExecutionDataOutput;
     if (!executions) { return false; }
     this.ongoingExecutionsOutput = this.datasets.addDatasetNameAndCurrentPlugin(executions);
   }
@@ -84,7 +85,7 @@ export class ExecutionsComponent implements OnInit {
   /* get all executions, ordered by most recent started
   /* datasetname needs to be added to executions for use in table
   */
-  getAllExecutions() {    
+  getAllExecutions() {
     if (!this.executionDataOutput) { return false; }
     this.allExecutions = this.datasets.addDatasetNameAndCurrentPlugin(this.executionDataOutput);
     this.currentNumberOfRecords = this.allExecutions.length;

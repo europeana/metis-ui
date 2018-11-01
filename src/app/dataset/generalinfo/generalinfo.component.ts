@@ -14,7 +14,7 @@ export class GeneralinfoComponent implements OnInit {
 
   constructor(private datasets: DatasetsService,
     private workflows: WorkflowService,
-  	private translate: TranslateService,
+    private translate: TranslateService,
     private authentication: AuthenticationService,
     private errors: ErrorService) { }
 
@@ -33,8 +33,8 @@ export class GeneralinfoComponent implements OnInit {
   /* if dataset, try to retrieve information about harvest and publication
   */
   ngOnInit() {
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
 
     this.workflows.changeWorkflow.subscribe(
@@ -44,7 +44,7 @@ export class GeneralinfoComponent implements OnInit {
     );
 
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
+    const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.getDatasetInformation();
     });
@@ -52,7 +52,7 @@ export class GeneralinfoComponent implements OnInit {
 
   /** ngOnDestroy
   /* cancel subscriptions to check for current available dataset information
-  */  
+  */
   ngOnDestroy() {
     if (this.subscription) { this.subscription.unsubscribe(); }
   }
@@ -60,32 +60,32 @@ export class GeneralinfoComponent implements OnInit {
   /** getDatasetInformation
   /* get information about dataset
   /* including links to preview and collections
-  */ 
+  */
   getDatasetInformation () {
     if (!this.authentication.validatedUser()) { return false; }
     if (this.datasetData) {
 
       if (!this.viewPreview) {
         this.viewPreview = apiSettings.viewPreview + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
-        this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');  
+        this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
       }
 
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
         this.buttonClassPreview = this.harvestPublicationData.lastPreviewRecordsReadyForViewing ? '' : 'btn-disabled';
-        this.buttonClassCollections = this.harvestPublicationData.lastPublishedRecordsReadyForViewing ? '' : 'btn-disabled';             
+        this.buttonClassCollections = this.harvestPublicationData.lastPublishedRecordsReadyForViewing ? '' : 'btn-disabled';
       }, (err: HttpErrorResponse) => {
         if (this.subscription) { this.subscription.unsubscribe(); }
-        this.errors.handleError(err);   
+        this.errors.handleError(err);
       });
     }
   }
 
   /** escapeSolr
   /* format urls to link and preview
-  */ 
+  */
   escapeSolr(url) {
-    let pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
+    const pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
     return url.replace(pattern, '\\$1');
   }
 }

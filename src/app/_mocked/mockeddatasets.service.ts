@@ -1,8 +1,7 @@
-
 import {of as observableOf,  Observable } from 'rxjs';
 import { DatasetsService } from '../_services';
 
-export const currentDataset = { 
+export const currentDataset = {
     country: {enum: 'CHINA', name: 'China', isoCode: 'CN'},
     createdByUserId: '1',
     createdDate: '2018-03-30T13:49:55.607Z',
@@ -36,16 +35,16 @@ export const xslt = `<?xml version="1.0" encoding="UTF-8"?>
     </xsl:template>
   </xsl:stylesheet>`;
 
-export const XMLTransformSamples = [{ 
+export const XMLTransformSamples = [{
  'ecloudId': 1,
  'xmlRecord': '<?xml version="1.0" encoding="UTF-8"?>'
 }];
 
 export class MockDatasetService extends DatasetsService {
 
-	getXSLT() {
-		return observableOf(xslt);
-	}
+  getXSLT() {
+    return observableOf(xslt);
+  }
 
   getDataset() {
     return observableOf(currentDataset);
@@ -55,7 +54,7 @@ export class MockDatasetService extends DatasetsService {
     return observableOf(true);
   }
 
-  createDataset(datasetFormValues: Array<any>) {    
+  createDataset(datasetFormValues: Array<any>) {
     return observableOf(currentDataset);
   }
 

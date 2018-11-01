@@ -9,7 +9,7 @@ import { DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorServi
 import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset, currentWorkflowDataset, MockAuthenticationService, currentUser } from '../../_mocked';
 
 import { WorkflowComponent } from './workflow.component';
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 
 describe('WorkflowComponent', () => {
   let component: WorkflowComponent;
@@ -19,12 +19,12 @@ describe('WorkflowComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, ReactiveFormsModule, HttpClientModule ],
-      declarations: [ WorkflowComponent, TranslatePipe, RenameWorkflowPipe ], 
-      providers:    [         
-        { provide: DatasetsService, useClass: MockDatasetService }, 
-        { provide: WorkflowService, useClass: MockWorkflowService },        
-        { provide: AuthenticationService, useClass: MockAuthenticationService }, 
-        ErrorService, 
+      declarations: [ WorkflowComponent, TranslatePipe, RenameWorkflowPipe ],
+      providers: [
+        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService,
           useValue: {
@@ -72,7 +72,7 @@ describe('WorkflowComponent', () => {
 
     component.removeConnection('LINK_CHECKING', 0);
     fixture.detectChanges();
-    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(1);    
+    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(1);
   });
 
   it('should add and remove host/connections for media processing', () => {

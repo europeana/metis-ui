@@ -5,7 +5,7 @@ import { User } from '../../_models';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html',  
+  templateUrl: './header.component.html',
   providers: [AuthenticationService]
 })
 
@@ -13,7 +13,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authentication: AuthenticationService,
-    public router: Router, 
+    public router: Router,
     private route: ActivatedRoute,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private translate: TranslateService) {}
@@ -34,9 +34,9 @@ export class HeaderComponent implements OnInit {
     this.openSignIn = false;
     this.searchfilter = 'All';
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }    
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
+    }
   }
 
   /** toggleSignInMenu

@@ -23,24 +23,24 @@ export class DatasetformComponent implements OnInit {
   autosuggest;
   autosuggestId: string;
   datasetOptions: object;
-  formMode: string = 'create'; // possible options: create, read, update
+  formMode = 'create'; // possible options: create, read, update
   formSubmitted: boolean;
   errorMessage;
   successMessage;
-  harvestprotocol; 
+  harvestprotocol;
   selectedCountry;
   selectedLanguage;
 
   private datasetForm: FormGroup;
   private countryOptions: any;
   private languageOptions: any;
- 
+
   constructor(private countries: CountriesService,
     private workflows: WorkflowService,
     private datasets: DatasetsService,
     private authentication: AuthenticationService,
     private router: Router,
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private RedirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
     private datePipe: DatePipe,
@@ -56,33 +56,33 @@ export class DatasetformComponent implements OnInit {
   */
   ngOnInit() {
 
-    if (!this.datasetData) {      
-      const tempdata = JSON.parse(localStorage.getItem('tempDatasetData')); // something in localstorage? 
+    if (!this.datasetData) {
+      const tempdata = JSON.parse(localStorage.getItem('tempDatasetData'));
       this.datasetData = tempdata;
       this.formMode = 'create';
     } else {
-      this.formMode = 'read';      
+      this.formMode = 'read';
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
         this.buildForm();
       }, (err: HttpErrorResponse) => {
-        this.errors.handleError(err);     
+        this.errors.handleError(err);
       });
     }
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
-    
-    this.returnCountries();   
-    this.buildForm(); 
+
+    this.returnCountries();
+    this.buildForm();
   }
 
   /** returnCountries
   /* return all countries
   /* list can be used in form
   */
-  returnCountries() {    
+  returnCountries() {
     this.countries.getCountriesLanguages('country').subscribe(result => {
       this.countryOptions = result;
       if (this.datasetData && this.countryOptions) {
@@ -96,7 +96,7 @@ export class DatasetformComponent implements OnInit {
       }
       this.returnLanguages();
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);     
+      this.errors.handleError(err);
     });
   }
 
@@ -118,7 +118,7 @@ export class DatasetformComponent implements OnInit {
       }
       this.buildForm();
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);     
+      this.errors.handleError(err);
     });
   }
 
@@ -152,9 +152,9 @@ export class DatasetformComponent implements OnInit {
     });
 
     this.datasetForm.patchValue({country: this.selectedCountry});
-    this.datasetForm.patchValue({language: this.selectedLanguage})
+    this.datasetForm.patchValue({language: this.selectedLanguage});
 
-    if (this.formMode == 'read') { 
+    if (this.formMode === 'read') {
       this.datasetForm.controls['country'].disable();
       this.datasetForm.controls['language'].disable();
       this.datasetForm.controls['description'].disable();
@@ -196,29 +196,29 @@ export class DatasetformComponent implements OnInit {
     this.errorMessage = undefined;
     this.formatFormValues();
 
-    let datasetValues = { 'dataset': this.datasetForm.value };       
+    const datasetValues = { 'dataset': this.datasetForm.value };
     if (this.formMode === 'update') {
       this.datasets.updateDataset(datasetValues).subscribe(result => {
         localStorage.removeItem('tempDatasetData');
         this.successMessage = 'Dataset updated!';
         this.formMode = 'read';
-        
+
         this.datasetForm.controls['country'].disable();
         this.datasetForm.controls['language'].disable();
         this.datasetForm.controls['description'].disable();
         this.datasetForm.controls['notes'].disable();
       }, (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`; 
+        this.errorMessage = `${StringifyHttpError(error)}`;
       });
     } else {
-      this.datasets.createDataset(this.datasetForm.value).subscribe(result => {        
+      this.datasets.createDataset(this.datasetForm.value).subscribe(result => {
         localStorage.removeItem('tempDatasetData');
         this.datasets.setDatasetMessage('New dataset created! Id: ' + result['datasetId']);
         this.router.navigate(['/dataset/new/' + result['datasetId']]);
       }, (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;  
+        this.errorMessage = `${StringifyHttpError(error)}`;
       });
     }
 
@@ -240,8 +240,7 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.controls['language'].enable();
     this.datasetForm.controls['description'].enable();
     this.datasetForm.controls['notes'].enable();
-    
-    window.scrollTo(0, 0);
-  }   
 
+    window.scrollTo(0, 0);
+  }
 }

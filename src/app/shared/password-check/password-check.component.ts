@@ -61,7 +61,7 @@ export class PasswordCheckComponent implements OnChanges {
   /** setBarColors
   /* set colors of the bar to indicate password strength
   /* @param {number} count - strength
-  /* @param {string} color - color of the bar 
+  /* @param {string} color - color of the bar
   */
   private setBarColors(count, col) {
     for (let _n = 0; _n < count; _n++) {
@@ -70,7 +70,7 @@ export class PasswordCheckComponent implements OnChanges {
   }
 
   /** toggleInfo
-  /* toggle hinting/help 
+  /* toggle hinting/help
   */
   toggleInfo() {
     this.info = !this.info;

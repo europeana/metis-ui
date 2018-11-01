@@ -15,14 +15,14 @@ export class AppComponent implements OnInit {
   title = 'Metis-UI';
   isLessMargin = false;
   bodyClass: string;
-  showWrapper: boolean = false;
+  showWrapper = false;
   currentWorkflowId;
   public loggedIn = false;
 
   constructor(
     public workflows: WorkflowService,
     private authentication: AuthenticationService,
-    private errors: ErrorService, 
+    private errors: ErrorService,
     public router: Router,
     private translate: TranslateService) {
   }
@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
   /* add a body class
   /* and margins
   */
-  public ngOnInit(): void {  
+  public ngOnInit(): void {
 
     this.router.events.subscribe((event: any) => {
       if (!event.url) { return false; }
@@ -55,10 +55,9 @@ export class AppComponent implements OnInit {
       }
     });
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
     }
-
   }
 
   /** closePrompt
@@ -76,8 +75,7 @@ export class AppComponent implements OnInit {
       this.closePrompt();
       this.workflows.setWorkflowCancelled();
     }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);   
-    });    
+      this.errors.handleError(err);
+    });
   }
-
 }

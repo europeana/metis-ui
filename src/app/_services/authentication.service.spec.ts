@@ -33,8 +33,7 @@ describe('AuthenticationService', () => {
     errors = TestBed.get(ErrorService);
     httpTestingController = TestBed.get(HttpTestingController);
 
-    service = new AuthenticationService(httpClient, router, errors, redirect); 
-
+    service = new AuthenticationService(httpClient, router, errors, redirect);
   }));
 
   it('should return whether a user is validated', () => {
@@ -51,9 +50,8 @@ describe('AuthenticationService', () => {
 
   it('should get the current user', () => {
     if (service) {
-    	service.currentUser = currentUser;
-    	expect(service.getCurrentUser()).not.toBe(null); 
-    } 	
+      service.currentUser = currentUser;
+      expect(service.getCurrentUser()).not.toBe(null);
+    }
   });
- 
 });

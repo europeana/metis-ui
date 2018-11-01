@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import { TranslateService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
 import { MockAuthenticationService, currentUser } from '../_mocked';
 
 import { ReactiveFormsModule } from '@angular/forms';
@@ -19,7 +19,7 @@ describe('ProfileComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
       declarations: [ ProfileComponent, TranslatePipe ],
-      providers: [ 
+      providers: [
         ErrorService,
         RedirectPreviousUrl,
         {provide: AuthenticationService, useClass: MockAuthenticationService},
@@ -48,11 +48,11 @@ describe('ProfileComponent', () => {
   it('should reload the profile form', () => {
     component.editMode = false;
     fixture.detectChanges();
-    
+
     const reload = fixture.debugElement.query(By.css('#refresh-btn'));
     reload.triggerEventHandler('click', null);
     fixture.detectChanges();
-    
+
     expect(component.successMessage).not.toBe('');
   });
 

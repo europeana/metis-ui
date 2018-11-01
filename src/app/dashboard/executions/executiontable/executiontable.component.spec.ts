@@ -6,7 +6,7 @@ import { WorkflowService, TranslateService, ErrorService, AuthenticationService,
 import { MockWorkflowService, currentWorkflow, MockAuthenticationService } from '../../../_mocked';
 import { ExecutiontableComponent } from './executiontable.component';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../../_translate';
+import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../../_translate';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;
@@ -16,11 +16,11 @@ describe('ExecutiontableComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule ],
       declarations: [ ExecutiontableComponent, TranslatePipe ],
-      providers: [ 
+      providers: [
         ErrorService,
         RedirectPreviousUrl,
-        { provide: WorkflowService, useClass: MockWorkflowService },  
-        { provide: AuthenticationService, useClass: MockAuthenticationService }, 
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService,
           useValue: {
             translate: () => {
@@ -46,15 +46,14 @@ describe('ExecutiontableComponent', () => {
   });
 
   it('should cancel a workflow', () => {
-    component.cancelWorkflow(1);    
+    component.cancelWorkflow(1);
     fixture.detectChanges();
     expect(component.successMessage).not.toBe('');
-  });  
+  });
 
   it('should copy information', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
   });
-  
 });

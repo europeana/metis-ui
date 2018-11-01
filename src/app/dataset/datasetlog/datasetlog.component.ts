@@ -12,8 +12,8 @@ import { WorkflowService, AuthenticationService, TranslateService, ErrorService 
 })
 export class DatasetlogComponent implements OnInit {
 
-  constructor(private workflows: WorkflowService, 
-    private authentication: AuthenticationService, 
+  constructor(private workflows: WorkflowService,
+    private authentication: AuthenticationService,
     private errors: ErrorService,
     private translate: TranslateService) { }
 
@@ -21,10 +21,10 @@ export class DatasetlogComponent implements OnInit {
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   logMessages;
-  logPerStep: number = 100;
-  logStep: number = 1;
-  logFrom: number = 1;
-  logTo: number = this.logStep * this.logPerStep;
+  logPerStep = 100;
+  logStep = 1;
+  logFrom = 1;
+  logTo = this.logStep * this.logPerStep;
   logPlugin;
   subscription;
   intervalTimer = environment.intervalStatus;
@@ -40,9 +40,9 @@ export class DatasetlogComponent implements OnInit {
   ngOnInit() {
     this.startPolling();
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-      this.noLogs = this.translate.instant('nologs'); 
+    if (typeof this.translate.use === 'function') {
+      this.translate.use('en');
+      this.noLogs = this.translate.instant('nologs');
     }
   }
 
@@ -50,7 +50,7 @@ export class DatasetlogComponent implements OnInit {
   /* close log modal window
   */
   closeLog() {
-  	this.notifyShowLogStatus.emit(false);
+    this.notifyShowLogStatus.emit(false);
     if (this.subscription) { this.subscription.unsubscribe(); }
   }
 
@@ -59,7 +59,7 @@ export class DatasetlogComponent implements OnInit {
   */
   startPolling() {
     if (this.subscription) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
+    const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
       this.returnLog();
     });
@@ -70,11 +70,11 @@ export class DatasetlogComponent implements OnInit {
   */
   returnLog() {
 
-    let currentProcessed = this.workflows.getCurrentProcessed();
+    const currentProcessed = this.workflows.getCurrentProcessed();
     this.logTo = currentProcessed ? currentProcessed.processed : this.isShowingLog['processed'];
     this.logPlugin = currentProcessed ? currentProcessed.topology : this.isShowingLog['plugin'];
 
-    if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED' || this.isShowingLog['status'] === 'CANCELLED' || this.isShowingLog['status'] === 'FAILED')) { 
+    if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED' || this.isShowingLog['status'] === 'CANCELLED' || this.isShowingLog['status'] === 'FAILED')) {
       if (this.subscription) { this.subscription.unsubscribe(); }
     }
 
@@ -105,10 +105,9 @@ export class DatasetlogComponent implements OnInit {
 
   /** getLogFrom
   /* calculate from
-  /* used to get logs  
+  /* used to get logs
   */
   getLogFrom() {
     return (this.logTo - this.logPerStep) >= 1 ? (this.logTo - this.logPerStep) + 1 : 1;
   }
-  
 }

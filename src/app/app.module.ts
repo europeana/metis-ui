@@ -12,9 +12,9 @@ import { AuthUserGuard,
 import { AuthenticationService,
          DatasetsService,
          TokenInterceptor,
-         RedirectPreviousUrl, 
-         CountriesService,          
-         SettingsService, 
+         RedirectPreviousUrl,
+         CountriesService,
+         SettingsService,
          WorkflowService,
          ErrorService,
          TranslateService } from './_services';
@@ -47,7 +47,7 @@ import { ReportComponent } from './dataset/report/report.component';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
-import { XmlPipe }   from './_helpers';
+import { XmlPipe } from './_helpers';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
 import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
 import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
@@ -87,11 +87,11 @@ import { ExecutiontableComponent } from './dashboard/executions/executiontable/e
   imports: [
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule,    
+    ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
     CodemirrorModule,
-    ClickOutsideModule 
+    ClickOutsideModule
   ],
   entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, WorkflowComponent ],
   providers: [
@@ -100,17 +100,17 @@ import { ExecutiontableComponent } from './dashboard/executions/executiontable/e
     AuthenticationService,
     DatasetsService,
     RedirectPreviousUrl,
-    CountriesService,    
+    CountriesService,
     SettingsService,
     WorkflowService,
     ErrorService,
-    TRANSLATION_PROVIDERS, 
+    TRANSLATION_PROVIDERS,
     TranslateService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true
-    }    
+    }
   ],
   bootstrap: [AppComponent]
 })
