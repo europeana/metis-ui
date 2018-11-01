@@ -94,7 +94,6 @@ export class GeneralactionbarComponent implements OnInit {
   /*  select the workflow, so it would be triggered
   */
   selectWorkflow() {
-    console.log('selectWorkflow generalactionbar');
     this.workflows.selectWorkflow();
     if (this.subscription) { this.subscription.unsubscribe(); }
     this.checkStatus();

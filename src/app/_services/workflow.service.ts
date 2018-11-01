@@ -323,7 +323,6 @@ export class WorkflowService {
   /* @param {string} workflow - name of the workflow that is selected
   */
   selectWorkflow(): void {
-    console.log('selectWorkflow workflow service');
     this.selectedWorkflow.emit(true);
   }
 

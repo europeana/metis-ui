@@ -252,7 +252,6 @@ export class HistoryComponent implements OnInit {
   */
   triggerWorkflow() {  
 
-    console.log('triggerWorkflow', this.datasetData.datasetId);
     if (this.datasetData.datasetId !== this.thisDatasetId) { return false; }
 
     this.errorMessage = undefined;
