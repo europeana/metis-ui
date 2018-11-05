@@ -344,6 +344,14 @@ export class WorkflowComponent implements OnInit {
       }      
     }
 
+    // validation external
+    if (this.workflowForm.value['pluginVALIDATION_EXTERNAL'] === true) {
+      plugins.push({
+        'pluginType': 'VALIDATION_EXTERNAL',
+        'mocked': false
+      });
+    }
+
     // transformation
     if (this.workflowForm.value['pluginTRANSFORMATION'] === true) {
       plugins.push({
@@ -353,14 +361,7 @@ export class WorkflowComponent implements OnInit {
       });
     }
 
-    // validation
-    if (this.workflowForm.value['pluginVALIDATION_EXTERNAL'] === true) {
-      plugins.push({
-        'pluginType': 'VALIDATION_EXTERNAL',
-        'mocked': false
-      });
-    }
-
+    // validation internal
     if (this.workflowForm.value['pluginVALIDATION_INTERNAL'] === true) {
       plugins.push({
         'pluginType': 'VALIDATION_INTERNAL',
