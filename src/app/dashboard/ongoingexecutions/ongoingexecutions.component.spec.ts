@@ -67,6 +67,7 @@ describe('OngoingexecutionsComponent', () => {
     component.ongoingExecutionDataOutput = [currentWorkflow['results'][1]];
     component.getOngoing();
     fixture.detectChanges();
+    expect(component.ongoingExecutions.length).not.toBe(0);
   });
 
 });

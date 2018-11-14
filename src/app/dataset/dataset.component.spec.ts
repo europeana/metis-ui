@@ -95,6 +95,5 @@ describe('DatasetComponent', () => {
     component.clickOutsideMessage();
     fixture.detectChanges();
     expect(component.errorMessage).toBe(undefined);
-
   });
 });
