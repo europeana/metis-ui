@@ -14,6 +14,11 @@ import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
 import { WorkflowExecution } from '../_models/workflow-execution';
 
+export interface PreviewFilters {
+  date?: WorkflowExecution;
+  plugin?: string;
+}
+
 @Injectable()
 export class DatasetsService {
 
@@ -21,7 +26,7 @@ export class DatasetsService {
 
   private datasets = [];
   datasetMessage: string;
-  tempPreviewFilers: string[];
+  tempPreviewFilers: PreviewFilters;
   datasetNames: { [id: string]: string } = {};
   tempXSLT: string | null;
   currentTaskId: string;
@@ -67,9 +72,9 @@ export class DatasetsService {
   /* update an existing dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
-  updateDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
+  updateDataset(datasetFormValues: { dataset: any }): Observable<void | boolean> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.put<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
+    return this.http.put<void>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }
 
   /** addDatasetNameAndCurrentPlugin
@@ -119,14 +124,14 @@ export class DatasetsService {
   /* set filters used in the preview tab
   /* @param {array} tempFilters - options selected in the filter, removed after page refresh/tab switch
   */
-  setPreviewFilters(tempFilters: string[]): void {
+  setPreviewFilters(tempFilters: PreviewFilters): void {
     this.tempPreviewFilers = tempFilters;
   }
 
   /** getPreviewFilters
   /* get filters used in the preview tab
   */
-  getPreviewFilters(): string[] {
+  getPreviewFilters(): PreviewFilters {
     return this.tempPreviewFilers;
   }
 

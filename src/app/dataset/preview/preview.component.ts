@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService, DatasetsService, PreviewFilters } from '../../_services';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
 import { Router } from '@angular/router';
+import { EditorConfiguration } from 'codemirror';
 
 import 'codemirror/mode/xml/xml';
 import 'codemirror/addon/fold/foldcode';
@@ -15,6 +16,9 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/comment-fold';
 
 import * as beautify from 'vkbeautify';
+import { Dataset } from '../../_models/dataset';
+import { XmlSample } from '../../_models/xml-sample';
+import { WorkflowExecution } from '../../_models/workflow-execution';
 
 @Component({
   selector: 'app-preview',
@@ -33,31 +37,27 @@ export class PreviewComponent implements OnInit {
     private datasets: DatasetsService,
     private router: Router) { }
 
-  @Input('datasetData') datasetData;
-  editorConfig;
+  @Input('datasetData') datasetData: Dataset;
+  editorConfig: EditorConfiguration;
   allWorkflows: Array<any> = [];
   allWorkflowDates: Array<any> = [];
   allPlugins: Array<any> = [];
   allSamples: Array<any> = [];
-  allTransformedSamples;
+  allTransformedSamples: XmlSample[];
   filterDate = false;
   filterPlugin = false;
   selectedDate: string;
-  selectedPlugin: string;
-  displayFilterWorkflow;
-  displayFilterDate;
-  displayFilterPlugin;
-  expandedSample;
+  selectedPlugin?: string;
+  expandedSample?: number;
   nosample: string;
   errorMessage: string;
   nextPage = 0;
   nextPageDate = 0;
-  datasetHistory;
-  execution: number;
-  tempFilterSelection: Array<any> = [];
-  prefill;
+  execution: WorkflowExecution;
+  tempFilterSelection: PreviewFilters;
+  prefill: PreviewFilters;
   loadingSamples = false;
-  tempXSLT;
+  tempXSLT: string | null;
 
   /** ngOnInit
   /*  init this component
@@ -67,7 +67,7 @@ export class PreviewComponent implements OnInit {
   /* add a workflow filter if dataset is know
   /* get prefilled values and prefill filters if available
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.editorConfig = {
       mode: 'application/xml',
       lineNumbers: true,
@@ -104,7 +104,7 @@ export class PreviewComponent implements OnInit {
   /* save selection, when switching tab
   /* @param {string} workflow - selected workflow
   */
-  addDateFilter() {
+  addDateFilter(): void {
     this.workflows.getAllExecutionsEveryStatus(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {
         this.allWorkflowDates.push(result['results'][i]);
@@ -125,11 +125,11 @@ export class PreviewComponent implements OnInit {
   /* save selection, when switching tab
   /* @param {object} execution - selected execution
   */
-  addPluginFilter(execution) {
+  addPluginFilter(execution: WorkflowExecution): void {
     this.filterDate = false;
     this.allPlugins = [];
     this.execution = execution;
-    this.selectedDate = execution['startedDate'];
+    this.selectedDate = execution.startedDate;
     this.nextPageDate = 0;
     this.saveTempFilterSelection('date', execution);
     for (let i = 0; i < execution['metisPlugins'].length; i++) {
@@ -150,12 +150,12 @@ export class PreviewComponent implements OnInit {
   /* show loader while fetching the samples
   /* @param {string} plugin - selected plugin
   */
-  getXMLSamples(plugin) {
+  getXMLSamples(plugin: string): void {
     this.loadingSamples = true;
     this.onClickedOutside();
     this.selectedPlugin = plugin;
     this.saveTempFilterSelection('plugin', plugin);
-    this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
+    this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe(result => {
       this.allSamples = this.undoNewLines(result);
       if (this.allSamples.length === 1) {
        this.expandedSample = 0;
@@ -172,7 +172,7 @@ export class PreviewComponent implements OnInit {
   /* based on temp saved XSLT
   /* @param {string} type - either default or custom
   */
-  transformSamples(type) {
+  transformSamples(type: string): void {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       if (!result['results'][0]) { return false; }
       this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
@@ -186,6 +186,7 @@ export class PreviewComponent implements OnInit {
       }, (err: HttpErrorResponse) => {
         this.errors.handleError(err);
       });
+      return;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(error)}`;
@@ -198,7 +199,7 @@ export class PreviewComponent implements OnInit {
   /* @param {filter} array - name of filter
   /* @param {toSave} any - string or object to save temporarily
   */
-  saveTempFilterSelection(filter, toSave) {
+  saveTempFilterSelection(filter: keyof PreviewFilters, toSave: any): void {
     this.tempFilterSelection[filter] = toSave;
     this.datasets.setPreviewFilters(this.tempFilterSelection);
   }
@@ -206,16 +207,16 @@ export class PreviewComponent implements OnInit {
   /** prefillFilters
   /* prefill filters, when temporarily saved options are available
   */
-  prefillFilters() {
+  prefillFilters(): void {
     if (this.prefill) {
-      if (this.prefill['date']) {
-        this.selectedDate = this.prefill['date'];
-        this.addPluginFilter(this.prefill['date']);
+      if (this.prefill.date) {
+        this.selectedDate = this.prefill.date.startedDate;
+        this.addPluginFilter(this.prefill.date);
       }
 
-      if (this.prefill['plugin']) {
-        this.selectedPlugin = this.prefill['plugin'];
-        this.getXMLSamples(this.prefill['plugin']);
+      if (this.prefill.plugin) {
+        this.selectedPlugin = this.prefill.plugin;
+        this.getXMLSamples(this.prefill.plugin);
       }
     }
   }
@@ -225,17 +226,17 @@ export class PreviewComponent implements OnInit {
   /* only one sample can be expanded
   /* @param {number} index - index of sample to expand
   */
-  expandSample(index: number) {
+  expandSample(index: number): void {
     const sample = this.allSamples[index]['xmlRecord'];
     const samples = this.undoNewLines(this.allSamples);
     this.allSamples[index]['xmlRecord'] = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
-    setTimeout(function() {
+    setTimeout(() => {
       samples[index]['xmlRecord'] = sample;
     }, 500);
   }
 
-  undoNewLines(samples) {
+  undoNewLines(samples: XmlSample[]): XmlSample[] {
     const clearSamples = samples;
     for (let i = 0; i < samples.length; i++) {
       clearSamples[i]['xmlRecord'] = samples[i]['xmlRecord'].replace(/[\r\n]/g, '').trim();
@@ -246,14 +247,14 @@ export class PreviewComponent implements OnInit {
   /** gotoMapping
   /* go to mapping tab, after transformation on the fly
   */
-  gotoMapping() {
+  gotoMapping(): void {
     this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]);
   }
 
   /** toggleFilterDate
   /* show or hide date filter
   */
-  toggleFilterDate() {
+  toggleFilterDate(): void {
     this.onClickedOutside();
     this.nextPageDate = 0;
     this.allPlugins = [];
@@ -268,7 +269,7 @@ export class PreviewComponent implements OnInit {
   /** toggleFilterPlugin
   /* show or hide plugin filter
   */
-  toggleFilterPlugin() {
+  toggleFilterPlugin(): void {
     this.onClickedOutside();
     if (this.filterPlugin === false) {
       this.filterPlugin = true;
@@ -280,7 +281,7 @@ export class PreviewComponent implements OnInit {
   /** onClickedOutside
   /* close all open filters when click outside the filters
   */
-  onClickedOutside(e?) {
+  onClickedOutside(e?: Event): void {
     this.filterDate = false;
     this.filterPlugin = false;
   }
