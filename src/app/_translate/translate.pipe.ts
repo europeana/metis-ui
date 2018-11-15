@@ -12,7 +12,7 @@ export class TranslatePipe implements PipeTransform {
   /* use this pipe in components to translate values
   /* @param {string} value - word or sentence to translate
   */
-  transform(value: string): any {
+  transform(value: string): string | undefined {
     if (!value) { return; }
     if (typeof this._translate.instant === 'function') {
       return this._translate.instant(value);
