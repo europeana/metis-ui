@@ -1,4 +1,4 @@
-export class Notification {
+export interface Notification {
   action: string;
   date: Date;
 }

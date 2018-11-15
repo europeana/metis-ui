@@ -87,9 +87,9 @@ export class AuthenticationService {
   */
   login(email: string, password: string): Observable<boolean> {
     if (this.currentUser) { // check beforehand if there is already an user
-      const url = this.redirectPreviousUrl.get();
-      if (url && url !== 'login') {
-        this.router.navigateByUrl(`/${url}`);
+      const prevUrl = this.redirectPreviousUrl.get();
+      if (prevUrl && prevUrl !== 'login') {
+        this.router.navigateByUrl(`/${prevUrl}`);
         this.redirectPreviousUrl.set(undefined);
       } else {
         this.router.navigate([`${environment.afterLoginGoto}`]);

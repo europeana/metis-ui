@@ -1,4 +1,4 @@
-
+import { Observable } from 'rxjs';
 import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
@@ -8,6 +8,8 @@ import { apiSettings } from '../../environments/apisettings';
 import { AuthenticationService } from '../_services/authentication.service';
 import { StringifyHttpError } from '../_helpers';
 import { ErrorService } from './error.service';
+import { Country } from '../_models/country';
+import { Language } from '../_models/language';
 
 @Injectable()
 export class CountriesService {
@@ -16,21 +18,23 @@ export class CountriesService {
     private errors: ErrorService,
     private authentication: AuthenticationService) {}
 
-  /** getCountriesLanguages
-  /* get a list of countries or languages
-  /* @param {boolean} type - type of values to return, either country or language
+  /** getCountries
+  /* get a list of countries
   */
-  getCountriesLanguages(type) {
-    let url = `${apiSettings.apiHostCore}/datasets/countries`;
-    if (type === 'language') {
-      url = `${apiSettings.apiHostCore}/datasets/languages`;
-    }
-    return this.http.get(url).pipe(map(data => {
-      if (data) {
-        return data;
-      } else {
-        return false;
-      }
+  getCountries(): Observable<Country[] | false> {
+    const url = `${apiSettings.apiHostCore}/datasets/countries`;
+    return this.http.get<Country[]>(url).pipe(map(data => {
+      return data ? data : false;
+    })).pipe(this.errors.handleRetry());
+  }
+
+  /** getLanguages
+  /* get a list of languages
+  */
+  getLanguages(): Observable<Language[] | false> {
+    const url = `${apiSettings.apiHostCore}/datasets/languages`;
+    return this.http.get<Language[]>(url).pipe(map(data => {
+      return data ? data : false;
     })).pipe(this.errors.handleRetry());
   }
 }

@@ -1,6 +1,6 @@
 ﻿import { UserToken } from './user-token';
 
-export class User {
+export interface User {
   userId: string;
   email: string;
   firstName: string;

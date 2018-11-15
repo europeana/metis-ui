@@ -10,6 +10,8 @@ import 'rxjs';
 
 import { ErrorService } from './error.service';
 import { WorkflowService } from './workflow.service';
+import { Dataset } from '../_models/dataset';
+import { XmlSample } from '../_models/xml-sample';
 
 @Injectable()
 export class DatasetsService {
@@ -17,11 +19,11 @@ export class DatasetsService {
   @Output() updateLog: EventEmitter<any> = new EventEmitter();
 
   private datasets = [];
-  datasetMessage;
-  tempPreviewFilers;
-  datasetNames: Array<any> = [];
-  tempXSLT;
-  currentTaskId;
+  datasetMessage: string;
+  tempPreviewFilers: string[];
+  datasetNames: string[] = [];
+  tempXSLT: string | null;
+  currentTaskId: string;
 
   constructor(private http: HttpClient,
     private errors: ErrorService,
@@ -31,14 +33,14 @@ export class DatasetsService {
   /* set message that is displayed on the dataset page
   /* @param {string} message - text to display
   */
-  setDatasetMessage(message) {
+  setDatasetMessage(message: string): void {
     this.datasetMessage = message;
   }
 
   /** getDatasetMessage
   /* get message that is displayed on the dataset page
   */
-  getDatasetMessage() {
+  getDatasetMessage(): string {
     return this.datasetMessage;
   }
 
@@ -46,9 +48,9 @@ export class DatasetsService {
   /* get all information related to the dataset
   /* @param {string} id - datasetid
   */
-  getDataset(id: string) {
+  getDataset(id: string): Observable<Dataset | false> {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;
-    return this.http.get(url)
+    return this.http.get<Dataset | null>(url)
       .pipe(map(dataset => {
         return dataset ? dataset : false;
       })).pipe(this.errors.handleRetry());
@@ -58,9 +60,9 @@ export class DatasetsService {
   /* create a new dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
-  createDataset(datasetFormValues: Array<any>) {
+  createDataset(datasetFormValues: Dataset): Observable<Dataset | false> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.post(url, datasetFormValues).pipe(map(newDataset => {
+    return this.http.post<Dataset | null>(url, datasetFormValues).pipe(map(newDataset => {
       return newDataset ? newDataset : false;
     })).pipe(this.errors.handleRetry());
   }
@@ -69,9 +71,9 @@ export class DatasetsService {
   /* update an existing dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
-  updateDataset(datasetFormValues) {
+  updateDataset(datasetFormValues: Dataset): Observable<Dataset | false> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.put(url, datasetFormValues).pipe(map(updateDataset => {
+    return this.http.put<Dataset | null>(url, datasetFormValues).pipe(map(updateDataset => {
       return updateDataset ? updateDataset : false;
     })).pipe(this.errors.handleRetry());
   }
@@ -123,14 +125,14 @@ export class DatasetsService {
   /* set filters used in the preview tab
   /* @param {array} tempFilters - options selected in the filter, removed after page refresh/tab switch
   */
-  setPreviewFilters(tempFilters) {
+  setPreviewFilters(tempFilters: string[]): void {
     this.tempPreviewFilers = tempFilters;
   }
 
   /** getPreviewFilters
   /* get filters used in the preview tab
   */
-  getPreviewFilters() {
+  getPreviewFilters(): string[] {
     return this.tempPreviewFilers;
   }
 
@@ -138,15 +140,15 @@ export class DatasetsService {
   /* get default xslt
   /* the default one
   */
-  getXSLT(type, id?) {
+  getXSLT(type: string, id?: string): string | false {
     let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
-    let options =  { responseType: 'text' as 'text' };
+    let options = { responseType: 'text' as any };
     if (type === 'custom') {
       url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;
       options = undefined;
     }
 
-    return this.http.get(url, options).pipe(map(data => {
+    return this.http.get<string | null>(url, options).pipe(map(data => {
       return data ? (type === 'default' ? data : data['xslt']) : false;
     })).pipe(this.errors.handleRetry());
   }
@@ -157,12 +159,12 @@ export class DatasetsService {
   /* @param {string} id - dataset identifier
   /* @param {object} samples - samples to transform
   */
-  getTransform(id, samples, type) {
+  getTransform(id: string, samples: XmlSample[], type: string): Observable<XmlSample[] | false> {
     let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;
     if (type === 'default') {
       url += '/default';
     }
-    return this.http.post(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(map(data => {
+    return this.http.post<XmlSample[] | null>(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(map(data => {
       return data ? data : false;
     })).pipe(this.errors.handleRetry());
   }
@@ -170,14 +172,14 @@ export class DatasetsService {
   /** setTempXSLT
   /* temporary save xslt to use in transformation on the fly
   */
-  setTempXSLT(xslttype) {
+  setTempXSLT(xslttype: string | null): void {
     this.tempXSLT = xslttype;
   }
 
   /** getTempXSLT
   /* temporary save xslt to use in transformation on the fly
   */
-  getTempXSLT() {
+  getTempXSLT(): string {
     return this.tempXSLT;
   }
 

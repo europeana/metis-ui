@@ -1,3 +1,3 @@
-export class UserToken {
+export interface UserToken {
    accessToken: string;
 }
