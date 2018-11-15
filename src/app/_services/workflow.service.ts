@@ -19,7 +19,7 @@ export class WorkflowService {
   @Output() workflowIsDone: EventEmitter<any> = new EventEmitter();
   @Output() ongoingExecutionIsDone: EventEmitter<any> = new EventEmitter();
   @Output() updateHistoryPanel: EventEmitter<any> = new EventEmitter();
-  @Output() promptCancelWorkflow: EventEmitter<any> = new EventEmitter();
+  @Output() promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
   @Output() workflowCancelled: EventEmitter<any> = new EventEmitter();
 
   activeWorkflow: any;

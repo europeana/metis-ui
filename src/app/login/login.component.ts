@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
   /** onSubmit
   /* submit login form
   */
-  onSubmit(): boolean | undefined {
+  onSubmit(): false | undefined {
     if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; }
 
     this.loading = true;

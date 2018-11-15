@@ -262,7 +262,7 @@ export class WorkflowComponent implements OnInit {
   /* if dataset does not exist, display message
   /* get workflow for this dataset, could be empty
   */
-  getWorkflow(): boolean | undefined {
+  getWorkflow(): false | undefined {
     if (!this.datasetData) {
       if (typeof this.translate.instant === 'function') {
         this.errorMessage = this.translate.instant('create dataset');
@@ -454,7 +454,7 @@ export class WorkflowComponent implements OnInit {
   /* cannot submit when there is no dataset yet
   /* submit the form
   */
-  onSubmit(): boolean | undefined {
+  onSubmit(): false | undefined {
     if (!this.datasetData) { return false; }
     this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {
       this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowDataset => {

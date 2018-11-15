@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   isLessMargin = false;
   bodyClass: string;
   showWrapper = false;
-  currentWorkflowId;
+  currentWorkflowId?: string;
   public loggedIn = false;
 
   constructor(
@@ -46,9 +46,10 @@ export class AppComponent implements OnInit {
 
         this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
       }
+      return;
     });
 
-    this.workflows.promptCancelWorkflow.subscribe(workflow => {
+    this.workflows.promptCancelWorkflow.subscribe((workflow: string) => {
       if (workflow) {
         this.currentWorkflowId = workflow;
         this.showWrapper = true;
@@ -63,14 +64,14 @@ export class AppComponent implements OnInit {
   /** closePrompt
   /*  as the name suggests, this one closes the prompt or modal window
   */
-  closePrompt () {
+  closePrompt (): void {
     this.showWrapper = false;
   }
 
   /** cancelWorkflow
   /*  cancels the workflow using the currentWorkflow id
   */
-  cancelWorkflow () {
+  cancelWorkflow (): void {
     this.workflows.cancelThisWorkflow(this.currentWorkflowId).subscribe(result => {
       this.closePrompt();
       this.workflows.setWorkflowCancelled();
