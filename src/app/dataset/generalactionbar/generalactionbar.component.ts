@@ -39,7 +39,7 @@ export class GeneralactionbarComponent implements OnInit {
   /* poll to check the status of this dataset + workflow history
   */
   ngOnInit() {
-    if (!this.datasetData) { return false; }
+    if (!this.datasetData) { return; }
     this.activeSet = this.datasetData.datasetId;
     this.checkStatus();
 
@@ -65,7 +65,7 @@ export class GeneralactionbarComponent implements OnInit {
   /*  check if workflow info is already available
   */
   returnWorkflowInfo () {
-    if (!this.datasetData || !this.authentication.validatedUser()) { return false; }
+    if (!this.datasetData || !this.authentication.validatedUser()) { return; }
     const workflowinfo = this.workflowData;
     if (workflowinfo) {
       this.workflowInfoAvailable = true;
@@ -81,7 +81,7 @@ export class GeneralactionbarComponent implements OnInit {
   /*  get the last action for this dataset and display its status in the progress/actionbar
   */
   returnLastExecution () {
-    if (!this.datasetData) { return false; }
+    if (!this.datasetData) { return; }
     const workflow = this.lastExecutionData;
     if (workflow) {
       this.currentWorkflowStatus = workflow['workflowStatus'];

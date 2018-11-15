@@ -76,8 +76,8 @@ export class DashboardComponent implements OnInit {
   /** checkStatusOngoingExecutions
   /*  get the current status of the ongoing executions
   */
-  checkStatusOngoingExecutions() {
-    if (this.stopChecking) { return false; }
+  checkStatusOngoingExecutions(): void {
+    if (this.stopChecking) { return; }
     this.tsO = setTimeout(() => {
         this.runningExecutionData = [];
         this.getOngoingExecutions();
@@ -87,8 +87,8 @@ export class DashboardComponent implements OnInit {
   /** checkStatusExecutions
   /*  get the current status of the executions
   */
-  checkStatusExecutions() {
-    if (this.stopChecking) { return false; }
+  checkStatusExecutions(): void {
+    if (this.stopChecking) { return; }
     this.ts = setTimeout(() => {
         this.executionData = [];
         this.getExecutions();

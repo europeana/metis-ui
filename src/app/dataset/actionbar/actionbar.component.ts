@@ -70,7 +70,7 @@ export class ActionbarComponent {
   ngOnChanges() {
     if (this.workflowData && !this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
 
-    if (!this.lastExecutionData) { return false; }
+    if (!this.lastExecutionData) { return; }
     if (!this.subscription || this.subscription.closed) {
       this.currentWorkflow = this.lastExecutionData;
       this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
@@ -107,7 +107,7 @@ export class ActionbarComponent {
   /*  check the current status of a workflow
   */
   pollingWorkflow() {
-    if (!this.datasetData || !this.authentication.validatedUser()) { return false; }
+    if (!this.datasetData || !this.authentication.validatedUser()) { return; }
 
     const execution = this.lastExecutionData;
     this.currentWorkflow = this.lastExecutionData;
@@ -136,7 +136,7 @@ export class ActionbarComponent {
 
       } else {
 
-        if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
+        if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return; }
 
         if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
           this.workflows.updateHistory(e);

@@ -62,7 +62,7 @@ export class GeneralinfoComponent implements OnInit {
   /* including links to preview and collections
   */
   getDatasetInformation () {
-    if (!this.authentication.validatedUser()) { return false; }
+    if (!this.authentication.validatedUser()) { return; }
     if (this.datasetData) {
 
       if (!this.viewPreview) {

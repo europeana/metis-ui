@@ -57,8 +57,8 @@ export class LoginComponent implements OnInit {
   /** onSubmit
   /* submit login form
   */
-  onSubmit(): false | undefined {
-    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; }
+  onSubmit(): void {
+    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return; }
 
     this.loading = true;
     this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
@@ -72,7 +72,6 @@ export class LoginComponent implements OnInit {
       this.errorMessage = err.status === 406 ? this.msgBadCredentials : `Signin failed: ${StringifyHttpError(err)}`;
       this.loading = false;
     });
-    return;
   }
 
   /** redirectAfterLogin

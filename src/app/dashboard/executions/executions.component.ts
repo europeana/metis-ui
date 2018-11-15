@@ -74,10 +74,10 @@ export class ExecutionsComponent implements OnInit {
   /* get all ongoing executions, either in queue or running
   /* datasetname needs to be added to executions for use in table
   */
-  getOngoingExecutions() {
-    if (!this.authentication.validatedUser()) { return false; }
+  getOngoingExecutions(): void {
+    if (!this.authentication.validatedUser()) { return; }
     const executions = this.ongoingExecutionDataOutput;
-    if (!executions) { return false; }
+    if (!executions) { return; }
     this.ongoingExecutionsOutput = this.datasets.addDatasetNameAndCurrentPlugin(executions);
   }
 
@@ -85,8 +85,8 @@ export class ExecutionsComponent implements OnInit {
   /* get all executions, ordered by most recent started
   /* datasetname needs to be added to executions for use in table
   */
-  getAllExecutions() {
-    if (!this.executionDataOutput) { return false; }
+  getAllExecutions(): void {
+    if (!this.executionDataOutput) { return; }
     this.allExecutions = this.datasets.addDatasetNameAndCurrentPlugin(this.executionDataOutput);
     this.currentNumberOfRecords = this.allExecutions.length;
   }

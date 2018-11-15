@@ -87,7 +87,7 @@ export class MappingComponent implements OnInit {
         }
       }
 
-      if (!taskId) { return false; }
+      if (!taskId) { return; }
       this.successMessage = 'Loading statistics';
       this.workflows.getStatistics('validation', taskId).subscribe(resultStatistics => {
         this.statistics = resultStatistics['nodeStatistics'];

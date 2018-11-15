@@ -44,7 +44,7 @@ export class OngoingexecutionsComponent {
   */
   ngOnInit() {
     this.startPolling();
-    if (!this.datasets.updateLog) { return false; }
+    if (!this.datasets.updateLog) { return; }
     this.datasets.updateLog.subscribe(
       log => {
         if (this.isShowingLog) {
@@ -76,11 +76,11 @@ export class OngoingexecutionsComponent {
   /*  showing up to 5 executions
   */
   getOngoing() {
-    if (!this.authentication.validatedUser()) { return false; }
+    if (!this.authentication.validatedUser()) { return; }
 
     const executions = this.ongoingExecutionDataOutput;
     const max = 5;
-    if (!executions) { return false; }
+    if (!executions) { return; }
 
     this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen);
     if (executions.length > max) {
@@ -95,7 +95,7 @@ export class OngoingexecutionsComponent {
   /* @param {number} id - id of the dataset to cancel
   */
   cancelWorkflow(id) {
-    if (!id) { return false; }
+    if (!id) { return; }
     this.getOngoing();
     this.workflows.promptCancelThisWorkflow(id);
   }

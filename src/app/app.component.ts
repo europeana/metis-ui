@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
   public ngOnInit(): void {
 
     this.router.events.subscribe((event: any) => {
-      if (!event.url) { return false; }
+      if (!event.url) { return; }
       if (this.router.isActive(event.url, false)) {
         this.loggedIn = this.authentication.validatedUser( );
 
@@ -46,7 +46,6 @@ export class AppComponent implements OnInit {
 
         this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
       }
-      return;
     });
 
     this.workflows.promptCancelWorkflow.subscribe((workflow: string) => {

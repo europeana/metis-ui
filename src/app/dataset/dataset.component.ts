@@ -94,10 +94,10 @@ export class DatasetComponent implements OnInit {
   /*  returns all dataset information based on identifier
   /* @param {string} id - dataset identifier
   */
-  returnDataset(id?: string): void | false {
+  returnDataset(id?: string): void {
     if (!id) {
       this.loadTabComponent();
-      return false;
+      return;
     }
 
     this.datasets.getDataset(id).subscribe(result => {
@@ -160,9 +160,9 @@ export class DatasetComponent implements OnInit {
   /** loadTabComponent
   /*  loads the content within the placeholder
   */
-  loadTabComponent(): void | false {
+  loadTabComponent(): void {
 
-    if (!this.getCurrentTab()) {return false; }
+    if (!this.getCurrentTab()) {return; }
 
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab()!.component);
     const viewContainerRef = this.datasetHost.viewContainerRef;

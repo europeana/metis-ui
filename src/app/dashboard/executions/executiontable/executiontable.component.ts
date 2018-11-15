@@ -38,8 +38,8 @@ export class ExecutiontableComponent implements OnInit {
   /*  start cancellation of the dataset with id
   /* @param {number} id - id of the dataset to cancel
   */
-  cancelWorkflow(id) {
-    if (!id) { return false; }
+  cancelWorkflow(id): void {
+    if (!id) { return; }
     this.workflows.promptCancelThisWorkflow(id);
   }
 

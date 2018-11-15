@@ -267,16 +267,16 @@ export class WorkflowComponent implements OnInit {
   /* if dataset does not exist, display message
   /* get workflow for this dataset, could be empty
   */
-  getWorkflow(): false | undefined {
+  getWorkflow(): void {
     if (!this.datasetData) {
       if (typeof this.translate.instant === 'function') {
         this.errorMessage = this.translate.instant('create dataset');
       }
-      return false;
+      return;
     }
 
     const workflow = this.workflowData;
-    if (!workflow) { return false; }
+    if (!workflow) { return; }
     this.newWorkflow = false;
 
     for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
@@ -314,7 +314,7 @@ export class WorkflowComponent implements OnInit {
 
       // media processing + link checking
       if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
-        if (!thisWorkflow.connectionLimitToDomains) { return false; }
+        if (!thisWorkflow.connectionLimitToDomains) { return; }
         this.removeAllConnections(thisWorkflow.pluginType);
         const connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
         for (let lc = 0; lc < connectionDomains.length; lc++) {
@@ -330,7 +330,6 @@ export class WorkflowComponent implements OnInit {
         }
       }
     }
-    return;
   }
 
   /** formatFormValues
@@ -459,8 +458,8 @@ export class WorkflowComponent implements OnInit {
   /* cannot submit when there is no dataset yet
   /* submit the form
   */
-  onSubmit(): false | undefined {
-    if (!this.datasetData) { return false; }
+  onSubmit(): void {
+    if (!this.datasetData) { return; }
     this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(() => {
       this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowDataset => {
         this.workflowData = workflowDataset;
@@ -473,7 +472,6 @@ export class WorkflowComponent implements OnInit {
       this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
       this.scrollToMessageBox();
     });
-    return;
   }
 
   /** onClickedOutside

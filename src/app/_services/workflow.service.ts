@@ -24,7 +24,7 @@ export class WorkflowService {
 
   @Output() changeWorkflow: EventEmitter<WorkflowExecution> = new EventEmitter();
   @Output() selectedWorkflow: EventEmitter<boolean> = new EventEmitter();
-  @Output() workflowIsDone: EventEmitter<string> = new EventEmitter();
+  @Output() workflowIsDone: EventEmitter<boolean> = new EventEmitter();
   @Output() updateHistoryPanel: EventEmitter<Workflow> = new EventEmitter();
   @Output() promptCancelWorkflow: EventEmitter<string | false> = new EventEmitter();
   @Output() workflowCancelled: EventEmitter<boolean> = new EventEmitter();
@@ -303,10 +303,10 @@ export class WorkflowService {
 
   /** workflowDone
   /*  indicate when workflow is done, and emit changes so other components can act upon
-  /* @param {string} status - status of the workflow that just finished running
+  /* @param {boolean} done - is the workflow done
   */
-  workflowDone(status: string): void {
-    this.workflowIsDone.emit(status);
+  workflowDone(done: boolean): void {
+    this.workflowIsDone.emit(done);
   }
 
   /** updateHistory
