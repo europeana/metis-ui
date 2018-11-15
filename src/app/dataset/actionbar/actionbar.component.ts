@@ -5,6 +5,7 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, AuthenticationService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { LogStatus } from '../../_models/log-message';
 
 @Component({
   selector: 'app-actionbar',
@@ -21,7 +22,7 @@ export class ActionbarComponent {
       private errors: ErrorService,
       private translate: TranslateService) { }
 
-  @Input('isShowingLog') isShowingLog: boolean;
+  @Input('isShowingLog') isShowingLog: LogStatus;
   @Input('datasetData') datasetData;
   @Input('lastExecutionData') lastExecutionData;
   @Input('workflowData') workflowData;

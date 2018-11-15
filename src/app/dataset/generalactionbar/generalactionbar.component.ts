@@ -1,10 +1,13 @@
 
-import {timer as observableTimer, Observable} from 'rxjs';
+import { Subscription, timer as observableTimer } from 'rxjs';
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { WorkflowService, TranslateService, ErrorService, AuthenticationService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { WorkflowExecution } from '../../_models/workflow-execution';
+import { Workflow } from '../../_models/workflow';
+import { Dataset } from '../../_models/dataset';
 
 @Component({
   selector: 'app-generalactionbar',
@@ -18,9 +21,9 @@ export class GeneralactionbarComponent implements OnInit {
     private authentication: AuthenticationService,
     private errors: ErrorService) { }
 
-  @Input('datasetData') datasetData;
-  @Input('lastExecutionData') lastExecutionData;
-  @Input('workflowData') workflowData;
+  @Input('datasetData') datasetData: Dataset;
+  @Input('lastExecutionData') lastExecutionData: WorkflowExecution;
+  @Input('workflowData') workflowData: Workflow;
   activeSet: string;
   addWorkflow = false;
   statusCheck: number;
@@ -30,7 +33,7 @@ export class GeneralactionbarComponent implements OnInit {
   currentPlugin: number;
   totalPlugins: number;
   pluginPercentage: number;
-  subscription;
+  subscription: Subscription;
   intervalTimer: number = environment.intervalStatusShort;
 
   /** ngOnInit
@@ -38,7 +41,7 @@ export class GeneralactionbarComponent implements OnInit {
   /* set active dataset
   /* poll to check the status of this dataset + workflow history
   */
-  ngOnInit() {
+  ngOnInit(): void {
     if (!this.datasetData) { return; }
     this.activeSet = this.datasetData.datasetId;
     this.checkStatus();
@@ -52,7 +55,7 @@ export class GeneralactionbarComponent implements OnInit {
   /*  check status of current dataset: is there already workflow info
   /* is there already an execution (running or not)
   */
-  checkStatus() {
+  checkStatus(): void {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
@@ -64,7 +67,7 @@ export class GeneralactionbarComponent implements OnInit {
   /** returnWorkflowInfo
   /*  check if workflow info is already available
   */
-  returnWorkflowInfo () {
+  returnWorkflowInfo (): void {
     if (!this.datasetData || !this.authentication.validatedUser()) { return; }
     const workflowinfo = this.workflowData;
     if (workflowinfo) {
@@ -73,14 +76,14 @@ export class GeneralactionbarComponent implements OnInit {
     } else {
       this.addWorkflow = true;
     }
-    
+
     if (this.statusCheck > 1) { this.displayWorkflowButton = true; }
   }
 
   /** returnLastExecution
   /*  get the last action for this dataset and display its status in the progress/actionbar
   */
-  returnLastExecution () {
+  returnLastExecution (): void {
     if (!this.datasetData) { return; }
     const workflow = this.lastExecutionData;
     if (workflow) {
@@ -94,7 +97,7 @@ export class GeneralactionbarComponent implements OnInit {
   /** selectWorkflow
   /*  select the workflow, so it would be triggered
   */
-  selectWorkflow() {
+  selectWorkflow(): void {
     this.workflows.selectWorkflow();
     if (this.subscription) { this.subscription.unsubscribe(); }
     this.checkStatus();

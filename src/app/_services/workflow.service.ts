@@ -88,7 +88,7 @@ export class WorkflowService {
   /* @param {number} start - start from ...
   /* @param {number} finish - to ...
   */
-  getLogs(taskId?: number, topologyName?: string, start?: number, finish?: number): Observable<SubTaskInfo[]> {
+  getLogs(taskId?: string, topologyName?: string, start?: number, finish?: number): Observable<SubTaskInfo[]> {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=${start}&to=${finish}`;

@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DatasetsService, TranslateService, WorkflowService, ErrorService, AuthenticationService } from '../../_services';
-import { Observable, timer as observableTimer } from 'rxjs';
+import { Subscription, timer as observableTimer } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { apiSettings } from '../../../environments/apisettings';
+import { Workflow } from '../../_models/workflow';
 
 @Component({
   selector: 'app-generalinfo',
@@ -20,10 +21,10 @@ export class GeneralinfoComponent implements OnInit {
 
   @Input() datasetData: any;
   harvestPublicationData: any;
-  subscription;
+  subscription: Subscription;
   intervalTimer = environment.intervalStatusLong;
-  viewPreview;
-  viewCollections;
+  viewPreview: string;
+  viewCollections: string;
   buttonClassPreview = 'btn-disabled';
   buttonClassCollections = 'btn-disabled';
 
@@ -32,13 +33,13 @@ export class GeneralinfoComponent implements OnInit {
   /* and set translation languages
   /* if dataset, try to retrieve information about harvest and publication
   */
-  ngOnInit() {
+  ngOnInit(): void {
     if (typeof this.translate.use === 'function') {
       this.translate.use('en');
     }
 
     this.workflows.changeWorkflow.subscribe(
-      workflow => {
+      () => {
         this.getDatasetInformation();
       }
     );
@@ -53,7 +54,7 @@ export class GeneralinfoComponent implements OnInit {
   /** ngOnDestroy
   /* cancel subscriptions to check for current available dataset information
   */
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.subscription) { this.subscription.unsubscribe(); }
   }
 
@@ -61,7 +62,7 @@ export class GeneralinfoComponent implements OnInit {
   /* get information about dataset
   /* including links to preview and collections
   */
-  getDatasetInformation () {
+  getDatasetInformation (): void {
     if (!this.authentication.validatedUser()) { return; }
     if (this.datasetData) {
 
@@ -84,7 +85,7 @@ export class GeneralinfoComponent implements OnInit {
   /** escapeSolr
   /* format urls to link and preview
   */
-  escapeSolr(url) {
+  escapeSolr(url: string): string {
     const pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
     return url.replace(pattern, '\\$1');
   }

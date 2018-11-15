@@ -6,6 +6,7 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService, AuthenticationService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { LogStatus } from '../../_models/log-message';
 
 @Component({
   selector: 'app-ongoingexecutions',
@@ -20,8 +21,8 @@ export class OngoingexecutionsComponent {
     private translate: TranslateService,
     private datasets: DatasetsService) { }
 
-  @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
-  @Input('isShowingLog') isShowingLog;
+  @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
+  @Input('isShowingLog') isShowingLog: LogStatus;
   @Input('runningExecutionDataOutput') ongoingExecutionDataOutput;
 
   ongoingExecutions;
