@@ -6,7 +6,7 @@ import { StringifyHttpError } from '../_helpers';
 
 import { environment } from '../../environments/environment';
 import {timer as observableTimer, Observable} from 'rxjs';
-import { LogStatus } from '../_models/log-message';
+import { LogStatus } from '../_models/log-status';
 import { WorkflowExecution } from '../_models/workflow-execution';
 import { Dataset } from '../_models/dataset';
 

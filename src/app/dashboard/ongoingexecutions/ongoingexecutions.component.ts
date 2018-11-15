@@ -6,7 +6,7 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, ErrorService, TranslateService, DatasetsService, AuthenticationService } from '../../_services';
 import { environment } from '../../../environments/environment';
-import { LogStatus } from '../../_models/log-message';
+import { LogStatus } from '../../_models/log-status';
 
 @Component({
   selector: 'app-ongoingexecutions',

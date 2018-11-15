@@ -5,7 +5,7 @@ import {timer as observableTimer, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 import { WorkflowService, AuthenticationService, TranslateService, ErrorService } from '../../_services';
-import { LogStatus } from '../../_models/log-message';
+import { LogStatus } from '../../_models/log-status';
 
 @Component({
   selector: 'app-datasetlog',

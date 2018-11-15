@@ -5,7 +5,7 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, AuthenticationService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
-import { LogStatus } from '../../_models/log-message';
+import { LogStatus } from '../../_models/log-status';
 
 @Component({
   selector: 'app-actionbar',
