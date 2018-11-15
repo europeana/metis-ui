@@ -4,6 +4,7 @@ import { Language } from './language';
 export interface Dataset {
   id: string;
   datasetId: string;
+  ecloudDatasetId: string;
   datasetName: string;
   organizationId: string;
   organizationName: string;
@@ -23,5 +24,5 @@ export interface Dataset {
   description?: string;
   notes?: string;
 
-  xsltId?: string;
+  xsltId?: string | null;
 }
