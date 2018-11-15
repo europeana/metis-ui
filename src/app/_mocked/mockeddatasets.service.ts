@@ -52,8 +52,8 @@ export class MockDatasetService extends DatasetsService {
     return observableOf(currentDataset);
   }
 
-  updateDataset(): Observable<boolean> {
-    return observableOf(true);
+  updateDataset(): Observable<void> {
+    return observableOf(undefined);
   }
 
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {

@@ -189,11 +189,9 @@ export class WorkflowService {
   /* cancel the running execution for a datasetid
   /* @param {number} id - id of the workflow
   */
-  cancelThisWorkflow(id: string): Observable<void | boolean> {
+  cancelThisWorkflow(id: string): Observable<void> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}`;
-    return this.http.delete<boolean>(url).pipe(map(canceledWorkflow => {
-      return canceledWorkflow ? canceledWorkflow : false;
-    }));
+    return this.http.delete<void>(url);
   }
 
   /** promptCancelThisWorkflow

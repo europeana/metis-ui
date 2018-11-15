@@ -72,7 +72,7 @@ export class DatasetsService {
   /* update an existing dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
-  updateDataset(datasetFormValues: { dataset: any }): Observable<void | boolean> {
+  updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }

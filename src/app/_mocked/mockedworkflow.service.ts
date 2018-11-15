@@ -210,8 +210,8 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(currentWorkflow.results[0]);
   }
 
-  cancelThisWorkflow(): Observable<void | boolean> {
-    return observableOf(false);
+  cancelThisWorkflow(): Observable<void> {
+    return observableOf(undefined);
   }
 
   getAllExecutions(): Observable<Results<WorkflowExecution[]>> {
