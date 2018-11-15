@@ -62,7 +62,7 @@ describe('HistoryComponent', () => {
     component.datasetData = currentDataset;
     fixture.detectChanges();
 
-    component.openReport(123, 'mocked');
+    component.openReport('123', 'mocked');
     fixture.detectChanges();
     expect(component.report).not.toBe('');
   });
@@ -106,7 +106,7 @@ describe('HistoryComponent', () => {
   });
 
   it('should copy something to the clipboard', () => {
-    component.copyInformation('plugin', 1, 2);
+    component.copyInformation('plugin', '1', '2');
     expect(component.contentCopied).toBe(true);
   });
 

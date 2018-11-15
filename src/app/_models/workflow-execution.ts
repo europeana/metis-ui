@@ -19,6 +19,8 @@ export interface PluginExecution {
   executionProgress: ExecutionProgress;
   pluginMetadata: PluginMetadata;
   topologyName: string;
+
+  hasReport?: boolean;
 }
 
 export interface WorkflowExecution {
