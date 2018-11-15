@@ -81,7 +81,7 @@ describe('MappingComponent', () => {
     component.successMessage = 'test';
     component.closeMessages();
     fixture.detectChanges();
-    expect(component.successMessage).toBe(undefined);
+    expect(component.successMessage).toBeFalsy();
   });
 
   it('should display xslt in cards', () => {

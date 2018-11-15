@@ -2,22 +2,22 @@ import { Injectable } from '@angular/core';
 @Injectable()
 
 export class RedirectPreviousUrl {
-  private url: string | null;
+  private url: string | undefined;
 
   /** set
   /*  set the url to redirect to
   /* @param {string} url - url of redirect
   */
-  set(_url: string): void {
+  set(_url: string | undefined): void {
     this.url = _url;
   }
 
   /** get
   /*  return the redirect url
   */
-  get(): string | null {
+  get(): string | undefined {
     const previous_url = this.url;
-    this.url = null;
+    this.url = undefined;
     return previous_url;
   }
 }

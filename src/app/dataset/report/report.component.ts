@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WorkflowService, TranslateService } from '../../_services';
+import { ReportError } from '../../_models/report';
 
 @Component({
   selector: 'app-report',
@@ -10,7 +11,7 @@ export class ReportComponent implements OnInit {
   constructor(private workflows: WorkflowService,
     private translate: TranslateService) { }
 
-  report;
+  report?: ReportError[];
   reportKeys: (o: Object) => string[];
 
   /** ngOnInit

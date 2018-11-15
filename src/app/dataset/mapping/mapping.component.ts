@@ -40,7 +40,7 @@ export class MappingComponent implements OnInit {
   xsltToSave: Array<any> = [];
   xsltHeading: string;
   errorMessage: string;
-  successMessage: string;
+  successMessage?: string;
   fullView = true;
   splitter: string = environment.xsltSplitter;
   expandedSample: number;
