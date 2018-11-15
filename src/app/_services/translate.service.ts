@@ -5,7 +5,7 @@ import { TRANSLATIONS } from '../_translate/translation';
 export class TranslateService {
   private _currentLang: string;
 
-  public get currentLang() {
+  public get currentLang(): string {
       return this._currentLang;
   }
 
@@ -36,7 +36,7 @@ export class TranslateService {
   /*  translate this value in current language
   /* @param {string} key - value to translate
   */
-  public instant(key: string) {
+  public instant(key: string): string {
     return this.translate(key);
   }
 }
