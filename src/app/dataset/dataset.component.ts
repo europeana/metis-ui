@@ -41,8 +41,8 @@ export class DatasetComponent implements OnInit {
 
   @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
 
-  activeTab = 'new';
-  prevTab: string;
+  activeTab: string | undefined = 'new';
+  prevTab: string | undefined;
   showLog = false;
   user: User | null;
   errorMessage?: string;
@@ -53,7 +53,7 @@ export class DatasetComponent implements OnInit {
   tabsLoaded = false;
 
   public isShowingLog: boolean;
-  public datasetData?: Dataset;
+  public datasetData: Dataset;
   public activeSet: string;
   public workflowData?: Workflow;
   public harvestPublicationData?: HarvestData;

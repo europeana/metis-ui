@@ -88,9 +88,9 @@ describe('DatasetComponent', () => {
   });
 
   it('should be possible to display a message', () => {
-    component.onNotifyShowLogStatus('mocked');
+    component.onNotifyShowLogStatus(true);
     fixture.detectChanges();
-    expect(component.isShowingLog).toBe('mocked');
+    expect(component.isShowingLog).toBe(true);
 
     component.clickOutsideMessage();
     fixture.detectChanges();
