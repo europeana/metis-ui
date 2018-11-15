@@ -1,6 +1,6 @@
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 
-export function harvestValidator(control: AbstractControl) {
+export function harvestValidator(control: AbstractControl): ValidationErrors | null {
   if (control.value.indexOf('?') >= 0) {
     return {'validParameter': true };
   }
