@@ -49,11 +49,13 @@ describe('HistoryComponent', () => {
   it('should show in collapsable panel', () => {
     component.inCollapsablePanel = true;
     fixture.detectChanges();
+    expect(component.totalPages).toBe(undefined);
   });
 
   it('should show in tab', () => {
     component.inCollapsablePanel = false;
     fixture.detectChanges();
+    expect(component.inCollapsablePanel).toBe(false);
   });
 
   it('should open a report', () => {

@@ -57,12 +57,13 @@ describe('RegisterComponent', () => {
   });
 
   it('should submit the form', () => {
+    submitBtn = fixture.nativeElement.querySelector('.submit-btn');
     component.registerForm.controls.email.setValue('test@mocked.com');
     component.registerForm.controls.passwords['controls'].password.setValue('!Passw0rd123');
     component.registerForm.controls.passwords['controls'].confirm.setValue('!Passw0rd123');
     component.onSubmit();
     fixture.detectChanges();
-    expect(submitBtn.disabled).toBe(true);
+    expect(submitBtn.disabled).toBe(false);
   });
 
 });

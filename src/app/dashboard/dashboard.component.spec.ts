@@ -61,7 +61,7 @@ describe('DashboardComponent', () => {
     component.currentPageHistory = 1;
     component.getExecutions();
     fixture.detectChanges();
-    //expect(component.currentPageHistory).toBe(1);
+    expect(component.currentPageHistory).toBe(1);
   });
 
 });

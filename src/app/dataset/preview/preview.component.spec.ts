@@ -78,6 +78,7 @@ describe('PreviewComponent', () => {
     component.datasetData = currentDataset;
     component.transformSamples('default');
     fixture.detectChanges();
+    expect(component.allSamples.length).not.toBe(0);
   });
 
 });

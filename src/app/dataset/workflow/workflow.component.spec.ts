@@ -101,6 +101,7 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('pluginLINK_CHECKING').setValue(true);
     component.onSubmit();
     fixture.detectChanges();
+    expect(component.successMessage).not.toBe(undefined);
   });
 
 });
