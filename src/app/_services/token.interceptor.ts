@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class TokenInterceptor implements HttpInterceptor {
 
-  private auth;
+  private auth: AuthenticationService;
   constructor(private inj: Injector) {}
 
   /** intercept
