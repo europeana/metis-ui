@@ -12,6 +12,7 @@ import { ErrorService } from './error.service';
 import { WorkflowService } from './workflow.service';
 import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
+import { WorkflowExecution } from '../_models/workflow-execution';
 
 @Injectable()
 export class DatasetsService {
@@ -21,7 +22,7 @@ export class DatasetsService {
   private datasets = [];
   datasetMessage: string;
   tempPreviewFilers: string[];
-  datasetNames: string[] = [];
+  datasetNames: { [id: string]: string } = {};
   tempXSLT: string | null;
   currentTaskId: string;
 
@@ -48,34 +49,27 @@ export class DatasetsService {
   /* get all information related to the dataset
   /* @param {string} id - datasetid
   */
-  getDataset(id: string): Observable<Dataset | false> {
+  getDataset(id: string): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;
-    return this.http.get<Dataset | null>(url)
-      .pipe(map(dataset => {
-        return dataset ? dataset : false;
-      })).pipe(this.errors.handleRetry());
+    return this.http.get<Dataset>(url).pipe(this.errors.handleRetry());
   }
 
   /** createDataset
   /* create a new dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
-  createDataset(datasetFormValues: Dataset): Observable<Dataset | false> {
+  createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.post<Dataset | null>(url, datasetFormValues).pipe(map(newDataset => {
-      return newDataset ? newDataset : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.post<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }
 
   /** updateDataset
   /* update an existing dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
-  updateDataset(datasetFormValues: Dataset): Observable<Dataset | false> {
+  updateDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.put<Dataset | null>(url, datasetFormValues).pipe(map(updateDataset => {
-      return updateDataset ? updateDataset : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.put<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }
 
   /** addDatasetNameAndCurrentPlugin
@@ -84,12 +78,12 @@ export class DatasetsService {
   /* make a call to get dataset name and store it in the array
   /* @param {object} executions - the executions retrieved from a call
   */
-  addDatasetNameAndCurrentPlugin(executions, currentDatasetId?) {
+  addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): WorkflowExecution[] {
     const updatedExecutions: Array<any> = [];
     for (let i = 0; i < executions.length; i++) {
       executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
 
-      const thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin];
+      const thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin!];
 
       if (executions[i].datasetId === currentDatasetId) {
         if (this.currentTaskId !== thisPlugin['externalTaskId']) {
@@ -140,16 +134,16 @@ export class DatasetsService {
   /* get default xslt
   /* the default one
   */
-  getXSLT(type: string, id?: string): string | false {
+  getXSLT(type: string, id?: string): Observable<string> {
     let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
-    let options = { responseType: 'text' as any };
+    let options: { responseType: any } | undefined = { responseType: 'text' };
     if (type === 'custom') {
       url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;
       options = undefined;
     }
 
-    return this.http.get<string | null>(url, options).pipe(map(data => {
-      return data ? (type === 'default' ? data : data['xslt']) : false;
+    return this.http.get<any>(url, options).pipe(map(data => { // TODO: fix any
+      return type === 'default' ? data : data['xslt'];
     })).pipe(this.errors.handleRetry());
   }
 
@@ -159,14 +153,12 @@ export class DatasetsService {
   /* @param {string} id - dataset identifier
   /* @param {object} samples - samples to transform
   */
-  getTransform(id: string, samples: XmlSample[], type: string): Observable<XmlSample[] | false> {
+  getTransform(id: string, samples: XmlSample[], type: string): Observable<XmlSample[]> {
     let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;
     if (type === 'default') {
       url += '/default';
     }
-    return this.http.post<XmlSample[] | null>(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(map(data => {
-      return data ? data : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.post<XmlSample[]>(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(this.errors.handleRetry());
   }
 
   /** setTempXSLT
@@ -179,7 +171,7 @@ export class DatasetsService {
   /** getTempXSLT
   /* temporary save xslt to use in transformation on the fly
   */
-  getTempXSLT(): string {
+  getTempXSLT(): string | null {
     return this.tempXSLT;
   }
 

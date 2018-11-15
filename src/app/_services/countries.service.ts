@@ -21,20 +21,16 @@ export class CountriesService {
   /** getCountries
   /* get a list of countries
   */
-  getCountries(): Observable<Country[] | false> {
+  getCountries(): Observable<Country[]> {
     const url = `${apiSettings.apiHostCore}/datasets/countries`;
-    return this.http.get<Country[]>(url).pipe(map(data => {
-      return data ? data : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Country[]>(url).pipe(this.errors.handleRetry());
   }
 
   /** getLanguages
   /* get a list of languages
   */
-  getLanguages(): Observable<Language[] | false> {
+  getLanguages(): Observable<Language[]> {
     const url = `${apiSettings.apiHostCore}/datasets/languages`;
-    return this.http.get<Language[]>(url).pipe(map(data => {
-      return data ? data : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Language[]>(url).pipe(this.errors.handleRetry());
   }
 }

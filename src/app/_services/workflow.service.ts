@@ -1,5 +1,5 @@
 
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -34,28 +34,24 @@ export class WorkflowService {
   activeExternalTaskId: string;
   allWorkflows: WorkflowExecution[];
   currentPage: { [component: string]: number } = {};
-  currentProcessing: { processed: string; topology: string };
+  currentProcessing: { processed: number; topology: string };
 
   /** getWorkflowForDataset
   /*  check if there is a workflow for this specific dataset
   /* @param {string} id - dataset identifier
   */
-  getWorkflowForDataset (id: string): Observable<Workflow | false> {
+  getWorkflowForDataset (id: string): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
-    return this.http.get<Workflow | null>(url).pipe(map(workflowData => {
-      return workflowData ? workflowData : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Workflow>(url).pipe(this.errors.handleRetry());
   }
 
   /** getPublishedHarvestedData
   /*  get data about publication and harvest
   /* @param {string} id - dataset identifier
   */
-  getPublishedHarvestedData(id: string): Observable<HarvestData | false> {
+  getPublishedHarvestedData(id: string): Observable<HarvestData> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;
-    return this.http.get<HarvestData | null>(url).pipe(map(harvestedData => {
-      return harvestedData ? harvestedData : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<HarvestData>(url).pipe(this.errors.handleRetry());
   }
 
   /** createWorkflowForDataset
@@ -64,16 +60,12 @@ export class WorkflowService {
   /* @param {object} values - form values
   /* @param {boolean} newWorkflow - is this a new workflow or one to update
   */
-  createWorkflowForDataset (id: string, values: Workflow, newWorkflow: boolean): Observable<Workflow | false> {
+  createWorkflowForDataset (id: string, values: Workflow, newWorkflow: boolean): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
     if (newWorkflow === false) {
-      return this.http.put<Workflow | null>(url, values).pipe(map(newWorkflowData => {
-        return newWorkflowData ? newWorkflowData : false;
-      })).pipe(this.errors.handleRetry());
+      return this.http.put<Workflow>(url, values).pipe(this.errors.handleRetry());
     } else {
-      return this.http.post<Workflow | null>(url, values).pipe(map(updatedWorkflowData => {
-        return updatedWorkflowData ? updatedWorkflowData : false;
-      })).pipe(this.errors.handleRetry());
+      return this.http.post<Workflow>(url, values).pipe(this.errors.handleRetry());
     }
   }
 
@@ -81,14 +73,12 @@ export class WorkflowService {
   /*  trigger a new workflow
   /* @param {string} id - dataset identifier
   */
-  public triggerNewWorkflow (id: string): Observable<WorkflowExecution | false> {
+  public triggerNewWorkflow (id: string): Observable<WorkflowExecution> {
     const priority = 0;
     const enforce = '';
 
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;
-    return this.http.post<WorkflowExecution | null>(url, JSON.stringify('{}')).pipe(map(newWorkflowExecution => {
-      return newWorkflowExecution ? newWorkflowExecution : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.post<WorkflowExecution>(url, JSON.stringify('{}')).pipe(this.errors.handleRetry());
   }
 
   /** getLogs
@@ -98,14 +88,12 @@ export class WorkflowService {
   /* @param {number} start - start from ...
   /* @param {number} finish - to ...
   */
-  getLogs(taskId?: number, topologyName?: string, start?: number, finish?: number): Observable<SubTaskInfo[] | false> {
+  getLogs(taskId?: number, topologyName?: string, start?: number, finish?: number): Observable<SubTaskInfo[]> {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=${start}&to=${finish}`;
 
-    return this.http.get<SubTaskInfo[] | null>(url).pipe(map(logData => {
-      return logData ? logData : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
   /** getReport
@@ -113,13 +101,11 @@ export class WorkflowService {
   /* @param {number} taskId - identifier of task
   /* @param {string} topologyName - name of the topology
   */
-  getReport(taskId: string, topologyName: string): Observable<Report | false> {
+  getReport(taskId: string, topologyName: string): Observable<Report> {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;
-    return this.http.get<Report | null>(url).pipe(map(reportData => {
-      return reportData ? reportData : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Report>(url).pipe(this.errors.handleRetry());
   }
 
   /** getAllExecutions
@@ -127,17 +113,12 @@ export class WorkflowService {
   /* @param {string} id - identifier of dataset
   /* @param {number} page - number of next page, optional
   */
-  getAllExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]> | false> {
+  getAllExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     console.log('getAllExecutions', url);
-    return this.http.get<Results<WorkflowExecution[]> | null>(url).pipe(map(allExecutions => {
-      if (allExecutions) {
-        this.allWorkflows = allExecutions.results;
-        return allExecutions;
-      } else {
-        return false;
-      }
+    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(tap(allExecutions => {
+      this.allWorkflows = allExecutions.results;
     })).pipe(this.errors.handleRetry());
   }
 
@@ -146,15 +127,9 @@ export class WorkflowService {
   /* @param {string} id - identifier of dataset
   /* @param {number} page - number of next page, optional
   */
-  getAllExecutionsEveryStatus(id: string, page?: number): Observable<Results<WorkflowExecution[]> | false> {
+  getAllExecutionsEveryStatus(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution[]> | null>(url).pipe(map(allExecutionsStatus => {
-      if (allExecutionsStatus) {
-        return allExecutionsStatus;
-      } else {
-        return false;
-      }
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
   /** getAllFinishedExecutions
@@ -162,21 +137,19 @@ export class WorkflowService {
   /* @param {string} id - identifier of dataset
   /* @param {number} page - number of next page, optional
   */
-  getAllFinishedExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]> | false> {
+  getAllFinishedExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution[]> | null>(url).pipe(map(finishedExecutions => {
-      return finishedExecutions ? finishedExecutions : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
   /** getLastExecution
   /*  get most recent execution for specific datasetid
   /* @param {string} id - identifier of dataset
   */
-  getLastExecution(id: string): Observable<WorkflowExecution | false> {
+  getLastExecution(id: string): Observable<WorkflowExecution> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?&orderField=CREATED_DATE&ascending=false`;
-    return this.http.get<Results<WorkflowExecution[]> | null>(url).pipe(map(lastExecution => {
-      return lastExecution ? lastExecution.results[0] : false;
+    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(map(lastExecution => {
+      return lastExecution.results[0];
     })).pipe(this.errors.handleRetry());
   }
 
@@ -185,7 +158,7 @@ export class WorkflowService {
   /* @param {number} page - number of next page
   /* @param {boolean} ongoing - ongoing executions only, optional
   */
-  getAllExecutionsPerOrganisation(page: number, ongoing?: boolean): Observable<Results<WorkflowExecution[]> | false> {
+  getAllExecutionsPerOrganisation(page: number, ongoing?: boolean): Observable<Results<WorkflowExecution[]>> {
     let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     if (ongoing) {
       url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
@@ -193,9 +166,7 @@ export class WorkflowService {
       url += '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED';
     }
 
-    return this.http.get<Results<WorkflowExecution[]> | null>(url).pipe(map(executionsOrganisation => {
-      return executionsOrganisation ? executionsOrganisation : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
   /** getCurrentPlugin
@@ -246,10 +217,10 @@ export class WorkflowService {
   /* @param {number} executionId - id of the execution
   /* @param {string} pluginType - name of the plugin
   */
-  getWorkflowSamples(executionId: string, pluginType: string): Observable<XmlSample[] | false> {
+  getWorkflowSamples(executionId: string, pluginType: string): Observable<XmlSample[]> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;
-    return this.http.get<{ records: XmlSample[] } | null>(url).pipe(map(samples => {
-      return samples ? samples['records'] : false;
+    return this.http.get<{ records: XmlSample[] }>(url).pipe(map(samples => {
+      return samples['records'];
     })).pipe(this.errors.handleRetry());
   }
 
@@ -258,11 +229,9 @@ export class WorkflowService {
   /* mocked data for now
   */
 
-  getStatistics(topologyName: string, taskId: string): Observable<Statistics | false> {
+  getStatistics(topologyName: string, taskId: string): Observable<Statistics> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
-    return this.http.get<Statistics | null>(url).pipe(map(statistics => {
-      return statistics ? statistics : false;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
   }
 
   /** setCurrentReport
@@ -284,14 +253,14 @@ export class WorkflowService {
   /* set information about the currently processing topology
   /* @param {object} report - data of current report
   */
-  setCurrentProcessed(processed: string, topology: string): void {
+  setCurrentProcessed(processed: number, topology: string): void {
     this.currentProcessing = {'processed': processed, 'topology': topology};
   }
 
   /** getCurrentProcessed
   /* get information about currently processing topology
   */
-  getCurrentProcessed(): { processed: string; topology: string } {
+  getCurrentProcessed(): { processed: number; topology: string } {
     return this.currentProcessing;
   }
 
