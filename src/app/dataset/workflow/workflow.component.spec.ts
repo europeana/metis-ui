@@ -51,7 +51,7 @@ describe('WorkflowComponent', () => {
   });
 
   it('should check for changes and update required fields', () => {
-    component.workflowForm.get('pluginHARVEST').setValue(true);
+    component.workflowForm.get('pluginHARVEST')!.setValue(true);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('#harvest-url')).length).toBe(0);
   });
@@ -87,18 +87,18 @@ describe('WorkflowComponent', () => {
 
   it('should submit the changes', () => {
     component.datasetData = currentDataset;
-    component.workflowForm.get('pluginHARVEST').setValue(true);
-    component.workflowForm.get('pluginType').setValue('OAIPMH_HARVEST');
-    component.workflowForm.get('pluginTRANSFORMATION').setValue(true);
-    component.workflowForm.get('customXslt').setValue('mocked');
-    component.workflowForm.get('pluginVALIDATION_EXTERNAL').setValue(true);
-    component.workflowForm.get('pluginVALIDATION_INTERNAL').setValue(true);
-    component.workflowForm.get('pluginNORMALIZATION').setValue(true);
-    component.workflowForm.get('pluginENRICHMENT').setValue(true);
-    component.workflowForm.get('pluginMEDIA_PROCESS').setValue(true);
-    component.workflowForm.get('pluginPREVIEW').setValue(true);
-    component.workflowForm.get('pluginPUBLISH').setValue(true);
-    component.workflowForm.get('pluginLINK_CHECKING').setValue(true);
+    component.workflowForm.get('pluginHARVEST')!.setValue(true);
+    component.workflowForm.get('pluginType')!.setValue('OAIPMH_HARVEST');
+    component.workflowForm.get('pluginTRANSFORMATION')!.setValue(true);
+    component.workflowForm.get('customXslt')!.setValue('mocked');
+    component.workflowForm.get('pluginVALIDATION_EXTERNAL')!.setValue(true);
+    component.workflowForm.get('pluginVALIDATION_INTERNAL')!.setValue(true);
+    component.workflowForm.get('pluginNORMALIZATION')!.setValue(true);
+    component.workflowForm.get('pluginENRICHMENT')!.setValue(true);
+    component.workflowForm.get('pluginMEDIA_PROCESS')!.setValue(true);
+    component.workflowForm.get('pluginPREVIEW')!.setValue(true);
+    component.workflowForm.get('pluginPUBLISH')!.setValue(true);
+    component.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
     component.onSubmit();
     fixture.detectChanges();
     expect(component.successMessage).not.toBe(undefined);

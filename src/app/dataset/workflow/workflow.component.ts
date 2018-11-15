@@ -7,6 +7,11 @@ import { WorkflowService, DatasetsService, AuthenticationService, RedirectPrevio
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, harvestValidator } from '../../_helpers';
+import { PluginMetadata } from '../../_models/plugin-metadata';
+
+interface Connections {
+  [host: string]: number;
+}
 
 @Component({
   selector: 'app-workflow',
@@ -20,7 +25,7 @@ export class WorkflowComponent implements OnInit {
     private workflows: WorkflowService,
     private authentication: AuthenticationService,
     private fb: FormBuilder,
-    private RedirectPreviousUrl: RedirectPreviousUrl,
+    private redirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
     private datePipe: DatePipe,
     private translate: TranslateService,
@@ -196,7 +201,7 @@ export class WorkflowComponent implements OnInit {
   /** initLimitConnections
   /* add new host/connections form group to the list
   */
-  initLimitConnections(host?: string, connections?) {
+  initLimitConnections(host?: string, connections?: Connections): FormGroup {
     return this.fb.group({
       host: [host ? host : ''],
       connections: [connections ? connections : '']
@@ -207,7 +212,7 @@ export class WorkflowComponent implements OnInit {
   /* add new host/connection to form
   /* @param {string} type - either link checking or media processing
   */
-  addConnection(type: string, host?: string, connections?): void {
+  addConnection(type: string, host?: string, connections?: Connections): void {
     let control: FormArray;
     if (type === 'LINK_CHECKING') {
       control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
@@ -331,9 +336,9 @@ export class WorkflowComponent implements OnInit {
   /** formatFormValues
   /* format the form values so they can be submitted in a proper format
   */
-  formatFormValues(): { metisPluginsMetadata: any[] } {
+  formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
 
-    const plugins = [];
+    const plugins: PluginMetadata[] = [];
 
     // import/harvest
     if (this.workflowForm.value['pluginHARVEST'] === true) {
@@ -440,8 +445,8 @@ export class WorkflowComponent implements OnInit {
   /* build a map with connections
   /* @param {object} formValuesConnections - connection values from form
   */
-  returnConnections (formValuesConnections) {
-    const connections = {};
+  returnConnections (formValuesConnections: Array<{ host: string; connections: number }>): Connections {
+    const connections: Connections = {};
     for (let c = 0; c < formValuesConnections.length; c++) {
       if (formValuesConnections[c]['host'] && formValuesConnections[c]['connections']) {
         connections[formValuesConnections[c]['host']] = Number(formValuesConnections[c]['connections']);
@@ -456,7 +461,7 @@ export class WorkflowComponent implements OnInit {
   */
   onSubmit(): false | undefined {
     if (!this.datasetData) { return false; }
-    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {
+    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(() => {
       this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowDataset => {
         this.workflowData = workflowDataset;
         this.getWorkflow();

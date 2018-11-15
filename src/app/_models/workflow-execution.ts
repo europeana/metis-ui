@@ -31,4 +31,7 @@ export interface WorkflowExecution {
   updatedDate: string;
   finishedDate?: string;
   metisPlugins: PluginExecution[];
+
+  datasetName?: string;
+  currentPlugin?: number;
 }

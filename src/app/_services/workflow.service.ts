@@ -60,7 +60,7 @@ export class WorkflowService {
   /* @param {object} values - form values
   /* @param {boolean} newWorkflow - is this a new workflow or one to update
   */
-  createWorkflowForDataset (id: string, values: Workflow, newWorkflow: boolean): Observable<Workflow> {
+  createWorkflowForDataset (id: string, values: Partial<Workflow>, newWorkflow: boolean): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
     if (newWorkflow === false) {
       return this.http.put<Workflow>(url, values).pipe(this.errors.handleRetry());

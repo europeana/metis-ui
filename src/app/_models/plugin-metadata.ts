@@ -1,6 +1,6 @@
 export interface PluginMetadata {
   pluginType: string;
   mocked?: boolean;
-  enabled: boolean;
+  enabled?: boolean;
   [key: string]: any;
 }
