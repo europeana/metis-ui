@@ -5,7 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthenticationService, TranslateService, ErrorService } from '../_services';
 import { User } from '../_models';
 import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
-import { environment } from 'environments/environment';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -16,9 +16,9 @@ import { environment } from 'environments/environment';
 export class ProfileComponent implements OnInit {
   editMode = false;
   loading = false;
-  errorMessage: string;
-  successMessage: string;
-  public password;
+  errorMessage?: string;
+  successMessage?: string;
+  public password: string;
   confirmPasswordError = false;
   emailInfo: string = environment.links.updateProfileMain;
   profileForm: FormGroup;
@@ -34,7 +34,7 @@ export class ProfileComponent implements OnInit {
   /* create the profile form
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.createForm();
     if (typeof this.translate.use === 'function') {
       this.translate.use('en');
@@ -45,8 +45,8 @@ export class ProfileComponent implements OnInit {
   /* create a profile form
   /* prefill the form with known data
   */
-  createForm() {
-    const user: User = this.authentication.currentUser;
+  createForm(): void {
+    const user: User | null = this.authentication.currentUser;
 
     if (user) {
       this.profileForm = this.fb.group({
@@ -75,7 +75,7 @@ export class ProfileComponent implements OnInit {
   /** toggleEditMode
   /* switch between readonly and edit mode
   */
-  toggleEditMode() {
+  toggleEditMode(): void {
     this.profileForm.controls.passwords.reset();
     this.onKeyupPassword();
 
@@ -91,11 +91,11 @@ export class ProfileComponent implements OnInit {
   /** onKeyupPassword
   /* get password when keyup
   */
-  onKeyupPassword() {
-    this.password = this.profileForm.controls.passwords.get('password').value;
+  onKeyupPassword(): void {
+    this.password = this.profileForm.controls.passwords.get('password')!.value;
   }
 
-  checkMatchingPasswords() {
+  checkMatchingPasswords(): void {
     if (MatchPasswordValidator(this.profileForm.controls.passwords) !== null) {
       this.confirmPasswordError = true;
     } else {
@@ -107,13 +107,13 @@ export class ProfileComponent implements OnInit {
   /* submit current password form
   /* which is a part of the profile form
   */
-  onSubmit() {
+  onSubmit(): void {
     this.errorMessage = undefined;
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
-    const password = passwords.get('password').value;
-    const oldpassword = passwords.get('oldpassword').value;
+    const password = passwords.get('password')!.value;
+    const oldpassword = passwords.get('oldpassword')!.value;
 
     this.authentication.updatePassword(password, oldpassword).subscribe(result => {
       if (result === true) {
@@ -133,7 +133,7 @@ export class ProfileComponent implements OnInit {
   /** onReloadProfile
   /* get most accurate user data from zoho
   */
-  onReloadProfile() {
+  onReloadProfile(): void {
     this.errorMessage = undefined;
     this.loading = true;
 

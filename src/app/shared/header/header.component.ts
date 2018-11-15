@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
 
   openSignIn = false;
   openSearch = false;
-  searchfilter;
+  searchfilter: string;
 
   @Input('loggedIn') loggedIn: boolean;
 
@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit {
   /* set search to default 'All'
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.openSignIn = false;
     this.searchfilter = 'All';
 
@@ -42,14 +42,14 @@ export class HeaderComponent implements OnInit {
   /** toggleSignInMenu
   /* toggle sign in menu
   */
-  toggleSignInMenu() {
+  toggleSignInMenu(): void {
     this.openSignIn = !this.openSignIn;
   }
 
   /** toggleSearchMenu
   /* toggle search menu
   */
-  toggleSearchMenu() {
+  toggleSearchMenu(): void {
     this.openSearch = !this.openSearch;
   }
 
@@ -57,7 +57,7 @@ export class HeaderComponent implements OnInit {
   /* open search filter
   /* @param {string} filter - selected filter
   */
-  filterSearch(filter) {
+  filterSearch(filter: string): void {
     this.openSearch = false;
     this.searchfilter = filter;
   }
@@ -65,7 +65,7 @@ export class HeaderComponent implements OnInit {
   /** gotoProfile
   /* go to profile page
   */
-  gotoProfile() {
+  gotoProfile(): void {
     this.openSignIn = false;
     this.router.navigate(['/profile']);
   }
@@ -73,7 +73,7 @@ export class HeaderComponent implements OnInit {
   /** gotoLogin
   /* go to login(=signin) page
   */
-  gotoLogin() {
+  gotoLogin(): void {
     this.openSignIn = false;
     this.router.navigate(['/signin']);
   }
@@ -81,7 +81,7 @@ export class HeaderComponent implements OnInit {
   /** gotoRegister
   /* go to registration page
   */
-  gotoRegister() {
+  gotoRegister(): void {
     this.openSignIn = false;
     this.router.navigate(['/register']);
   }
@@ -89,7 +89,7 @@ export class HeaderComponent implements OnInit {
   /** isLoggedIn
   /* get logged in status of a user
   */
-  isLoggedIn() {
+  isLoggedIn(): boolean {
     return this.loggedIn;
   }
 
@@ -97,7 +97,7 @@ export class HeaderComponent implements OnInit {
   /* logout user
   /* redirect to homepage
   */
-  logOut() {
+  logOut(): void {
     this.authentication.logout();
     this.redirectPreviousUrl.set(undefined);
     this.loggedIn = false;
@@ -109,7 +109,7 @@ export class HeaderComponent implements OnInit {
   /* close sign in menu after clicking outside
   /* @param {object} e - event, optional
   */
-  onClickedOutsideUser(e?) {
+  onClickedOutsideUser(e?: Event): void {
     this.openSignIn = false;
   }
 
@@ -117,7 +117,7 @@ export class HeaderComponent implements OnInit {
   /* close search menu after clicking outside
   /* @param {object} e - event, optional
   */
-  onClickedOutsideSearch(e?) {
+  onClickedOutsideSearch(e?: Event): void {
     this.openSearch = false;
   }
 

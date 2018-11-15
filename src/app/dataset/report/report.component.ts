@@ -11,14 +11,14 @@ export class ReportComponent implements OnInit {
     private translate: TranslateService) { }
 
   report;
-  reportKeys;
+  reportKeys: (o: Object) => string[];
 
   /** ngOnInit
   /* init this component
   /* if report not empty, create a report object
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
     if (this.workflows.getCurrentReport()) {
       this.reportKeys = Object.keys;
       this.report = this.workflows.getCurrentReport().errors;
@@ -32,14 +32,14 @@ export class ReportComponent implements OnInit {
   /** closeReport
   /* set report to empty, to close the repot
   */
-  closeReport() {
+  closeReport(): void {
     this.report = undefined;
   }
 
   /** isObject
   /* is value
   */
-  isObject(val) {
+  isObject(val: any): boolean {
     return typeof val === 'object';
   }
 }
