@@ -271,6 +271,6 @@ export class MockWorkflowService extends WorkflowService {
   }
 
   getLogs(): Observable<SubTaskInfo[]> {
-    return observableOf([]);
+    return observableOf([{ resourceNum: 5, resource: 'dsv', state: 'st', info: 'fdsfsd', resultResource: 'xcsdc' }]);
   }
 }

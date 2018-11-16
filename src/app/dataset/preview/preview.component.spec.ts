@@ -68,7 +68,7 @@ describe('PreviewComponent', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length).toBeTruthy();
 
-    component.allPlugins = ['mocked'];
+    component.allPlugins = [{ type: 'mocked', error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length).toBeTruthy();

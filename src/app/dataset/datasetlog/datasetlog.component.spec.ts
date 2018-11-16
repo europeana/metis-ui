@@ -46,7 +46,7 @@ describe('DatasetlogComponent', () => {
     component.isShowingLog = {'externaltaskId' : 'mocked', 'topology' : 'mocked', 'plugin': 'testplugin', 'processed': 100, 'status': 'RUNNING'};
     fixture.detectChanges();
     component.returnLog();
-    expect(component.logMessages).toBe('mocked');
+    expect(component.logMessages).toBeTruthy();
     component.closeLog();
   });
 

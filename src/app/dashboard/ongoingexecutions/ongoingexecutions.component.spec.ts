@@ -45,7 +45,7 @@ describe('OngoingexecutionsComponent', () => {
 
   it('should show a log', () => {
     spyOn(component.notifyShowLogStatus, 'emit');
-    component.showLog(1, 'mocked', 'testplugin');
+    component.showLog('1', 'mocked', 'testplugin');
     fixture.detectChanges();
     expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
   });

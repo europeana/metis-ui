@@ -102,7 +102,7 @@ describe('HistoryComponent', () => {
   it('should update history panel', () => {
     component.updateExecutionHistoryPanel(currentWorkflow.results[4]);
     fixture.detectChanges();
-    expect(component.historyInPanel).not.toBe('');
+    expect(component.historyInPanel).toBeTruthy();
   });
 
   it('should copy something to the clipboard', () => {

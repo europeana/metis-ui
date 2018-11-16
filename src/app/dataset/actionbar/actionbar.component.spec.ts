@@ -86,7 +86,7 @@ describe('ActionbarComponent', () => {
   }));
 
   it('should cancel', (): void => {
-    component.currentWorkflow = currentWorkflow;
+    component.currentWorkflow = currentWorkflow.results[0];
     component.currentStatus = 'RUNNING';
     fixture.detectChanges();
 
@@ -100,7 +100,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should run a workflow', (): void => {
-    component.currentWorkflow = currentWorkflow;
+    component.currentWorkflow = currentWorkflow.results[0];
     component.currentStatus = 'FINISHED';
     fixture.detectChanges();
     const run = fixture.debugElement.query(By.css('.newaction-btn'));
@@ -113,14 +113,14 @@ describe('ActionbarComponent', () => {
   });
 
   it('should have a running workflow', (): void => {
-    component.currentWorkflow = currentWorkflow;
+    component.currentWorkflow = currentWorkflow.results[0];
     component.currentStatus = 'RUNNING';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress') === null).toBe(false);
   });
 
   it('should show a report button and open report', (): void => {
-    component.currentWorkflow = currentWorkflow;
+    component.currentWorkflow = currentWorkflow.results[0];
     component.totalErrors = 10;
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.svg-icon-report') === null).toBe(false);
