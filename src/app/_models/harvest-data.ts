@@ -1,3 +1,5 @@
+// Java name: DatasetExecutionInformation
+
 export interface HarvestData {
   lastPreviewDate: string;
   lastPreviewRecords: number;
