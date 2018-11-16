@@ -8,23 +8,23 @@ describe('Profile', () => {
   });
 
   it('should display profile', () => {
-    
-    element(by.css('.metis-profile-form')).isPresent().then(function(result) {
+
+    element(by.css('.metis-profile-form')).isPresent().then((result) => {
       if ( result ) {
-    
+
         element(by.id('refresh-btn')).click();
         browser.sleep(2000);
-        
+
         expect(element(by.css('.messages')).isDisplayed()).toBeTruthy();
 
       } else {
 
         element(by.id('email')).sendKeys(environment.test.username);
-        element(by.id('password')).sendKeys(environment.test.password);        
+        element(by.id('password')).sendKeys(environment.test.password);
         element(by.tagName('button')).click();
         browser.wait(ExpectedConditions.urlContains('profile'), 5000);
 
-        element(by.id('refresh-btn')).click(); 
+        element(by.id('refresh-btn')).click();
         browser.sleep(2000);
 
         expect(element(by.css('.messages')).isDisplayed()).toBeTruthy();
@@ -33,7 +33,7 @@ describe('Profile', () => {
     });
   });
 
-  afterEach(function() {
+  afterEach(() => {
     browser.executeScript('window.localStorage.clear();');
   });
 

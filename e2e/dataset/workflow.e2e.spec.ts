@@ -7,10 +7,10 @@ describe('Dataset', () => {
     browser.get('/login');
 
     element(by.id('email')).sendKeys(environment.test.username);
-    element(by.id('password')).sendKeys(environment.test.password);        
+    element(by.id('password')).sendKeys(environment.test.password);
     element(by.tagName('button')).click();
     browser.wait(ExpectedConditions.urlContains('profile'), 5000);
-    
+
   });
 
   it('should update trigger a workflow', () => {
@@ -27,7 +27,7 @@ describe('Dataset', () => {
 
   });
 
-  afterEach(function() {
+  afterEach(() => {
     browser.executeScript('window.localStorage.clear();');
   });
 
