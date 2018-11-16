@@ -1,3 +1,5 @@
+// Java name: AbstractMetisPluginMetadata
+
 export interface PluginMetadata {
   pluginType: string;
   mocked?: boolean;

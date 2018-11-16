@@ -1,8 +1,9 @@
 import {of as observableOf,  Observable } from 'rxjs';
 import { AuthenticationService } from '../_services';
+import { User, AccountRole } from '../_models';
 
-export const currentUser = {
-  accountRole: 'user',
+export const currentUser: User = {
+  accountRole: AccountRole.EUROPEANA_DATA_OFFICER,
   country: 'Netherlands',
   createdDate: 453256554364,
   email: 'mocked@mocked.com',

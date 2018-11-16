@@ -2,7 +2,7 @@ import {of as observableOf,  Observable } from 'rxjs';
 import { WorkflowService } from '../_services';
 import { Workflow } from '../_models/workflow';
 import { Results } from '../_models/results';
-import { WorkflowExecution } from '../_models/workflow-execution';
+import { WorkflowExecution, PluginStatus, WorkflowStatus, TaskState } from '../_models/workflow-execution';
 import { XmlSample } from '../_models/xml-sample';
 import { Report } from '../_models/report';
 import { HarvestData } from '../_models/harvest-data';
@@ -40,7 +40,7 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
   results: [{
     id: '253453453',
     datasetId: '5323465',
-    workflowStatus: 'INQUEUE',
+    workflowStatus: WorkflowStatus.INQUEUE,
     createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
@@ -50,7 +50,7 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
       startedDate: '2018-11-05T15:38:18.450Z',
       updatedDate: '2018-11-05T15:38:18.450Z',
       pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
-      pluginStatus: 'INQUEUE',
+      pluginStatus: PluginStatus.INQUEUE,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
@@ -58,14 +58,14 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
         expectedRecords: 1000,
         progressPercentage: 100,
         errors: 0,
-        status: 'DONE'
+        status: TaskState.SENT
       }
     }]
   },
   {
     id: '253453453',
     datasetId: '5323465',
-    workflowStatus: 'RUNNING',
+    workflowStatus: WorkflowStatus.RUNNING,
     createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
@@ -75,7 +75,7 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
       startedDate: '2018-11-05T15:38:18.450Z',
       updatedDate: '2018-11-05T15:38:18.450Z',
       pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
-      pluginStatus: 'RUNNING',
+      pluginStatus: PluginStatus.RUNNING,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
@@ -83,14 +83,14 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
         expectedRecords: 1000,
         progressPercentage: 100,
         errors: 0,
-        status: 'DONE'
+        status: TaskState.PROCESSED
       }
     }]
   },
   {
     id: '253453453',
     datasetId: '5323465',
-    workflowStatus: 'FAILED',
+    workflowStatus: WorkflowStatus.FAILED,
     createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
@@ -100,7 +100,7 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
       startedDate: '2018-11-05T15:38:18.450Z',
       updatedDate: '2018-11-05T15:38:18.450Z',
       pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
-      pluginStatus: 'FAILED',
+      pluginStatus: PluginStatus.FAILED,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
@@ -108,14 +108,14 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
         expectedRecords: 1000,
         progressPercentage: 100,
         errors: 0,
-        status: 'DONE'
+        status: TaskState.PROCESSED
       }
     }]
   },
   {
     id: '253453453',
     datasetId: '5323465',
-    workflowStatus: 'CANCELLED',
+    workflowStatus: WorkflowStatus.CANCELLED,
     createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
@@ -125,7 +125,7 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
       startedDate: '2018-11-05T15:38:18.450Z',
       updatedDate: '2018-11-05T15:38:18.450Z',
       pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
-      pluginStatus: 'FAILED',
+      pluginStatus: PluginStatus.CANCELLED,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
@@ -133,14 +133,14 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
         expectedRecords: 1000,
         progressPercentage: 100,
         errors: 0,
-        status: 'DONE'
+        status: TaskState.PROCESSED
       }
     }]
   },
   {
     id: '253453453',
     datasetId: '5323465',
-    workflowStatus: 'FINISHED',
+    workflowStatus: WorkflowStatus.FINISHED,
     createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
@@ -150,7 +150,7 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
       startedDate: '2018-11-05T15:38:18.450Z',
       updatedDate: '2018-11-05T15:38:18.450Z',
       pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
-      pluginStatus: 'FINISHED',
+      pluginStatus: PluginStatus.FINISHED,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
@@ -158,7 +158,7 @@ export const currentWorkflow: Results<WorkflowExecution[]> = {
         expectedRecords: 1000,
         progressPercentage: 100,
         errors: 0,
-        status: 'DONE'
+        status: TaskState.PROCESSED
       }
     }]
   }],
@@ -171,7 +171,9 @@ export const xmlSamples: XmlSample[] = [{
   xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>'
 }];
 
-export const statistics: Statistics = { nodeStatistics:
+export const statistics: Statistics = {
+  taskId: 5,
+  nodeStatistics:
   [{attributesStatistics:
       [{name: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
         occurrence: 2,
@@ -190,8 +192,7 @@ export const currentReport: Report = {
     {
       errorType: 'errorType',
       message: 'errorMessage',
-      occurrences: 9,
-      identifiers: []
+      occurrences: 9
     }
   ]
 };
