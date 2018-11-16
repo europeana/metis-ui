@@ -217,9 +217,9 @@ export class WorkflowComponent implements OnInit {
   addConnection(type: string, host?: string, connections?: Connections): void {
     let control: FormArray;
     if (type === 'LINK_CHECKING') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control = this.workflowForm.controls['limitConnectionsLINK_CHECKING'] as FormArray;
     } else if (type === 'MEDIA_PROCESS') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control = this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'] as FormArray;
     } else {
       console.warn('unknown connection type: ' + type);
       return;
@@ -235,9 +235,9 @@ export class WorkflowComponent implements OnInit {
   removeConnection(type: string, i: number): void {
     let control;
     if (type === 'LINK_CHECKING') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control = this.workflowForm.controls['limitConnectionsLINK_CHECKING'] as FormArray;
     } else if (type === 'MEDIA_PROCESS') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control = this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'] as FormArray;
     } else {
       console.warn('unknown connection type: ' + type);
       return;
@@ -252,9 +252,9 @@ export class WorkflowComponent implements OnInit {
   removeAllConnections(type: string): void {
     let control;
     if (type === 'LINK_CHECKING') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control = this.workflowForm.controls['limitConnectionsLINK_CHECKING'] as FormArray;
     } else if (type === 'MEDIA_PROCESS') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control = this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'] as FormArray;
     } else {
       console.warn('unknown connection type: ' + type);
       return;

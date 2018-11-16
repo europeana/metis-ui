@@ -98,8 +98,7 @@ export class AuthenticationService {
 
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
-      const user = <User>data;
+    return this.http.post<User>(url, JSON.stringify('{}'), { headers: headers }).pipe(map(user => {
       if (user && user.metisUserAccessToken) {
         this.setCurrentUser(user);
         return true;
@@ -127,8 +126,7 @@ export class AuthenticationService {
   */
   reloadCurrentUser(email: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;
-    return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
-      const user = <User>data;
+    return this.http.put<User>(url, JSON.stringify('{}')).pipe(map(user => {
       if (user) {
         this.setCurrentUser(user);
         return true;
