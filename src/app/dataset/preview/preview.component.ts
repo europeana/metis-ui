@@ -55,7 +55,7 @@ export class PreviewComponent implements OnInit {
   nextPage = 0;
   nextPageDate = 0;
   execution: WorkflowExecution;
-  tempFilterSelection: PreviewFilters;
+  tempFilterSelection: PreviewFilters = {};
   prefill: PreviewFilters;
   loadingSamples = false;
   tempXSLT: string | null;
