@@ -1,4 +1,4 @@
-import {timer as observableTimer, Observable} from 'rxjs';
+import { timer as observableTimer, Subscription } from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
@@ -7,6 +7,7 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 import { WorkflowService, ErrorService, TranslateService, DatasetsService, AuthenticationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { LogStatus } from '../../_models/log-status';
+import { WorkflowExecution } from '../../_models/workflow-execution';
 
 @Component({
   selector: 'app-ongoingexecutions',
@@ -23,18 +24,18 @@ export class OngoingexecutionsComponent {
 
   @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
   @Input('isShowingLog') isShowingLog: LogStatus;
-  @Input('runningExecutionDataOutput') ongoingExecutionDataOutput;
+  @Input('runningExecutionDataOutput') ongoingExecutionDataOutput: WorkflowExecution[];
 
-  ongoingExecutions;
+  ongoingExecutions: WorkflowExecution[];
   ongoingExecutionsTotal: number;
-  errorMessage;
-  subscription;
+  errorMessage: string;
+  subscription: Subscription;
   intervalTimer = environment.intervalStatusShort;
-  cancelling;
+  cancelling: string;
   currentPlugin = 0;
   datasetNames: Array<any> = [];
   viewMore = false;
-  logIsOpen;
+  logIsOpen?: string;
   contentCopied = false;
 
   /** ngOnInit
@@ -43,11 +44,11 @@ export class OngoingexecutionsComponent {
   /* set translation languages
   /* translate some values to use in this component
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.startPolling();
     if (!this.datasets.updateLog) { return; }
     this.datasets.updateLog.subscribe(
-      log => {
+      (log: LogStatus) => {
         if (this.isShowingLog) {
           this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen, log['processed'], log['status']);
         } else {
@@ -64,7 +65,7 @@ export class OngoingexecutionsComponent {
   /** startPolling
   /*  check for ongoing executions
   */
-  startPolling() {
+  startPolling(): void {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
@@ -76,7 +77,7 @@ export class OngoingexecutionsComponent {
   /*  get ongoing executions, either in queue or running, most recent started
   /*  showing up to 5 executions
   */
-  getOngoing() {
+  getOngoing(): void {
     if (!this.authentication.validatedUser()) { return; }
 
     const executions = this.ongoingExecutionDataOutput;
@@ -95,7 +96,7 @@ export class OngoingexecutionsComponent {
   /*  start cancellation of the dataset with id
   /* @param {number} id - id of the dataset to cancel
   */
-  cancelWorkflow(id) {
+  cancelWorkflow(id: string): void {
     if (!id) { return; }
     this.getOngoing();
     this.workflows.promptCancelThisWorkflow(id);
@@ -106,7 +107,7 @@ export class OngoingexecutionsComponent {
   /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
   /* @param {string} topology - name of the topology
   */
-  showLog(externaltaskId, topology, plugin, datasetId?, processed?, status?) {
+  showLog(externaltaskId: string, topology: string, plugin: string, datasetId?: string, processed?: number, status?: string): void {
     const message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
     this.logIsOpen = datasetId;
     this.notifyShowLogStatus.emit(message);
@@ -115,7 +116,7 @@ export class OngoingexecutionsComponent {
   /** viewAll
   /*  scrolls to top of all executions table/top of page
   */
-  viewAll() {
+  viewAll(): void {
     window.scrollTo(0, 0);
   }
 
@@ -125,7 +126,7 @@ export class OngoingexecutionsComponent {
   /* @param {string} id1 - an id, depending on type
   /* @param {string} id2 - an id, depending on type
   */
-  copyInformation (type, id1, id2) {
+  copyInformation (type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }

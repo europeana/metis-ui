@@ -25,7 +25,7 @@ export class WorkflowService {
   @Output() changeWorkflow: EventEmitter<WorkflowExecution> = new EventEmitter();
   @Output() selectedWorkflow: EventEmitter<boolean> = new EventEmitter();
   @Output() workflowIsDone: EventEmitter<boolean> = new EventEmitter();
-  @Output() updateHistoryPanel: EventEmitter<Workflow> = new EventEmitter();
+  @Output() updateHistoryPanel: EventEmitter<WorkflowExecution> = new EventEmitter();
   @Output() promptCancelWorkflow: EventEmitter<string | false> = new EventEmitter();
   @Output() workflowCancelled: EventEmitter<boolean> = new EventEmitter();
 
@@ -313,7 +313,7 @@ export class WorkflowService {
   /*  update history in the collapsible panel after finishing a task/plugin
   /* @param {any} workflow - status of current workflow
   */
-  updateHistory(workflow: Workflow): void {
+  updateHistory(workflow: WorkflowExecution): void {
     this.updateHistoryPanel.emit(workflow);
   }
 }

@@ -13,6 +13,7 @@ import { WorkflowService } from './workflow.service';
 import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
 import { WorkflowExecution } from '../_models/workflow-execution';
+import { LogStatus } from '../_models/log-status';
 
 export interface PreviewFilters {
   date?: WorkflowExecution;
@@ -22,7 +23,7 @@ export interface PreviewFilters {
 @Injectable()
 export class DatasetsService {
 
-  @Output() updateLog: EventEmitter<any> = new EventEmitter();
+  @Output() updateLog: EventEmitter<LogStatus> = new EventEmitter();
 
   private datasets = [];
   datasetMessage: string;

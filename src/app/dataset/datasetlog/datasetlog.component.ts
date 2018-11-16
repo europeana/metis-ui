@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 
 import { WorkflowService, AuthenticationService, TranslateService, ErrorService } from '../../_services';
 import { LogStatus } from '../../_models/log-status';
+import { SubTaskInfo } from '../../_models/subtask-info';
 
 @Component({
   selector: 'app-datasetlog',
@@ -21,7 +22,7 @@ export class DatasetlogComponent implements OnInit {
   @Input('isShowingLog') isShowingLog: LogStatus;
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  logMessages?: LogMessage[];
+  logMessages?: SubTaskInfo[];
   logPerStep = 100;
   logStep = 1;
   logFrom = 1;
@@ -72,8 +73,8 @@ export class DatasetlogComponent implements OnInit {
   returnLog(): void {
 
     const currentProcessed = this.workflows.getCurrentProcessed();
-    this.logTo = currentProcessed ? currentProcessed.processed : this.isShowingLog['processed'];
-    this.logPlugin = currentProcessed ? currentProcessed.topology : this.isShowingLog['plugin'];
+    this.logTo = (currentProcessed ? currentProcessed.processed : this.isShowingLog.processed) || 0;
+    this.logPlugin = currentProcessed ? currentProcessed.topology : this.isShowingLog.plugin;
 
     if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED' || this.isShowingLog['status'] === 'CANCELLED' || this.isShowingLog['status'] === 'FAILED')) {
       if (this.subscription) { this.subscription.unsubscribe(); }
@@ -99,7 +100,7 @@ export class DatasetlogComponent implements OnInit {
   /* show correct information in log modal window
   /* this good be a "no logs found" message or the actual log
   */
-  showWindowOutput(nolog: string | undefined, log: LogMessage[] | undefined): void {
+  showWindowOutput(nolog: string | undefined, log: SubTaskInfo[] | undefined): void {
     this.noLogMessage = nolog;
     this.logMessages = log;
   }

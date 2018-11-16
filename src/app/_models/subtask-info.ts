@@ -1,2 +1,8 @@
-// tslint:disable-next-line: no-empty-interface
-export interface SubTaskInfo {}
+export interface SubTaskInfo {
+  resourceNum: number;
+  resource: string;
+  state: string;
+  info: string;
+  additionalInformations: string;
+  resultResource: string;
+}

@@ -1,4 +1,4 @@
-import {timer as observableTimer,  Observable } from 'rxjs';
+import {timer as observableTimer,  Subscription } from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
@@ -6,6 +6,11 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 import { WorkflowService, AuthenticationService, ErrorService, TranslateService, DatasetsService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { LogStatus } from '../../_models/log-status';
+import { Dataset } from '../../_models/dataset';
+import { Workflow } from '../../_models/workflow';
+import { Report } from '../../_models/report';
+import { SubTaskInfo } from '../../_models/subtask-info';
+import { WorkflowExecution, PluginExecution } from '../../_models/workflow-execution';
 
 @Component({
   selector: 'app-actionbar',
@@ -23,31 +28,31 @@ export class ActionbarComponent {
       private translate: TranslateService) { }
 
   @Input('isShowingLog') isShowingLog: LogStatus;
-  @Input('datasetData') datasetData;
-  @Input('lastExecutionData') lastExecutionData;
-  @Input('workflowData') workflowData;
-  errorMessage;
+  @Input('datasetData') datasetData: Dataset;
+  @Input('lastExecutionData') lastExecutionData: WorkflowExecution;
+  @Input('workflowData') workflowData: Workflow;
+  errorMessage: string;
   workflowPercentage = 0;
-  subscription;
+  subscription: Subscription;
   intervalTimer = environment.intervalStatusShort;
-  now;
-  totalInDataset;
+  now?: string;
+  totalInDataset: number;
   totalProcessed = 0;
   totalErrors = 0;
   cancelling: string;
   currentStatus: any;
-  currentWorkflow;
-  currentPluginName;
-  currentExternalTaskId;
-  currentTopology;
+  currentWorkflow: WorkflowExecution;
+  currentPluginName: string;
+  currentExternalTaskId: string;
+  currentTopology: string;
   currentPlugin = 0;
-  logMessages;
+  logMessages: SubTaskInfo[];
   isShowingWorkflowSelector = false;
   workflowInfoAvailable = false;
   logIsOpen = false;
   contentCopied = false;
   workflowIsDone = false;
-  report;
+  report?: Report;
 
   @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
 
@@ -57,7 +62,7 @@ export class ActionbarComponent {
   /* act when workflow changed
   /* set language to use for translations
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.returnWorkflowInfo();
     if (typeof this.translate.use === 'function') {
       this.translate.use('en');
@@ -68,7 +73,7 @@ export class ActionbarComponent {
   /** ngOnChanges
   /*  look for changes, and more specific the lastExecutionData
   */
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (this.workflowData && !this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
 
     if (!this.lastExecutionData) { return; }
@@ -85,7 +90,7 @@ export class ActionbarComponent {
   /** returnWorkflowInfo
   /*  check if workflow info is already available
   */
-  returnWorkflowInfo () {
+  returnWorkflowInfo (): void {
     const workflowinfo = this.workflowData;
     if (workflowinfo) {
       this.workflowInfoAvailable = true;
@@ -95,7 +100,7 @@ export class ActionbarComponent {
   /** startPollingWorkflow
   /*  start a timer and start checking the status of a workflow
   */
-  startPollingWorkflow() {
+  startPollingWorkflow(): void {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
@@ -107,12 +112,12 @@ export class ActionbarComponent {
   /** pollingWorkflow
   /*  check the current status of a workflow
   */
-  pollingWorkflow() {
+  pollingWorkflow(): void {
     if (!this.datasetData || !this.authentication.validatedUser()) { return; }
 
     const execution = this.lastExecutionData;
     this.currentWorkflow = this.lastExecutionData;
-    if (execution === 0 || !execution) {
+    if (!execution) {
       this.currentPlugin = 0;
       this.subscription.unsubscribe();
       this.workflows.setActiveWorkflow();
@@ -174,14 +179,14 @@ export class ActionbarComponent {
   /*  cancel a running execution
   /* using id of current workflow
   */
-  cancelWorkflow () {
+  cancelWorkflow (): void {
     this.workflows.promptCancelThisWorkflow(this.currentWorkflow.id);
   }
 
   /** showLog
   /*  show the log for the current/last execution
   */
-  showLog(taskid, topology, plugin, processed, status) {
+  showLog(taskid: string, topology: string, plugin: string, processed: number, status: string): void {
     const message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
     this.notifyShowLogStatus.emit(message);
   }
@@ -191,7 +196,7 @@ export class ActionbarComponent {
   /* @param {object} thisPlugin - current plugin
   /* @param {boolean} cancelling - has workflow been cancelled, optional
   */
-  setCurrentPluginInfo(thisPlugin, cancelling?) {
+  setCurrentPluginInfo(thisPlugin: PluginExecution, cancelling?: boolean): void {
     if (thisPlugin) {
       if (cancelling === false) {
         this.currentStatus = thisPlugin.pluginStatus ? thisPlugin.pluginStatus : '-';
@@ -210,21 +215,21 @@ export class ActionbarComponent {
   /** selectWorkflow
   /*  select the workflow, so it would be triggered
   */
-  selectWorkflow() {
+  selectWorkflow(): void {
     this.workflows.selectWorkflow();
   }
 
   /** getReport
   /*  get the report for a specific workflow step
   */
-  openReport(taskid, topology) {
+  openReport(taskid: string, topology: string): void {
     this.report = undefined;
     this.workflows.getReport(taskid, topology).subscribe(result => {
       this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
-      if (error === 'retry') {
+      if (error.toString() === 'retry') {
         this.openReport(taskid, topology);
       } else {
         this.errorMessage = `${StringifyHttpError(error)}`;
@@ -238,7 +243,7 @@ export class ActionbarComponent {
   /* @param {string} id1 - an id, depending on type
   /* @param {string} id2 - an id, depending on type
   */
-  copyInformation (type, id1, id2) {
+  copyInformation (type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
