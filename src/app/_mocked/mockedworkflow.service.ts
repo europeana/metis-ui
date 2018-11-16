@@ -197,11 +197,15 @@ export const currentReport: Report = {
 };
 
 export const harvestData: HarvestData = {
-  'firstPublishedDate': '2018-03-28T13:53:04.762Z',
-  'lastPublishedDate': '2018-03-30T13:53:04.762Z',
-  'lastPublishedRecords': 842,
-  'lastHarvestedDate': '2018-03-30T13:53:04.762Z',
-  'lastHarvestedRecords': 842
+  lastPreviewDate: '2018-03-28T13:53:04.762Z',
+  lastPreviewRecords: 842,
+  lastPreviewRecordsReadyForViewing: true,
+  firstPublishedDate: '2018-03-28T13:53:04.762Z',
+  lastPublishedDate: '2018-03-30T13:53:04.762Z',
+  lastPublishedRecords: 842,
+  lastPublishedRecordsReadyForViewing: true,
+  lastHarvestedDate: '2018-03-30T13:53:04.762Z',
+  lastHarvestedRecords: 842
 };
 
 export class MockWorkflowService extends WorkflowService {

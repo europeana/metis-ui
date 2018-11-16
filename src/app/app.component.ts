@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, Event, RouterEvent } from '@angular/router';
 import { WorkflowService, AuthenticationService, DatasetsService, ErrorService, TranslateService } from './_services';
 import { StringifyHttpError } from './_helpers';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -36,15 +36,16 @@ export class AppComponent implements OnInit {
   */
   public ngOnInit(): void {
 
-    this.router.events.subscribe((event: any) => {
-      if (!event.url) { return; }
-      if (this.router.isActive(event.url, false)) {
+    this.router.events.subscribe((event: Event) => {
+      const url: string | undefined = (event as RouterEvent).url;
+      if (!url) { return; }
+      if (this.router.isActive(url, false)) {
         this.loggedIn = this.authentication.validatedUser( );
 
-        this.bodyClass = event.url.split('/')[1];
-        if (event.url === '/') { this.bodyClass = 'home'; }
+        this.bodyClass = url.split('/')[1];
+        if (url === '/') { this.bodyClass = 'home'; }
 
-        this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
+        this.isLessMargin = url.includes('home') || url === '/' || url.includes('dashboard');
       }
     });
 

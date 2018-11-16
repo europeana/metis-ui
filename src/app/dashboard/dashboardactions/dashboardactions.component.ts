@@ -17,7 +17,7 @@ export class DashboardactionsComponent implements OnInit {
   /* init this component:
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
     if (typeof this.translate.use === 'function') {
       this.translate.use('en');
     }
