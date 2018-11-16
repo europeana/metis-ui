@@ -1,0 +1,6 @@
+{
+  "baseUrl": "http://localhost:4280",
+  "ignoreTestFiles": ["tsconfig.json"],
+  "screenshotsFolder": "tmp/cypress-screenshots/",
+  "videosFolder": "tmp/cypress-videos/"
+}
