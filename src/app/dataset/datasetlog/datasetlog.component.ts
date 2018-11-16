@@ -86,7 +86,7 @@ export class DatasetlogComponent implements OnInit {
     }
 
     this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.getLogFrom(), this.logTo).subscribe(result => {
-      if (result && (<any>result).length > 0) {
+      if (result.length > 0) {
         this.showWindowOutput(undefined, result);
       } else {
         this.showWindowOutput(this.noLogs, undefined);

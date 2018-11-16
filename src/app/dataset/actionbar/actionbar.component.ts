@@ -40,7 +40,7 @@ export class ActionbarComponent {
   totalProcessed = 0;
   totalErrors = 0;
   cancelling: string;
-  currentStatus: any;
+  currentStatus: string;
   currentWorkflow: WorkflowExecution;
   currentPluginName: string;
   currentExternalTaskId: string;
@@ -54,7 +54,7 @@ export class ActionbarComponent {
   workflowIsDone = false;
   report?: Report;
 
-  @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
+  @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
 
   /** ngOnInit
   /* init for this component:

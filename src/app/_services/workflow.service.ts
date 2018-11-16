@@ -311,7 +311,7 @@ export class WorkflowService {
 
   /** updateHistory
   /*  update history in the collapsible panel after finishing a task/plugin
-  /* @param {any} workflow - status of current workflow
+  /* @param {object} workflow - status of current workflow
   */
   updateHistory(workflow: WorkflowExecution): void {
     this.updateHistoryPanel.emit(workflow);

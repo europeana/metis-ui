@@ -19,6 +19,7 @@ import * as beautify from 'vkbeautify';
 import { Dataset } from '../../_models/dataset';
 import { XmlSample } from '../../_models/xml-sample';
 import { WorkflowExecution } from '../../_models/workflow-execution';
+import { Workflow } from '../../_models/workflow';
 
 @Component({
   selector: 'app-preview',
@@ -39,10 +40,10 @@ export class PreviewComponent implements OnInit {
 
   @Input('datasetData') datasetData: Dataset;
   editorConfig: EditorConfiguration;
-  allWorkflows: Array<any> = [];
-  allWorkflowDates: Array<any> = [];
-  allPlugins: Array<any> = [];
-  allSamples: Array<any> = [];
+  allWorkflows: Array<Workflow> = [];
+  allWorkflowDates: Array<WorkflowExecution> = [];
+  allPlugins: Array<{ type: string, error: boolean }> = [];
+  allSamples: Array<XmlSample> = [];
   allTransformedSamples: XmlSample[];
   filterDate = false;
   filterPlugin = false;
@@ -196,10 +197,10 @@ export class PreviewComponent implements OnInit {
   /** saveTempFilterSelection
   /* save selected options from filters
   /* so they can be prefilled after switching tabs
-  /* @param {filter} array - name of filter
-  /* @param {toSave} any - string or object to save temporarily
+  /* @param {string} filter - name of filter
+  /* @param {object | string} toSave - string or object to save temporarily
   */
-  saveTempFilterSelection(filter: keyof PreviewFilters, toSave: any): void {
+  saveTempFilterSelection(filter: keyof PreviewFilters, toSave: WorkflowExecution | string): void {
     this.tempFilterSelection[filter] = toSave;
     this.datasets.setPreviewFilters(this.tempFilterSelection);
   }

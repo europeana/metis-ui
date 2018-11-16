@@ -40,6 +40,7 @@ export class ReportComponent implements OnInit {
   /** isObject
   /* is value
   */
+  //tslint:disable-next-line: no-any
   isObject(val: any): boolean {
     return typeof val === 'object';
   }

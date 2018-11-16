@@ -10,6 +10,8 @@ import { CountriesService, DatasetsService, AuthenticationService, RedirectPrevi
 import { StringifyHttpError } from '../../_helpers';
 import { Language } from '../../_models/language';
 import { Country } from '../../_models/country';
+import { HarvestData } from '../../_models/harvest-data';
+import { Dataset } from '../../_models/dataset';
 
 @Component({
   selector: 'app-datasetform',
@@ -20,8 +22,8 @@ import { Country } from '../../_models/country';
 
 export class DatasetformComponent implements OnInit {
 
-  @Input() datasetData: any;
-  harvestPublicationData: any;
+  @Input() datasetData: Dataset;
+  harvestPublicationData: HarvestData;
   autosuggest: string;
   autosuggestId: string;
   datasetOptions: object;
@@ -34,8 +36,8 @@ export class DatasetformComponent implements OnInit {
   selectedLanguage?: Language;
 
   private datasetForm: FormGroup;
-  private countryOptions: any;
-  private languageOptions: any;
+  private countryOptions: Country[];
+  private languageOptions: Language[];
 
   constructor(private countries: CountriesService,
     private workflows: WorkflowService,

@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { WorkflowService, TranslateService, ErrorService } from '../../../_services';
 
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../../_helpers';
+import { WorkflowExecution, PluginExecution } from '../../../_models/workflow-execution';
 
 @Component({
   selector: '[app-executiontable]',
@@ -11,8 +12,8 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../../_helpers';
 })
 export class ExecutiontableComponent implements OnInit {
 
-  @Input() execution: any;
-  @Input() plugin: any;
+  @Input() execution: WorkflowExecution;
+  @Input() plugin: PluginExecution;
 
   contentCopied = false;
   msgCancelling: string;

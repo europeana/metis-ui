@@ -29,9 +29,8 @@ export class HistoryComponent implements OnInit {
 
   errorMessage?: string;
   report?: Report;
-  allExecutions: Array<any> = [];
-  allExecutionsPanel: Array<any> = [];
-  historyInPanel: Array<any> = [];
+  allExecutions: Array<WorkflowExecution | PluginExecution> = []; // TODO: check type
+  historyInPanel: PluginExecution[] = [];
   currentPlugin = 0;
   nextPage = 0;
   totalPages = 0;
@@ -123,7 +122,7 @@ export class HistoryComponent implements OnInit {
 
   /** updateExecutionHistoryPanel
   /*  update execution information in history panel specific
-  /* @param {any} workflow - current running workflow
+  /* @param {object} workflow - current running workflow
   */
   updateExecutionHistoryPanel(workflow: WorkflowExecution): void {
 
@@ -239,7 +238,7 @@ export class HistoryComponent implements OnInit {
 
   /** scroll
   /*  scroll to specific point in page after click
-  /* @param {any} el - scroll to defined element
+  /* @param {Element} el - scroll to defined element
   */
   scroll(el: Element): void {
     el.scrollIntoView({behavior: 'smooth'});

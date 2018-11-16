@@ -1,6 +1,12 @@
 import { Injectable, Inject } from '@angular/core';
 import { TRANSLATIONS } from '../_translate/translation';
 
+interface Translations {
+  [language: string]: {
+    [key: string]: string | undefined;
+  } | undefined;
+}
+
 @Injectable()
 export class TranslateService {
   private _currentLang: string;
@@ -9,7 +15,7 @@ export class TranslateService {
       return this._currentLang;
   }
 
-  constructor(@Inject(TRANSLATIONS) private _translations: any) {}
+  constructor(@Inject(TRANSLATIONS) private _translations: Translations) {}
 
   /** use
   /*  indicate which language to use
@@ -26,8 +32,8 @@ export class TranslateService {
   */
   private translate(key: string): string {
     const translation = key;
-    if (this._translations[this.currentLang] && this._translations[this.currentLang][key]) {
-        return this._translations[this.currentLang][key];
+    if (this._translations[this.currentLang] && this._translations[this.currentLang]![key]) {
+        return this._translations[this.currentLang]![key]!;
     }
     return translation;
   }

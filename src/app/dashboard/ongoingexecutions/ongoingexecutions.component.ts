@@ -33,7 +33,7 @@ export class OngoingexecutionsComponent {
   intervalTimer = environment.intervalStatusShort;
   cancelling: string;
   currentPlugin = 0;
-  datasetNames: Array<any> = [];
+  datasetNames: Array<string> = [];
   viewMore = false;
   logIsOpen?: string;
   contentCopied = false;

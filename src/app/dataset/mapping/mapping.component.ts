@@ -18,6 +18,7 @@ import 'codemirror/addon/fold/comment-fold';
 
 import * as beautify from 'vkbeautify';
 import { NodeStatistics } from '../../_models/statistics';
+import { Dataset } from '../../_models/dataset';
 
 @Component({
   selector: 'app-mapping',
@@ -32,14 +33,14 @@ export class MappingComponent implements OnInit {
     private translate: TranslateService,
     private router: Router) { }
 
-  @Input() datasetData: any;
+  @Input() datasetData: Dataset;
   editorConfigEdit: EditorConfiguration;
   statistics: NodeStatistics[];
   statisticsMap = new Map();
   fullXSLT: string;
   xsltType = 'default';
-  xslt: Array<any> = [];
-  xsltToSave: Array<any> = [];
+  xslt: Array<string> = [];
+  xsltToSave: Array<string> = [];
   xsltHeading: string;
   errorMessage?: string;
   successMessage?: string;
@@ -128,7 +129,7 @@ export class MappingComponent implements OnInit {
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
       if (this.xsltType === 'custom') {
-        this.xslt[0] = undefined;
+        this.xslt = [];
         this.xsltHeading = 'No custom XSLT yet';
       }
     });
@@ -233,7 +234,7 @@ export class MappingComponent implements OnInit {
 
   /** scroll
   /*  scroll to specific point in page after click
-  /* @param {any} el - scroll to defined element
+  /* @param {Element} el - scroll to defined element
   */
   scroll(el: Element): void {
     el.scrollIntoView({behavior: 'smooth'});

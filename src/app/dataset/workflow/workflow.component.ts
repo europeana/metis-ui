@@ -8,6 +8,8 @@ import { WorkflowService, DatasetsService, AuthenticationService, RedirectPrevio
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, harvestValidator } from '../../_helpers';
 import { PluginMetadata } from '../../_models/plugin-metadata';
+import { Dataset } from '../../_models/dataset';
+import { Workflow } from '../../_models/workflow';
 
 interface Connections {
   [host: string]: number;
@@ -43,8 +45,8 @@ export class WorkflowComponent implements OnInit {
 
     }
 
-  @Input() datasetData: any;
-  @Input() workflowData: any;
+  @Input() datasetData: Dataset;
+  @Input() workflowData: Workflow;
   errorMessage: string;
   successMessage?: string;
   harvestprotocol: string;

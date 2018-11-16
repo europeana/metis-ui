@@ -5,6 +5,8 @@ import { Subscription, timer as observableTimer } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { apiSettings } from '../../../environments/apisettings';
 import { Workflow } from '../../_models/workflow';
+import { Dataset } from '../../_models/dataset';
+import { HarvestData } from '../../_models/harvest-data';
 
 @Component({
   selector: 'app-generalinfo',
@@ -19,8 +21,8 @@ export class GeneralinfoComponent implements OnInit {
     private authentication: AuthenticationService,
     private errors: ErrorService) { }
 
-  @Input() datasetData: any;
-  harvestPublicationData: any;
+  @Input() datasetData: Dataset;
+  harvestPublicationData: HarvestData;
   subscription: Subscription;
   intervalTimer = environment.intervalStatusLong;
   viewPreview: string;

@@ -64,6 +64,7 @@ export class DatasetsService {
   /* create a new dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
+  //tslint:disable-next-line: no-any
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.post<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
@@ -73,6 +74,7 @@ export class DatasetsService {
   /* update an existing dataset
   /* @param {array} datasetFormValues - values from dataset form
   */
+  //tslint:disable-next-line: no-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(this.errors.handleRetry());
@@ -85,7 +87,7 @@ export class DatasetsService {
   /* @param {object} executions - the executions retrieved from a call
   */
   addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): WorkflowExecution[] {
-    const updatedExecutions: Array<any> = [];
+    const updatedExecutions: WorkflowExecution[] = [];
     for (let i = 0; i < executions.length; i++) {
       executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
 
@@ -142,12 +144,14 @@ export class DatasetsService {
   */
   getXSLT(type: string, id?: string): Observable<string> {
     let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
+    //tslint:disable-next-line: no-any
     let options: { responseType: any } | undefined = { responseType: 'text' };
     if (type === 'custom') {
       url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;
       options = undefined;
     }
 
+    //tslint:disable-next-line: no-any
     return this.http.get<any>(url, options).pipe(map(data => { // TODO: fix any
       return type === 'default' ? data : data['xslt'];
     })).pipe(this.errors.handleRetry());

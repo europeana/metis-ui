@@ -168,8 +168,8 @@ export class DatasetComponent implements OnInit {
     const viewContainerRef = this.datasetHost.viewContainerRef;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.datasetData = this.getCurrentTab()!.data;
-    componentRef.instance.workflowData = this.getCurrentTab()!.data2;
+    componentRef.instance.datasetData = this.getCurrentTab()!.dataset;
+    componentRef.instance.workflowData = this.getCurrentTab()!.workflow;
 
     this.successMessage = this.datasets.getDatasetMessage();
 
@@ -202,7 +202,7 @@ export class DatasetComponent implements OnInit {
 
   /** clickOutsideMessage
   /*  click outside message to close it
-  /* @param {any} e - event, optional
+  /* @param {Event} e - event, optional
   */
   clickOutsideMessage(e?: Event): void {
     this.errorMessage = undefined;

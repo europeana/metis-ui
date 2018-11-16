@@ -62,16 +62,12 @@ export class DashboardComponent implements OnInit {
 
   /** onNotifyShowLogStatus
   /*  opens/closes the log messages
-  /* @param {any} message - message to display in log modal
+  /* @param {object} message - message to display in log modal
   */
   onNotifyShowLogStatus(message: LogStatus): void {
     this.isShowingLog = message;
   }
 
-  /** onNotifyShowLogStatus
-  /*  opens/closes the log messages
-  /* @param {any} message - message to display in log modal
-  */
   getNextPage(page: number): void {
     this.currentPageHistory = page;
   }
