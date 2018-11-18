@@ -1,7 +1,7 @@
 <td class="errorindicator"><span class="error" *ngIf="plugin && plugin.executionProgress.errors !== 0"></span></td>
 <td class="nowrap">{{execution.datasetId}}</td>
 <td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
-<td class="iconplaceholder"><span class="svg-icon-{{execution.workflowName}}"></span></td>
+<td class="iconplaceholder"><!-- doesn't work <span class="svg-icon-{{execution.workflowName}}"></span> --></td>
 <td>
   <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', plugin.externalTaskId, plugin.id);">
     {{plugin.pluginType}}
@@ -27,7 +27,7 @@
       <span class="progress-percentage">{{ 'step' | translate }} {{execution.currentPlugin}}/{{execution.metisPlugins.length}}</span>
     </div>
     <div class="progressbar">
-      <div class="progressbar-done" [style.width.%]="(execution.currentPlugin / execution.metisPlugins.length * 100) >= 0 ? (execution.currentPlugin / execution.metisPlugins.length * 100) : 0">
+      <div class="progressbar-done" [style.width.%]="((execution.currentPlugin || 0) / execution.metisPlugins.length * 100) >= 0 ? ((execution.currentPlugin! || 0) / execution.metisPlugins.length * 100) : 0">
       </div>
     </div>
   </div>

@@ -35,9 +35,9 @@ export class DatasetformComponent implements OnInit {
   selectedCountry?: Country;
   selectedLanguage?: Language;
 
-  private datasetForm: FormGroup;
-  private countryOptions: Country[];
-  private languageOptions: Language[];
+  datasetForm: FormGroup;
+  countryOptions: Country[];
+  languageOptions: Language[];
 
   constructor(private countries: CountriesService,
     private workflows: WorkflowService,

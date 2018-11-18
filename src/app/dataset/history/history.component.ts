@@ -28,6 +28,7 @@ export class HistoryComponent implements OnInit {
   @Input('inCollapsablePanel') inCollapsablePanel: boolean;
 
   errorMessage?: string;
+  successMessage?: string;
   report?: Report;
   allExecutions: Array<WorkflowExecution | PluginExecution> = []; // TODO: check type
   historyInPanel: PluginExecution[] = [];
