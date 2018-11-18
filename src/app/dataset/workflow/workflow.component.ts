@@ -456,6 +456,10 @@ export class WorkflowComponent implements OnInit {
     return connections;
   }
 
+  getFormArrayControls(name: string): AbstractControl[] {
+    return (this.workflowForm.controls[name] as FormArray).controls;
+  }
+
   /** onSubmit
   /* cannot submit when there is no dataset yet
   /* submit the form

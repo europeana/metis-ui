@@ -9,7 +9,8 @@
     "test": "ng test --watch=false --code-coverage --source-map=false",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "dist": "ng build --prod --output-hashing=all && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
+    "dist": "ng build --prod --output-hashing=all && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",
+    "template-check": "ng build --output-path=tmp/template-check --aot"
   },
   "private": true,
   "dependencies": {

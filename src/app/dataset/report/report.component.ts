@@ -11,7 +11,8 @@ export class ReportComponent implements OnInit {
   constructor(private workflows: WorkflowService,
     private translate: TranslateService) { }
 
-  report?: ReportError[];
+  // tslint:disable-next-line: no-any
+  report?: any;
   reportKeys: (o: Object) => string[];
 
   /** ngOnInit
