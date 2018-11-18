@@ -16,7 +16,6 @@ export class RegisterComponent implements OnInit {
   loading = false;
   errorMessage?: string;
   successMessage: string;
-  notfoundMessage: string;
   linkRegister: string = environment.links.registerMetis;
   msgSuccess: string;
   msgPasswordWeak: string;
