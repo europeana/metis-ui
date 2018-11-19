@@ -1,6 +1,5 @@
 import user from '../fixtures/user';
-import dataset from '../fixtures/dataset';
-import executions from '../fixtures/workflow-executions';
+import { setupWorkflowRoutes } from '../helpers';
 
 context('metis-ui', () => {
   describe('signin', () => {
@@ -49,9 +48,8 @@ context('metis-ui', () => {
     });
 
     it('should login', () => {
+      setupWorkflowRoutes();
       cy.route('POST', '/authentication/login', user);
-      cy.route('GET', '/orchestrator/workflows/executions/*', executions);
-      cy.route('GET', '/datasets/*', dataset);
 
       cy.get('#email').clear().type('hello@example.com').blur();
       cy.get('#password').clear().type('x').blur();
