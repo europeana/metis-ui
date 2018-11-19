@@ -1,11 +1,12 @@
-const executionsResults = {
+import { Results } from '../../src/app/_models/results';
+import { PluginStatus, TaskState, WorkflowExecution, WorkflowStatus } from '../../src/app/_models/workflow-execution';
+
+const executionsResults: Results<WorkflowExecution[]> = {
   'results': [
       {
           'id': '5bea8f7e729e6f000d3a8765',
           'datasetId': '58',
-          'workflowStatus': 'FINISHED',
-          'ecloudDatasetId': 'fa07e945-48c4-4547-8929-6fde4055a403',
-          'workflowPriority': 0,
+          'workflowStatus': WorkflowStatus.FINISHED,
           'cancelling': false,
           'createdDate': '2018-11-13T08:46:54.373Z',
           'startedDate': '2018-11-13T08:46:54.476Z',
@@ -15,7 +16,7 @@ const executionsResults = {
               {
                   'pluginType': 'OAIPMH_HARVEST',
                   'id': '5bea8f7e729e6f000d3a8764-OAIPMH_HARVEST',
-                  'pluginStatus': 'FINISHED',
+                  'pluginStatus': PluginStatus.FINISHED,
                   'startedDate': '2018-11-13T08:46:54.476Z',
                   'updatedDate': '2018-11-13T08:47:32.003Z',
                   'finishedDate': '2018-11-13T08:47:32.008Z',
@@ -25,7 +26,7 @@ const executionsResults = {
                       'processedRecords': 760,
                       'progressPercentage': 100,
                       'errors': 0,
-                      'status': 'PROCESSED'
+                      'status': TaskState.PROCESSED
                   },
                   'pluginMetadata': {
                       'pluginType': 'OAIPMH_HARVEST',
@@ -49,9 +50,7 @@ const executionsResults = {
       {
           'id': '5be15e85bbcf53000795bd9c',
           'datasetId': '58',
-          'workflowStatus': 'FINISHED',
-          'ecloudDatasetId': 'fa07e945-48c4-4547-8929-6fde4055a403',
-          'workflowPriority': 0,
+          'workflowStatus': WorkflowStatus.FINISHED,
           'cancelling': false,
           'createdDate': '2018-11-06T09:27:33.075Z',
           'startedDate': '2018-11-06T09:27:33.240Z',
@@ -61,7 +60,7 @@ const executionsResults = {
               {
                   'pluginType': 'PUBLISH',
                   'id': '5be15e85bbcf53000795bd9b-PUBLISH',
-                  'pluginStatus': 'FINISHED',
+                  'pluginStatus': PluginStatus.FINISHED,
                   'startedDate': '2018-11-06T09:27:33.240Z',
                   'updatedDate': '2018-11-06T09:27:49.743Z',
                   'finishedDate': '2018-11-06T09:27:49.748Z',
@@ -71,7 +70,7 @@ const executionsResults = {
                       'processedRecords': 760,
                       'progressPercentage': 100,
                       'errors': 0,
-                      'status': 'PROCESSED'
+                      'status': TaskState.PROCESSED
                   },
                   'pluginMetadata': {
                       'pluginType': 'PUBLISH',
@@ -90,9 +89,7 @@ const executionsResults = {
       {
           'id': '5be0642d32251400094e50fe',
           'datasetId': '58',
-          'workflowStatus': 'FINISHED',
-          'ecloudDatasetId': 'fa07e945-48c4-4547-8929-6fde4055a403',
-          'workflowPriority': 0,
+          'workflowStatus': WorkflowStatus.FINISHED,
           'cancelling': false,
           'createdDate': '2018-11-05T15:39:25.617Z',
           'startedDate': '2018-11-05T15:39:25.652Z',
@@ -102,7 +99,7 @@ const executionsResults = {
               {
                   'pluginType': 'PUBLISH',
                   'id': '5be0642d32251400094e50fd-PUBLISH',
-                  'pluginStatus': 'FINISHED',
+                  'pluginStatus': PluginStatus.FINISHED,
                   'startedDate': '2018-11-05T15:39:25.652Z',
                   'updatedDate': '2018-11-05T15:39:41.395Z',
                   'finishedDate': '2018-11-05T15:39:41.404Z',
@@ -112,7 +109,7 @@ const executionsResults = {
                       'processedRecords': 760,
                       'progressPercentage': 100,
                       'errors': 0,
-                      'status': 'PROCESSED'
+                      'status': TaskState.PROCESSED
                   },
                   'pluginMetadata': {
                       'pluginType': 'PUBLISH',
@@ -131,9 +128,7 @@ const executionsResults = {
       {
           'id': '5be063ea32251400094e50fc',
           'datasetId': '58',
-          'workflowStatus': 'FINISHED',
-          'ecloudDatasetId': 'fa07e945-48c4-4547-8929-6fde4055a403',
-          'workflowPriority': 0,
+          'workflowStatus': WorkflowStatus.FINISHED,
           'cancelling': false,
           'createdDate': '2018-11-05T15:38:18.344Z',
           'startedDate': '2018-11-05T15:38:18.450Z',
@@ -143,7 +138,7 @@ const executionsResults = {
               {
                   'pluginType': 'PUBLISH',
                   'id': '5be063ea32251400094e50fb-PUBLISH',
-                  'pluginStatus': 'FINISHED',
+                  'pluginStatus': PluginStatus.FINISHED,
                   'startedDate': '2018-11-05T15:38:18.450Z',
                   'updatedDate': '2018-11-05T15:38:40.101Z',
                   'finishedDate': '2018-11-05T15:38:40.105Z',
@@ -153,7 +148,7 @@ const executionsResults = {
                       'processedRecords': 760,
                       'progressPercentage': 100,
                       'errors': 0,
-                      'status': 'PROCESSED'
+                      'status': TaskState.PROCESSED
                   },
                   'pluginMetadata': {
                       'pluginType': 'PUBLISH',
@@ -172,29 +167,27 @@ const executionsResults = {
       {
           'id': '5be05f9832251400094e50fa',
           'datasetId': '80',
-          'workflowStatus': 'FAILED',
-          'ecloudDatasetId': 'debec71c-6ce7-4032-9fff-4602abc2e775',
-          'workflowPriority': 0,
+          'workflowStatus': WorkflowStatus.FAILED,
           'cancelling': false,
           'createdDate': '2018-11-05T15:19:52.791Z',
           'startedDate': '2018-11-05T15:19:52.863Z',
           'updatedDate': '2018-11-05T15:20:13.549Z',
-          'finishedDate': null,
+          'finishedDate': undefined,
           'metisPlugins': [
               {
                   'pluginType': 'OAIPMH_HARVEST',
                   'id': '5be05f9832251400094e50f9-OAIPMH_HARVEST',
-                  'pluginStatus': 'FAILED',
+                  'pluginStatus': PluginStatus.FAILED,
                   'startedDate': '2018-11-05T15:19:52.863Z',
                   'updatedDate': '2018-11-05T15:20:13.549Z',
-                  'finishedDate': null,
+                  'finishedDate': undefined,
                   'externalTaskId': '-8670244063443531419',
                   'executionProgress': {
                       'expectedRecords': 0,
                       'processedRecords': 0,
                       'progressPercentage': 0,
                       'errors': 0,
-                      'status': 'DROPPED'
+                      'status': TaskState.DROPPED
                   },
                   'pluginMetadata': {
                       'pluginType': 'OAIPMH_HARVEST',

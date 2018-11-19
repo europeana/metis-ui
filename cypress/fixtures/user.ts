@@ -1,11 +1,13 @@
-const user = {
+import { AccountRole, User } from '../../src/app/_models/user';
+
+const user: User = {
   'userId': '1482250000003948001',
   'email': 'valentine.metis@europeana.eu',
   'firstName': 'Valentine',
   'lastName': 'Metis',
   'organizationId': '1482250000001617026',
   'organizationName': 'Europeana Foundation',
-  'accountRole': 'EUROPEANA_DATA_OFFICER',
+  'accountRole': AccountRole.EUROPEANA_DATA_OFFICER,
   'country': 'Netherlands',
   'networkMember': false,
   'metisUserFlag': true,
