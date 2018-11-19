@@ -7,3 +7,4 @@ export * from './languages';
 export * from './report';
 export * from './user';
 export * from './workflow';
+export * from './xslt';

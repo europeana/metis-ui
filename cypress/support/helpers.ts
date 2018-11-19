@@ -6,7 +6,8 @@ import {
   languages,
   runningExecutions,
   user,
-  workflow
+  workflow,
+  xslt
 } from '../fixtures';
 
 export function setupUser(): void {
@@ -38,4 +39,8 @@ export function setupWorkflowRoutes(): void {
     .as('getWorkflowExecutions');
   cy.route('DELETE', '/orchestrator/workflows/executions/*', {})
     .as('deleteExecution');
+  cy.route('GET', '/datasets/xslt/*', xslt)
+    .as('getXslt');
+  cy.route('PUT', '/datasets', '')
+    .as('updateDataset');
 }
