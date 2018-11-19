@@ -30,7 +30,7 @@ export class TranslateService {
   /*  translate this value in current language
   /* @param {string} key - value to translate
   */
-  private translate(key: string): string {
+  protected translate(key: string): string {
     const translation = key;
     if (this._translations[this.currentLang] && this._translations[this.currentLang]![key]) {
         return this._translations[this.currentLang]![key]!;
