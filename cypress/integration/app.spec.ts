@@ -1,3 +1,7 @@
+const user = require('../fixtures/user');
+const dataset = require('../fixtures/dataset');
+const executions = require('../fixtures/workflow-executions');
+
 context('metis-ui', () => {
   describe('home', () => {
     beforeEach(() => {
@@ -65,9 +69,9 @@ context('metis-ui', () => {
     });
 
     it('should login', () => {
-      cy.route('POST', '/authentication/login', 'fixture:user.json');
-      cy.route('GET', '/orchestrator/workflows/executions/*', 'fixture:workflow-executions.json');
-      cy.route('GET', '/datasets/*', 'fixture:dataset.json');
+      cy.route('POST', '/authentication/login', user);
+      cy.route('GET', '/orchestrator/workflows/executions/*', executions);
+      cy.route('GET', '/datasets/*', dataset);
 
       cy.get('#email').clear().type('hello@example.com').blur();
       cy.get('#password').clear().type('x').blur();

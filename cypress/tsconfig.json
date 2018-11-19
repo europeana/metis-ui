@@ -14,7 +14,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "es5",
-    "types": ["cypress"]
+    "types": ["cypress", "node"]
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }
