@@ -1,4 +1,4 @@
-import user from '../fixtures/user';
+import { user } from '../fixtures';
 import { setupWorkflowRoutes } from '../support/helpers';
 
 context('metis-ui', () => {

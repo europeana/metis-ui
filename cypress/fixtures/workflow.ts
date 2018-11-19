@@ -1,6 +1,6 @@
 import { Workflow } from '../../src/app/_models/workflow';
 
-const workflow: Workflow = {
+export const workflow: Workflow = {
   datasetId: '1',
   id: '1',
   metisPluginsMetadata: [{
@@ -26,5 +26,3 @@ const workflow: Workflow = {
     connectionLimitToDomains: { 'mocked': 1 }
   }]
 };
-
-export default workflow;

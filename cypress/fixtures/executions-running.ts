@@ -1,7 +1,7 @@
 import { Results } from '../../src/app/_models/results';
 import { PluginStatus, TaskState, WorkflowExecution, WorkflowStatus } from '../../src/app/_models/workflow-execution';
 
-const executionsResults: Results<WorkflowExecution[]> = {
+export const runningExecutions: Results<WorkflowExecution[]> = {
   'results': [
       {
           'id': 'vfvdsvfdv',
@@ -95,5 +95,3 @@ const executionsResults: Results<WorkflowExecution[]> = {
   'listSize': 5,
   'nextPage': -1
 };
-
-export default executionsResults;

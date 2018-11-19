@@ -1,6 +1,6 @@
 import { AccountRole, User } from '../../src/app/_models/user';
 
-const user: User = {
+export const user: User = {
   'userId': '1482250000003948001',
   'email': 'valentine.metis@europeana.eu',
   'firstName': 'Valentine',
@@ -17,5 +17,3 @@ const user: User = {
     'accessToken': 'DsBOGusbvSGSSJxeYC9b'
   }
 };
-
-export default user;

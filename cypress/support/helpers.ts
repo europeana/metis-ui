@@ -1,11 +1,13 @@
-import user from '../fixtures/user';
-import dataset from '../fixtures/dataset';
-import finishedExecutions from '../fixtures/executions-finished';
-import runningExecutions from '../fixtures/executions-running';
-import countries from '../fixtures/countries';
-import languages from '../fixtures/languages';
-import harvestData from '../fixtures/harvest-data';
-import workflow from '../fixtures/workflow';
+import {
+  countries,
+  dataset,
+  finishedExecutions,
+  harvestData,
+  languages,
+  runningExecutions,
+  user,
+  workflow
+} from '../fixtures';
 
 export function setupUser(): void {
   cy.window().then((w) => {

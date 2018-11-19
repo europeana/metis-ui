@@ -1,6 +1,6 @@
 import { Dataset } from '../../src/app/_models/dataset';
 
-const dataset: Dataset = {
+export const dataset: Dataset = {
   'id': '5b90d759fa974d0009a4fb97',
   'ecloudDatasetId': 'fa07e945-48c4-4547-8929-6fde4055a403',
   'datasetId': '58',
@@ -28,5 +28,3 @@ const dataset: Dataset = {
   'notes': '',
   'xsltId': null
 };
-
-export default dataset;

@@ -1,6 +1,6 @@
 import { HarvestData } from '../../src/app/_models/harvest-data';
 
-const harvestData: HarvestData = {
+export const harvestData: HarvestData = {
   'lastPreviewDate': '2018-09-06T11:45:55.168Z',
   'lastPreviewRecords': 760,
   'lastPreviewRecordsReadyForViewing': true,
@@ -11,5 +11,3 @@ const harvestData: HarvestData = {
   'lastHarvestedDate': '2018-11-19T09:10:50.864Z',
   'lastHarvestedRecords': 760
 };
-
-export default harvestData;
