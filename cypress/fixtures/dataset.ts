@@ -4,7 +4,7 @@ const dataset: Dataset = {
   'id': '5b90d759fa974d0009a4fb97',
   'ecloudDatasetId': 'fa07e945-48c4-4547-8929-6fde4055a403',
   'datasetId': '58',
-  'datasetName': 'dataset_with_long_field',
+  'datasetName': 'datasetName',
   'organizationId': '1482250000001617026',
   'organizationName': 'Europeana Foundation',
   'provider': 'Europeana',
