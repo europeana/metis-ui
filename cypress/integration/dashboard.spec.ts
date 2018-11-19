@@ -1,11 +1,25 @@
 import { setupUser, setupWorkflowRoutes } from '../support/helpers';
 
-function runningByIndex(index: number): Cypress.Chainable {
-  return cy.get(`.latest-ongoing:nth-child(${index + 1})`);
+const OPTIONS = { log: true, timeout: 10000 };
+
+function allRunning(): Cypress.Chainable {
+  return cy.get('.latest-ongoing');
 }
 
-function executionByIndex(index: number): Cypress.Chainable {
-  return cy.get(`.executions-table tbody tr:nth-child(${index + 1})`);
+function runningByIndex(index: number, sel: string): Cypress.Chainable {
+  return cy.get(`.latest-ongoing:nth-child(${index + 1}) ${sel}`, OPTIONS);
+}
+
+function allExecutions(): Cypress.Chainable {
+  return cy.get('.executions-table tbody tr', OPTIONS);
+}
+
+function executionByIndex(index: number, sel: string): Cypress.Chainable {
+  return cy.get(`.executions-table tbody tr:nth-child(${index + 1}) ${sel}`, OPTIONS);
+}
+
+function checkAHref(subject: Cypress.Chainable, href: string): void {
+  subject.closest('a').should('have.attr', 'href', href);
 }
 
 context('metis-ui', () => {
@@ -16,77 +30,56 @@ context('metis-ui', () => {
       setupWorkflowRoutes();
 
       cy.visit('/dashboard');
+      cy.wait(['@getRunningExecutions', '@getFinishedExecutions', '@getDataset']);
     });
 
     it('should show the dashboard screen and the executions', () => {
       cy.get('.metis-welcome-message').contains('Welcome');
 
-      cy.get('.latest-ongoing').should('have.length', 2);
-      runningByIndex(0).find('.progress').contains('64');
-      runningByIndex(1).find('.progress').contains('194');
+      allRunning().should('have.length', 2);
+      runningByIndex(0, '.progress').contains('64');
+      runningByIndex(1, '.progress').contains('194');
 
       cy.get('.executions-table tbody tr').should('have.length', 7);
-      executionByIndex(0).find('td.nowrap').contains('64');
-      executionByIndex(1).find('td.nowrap').contains('194');
-      executionByIndex(2).find('td.nowrap').contains('58');
-      executionByIndex(6).find('td.nowrap').contains('80');
+      executionByIndex(0, 'td.nowrap').contains('64');
+      executionByIndex(1, 'td.nowrap').contains('194');
+      executionByIndex(2, 'td.nowrap').contains('58');
+      executionByIndex(6, 'td.nowrap').contains('80');
     });
 
     it('should have action buttons', () => {
-      cy.get('.btn').contains('New dataset').click();
-      cy.url().should('contain', '/dataset/new');
-      cy.go('back');
-
-      cy.get('.btn').contains('New organization')
-        .closest('a').should('have.attr', 'href', 'https://www.zoho.com');
+      checkAHref(cy.get('.btn').contains('New dataset'), '/dataset/new');
+      checkAHref(cy.get('.btn').contains('New organization'), 'https://www.zoho.com');
     });
 
-    it('should view a dataset when the user clicks on its name', () => {
-      runningByIndex(0).contains('datasetName').click();
-      cy.url().should('contain', '/dataset/edit/64');
-      cy.go('back');
+    it('the dataset name should link to the dataset page', () => {
+      checkAHref(runningByIndex(0, '.workflowname'), '/dataset/edit/64');
+      checkAHref(runningByIndex(1, '.workflowname'), '/dataset/edit/194');
 
-      runningByIndex(1).contains('datasetName').click();
-      cy.url().should('contain', '/dataset/edit/194');
-      cy.go('back');
-
-      executionByIndex(0).contains('datasetName').click();
-      cy.url().should('contain', '/dataset/edit/64');
-      cy.go('back');
-
-      executionByIndex(4).contains('datasetName').click();
-      cy.url().should('contain', '/dataset/edit/58');
-      cy.go('back');
-
-      executionByIndex(6).contains('datasetName').click();
-      cy.url().should('contain', '/dataset/edit/80');
-      cy.go('back');
+      checkAHref(executionByIndex(0, '.datasetName'), '/dataset/edit/64');
+      checkAHref(executionByIndex(4, '.datasetName'), '/dataset/edit/58');
+      checkAHref(executionByIndex(6, '.datasetName'), '/dataset/edit/80');
     });
 
     it('should have cancel, log and history buttons for running executions', () => {
-      runningByIndex(0).find('.svg-icon-cancel').click();
+      runningByIndex(0, '.svg-icon-cancel').click();
       cy.get('.modal .head').contains('Cancel');
       cy.get('.modal .button').contains('Yes').click();
       cy.wait('@deleteExecution');
 
-      runningByIndex(0).find('.svg-icon-log').click();
+      runningByIndex(0, '.svg-icon-log').click();
       cy.get('.modal .head').contains('Log OAIPMH_HARVEST');
       cy.get('.modal .btn-close').click();
-      cy.should('not.exist', '.modal');
+      cy.get('.modal').should('not.exist');
 
-      runningByIndex(0).find('.svg-icon-history').click();
-      cy.url().should('contain', '/dataset/log/64');
-      cy.go('back');
-
-      executionByIndex(1).find('.svg-icon-history').click();
-      cy.url().should('contain', '/dataset/log/194');
-      cy.go('back');
+      checkAHref(runningByIndex(0, '.svg-icon-history'), '/dataset/log/64');
+      checkAHref(executionByIndex(1, '.svg-icon-history'), '/dataset/log/194');
     });
 
     it('should have a "load more" button', () => {
+      allExecutions().should('have.length', 7);
       cy.get('.load-more-btn').contains('Load more').click();
-      cy.get('.executions-table tbody tr', { timeout: 10000 })
-        .should('have.length', 12);
+      allExecutions().should('have.length', 12);
     });
   });
 });

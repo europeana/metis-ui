@@ -20,13 +20,22 @@ export function setupUser(): void {
 }
 
 export function setupWorkflowRoutes(): void {
-  cy.route('GET', /\/datasets\/\d+/, dataset);
-  cy.route('GET', '/datasets/countries', countries);
-  cy.route('GET', '/datasets/languages', languages);
-  cy.route('GET', '/orchestrator/workflows/executions/*FINISHED*', finishedExecutions);
-  cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutions);
-  cy.route('GET', /\/orchestrator\/workflows\/\d+/, workflow);
-  cy.route('GET', '/orchestrator/workflows/executions/dataset/*/information', harvestData);
-  cy.route('GET', '/orchestrator/workflows/executions/dataset/*?*orderField*', runningExecutions);
-  cy.route('DELETE', '/orchestrator/workflows/executions/*', {}).as('deleteExecution');
+  cy.route('GET', /\/datasets\/\d+/, dataset)
+    .as('getDataset');
+  cy.route('GET', '/datasets/countries', countries)
+    .as('getCountries');
+  cy.route('GET', '/datasets/languages', languages)
+    .as('getLanguages');
+  cy.route('GET', '/orchestrator/workflows/executions/*FINISHED*', finishedExecutions)
+    .as('getFinishedExecutions');
+  cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutions)
+    .as('getRunningExecutions');
+  cy.route('GET', /\/orchestrator\/workflows\/\d+/, workflow)
+    .as('getWorkflow');
+  cy.route('GET', '/orchestrator/workflows/executions/dataset/*/information', harvestData)
+    .as('getHarvestData');
+  cy.route('GET', '/orchestrator/workflows/executions/dataset/*?*orderField*', runningExecutions)
+    .as('getWorkflowExecutions');
+  cy.route('DELETE', '/orchestrator/workflows/executions/*', {})
+    .as('deleteExecution');
 }
