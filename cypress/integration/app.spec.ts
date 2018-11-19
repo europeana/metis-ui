@@ -1,6 +1,6 @@
-const user = require('../fixtures/user');
-const dataset = require('../fixtures/dataset');
-const executions = require('../fixtures/workflow-executions');
+import user from '../fixtures/user';
+import dataset from '../fixtures/dataset';
+import executions from '../fixtures/workflow-executions';
 
 context('metis-ui', () => {
   describe('home', () => {
