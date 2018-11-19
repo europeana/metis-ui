@@ -8,6 +8,10 @@ import 'rxjs';
 
 import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
+import { Language } from '../../_models/language';
+import { Country } from '../../_models/country';
+import { HarvestData } from '../../_models/harvest-data';
+import { Dataset } from '../../_models/dataset';
 
 @Component({
   selector: 'app-datasetform',
@@ -18,22 +22,22 @@ import { StringifyHttpError } from '../../_helpers';
 
 export class DatasetformComponent implements OnInit {
 
-  @Input() datasetData: any;
-  harvestPublicationData: any;
-  autosuggest;
+  @Input() datasetData: Dataset;
+  harvestPublicationData: HarvestData;
+  autosuggest: string;
   autosuggestId: string;
   datasetOptions: object;
-  formMode = 'create'; // possible options: create, read, update
+  formMode: 'create' | 'read' | 'update' = 'create';
   formSubmitted: boolean;
-  errorMessage;
-  successMessage;
-  harvestprotocol;
-  selectedCountry;
-  selectedLanguage;
+  errorMessage?: string;
+  successMessage?: string;
+  harvestprotocol?: string;
+  selectedCountry?: Country;
+  selectedLanguage?: Language;
 
-  private datasetForm: FormGroup;
-  private countryOptions: any;
-  private languageOptions: any;
+  datasetForm: FormGroup;
+  countryOptions: Country[];
+  languageOptions: Language[];
 
   constructor(private countries: CountriesService,
     private workflows: WorkflowService,
@@ -41,7 +45,7 @@ export class DatasetformComponent implements OnInit {
     private authentication: AuthenticationService,
     private router: Router,
     private fb: FormBuilder,
-    private RedirectPreviousUrl: RedirectPreviousUrl,
+    private redirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
     private datePipe: DatePipe,
     private translate: TranslateService) {}
@@ -54,10 +58,10 @@ export class DatasetformComponent implements OnInit {
   /* get countries and languages
   /* build the dataset form
   */
-  ngOnInit() {
+  ngOnInit(): void {
 
     if (!this.datasetData) {
-      const tempdata = JSON.parse(localStorage.getItem('tempDatasetData'));
+      const tempdata = JSON.parse(localStorage.getItem('tempDatasetData') || '{}');
       this.datasetData = tempdata;
       this.formMode = 'create';
     } else {
@@ -82,8 +86,8 @@ export class DatasetformComponent implements OnInit {
   /* return all countries
   /* list can be used in form
   */
-  returnCountries() {
-    this.countries.getCountriesLanguages('country').subscribe(result => {
+  returnCountries(): void {
+    this.countries.getCountries().subscribe(result => {
       this.countryOptions = result;
       if (this.datasetData && this.countryOptions) {
         if (this.datasetData.country) {
@@ -104,8 +108,8 @@ export class DatasetformComponent implements OnInit {
   /* return all languages
   /* list can be used in form
   */
-  returnLanguages() {
-    this.countries.getCountriesLanguages('language').subscribe(result => {
+  returnLanguages(): void {
+    this.countries.getLanguages().subscribe(result => {
       this.languageOptions = result;
       if (this.datasetData && this.languageOptions) {
         if (this.datasetData.language) {
@@ -128,7 +132,7 @@ export class DatasetformComponent implements OnInit {
   /* if datasetid exists: prefill form
   /* disable/enable fields
   */
-  buildForm() {
+  buildForm(): void {
     this.datasetForm = this.fb.group({
       datasetId: [(this.datasetData ? this.datasetData.datasetId : '')],
       datasetName: [(this.datasetData ? this.datasetData.datasetName : ''), [Validators.required]],
@@ -166,7 +170,7 @@ export class DatasetformComponent implements OnInit {
   /* temporarily save form values
   /* after blur/change
   */
-  saveTempData() {
+  saveTempData(): void {
     if (this.formMode === 'create') {
       this.formatFormValues();
       localStorage.removeItem('tempDatasetData');
@@ -177,7 +181,7 @@ export class DatasetformComponent implements OnInit {
   /** formatFormValues
   /* some field values need formating before sending them to the backend
   */
-  formatFormValues() {
+  formatFormValues(): void {
     if (!this.datasetForm.value['country']) {
       this.datasetForm.value['country'] = null;
     }
@@ -190,13 +194,13 @@ export class DatasetformComponent implements OnInit {
   /** onSubmit
   /*  submits the form and shows an error or success message
   */
-  onSubmit() {
+  onSubmit(): void {
 
     this.successMessage = undefined;
     this.errorMessage = undefined;
     this.formatFormValues();
 
-    const datasetValues = { 'dataset': this.datasetForm.value };
+    const datasetValues = { dataset: this.datasetForm.value };
     if (this.formMode === 'update') {
       this.datasets.updateDataset(datasetValues).subscribe(result => {
         localStorage.removeItem('tempDatasetData');
@@ -230,7 +234,7 @@ export class DatasetformComponent implements OnInit {
   /* using (new) values from the form
   /* show an error or success message
   */
-  updateForm() {
+  updateForm(): void {
     this.formMode = 'update';
     this.datasets.setDatasetMessage('');
     this.errorMessage = undefined;

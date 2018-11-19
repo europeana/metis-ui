@@ -1,43 +1,44 @@
 import {of as observableOf,  Observable } from 'rxjs';
 import { AuthenticationService } from '../_services';
+import { User, AccountRole } from '../_models';
 
-export const currentUser = {
-  accountRole: 'user',
+export const currentUser: User = {
+  accountRole: AccountRole.EUROPEANA_DATA_OFFICER,
   country: 'Netherlands',
-  createdDate: '',
+  createdDate: 453256554364,
   email: 'mocked@mocked.com',
   firstName: 'mocked',
   lastName: 'test',
-  metisUserAccessToken: {},
+  metisUserAccessToken: { accessToken: 'ffsafre' },
   metisUserFlag: true,
   networkMember: true,
-  organizationId: 1,
+  organizationId: '1',
   organizationName: 'organization',
-  updatedDate: '',
-  userId: 1
+  updatedDate: 546466545364,
+  userId: '1'
 };
 
 export class MockAuthenticationService extends AuthenticationService {
 
   currentUser = currentUser;
 
-  validatedUser() {
+  validatedUser(): boolean {
     return true;
   }
 
-  reloadCurrentUser() {
+  reloadCurrentUser(): Observable<boolean> {
     return observableOf(true);
   }
 
-  updatePassword() {
+  updatePassword(): Observable<boolean> {
     return observableOf(true);
   }
 
-  login() {
+  login(): Observable<boolean> {
     return observableOf(true);
   }
 
-  register() {
+  register(): Observable<boolean> {
     return observableOf(true);
   }
 }

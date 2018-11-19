@@ -14,16 +14,15 @@ import { environment } from '../../environments/environment';
 
 export class RegisterComponent implements OnInit {
   loading = false;
-  errorMessage: string;
+  errorMessage?: string;
   successMessage: string;
-  notfoundMessage: string;
   linkRegister: string = environment.links.registerMetis;
   msgSuccess: string;
   msgPasswordWeak: string;
   msgRegistrationFailed: string;
   msgAlreadyRegistered: string;
 
-  public password;
+  public password?: string;
 
   registerForm: FormGroup;
 
@@ -38,7 +37,7 @@ export class RegisterComponent implements OnInit {
   /* create a registration form
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       passwords: this.fb.group({
@@ -61,8 +60,8 @@ export class RegisterComponent implements OnInit {
   /** onKeyupPassword
   /* get password after keyup in form
   */
-  onKeyupPassword() {
-    this.password = this.registerForm.controls.passwords.get('password').value;
+  onKeyupPassword(): void {
+    this.password = this.registerForm.controls.passwords.get('password')!.value;
   }
 
   /** onSubmit
@@ -70,13 +69,13 @@ export class RegisterComponent implements OnInit {
   /* check if passwords do match
   /* and are strict
   */
-  onSubmit() {
+  onSubmit(): void {
     this.errorMessage = undefined;
     this.loading = true;
     const controls = this.registerForm.controls;
     const email = controls.email.value;
     const passwords = controls.passwords;
-    const password = passwords.get('password').value;
+    const password = passwords.get('password')!.value;
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 
@@ -100,7 +99,7 @@ export class RegisterComponent implements OnInit {
   /* redirect user to signin page afterwards
   /* @param {string} msg - success message
   */
-  private onRegistration(msg) {
+  private onRegistration(msg: string): void {
     this.successMessage = msg;
     setTimeout(() => {
       this.router.navigate(['/signin']);

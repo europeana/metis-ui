@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
 
 import { Router } from '@angular/router';
@@ -9,7 +10,7 @@ import {of as observableOf,  Observable, throwError } from 'rxjs';
 export class ErrorService {
 
   constructor(private router: Router,
-    private RedirectPreviousUrl: RedirectPreviousUrl) { }
+    private redirectPreviousUrl: RedirectPreviousUrl) { }
 
   numberOfRetries = 5;
   retryDelay = 1000;
@@ -19,7 +20,7 @@ export class ErrorService {
   /* check for specific error message, and act upon
   /* @param {object} err - details of error
   */
-  handleError(err) {
+  handleError(err: HttpErrorResponse): HttpErrorResponse | false {
     if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
       this.expiredToken();
       return false;
@@ -32,9 +33,9 @@ export class ErrorService {
   /* retry http call
   /* check and retry for a specific error
   */
-  handleRetry() {
-    return retryWhen(error => {
-      return error.pipe(flatMap((errorM: any) => {
+  handleRetry<T>(): (o: Observable<T>) => Observable<T> {
+    return retryWhen<T>(error => {
+      return error.pipe(flatMap((errorM: HttpErrorResponse) => {
         if (errorM.status  === 0 || errorM.message  === 'Http failure response for (unknown url): 0 Unknown Error') {
           return observableOf(errorM.status).pipe(delay(this.retryDelay));
         }
@@ -49,8 +50,8 @@ export class ErrorService {
   /* logout,
   /* navigato to signin page
   */
-  expiredToken() {
-    this.RedirectPreviousUrl.set(this.router.url);
+  expiredToken(): void {
+    this.redirectPreviousUrl.set(this.router.url);
     localStorage.removeItem('currentUser');
     this.router.navigate(['/signin']);
   }

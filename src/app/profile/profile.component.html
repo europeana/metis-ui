@@ -86,13 +86,13 @@
           <input id="oldpassword" type="password" formControlName="oldpassword" placeholder="{{ 'passwordold' | translate }}" />
           <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}" />
           <app-password-check [passwordToCheck]="password"></app-password-check>
-          <div class="messages" *ngIf="profileForm.controls['passwords'].get('password').touched && !profileForm.controls['passwords'].get('password').valid">
+          <div class="messages" *ngIf="profileForm.controls['passwords'].get('password')!.touched && !profileForm.controls['passwords'].get('password')!.valid">
             <div class="error-message">{{ 'passwordolderror' | translate }}</div>
           </div>
           
           <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password" (keyup)="checkMatchingPasswords()" />
           {{profileForm.controls['passwords'].errors}}
-          <div class="messages" *ngIf="(profileForm.controls['passwords'].get('confirm').touched && !profileForm.controls['passwords'].get('confirm').valid) || confirmPasswordError">
+          <div class="messages" *ngIf="(profileForm.controls['passwords'].get('confirm')!.touched && !profileForm.controls['passwords'].get('confirm')!.valid) || confirmPasswordError">
             <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
           </div>
         </fieldset>

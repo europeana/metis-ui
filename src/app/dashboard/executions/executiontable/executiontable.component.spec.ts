@@ -46,7 +46,7 @@ describe('ExecutiontableComponent', () => {
   });
 
   it('should cancel a workflow', () => {
-    component.cancelWorkflow(1);
+    component.cancelWorkflow('1');
     fixture.detectChanges();
     expect(component.successMessage).not.toBe('');
   });

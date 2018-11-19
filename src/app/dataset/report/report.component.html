@@ -4,7 +4,7 @@
     <div class="content">
 
       <ul *ngFor="let r of reportKeys(report)" >
-        <li *ngFor="let rk of reportKeys(report[r])"><strong>{{rk}}:</strong> 
+        <li *ngFor="let rk of reportKeys(report[r])"><strong>{{rk}}:</strong>
           <span *ngIf=!isObject(report[r][rk])>{{report[r][rk]}}</span>
           <div *ngIf=isObject(report[r][rk])>
             <ul *ngFor="let subrk of reportKeys(report[r][rk])">
@@ -13,7 +13,7 @@
               </li>
             </ul>
           </div>
-        </li>  
+        </li>
       </ul>
 
     </div>

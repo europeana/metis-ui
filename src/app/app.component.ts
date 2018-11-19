@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, Event, RouterEvent } from '@angular/router';
 import { WorkflowService, AuthenticationService, DatasetsService, ErrorService, TranslateService } from './_services';
 import { StringifyHttpError } from './_helpers';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   isLessMargin = false;
   bodyClass: string;
   showWrapper = false;
-  currentWorkflowId;
+  currentWorkflowId?: string;
   public loggedIn = false;
 
   constructor(
@@ -36,19 +36,20 @@ export class AppComponent implements OnInit {
   */
   public ngOnInit(): void {
 
-    this.router.events.subscribe((event: any) => {
-      if (!event.url) { return false; }
-      if (this.router.isActive(event.url, false)) {
+    this.router.events.subscribe((event: Event) => {
+      const url: string | undefined = (event as RouterEvent).url;
+      if (!url) { return; }
+      if (this.router.isActive(url, false)) {
         this.loggedIn = this.authentication.validatedUser( );
 
-        this.bodyClass = event.url.split('/')[1];
-        if (event.url === '/') { this.bodyClass = 'home'; }
+        this.bodyClass = url.split('/')[1];
+        if (url === '/') { this.bodyClass = 'home'; }
 
-        this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
+        this.isLessMargin = url.includes('home') || url === '/' || url.includes('dashboard');
       }
     });
 
-    this.workflows.promptCancelWorkflow.subscribe(workflow => {
+    this.workflows.promptCancelWorkflow.subscribe((workflow: string) => {
       if (workflow) {
         this.currentWorkflowId = workflow;
         this.showWrapper = true;
@@ -63,15 +64,15 @@ export class AppComponent implements OnInit {
   /** closePrompt
   /*  as the name suggests, this one closes the prompt or modal window
   */
-  closePrompt () {
+  closePrompt (): void {
     this.showWrapper = false;
   }
 
   /** cancelWorkflow
   /*  cancels the workflow using the currentWorkflow id
   */
-  cancelWorkflow () {
-    this.workflows.cancelThisWorkflow(this.currentWorkflowId).subscribe(result => {
+  cancelWorkflow (): void {
+    this.workflows.cancelThisWorkflow(this.currentWorkflowId!).subscribe(result => {
       this.closePrompt();
       this.workflows.setWorkflowCancelled();
     }, (err: HttpErrorResponse) => {

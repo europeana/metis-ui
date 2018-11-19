@@ -7,6 +7,13 @@ import { WorkflowService, DatasetsService, AuthenticationService, RedirectPrevio
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, harvestValidator } from '../../_helpers';
+import { PluginMetadata } from '../../_models/plugin-metadata';
+import { Dataset } from '../../_models/dataset';
+import { Workflow } from '../../_models/workflow';
+
+interface Connections {
+  [host: string]: number;
+}
 
 @Component({
   selector: 'app-workflow',
@@ -20,7 +27,7 @@ export class WorkflowComponent implements OnInit {
     private workflows: WorkflowService,
     private authentication: AuthenticationService,
     private fb: FormBuilder,
-    private RedirectPreviousUrl: RedirectPreviousUrl,
+    private redirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
     private datePipe: DatePipe,
     private translate: TranslateService,
@@ -38,11 +45,11 @@ export class WorkflowComponent implements OnInit {
 
     }
 
-  @Input() datasetData: any;
-  @Input() workflowData: any;
+  @Input() datasetData: Dataset;
+  @Input() workflowData: Workflow;
   errorMessage: string;
-  successMessage: string;
-  harvestprotocol;
+  successMessage?: string;
+  harvestprotocol: string;
   newWorkflow = true;
   formIsValid = false;
   workflowForm: FormGroup;
@@ -63,7 +70,7 @@ export class WorkflowComponent implements OnInit {
   /* build the workflow form
   /* get workflow for this dataset, could be empty if none is created yet
   */
-  ngOnInit() {
+  ngOnInit(): void {
     if (typeof this.translate.use === 'function') {
       this.translate.use('en');
     }
@@ -76,7 +83,7 @@ export class WorkflowComponent implements OnInit {
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
   */
-  buildForm() {
+  buildForm(): void {
     this.workflowForm = this.fb.group({
       pluginHARVEST: [''],
       pluginTRANSFORMATION: [''],
@@ -111,39 +118,39 @@ export class WorkflowComponent implements OnInit {
   /** updateRequired
   /* update required fields depending on selection
   */
-  updateRequired() {
+  updateRequired(): void {
     this.workflowForm.valueChanges.subscribe(() => {
-      if (this.workflowForm.get('pluginHARVEST').value === true) {
-        this.workflowForm.get('pluginType').setValidators([Validators.required]);
-        this.workflowForm.get('pluginType').updateValueAndValidity({onlySelf : false, emitEvent : false});
-        if (this.workflowForm.get('pluginType').value === 'OAIPMH_HARVEST') {
-          this.workflowForm.get('harvestUrl').setValidators([Validators.required, harvestValidator]);
-          this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
-          this.workflowForm.get('metadataFormat').setValidators([Validators.required]);
-          this.workflowForm.get('metadataFormat').updateValueAndValidity({onlySelf : false, emitEvent : false});
-          this.workflowForm.get('url').setValidators(null);
-          this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
-        } else if (this.workflowForm.get('pluginType').value === 'HTTP_HARVEST') {
-          this.workflowForm.get('url').setValidators([Validators.required, harvestValidator]);
-          this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
-          this.workflowForm.get('harvestUrl').setValidators(null);
-          this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
-          this.workflowForm.get('metadataFormat').setValidators(null);
-          this.workflowForm.get('metadataFormat').updateValueAndValidity({onlySelf : false, emitEvent : false});
+      if (this.workflowForm.get('pluginHARVEST')!.value === true) {
+        this.workflowForm.get('pluginType')!.setValidators([Validators.required]);
+        this.workflowForm.get('pluginType')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+        if (this.workflowForm.get('pluginType')!.value === 'OAIPMH_HARVEST') {
+          this.workflowForm.get('harvestUrl')!.setValidators([Validators.required, harvestValidator]);
+          this.workflowForm.get('harvestUrl')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+          this.workflowForm.get('metadataFormat')!.setValidators([Validators.required]);
+          this.workflowForm.get('metadataFormat')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+          this.workflowForm.get('url')!.setValidators(null);
+          this.workflowForm.get('url')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+        } else if (this.workflowForm.get('pluginType')!.value === 'HTTP_HARVEST') {
+          this.workflowForm.get('url')!.setValidators([Validators.required, harvestValidator]);
+          this.workflowForm.get('url')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+          this.workflowForm.get('harvestUrl')!.setValidators(null);
+          this.workflowForm.get('harvestUrl')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+          this.workflowForm.get('metadataFormat')!.setValidators(null);
+          this.workflowForm.get('metadataFormat')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
         }
       } else {
-        this.workflowForm.get('pluginType').setValidators(null);
-        this.workflowForm.get('pluginType').updateValueAndValidity({onlySelf : false, emitEvent : false});
-        this.workflowForm.get('url').setValidators(null);
-        this.workflowForm.get('url').updateValueAndValidity({onlySelf : false, emitEvent : false});
-        this.workflowForm.get('harvestUrl').setValidators(null);
-        this.workflowForm.get('harvestUrl').updateValueAndValidity({onlySelf : false, emitEvent : false});
+        this.workflowForm.get('pluginType')!.setValidators(null);
+        this.workflowForm.get('pluginType')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+        this.workflowForm.get('url')!.setValidators(null);
+        this.workflowForm.get('url')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
+        this.workflowForm.get('harvestUrl')!.setValidators(null);
+        this.workflowForm.get('harvestUrl')!.updateValueAndValidity({onlySelf : false, emitEvent : false});
       }
 
       this.selectedSteps = false;
       Object.keys(this.workflowForm.controls).forEach(key => {
         if (key.includes('plugin') && key !== 'pluginType') {
-          if (this.workflowForm.get(key).value) {
+          if (this.workflowForm.get(key)!.value) {
             this.selectedSteps = true;
           }
         }
@@ -154,34 +161,34 @@ export class WorkflowComponent implements OnInit {
   /** workflowStepAllowed
   /* make step before and after available for selection
   */
-  workflowStepAllowed(selectedPlugin) {
-    const plugin = this.pluginsOrdered.findIndex(function(element) {
-      return element === selectedPlugin;
-    });
+  workflowStepAllowed(selectedPlugin: string): void {
+    const plugin = this.pluginsOrdered.findIndex((element) =>
+      element === selectedPlugin
+    );
 
     let hasValue = 0;
 
     this.pluginsOrdered.forEach((value, index) => {
-      this.workflowForm.get(value).disable();
+      this.workflowForm.get(value)!.disable();
       hasValue = 0;
     });
 
     this.pluginsOrdered.forEach((value, index) => {
-      if (this.workflowForm.get(value).value) {
+      if (this.workflowForm.get(value)!.value) {
         hasValue++;
         if ((index - 1) >= 0) {
-          this.workflowForm.get(this.pluginsOrdered[index - 1]).enable();
+          this.workflowForm.get(this.pluginsOrdered[index - 1])!.enable();
         }
-        this.workflowForm.get(this.pluginsOrdered[index]).enable();
+        this.workflowForm.get(this.pluginsOrdered[index])!.enable();
         if ((index + 1) < this.pluginsOrdered.length) {
-          this.workflowForm.get(this.pluginsOrdered[index + 1]).enable();
+          this.workflowForm.get(this.pluginsOrdered[index + 1])!.enable();
         }
       }
     });
 
     if (hasValue === 0) {
       this.pluginsOrdered.forEach((value, index) => {
-        this.workflowForm.get(value).enable();
+        this.workflowForm.get(value)!.enable();
       });
     }
   }
@@ -189,14 +196,14 @@ export class WorkflowComponent implements OnInit {
   /** changeHarvestProtocol
   /* update form according to selected protocol
   */
-  changeHarvestProtocol(protocol) {
+  changeHarvestProtocol(protocol: string): void {
     this.harvestprotocol = protocol;
   }
 
   /** initLimitConnections
   /* add new host/connections form group to the list
   */
-  initLimitConnections(host?, connections?) {
+  initLimitConnections(host?: string, connections?: Connections): FormGroup {
     return this.fb.group({
       host: [host ? host : ''],
       connections: [connections ? connections : '']
@@ -207,12 +214,15 @@ export class WorkflowComponent implements OnInit {
   /* add new host/connection to form
   /* @param {string} type - either link checking or media processing
   */
-  addConnection(type: string, host?, connections?) {
-    let control;
+  addConnection(type: string, host?: string, connections?: Connections): void {
+    let control: FormArray;
     if (type === 'LINK_CHECKING') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control = this.workflowForm.controls['limitConnectionsLINK_CHECKING'] as FormArray;
     } else if (type === 'MEDIA_PROCESS') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control = this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'] as FormArray;
+    } else {
+      console.warn('unknown connection type: ' + type);
+      return;
     }
     control.push(this.initLimitConnections(host, connections));
   }
@@ -222,12 +232,15 @@ export class WorkflowComponent implements OnInit {
   /* @param {string} type - either link checking or media processing
   /* @param {number} i - host/connections combination in the list
   */
-  removeConnection(type: string, i: number) {
+  removeConnection(type: string, i: number): void {
     let control;
     if (type === 'LINK_CHECKING') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control = this.workflowForm.controls['limitConnectionsLINK_CHECKING'] as FormArray;
     } else if (type === 'MEDIA_PROCESS') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control = this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'] as FormArray;
+    } else {
+      console.warn('unknown connection type: ' + type);
+      return;
     }
     control.removeAt(i);
   }
@@ -236,12 +249,15 @@ export class WorkflowComponent implements OnInit {
   /* remove all host/connection
   /* @param {string} type - either link checking or media processing
   */
-  removeAllConnections(type: string) {
+  removeAllConnections(type: string): void {
     let control;
     if (type === 'LINK_CHECKING') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsLINK_CHECKING'];
+      control = this.workflowForm.controls['limitConnectionsLINK_CHECKING'] as FormArray;
     } else if (type === 'MEDIA_PROCESS') {
-      control = <FormArray>this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'];
+      control = this.workflowForm.controls['limitConnectionsMEDIA_PROCESS'] as FormArray;
+    } else {
+      console.warn('unknown connection type: ' + type);
+      return;
     }
 
     while (control.length !== 0) {
@@ -253,16 +269,16 @@ export class WorkflowComponent implements OnInit {
   /* if dataset does not exist, display message
   /* get workflow for this dataset, could be empty
   */
-  getWorkflow() {
+  getWorkflow(): void {
     if (!this.datasetData) {
       if (typeof this.translate.instant === 'function') {
         this.errorMessage = this.translate.instant('create dataset');
       }
-      return false;
+      return;
     }
 
     const workflow = this.workflowData;
-    if (!workflow) { return false; }
+    if (!workflow) { return; }
     this.newWorkflow = false;
 
     for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
@@ -300,7 +316,7 @@ export class WorkflowComponent implements OnInit {
 
       // media processing + link checking
       if (thisWorkflow.pluginType === 'MEDIA_PROCESS' || thisWorkflow.pluginType === 'LINK_CHECKING') {
-        if (!thisWorkflow.connectionLimitToDomains) { return false; }
+        if (!thisWorkflow.connectionLimitToDomains) { return; }
         this.removeAllConnections(thisWorkflow.pluginType);
         const connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
         for (let lc = 0; lc < connectionDomains.length; lc++) {
@@ -321,9 +337,9 @@ export class WorkflowComponent implements OnInit {
   /** formatFormValues
   /* format the form values so they can be submitted in a proper format
   */
-  formatFormValues() {
+  formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
 
-    const plugins = [];
+    const plugins: PluginMetadata[] = [];
 
     // import/harvest
     if (this.workflowForm.value['pluginHARVEST'] === true) {
@@ -430,8 +446,8 @@ export class WorkflowComponent implements OnInit {
   /* build a map with connections
   /* @param {object} formValuesConnections - connection values from form
   */
-  returnConnections (formValuesConnections) {
-    const connections = {};
+  returnConnections (formValuesConnections: Array<{ host: string; connections: number }>): Connections {
+    const connections: Connections = {};
     for (let c = 0; c < formValuesConnections.length; c++) {
       if (formValuesConnections[c]['host'] && formValuesConnections[c]['connections']) {
         connections[formValuesConnections[c]['host']] = Number(formValuesConnections[c]['connections']);
@@ -440,13 +456,17 @@ export class WorkflowComponent implements OnInit {
     return connections;
   }
 
+  getFormArrayControls(name: string): AbstractControl[] {
+    return (this.workflowForm.controls[name] as FormArray).controls;
+  }
+
   /** onSubmit
   /* cannot submit when there is no dataset yet
   /* submit the form
   */
-  onSubmit() {
-    if (!this.datasetData) { return false; }
-    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(workflow => {
+  onSubmit(): void {
+    if (!this.datasetData) { return; }
+    this.workflows.createWorkflowForDataset(this.datasetData.datasetId, this.formatFormValues(), this.newWorkflow).subscribe(() => {
       this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflowDataset => {
         this.workflowData = workflowDataset;
         this.getWorkflow();
@@ -463,14 +483,14 @@ export class WorkflowComponent implements OnInit {
   /** onClickedOutside
   /* click outside the message = remove messages
   */
-  onClickedOutside() {
+  onClickedOutside(): void {
     this.successMessage = undefined;
   }
 
   /** scrollToMessageBox
   /* scroll to messagebox so it will be in view after changing
   */
-  scrollToMessageBox() {
+  scrollToMessageBox(): void {
     window.scrollTo(0, 0);
   }
 }

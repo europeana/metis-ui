@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { WorkflowService, TranslateService, ErrorService } from '../../../_services';
 
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../../_helpers';
+import { WorkflowExecution, PluginExecution } from '../../../_models/workflow-execution';
 
 @Component({
   selector: '[app-executiontable]',
@@ -11,8 +12,8 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../../_helpers';
 })
 export class ExecutiontableComponent implements OnInit {
 
-  @Input() execution: any;
-  @Input() plugin: any;
+  @Input() execution: WorkflowExecution;
+  @Input() plugin: PluginExecution;
 
   contentCopied = false;
   msgCancelling: string;
@@ -27,7 +28,7 @@ export class ExecutiontableComponent implements OnInit {
   /* init this component:
   /* set translation language,
   */
-  ngOnInit() {
+  ngOnInit(): void {
     if (typeof this.translate.use === 'function') {
       this.translate.use('en');
       this.msgCancelling = this.translate.instant('cancelling');
@@ -38,8 +39,8 @@ export class ExecutiontableComponent implements OnInit {
   /*  start cancellation of the dataset with id
   /* @param {number} id - id of the dataset to cancel
   */
-  cancelWorkflow(id) {
-    if (!id) { return false; }
+  cancelWorkflow(id: string): void {
+    if (!id) { return; }
     this.workflows.promptCancelThisWorkflow(id);
   }
 
@@ -49,7 +50,7 @@ export class ExecutiontableComponent implements OnInit {
   /* @param {string} id1 - an id, depending on type
   /* @param {string} id2 - an id, depending on type
   */
-  copyInformation (type, id1, id2) {
+  copyInformation (type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }

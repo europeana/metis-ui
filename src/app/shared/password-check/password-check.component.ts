@@ -25,7 +25,7 @@ export class PasswordCheckComponent implements OnChanges {
   /* find out which color to use
   /* @param {number} s - index number, used to catch color
   */
-  private getColor(s) {
+  private getColor(s: number): { idx: number, col: string } {
     let idx = 0;
     if (s <= 10) {
       idx = 0;
@@ -63,16 +63,17 @@ export class PasswordCheckComponent implements OnChanges {
   /* @param {number} count - strength
   /* @param {string} color - color of the bar
   */
-  private setBarColors(count, col) {
+  private setBarColors(count: number, col: string): void {
     for (let _n = 0; _n < count; _n++) {
-      this['bar' + _n] = col;
+      //tslint:disable-next-line: no-any
+      (this as any)['bar' + _n] = col;
     }
   }
 
   /** toggleInfo
   /* toggle hinting/help
   */
-  toggleInfo() {
+  toggleInfo(): boolean {
     this.info = !this.info;
     return false;
   }

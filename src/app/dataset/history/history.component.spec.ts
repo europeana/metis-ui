@@ -49,7 +49,7 @@ describe('HistoryComponent', () => {
   it('should show in collapsable panel', () => {
     component.inCollapsablePanel = true;
     fixture.detectChanges();
-    expect(component.totalPages).toBe(undefined);
+    expect(component.totalPages).toBeFalsy();
   });
 
   it('should show in tab', () => {
@@ -62,9 +62,9 @@ describe('HistoryComponent', () => {
     component.datasetData = currentDataset;
     fixture.detectChanges();
 
-    component.openReport(123, 'mocked');
+    component.openReport('123', 'mocked');
     fixture.detectChanges();
-    expect(component.report).not.toBe('');
+    expect(component.report).toBeTruthy();
   });
 
   it('should display history in panel', () => {
@@ -102,11 +102,11 @@ describe('HistoryComponent', () => {
   it('should update history panel', () => {
     component.updateExecutionHistoryPanel(currentWorkflow.results[4]);
     fixture.detectChanges();
-    expect(component.historyInPanel).not.toBe('');
+    expect(component.historyInPanel).toBeTruthy();
   });
 
   it('should copy something to the clipboard', () => {
-    component.copyInformation('plugin', 1, 2);
+    component.copyInformation('plugin', '1', '2');
     expect(component.contentCopied).toBe(true);
   });
 

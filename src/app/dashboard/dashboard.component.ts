@@ -6,6 +6,9 @@ import { StringifyHttpError } from '../_helpers';
 
 import { environment } from '../../environments/environment';
 import {timer as observableTimer, Observable} from 'rxjs';
+import { LogStatus } from '../_models/log-status';
+import { WorkflowExecution } from '../_models/workflow-execution';
+import { Dataset } from '../_models/dataset';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,18 +20,18 @@ export class DashboardComponent implements OnInit {
 
   user: User;
   userName: string;
-  datasets;
-  runningExecutionData: Array<any> = [];
-  ongoingExecutionDataOutput;
-  executionData: Array<any> = [];
-  executionDataOutput;
-  ts;
-  tsO;
+  datasets: Dataset[];
+  runningExecutionData: WorkflowExecution[] = [];
+  ongoingExecutionDataOutput: WorkflowExecution[];
+  executionData: WorkflowExecution[] = [];
+  executionDataOutput: WorkflowExecution[];
+  ts: number;
+  tsO: number;
   intervalTimer = environment.intervalStatusShort;
   currentPageHistory = 0;
   stopChecking = true;
 
-  public isShowingLog = false;
+  public isShowingLog?: LogStatus;
 
   constructor(private authentication: AuthenticationService,
               private translate: TranslateService,
@@ -41,7 +44,7 @@ export class DashboardComponent implements OnInit {
   /* start checking the status of ongoing executions
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.stopChecking = false;
     this.getOngoingExecutions();
     this.getExecutions();
@@ -51,7 +54,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     clearTimeout(this.ts);
     clearTimeout(this.tsO);
     this.stopChecking = true;
@@ -59,26 +62,22 @@ export class DashboardComponent implements OnInit {
 
   /** onNotifyShowLogStatus
   /*  opens/closes the log messages
-  /* @param {any} message - message to display in log modal
+  /* @param {object} message - message to display in log modal
   */
-  onNotifyShowLogStatus(message): void {
+  onNotifyShowLogStatus(message: LogStatus): void {
     this.isShowingLog = message;
   }
 
-  /** onNotifyShowLogStatus
-  /*  opens/closes the log messages
-  /* @param {any} message - message to display in log modal
-  */
-  getNextPage(page): void {
+  getNextPage(page: number): void {
     this.currentPageHistory = page;
   }
 
   /** checkStatusOngoingExecutions
   /*  get the current status of the ongoing executions
   */
-  checkStatusOngoingExecutions() {
-    if (this.stopChecking) { return false; }
-    this.tsO = setTimeout(() => {
+  checkStatusOngoingExecutions(): void {
+    if (this.stopChecking) { return; }
+    this.tsO = window.setTimeout(() => {
         this.runningExecutionData = [];
         this.getOngoingExecutions();
     }, this.intervalTimer);
@@ -87,9 +86,9 @@ export class DashboardComponent implements OnInit {
   /** checkStatusExecutions
   /*  get the current status of the executions
   */
-  checkStatusExecutions() {
-    if (this.stopChecking) { return false; }
-    this.ts = setTimeout(() => {
+  checkStatusExecutions(): void {
+    if (this.stopChecking) { return; }
+    this.ts = window.setTimeout(() => {
         this.executionData = [];
         this.getExecutions();
     }, this.intervalTimer);
@@ -98,7 +97,7 @@ export class DashboardComponent implements OnInit {
   /** getOngoingExecutions
   /*  get all ongoing executions and start polling again
   */
-  getOngoingExecutions(page?) {
+  getOngoingExecutions(page?: number): void {
     this.workflows.getAllExecutionsPerOrganisation((page ? page : 0), true).subscribe(executions => {
       this.runningExecutionData = this.runningExecutionData.concat(executions['results']);
       if (executions['nextPage'] !== -1) {
@@ -117,12 +116,12 @@ export class DashboardComponent implements OnInit {
   /** getExecutions
   /*  get history of all executions (finished, cancelled, failed) and start polling again
   */
-  getExecutions(page?) {
+  getExecutions(page?: number): void {
     page = (page ? page : 0);
     this.workflows.getAllExecutionsPerOrganisation(page, false).subscribe(executions => {
       this.executionData = this.executionData.concat(executions['results']);
-      if (this.currentPageHistory > 0 && page < this.currentPageHistory) {
-        page++;
+      if (this.currentPageHistory > 0 && page! < this.currentPageHistory) {
+        page!++;
         this.getExecutions(page);
       } else {
         this.executionDataOutput = this.executionData;

@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
   /* create a login form
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
     // already logged in, then redirect
     if (this.authentication.validatedUser() && this.checkLogin) {
       this.checkLogin = true;
@@ -57,8 +57,8 @@ export class LoginComponent implements OnInit {
   /** onSubmit
   /* submit login form
   */
-  onSubmit() {
-    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; }
+  onSubmit(): void {
+    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return; }
 
     this.loading = true;
     this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit {
   /** redirectAfterLogin
   /* redirect to previous page after login or default page
   */
-  redirectAfterLogin () {
+  redirectAfterLogin (): void {
     const url = this.redirectPreviousUrl.get();
 
     if (url && url !== '/signin') {

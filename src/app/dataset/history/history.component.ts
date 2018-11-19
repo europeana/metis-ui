@@ -1,12 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { timer as observableTimer } from 'rxjs';
+import { Subscription, timer as observableTimer } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ActivatedRoute } from '@angular/router';
 
 import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
+import { Dataset } from '../../_models/dataset';
+import { WorkflowExecution, PluginExecution } from '../../_models/workflow-execution';
+import { Report } from '../../_models/report';
 
 @Component({
   selector: 'app-history',
@@ -20,25 +23,25 @@ export class HistoryComponent implements OnInit {
     private translate: TranslateService,
     private route: ActivatedRoute) { }
 
-  @Input('datasetData') datasetData;
-  @Input('lastExecutionData') lastExecutionData;
-  @Input('inCollapsablePanel') inCollapsablePanel;
+  @Input('datasetData') datasetData: Dataset;
+  @Input('lastExecutionData') lastExecutionData: WorkflowExecution;
+  @Input('inCollapsablePanel') inCollapsablePanel: boolean;
 
-  errorMessage: string;
-  report;
-  allExecutions: Array<any> = [];
-  allExecutionsPanel: Array<any> = [];
-  historyInPanel: Array<any> = [];
+  errorMessage?: string;
+  successMessage?: string;
+  report?: Report;
+  allExecutions: Array<WorkflowExecution | PluginExecution> = []; // TODO: check type
+  historyInPanel: PluginExecution[] = [];
   currentPlugin = 0;
   nextPage = 0;
   totalPages = 0;
   contentCopied = false;
   workflowHasFinished = false;
-  subscription;
+  subscription: Subscription;
   intervalTimer = environment.intervalStatusShort;
   checkStatusStarted = false;
-  thisDatasetId;
-  checkTrigger;
+  thisDatasetId: string;
+  checkTrigger: Subscription;
 
 
   /** ngOnInit
@@ -51,7 +54,7 @@ export class HistoryComponent implements OnInit {
   /* and set translation langugaes
   */
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.thisDatasetId = params['id']; // if no id defined, let's create a new dataset
     });
@@ -59,8 +62,8 @@ export class HistoryComponent implements OnInit {
     this.checkStatus();
     if (this.inCollapsablePanel) {
       this.checkTrigger = this.workflows.selectedWorkflow.subscribe(
-        selectedworkflow => {
-          this.triggerWorkflow();    
+        () => {
+          this.triggerWorkflow();
           if (this.inCollapsablePanel) {
             this.allExecutions = [];
           }
@@ -69,7 +72,7 @@ export class HistoryComponent implements OnInit {
     }
 
     if (!this.inCollapsablePanel) {
-      if (typeof this.workflows.getCurrentPageNumberForComponent !== 'function') { return false; }
+      if (typeof this.workflows.getCurrentPageNumberForComponent !== 'function') { return; }
       this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
       this.returnAllExecutions();
     } else {
@@ -77,7 +80,7 @@ export class HistoryComponent implements OnInit {
     }
 
     this.workflows.workflowIsDone.subscribe(
-      workflowstatus => {
+      (workflowstatus: boolean) => {
         if (workflowstatus && this.workflowHasFinished === false) {
           this.allExecutions = [];
           this.nextPage = 0;
@@ -103,14 +106,14 @@ export class HistoryComponent implements OnInit {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.checkTrigger) { this.checkTrigger.unsubscribe(); }
   }
 
   /** checkStatus
   /*  start checking the status of the workflow
   */
-  checkStatus () {
+  checkStatus (): void {
     if (this.subscription) { this.subscription.unsubscribe(); }
     const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
@@ -120,16 +123,16 @@ export class HistoryComponent implements OnInit {
 
   /** updateExecutionHistoryPanel
   /*  update execution information in history panel specific
-  /* @param {any} workflow - current running workflow
+  /* @param {object} workflow - current running workflow
   */
-  updateExecutionHistoryPanel(workflow) {
+  updateExecutionHistoryPanel(workflow: WorkflowExecution): void {
 
-    if (!workflow) { return false; }
+    if (!workflow) { return; }
     if (this.historyInPanel.length === this.workflows.getCurrentPlugin(workflow) &&
       this.historyInPanel.length &&
       this.historyInPanel.length > 0 &&
       this.workflows.getCurrentPlugin(workflow) > 0) {
-        return false;
+        return;
       }
 
     this.historyInPanel = [];
@@ -152,16 +155,16 @@ export class HistoryComponent implements OnInit {
   /*  return all executions, either max 1 to display in collapsable panel of list with pagination
   /*  option to filter on workflow in table
   */
-  returnAllExecutions() {
+  returnAllExecutions(): void {
 
-    if (!this.datasetData) { return false; }
+    if (!this.datasetData) { return; }
 
     let startPage = 0;
     const totalPageNr = this.totalPages;
 
     this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
 
-      if (result['results'].length === 0) { this.nextPage = 0; return false; }
+      if (result['results'].length === 0) { this.nextPage = 0; return; }
 
       let showTotal = result['results'].length;
       if (this.inCollapsablePanel && result['results'].length >= 1 ) {
@@ -199,8 +202,8 @@ export class HistoryComponent implements OnInit {
   /*  check if the execution is finished/failed
   /*  add a report when available
   */
-  getReport(w) {
-    const ws = w;
+  getReport(w: PluginExecution): PluginExecution {
+    const ws: PluginExecution = w;
     ws['hasReport'] = false;
 
     if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED' || w.pluginStatus === 'CANCELLED') {
@@ -221,11 +224,11 @@ export class HistoryComponent implements OnInit {
   /*  get last execution, set status to running if it indeed does run or is inqueue
   /*  and update the history panel with the most recent details
   */
-  getLatestExecution() {
+  getLatestExecution(): void {
     const workflow = this.lastExecutionData;
-    if (!workflow) { return false; }
+    if (!workflow) { return; }
     const currentPlugin = this.workflows.getCurrentPlugin(workflow);
-    if (!workflow['metisPlugins'][currentPlugin]) { return false; }
+    if (!workflow['metisPlugins'][currentPlugin]) { return; }
     if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
       this.workflowHasFinished = false;
     } else {
@@ -236,16 +239,16 @@ export class HistoryComponent implements OnInit {
 
   /** scroll
   /*  scroll to specific point in page after click
-  /* @param {any} el - scroll to defined element
+  /* @param {Element} el - scroll to defined element
   */
-  scroll(el) {
+  scroll(el: Element): void {
     el.scrollIntoView({behavior: 'smooth'});
   }
 
   /** loadNextPage
   /*  used in processing history table to display next page
   */
-  loadNextPage() {
+  loadNextPage(): void {
     if (this.nextPage !== -1) {
       this.returnAllExecutions();
     }
@@ -255,10 +258,10 @@ export class HistoryComponent implements OnInit {
   /*  trigger a workflow, based on selection in workflow dropdown or restart button
   /* @param {string} workflowName - name of workflow to trigger
   */
-  triggerWorkflow() {
-    if (this.datasetData.datasetId !== this.thisDatasetId) { return false; }
+  triggerWorkflow(): void {
+    if (this.datasetData.datasetId !== this.thisDatasetId) { return; }
     this.errorMessage = undefined;
-    if (!this.datasetData) { return false; }
+    if (!this.datasetData) { return; }
     this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
       this.workflowHasFinished = false;
       this.workflows.setActiveWorkflow(result);
@@ -281,7 +284,7 @@ export class HistoryComponent implements OnInit {
   /* @param {number} taskid - id of task
   /* @param {string} topology - name of topology
   */
-  openReport (taskid, topology) {
+  openReport (taskid: string, topology: string): void {
     this.report = undefined;
     this.workflows.getReport(taskid, topology).subscribe(result => {
       this.workflows.setCurrentReport(result);
@@ -298,7 +301,7 @@ export class HistoryComponent implements OnInit {
   /* @param {string} id1 - an id, depending on type
   /* @param {string} id2 - an id, depending on type
   */
-  copyInformation (type, id1, id2) {
+  copyInformation (type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }

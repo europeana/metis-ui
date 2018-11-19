@@ -15,5 +15,9 @@ export const environment = {
     registerMetis: 'http://pro-beta.europeana.eu/page/register-to-metis',
     gotoZoho: 'https://www.zoho.com',
     updateProfileMain: 'content@europeana.eu'
+  },
+  test: {
+    username: 'username',
+    password: 'password'
   }
 };

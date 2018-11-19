@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class TokenInterceptor implements HttpInterceptor {
 
-  private auth;
+  private auth: AuthenticationService;
   constructor(private inj: Injector) {}
 
   /** intercept
@@ -21,9 +21,10 @@ export class TokenInterceptor implements HttpInterceptor {
   /* @param {httprequest} request - identify the http request, url
   /* @param {httphandler} next
   */
+  //tslint:disable-next-line: no-any
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
-      const auth = this.inj.get(AuthenticationService);
+      const auth = this.inj.get<AuthenticationService>(AuthenticationService);
       const token = auth.getToken();
 
       if (token) {

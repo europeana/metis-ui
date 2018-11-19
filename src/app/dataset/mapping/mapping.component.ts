@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkflowService, DatasetsService, TranslateService, ErrorService } from '../../_services';
+import { EditorConfiguration } from 'codemirror';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
@@ -16,6 +17,8 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/comment-fold';
 
 import * as beautify from 'vkbeautify';
+import { NodeStatistics } from '../../_models/statistics';
+import { Dataset } from '../../_models/dataset';
 
 @Component({
   selector: 'app-mapping',
@@ -30,24 +33,24 @@ export class MappingComponent implements OnInit {
     private translate: TranslateService,
     private router: Router) { }
 
-  @Input() datasetData: any;
-  editorConfigEdit;
-  statistics;
+  @Input() datasetData: Dataset;
+  editorConfigEdit: EditorConfiguration;
+  statistics: NodeStatistics[];
   statisticsMap = new Map();
-  fullXSLT;
+  fullXSLT: string;
   xsltType = 'default';
-  xslt: Array<any> = [];
-  xsltToSave: Array<any> = [];
+  xslt: Array<string> = [];
+  xsltToSave: Array<string> = [];
   xsltHeading: string;
-  errorMessage: string;
-  successMessage: string;
+  errorMessage?: string;
+  successMessage?: string;
   fullView = true;
   splitter: string = environment.xsltSplitter;
-  expandedSample: number;
+  expandedSample?: number;
   expandedStatistics: boolean;
   msgXSLTSuccess: string;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.editorConfigEdit = {
       mode: 'application/xml',
       lineNumbers: true,
@@ -73,9 +76,9 @@ export class MappingComponent implements OnInit {
   /* load the data on statistics and display this in a card (=readonly editor)
   /* mocked data for now
   */
-  loadStatistics() {
+  loadStatistics(): void {
     this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
-      let taskId: string;
+      let taskId: string | undefined;
       if (result['results'].length > 0) {
         // find validation in the latest run, and if available, find taskid
         for (let i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
@@ -85,7 +88,7 @@ export class MappingComponent implements OnInit {
         }
       }
 
-      if (!taskId) { return false; }
+      if (!taskId) { return; }
       this.successMessage = 'Loading statistics';
       this.workflows.getStatistics('validation', taskId).subscribe(resultStatistics => {
         this.statistics = resultStatistics['nodeStatistics'];
@@ -94,6 +97,7 @@ export class MappingComponent implements OnInit {
         const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
       });
+      return;
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
@@ -103,7 +107,7 @@ export class MappingComponent implements OnInit {
   /* load the xslt in an editor/card
   /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
   */
-  loadEditor() {
+  loadEditor(): void {
     let type = this.datasets.getTempXSLT();
     if (!type) {
       type = 'default';
@@ -117,7 +121,7 @@ export class MappingComponent implements OnInit {
   /* display XSLT
   /* show message if no custom XSLT
   */
-  loadXSLT(type) {
+  loadXSLT(type: string): void {
     this.xsltType = type;
     this.datasets.getXSLT(this.xsltType, this.datasetData.datasetId).subscribe(result => {
       this.fullXSLT = result;
@@ -125,7 +129,7 @@ export class MappingComponent implements OnInit {
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
       if (this.xsltType === 'custom') {
-        this.xslt[0] = undefined;
+        this.xslt = [];
         this.xsltHeading = 'No custom XSLT yet';
       }
     });
@@ -136,7 +140,7 @@ export class MappingComponent implements OnInit {
   /* expand the sample when in full view, else start with all cards "closed"
   /* empty xsltToSave to avoid misalignments
   */
-  displayXSLT() {
+  displayXSLT(): void {
     this.xslt = [];
     this.xsltToSave = [];
     this.xsltHeading = this.xsltType;
@@ -153,7 +157,7 @@ export class MappingComponent implements OnInit {
   /** splitXSLT
   /* split xslt on comments to show file in individual cards
   */
-  splitXSLT() {
+  splitXSLT(): string[] {
     return this.fullXSLT.split(this.splitter);
   }
 
@@ -162,7 +166,7 @@ export class MappingComponent implements OnInit {
   /* switch to preview tab to have a look of the outcome
   /* @param {string} type - either custom or default
   */
-  tryOutXSLT(type) {
+  tryOutXSLT(type: string): void {
     this.datasets.setTempXSLT(type);
     if (type === 'default') { // no need to save, but move to preview directly
       this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
@@ -174,7 +178,7 @@ export class MappingComponent implements OnInit {
   /** getFullXSLT
   /* get the full xslt
   */
-  getFullXSLT() {
+  getFullXSLT(): string {
     let xsltValue = '';
 
     if (this.fullView) {
@@ -197,7 +201,7 @@ export class MappingComponent implements OnInit {
   /* switch to custom view after saving
   /* @param {boolean} tryout - "tryout" xslt in preview tab or just save it, optional
   */
-  saveXSLT(tryout?) {
+  saveXSLT(tryout?: boolean): void {
     const xsltValue = this.getFullXSLT();
     const datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };
     this.datasets.updateDataset(datasetValues).subscribe(result => {
@@ -215,7 +219,7 @@ export class MappingComponent implements OnInit {
   /** toggleStatistics
   /* expand statistics panel
   */
-  toggleStatistics() {
+  toggleStatistics(): void {
     this.expandedStatistics = this.expandedStatistics === true ? false : true;
   }
 
@@ -224,22 +228,22 @@ export class MappingComponent implements OnInit {
   /* only one sample can be expanded
   /* @param {number} index - index of sample to expand
   */
-  expandSample(index: number) {
+  expandSample(index: number): void {
     this.expandedSample = this.expandedSample === index ? undefined : index;
   }
 
   /** scroll
   /*  scroll to specific point in page after click
-  /* @param {any} el - scroll to defined element
+  /* @param {Element} el - scroll to defined element
   */
-  scroll(el) {
+  scroll(el: Element): void {
     el.scrollIntoView({behavior: 'smooth'});
   }
 
   /** closeMessages
   /*  close messagebox
   */
-  closeMessages() {
+  closeMessages(): void {
     this.errorMessage = undefined;
     this.successMessage = undefined;
   }

@@ -1,10 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import {timer as observableTimer, Observable} from 'rxjs';
+import {timer as observableTimer, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 import { WorkflowService, AuthenticationService, TranslateService, ErrorService } from '../../_services';
+import { LogStatus } from '../../_models/log-status';
+import { SubTaskInfo } from '../../_models/subtask-info';
 
 @Component({
   selector: 'app-datasetlog',
@@ -17,19 +19,19 @@ export class DatasetlogComponent implements OnInit {
     private errors: ErrorService,
     private translate: TranslateService) { }
 
-  @Input('isShowingLog') isShowingLog;
+  @Input('isShowingLog') isShowingLog: LogStatus;
   @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  logMessages;
+  logMessages?: SubTaskInfo[];
   logPerStep = 100;
   logStep = 1;
   logFrom = 1;
   logTo = this.logStep * this.logPerStep;
-  logPlugin;
-  subscription;
+  logPlugin: string;
+  subscription: Subscription;
   intervalTimer = environment.intervalStatus;
   noLogs: string;
-  noLogMessage: string;
+  noLogMessage?: string;
 
 
   /** ngOnInit
@@ -37,7 +39,7 @@ export class DatasetlogComponent implements OnInit {
   /* return the log information
   /* and set translation langugaes
   */
-  ngOnInit() {
+  ngOnInit(): void {
     this.startPolling();
 
     if (typeof this.translate.use === 'function') {
@@ -49,7 +51,7 @@ export class DatasetlogComponent implements OnInit {
   /** closeLog
   /* close log modal window
   */
-  closeLog() {
+  closeLog(): void {
     this.notifyShowLogStatus.emit(false);
     if (this.subscription) { this.subscription.unsubscribe(); }
   }
@@ -57,7 +59,7 @@ export class DatasetlogComponent implements OnInit {
   /** startPolling
   /*  check for new logs
   */
-  startPolling() {
+  startPolling(): void {
     if (this.subscription) { this.subscription.unsubscribe(); }
     const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
@@ -68,11 +70,11 @@ export class DatasetlogComponent implements OnInit {
   /** returnLog
   /* get content of log, based on external taskid and topology
   */
-  returnLog() {
+  returnLog(): void {
 
     const currentProcessed = this.workflows.getCurrentProcessed();
-    this.logTo = currentProcessed ? currentProcessed.processed : this.isShowingLog['processed'];
-    this.logPlugin = currentProcessed ? currentProcessed.topology : this.isShowingLog['plugin'];
+    this.logTo = (currentProcessed ? currentProcessed.processed : this.isShowingLog.processed) || 0;
+    this.logPlugin = currentProcessed ? currentProcessed.topology : this.isShowingLog.plugin;
 
     if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED' || this.isShowingLog['status'] === 'CANCELLED' || this.isShowingLog['status'] === 'FAILED')) {
       if (this.subscription) { this.subscription.unsubscribe(); }
@@ -80,11 +82,11 @@ export class DatasetlogComponent implements OnInit {
 
     if (this.logTo <= 1) {
       this.showWindowOutput(this.noLogs, undefined);
-      return false;
+      return;
     }
 
     this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.getLogFrom(), this.logTo).subscribe(result => {
-      if (result && (<any>result).length > 0) {
+      if (result.length > 0) {
         this.showWindowOutput(undefined, result);
       } else {
         this.showWindowOutput(this.noLogs, undefined);
@@ -98,7 +100,7 @@ export class DatasetlogComponent implements OnInit {
   /* show correct information in log modal window
   /* this good be a "no logs found" message or the actual log
   */
-  showWindowOutput(nolog, log) {
+  showWindowOutput(nolog: string | undefined, log: SubTaskInfo[] | undefined): void {
     this.noLogMessage = nolog;
     this.logMessages = log;
   }
@@ -107,7 +109,7 @@ export class DatasetlogComponent implements OnInit {
   /* calculate from
   /* used to get logs
   */
-  getLogFrom() {
+  getLogFrom(): number {
     return (this.logTo - this.logPerStep) >= 1 ? (this.logTo - this.logPerStep) + 1 : 1;
   }
 }

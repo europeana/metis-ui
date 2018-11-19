@@ -1,4 +1,4 @@
-export function PasswordStrength(p: string) {
+export function PasswordStrength(p: string): number {
     let strength = 0;
     const _regex = /[$-/:-?{-~!"^_`\[\]]/g;
 

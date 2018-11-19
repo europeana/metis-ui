@@ -47,6 +47,6 @@ describe('GeneralinfoComponent', () => {
     component.datasetData = currentDataset;
     component.getDatasetInformation();
     fixture.detectChanges();
-    expect(component.harvestPublicationData).not.toBe(undefined);
+    expect(component.harvestPublicationData).toBeTruthy();
   });
 });

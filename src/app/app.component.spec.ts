@@ -1,4 +1,4 @@
-import { TestBed, async } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 
 import { AppComponent } from './app.component';
 
@@ -14,8 +14,8 @@ import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_tra
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
-  let fixture;
-  let app;
+  let fixture: ComponentFixture<AppComponent>;
+  let app: AppComponent;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

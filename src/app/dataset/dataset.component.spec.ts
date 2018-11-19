@@ -54,7 +54,7 @@ describe('DatasetComponent', () => {
     component.activeTab = undefined;
     component.returnDataset('1');
     fixture.detectChanges();
-    expect(component.subscription.closed).not.toBe(undefined);
+    expect(component.subscription.closed).toBe(false);
   });
 
   it('should switch tabs', () => {
@@ -88,9 +88,9 @@ describe('DatasetComponent', () => {
   });
 
   it('should be possible to display a message', () => {
-    component.onNotifyShowLogStatus('mocked');
+    component.onNotifyShowLogStatus(true);
     fixture.detectChanges();
-    expect(component.isShowingLog).toBe('mocked');
+    expect(component.isShowingLog).toBe(true);
 
     component.clickOutsideMessage();
     fixture.detectChanges();

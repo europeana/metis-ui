@@ -1,8 +1,10 @@
 ﻿import { HttpErrorResponse } from '@angular/common/http';
 
-export function StringifyHttpError(err: HttpErrorResponse): string {
+export function StringifyHttpError(err: HttpErrorResponse | false): string {
   let errmsg;
-  if (err.error instanceof Error) {
+  if (err === false) {
+    errmsg = 'authorization failed or expired.';
+  } else if (err.error instanceof Error) {
     // A client-side or network error occurred. Handle it accordingly.
     if (err.status === 404) {
       errmsg = `${err.status} ${err.statusText}`;

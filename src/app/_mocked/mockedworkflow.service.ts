@@ -1,10 +1,17 @@
-
 import {of as observableOf,  Observable } from 'rxjs';
 import { WorkflowService } from '../_services';
+import { Workflow } from '../_models/workflow';
+import { Results } from '../_models/results';
+import { WorkflowExecution, PluginStatus, WorkflowStatus, TaskState } from '../_models/workflow-execution';
+import { XmlSample } from '../_models/xml-sample';
+import { Report } from '../_models/report';
+import { HarvestData } from '../_models/harvest-data';
+import { Statistics } from '../_models/statistics';
+import { SubTaskInfo } from '../_models/subtask-info';
 
-export const currentWorkflowDataset = {
+export const currentWorkflowDataset: Workflow = {
   datasetId: '1',
-  id: 1,
+  id: '1',
   metisPluginsMetadata: [{
     enabled: true,
     metadataFormat: 'edm',
@@ -29,91 +36,144 @@ export const currentWorkflowDataset = {
   }]
 };
 
-export const currentWorkflow = {
+export const currentWorkflow: Results<WorkflowExecution[]> = {
   results: [{
-    workflowStatus: 'INQUEUE',
+    id: '253453453',
+    datasetId: '5323465',
+    workflowStatus: WorkflowStatus.INQUEUE,
+    createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
     metisPlugins: [{
       pluginType: 'mocked',
-      pluginStatus: 'INQUEUE',
+      id: '432552345',
+      startedDate: '2018-11-05T15:38:18.450Z',
+      updatedDate: '2018-11-05T15:38:18.450Z',
+      pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
+      pluginStatus: PluginStatus.INQUEUE,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
-        processedRecords: '1000',
-        expectedRecords: '1000'
+        processedRecords: 1000,
+        expectedRecords: 1000,
+        progressPercentage: 100,
+        errors: 0,
+        status: TaskState.SENT
       }
     }]
   },
   {
-    workflowStatus: 'RUNNING',
+    id: '253453453',
+    datasetId: '5323465',
+    workflowStatus: WorkflowStatus.RUNNING,
+    createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
     metisPlugins: [{
       pluginType: 'mocked',
-      pluginStatus: 'RUNNING',
+      id: '432552345',
+      startedDate: '2018-11-05T15:38:18.450Z',
+      updatedDate: '2018-11-05T15:38:18.450Z',
+      pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
+      pluginStatus: PluginStatus.RUNNING,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
-        processedRecords: '1000',
-        expectedRecords: '1000'
+        processedRecords: 1000,
+        expectedRecords: 1000,
+        progressPercentage: 100,
+        errors: 0,
+        status: TaskState.PROCESSED
       }
     }]
   },
   {
-    workflowStatus: 'FAILED',
+    id: '253453453',
+    datasetId: '5323465',
+    workflowStatus: WorkflowStatus.FAILED,
+    createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
     metisPlugins: [{
       pluginType: 'mocked',
-      pluginStatus: 'FAILED',
+      id: '432552345',
+      startedDate: '2018-11-05T15:38:18.450Z',
+      updatedDate: '2018-11-05T15:38:18.450Z',
+      pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
+      pluginStatus: PluginStatus.FAILED,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
-        processedRecords: '1000',
-        expectedRecords: '1000'
+        processedRecords: 1000,
+        expectedRecords: 1000,
+        progressPercentage: 100,
+        errors: 0,
+        status: TaskState.PROCESSED
       }
     }]
   },
   {
-    workflowStatus: 'CANCELLED',
+    id: '253453453',
+    datasetId: '5323465',
+    workflowStatus: WorkflowStatus.CANCELLED,
+    createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
     metisPlugins: [{
       pluginType: 'mocked',
-      pluginStatus: 'FAILED',
+      id: '432552345',
+      startedDate: '2018-11-05T15:38:18.450Z',
+      updatedDate: '2018-11-05T15:38:18.450Z',
+      pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
+      pluginStatus: PluginStatus.CANCELLED,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
-        processedRecords: '1000',
-        expectedRecords: '1000'
+        processedRecords: 1000,
+        expectedRecords: 1000,
+        progressPercentage: 100,
+        errors: 0,
+        status: TaskState.PROCESSED
       }
     }]
   },
   {
-    workflowStatus: 'FINISHED',
+    id: '253453453',
+    datasetId: '5323465',
+    workflowStatus: WorkflowStatus.FINISHED,
+    createdDate: '2018-11-05T15:38:18.450Z',
     updatedDate: '',
     startedDate: '',
     metisPlugins: [{
       pluginType: 'mocked',
-      pluginStatus: 'FINISHED',
+      id: '432552345',
+      startedDate: '2018-11-05T15:38:18.450Z',
+      updatedDate: '2018-11-05T15:38:18.450Z',
+      pluginMetadata: { pluginType: 'mocked', mocked: true, enabled: false },
+      pluginStatus: PluginStatus.FINISHED,
       externalTaskId: '123',
       topologyName: 'mocked',
       executionProgress: {
-        processedRecords: '1000',
-        expectedRecords: '1000'
+        processedRecords: 1000,
+        expectedRecords: 1000,
+        progressPercentage: 100,
+        errors: 0,
+        status: TaskState.PROCESSED
       }
     }]
   }],
+  listSize: 5,
   nextPage: -1
 };
 
-export const XMLSamples = [{
- 'ecloudId': 1,
- 'xmlRecord': '<?xml version="1.0" encoding="UTF-8"?>'
+export const xmlSamples: XmlSample[] = [{
+  ecloudId: '1',
+  xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>'
 }];
 
-export const statistics = { nodeStatistics:
+export const statistics: Statistics = {
+  taskId: 5,
+  nodeStatistics:
   [{attributesStatistics:
       [{name: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
         occurrence: 2,
@@ -126,85 +186,92 @@ export const statistics = { nodeStatistics:
   }]
 };
 
-export const currentReport = { id: 123,
-  errors: [{errorType: 'errorType',
-    message: 'errorMessage',
-    occurrences: 9,
-    identifiers: []
-  }]
+export const currentReport: Report = {
+  id: '123',
+  errors: [
+    {
+      errorType: 'errorType',
+      message: 'errorMessage',
+      occurrences: 9
+    }
+  ]
 };
 
-export const harvestData = {
-  'firstPublishedDate': '2018-03-28T13:53:04.762Z',
-  'lastPublishedDate': '2018-03-30T13:53:04.762Z',
-  'lastPublishedRecords': 842,
-  'lastHarvestedDate': '2018-03-30T13:53:04.762Z',
-  'lastHarvestedRecords': 842
+export const harvestData: HarvestData = {
+  lastPreviewDate: '2018-03-28T13:53:04.762Z',
+  lastPreviewRecords: 842,
+  lastPreviewRecordsReadyForViewing: true,
+  firstPublishedDate: '2018-03-28T13:53:04.762Z',
+  lastPublishedDate: '2018-03-30T13:53:04.762Z',
+  lastPublishedRecords: 842,
+  lastPublishedRecordsReadyForViewing: true,
+  lastHarvestedDate: '2018-03-30T13:53:04.762Z',
+  lastHarvestedRecords: 842
 };
 
 export class MockWorkflowService extends WorkflowService {
 
-  triggerNewWorkflow() {
-    return observableOf(currentWorkflow['results'][0]);
+  triggerNewWorkflow(): Observable<WorkflowExecution> {
+    return observableOf(currentWorkflow.results[0]);
   }
 
-  cancelThisWorkflow() {
-    return observableOf(false);
+  cancelThisWorkflow(): Observable<void> {
+    return observableOf(undefined);
   }
 
-  getAllExecutions() {
+  getAllExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getAllExecutionsEveryStatus() {
+  getAllExecutionsEveryStatus(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getLastExecution() {
-    return observableOf(currentWorkflow['results'][0]);
+  getLastExecution(): Observable<WorkflowExecution> {
+    return observableOf(currentWorkflow.results[0]);
   }
 
-  setActiveWorkflow(workflow?): void {
-    this.changeWorkflow.emit(currentWorkflow['results'][0]);
+  setActiveWorkflow(workflow?: WorkflowExecution): void {
+    this.changeWorkflow.emit(currentWorkflow.results[0]);
   }
 
-  getAllExecutionsPerOrganisation() {
+  getAllExecutionsPerOrganisation(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getAllFinishedExecutions() {
+  getAllFinishedExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getWorkflowSamples() {
-    return observableOf(XMLSamples);
+  getWorkflowSamples(): Observable<XmlSample[]> {
+    return observableOf(xmlSamples);
   }
 
-  getReport(taskid, topology) {
+  getReport(taskid: string, topology: string): Observable<Report> {
     return observableOf(currentReport);
   }
 
-  getCurrentReport() {
+  getCurrentReport(): Report {
     return currentReport;
   }
 
-  getStatistics() {
+  getStatistics(): Observable<Statistics> {
     return observableOf(statistics);
   }
 
-  getWorkflowForDataset() {
+  getWorkflowForDataset(): Observable<Workflow> {
     return observableOf(currentWorkflowDataset);
   }
 
-  createWorkflowForDataset() {
+  createWorkflowForDataset(): Observable<Workflow> {
     return observableOf(currentWorkflowDataset);
   }
 
-  getPublishedHarvestedData() {
+  getPublishedHarvestedData(): Observable<HarvestData> {
     return observableOf(harvestData);
   }
 
-  getLogs() {
-    return observableOf('mocked');
+  getLogs(): Observable<SubTaskInfo[]> {
+    return observableOf([{ resourceNum: 5, resource: 'dsv', state: 'st', info: 'fdsfsd', resultResource: 'xcsdc' }]);
   }
 }

@@ -47,8 +47,8 @@ describe('DashboardComponent', () => {
   });
 
   it('should open log messages', () => {
-    component.onNotifyShowLogStatus('mocked message');
-    expect(component.isShowingLog).not.toBe(false);
+    component.onNotifyShowLogStatus({ externaltaskId: '543534', topology: 'fsgas', plugin: 'harvest' });
+    expect(component.isShowingLog).toBeTruthy();
   });
 
   it('should open more than 1 page', () => {

@@ -42,6 +42,7 @@
         ]
       }
     ],
+    "no-any": true,
     "no-arg": true,
     "no-bitwise": true,
     "no-console": [
@@ -63,7 +64,6 @@
       "ignore-params"
     ],
     "no-misused-new": true,
-    "no-non-null-assertion": true,
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-string-throw": true,
@@ -95,6 +95,7 @@
       true,
       "allow-null-check"
     ],
+    "typedef": [true, "call-signature", "parameter", "property-declaration"],
     "typedef-whitespace": [
       true,
       {

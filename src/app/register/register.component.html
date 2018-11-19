@@ -1,4 +1,4 @@
-<div class="metis-register-form metis-form" *ngIf="!notfoundMessage">
+<div class="metis-register-form metis-form">
   <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" #formDir="ngForm" novalidate autocomplete="off">
     <div class="form-header">
       <h2>{{ 'register' | translate }}</h2>
@@ -26,7 +26,7 @@
         <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}">
         <app-password-check [passwordToCheck]="password"></app-password-check>
         <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password">
-        <div class="messages" *ngIf="registerForm.controls['passwords'].get('confirm').touched && !registerForm.controls['passwords'].get('confirm').valid">
+        <div class="messages" *ngIf="registerForm.controls['passwords'].get('confirm')!.touched && !registerForm.controls['passwords'].get('confirm')!.valid">
           <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
         </div>
       </fieldset>
@@ -39,12 +39,3 @@
     </div>
   </form>
 </div>
-
-<div class="notfound" *ngIf="notfoundMessage">
-  <h2>{{ 'registererror' | translate }}</h2>
-  <div class="notfound-body">
-    <p>{{notfoundMessage}}</p>
-    <p>{{registerinorderto}}: <a href="{{linkRegister}}" target="_blank">{{linkRegister}}</a></p>
-  </div>
-</div>
-

@@ -7,11 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent {
 
-  heroimage;
+  heroimage: string;
   attributiontext: string;
-  attributionlink;
+  attributionlink: string;
   attributionrights: string;
-  attributionrightslink;
+  attributionrightslink: string;
 
   bannerheading: string;
   bannertext: string;
