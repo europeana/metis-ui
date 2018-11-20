@@ -63,10 +63,8 @@ export class MappingComponent implements OnInit {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-      this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
-    }
+    this.translate.use('en');
+    this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
 
     this.loadStatistics();
     this.loadEditor();

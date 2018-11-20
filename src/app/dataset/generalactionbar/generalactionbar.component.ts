@@ -46,9 +46,7 @@ export class GeneralactionbarComponent implements OnInit {
     this.activeSet = this.datasetData.datasetId;
     this.checkStatus();
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
   }
 
   /** checkStatus

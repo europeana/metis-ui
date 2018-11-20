@@ -5,8 +5,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import { TranslateService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
-import { MockAuthenticationService, currentUser } from '../_mocked';
+import { TranslatePipe } from '../_translate';
+import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from './profile.component';
@@ -23,13 +23,8 @@ describe('ProfileComponent', () => {
         ErrorService,
         RedirectPreviousUrl,
         {provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-      }],
+        { provide: TranslateService, useClass: MockTranslateService }
+      ],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();

@@ -46,9 +46,7 @@ export class ExecutionsComponent implements OnInit {
   /* start polling, checking for updates
   */
   ngOnInit(): void {
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
 
     this.startPolling();
   }

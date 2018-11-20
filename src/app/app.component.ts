@@ -56,9 +56,7 @@ export class AppComponent implements OnInit {
       }
     });
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
   }
 
   /** closePrompt

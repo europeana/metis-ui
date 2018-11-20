@@ -2,11 +2,11 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GeneralinfoComponent } from './generalinfo.component';
 import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
+import { MockDatasetService, MockWorkflowService, currentDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
+import { TranslatePipe } from '../../_translate';
 
 describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
@@ -22,13 +22,8 @@ describe('GeneralinfoComponent', () => {
         ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService},
         RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }]
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     })
     .compileComponents();
   }));

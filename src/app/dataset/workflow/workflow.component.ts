@@ -71,9 +71,7 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit(): void {
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
 
     this.buildForm();
     this.getWorkflow();

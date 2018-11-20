@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, xslt, MockAuthenticationService, currentUser, statistics } from '../../_mocked';
+import { MockWorkflowService, MockDatasetService, currentDataset, MockAuthenticationService, statistics, MockTranslateService } from '../../_mocked';
 
 import { DatasetsService, WorkflowService, TranslateService, RedirectPreviousUrl, ErrorService, AuthenticationService } from '../../_services';
 
@@ -11,7 +11,7 @@ import { MappingComponent } from './mapping.component';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
+import { TranslatePipe } from '../../_translate';
 import { XmlPipe } from '../../_helpers';
 
 describe('MappingComponent', () => {
@@ -25,13 +25,7 @@ describe('MappingComponent', () => {
       declarations: [ MappingComponent, TranslatePipe, XmlPipe ],
       providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
         { provide: DatasetsService, useClass: MockDatasetService },
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        },
+        { provide: TranslateService, useClass: MockTranslateService },
         RedirectPreviousUrl,
         ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService}

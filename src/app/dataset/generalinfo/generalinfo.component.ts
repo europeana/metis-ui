@@ -36,9 +36,7 @@ export class GeneralinfoComponent implements OnInit {
   /* if dataset, try to retrieve information about harvest and publication
   */
   ngOnInit(): void {
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
 
     this.workflows.changeWorkflow.subscribe(
       () => {

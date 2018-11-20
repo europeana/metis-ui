@@ -1,12 +1,12 @@
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
+import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
-import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
+import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
 
 import { HistoryComponent } from './history.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -24,13 +24,8 @@ describe('HistoryComponent', () => {
         RedirectPreviousUrl,
         { provide: AuthenticationService, useClass: MockAuthenticationService},
         ErrorService,
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        }],
+        { provide: TranslateService, useClass: MockTranslateService }
+      ],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();

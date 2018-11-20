@@ -26,9 +26,7 @@ export class ReportComponent implements OnInit {
       this.report = this.workflows.getCurrentReport().errors;
     }
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
   }
 
   /** closeReport

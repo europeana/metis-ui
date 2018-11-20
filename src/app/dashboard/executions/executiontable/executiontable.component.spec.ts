@@ -3,10 +3,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl } from '../../../_services';
-import { MockWorkflowService, currentWorkflow, MockAuthenticationService } from '../../../_mocked';
+import { MockWorkflowService, currentWorkflow, MockAuthenticationService, MockTranslateService } from '../../../_mocked';
 import { ExecutiontableComponent } from './executiontable.component';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../../_translate';
+import { TranslatePipe } from '../../../_translate';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;
@@ -21,13 +21,7 @@ describe('ExecutiontableComponent', () => {
         RedirectPreviousUrl,
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        }
+        { provide: TranslateService, useClass: MockTranslateService }
        ]
     })
     .compileComponents();

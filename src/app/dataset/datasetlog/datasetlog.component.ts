@@ -42,10 +42,8 @@ export class DatasetlogComponent implements OnInit {
   ngOnInit(): void {
     this.startPolling();
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-      this.noLogs = this.translate.instant('nologs');
-    }
+    this.translate.use('en');
+    this.noLogs = this.translate.instant('nologs');
   }
 
   /** closeLog

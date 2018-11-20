@@ -1,13 +1,12 @@
-import { async, ComponentFixture, TestBed, tick, fakeAsync, inject } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
-import { BaseRequestOptions, ConnectionBackend, Http, RequestOptions } from '@angular/http';
 
 import { ReportComponent } from './report.component';
 
 import { WorkflowService, AuthenticationService, TranslateService, ErrorService, RedirectPreviousUrl } from '../../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../../_translate';
-import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
+import { TranslatePipe } from '../../_translate';
+import { MockWorkflowService, MockAuthenticationService, MockTranslateService } from '../../_mocked';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -20,13 +19,7 @@ describe('ReportComponent', () => {
       providers: [
       {provide: WorkflowService, useClass: MockWorkflowService},
       { provide: AuthenticationService, useClass: MockAuthenticationService },
-      { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-      },
+      { provide: TranslateService, useClass: MockTranslateService },
       ErrorService,
       RedirectPreviousUrl]
 

@@ -2,13 +2,13 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardComponent } from './dashboard.component';
 import { AuthenticationService, DatasetsService, TranslateService, WorkflowService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
+import { TranslatePipe } from '../_translate';
 
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../_mocked';
+import { MockWorkflowService, MockAuthenticationService, MockTranslateService } from '../_mocked';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -23,13 +23,7 @@ describe('DashboardComponent', () => {
         DatasetsService,
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        }
+        { provide: TranslateService, useClass: MockTranslateService }
        ],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
