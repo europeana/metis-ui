@@ -54,3 +54,7 @@ export function setupWorkflowRoutes(): void {
   cy.route('GET', '/orchestrator/proxies/records?*', records);
   cy.route('GET', '/orchestrator/proxies/validation/task/*/statistic', statistics);
 }
+
+export function checkAHref(subject: Cypress.Chainable, href: string): void {
+  subject.closest('a').should('have.attr', 'href', href);
+}

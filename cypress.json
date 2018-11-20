@@ -3,5 +3,7 @@
   "blacklistHosts": ["*fonts.googleapis.com", "*fonts.gstatic.com"],
   "ignoreTestFiles": ["tsconfig.json"],
   "screenshotsFolder": "tmp/cypress-screenshots/",
-  "videosFolder": "tmp/cypress-videos/"
+  "videosFolder": "tmp/cypress-videos/",
+  "viewportHeight": 768,
+  "viewportWidth": 1024
 }
