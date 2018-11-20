@@ -1,5 +1,6 @@
 {
   "baseUrl": "http://localhost:4280",
+  "blacklistHosts": ["*fonts.googleapis.com", "*fonts.gstatic.com"],
   "ignoreTestFiles": ["tsconfig.json"],
   "screenshotsFolder": "tmp/cypress-screenshots/",
   "videosFolder": "tmp/cypress-videos/"
