@@ -82,12 +82,14 @@ export class OngoingexecutionsComponent {
     const max = 5;
     if (!executions) { return; }
 
-    this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen);
-    if (executions.length > max) {
-      this.viewMore = true;
-    } else {
-      this.viewMore = false;
-    }
+    this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen).subscribe((ongoingExecutions) => {
+      this.ongoingExecutions = ongoingExecutions;
+      if (executions.length > max) {
+        this.viewMore = true;
+      } else {
+        this.viewMore = false;
+      }
+    });
   }
 
   /** cancelWorkflow

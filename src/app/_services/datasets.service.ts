@@ -1,5 +1,5 @@
-import { map,  switchMap } from 'rxjs/operators';
-import {of as observableOf,  Observable, throwError } from 'rxjs';
+import { map, publishLast, switchMap } from 'rxjs/operators';
+import { ConnectableObservable, forkJoin, of as observableOf,  Observable, throwError } from 'rxjs';
 
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
@@ -28,9 +28,9 @@ export class DatasetsService {
   private datasets = [];
   datasetMessage: string;
   tempPreviewFilers: PreviewFilters;
-  datasetNames: { [id: string]: string } = {};
   tempXSLT: string | null;
   currentTaskId?: string;
+  datasetById: { [id: string]: Observable<Dataset> } = {};
 
   constructor(private http: HttpClient,
     private errors: ErrorService,
@@ -60,6 +60,18 @@ export class DatasetsService {
     return this.http.get<Dataset>(url).pipe(this.errors.handleRetry());
   }
 
+  getCachedDataset(id: string): Observable<Dataset> {
+    let observable = this.datasetById[id];
+    if (observable) {
+      return observable;
+    }
+    // tslint:disable-next-line: no-any
+    observable = this.getDataset(id).pipe(publishLast());
+    (observable as ConnectableObservable<Dataset>).connect();
+    this.datasetById[id] = observable;
+    return observable;
+  }
+
   /** createDataset
   /* create a new dataset
   /* @param {array} datasetFormValues - values from dataset form
@@ -86,14 +98,13 @@ export class DatasetsService {
   /* make a call to get dataset name and store it in the array
   /* @param {object} executions - the executions retrieved from a call
   */
-  addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): WorkflowExecution[] {
-    const updatedExecutions: WorkflowExecution[] = [];
-    for (let i = 0; i < executions.length; i++) {
-      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
+  addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): Observable<WorkflowExecution[]> {
+    executions.forEach((execution) => {
+      execution.currentPlugin = this.workflows.getCurrentPlugin(execution);
 
-      const thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin!];
+      const thisPlugin = execution['metisPlugins'][execution.currentPlugin!];
 
-      if (executions[i].datasetId === currentDatasetId) {
+      if (execution.datasetId === currentDatasetId) {
         if (this.currentTaskId !== thisPlugin['externalTaskId']) {
           const message = {
             'externaltaskId' : thisPlugin['externalTaskId'],
@@ -107,20 +118,19 @@ export class DatasetsService {
         this.workflows.setCurrentProcessed(thisPlugin['executionProgress'].processedRecords, thisPlugin['pluginType']);
         this.currentTaskId = thisPlugin['externalTaskId'];
       }
+    });
 
-      if (this.datasetNames[executions[i].datasetId]) {
-        executions[i].datasetName = this.datasetNames[executions[i].datasetId];
-      } else {
-        this.getDataset(executions[i].datasetId).subscribe(result => {
-          this.datasetNames[executions[i].datasetId] = result['datasetName'];
-          executions[i].datasetName = result['datasetName'];
-        }, (err: HttpErrorResponse) => {
-          this.errors.handleError(err);
+    const observables = executions.map(({ datasetId }) => this.getCachedDataset(datasetId));
+    return forkJoin(observables).pipe(
+      map((datasets) => {
+        executions.forEach((execution, i) => {
+          execution.datasetName = datasets[i].datasetName;
         });
-      }
-      updatedExecutions.push(executions[i]);
-    }
-    return updatedExecutions;
+        return executions;
+      })
+    );
+
+    // TODO: error handling?
   }
 
   /** setPreviewFilters

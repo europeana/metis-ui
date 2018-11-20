@@ -62,10 +62,6 @@ export class ExecutionsComponent implements OnInit {
     this.subscription = timer.subscribe(t => {
       this.getOngoingExecutions();
       this.getAllExecutions();
-
-      if (this.currentNumberOfRecords > (this.currentPage * this.perPage)) {
-        this.isLoading = false;
-      }
     });
   }
 
@@ -77,7 +73,9 @@ export class ExecutionsComponent implements OnInit {
     if (!this.authentication.validatedUser()) { return; }
     const executions = this.ongoingExecutionDataOutput;
     if (!executions) { return; }
-    this.ongoingExecutionsOutput = this.datasets.addDatasetNameAndCurrentPlugin(executions);
+    this.datasets.addDatasetNameAndCurrentPlugin(executions).subscribe((ongoingExecutionsOutput) => {
+      this.ongoingExecutionsOutput = ongoingExecutionsOutput;
+    });
   }
 
   /** getAllExecutions
@@ -86,8 +84,13 @@ export class ExecutionsComponent implements OnInit {
   */
   getAllExecutions(): void {
     if (!this.executionDataOutput) { return; }
-    this.allExecutions = this.datasets.addDatasetNameAndCurrentPlugin(this.executionDataOutput);
-    this.currentNumberOfRecords = this.allExecutions.length;
+    this.datasets.addDatasetNameAndCurrentPlugin(this.executionDataOutput).subscribe((allExecutions) => {
+      this.allExecutions = allExecutions;
+      this.currentNumberOfRecords = this.allExecutions.length;
+      if (this.currentNumberOfRecords > (this.currentPage * this.perPage)) {
+        this.isLoading = false;
+      }
+    });
   }
 
   /** loadNextPage
