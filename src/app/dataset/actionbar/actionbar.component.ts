@@ -220,7 +220,7 @@ export class ActionbarComponent {
   /** getReport
   /*  get the report for a specific workflow step
   */
-  openReport(taskid: string, topology: string): void {
+  openReport(taskid: string | undefined, topology: string): void {
     this.report = undefined;
     this.workflows.getReport(taskid, topology).subscribe(result => {
       this.workflows.setCurrentReport(result);
