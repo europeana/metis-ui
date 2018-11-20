@@ -1,21 +1,19 @@
 import { setupUser, setupWorkflowRoutes } from '../support/helpers';
 
-const OPTIONS = { log: true, timeout: 10000 };
-
 function allRunning(): Cypress.Chainable {
   return cy.get('.latest-ongoing');
 }
 
 function runningByIndex(index: number, sel: string): Cypress.Chainable {
-  return cy.get(`.latest-ongoing:nth-child(${index + 1}) ${sel}`, OPTIONS);
+  return cy.get(`.latest-ongoing:nth-child(${index + 1}) ${sel}`);
 }
 
 function allExecutions(): Cypress.Chainable {
-  return cy.get('.executions-table tbody tr', OPTIONS);
+  return cy.get('.executions-table tbody tr');
 }
 
 function executionByIndex(index: number, sel: string): Cypress.Chainable {
-  return cy.get(`.executions-table tbody tr:nth-child(${index + 1}) ${sel}`, OPTIONS);
+  return cy.get(`.executions-table tbody tr:nth-child(${index + 1}) ${sel}`);
 }
 
 function checkAHref(subject: Cypress.Chainable, href: string): void {
