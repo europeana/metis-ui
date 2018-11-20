@@ -198,7 +198,7 @@ export class ActionbarComponent {
   */
   setCurrentPluginInfo(thisPlugin: PluginExecution, cancelling?: boolean): void {
     if (thisPlugin) {
-      if (cancelling === false) {
+      if (!cancelling) {
         this.currentStatus = thisPlugin.pluginStatus ? thisPlugin.pluginStatus : '-';
       } else {
         this.currentStatus = this.cancelling;
