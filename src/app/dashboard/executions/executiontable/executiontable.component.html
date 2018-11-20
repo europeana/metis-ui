@@ -33,7 +33,7 @@
   </div>
   <nav>
     <ul>
-      <li *ngIf="!execution.cancelling && plugin.pluginType !== 'PREVIEW' && plugin.pluginType !== 'PUBLISH' && plugin.pluginType !== 'MEDIA_PROCESS'">
+      <li *ngIf="!execution.cancelling && plugin.pluginType !== 'PUBLISH' && plugin.pluginType !== 'MEDIA_PROCESS'">
         <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(execution.id)"></a>
       </li>
       <li><a [routerLink]="['/dataset', 'log', execution.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>
