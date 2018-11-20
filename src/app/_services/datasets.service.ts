@@ -30,7 +30,7 @@ export class DatasetsService {
   tempPreviewFilers: PreviewFilters;
   datasetNames: { [id: string]: string } = {};
   tempXSLT: string | null;
-  currentTaskId: string;
+  currentTaskId?: string;
 
   constructor(private http: HttpClient,
     private errors: ErrorService,

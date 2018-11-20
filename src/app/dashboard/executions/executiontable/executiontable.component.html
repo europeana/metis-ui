@@ -1,9 +1,9 @@
 <td class="errorindicator"><span class="error" *ngIf="plugin && plugin.executionProgress.errors !== 0"></span></td>
 <td class="nowrap">{{execution.datasetId}}</td>
-<td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
+<td><a class="datasetName" [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
 <td class="iconplaceholder"><!-- doesn't work <span class="svg-icon-{{execution.workflowName}}"></span> --></td>
 <td>
-  <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', plugin.externalTaskId, plugin.id);">
+  <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', plugin.externalTaskId || '', plugin.id);">
     {{plugin.pluginType}}
   </span>
 </td>

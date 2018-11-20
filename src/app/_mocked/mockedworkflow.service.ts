@@ -187,12 +187,13 @@ export const statistics: Statistics = {
 };
 
 export const currentReport: Report = {
-  id: '123',
+  id: 123,
   errors: [
     {
       errorType: 'errorType',
       message: 'errorMessage',
-      occurrences: 9
+      occurrences: 9,
+      errorDetails: []
     }
   ]
 };

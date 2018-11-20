@@ -14,7 +14,7 @@ export interface ExecutionProgress {
   processedRecords: number;
   progressPercentage: number;
   errors: number;
-  status: TaskState;
+  status?: TaskState;
 }
 
 export enum PluginStatus {
@@ -32,10 +32,10 @@ export interface PluginExecution {
   pluginType: string;
   id: string;
   pluginStatus: PluginStatus;
-  startedDate: string;
-  updatedDate: string;
+  startedDate?: string;
+  updatedDate?: string;
   finishedDate?: string;
-  externalTaskId: string;
+  externalTaskId?: string;
   executionProgress: ExecutionProgress;
   pluginMetadata: PluginMetadata;
   topologyName: string;
@@ -54,6 +54,8 @@ export enum WorkflowStatus {
 export interface WorkflowExecution {
   id: string;
   datasetId: string;
+  ecloudDatasetId?: string;
+  workflowPriority?: number;
   workflowStatus: WorkflowStatus;
   cancelling?: boolean;
   createdDate: string;

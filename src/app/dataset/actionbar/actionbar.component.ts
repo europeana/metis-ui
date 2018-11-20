@@ -43,7 +43,7 @@ export class ActionbarComponent {
   currentStatus: string;
   currentWorkflow: WorkflowExecution;
   currentPluginName: string;
-  currentExternalTaskId: string;
+  currentExternalTaskId?: string;
   currentTopology: string;
   currentPlugin = 0;
   logMessages: SubTaskInfo[];
@@ -184,7 +184,7 @@ export class ActionbarComponent {
   /** showLog
   /*  show the log for the current/last execution
   */
-  showLog(taskid: string, topology: string, plugin: string, processed: number, status: string): void {
+  showLog(taskid: string | undefined, topology: string, plugin: string, processed: number, status: string): void {
     const message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
     this.notifyShowLogStatus.emit(message);
   }
@@ -220,7 +220,7 @@ export class ActionbarComponent {
   /** getReport
   /*  get the report for a specific workflow step
   */
-  openReport(taskid: string, topology: string): void {
+  openReport(taskid: string | undefined, topology: string): void {
     this.report = undefined;
     this.workflows.getReport(taskid, topology).subscribe(result => {
       this.workflows.setCurrentReport(result);

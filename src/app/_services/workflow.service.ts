@@ -101,7 +101,7 @@ export class WorkflowService {
   /* @param {number} taskId - identifier of task
   /* @param {string} topologyName - name of the topology
   */
-  getReport(taskId: string, topologyName: string): Observable<Report> {
+  getReport(taskId: string | undefined, topologyName: string): Observable<Report> {
     const topology = topologyName;
     const externalTaskId = taskId;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;

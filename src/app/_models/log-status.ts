@@ -1,5 +1,5 @@
 export interface LogStatus {
-  externaltaskId: string;
+  externaltaskId?: string;
   topology: string;
   plugin: string;
   processed?: number;
