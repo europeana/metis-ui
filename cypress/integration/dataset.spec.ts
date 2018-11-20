@@ -108,13 +108,30 @@ context('metis-ui', () => {
     // TODO: check and update fields
   });
 
+  // TODO: mapping
+
+  // TODO: preview
+
   describe('dataset log', () => {
     beforeEach(() => {
       setupDatasetPage('log');
     });
 
     it('should show the log', () => {
+      cy.get('.workflow-head')
+        .contains('Workflow created on 19/11/2018 10:10')
+        .closest('tr')
+        .as('headRow');
 
+      cy.get('@headRow').next().as('row');
+      cy.get('@row').find('td').contains('Validate (EDM external)');
+      cy.get('@row').find('td').contains('0 (760)');
+      cy.get('@row').find('td').contains('FINISHED');
+
+      cy.get('@row').next().as('row');
+      cy.get('@row').find('td').contains('Import OAI-PMH');
+      cy.get('@row').find('td').contains('760');
+      cy.get('@row').find('td').contains('FINISHED');
     });
   });
 });
