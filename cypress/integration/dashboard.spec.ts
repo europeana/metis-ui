@@ -1,4 +1,4 @@
-import { setupUser, setupWorkflowRoutes } from '../support/helpers';
+import { setupUser, setupWorkflowRoutes, checkAHref } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
   return cy.get('.latest-ongoing');
@@ -14,10 +14,6 @@ function allExecutions(): Cypress.Chainable {
 
 function executionByIndex(index: number, sel: string): Cypress.Chainable {
   return cy.get(`.executions-table tbody tr:nth-child(${index + 1}) ${sel}`);
-}
-
-function checkAHref(subject: Cypress.Chainable, href: string): void {
-  subject.closest('a').should('have.attr', 'href', href);
 }
 
 context('metis-ui', () => {
