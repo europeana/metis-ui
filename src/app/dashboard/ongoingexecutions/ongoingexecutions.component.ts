@@ -105,7 +105,7 @@ export class OngoingexecutionsComponent {
   /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
   /* @param {string} topology - name of the topology
   */
-  showLog(externaltaskId: string, topology: string, plugin: string, datasetId?: string, processed?: number, status?: string): void {
+  showLog(externaltaskId: string | undefined, topology: string, plugin: string, datasetId?: string, processed?: number, status?: string): void {
     const message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
     this.logIsOpen = datasetId;
     this.notifyShowLogStatus.emit(message);
