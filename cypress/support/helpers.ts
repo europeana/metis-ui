@@ -1,9 +1,12 @@
+import { Results } from '../../src/app/_models/results';
+import { WorkflowExecution } from '../../src/app/_models/workflow-execution';
 import {
   countries,
   dataset,
   finishedExecutions,
   harvestData,
   languages,
+  report,
   runningExecutions,
   user,
   workflow,
@@ -20,6 +23,12 @@ export function setupUser(): void {
   });
 }
 
+const allExecutions: Results<WorkflowExecution[]> = {
+  results: runningExecutions.results.concat(finishedExecutions.results),
+  listSize: 10,
+  nextPage: -1
+};
+
 export function setupWorkflowRoutes(): void {
   cy.route('GET', /\/datasets\/\d+/, dataset)
     .as('getDataset');
@@ -35,10 +44,12 @@ export function setupWorkflowRoutes(): void {
     .as('getWorkflow');
   cy.route('GET', '/orchestrator/workflows/executions/dataset/*/information', harvestData)
     .as('getHarvestData');
-  cy.route('GET', '/orchestrator/workflows/executions/dataset/*?*orderField*', runningExecutions)
+  cy.route('GET', '/orchestrator/workflows/executions/dataset/*?*orderField*', allExecutions)
     .as('getWorkflowExecutions');
   cy.route('DELETE', '/orchestrator/workflows/executions/*', {})
     .as('deleteExecution');
+  cy.route('GET', '/orchestrator/proxies/*/task/*/report?*', report)
+    .as('getReport');
   cy.route('GET', '/datasets/xslt/*', xslt)
     .as('getXslt');
   cy.route('PUT', '/datasets', '')
