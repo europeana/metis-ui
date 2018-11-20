@@ -1,11 +1,11 @@
 
-import {map, tap} from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
 
-import { Observable ,  of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { ErrorService } from './error.service';
 import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
@@ -167,6 +167,32 @@ export class WorkflowService {
     }
 
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+  }
+
+  getAllExecutionsCollectingPages(ongoing: boolean, page: number = 0): Observable<WorkflowExecution[]> {
+    return this.getAllExecutionsPerOrganisation(page, ongoing).pipe(
+      switchMap(({ results, nextPage }) => {
+        if (nextPage !== -1) {
+          return this.getAllExecutionsCollectingPages(ongoing, page + 1).pipe(
+            map((nextResults) => results.concat(nextResults))
+          );
+        } else {
+          return of(results);
+        }
+      })
+    );
+  }
+
+  getAllExecutionsUptoPage(page: number, ongoing: boolean): Observable<WorkflowExecution[]> {
+    const observables: Observable<Results<WorkflowExecution[]>>[] = [];
+    for (let i = 0; i <= page; i ++) {
+      observables.push(this.getAllExecutionsPerOrganisation(i, ongoing));
+    }
+    return forkJoin(observables)
+      .pipe(map((resultList) => {
+        const executions: WorkflowExecution[] = [];
+        return executions.concat(...resultList.map(r => r.results));
+      }));
   }
 
   /** getCurrentPlugin

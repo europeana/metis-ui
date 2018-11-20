@@ -1,12 +1,10 @@
-import { map, publishLast, switchMap } from 'rxjs/operators';
-import { ConnectableObservable, forkJoin, of as observableOf,  Observable, throwError } from 'rxjs';
+import { map, publishLast } from 'rxjs/operators';
+import { ConnectableObservable, forkJoin,  Observable, of } from 'rxjs';
 
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
-
-import 'rxjs';
 
 import { ErrorService } from './error.service';
 import { WorkflowService } from './workflow.service';
@@ -25,7 +23,6 @@ export class DatasetsService {
 
   @Output() updateLog: EventEmitter<LogStatus> = new EventEmitter();
 
-  private datasets = [];
   datasetMessage: string;
   tempPreviewFilers: PreviewFilters;
   tempXSLT: string | null;
@@ -99,6 +96,10 @@ export class DatasetsService {
   /* @param {object} executions - the executions retrieved from a call
   */
   addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): Observable<WorkflowExecution[]> {
+    if (executions.length === 0) {
+      return of(executions);
+    }
+
     executions.forEach((execution) => {
       execution.currentPlugin = this.workflows.getCurrentPlugin(execution);
 

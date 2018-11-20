@@ -1,11 +1,8 @@
-import { timer as observableTimer, Subscription } from 'rxjs';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
+import { copyExecutionAndTaskId } from '../../_helpers';
 
-import { WorkflowService, ErrorService, TranslateService, DatasetsService, AuthenticationService } from '../../_services';
-import { environment } from '../../../environments/environment';
+import { WorkflowService, TranslateService, DatasetsService } from '../../_services';
 import { LogStatus } from '../../_models/log-status';
 import { WorkflowExecution } from '../../_models/workflow-execution';
 
@@ -17,23 +14,17 @@ import { WorkflowExecution } from '../../_models/workflow-execution';
 export class OngoingexecutionsComponent {
 
   constructor(private workflows: WorkflowService,
-    private errors: ErrorService,
-    private authentication: AuthenticationService,
     private translate: TranslateService,
     private datasets: DatasetsService) { }
 
   @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
   @Input('isShowingLog') isShowingLog: LogStatus;
-  @Input('runningExecutionDataOutput') ongoingExecutionDataOutput: WorkflowExecution[];
+  @Input() runningExecutions: WorkflowExecution[];
 
   ongoingExecutions: WorkflowExecution[];
   ongoingExecutionsTotal: number;
   errorMessage: string;
-  subscription: Subscription;
-  intervalTimer = environment.intervalStatusShort;
   cancelling: string;
-  currentPlugin = 0;
-  datasetNames: Array<string> = [];
   viewMore = false;
   logIsOpen?: string;
   contentCopied = false;
@@ -45,7 +36,6 @@ export class OngoingexecutionsComponent {
   /* translate some values to use in this component
   */
   ngOnInit(): void {
-    this.startPolling();
     if (!this.datasets.updateLog) { return; }
     this.datasets.updateLog.subscribe(
       (log: LogStatus) => {
@@ -60,45 +50,12 @@ export class OngoingexecutionsComponent {
     this.cancelling = this.translate.instant('cancelling');
   }
 
-  /** startPolling
-  /*  check for ongoing executions
-  */
-  startPolling(): void {
-    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    const timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      this.getOngoing();
-    });
-  }
-
-  /** getOngoing
-  /*  get ongoing executions, either in queue or running, most recent started
-  /*  showing up to 5 executions
-  */
-  getOngoing(): void {
-    if (!this.authentication.validatedUser()) { return; }
-
-    const executions = this.ongoingExecutionDataOutput;
-    const max = 5;
-    if (!executions) { return; }
-
-    this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen).subscribe((ongoingExecutions) => {
-      this.ongoingExecutions = ongoingExecutions;
-      if (executions.length > max) {
-        this.viewMore = true;
-      } else {
-        this.viewMore = false;
-      }
-    });
-  }
-
   /** cancelWorkflow
   /*  start cancellation of the dataset with id
   /* @param {number} id - id of the dataset to cancel
   */
   cancelWorkflow(id: string): void {
     if (!id) { return; }
-    this.getOngoing();
     this.workflows.promptCancelThisWorkflow(id);
   }
 
