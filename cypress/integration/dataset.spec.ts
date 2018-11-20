@@ -14,8 +14,15 @@ context('metis-ui', () => {
       ]);
     });
 
-    it('should show the dataset', () => {
+    it('should show the dataset, general info, status', () => {
       cy.get('.dataset-name').contains('datasetName');
+
+      cy.get('.metis-dataset-info-block dd').contains('Europeana');
+      cy.get('.metis-dataset-info-block dd').contains('760');
+      cy.get('.metis-dataset-info-block dd').contains('06/11/2018 - 10:27');
+
+      cy.get('.dataset-actionbar .status').contains('Preview');
+      cy.get('.dataset-actionbar .status').contains('FAILED');
     });
   });
 });
