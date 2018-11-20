@@ -27,7 +27,6 @@ export class DashboardComponent implements OnInit {
   finishedTimer: number;
   finishedIsLoading = true;
   finishedCurrentPage = 0;
-  intervalTimer = environment.intervalStatusShort;
   stopChecking = true;
 
   public isShowingLog?: LogStatus;
@@ -75,9 +74,9 @@ export class DashboardComponent implements OnInit {
   */
   checkStatusRunningExecutions(): void {
     if (this.stopChecking) { return; }
-    this.finishedTimer = window.setTimeout(() => {
+    this.runningTimer = window.setTimeout(() => {
         this.getRunningExecutions();
-    }, this.intervalTimer);
+    }, environment.intervalStatus);
   }
 
   /** checkStatusExecutions
@@ -85,9 +84,9 @@ export class DashboardComponent implements OnInit {
   */
   checkStatusFinishedExecutions(): void {
     if (this.stopChecking) { return; }
-    this.runningTimer = window.setTimeout(() => {
+    this.finishedTimer = window.setTimeout(() => {
         this.getFinishedExecutions();
-    }, this.intervalTimer);
+    }, environment.intervalStatusMedium);
   }
 
   /** getRunningExecutions

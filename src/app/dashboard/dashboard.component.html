@@ -12,7 +12,7 @@
     </div>
 
     <div class="metis-dashboard-right">
-      <app-executions [runningExecutions]="runningExecutions" [finishedExecutions]="finishedExecutions" [isLoading]="runningIsLoading || finishedIsLoading" (nextPage)="getNextPage()"></app-executions>
+      <app-executions [runningExecutions]="runningExecutions" [finishedExecutions]="finishedExecutions" [isLoading]="finishedIsLoading" (nextPage)="getNextPage()"></app-executions>
     </div>
   </div>
 </div>
