@@ -81,10 +81,8 @@ export class PreviewComponent implements OnInit {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     };
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-      this.nosample = this.translate.instant('nosample');
-    }
+    this.translate.use('en');
+    this.nosample = this.translate.instant('nosample');
 
     if (this.datasetData) {
       this.addDateFilter();

@@ -6,9 +6,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService } from './_services';
-import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, currentUser } from './_mocked';
+import { MockAuthenticationService, MockWorkflowService, MockTranslateService } from './_mocked';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
+import { TranslatePipe } from './_translate';
 
 // Can't bind to 'loggedIn' since it isn't a known property of 'app-header'.
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -27,13 +27,7 @@ describe('AppComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }
+        { provide: TranslateService, useClass: MockTranslateService },
       ]
     })
       .compileComponents();

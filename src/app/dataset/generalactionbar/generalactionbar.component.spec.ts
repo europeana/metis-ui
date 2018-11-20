@@ -2,11 +2,11 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
+import { TranslatePipe } from '../../_translate';
 
 import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { GeneralactionbarComponent } from './generalactionbar.component';
-import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, currentUser } from '../../_mocked';
+import { MockAuthenticationService, MockWorkflowService, currentWorkflow, currentDataset, MockTranslateService } from '../../_mocked';
 
 describe('GeneralactionbarComponent', () => {
   let component: GeneralactionbarComponent;
@@ -20,13 +20,8 @@ describe('GeneralactionbarComponent', () => {
         ErrorService,
         RedirectPreviousUrl,
         { provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService,
-              useValue: {
-                translate: () => {
-                  return {};
-                }
-              }
-          }]
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     })
     .compileComponents();
   }));

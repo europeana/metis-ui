@@ -7,10 +7,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { AuthenticationService, TranslateService, RedirectPreviousUrl, ErrorService } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
+import { TranslatePipe } from '../_translate';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-import { MockAuthenticationService, currentUser } from '../_mocked';
+import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -25,13 +25,8 @@ describe('RegisterComponent', () => {
         RedirectPreviousUrl,
         ErrorService,
         {provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-      }],
+        { provide: TranslateService, useClass: MockTranslateService }
+      ],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
       .compileComponents();

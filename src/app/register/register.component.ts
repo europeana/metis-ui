@@ -48,13 +48,11 @@ export class RegisterComponent implements OnInit {
       })
     });
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-      this.msgSuccess = this.translate.instant('registrationsuccessful');
-      this.msgPasswordWeak = this.translate.instant('passwordweakerror');
-      this.msgRegistrationFailed = this.translate.instant('registrationfailed');
-      this.msgAlreadyRegistered = this.translate.instant('registrationalready');
-    }
+    this.translate.use('en');
+    this.msgSuccess = this.translate.instant('registrationsuccessful');
+    this.msgPasswordWeak = this.translate.instant('passwordweakerror');
+    this.msgRegistrationFailed = this.translate.instant('registrationfailed');
+    this.msgAlreadyRegistered = this.translate.instant('registrationalready');
   }
 
   /** onKeyupPassword

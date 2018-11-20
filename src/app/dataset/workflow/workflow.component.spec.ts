@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -6,10 +6,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset, currentWorkflowDataset, MockAuthenticationService, currentUser } from '../../_mocked';
+import { MockDatasetService, MockWorkflowService, currentDataset, currentWorkflowDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
 
 import { WorkflowComponent } from './workflow.component';
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
+import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 
 describe('WorkflowComponent', () => {
   let component: WorkflowComponent;
@@ -26,13 +26,8 @@ describe('WorkflowComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        } ]
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     })
     .compileComponents();
 

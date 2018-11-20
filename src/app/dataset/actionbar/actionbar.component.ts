@@ -64,10 +64,8 @@ export class ActionbarComponent {
   */
   ngOnInit(): void {
     this.returnWorkflowInfo();
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-      this.cancelling = this.translate.instant('cancelling');
-    }
+    this.translate.use('en');
+    this.cancelling = this.translate.instant('cancelling');
   }
 
   /** ngOnChanges

@@ -2,14 +2,14 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from 'ng2-codemirror';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
+import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
 
 import { PreviewComponent } from './preview.component';
 import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
+import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import { XmlPipe } from '../../_helpers';
 
 describe('PreviewComponent', () => {
@@ -25,13 +25,8 @@ describe('PreviewComponent', () => {
         ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-      }]
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     })
     .compileComponents();
   }));

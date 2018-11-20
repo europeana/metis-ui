@@ -1,12 +1,11 @@
 import { RouterTestingModule } from '@angular/router/testing';
 import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, currentUser } from '../../_mocked';
+import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, MockTranslateService } from '../../_mocked';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from '../../_translate';
+import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { Observable } from 'rxjs';
 import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionbarComponent } from './actionbar.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -25,13 +24,8 @@ describe('ActionbarComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService},
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }],
+        { provide: TranslateService, useClass: MockTranslateService }
+      ],
         schemas: [ NO_ERRORS_SCHEMA ]
     }).compileComponents();
   }));

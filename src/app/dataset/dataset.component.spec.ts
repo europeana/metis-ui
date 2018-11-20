@@ -1,16 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DatasetComponent } from './dataset.component';
-import { DatasetformComponent } from './datasetform/datasetform.component';
 
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../_services';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../_mocked';
+import { MockDatasetService, MockWorkflowService, MockAuthenticationService, MockTranslateService } from '../_mocked';
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
+import { TranslatePipe } from '../_translate';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -28,13 +27,8 @@ describe('DatasetComponent', () => {
         ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService},
         RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }],
+        { provide: TranslateService, useClass: MockTranslateService }
+      ],
       schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();

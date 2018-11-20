@@ -11,7 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RedirectPreviousUrl, TranslateService, AuthenticationService, ErrorService } from '../_services';
 import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
 
-import { MockAuthenticationService, currentUser } from '../_mocked';
+import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -23,14 +23,9 @@ describe('LoginComponent', () => {
       imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
       declarations: [ LoginComponent, TranslatePipe ],
       providers: [ RedirectPreviousUrl, ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }]
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     })
     .compileComponents();
 

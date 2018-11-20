@@ -49,9 +49,7 @@ export class DashboardComponent implements OnInit {
     this.getOngoingExecutions();
     this.getExecutions();
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
   }
 
   ngOnDestroy(): void {

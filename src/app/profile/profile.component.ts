@@ -36,9 +36,7 @@ export class ProfileComponent implements OnInit {
   */
   ngOnInit(): void {
     this.createForm();
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
   }
 
   /** createForm

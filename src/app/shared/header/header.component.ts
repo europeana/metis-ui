@@ -34,9 +34,7 @@ export class HeaderComponent implements OnInit {
     this.openSignIn = false;
     this.searchfilter = 'All';
 
-    if (typeof this.translate.use === 'function') {
-      this.translate.use('en');
-    }
+    this.translate.use('en');
   }
 
   /** toggleSignInMenu
