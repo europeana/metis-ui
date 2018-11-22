@@ -4,9 +4,9 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { ReportComponent } from './report.component';
 
-import { WorkflowService, AuthenticationService, TranslateService, ErrorService, RedirectPreviousUrl } from '../../_services';
+import { WorkflowService, AuthenticationService, TranslateService, ErrorService, RedirectPreviousUrl, DatasetsService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
-import { MockWorkflowService, MockAuthenticationService, MockTranslateService } from '../../_mocked';
+import { MockWorkflowService, MockAuthenticationService, MockTranslateService, MockDatasetService } from '../../_mocked';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -17,7 +17,8 @@ describe('ReportComponent', () => {
       imports: [ RouterTestingModule, HttpClientModule],
       declarations: [ ReportComponent, TranslatePipe ],
       providers: [
-      {provide: WorkflowService, useClass: MockWorkflowService},
+      { provide: DatasetsService, useClass: MockDatasetService },
+      { provide: WorkflowService, useClass: MockWorkflowService },
       { provide: AuthenticationService, useClass: MockAuthenticationService },
       { provide: TranslateService, useClass: MockTranslateService },
       ErrorService,

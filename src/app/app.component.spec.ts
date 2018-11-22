@@ -5,8 +5,8 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService } from './_services';
-import { MockAuthenticationService, MockWorkflowService, MockTranslateService } from './_mocked';
+import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService, DatasetsService } from './_services';
+import { MockAuthenticationService, MockWorkflowService, MockTranslateService, MockDatasetService } from './_mocked';
 
 import { TranslatePipe } from './_translate';
 
@@ -23,6 +23,7 @@ describe('AppComponent', () => {
       declarations: [ AppComponent, TranslatePipe ],
       schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
+        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
