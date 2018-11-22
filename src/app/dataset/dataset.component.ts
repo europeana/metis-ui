@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
 import { environment } from '../../environments/environment';
-import { timer as observableTimer, Observable, Subscription } from 'rxjs';
+import { timer, Subscription } from 'rxjs';
 
 import { AuthenticationService, DatasetsService, WorkflowService, ErrorService, TranslateService } from '../_services';
 
@@ -47,9 +47,8 @@ export class DatasetComponent implements OnInit {
   user: User | null;
   errorMessage?: string;
   successMessage?: string;
-  subscription: Subscription;
-  subscriptionWorkflow: Subscription;
-  intervalTimer: number = environment.intervalStatus;
+  executionsSubscription: Subscription;
+  workflowSubscription: Subscription;
   tabsLoaded = false;
 
   public isShowingLog: boolean;
@@ -84,8 +83,8 @@ export class DatasetComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) { this.subscription.unsubscribe(); }
-    if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
+    if (this.executionsSubscription) { this.executionsSubscription.unsubscribe(); }
+    if (this.workflowSubscription) { this.workflowSubscription.unsubscribe(); }
   }
 
   /** returnDataset
@@ -106,22 +105,23 @@ export class DatasetComponent implements OnInit {
       });
 
       // check for last execution every x seconds
-      if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-      const timer = observableTimer(0, this.intervalTimer);
-      this.subscription = timer.subscribe(t => {
+      if (this.executionsSubscription || !this.authentication.validatedUser()) { this.executionsSubscription.unsubscribe(); }
+      const executionsTimer = timer(0, environment.intervalStatus);
+      this.executionsSubscription = executionsTimer.subscribe(t => {
         this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
           this.lastExecutionData = execution;
         }, (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.errorMessage = `${StringifyHttpError(error)}`;
-          this.subscription.unsubscribe();
+          this.executionsSubscription.unsubscribe();
         });
       });
 
 
       // check workflow for every x seconds
-      if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
-      this.subscriptionWorkflow = timer.subscribe(t => {
+      if (this.workflowSubscription) { this.workflowSubscription.unsubscribe(); }
+      const workflowTimer = timer(0, environment.intervalStatusMedium);
+      this.workflowSubscription = workflowTimer.subscribe(t => {
         this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
           this.workflowData = workflow;
           if (this.workflowData && !this.tabsLoaded) {
@@ -131,7 +131,7 @@ export class DatasetComponent implements OnInit {
         }, (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.errorMessage = `${StringifyHttpError(error)}`;
-          this.subscriptionWorkflow.unsubscribe();
+          this.workflowSubscription.unsubscribe();
         });
       });
 
@@ -141,7 +141,7 @@ export class DatasetComponent implements OnInit {
       }
 
     }, (err: HttpErrorResponse) => {
-        if (this.subscription) { this.subscription.unsubscribe(); }
+        if (this.executionsSubscription) { this.executionsSubscription.unsubscribe(); }
         const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
     });

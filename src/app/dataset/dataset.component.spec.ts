@@ -48,7 +48,7 @@ describe('DatasetComponent', () => {
     component.activeTab = undefined;
     component.returnDataset('1');
     fixture.detectChanges();
-    expect(component.subscription.closed).toBe(false);
+    expect(component.executionsSubscription.closed).toBe(false);
   });
 
   it('should switch tabs', () => {
