@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, ViewChild, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
@@ -7,7 +7,6 @@ import { timer as observableTimer, Observable, Subscription } from 'rxjs';
 
 import { AuthenticationService, DatasetsService, WorkflowService, ErrorService, TranslateService } from '../_services';
 
-import { DatasetDirective } from './dataset.directive';
 import { DatasetformComponent } from './datasetform/datasetform.component';
 import { HistoryComponent } from './history/history.component';
 import { MappingComponent } from './mapping/mapping.component';
@@ -39,7 +38,8 @@ export class DatasetComponent implements OnInit {
     private translate: TranslateService,
     private route: ActivatedRoute) { }
 
-  @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
+  @ViewChild('tabContainer', { read: ViewContainerRef })
+  tabContainer: ViewContainerRef;
 
   activeTab: string | undefined = 'new';
   prevTab: string | undefined;
@@ -163,7 +163,7 @@ export class DatasetComponent implements OnInit {
     if (!this.getCurrentTab()) {return; }
 
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab()!.component);
-    const viewContainerRef = this.datasetHost.viewContainerRef;
+    const viewContainerRef = this.tabContainer;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.datasetData = this.getCurrentTab()!.dataset;

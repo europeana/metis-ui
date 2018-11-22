@@ -1,7 +1,5 @@
-export * from './dataset.component';
-export * from './dataset.directive';
-
 export * from './actionbar/actionbar.component';
+export * from './dataset.component';
 export * from './datasetform/datasetform.component';
 export * from './datasetlog/datasetlog.component';
 export * from './generalinfo/generalinfo.component';
