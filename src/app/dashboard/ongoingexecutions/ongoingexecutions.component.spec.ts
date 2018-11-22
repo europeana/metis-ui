@@ -57,12 +57,4 @@ describe('OngoingexecutionsComponent', () => {
     expect(component.contentCopied).toBe(true);
   });
 
-  it('should get ongoing executions', () => {
-    component.ongoingExecutionsTotal = 1;
-    component.ongoingExecutionDataOutput = [currentWorkflow['results'][1]];
-    component.getOngoing();
-    fixture.detectChanges();
-    expect(component.ongoingExecutions.length).not.toBe(0);
-  });
-
 });

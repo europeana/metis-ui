@@ -1,10 +1,10 @@
-<div class="ongoing-executions" *ngIf="ongoingExecutions && ongoingExecutions.length > 0">
+<div class="ongoing-executions" *ngIf="runningExecutions && runningExecutions.length > 0">
 	<h3>{{ 'ongoingexecutions' | translate }}</h3>
   <div class="messages">
     <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
   </div>
   <div class="ongoing-list">
-    <div class="latest-ongoing" *ngFor="let ongoing of ongoingExecutions;">
+    <div class="latest-ongoing" *ngFor="let ongoing of runningExecutions;">
       <div class="status">
         <strong class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', ongoing.metisPlugins[ongoing.currentPlugin].externalTaskId, ongoing.metisPlugins[ongoing.currentPlugin].id);">
             <span>{{ongoing.metisPlugins[ongoing.currentPlugin].pluginType}}</span>

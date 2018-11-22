@@ -1,19 +1,15 @@
-import { map,  switchMap } from 'rxjs/operators';
-import {of as observableOf,  Observable, throwError } from 'rxjs';
+import { map, publishLast } from 'rxjs/operators';
+import { ConnectableObservable,  Observable } from 'rxjs';
 
-import { Injectable, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
 
-import 'rxjs';
-
 import { ErrorService } from './error.service';
-import { WorkflowService } from './workflow.service';
 import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
 import { WorkflowExecution } from '../_models/workflow-execution';
-import { LogStatus } from '../_models/log-status';
 
 export interface PreviewFilters {
   date?: WorkflowExecution;
@@ -23,18 +19,13 @@ export interface PreviewFilters {
 @Injectable()
 export class DatasetsService {
 
-  @Output() updateLog: EventEmitter<LogStatus> = new EventEmitter();
-
-  private datasets = [];
   datasetMessage: string;
   tempPreviewFilers: PreviewFilters;
-  datasetNames: { [id: string]: string } = {};
   tempXSLT: string | null;
-  currentTaskId?: string;
+  datasetById: { [id: string]: Observable<Dataset> } = {};
 
   constructor(private http: HttpClient,
-    private errors: ErrorService,
-    private workflows: WorkflowService) { }
+    private errors: ErrorService) { }
 
   /** setDatasetMessage
   /* set message that is displayed on the dataset page
@@ -60,6 +51,18 @@ export class DatasetsService {
     return this.http.get<Dataset>(url).pipe(this.errors.handleRetry());
   }
 
+  getCachedDataset(id: string): Observable<Dataset> {
+    let observable = this.datasetById[id];
+    if (observable) {
+      return observable;
+    }
+    // tslint:disable-next-line: no-any
+    observable = this.getDataset(id).pipe(publishLast());
+    (observable as ConnectableObservable<Dataset>).connect();
+    this.datasetById[id] = observable;
+    return observable;
+  }
+
   /** createDataset
   /* create a new dataset
   /* @param {array} datasetFormValues - values from dataset form
@@ -76,51 +79,11 @@ export class DatasetsService {
   */
   //tslint:disable-next-line: no-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
+    // remove old dataset from cache
+    delete this.datasetById[datasetFormValues.dataset.id];
+
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(this.errors.handleRetry());
-  }
-
-  /** addDatasetNameAndCurrentPlugin
-  /* add relevant dataset info to execution
-  /* use a name that was retrieved before, or
-  /* make a call to get dataset name and store it in the array
-  /* @param {object} executions - the executions retrieved from a call
-  */
-  addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): WorkflowExecution[] {
-    const updatedExecutions: WorkflowExecution[] = [];
-    for (let i = 0; i < executions.length; i++) {
-      executions[i].currentPlugin = this.workflows.getCurrentPlugin(executions[i]);
-
-      const thisPlugin = executions[i]['metisPlugins'][executions[i].currentPlugin!];
-
-      if (executions[i].datasetId === currentDatasetId) {
-        if (this.currentTaskId !== thisPlugin['externalTaskId']) {
-          const message = {
-            'externaltaskId' : thisPlugin['externalTaskId'],
-            'topology' : thisPlugin['topologyName'],
-            'plugin': thisPlugin['pluginType'],
-            'processed': thisPlugin['executionProgress'].processedRecords,
-            'status': thisPlugin['pluginStatus']
-          };
-          this.updateLog.emit(message);
-        }
-        this.workflows.setCurrentProcessed(thisPlugin['executionProgress'].processedRecords, thisPlugin['pluginType']);
-        this.currentTaskId = thisPlugin['externalTaskId'];
-      }
-
-      if (this.datasetNames[executions[i].datasetId]) {
-        executions[i].datasetName = this.datasetNames[executions[i].datasetId];
-      } else {
-        this.getDataset(executions[i].datasetId).subscribe(result => {
-          this.datasetNames[executions[i].datasetId] = result['datasetName'];
-          executions[i].datasetName = result['datasetName'];
-        }, (err: HttpErrorResponse) => {
-          this.errors.handleError(err);
-        });
-      }
-      updatedExecutions.push(executions[i]);
-    }
-    return updatedExecutions;
   }
 
   /** setPreviewFilters

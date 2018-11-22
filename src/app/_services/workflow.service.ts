@@ -1,11 +1,11 @@
 
-import {map, tap} from 'rxjs/operators';
-import { Injectable, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { Injectable, EventEmitter } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
 
-import { Observable ,  of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { ErrorService } from './error.service';
 import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
@@ -15,20 +15,25 @@ import { SubTaskInfo } from '../_models/subtask-info';
 import { Results } from '../_models/results';
 import { XmlSample } from '../_models/xml-sample';
 import { Statistics } from '../_models/statistics';
+import { DatasetsService } from './datasets.service';
+import { LogStatus } from '../_models/log-status';
 
 @Injectable()
 export class WorkflowService {
 
   constructor(private http: HttpClient,
+    private datasetService: DatasetsService,
     private errors: ErrorService) { }
 
-  @Output() changeWorkflow: EventEmitter<WorkflowExecution> = new EventEmitter();
-  @Output() selectedWorkflow: EventEmitter<boolean> = new EventEmitter();
-  @Output() workflowIsDone: EventEmitter<boolean> = new EventEmitter();
-  @Output() updateHistoryPanel: EventEmitter<WorkflowExecution> = new EventEmitter();
-  @Output() promptCancelWorkflow: EventEmitter<string | false> = new EventEmitter();
-  @Output() workflowCancelled: EventEmitter<boolean> = new EventEmitter();
+  public changeWorkflow: EventEmitter<WorkflowExecution> = new EventEmitter();
+  public selectedWorkflow: EventEmitter<boolean> = new EventEmitter();
+  public workflowIsDone: EventEmitter<boolean> = new EventEmitter();
+  public updateHistoryPanel: EventEmitter<WorkflowExecution> = new EventEmitter();
+  public promptCancelWorkflow: EventEmitter<string | false> = new EventEmitter();
+  public workflowCancelled: EventEmitter<boolean> = new EventEmitter();
+  public updateLog: EventEmitter<LogStatus> = new EventEmitter();
 
+  currentTaskId?: string;
   activeWorkflow?: WorkflowExecution;
   currentReport: Report;
   activeExternalTaskId: string;
@@ -167,6 +172,93 @@ export class WorkflowService {
     }
 
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+  }
+
+  private collectAllResults<T>(
+    getResults: (page: number) => Observable<Results<T[]>>,
+    page: number
+  ): Observable<T[]> {
+    return getResults(page).pipe(
+      switchMap(({ results, nextPage }) => {
+        if (nextPage !== -1) {
+          return this.collectAllResults(getResults, page + 1).pipe(
+            map((nextResults) => results.concat(nextResults))
+          );
+        } else {
+          return of(results);
+        }
+      })
+    );
+  }
+
+  private collectResultsUptoPage<T>(
+    getResults: (page: number) => Observable<Results<T[]>>,
+    endPage: number
+  ): Observable<T[]> {
+    const observables: Observable<Results<T[]>>[] = [];
+    for (let i = 0; i <= endPage; i ++) {
+      observables.push(getResults(i));
+    }
+    return forkJoin(observables).pipe(
+      map((resultList) => {
+        const executions: T[] = [];
+        return executions.concat(...resultList.map(r => r.results));
+      })
+    );
+  }
+
+  private addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): Observable<WorkflowExecution[]> {
+    if (executions.length === 0) {
+      return of(executions);
+    }
+
+    // TODO: extract this, call this from component after getting executions?
+    executions.forEach((execution) => {
+      execution.currentPlugin = this.getCurrentPlugin(execution);
+
+      const thisPlugin = execution['metisPlugins'][execution.currentPlugin!];
+
+      if (execution.datasetId === currentDatasetId) {
+        if (this.currentTaskId !== thisPlugin['externalTaskId']) {
+          const message = {
+            'externaltaskId' : thisPlugin['externalTaskId'],
+            'topology' : thisPlugin['topologyName'],
+            'plugin': thisPlugin['pluginType'],
+            'processed': thisPlugin['executionProgress'].processedRecords,
+            'status': thisPlugin['pluginStatus']
+          };
+          this.updateLog.emit(message);
+        }
+        this.setCurrentProcessed(thisPlugin['executionProgress'].processedRecords, thisPlugin['pluginType']);
+        this.currentTaskId = thisPlugin['externalTaskId'];
+      }
+    });
+
+    const observables = executions.map(({ datasetId }) => this.datasetService.getCachedDataset(datasetId));
+    return forkJoin(observables).pipe(
+      map((datasets) => {
+        executions.forEach((execution, i) => {
+          execution.datasetName = datasets[i].datasetName;
+        });
+        return executions;
+      })
+    );
+
+    // TODO: error handling?
+  }
+
+  getAllExecutionsCollectingPages(ongoing: boolean): Observable<WorkflowExecution[]> {
+    const getResults = (page: number) => this.getAllExecutionsPerOrganisation(page, ongoing);
+    return this.collectAllResults(getResults, 0).pipe(
+      switchMap((executions => this.addDatasetNameAndCurrentPlugin(executions)))
+    );
+  }
+
+  getAllExecutionsUptoPage(endPage: number, ongoing: boolean): Observable<WorkflowExecution[]> {
+    const getResults = (page: number) => this.getAllExecutionsPerOrganisation(page, ongoing);
+    return this.collectResultsUptoPage(getResults, endPage).pipe(
+      switchMap((executions => this.addDatasetNameAndCurrentPlugin(executions)))
+    );
   }
 
   /** getCurrentPlugin

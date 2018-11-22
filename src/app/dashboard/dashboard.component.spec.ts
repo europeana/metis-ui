@@ -46,16 +46,16 @@ describe('DashboardComponent', () => {
   });
 
   it('should open more than 1 page', () => {
-    component.getNextPage(1);
+    component.getNextPage();
     fixture.detectChanges();
-    expect(component.currentPageHistory).toBe(1);
+    expect(component.finishedCurrentPage).toBe(1);
   });
 
   it('should get a list of executions', () => {
-    component.currentPageHistory = 1;
-    component.getExecutions();
+    component.finishedCurrentPage = 1;
+    component.getFinishedExecutions();
     fixture.detectChanges();
-    expect(component.currentPageHistory).toBe(1);
+    expect(component.finishedCurrentPage).toBe(1);
   });
 
 });
