@@ -1,4 +1,4 @@
-import { map, publishLast } from 'rxjs/operators';
+import { map, publishLast, tap } from 'rxjs/operators';
 import { ConnectableObservable,  Observable } from 'rxjs';
 
 import { Injectable } from '@angular/core';
@@ -83,11 +83,14 @@ export class DatasetsService {
   */
   //tslint:disable-next-line: no-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
-    // remove old dataset from cache
-    delete this.datasetById[datasetFormValues.dataset.id];
-
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.put<void>(url, datasetFormValues).pipe(this.errors.handleRetry());
+    return this.http.put<void>(url, datasetFormValues).pipe(
+      tap(() => {
+        // remove old dataset from cache
+        delete this.datasetById[datasetFormValues.dataset.datasetId];
+      }),
+      this.errors.handleRetry()
+    );
   }
 
   /** setPreviewFilters
