@@ -65,6 +65,15 @@
     </ul>
   </div>
   <div class="tab-content">
-    <ng-template #tabContainer></ng-template>
+    <app-datasetform *ngIf="activeTab === 'new' || activeTab === 'edit'"
+      [datasetData]="datasetData"></app-datasetform>
+    <app-workflow *ngIf="activeTab === 'workflow'"
+      [datasetData]="datasetData" [workflowData]="workflowData"></app-workflow>
+    <app-mapping *ngIf="activeTab === 'mapping'"
+      [datasetData]="datasetData"></app-mapping>
+    <app-preview *ngIf="activeTab === 'preview'"
+      [datasetData]="datasetData"></app-preview>
+    <app-history *ngIf="activeTab === 'log'"
+      [datasetData]="datasetData"></app-history>
   </div>
 </div>

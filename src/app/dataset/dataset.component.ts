@@ -1,19 +1,11 @@
-import { Component, OnInit, ViewChild, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
 import { environment } from '../../environments/environment';
 import { timer, Subscription } from 'rxjs';
 
 import { AuthenticationService, DatasetsService, WorkflowService, ErrorService, TranslateService } from '../_services';
-
-import { DatasetformComponent } from './datasetform/datasetform.component';
-import { HistoryComponent } from './history/history.component';
-import { MappingComponent } from './mapping/mapping.component';
-import { PreviewComponent } from './preview/preview.component';
-import { WorkflowComponent } from './workflow/workflow.component';
-
-import { DatasetTab } from './datasettab';
 
 import { User } from '../_models';
 import { Dataset } from '../_models/dataset';
@@ -29,19 +21,14 @@ import { WorkflowExecution } from '../_models/workflow-execution';
 
 export class DatasetComponent implements OnInit {
 
-  constructor(private http: HttpClient,
-    private authentication: AuthenticationService,
+  constructor(private authentication: AuthenticationService,
     private datasets: DatasetsService,
     private workflows: WorkflowService,
-    private componentFactoryResolver: ComponentFactoryResolver,
     private errors: ErrorService,
     private translate: TranslateService,
     private route: ActivatedRoute) { }
 
-  @ViewChild('tabContainer', { read: ViewContainerRef })
-  tabContainer: ViewContainerRef;
-
-  activeTab: string | undefined = 'new';
+  activeTab = 'new';
   prevTab: string | undefined;
   showLog = false;
   user: User | null;
@@ -49,7 +36,7 @@ export class DatasetComponent implements OnInit {
   successMessage?: string;
   executionsSubscription: Subscription;
   workflowSubscription: Subscription;
-  tabsLoaded = false;
+  harvestSubscription: Subscription;
 
   public isShowingLog: boolean;
   public datasetData: Dataset;
@@ -72,11 +59,15 @@ export class DatasetComponent implements OnInit {
       this.prevTab = this.activeTab;
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
-      this.returnDataset(this.activeSet);
 
-      if (this.tabsLoaded) {
-        this.loadTabComponent();
+      if (this.activeTab === 'preview' && this.prevTab === 'mapping') {
+        this.datasets.setTempXSLT(this.datasets.getTempXSLT());
+      } else {
+        this.datasets.setTempXSLT(null);
       }
+      this.successMessage = this.datasets.getDatasetMessage();
+
+      this.returnDataset(this.activeSet);
     });
 
     this.translate.use('en');
@@ -93,7 +84,6 @@ export class DatasetComponent implements OnInit {
   */
   returnDataset(id?: string): void {
     if (!id) {
-      this.loadTabComponent();
       return;
     }
 
@@ -124,22 +114,12 @@ export class DatasetComponent implements OnInit {
       this.workflowSubscription = workflowTimer.subscribe(t => {
         this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {
           this.workflowData = workflow;
-          if (this.workflowData && !this.tabsLoaded) {
-            this.loadTabComponent();
-            this.tabsLoaded = true;
-          }
         }, (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.errorMessage = `${StringifyHttpError(error)}`;
           this.workflowSubscription.unsubscribe();
         });
       });
-
-      // no execution yet?
-      if (!this.lastExecutionData && !this.workflowData) {
-        this.loadTabComponent();
-      }
-
     }, (err: HttpErrorResponse) => {
         if (this.executionsSubscription) { this.executionsSubscription.unsubscribe(); }
         const error = this.errors.handleError(err);
@@ -153,49 +133,6 @@ export class DatasetComponent implements OnInit {
   */
   onNotifyShowLogStatus(message: boolean): void {
     this.isShowingLog = message;
-  }
-
-  /** loadTabComponent
-  /*  loads the content within the placeholder
-  */
-  loadTabComponent(): void {
-
-    if (!this.getCurrentTab()) {return; }
-
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab()!.component);
-    const viewContainerRef = this.tabContainer;
-    viewContainerRef.clear();
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.datasetData = this.getCurrentTab()!.dataset;
-    componentRef.instance.workflowData = this.getCurrentTab()!.workflow;
-
-    this.successMessage = this.datasets.getDatasetMessage();
-
-    if (this.activeTab === 'preview' && this.prevTab === 'mapping') {
-      this.datasets.setTempXSLT(this.datasets.getTempXSLT());
-    } else {
-      this.datasets.setTempXSLT(null);
-    }
-  }
-
-  /** getCurrentTab
-  /*  returns the components that will be used in the component placeholder within a tab
-  /*  based on currently active tab
-  */
-  getCurrentTab(): DatasetTab | undefined {
-    if (this.activeTab === 'new' || this.activeTab === 'edit') {
-      return new DatasetTab(DatasetformComponent, this.datasetData, this.workflowData);
-    } else if (this.activeTab === 'log') {
-      return new DatasetTab(HistoryComponent, this.datasetData, this.workflowData);
-    } else  if (this.activeTab === 'mapping') {
-      return new DatasetTab(MappingComponent, this.datasetData, this.workflowData);
-    } else  if (this.activeTab === 'preview') {
-      return new DatasetTab(PreviewComponent, this.datasetData, this.workflowData);
-    } else  if (this.activeTab === 'workflow') {
-      return new DatasetTab(WorkflowComponent, this.datasetData, this.workflowData);
-    } else {
-      return undefined;
-    }
   }
 
   /** clickOutsideMessage
