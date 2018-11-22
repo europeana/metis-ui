@@ -98,7 +98,7 @@ export class DatasetComponent implements OnInit {
       return;
     }
 
-    this.datasets.getDataset(id).subscribe(result => {
+    this.datasets.getDataset(id, true).subscribe(result => {
       this.datasetData = result;
       // check for harvest data
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(resultHarvest => {

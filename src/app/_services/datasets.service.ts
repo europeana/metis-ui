@@ -50,18 +50,18 @@ export class DatasetsService {
   /* get all information related to the dataset
   /* @param {string} id - datasetid
   */
-  getDataset(id: string): Observable<Dataset> {
+  private requestDataset(id: string): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;
     return this.http.get<Dataset>(url).pipe(this.errors.handleRetry());
   }
 
-  getCachedDataset(id: string): Observable<Dataset> {
+  getDataset(id: string, refresh: boolean = false): Observable<Dataset> {
     let observable = this.datasetById[id];
-    if (observable) {
+    if (observable && !refresh) {
       return observable;
     }
     // tslint:disable-next-line: no-any
-    observable = this.getDataset(id).pipe(publishLast());
+    observable = this.requestDataset(id).pipe(publishLast());
     (observable as ConnectableObservable<Dataset>).connect();
     this.datasetById[id] = observable;
     return observable;

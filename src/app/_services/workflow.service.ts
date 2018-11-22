@@ -234,7 +234,7 @@ export class WorkflowService {
       }
     });
 
-    const observables = executions.map(({ datasetId }) => this.datasetService.getCachedDataset(datasetId));
+    const observables = executions.map(({ datasetId }) => this.datasetService.getDataset(datasetId));
     return forkJoin(observables).pipe(
       map((datasets) => {
         executions.forEach((execution, i) => {
