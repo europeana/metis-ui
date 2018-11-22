@@ -40,6 +40,7 @@ export class GeneralinfoComponent implements OnInit {
 
     this.workflows.changeWorkflow.subscribe(
       () => {
+        console.log('gi workflow change, get dataset info');
         this.getDatasetInformation();
       }
     );
@@ -47,6 +48,7 @@ export class GeneralinfoComponent implements OnInit {
     if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
     const timer = observableTimer(0, this.intervalTimer);
     this.subscription = timer.subscribe(t => {
+      console.log('gi timer, get dataset info');
       this.getDatasetInformation();
     });
   }
@@ -71,6 +73,7 @@ export class GeneralinfoComponent implements OnInit {
         this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
       }
 
+      console.log('gi getdatasetinfo get harvest');
       this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
         this.harvestPublicationData = result;
         this.buttonClassPreview = this.harvestPublicationData.lastPreviewRecordsReadyForViewing ? '' : 'btn-disabled';
