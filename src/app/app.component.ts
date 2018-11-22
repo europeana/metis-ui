@@ -5,7 +5,6 @@ import { StringifyHttpError } from './_helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  providers: [AuthenticationService, DatasetsService],
   selector: 'app-root',
   templateUrl: './app.component.html'
 })

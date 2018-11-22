@@ -13,7 +13,6 @@ import { Dataset } from '../_models/dataset';
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  providers: [AuthenticationService]
 })
 export class DashboardComponent implements OnInit {
 

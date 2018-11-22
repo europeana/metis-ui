@@ -6,7 +6,6 @@ import { User } from '../../_models';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  providers: [AuthenticationService]
 })
 
 export class HeaderComponent implements OnInit {
