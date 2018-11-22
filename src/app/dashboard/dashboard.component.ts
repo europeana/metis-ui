@@ -32,7 +32,6 @@ export class DashboardComponent implements OnInit {
   public isShowingLog?: LogStatus;
 
   constructor(private translate: TranslateService,
-              private datasetService: DatasetsService,
               private workflows: WorkflowService,
               private errors: ErrorService) {
   }
@@ -96,9 +95,6 @@ export class DashboardComponent implements OnInit {
     clearTimeout(this.runningTimer);
     this.runningIsLoading = true;
     this.workflows.getAllExecutionsCollectingPages(true)
-      .pipe(switchMap((executions =>
-        this.datasetService.addDatasetNameAndCurrentPlugin(executions)
-      )))
       .subscribe(executions => {
       this.runningExecutions = executions;
       this.runningIsLoading = false;
@@ -117,9 +113,6 @@ export class DashboardComponent implements OnInit {
     clearTimeout(this.finishedTimer);
     this.finishedIsLoading = true;
     this.workflows.getAllExecutionsUptoPage(this.finishedCurrentPage, false)
-      .pipe(switchMap((executions =>
-        this.datasetService.addDatasetNameAndCurrentPlugin(executions)
-      )))
       .subscribe(executions => {
       this.finishedExecutions = executions;
       this.finishedIsLoading = false;

@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 
-import { WorkflowService, TranslateService, DatasetsService } from '../../_services';
+import { WorkflowService, TranslateService } from '../../_services';
 import { LogStatus } from '../../_models/log-status';
 import { WorkflowExecution } from '../../_models/workflow-execution';
 
@@ -14,8 +14,7 @@ import { WorkflowExecution } from '../../_models/workflow-execution';
 export class OngoingexecutionsComponent {
 
   constructor(private workflows: WorkflowService,
-    private translate: TranslateService,
-    private datasets: DatasetsService) { }
+    private translate: TranslateService) { }
 
   @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
   @Input('isShowingLog') isShowingLog: LogStatus;
@@ -36,8 +35,7 @@ export class OngoingexecutionsComponent {
   /* translate some values to use in this component
   */
   ngOnInit(): void {
-    if (!this.datasets.updateLog) { return; }
-    this.datasets.updateLog.subscribe(
+    this.workflows.updateLog.subscribe(
       (log: LogStatus) => {
         if (this.isShowingLog) {
           this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen, log['processed'], log['status']);
