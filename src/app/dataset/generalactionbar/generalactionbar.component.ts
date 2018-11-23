@@ -16,11 +16,11 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
     private translate: TranslateService) { }
 
   @Input() datasetData: Dataset;
-  @Input() lastExecutionData: WorkflowExecution;
-  @Input() workflowData: Workflow;
-  currentPlugin: number;
-  totalPlugins: number;
-  pluginPercentage: number;
+  @Input() lastExecutionData?: WorkflowExecution;
+  @Input() workflowData?: Workflow;
+  currentPlugin = 0;
+  totalPlugins = 0;
+  pluginPercentage = 0;
 
   ngOnInit(): void {
     this.translate.use('en');
