@@ -50,6 +50,7 @@ import { XmlPipe } from './_helpers';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
 import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
 import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
+import { LoadAnimationComponent } from './load-animation';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { ExecutiontableComponent } from './dashboard/executions/executiontable/e
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
+    LoadAnimationComponent,
     PageNotFoundComponent,
     HeaderComponent,
     HomeComponent,

@@ -1,4 +1,9 @@
-<div class="dashboard-wrapper" *ngIf="datasetData">
+<app-load-animation
+  *ngIf="!datasetData || harvestIsLoading || workflowIsLoading || lastExecutionIsLoading"
+  [resources]="{ 'dataset': !datasetData, 'harvest data': harvestIsLoading, 'workflow': workflowIsLoading, 'last workflow': lastExecutionIsLoading }"
+></app-load-animation>
+
+<div class="dashboard-wrapper" *ngIf="datasetData && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading">
 
   <div class="messages" (clickOutside)="clickOutsideMessage()">
     <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>

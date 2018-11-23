@@ -4,9 +4,10 @@
     <p>Welcome <strong>{{userName}}</strong>, let's ingest a world of Culture!</p>
   </div>
 
-  <div class="big-spin" *ngIf="runningIsFirstLoading || finishedIsFirstLoading">
-    <span class="svg-icon-spin"></span>
-  </div>
+  <app-load-animation
+    *ngIf="runningIsFirstLoading || finishedIsFirstLoading"
+    [resources]="{ 'running workflows': runningIsFirstLoading, 'finished workflows': finishedIsFirstLoading }"
+  ></app-load-animation>
 
   <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
     <div class="metis-dashboard-left">
