@@ -47,15 +47,14 @@ export class DatasetComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.prevTab = this.activeTab;
       this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
       this.activeSet = params['id']; // if no id defined, let's create a new dataset
-
       if (this.activeTab === 'preview' && this.prevTab === 'mapping') {
         this.datasets.setTempXSLT(this.datasets.getTempXSLT());
       } else {
         this.datasets.setTempXSLT(null);
       }
+      this.prevTab = this.activeTab;
       this.successMessage = this.datasets.getDatasetMessage();
 
       this.returnDataset(this.activeSet);
@@ -70,10 +69,6 @@ export class DatasetComponent implements OnInit {
     if (this.lastExecutionSubscription) { this.lastExecutionSubscription.unsubscribe(); }
   }
 
-  /** returnDataset
-  /*  returns all dataset information based on identifier
-  /* @param {string} id - dataset identifier
-  */
   returnDataset(id?: string): void {
     if (!id) {
       return;
@@ -134,7 +129,6 @@ export class DatasetComponent implements OnInit {
 
   /** onNotifyShowLogStatus
   /*  opens/closes the log messages
-  /* @param {boolean} message - show log yes/no
   */
   onNotifyShowLogStatus(message: boolean): void {
     this.isShowingLog = message;
@@ -142,9 +136,8 @@ export class DatasetComponent implements OnInit {
 
   /** clickOutsideMessage
   /*  click outside message to close it
-  /* @param {Event} e - event, optional
   */
-  clickOutsideMessage(e?: Event): void {
+  clickOutsideMessage(): void {
     this.errorMessage = undefined;
     this.successMessage = undefined;
     this.datasets.clearDatasetMessage();
