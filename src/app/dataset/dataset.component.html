@@ -30,7 +30,7 @@
       <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
     </div>
     <div class="metis-dashboard-right">  
-      <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" [workflowData]="workflowData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
+      <app-actionbar [workflowData]="workflowData" [lastExecutionData]="lastExecutionData" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
       <app-history [datasetData]="datasetData" [inCollapsablePanel]=true [lastExecutionData]="lastExecutionData"></app-history>
       <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
     </div>
