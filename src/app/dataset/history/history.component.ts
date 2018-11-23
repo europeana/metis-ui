@@ -222,11 +222,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     if (!workflow) { return; }
     const currentPlugin = this.workflows.getCurrentPlugin(workflow);
     if (!workflow['metisPlugins'][currentPlugin]) { return; }
-    if (workflow['metisPlugins'][currentPlugin].pluginStatus === 'RUNNING' || workflow['metisPlugins'][currentPlugin].pluginStatus === 'INQUEUE') {
-      this.workflowHasFinished = false;
-    } else {
-      this.workflowHasFinished = true;
-    }
+    this.workflowHasFinished = workflow['metisPlugins'][currentPlugin].pluginStatus !== 'RUNNING' &&
+        workflow['metisPlugins'][currentPlugin].pluginStatus !== 'INQUEUE';
     this.updateExecutionHistoryPanel(workflow);
   }
 
