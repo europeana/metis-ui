@@ -126,7 +126,7 @@ export class HistoryComponent implements OnInit {
   updateExecutionHistoryPanel(workflow: WorkflowExecution): void {
 
     if (!workflow) { return; }
-    if (this.historyInPanel.length === this.workflows.getCurrentPlugin(workflow) &&
+    if (this.historyInPanel.length === this.workflows.getCurrentPlugin(workflow) + 1 &&
       this.historyInPanel.length &&
       this.historyInPanel.length > 0 &&
       this.workflows.getCurrentPlugin(workflow) > 0) {
