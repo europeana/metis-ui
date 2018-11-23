@@ -34,8 +34,8 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
     }
   }
 
-  selectWorkflow(): void {
-    this.workflows.selectWorkflow();
+  startWorkflow(): void {
+    this.workflows.startNewWorkflow.emit();
   }
 
 }

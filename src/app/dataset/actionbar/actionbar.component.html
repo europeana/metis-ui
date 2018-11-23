@@ -29,7 +29,7 @@
         <a class="report-btn svg-icon-report tooltip" attr.data-tooltip="{{ 'report' | translate }}" (click)="openReport(currentExternalTaskId, currentTopology)"><span>{{ 'report' | translate }}</span></a>
       </li> 
       <li *ngIf="currentStatus === 'CANCELLED' || currentStatus === 'FINISHED' || currentStatus === 'FAILED'">
-        <a class="newaction-btn" (click)="selectWorkflow()">
+        <a class="newaction-btn" (click)="startWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
       </li> 
@@ -44,7 +44,7 @@
   <nav *ngIf="workflowData">
     <ul>
       <li>
-        <a class="newaction-btn" (click)="selectWorkflow()">
+        <a class="newaction-btn" (click)="startWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
       </li>  

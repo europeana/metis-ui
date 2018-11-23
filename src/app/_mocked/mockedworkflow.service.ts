@@ -212,7 +212,7 @@ export const harvestData: HarvestData = {
 
 export class MockWorkflowService extends WorkflowService {
 
-  triggerNewWorkflow(): Observable<WorkflowExecution> {
+  startWorkflow(): Observable<WorkflowExecution> {
     return observableOf(currentWorkflow.results[0]);
   }
 
@@ -230,10 +230,6 @@ export class MockWorkflowService extends WorkflowService {
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {
     return observableOf(currentWorkflow.results[0]);
-  }
-
-  setActiveWorkflow(workflow?: WorkflowExecution): void {
-    this.changeWorkflow.emit(currentWorkflow.results[0]);
   }
 
   protected getAllExecutions(): Observable<Results<WorkflowExecution[]>> {

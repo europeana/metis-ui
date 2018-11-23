@@ -39,7 +39,6 @@ export class ActionbarComponent {
   currentTopology?: string;
 
   contentCopied = false;
-  workflowIsDone = false;
   report?: Report;
 
   @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
@@ -75,13 +74,8 @@ export class ActionbarComponent {
           this.now = value.finishedDate;
         }
         this.currentStatus = value.workflowStatus;
-        if (!this.workflowIsDone) {
-          this.workflows.workflowDone(true);
-          this.workflowIsDone = true;
-        }
       } else {
         if (index !== this.currentPluginIndex) {
-          this.workflows.updateHistory(value);
           if (this.isShowingLog) {
             this.showLog(
               this.currentPlugin.externalTaskId,
@@ -98,9 +92,6 @@ export class ActionbarComponent {
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
         }
-
-        this.workflows.workflowDone(false);
-        this.workflowIsDone = false;
       }
     }
   }
@@ -123,11 +114,8 @@ export class ActionbarComponent {
     this.notifyShowLogStatus.emit(message);
   }
 
-  /** selectWorkflow
-  /*  select the workflow, so it would be triggered
-  */
-  selectWorkflow(): void {
-    this.workflows.selectWorkflow();
+  startWorkflow(): void {
+    this.workflows.startNewWorkflow.emit();
   }
 
   /** getReport

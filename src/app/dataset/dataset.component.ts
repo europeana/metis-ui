@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
@@ -18,7 +18,7 @@ import { WorkflowExecution } from '../_models/workflow-execution';
   styleUrls: ['./dataset.component.scss']
 })
 
-export class DatasetComponent implements OnInit {
+export class DatasetComponent implements OnInit, OnDestroy {
 
   constructor(private authentication: AuthenticationService,
     private datasets: DatasetsService,
@@ -57,10 +57,23 @@ export class DatasetComponent implements OnInit {
       this.prevTab = this.activeTab;
       this.successMessage = this.datasets.getDatasetMessage();
 
-      this.returnDataset(this.activeSet);
+      this.loadData();
     });
 
     this.translate.use('en');
+
+    this.workflows.reloadWorkflowExecution.subscribe(() => {
+      this.loadLastExecution();
+    });
+
+    this.workflows.startNewWorkflow.subscribe(() => {
+      this.workflows.startWorkflow(this.datasetData.datasetId).subscribe(() => {
+        this.workflows.reloadWorkflowExecution.emit();
+      }, (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+      });
+    });
   }
 
   ngOnDestroy(): void {
@@ -69,12 +82,12 @@ export class DatasetComponent implements OnInit {
     if (this.lastExecutionSubscription) { this.lastExecutionSubscription.unsubscribe(); }
   }
 
-  returnDataset(id?: string): void {
-    if (!id) {
+  loadData(): void {
+    if (!this.activeSet) {
       return;
     }
 
-    this.datasets.getDataset(id, true).subscribe(result => {
+    this.datasets.getDataset(this.activeSet, true).subscribe(result => {
       this.datasetData = result;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
@@ -84,46 +97,58 @@ export class DatasetComponent implements OnInit {
     // check for harvest data every x seconds
     if (this.harvestSubscription || !this.authentication.validatedUser()) { this.harvestSubscription.unsubscribe(); }
     const harvestTimer = timer(0, environment.intervalStatusMedium);
-    this.harvestSubscription = harvestTimer.subscribe(t => {
-      this.workflows.getPublishedHarvestedData(id).subscribe(resultHarvest => {
-        this.harvestPublicationData = resultHarvest;
-        this.harvestIsLoading = false;
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
-        this.harvestSubscription.unsubscribe();
-        this.harvestIsLoading = false;
-      });
+    this.harvestSubscription = harvestTimer.subscribe(() => {
+      this.loadHarvestData();
     });
 
     // check workflow for every x seconds
     if (this.workflowSubscription) { this.workflowSubscription.unsubscribe(); }
     const workflowTimer = timer(0, environment.intervalStatusMedium);
-    this.workflowSubscription = workflowTimer.subscribe(t => {
-      this.workflows.getWorkflowForDataset(id).subscribe(workflow => {
-        this.workflowData = workflow;
-        this.workflowIsLoading = false;
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
-        this.workflowSubscription.unsubscribe();
-        this.workflowIsLoading = false;
-      });
+    this.workflowSubscription = workflowTimer.subscribe(() => {
+      this.loadWorkflow();
     });
 
     // check for last execution every x seconds
     if (this.lastExecutionSubscription || !this.authentication.validatedUser()) { this.lastExecutionSubscription.unsubscribe(); }
     const executionsTimer = timer(0, environment.intervalStatus);
-    this.lastExecutionSubscription = executionsTimer.subscribe(t => {
-      this.workflows.getLastDatasetExecution(id).subscribe(execution => {
-        this.lastExecutionData = execution;
-        this.lastExecutionIsLoading = false;
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
-        this.lastExecutionSubscription.unsubscribe();
-        this.lastExecutionIsLoading = false;
-      });
+    this.lastExecutionSubscription = executionsTimer.subscribe(() => {
+      this.loadLastExecution();
+    });
+  }
+
+  loadHarvestData(): void {
+    this.workflows.getPublishedHarvestedData(this.activeSet).subscribe(resultHarvest => {
+      this.harvestPublicationData = resultHarvest;
+      this.harvestIsLoading = false;
+    }, (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
+      this.harvestSubscription.unsubscribe();
+      this.harvestIsLoading = false;
+    });
+  }
+
+  loadWorkflow(): void {
+    this.workflows.getWorkflowForDataset(this.activeSet).subscribe(workflow => {
+      this.workflowData = workflow;
+      this.workflowIsLoading = false;
+    }, (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
+      this.workflowSubscription.unsubscribe();
+      this.workflowIsLoading = false;
+    });
+  }
+
+  loadLastExecution(): void {
+    this.workflows.getLastDatasetExecution(this.activeSet).subscribe(execution => {
+      this.lastExecutionData = execution;
+      this.lastExecutionIsLoading = false;
+    }, (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
+      this.lastExecutionSubscription.unsubscribe();
+      this.lastExecutionIsLoading = false;
     });
   }
 

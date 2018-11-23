@@ -24,16 +24,12 @@ export class WorkflowService {
     private datasetService: DatasetsService,
     private errors: ErrorService) { }
 
-  public changeWorkflow: EventEmitter<WorkflowExecution> = new EventEmitter();
-  public selectedWorkflow: EventEmitter<boolean> = new EventEmitter();
-  public workflowIsDone: EventEmitter<boolean> = new EventEmitter();
-  public updateHistoryPanel: EventEmitter<WorkflowExecution> = new EventEmitter();
-  public promptCancelWorkflow: EventEmitter<string | boolean> = new EventEmitter();
-  public workflowCancelled: EventEmitter<boolean> = new EventEmitter();
+  public startNewWorkflow: EventEmitter<void> = new EventEmitter<void>();
+  public reloadWorkflowExecution: EventEmitter<void> = new EventEmitter();
+  public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
   public updateLog: EventEmitter<LogStatus> = new EventEmitter();
 
   currentTaskId?: string;
-  activeWorkflow?: WorkflowExecution;
   currentProcessing: { processed: number; topology: string };
   reportByKey: { [key: string]: Observable<Report> } = {};
 
@@ -59,7 +55,7 @@ export class WorkflowService {
   }
 
   //  trigger a new workflow
-  public triggerNewWorkflow (id: string): Observable<WorkflowExecution> {
+  public startWorkflow (id: string): Observable<WorkflowExecution> {
     const priority = 0;
     const enforce = '';
 
@@ -252,13 +248,8 @@ export class WorkflowService {
   }
 
   // show a prompt to cancel workflow
-  promptCancelThisWorkflow(id: string | false): void {
-    if (!id) { id = false; }
+  promptCancelThisWorkflow(id: string): void {
     this.promptCancelWorkflow.emit(id);
-  }
-
-  setWorkflowCancelled(): void {
-    this.workflowCancelled.emit(true);
   }
 
   // return samples based on executionid and plugintype
@@ -283,29 +274,5 @@ export class WorkflowService {
   // get information about currently processing topology
   getCurrentProcessed(): { processed: number; topology: string } {
     return this.currentProcessing;
-  }
-
-  //  set active workflow and emit changes so other components can act upon
-  setActiveWorkflow(workflow?: WorkflowExecution): void {
-    if (!workflow) {
-      workflow = undefined;
-    }
-    this.activeWorkflow = workflow;
-    this.changeWorkflow.emit(this.activeWorkflow);
-  }
-
-  //  set selected workflow, and emit changes so other components can act upon
-  selectWorkflow(): void {
-    this.selectedWorkflow.emit(true);
-  }
-
-  // indicate when workflow is done, and emit changes so other components can act upon
-  workflowDone(done: boolean): void {
-    this.workflowIsDone.emit(done);
-  }
-
-  //  update history in the collapsible panel after finishing a task/plugin
-  updateHistory(workflow: WorkflowExecution): void {
-    this.updateHistoryPanel.emit(workflow);
   }
 }

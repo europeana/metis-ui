@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let ex of allExecutions; let i = index">  
+    <tr *ngFor="let ex of allExecutions">
       <td *ngIf="ex.createdDate && !inCollapsablePanel" colspan="9" class="workflow-head">
         <div class="head-whitespace"></div>
         <div class="head-text" (dblclick)="copyInformation('execution', ex.id, ex.ecloudDatasetId);">

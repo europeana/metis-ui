@@ -51,6 +51,7 @@ import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_tra
 import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
 import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
 import { LoadAnimationComponent } from './load-animation';
+import { LastHistoryComponent } from './dataset/last-history/last-history.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { LoadAnimationComponent } from './load-animation';
     GeneralinfoComponent,
     DashboardactionsComponent,
     ActionbarComponent,
+    LastHistoryComponent,
     HistoryComponent,
     ActionbarComponent,
     WorkflowComponent,

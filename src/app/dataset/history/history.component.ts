@@ -60,16 +60,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
     });
 
     this.checkStatus();
-    if (this.inCollapsablePanel) {
-      this.checkTrigger = this.workflows.selectedWorkflow.subscribe(
-        () => {
-          this.triggerWorkflow();
-          if (this.inCollapsablePanel) {
-            this.allExecutions = [];
-          }
-        }
-      );
-    }
 
     if (!this.inCollapsablePanel) {
       this.returnAllExecutions();
@@ -77,22 +67,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
       this.getLatestExecution();
     }
 
-    this.workflows.workflowIsDone.subscribe(
-      (workflowstatus: boolean) => {
-        if (workflowstatus && !this.workflowHasFinished) {
-          this.allExecutions = [];
-          this.nextPage = 0;
-          this.workflowHasFinished = true;
-          this.returnAllExecutions();
-          if (this.subscription) { this.subscription.unsubscribe(); }
-          this.checkStatusStarted = false;
-        } else if (!workflowstatus) {
-          if (!this.checkStatusStarted) {
-            this.checkStatus();
-            this.checkStatusStarted = true;
-            this.workflowHasFinished = false;
-          }
+    this.workflows.reloadWorkflowExecution.subscribe(
+      () => {
+        this.allExecutions = [];
+        this.nextPage = 0;
+        this.workflowHasFinished = true;
+        this.returnAllExecutions();
+        if (this.subscription) {
+          this.subscription.unsubscribe();
         }
+        this.checkStatusStarted = false;
       }
     );
 
@@ -242,31 +226,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
     if (this.nextPage !== -1) {
       this.returnAllExecutions();
     }
-  }
-
-  /** triggerWorkflow
-  /*  trigger a workflow, based on selection in workflow dropdown or restart button
-  /* @param {string} workflowName - name of workflow to trigger
-  */
-  triggerWorkflow(): void {
-    if (this.datasetData.datasetId !== this.thisDatasetId) { return; }
-    this.errorMessage = undefined;
-    if (!this.datasetData) { return; }
-    this.workflows.triggerNewWorkflow(this.datasetData.datasetId).subscribe(result => {
-      this.workflowHasFinished = false;
-      this.workflows.setActiveWorkflow(result);
-      this.historyInPanel = [];
-      this.workflows.workflowDone(false);
-
-      // delay the check status a bit
-      setTimeout(() => {
-        this.checkStatus();
-      }, 5000);
-
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
   }
 
   /** openReport

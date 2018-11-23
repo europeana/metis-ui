@@ -1,0 +1,52 @@
+<div class="messages">
+  <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
+  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+</div>
+
+<table class="table-horizontal-layout history-table">
+  <thead>
+  	<tr>
+      <th colspan="2"></th>
+      <th>{{ 'workflow step' | translate }}</th>
+      <th>{{ 'totalprocessed' | translate }}</th>
+      <th>{{ 'totaldataset' | translate }}</th>
+      <th>{{ 'status' | translate }}</th>
+      <th class="centered">{{ 'startdate' | translate }}</th>
+      <th class="centered">{{ 'enddate' | translate }}</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let plugin of completedPlugins">
+      <td class="centered"><span class="svg-icon-{{plugin.pluginType}}"></span></td>
+      <td class="errorindicator"><span class="error" *ngIf="plugin.executionProgress.errors !== 0"></span></td>
+      <td class="nowrap uppercase" (dblclick)="copyInformation('plugin', plugin.externalTaskId, plugin.id);">
+        <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}">{{plugin.pluginType | renameWorkflow}} {{plugin.workflowCreated}}</span>
+      </td>
+      <td class="nowrap">{{plugin.executionProgress.processedRecords
+        - plugin.executionProgress.errors}} <span class="errors" *ngIf="plugin.executionProgress.errors > 0">({{plugin.executionProgress.errors}})</span></td>
+      <td class="nowrap uppercase">
+        {{plugin.executionProgress.expectedRecords >= 0 ? plugin.executionProgress.expectedRecords : ('unknown' |
+        translate)}}
+      </td>
+      <td class="nowrap">{{plugin.pluginStatus}}</td>
+      <td class="centered"><span class="date">{{plugin.startedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{plugin.startedDate | date:'HH:mm'}}</span></td>
+      <td class="centered"><span class="date">{{plugin.finishedDate | date:'dd/MM/yyyy'}}</span> <span class="datedivider">-</span> <span class="time">{{plugin.finishedDate | date:'HH:mm'}}</span></td>
+      <td class="buttonplaceholder nowrap">
+        <a *ngIf="plugin.hasReport" class="table-btn svg-icon-report" (click)="openReport(plugin.externalTaskId, plugin.topologyName)">
+          {{ 'report' | translate }}
+         </a>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr class="loadmore loadmore-history">
+      <td colspan="10">
+        <a class="load-more-btn" routerLink="/dataset/log/{{datasetId}}" (click)="scroll(starttab)">{{ 'fullhistory' | translate }}</a>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+<div #starttab></div>
+
+<app-report [report]="report" (closed)="onReportClosed()"></app-report>
