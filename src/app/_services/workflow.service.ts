@@ -81,7 +81,7 @@ export class WorkflowService {
     const enforce = '';
 
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;
-    return this.http.post<WorkflowExecution>(url, JSON.stringify('{}')).pipe(this.errors.handleRetry());
+    return this.http.post<WorkflowExecution>(url, {}).pipe(this.errors.handleRetry());
   }
 
   /** getLogs
