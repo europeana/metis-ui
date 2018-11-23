@@ -121,7 +121,6 @@ export class WorkflowService {
   getAllExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    console.log('getAllExecutions', url);
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(tap(allExecutions => {
       this.allWorkflows = allExecutions.results;
     })).pipe(this.errors.handleRetry());
