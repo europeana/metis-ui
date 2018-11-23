@@ -60,7 +60,6 @@ export class DatasetsService {
     if (observable && !refresh) {
       return observable;
     }
-    // tslint:disable-next-line: no-any
     observable = this.requestDataset(id).pipe(publishLast());
     (observable as ConnectableObservable<Dataset>).connect();
     this.datasetById[id] = observable;
