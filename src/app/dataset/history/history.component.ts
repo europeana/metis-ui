@@ -185,7 +185,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
     if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED' || w.pluginStatus === 'CANCELLED') {
       if (w.externalTaskId && w.topologyName) {
-        this.workflows.getReport(w.externalTaskId, w.topologyName).subscribe(report => {
+        this.workflows.getCachedReport(w.externalTaskId, w.topologyName).subscribe(report => {
           if (report['errors'].length > 0) {
             ws['hasReport'] = true;
           }

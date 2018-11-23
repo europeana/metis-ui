@@ -70,19 +70,20 @@ export class WorkflowService {
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
-  requestReport(taskId: string, topologyName: string): Observable<Report> {
+  getReport(taskId: string, topologyName: string): Observable<Report> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
     return this.http.get<Report>(url).pipe(this.errors.handleRetry());
   }
 
-  getReport(taskId: string, topologyName: string): Observable<Report> {
+  // only use this for finished tasks
+  getCachedReport(taskId: string, topologyName: string): Observable<Report> {
     const key = `${taskId}/${topologyName}`;
     let observable = this.reportByKey[key];
     if (observable) {
       return observable;
     }
     // tslint:disable-next-line: no-any
-    observable = this.requestReport(taskId, topologyName).pipe(publishLast());
+    observable = this.getReport(taskId, topologyName).pipe(publishLast());
     (observable as ConnectableObservable<Report>).connect();
     this.reportByKey[key] = observable;
     return observable;
@@ -229,7 +230,7 @@ export class WorkflowService {
       const { pluginStatus, externalTaskId, topologyName } = pluginExecution;
       if (pluginStatus === 'FINISHED' || pluginStatus === 'FAILED' || pluginStatus === 'CANCELLED') {
         if (externalTaskId && topologyName) {
-          this.getReport(externalTaskId, topologyName).subscribe(report => {
+          this.getCachedReport(externalTaskId, topologyName).subscribe(report => {
             if (report.errors.length) {
               pluginExecution.hasReport = true;
             }
