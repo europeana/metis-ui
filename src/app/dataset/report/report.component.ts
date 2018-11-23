@@ -24,7 +24,6 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.reportKeys = Object.keys;
     this.translate.use('en');
   }
 
