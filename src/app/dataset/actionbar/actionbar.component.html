@@ -52,4 +52,4 @@
   </nav>
 </div>
 
-<app-report *ngIf="report"></app-report>
+<app-report [report]="report" (closed)="onReportClosed()"></app-report>

@@ -134,18 +134,16 @@ export class ActionbarComponent {
   /*  get the report for a specific workflow step
   */
   openReport(taskId: string, topology: string): void {
-    this.report = undefined;
     this.workflows.getReport(taskId, topology).subscribe(result => {
-      this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
-      if (error.toString() === 'retry') {
-        this.openReport(taskId, topology);
-      } else {
-        this.errorMessage = `${StringifyHttpError(error)}`;
-      }
+      this.errorMessage = `${StringifyHttpError(error)}`;
     });
+  }
+
+  onReportClosed(): void {
+    this.report = undefined;
   }
 
   /** copyInformation

@@ -34,7 +34,6 @@ export class WorkflowService {
 
   currentTaskId?: string;
   activeWorkflow?: WorkflowExecution;
-  currentReport: Report;
   currentProcessing: { processed: number; topology: string };
   reportByKey: { [key: string]: Observable<Report> } = {};
 
@@ -274,16 +273,6 @@ export class WorkflowService {
   getStatistics(topologyName: string, taskId: string): Observable<Statistics> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
     return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
-  }
-
-  // set content for selected report
-  setCurrentReport(report: Report ): void {
-    this.currentReport = report;
-  }
-
-  // get content for selected report
-  getCurrentReport(): Report {
-    return this.currentReport;
   }
 
   // set information about the currently processing topology

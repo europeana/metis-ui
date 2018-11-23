@@ -275,14 +275,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
   /* @param {string} topology - name of topology
   */
   openReport (taskid: string, topology: string): void {
-    this.report = undefined;
     this.workflows.getReport(taskid, topology).subscribe(result => {
-      this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
+  }
+
+  onReportClosed(): void {
+    this.report = undefined;
   }
 
   /*** copyInformation

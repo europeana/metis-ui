@@ -252,10 +252,6 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(currentReport);
   }
 
-  getCurrentReport(): Report {
-    return currentReport;
-  }
-
   getStatistics(): Observable<Statistics> {
     return observableOf(statistics);
   }
