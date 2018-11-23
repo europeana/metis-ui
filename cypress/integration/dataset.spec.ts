@@ -46,13 +46,13 @@ context('metis-ui', () => {
       cy.get('@status').contains('Preview');
       cy.get('@status').contains('FAILED');
 
-      cy.get('.history-table tbody tr').should('have.length', 9);
-      getHistoryRow(1, 'td').contains('Preview');
+      cy.get('.history-table tbody tr').should('have.length', 8);
+      getHistoryRow(0, 'td').contains('Preview');
+      getHistoryRow(0, 'td').contains('CANCELLED');
+      getHistoryRow(1, 'td').contains('Process Media');
       getHistoryRow(1, 'td').contains('CANCELLED');
-      getHistoryRow(2, 'td').contains('Process Media');
-      getHistoryRow(2, 'td').contains('CANCELLED');
-      getHistoryRow(8, 'td').contains('Import OAI-PMH');
-      getHistoryRow(8, 'td').contains('FINISHED');
+      getHistoryRow(7, 'td').contains('Import OAI-PMH');
+      getHistoryRow(7, 'td').contains('FINISHED');
     });
 
     it('should show the tabs', () => {
