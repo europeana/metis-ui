@@ -4,7 +4,11 @@
     <p>Welcome <strong>{{userName}}</strong>, let's ingest a world of Culture!</p>
   </div>
 
-  <div class="metis-dashboard">
+  <div class="big-spin" *ngIf="runningIsFirstLoading || finishedIsFirstLoading">
+    <span class="svg-icon-spin"></span>
+  </div>
+
+  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>
       <app-ongoingexecutions [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)" [runningExecutions]="runningExecutions"></app-ongoingexecutions>

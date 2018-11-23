@@ -14,12 +14,14 @@ import { WorkflowExecution } from '../_models/workflow-execution';
 export class DashboardComponent implements OnInit {
 
   userName: string;
-  runningExecutions: WorkflowExecution[] = [];
+  runningExecutions: WorkflowExecution[];
   runningTimer: number;
   runningIsLoading = true;
-  finishedExecutions: WorkflowExecution[] = [];
+  runningIsFirstLoading = true;
+  finishedExecutions: WorkflowExecution[];
   finishedTimer: number;
   finishedIsLoading = true;
+  finishedIsFirstLoading = true;
   finishedCurrentPage = 0;
 
   public isShowingLog?: LogStatus;
@@ -70,12 +72,15 @@ export class DashboardComponent implements OnInit {
       .subscribe(executions => {
       this.runningExecutions = executions;
       this.runningIsLoading = false;
+      this.runningIsFirstLoading = false;
 
       this.runningTimer = window.setTimeout(() => {
         this.getRunningExecutions();
       }, environment.intervalStatus);
     }, (err: HttpErrorResponse) => {
-      this.handleError(err);
+      this.errors.handleError(err);
+      this.runningIsLoading = false;
+      this.runningIsFirstLoading = false;
     });
   }
 
@@ -88,19 +93,16 @@ export class DashboardComponent implements OnInit {
       .subscribe(executions => {
       this.finishedExecutions = executions;
       this.finishedIsLoading = false;
+      this.finishedIsFirstLoading = false;
 
       this.finishedTimer = window.setTimeout(() => {
         this.getFinishedExecutions();
       }, environment.intervalStatusMedium);
     }, (err: HttpErrorResponse) => {
-      this.handleError(err);
+      this.errors.handleError(err);
+      this.finishedIsLoading = false;
+      this.finishedIsFirstLoading = false;
     });
-  }
-
-  private handleError(err: HttpErrorResponse): void {
-    clearTimeout(this.runningTimer);
-    clearTimeout(this.finishedTimer);
-    this.errors.handleError(err);
   }
 
 }
