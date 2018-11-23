@@ -1,11 +1,10 @@
-
-import { map, switchMap } from 'rxjs/operators';
+import { map, publishLast, switchMap } from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
 
-import { forkJoin, Observable, of } from 'rxjs';
+import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
 import { ErrorService } from './error.service';
 import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
@@ -36,8 +35,8 @@ export class WorkflowService {
   currentTaskId?: string;
   activeWorkflow?: WorkflowExecution;
   currentReport: Report;
-  currentPage: { [component: string]: number } = {};
   currentProcessing: { processed: number; topology: string };
+  reportByKey: { [key: string]: Observable<Report> } = {};
 
   getWorkflowForDataset (id: string): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
@@ -76,10 +75,22 @@ export class WorkflowService {
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
-  //  get report information using topology and externaltaskid
-  getReport(taskId: string, topologyName: string): Observable<Report> {
+  requestReport(taskId: string, topologyName: string): Observable<Report> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
     return this.http.get<Report>(url).pipe(this.errors.handleRetry());
+  }
+
+  getReport(taskId: string, topologyName: string): Observable<Report> {
+    const key = `${taskId}/${topologyName}`;
+    let observable = this.reportByKey[key];
+    if (observable) {
+      return observable;
+    }
+    // tslint:disable-next-line: no-any
+    observable = this.requestReport(taskId, topologyName).pipe(publishLast());
+    (observable as ConnectableObservable<Report>).connect();
+    this.reportByKey[key] = observable;
+    return observable;
   }
 
   //  get history of finished, failed or canceled executions for specific datasetid
@@ -216,6 +227,23 @@ export class WorkflowService {
       }
     }
     return currentPlugin;
+  }
+
+  getReportsForExecution(workflowExecution: WorkflowExecution): void {
+    workflowExecution.metisPlugins.forEach((pluginExecution) => {
+      const { pluginStatus, externalTaskId, topologyName } = pluginExecution;
+      if (pluginStatus === 'FINISHED' || pluginStatus === 'FAILED' || pluginStatus === 'CANCELLED') {
+        if (externalTaskId && topologyName) {
+          this.getReport(externalTaskId, topologyName).subscribe(report => {
+            if (report.errors.length) {
+              pluginExecution.hasReport = true;
+            }
+          }, (err: HttpErrorResponse) => {
+            this.errors.handleError(err);
+          });
+        }
+      }
+    });
   }
 
   // cancel the running execution for a datasetid
