@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TranslateService, WorkflowService, ErrorService } from '../_services';
+import { TranslateService, WorkflowService, ErrorService, AuthenticationService } from '../_services';
 
 import { environment } from '../../environments/environment';
 import { LogStatus } from '../_models/log-status';
@@ -13,6 +13,7 @@ import { WorkflowExecution } from '../_models/workflow-execution';
 })
 export class DashboardComponent implements OnInit {
 
+  userName: string;
   runningExecutions: WorkflowExecution[] = [];
   runningTimer: number;
   runningIsLoading = true;
@@ -23,7 +24,8 @@ export class DashboardComponent implements OnInit {
 
   public isShowingLog?: LogStatus;
 
-  constructor(private translate: TranslateService,
+  constructor(private authentication: AuthenticationService,
+              private translate: TranslateService,
               private workflows: WorkflowService,
               private errors: ErrorService) {
   }
@@ -33,6 +35,11 @@ export class DashboardComponent implements OnInit {
     this.getFinishedExecutions();
 
     this.translate.use('en');
+
+    const user = this.authentication.getCurrentUser();
+    if (user) {
+      this.userName = user.firstName;
+    }
   }
 
   ngOnDestroy(): void {

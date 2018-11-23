@@ -1,11 +1,11 @@
-<div class="dashboard-wrapper">
+<div class="dashboard-wrapper" *ngIf="datasetData">
 
-  <div class="messages" (clickOutside)="clickOutsideMessage($event);">
+  <div class="messages" (clickOutside)="clickOutsideMessage()">
     <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
     <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
   </div>
   
-  <div class="collapse-block metis-dashboard" *ngIf="datasetData">
+  <div class="collapse-block metis-dashboard">
     <div class="metis-dashboard-left">  
       <div class="dataset-name">
         {{datasetData.datasetName}}
@@ -20,7 +20,7 @@
     </div>
   </div>
   <hr/>
-  <div class="dataset-collapse-blocks metis-dashboard" *ngIf="datasetData">
+  <div class="dataset-collapse-blocks metis-dashboard">
     <div class="metis-dashboard-left">        
       <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
     </div>
@@ -36,7 +36,7 @@
       <li [ngClass]="{'active': activeTab === 'new' || activeTab === 'edit'}">
         <a routerLink="/dataset/new/{{activeSet}}">
           <span class="tab-title">{{ 'datasetinformation' | translate }}</span>
-          <span class="tab-subtitle" *ngIf="datasetData">{{ 'lastharvest' | translate }}</span>
+          <span class="tab-subtitle">{{ 'lastharvest' | translate }}</span>
           <span class="tab-subtitle tab-date" *ngIf="harvestPublicationData">{{harvestPublicationData.lastHarvestedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
         </a>
       </li>
