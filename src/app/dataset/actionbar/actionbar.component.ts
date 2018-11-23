@@ -48,8 +48,6 @@ export class ActionbarComponent {
   set lastExecutionData(value: WorkflowExecution | undefined) {
     this._lastExecutionData = value;
 
-    this.workflowPercentage = 0;
-
     if (value) {
       const index = this.workflows.getCurrentPlugin(value);
       this.currentPlugin = value.metisPlugins[index];
@@ -68,6 +66,7 @@ export class ActionbarComponent {
       this.totalInDataset = executionProgress.expectedRecords;
 
       this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
+      this.workflowPercentage = 0;
 
       if (value.workflowStatus === 'FINISHED' || value.workflowStatus === 'CANCELLED' || value.workflowStatus === 'FAILED') {
         if (value.workflowStatus === 'CANCELLED' || value.workflowStatus === 'FAILED') {
