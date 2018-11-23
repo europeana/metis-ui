@@ -38,7 +38,7 @@ export class OngoingexecutionsComponent {
     this.workflows.updateLog.subscribe(
       (log: LogStatus) => {
         if (this.isShowingLog) {
-          this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen, log['processed'], log['status']);
+          this.showLog(log['externalTaskId'], log['topology'], log['plugin'], this.logIsOpen, log['processed'], log['status']);
         } else {
           this.logIsOpen = undefined;
         }
@@ -59,11 +59,11 @@ export class OngoingexecutionsComponent {
 
   /** showLog
   /*  show the log for the current/last execution
-  /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
+  /* @param {number} externalTaskId - id of the external task that belongs to topology/plugin
   /* @param {string} topology - name of the topology
   */
-  showLog(externaltaskId: string | undefined, topology: string, plugin: string, datasetId?: string, processed?: number, status?: string): void {
-    const message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
+  showLog(externalTaskId: string | undefined, topology: string, plugin: string, datasetId?: string, processed?: number, status?: string): void {
+    const message = {'externalTaskId' : externalTaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
     this.logIsOpen = datasetId;
     this.notifyShowLogStatus.emit(message);
   }

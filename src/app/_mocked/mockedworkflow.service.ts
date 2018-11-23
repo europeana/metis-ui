@@ -220,15 +220,15 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(undefined);
   }
 
-  getAllExecutions(): Observable<Results<WorkflowExecution[]>> {
+  getCompletedDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getAllExecutionsEveryStatus(): Observable<Results<WorkflowExecution[]>> {
+  getDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getLastExecution(): Observable<WorkflowExecution> {
+  getLastDatasetExecution(): Observable<WorkflowExecution> {
     return observableOf(currentWorkflow.results[0]);
   }
 
@@ -236,11 +236,11 @@ export class MockWorkflowService extends WorkflowService {
     this.changeWorkflow.emit(currentWorkflow.results[0]);
   }
 
-  getAllExecutionsPerOrganisation(): Observable<Results<WorkflowExecution[]>> {
+  protected getAllExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getAllFinishedExecutions(): Observable<Results<WorkflowExecution[]>> {
+  getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 

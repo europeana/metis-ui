@@ -41,7 +41,7 @@ describe('DashboardComponent', () => {
   });
 
   it('should open log messages', () => {
-    component.onNotifyShowLogStatus({ externaltaskId: '543534', topology: 'fsgas', plugin: 'harvest' });
+    component.onNotifyShowLogStatus({ externalTaskId: '543534', topology: 'fsgas', plugin: 'harvest' });
     expect(component.isShowingLog).toBeTruthy();
   });
 

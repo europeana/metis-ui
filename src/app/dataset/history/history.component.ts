@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, OnDestroy} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Subscription, timer as observableTimer } from 'rxjs';
@@ -16,7 +16,7 @@ import { Report } from '../../_models/report';
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent implements OnInit {
+export class HistoryComponent implements OnInit, OnDestroy {
 
   constructor(public workflows: WorkflowService,
     private errors: ErrorService,
@@ -72,8 +72,6 @@ export class HistoryComponent implements OnInit {
     }
 
     if (!this.inCollapsablePanel) {
-      if (typeof this.workflows.getCurrentPageNumberForComponent !== 'function') { return; }
-      this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
       this.returnAllExecutions();
     } else {
       this.getLatestExecution();
@@ -81,13 +79,10 @@ export class HistoryComponent implements OnInit {
 
     this.workflows.workflowIsDone.subscribe(
       (workflowstatus: boolean) => {
-        if (workflowstatus && this.workflowHasFinished === false) {
+        if (workflowstatus && !this.workflowHasFinished) {
           this.allExecutions = [];
           this.nextPage = 0;
           this.workflowHasFinished = true;
-          if (!this.inCollapsablePanel) {
-            this.totalPages = this.workflows.getCurrentPageNumberForComponent('history');
-          }
           this.returnAllExecutions();
           if (this.subscription) { this.subscription.unsubscribe(); }
           this.checkStatusStarted = false;
@@ -114,7 +109,7 @@ export class HistoryComponent implements OnInit {
   checkStatus (): void {
     if (this.subscription) { this.subscription.unsubscribe(); }
     const timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
+    this.subscription = timer.subscribe(() => {
       this.updateExecutionHistoryPanel(this.lastExecutionData);
     });
   }
@@ -160,7 +155,7 @@ export class HistoryComponent implements OnInit {
     let startPage = 0;
     const totalPageNr = this.totalPages;
 
-    this.workflows.getAllExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
+    this.workflows.getCompletedDatasetExecutions(this.datasetData.datasetId, this.nextPage).subscribe(result => {
 
       if (result['results'].length === 0) { this.nextPage = 0; return; }
 
@@ -180,7 +175,7 @@ export class HistoryComponent implements OnInit {
 
       if (!this.inCollapsablePanel) {
         startPage = this.nextPage;
-        this.workflows.setCurrentPageNumberForComponent(this.nextPage, 'history');
+        this.totalPages = this.nextPage;
         this.nextPage = result['nextPage'];
 
         if (totalPageNr > 0) {
@@ -205,7 +200,7 @@ export class HistoryComponent implements OnInit {
     ws['hasReport'] = false;
 
     if (w.pluginStatus === 'FINISHED' || w.pluginStatus === 'FAILED' || w.pluginStatus === 'CANCELLED') {
-      if (w.externalTaskId !== null && w.topologyName !== null && w.topologyName) {
+      if (w.externalTaskId && w.topologyName) {
         this.workflows.getReport(w.externalTaskId, w.topologyName).subscribe(report => {
           if (report['errors'].length > 0) {
             ws['hasReport'] = true;

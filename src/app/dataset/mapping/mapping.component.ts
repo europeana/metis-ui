@@ -75,7 +75,7 @@ export class MappingComponent implements OnInit {
   /* mocked data for now
   */
   loadStatistics(): void {
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
+    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       let taskId: string | undefined;
       if (result['results'].length > 0) {
         // find validation in the latest run, and if available, find taskid

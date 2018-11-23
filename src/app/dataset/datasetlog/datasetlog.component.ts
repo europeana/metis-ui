@@ -89,7 +89,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.workflows.getLogs(this.isShowingLog['externaltaskId'], this.isShowingLog['topology'], this.getLogFrom(), this.logTo).subscribe(result => {
+    this.workflows.getLogs(this.isShowingLog['externalTaskId'], this.isShowingLog['topology'], this.getLogFrom(), this.logTo).subscribe(result => {
       if (result.length > 0) {
         this.showWindowOutput(undefined, result);
       } else {

@@ -115,7 +115,7 @@ export class DatasetComponent implements OnInit {
     if (this.lastExecutionSubscription || !this.authentication.validatedUser()) { this.lastExecutionSubscription.unsubscribe(); }
     const executionsTimer = timer(0, environment.intervalStatus);
     this.lastExecutionSubscription = executionsTimer.subscribe(t => {
-      this.workflows.getLastExecution(id).subscribe(execution => {
+      this.workflows.getLastDatasetExecution(id).subscribe(execution => {
         this.lastExecutionData = execution;
         this.lastExecutionIsLoading = false;
       }, (err: HttpErrorResponse) => {

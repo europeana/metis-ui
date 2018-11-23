@@ -5,7 +5,6 @@ import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 import { LogStatus } from '../../_models/log-status';
 import { Report } from '../../_models/report';
-import { SubTaskInfo } from '../../_models/subtask-info';
 import { WorkflowExecution, PluginExecution } from '../../_models/workflow-execution';
 import { Workflow } from '../../_models/workflow';
 
@@ -39,9 +38,6 @@ export class ActionbarComponent {
   currentExternalTaskId?: string;
   currentTopology?: string;
 
-  logMessages: SubTaskInfo[];
-  isShowingWorkflowSelector = false;
-  logIsOpen = false;
   contentCopied = false;
   workflowIsDone = false;
   report?: Report;
@@ -123,8 +119,8 @@ export class ActionbarComponent {
     this.workflows.promptCancelThisWorkflow(this.lastExecutionData!.id);
   }
 
-  showLog(taskid: string | undefined, topology: string, plugin: string, processed: number, status: string): void {
-    const message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
+  showLog(taskId: string | undefined, topology: string, plugin: string, processed: number, status: string): void {
+    const message = {'externalTaskId' : taskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
     this.notifyShowLogStatus.emit(message);
   }
 
@@ -138,15 +134,15 @@ export class ActionbarComponent {
   /** getReport
   /*  get the report for a specific workflow step
   */
-  openReport(taskid: string | undefined, topology: string): void {
+  openReport(taskId: string, topology: string): void {
     this.report = undefined;
-    this.workflows.getReport(taskid, topology).subscribe(result => {
+    this.workflows.getReport(taskId, topology).subscribe(result => {
       this.workflows.setCurrentReport(result);
       this.report = result;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       if (error.toString() === 'retry') {
-        this.openReport(taskid, topology);
+        this.openReport(taskId, topology);
       } else {
         this.errorMessage = `${StringifyHttpError(error)}`;
       }

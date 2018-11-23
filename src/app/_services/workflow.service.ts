@@ -39,30 +39,18 @@ export class WorkflowService {
   currentPage: { [component: string]: number } = {};
   currentProcessing: { processed: number; topology: string };
 
-  /** getWorkflowForDataset
-  /*  check if there is a workflow for this specific dataset
-  /* @param {string} id - dataset identifier
-  */
   getWorkflowForDataset (id: string): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
     return this.http.get<Workflow>(url).pipe(this.errors.handleRetry());
   }
 
-  /** getPublishedHarvestedData
-  /*  get data about publication and harvest
-  /* @param {string} id - dataset identifier
-  */
+  // get data about publication and harvest
   getPublishedHarvestedData(id: string): Observable<HarvestData> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;
     return this.http.get<HarvestData>(url).pipe(this.errors.handleRetry());
   }
 
-  /** createWorkflowForDataset
-  /*  create or override a workflow for specific dataset
-  /* @param {string} id - dataset identifier
-  /* @param {object} values - form values
-  /* @param {boolean} newWorkflow - is this a new workflow or one to update
-  */
+  //  create or override a workflow for specific dataset
   createWorkflowForDataset (id: string, values: Partial<Workflow>, newWorkflow: boolean): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
     if (!newWorkflow) {
@@ -72,10 +60,7 @@ export class WorkflowService {
     }
   }
 
-  /** triggerNewWorkflow
-  /*  trigger a new workflow
-  /* @param {string} id - dataset identifier
-  */
+  //  trigger a new workflow
   public triggerNewWorkflow (id: string): Observable<WorkflowExecution> {
     const priority = 0;
     const enforce = '';
@@ -84,77 +69,48 @@ export class WorkflowService {
     return this.http.post<WorkflowExecution>(url, {}).pipe(this.errors.handleRetry());
   }
 
-  /** getLogs
-  /*  get logging information using topology and externaltaskid
-  /* @param {number} taskId - identifier of task, optional
-  /* @param {string} topologyName - name of the topology, optional
-  /* @param {number} start - start from ...
-  /* @param {number} finish - to ...
-  */
+  //  get logging information using topology and externaltaskid
   getLogs(taskId?: string, topologyName?: string, start?: number, finish?: number): Observable<SubTaskInfo[]> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/logs?from=${start}&to=${finish}`;
 
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
-  /** getReport
-  /*  get report information using topology and externaltaskid
-  /* @param {number} taskId - identifier of task
-  /* @param {string} topologyName - name of the topology
-  */
-  getReport(taskId: string | undefined, topologyName: string): Observable<Report> {
+  //  get report information using topology and externaltaskid
+  getReport(taskId: string, topologyName: string): Observable<Report> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
     return this.http.get<Report>(url).pipe(this.errors.handleRetry());
   }
 
-  /** getAllExecutions
-  /*  get history of executions for specific datasetid, possible to retrieve results for a specific page
-  /* @param {string} id - identifier of dataset
-  /* @param {number} page - number of next page, optional
-  */
-  getAllExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
+  //  get history of finished, failed or canceled executions for specific datasetid
+  getCompletedDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
-  /** getAllExecutionsEveryStatus
-  /*  get history of executions for specific datasetid, every status
-  /* @param {string} id - identifier of dataset
-  /* @param {number} page - number of next page, optional
-  */
-  getAllExecutionsEveryStatus(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
+  //  get history of executions for specific datasetid, every status
+  getDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
-  /** getAllFinishedExecutions
-  /*  get history of finished executions for specific datasetid, possible to retrieve results for a specific page
-  /* @param {string} id - identifier of dataset
-  /* @param {number} page - number of next page, optional
-  */
-  getAllFinishedExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
+  //  get history of finished executions for specific datasetid
+  getFinishedDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
-  /** getLastExecution
-  /*  get most recent execution for specific datasetid
-  /* @param {string} id - identifier of dataset
-  */
-  getLastExecution(id: string): Observable<WorkflowExecution> {
+  //  get most recent execution for specific datasetid
+  getLastDatasetExecution(id: string): Observable<WorkflowExecution> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?&orderField=CREATED_DATE&ascending=false`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(map(lastExecution => {
       return lastExecution.results[0];
     })).pipe(this.errors.handleRetry());
   }
 
-  /** getOngoingExecutionsPerOrganisation
-  /*  get all ongoing (either running or inqueue) executions for the user's organisation
-  /* @param {number} page - number of next page
-  /* @param {boolean} ongoing - ongoing executions only, optional
-  */
-  getAllExecutionsPerOrganisation(page: number, ongoing?: boolean): Observable<Results<WorkflowExecution[]>> {
+  //  get all executions for the user's organisation, either ongoing or finished/failed
+  protected getAllExecutions(page: number, ongoing?: boolean): Observable<Results<WorkflowExecution[]>> {
     let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     if (ongoing) {
       url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
@@ -209,7 +165,7 @@ export class WorkflowService {
       if (execution.datasetId === currentDatasetId) {
         if (this.currentTaskId !== thisPlugin['externalTaskId']) {
           const message = {
-            'externaltaskId' : thisPlugin['externalTaskId'],
+            'externalTaskId' : thisPlugin['externalTaskId'],
             'topology' : thisPlugin['topologyName'],
             'plugin': thisPlugin['pluginType'],
             'processed': thisPlugin['executionProgress'].processedRecords,
@@ -236,24 +192,21 @@ export class WorkflowService {
   }
 
   getAllExecutionsCollectingPages(ongoing: boolean): Observable<WorkflowExecution[]> {
-    const getResults = (page: number) => this.getAllExecutionsPerOrganisation(page, ongoing);
+    const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectAllResults(getResults, 0).pipe(
       switchMap((executions => this.addDatasetNameAndCurrentPlugin(executions)))
     );
   }
 
   getAllExecutionsUptoPage(endPage: number, ongoing: boolean): Observable<WorkflowExecution[]> {
-    const getResults = (page: number) => this.getAllExecutionsPerOrganisation(page, ongoing);
+    const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectResultsUptoPage(getResults, endPage).pipe(
       switchMap((executions => this.addDatasetNameAndCurrentPlugin(executions)))
     );
   }
 
-  /** getCurrentPlugin
-  /* get plugin that is currently running for a specific dataset/workflow
-  /* in case there is no plugin running, return last plugin
-  /* @param {object} workflow - workflow for specific dataset
-  */
+  // get plugin that is currently running for a specific dataset/workflow
+  // in case there is no plugin running, return last plugin
   getCurrentPlugin(workflow: WorkflowExecution): number {
     let currentPlugin = 0;
     for (let i = 0; i < workflow['metisPlugins'].length; i++) {
@@ -265,36 +218,23 @@ export class WorkflowService {
     return currentPlugin;
   }
 
-  /** cancelThisWorkflow
-  /* cancel the running execution for a datasetid
-  /* @param {number} id - id of the workflow
-  */
+  // cancel the running execution for a datasetid
   cancelThisWorkflow(id: string): Observable<void> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}`;
     return this.http.delete<void>(url);
   }
 
-  /** promptCancelThisWorkflow
-  /* show a prompt to cancel workflow
-  /* @param {number} id - id of the workflow
-  */
+  // show a prompt to cancel workflow
   promptCancelThisWorkflow(id: string | false): void {
     if (!id) { id = false; }
     this.promptCancelWorkflow.emit(id);
   }
 
-  /** setWorkflowCancelled
-  /* set cancelled to true
-  */
   setWorkflowCancelled(): void {
     this.workflowCancelled.emit(true);
   }
 
-  /** getWorkflowSamples
-  /* return samples based on executionid and plugintype
-  /* @param {number} executionId - id of the execution
-  /* @param {string} pluginType - name of the plugin
-  */
+  // return samples based on executionid and plugintype
   getWorkflowSamples(executionId: string, pluginType: string): Observable<XmlSample[]> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;
     return this.http.get<{ records: XmlSample[] }>(url).pipe(map(samples => {
@@ -302,69 +242,33 @@ export class WorkflowService {
     })).pipe(this.errors.handleRetry());
   }
 
-  /** getStatistics
-  /*  get statistics for a certain dataset
-  /* mocked data for now
-  */
-
+  //  get statistics for a certain dataset
   getStatistics(topologyName: string, taskId: string): Observable<Statistics> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
     return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
   }
 
-  /** setCurrentReport
-  /* set content for selected report
-  /* @param {object} report - data of current report
-  */
+  // set content for selected report
   setCurrentReport(report: Report ): void {
     this.currentReport = report;
   }
 
-  /** getCurrentReport
-  /* get content for selected report
-  */
+  // get content for selected report
   getCurrentReport(): Report {
     return this.currentReport;
   }
 
-  /** setCurrentReport
-  /* set information about the currently processing topology
-  /* @param {object} report - data of current report
-  */
+  // set information about the currently processing topology
   setCurrentProcessed(processed: number, topology: string): void {
     this.currentProcessing = {'processed': processed, 'topology': topology};
   }
 
-  /** getCurrentProcessed
-  /* get information about currently processing topology
-  */
+  // get information about currently processing topology
   getCurrentProcessed(): { processed: number; topology: string } {
     return this.currentProcessing;
   }
 
-  /** setCurrentPageNumberForComponent
-  /*  set currentpage to current page number
-  /*  for a specific component
-  /*  a page is a new set of results (pagination for list/table of results)
-  /* @param {number} page - number of the current page
-  /* @param {string} component - for this specific component
-  */
-  setCurrentPageNumberForComponent(page: number, component: string): void {
-    this.currentPage[component] = page;
-  }
-
-  /** getCurrentPageNumberForComponent
-  /*  get the current page number for the specific component
-  /* @param {string} component - for this specific component
-  */
-  getCurrentPageNumberForComponent(component: string): number {
-    return this.currentPage[component];
-  }
-
-  /** setActiveWorkflow
-  /*  set active workflow and emit changes so other components can act upon
-  /* @param {string} workflow - name of the workflow that is currenty running/active
-  */
+  //  set active workflow and emit changes so other components can act upon
   setActiveWorkflow(workflow?: WorkflowExecution): void {
     if (!workflow) {
       workflow = undefined;
@@ -373,26 +277,17 @@ export class WorkflowService {
     this.changeWorkflow.emit(this.activeWorkflow);
   }
 
-  /** selectWorkflow
-  /*  set selected workflow, and emit changes so other components can act upon
-  /* @param {string} workflow - name of the workflow that is selected
-  */
+  //  set selected workflow, and emit changes so other components can act upon
   selectWorkflow(): void {
     this.selectedWorkflow.emit(true);
   }
 
-  /** workflowDone
-  /*  indicate when workflow is done, and emit changes so other components can act upon
-  /* @param {boolean} done - is the workflow done
-  */
+  // indicate when workflow is done, and emit changes so other components can act upon
   workflowDone(done: boolean): void {
     this.workflowIsDone.emit(done);
   }
 
-  /** updateHistory
-  /*  update history in the collapsible panel after finishing a task/plugin
-  /* @param {object} workflow - status of current workflow
-  */
+  //  update history in the collapsible panel after finishing a task/plugin
   updateHistory(workflow: WorkflowExecution): void {
     this.updateHistoryPanel.emit(workflow);
   }

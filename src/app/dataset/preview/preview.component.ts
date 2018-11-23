@@ -104,7 +104,7 @@ export class PreviewComponent implements OnInit {
   /* @param {string} workflow - selected workflow
   */
   addDateFilter(): void {
-    this.workflows.getAllExecutionsEveryStatus(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
+    this.workflows.getDatasetExecutions(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
       for (let i = 0; i < result['results'].length; i++) {
         this.allWorkflowDates.push(result['results'][i]);
       }
@@ -172,7 +172,7 @@ export class PreviewComponent implements OnInit {
   /* @param {string} type - either default or custom
   */
   transformSamples(type: string): void {
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
+    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       if (!result['results'][0]) { return; }
       this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
         this.allSamples = this.undoNewLines(samples);
