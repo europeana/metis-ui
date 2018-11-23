@@ -1,4 +1,4 @@
-<div *ngIf="datasetData && !isLoading">
+<div>
 	<a class="btn" routerLink="/dataset/workflow/{{datasetData.datasetId}}" *ngIf="!workflowData">{{ 'addworkflow' | translate }}</a>
 	<a class="btn" *ngIf="workflowData && lastExecutionData && lastExecutionData.workflowStatus !== 'INQUEUE' && lastExecutionData.workflowStatus !== 'RUNNING'" (click)="selectWorkflow()">{{ 'run workflow' | translate }}</a>
 

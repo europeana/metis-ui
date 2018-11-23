@@ -15,7 +15,6 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
   constructor(private workflows: WorkflowService,
     private translate: TranslateService) { }
 
-  @Input() isLoading: boolean;
   @Input() datasetData: Dataset;
   @Input() lastExecutionData: WorkflowExecution;
   @Input() workflowData: Workflow;
