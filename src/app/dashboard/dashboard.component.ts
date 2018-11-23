@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthenticationService, TranslateService, WorkflowService, ErrorService, DatasetsService } from '../_services';
-import { User } from '../_models';
+import { TranslateService, WorkflowService, ErrorService } from '../_services';
 
 import { environment } from '../../environments/environment';
-import { switchMap } from 'rxjs/operators';
 import { LogStatus } from '../_models/log-status';
 import { WorkflowExecution } from '../_models/workflow-execution';
-import { Dataset } from '../_models/dataset';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,9 +13,6 @@ import { Dataset } from '../_models/dataset';
 })
 export class DashboardComponent implements OnInit {
 
-  user: User;
-  userName: string;
-  datasets: Dataset[];
   runningExecutions: WorkflowExecution[] = [];
   runningTimer: number;
   runningIsLoading = true;
@@ -26,7 +20,6 @@ export class DashboardComponent implements OnInit {
   finishedTimer: number;
   finishedIsLoading = true;
   finishedCurrentPage = 0;
-  stopChecking = true;
 
   public isShowingLog?: LogStatus;
 
@@ -35,13 +28,7 @@ export class DashboardComponent implements OnInit {
               private errors: ErrorService) {
   }
 
-  /** ngOnInit
-  /* init of this component
-  /* start checking the status of running executions
-  /* set translation language
-  */
   ngOnInit(): void {
-    this.stopChecking = false;
     this.getRunningExecutions();
     this.getFinishedExecutions();
 
@@ -51,12 +38,10 @@ export class DashboardComponent implements OnInit {
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
     clearTimeout(this.finishedTimer);
-    this.stopChecking = true;
   }
 
   /** onNotifyShowLogStatus
   /*  opens/closes the log messages
-  /* @param {object} message - message to display in log modal
   */
   onNotifyShowLogStatus(message: LogStatus): void {
     this.isShowingLog = message;
@@ -64,56 +49,42 @@ export class DashboardComponent implements OnInit {
 
   getNextPage(): void {
     this.finishedCurrentPage ++;
+
+    clearTimeout(this.finishedTimer);
     this.getFinishedExecutions();
-  }
-
-  /** checkStatusRunningExecutions
-  /*  get the current status of the running executions
-  */
-  checkStatusRunningExecutions(): void {
-    if (this.stopChecking) { return; }
-    this.runningTimer = window.setTimeout(() => {
-        this.getRunningExecutions();
-    }, environment.intervalStatus);
-  }
-
-  /** checkStatusExecutions
-  /*  get the current status of the executions
-  */
-  checkStatusFinishedExecutions(): void {
-    if (this.stopChecking) { return; }
-    this.finishedTimer = window.setTimeout(() => {
-        this.getFinishedExecutions();
-    }, environment.intervalStatusMedium);
   }
 
   /** getRunningExecutions
   /*  get all running executions and start polling again
   */
   getRunningExecutions(): void {
-    clearTimeout(this.runningTimer);
     this.runningIsLoading = true;
     this.workflows.getAllExecutionsCollectingPages(true)
       .subscribe(executions => {
       this.runningExecutions = executions;
       this.runningIsLoading = false;
-      this.checkStatusRunningExecutions();
+
+      this.runningTimer = window.setTimeout(() => {
+        this.getRunningExecutions();
+      }, environment.intervalStatus);
     }, (err: HttpErrorResponse) => {
       this.handleError(err);
     });
   }
 
-  /** getExecutions
+  /** getFinishedExecutions
   /*  get history of all executions (finished, cancelled, failed) and start polling again
   */
   getFinishedExecutions(): void {
-    clearTimeout(this.finishedTimer);
     this.finishedIsLoading = true;
     this.workflows.getAllExecutionsUptoPage(this.finishedCurrentPage, false)
       .subscribe(executions => {
       this.finishedExecutions = executions;
       this.finishedIsLoading = false;
-      this.checkStatusFinishedExecutions();
+
+      this.finishedTimer = window.setTimeout(() => {
+        this.getFinishedExecutions();
+      }, environment.intervalStatusMedium);
     }, (err: HttpErrorResponse) => {
       this.handleError(err);
     });
