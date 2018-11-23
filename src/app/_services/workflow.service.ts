@@ -1,5 +1,5 @@
 
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -36,8 +36,6 @@ export class WorkflowService {
   currentTaskId?: string;
   activeWorkflow?: WorkflowExecution;
   currentReport: Report;
-  activeExternalTaskId: string;
-  allWorkflows: WorkflowExecution[];
   currentPage: { [component: string]: number } = {};
   currentProcessing: { processed: number; topology: string };
 
@@ -67,7 +65,7 @@ export class WorkflowService {
   */
   createWorkflowForDataset (id: string, values: Partial<Workflow>, newWorkflow: boolean): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
-    if (newWorkflow === false) {
+    if (!newWorkflow) {
       return this.http.put<Workflow>(url, values).pipe(this.errors.handleRetry());
     } else {
       return this.http.post<Workflow>(url, values).pipe(this.errors.handleRetry());
@@ -94,9 +92,7 @@ export class WorkflowService {
   /* @param {number} finish - to ...
   */
   getLogs(taskId?: string, topologyName?: string, start?: number, finish?: number): Observable<SubTaskInfo[]> {
-    const topology = topologyName;
-    const externalTaskId = taskId;
-    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/logs?from=${start}&to=${finish}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/logs?from=${start}&to=${finish}`;
 
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
@@ -107,9 +103,7 @@ export class WorkflowService {
   /* @param {string} topologyName - name of the topology
   */
   getReport(taskId: string | undefined, topologyName: string): Observable<Report> {
-    const topology = topologyName;
-    const externalTaskId = taskId;
-    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topology}/task/${externalTaskId}/report?idsPerError=100`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
     return this.http.get<Report>(url).pipe(this.errors.handleRetry());
   }
 
@@ -121,9 +115,7 @@ export class WorkflowService {
   getAllExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(tap(allExecutions => {
-      this.allWorkflows = allExecutions.results;
-    })).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
   /** getAllExecutionsEveryStatus
@@ -199,10 +191,7 @@ export class WorkflowService {
       observables.push(getResults(i));
     }
     return forkJoin(observables).pipe(
-      map((resultList) => {
-        const executions: T[] = [];
-        return executions.concat(...resultList.map(r => r.results));
-      })
+      map((resultList) => ([] as T[]).concat(...resultList.map(r => r.results)))
     );
   }
 
