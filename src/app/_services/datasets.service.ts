@@ -19,7 +19,7 @@ export interface PreviewFilters {
 @Injectable()
 export class DatasetsService {
 
-  datasetMessage: string;
+  datasetMessage?: string;
   tempPreviewFilers: PreviewFilters;
   tempXSLT: string | null;
   datasetById: { [id: string]: Observable<Dataset> } = {};
@@ -35,10 +35,14 @@ export class DatasetsService {
     this.datasetMessage = message;
   }
 
+  clearDatasetMessage(): void {
+    this.datasetMessage = undefined;
+  }
+
   /** getDatasetMessage
   /* get message that is displayed on the dataset page
   */
-  getDatasetMessage(): string {
+  getDatasetMessage(): string | undefined {
     return this.datasetMessage;
   }
 

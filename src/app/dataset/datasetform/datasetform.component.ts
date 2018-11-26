@@ -234,7 +234,7 @@ export class DatasetformComponent implements OnInit {
   */
   updateForm(): void {
     this.formMode = 'update';
-    this.datasets.setDatasetMessage('');
+    this.datasets.clearDatasetMessage();
     this.errorMessage = undefined;
     this.successMessage = undefined;
 
