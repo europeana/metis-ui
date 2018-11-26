@@ -82,13 +82,14 @@ export class RegisterComponent implements OnInit {
       this.loading = false;
     } else {
       this.authentication.register(email, password).subscribe(result => {
+        this.loading = false;
         if (result === true) {
           this.onRegistration(this.msgSuccess);
         }
       }, (err: HttpErrorResponse) => {
+        this.loading = false;
         this.errorMessage = `${StringifyHttpError(err)}`;
       });
-      this.loading = false;
     }
   }
 
