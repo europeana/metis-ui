@@ -27,7 +27,7 @@
   <hr/>
   <div class="dataset-collapse-blocks metis-dashboard">
     <div class="metis-dashboard-left">        
-      <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
+      <app-generalinfo [datasetData]="datasetData" [harvestPublicationData]="harvestPublicationData"></app-generalinfo>
     </div>
     <div class="metis-dashboard-right">  
       <app-actionbar [workflowData]="workflowData" [lastExecutionData]="lastExecutionData" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>

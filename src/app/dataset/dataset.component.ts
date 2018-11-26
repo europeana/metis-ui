@@ -63,6 +63,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.translate.use('en');
 
     this.workflows.reloadWorkflowExecution.subscribe(() => {
+      this.loadHarvestData();
       this.loadLastExecution();
     });
 
