@@ -246,4 +246,17 @@ export class MappingComponent implements OnInit {
     this.successMessage = undefined;
   }
 
+  handleCodeClick(event: MouseEvent): void {
+    const target: Element = event.target as Element;
+    if (target && target.classList.contains('cm-string')) {
+      const text = target.textContent || '';
+      const match = /^"(https?:\/\/\S+)"$/.exec(text);
+      if (match) {
+        const url = match[1];
+        if (confirm('Do you want to open the following url in a new window: ' + url + ' ?')) {
+          window.open(url, '_blank');
+        }
+      }
+    }
+  }
 }
