@@ -5,6 +5,8 @@
   <dl class="dataset-info-fields">
     <dt>{{ 'provider' | translate }}</dt>
     <dd>{{datasetData.provider}}</dd>
+    <dt *ngIf="datasetData.dataProvider">{{ 'dataprovider' | translate }}</dt>
+    <dd *ngIf="datasetData.dataProvider">{{datasetData.dataProvider}}</dd>
     <dt>{{ 'numberpublished' | translate }}</dt>
     <dd>{{harvestPublicationData && harvestPublicationData.lastPublishedRecords != 0 ? harvestPublicationData.lastPublishedRecords : ('notpublished' | translate) }}</dd>
     <dt>{{ 'lastpublished' | translate }}</dt>
