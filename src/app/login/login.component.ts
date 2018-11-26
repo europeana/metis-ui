@@ -15,7 +15,6 @@ export class LoginComponent implements OnInit {
   loading = false;
   errorMessage: string;
   successMessage: string;
-  returnUrl: string;
   loginForm: FormGroup;
   msgBadCredentials: string;
   checkLogin = true;
@@ -82,7 +81,7 @@ export class LoginComponent implements OnInit {
       this.router.navigateByUrl(`/${url}`);
       this.redirectPreviousUrl.set(undefined);
     } else {
-      this.router.navigate([`${environment.afterLoginGoto}`]);
+      this.router.navigate([environment.afterLoginGoto]);
     }
   }
 
