@@ -205,5 +205,6 @@ export class DatasetComponent implements OnInit {
   clickOutsideMessage(e?: Event): void {
     this.errorMessage = undefined;
     this.successMessage = undefined;
+    this.datasets.clearDatasetMessage();
   }
 }
