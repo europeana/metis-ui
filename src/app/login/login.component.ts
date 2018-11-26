@@ -15,7 +15,6 @@ export class LoginComponent implements OnInit {
   loading = false;
   errorMessage: string;
   successMessage: string;
-  returnUrl: string;
   loginForm: FormGroup;
   msgBadCredentials: string;
   checkLogin = true;
@@ -38,6 +37,7 @@ export class LoginComponent implements OnInit {
     if (this.authentication.validatedUser() && this.checkLogin) {
       this.checkLogin = true;
       this.redirectAfterLogin();
+      return;
     }
 
     // else make sure the user is logged out properly and show the form
@@ -59,6 +59,14 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return; }
 
     this.loading = true;
+
+    // already logged in, then redirect
+    if (this.authentication.validatedUser() && this.checkLogin) {
+      this.checkLogin = true;
+      this.redirectAfterLogin();
+      return;
+    }
+
     this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
       if (result === true) {
         this.redirectAfterLogin();
@@ -82,7 +90,7 @@ export class LoginComponent implements OnInit {
       this.router.navigateByUrl(`/${url}`);
       this.redirectPreviousUrl.set(undefined);
     } else {
-      this.router.navigate([`${environment.afterLoginGoto}`]);
+      this.router.navigate([environment.afterLoginGoto]);
     }
   }
 
