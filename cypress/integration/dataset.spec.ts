@@ -40,7 +40,7 @@ context('metis-ui', () => {
       cy.get('.metis-dataset-info-block dd').as('dd');
       cy.get('@dd').contains('Europeana');
       cy.get('@dd').contains('760');
-      cy.get('@dd').contains('06/11/2018');
+      cy.get('@dd').contains('06/11/2018 - 10:27');
 
       cy.get('.dataset-actionbar .status').as('status');
       cy.get('@status').contains('Preview');
@@ -75,8 +75,12 @@ context('metis-ui', () => {
       checkFormGroup('Identifier', '58');
       checkFormGroup('Dataset Name *', 'datasetName');
       checkFormGroup('Provider *', 'Europeana');
+      checkFormGroup('Date Created', '06/09/2018 - 09:29');
       checkFormGroup('Created by', '1482250000003948017');
+      checkFormGroup('First published', '05/11/2018 - 16:38');
+      checkFormGroup('Last published', '06/11/2018 - 10:27');
       checkFormGroup('Number of items published', '760');
+      checkFormGroup('Last date of harvest', '19/11/2018 - 10:10');
       checkFormGroup('Number of items harvested', '760');
     });
 
@@ -115,7 +119,7 @@ context('metis-ui', () => {
 
     it('should show the log', () => {
       cy.get('.workflow-head')
-        .contains('Workflow created on 12/11/2018')
+        .contains('Workflow created on 19/11/2018 10:10')
         .closest('tr')
         .as('headRow');
 

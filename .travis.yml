@@ -8,6 +8,8 @@ cache:
   - ~/.npm
   - ~/.cache
 
+before_install:
+- export TZ=Europe/Amsterdam
+
 before_script:
 - cp src/environments/apisettings-test.ts src/environments/apisettings.ts
-
