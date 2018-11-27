@@ -38,7 +38,7 @@
     strong span {
       display: block;
       overflow: hidden;
-      text-overflow: ellipsis;
+      text-overflow: ellipsis; //NOSONAR
       text-transform: none;
       white-space: nowrap;
       width: auto;
@@ -63,7 +63,7 @@
   .workflowname {
     display: block;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; //NOSONAR
     white-space: nowrap;
     width: 10rem;
   }

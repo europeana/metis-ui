@@ -47,7 +47,7 @@ export class MappingComponent implements OnInit {
   fullView = true;
   splitter: string = environment.xsltSplitter;
   expandedSample?: number;
-  expandedStatistics: boolean;
+  expandedStatistics = false;
   msgXSLTSuccess: string;
 
   ngOnInit(): void {
@@ -218,7 +218,7 @@ export class MappingComponent implements OnInit {
   /* expand statistics panel
   */
   toggleStatistics(): void {
-    this.expandedStatistics = this.expandedStatistics === true ? false : true;
+    this.expandedStatistics = !this.expandedStatistics;
   }
 
   /** expandSample

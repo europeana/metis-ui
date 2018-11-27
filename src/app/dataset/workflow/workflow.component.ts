@@ -160,7 +160,7 @@ export class WorkflowComponent implements OnInit {
   /* make step before and after available for selection
   */
   workflowStepAllowed(selectedPlugin: string): void {
-    const plugin = this.pluginsOrdered.findIndex((element) =>
+    this.pluginsOrdered.findIndex((element) =>
       element === selectedPlugin
     );
 

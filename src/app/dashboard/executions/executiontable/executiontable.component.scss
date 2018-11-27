@@ -1,7 +1,7 @@
 .ellipsis {
   display: block;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis; //NOSONAR
   text-transform: none;
   white-space: nowrap;
   width: 6rem;

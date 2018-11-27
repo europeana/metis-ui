@@ -100,9 +100,7 @@ export class DashboardComponent implements OnInit {
       this.runningIsLoading = false;
       this.checkStatusRunningExecutions();
     }, (err: HttpErrorResponse) => {
-      clearTimeout(this.runningTimer);
-      clearTimeout(this.finishedTimer);
-      this.errors.handleError(err);
+      this.handleError(err);
     });
   }
 
@@ -118,10 +116,14 @@ export class DashboardComponent implements OnInit {
       this.finishedIsLoading = false;
       this.checkStatusFinishedExecutions();
     }, (err: HttpErrorResponse) => {
-      clearTimeout(this.runningTimer);
-      clearTimeout(this.finishedTimer);
-      this.errors.handleError(err);
+      this.handleError(err);
     });
+  }
+
+  private handleError(err: HttpErrorResponse): void {
+    clearTimeout(this.runningTimer);
+    clearTimeout(this.finishedTimer);
+    this.errors.handleError(err);
   }
 
 }
