@@ -115,7 +115,7 @@ context('metis-ui', () => {
 
     it('should show the log', () => {
       cy.get('.workflow-head')
-        .contains('Workflow created on 19/11/2018')
+        .contains('Workflow created on 12/11/2018')
         .closest('tr')
         .as('headRow');
 
