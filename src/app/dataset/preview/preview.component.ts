@@ -284,4 +284,16 @@ export class PreviewComponent implements OnInit {
     this.filterDate = false;
     this.filterPlugin = false;
   }
+
+  // if the click is on a http(s) link, open the link in a new tab
+  handleCodeClick(event: MouseEvent): void {
+    const target: Element = event.target as Element;
+    if (target && target.classList.contains('cm-string')) {
+      const text = target.textContent || '';
+      const match = /^"(https?:\/\/\S+)"$/.exec(text);
+      if (match) {
+        window.open(match[1], '_blank');
+      }
+    }
+  }
 }
