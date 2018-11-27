@@ -29,7 +29,7 @@ export class WorkflowService {
   public selectedWorkflow: EventEmitter<boolean> = new EventEmitter();
   public workflowIsDone: EventEmitter<boolean> = new EventEmitter();
   public updateHistoryPanel: EventEmitter<WorkflowExecution> = new EventEmitter();
-  public promptCancelWorkflow: EventEmitter<string | false> = new EventEmitter();
+  public promptCancelWorkflow: EventEmitter<string | boolean> = new EventEmitter();
   public workflowCancelled: EventEmitter<boolean> = new EventEmitter();
   public updateLog: EventEmitter<LogStatus> = new EventEmitter();
 
@@ -216,7 +216,7 @@ export class WorkflowService {
     executions.forEach((execution) => {
       execution.currentPlugin = this.getCurrentPlugin(execution);
 
-      const thisPlugin = execution['metisPlugins'][execution.currentPlugin!];
+      const thisPlugin = execution['metisPlugins'][execution.currentPlugin];
 
       if (execution.datasetId === currentDatasetId) {
         if (this.currentTaskId !== thisPlugin['externalTaskId']) {

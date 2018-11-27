@@ -76,7 +76,7 @@
   &:active,
   &:focus {
     background: $eu-jade;
-    box-shadow: none;
+    box-shadow: none; //NOSONAR
     color: $white;
   }
 
