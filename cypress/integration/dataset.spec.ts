@@ -75,12 +75,8 @@ context('metis-ui', () => {
       checkFormGroup('Identifier', '58');
       checkFormGroup('Dataset Name *', 'datasetName');
       checkFormGroup('Provider *', 'Europeana');
-      checkFormGroup('Date Created', '06/09/2018');
       checkFormGroup('Created by', '1482250000003948017');
-      checkFormGroup('First published', '05/11/2018');
-      checkFormGroup('Last published', '06/11/2018');
       checkFormGroup('Number of items published', '760');
-      checkFormGroup('Last date of harvest', '19/11/2018');
       checkFormGroup('Number of items harvested', '760');
     });
 
