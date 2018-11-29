@@ -27,6 +27,7 @@ export const LANG_EN_TRANS = {
   'dateupdated': 'Date Updated',
   'description': 'Description',
   'doubleclicktocopy': 'Double click to copy ids',
+  'edit': 'Edit',
   'email': 'Email',
   'emailerror': 'Please enter a valid email address',
   'enddate': 'End date',

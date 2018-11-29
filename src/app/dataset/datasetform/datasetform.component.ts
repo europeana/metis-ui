@@ -21,6 +21,7 @@ export class DatasetformComponent implements OnInit {
 
   @Input() datasetData: Dataset;
   @Input() harvestPublicationData: HarvestData;
+  @Input() isNew: boolean;
 
   @Output() setSuccessMessage = new EventEmitter<string | undefined>();
 
@@ -47,12 +48,7 @@ export class DatasetformComponent implements OnInit {
     private translate: TranslateService) {}
 
   ngOnInit(): void {
-    if (!this.datasetData) {
-      this.datasetData = JSON.parse(localStorage.getItem('tempDatasetData') || '{}');
-      this.formMode = 'create';
-    } else {
-      this.formMode = 'read';
-    }
+    this.formMode = this.isNew ? 'create' : 'read';
 
     this.translate.use('en');
 
@@ -186,11 +182,23 @@ export class DatasetformComponent implements OnInit {
     window.scrollTo(0, 0);
   }
 
-  /* update an existing dataset
-  /* using (new) values from the form
-  /* show an error or success message
-  */
-  updateForm(): void {
+  cancel(): void {
+    localStorage.removeItem('tempDatasetData');
+    if (this.formMode === 'update') {
+      this.formMode = 'read';
+
+      this.datasetForm.controls['country'].disable();
+      this.datasetForm.controls['language'].disable();
+      this.datasetForm.controls['description'].disable();
+      this.datasetForm.controls['notes'].disable();
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
+
+    window.scrollTo(0, 0);
+  }
+
+  editForm(): void {
     this.formMode = 'update';
     this.setSuccessMessage.emit(undefined);
     this.errorMessage = undefined;

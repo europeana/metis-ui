@@ -67,7 +67,31 @@ export class DatasetComponent implements OnInit, OnDestroy {
       }
       this.prevTab = this.activeTab;
 
-      this.loadData();
+      if (this.activeSet) {
+        this.loadData();
+      } else {
+        this.datasetData = {
+          id: '',
+          datasetId: '',
+          ecloudDatasetId: '',
+          datasetName: '',
+          organizationId: '',
+          organizationName: '',
+          createdByUserId: '',
+          createdDate: '',
+          country: {
+            enum: 'NL',
+            isoCode: 'nl',
+            name: 'Netherlands'
+          }, language: {
+            enum: 'EN',
+            name: 'English'
+          }
+        };
+        this.harvestIsLoading = false;
+        this.workflowIsLoading = false;
+        this.lastExecutionIsLoading = false;
+      }
     });
 
     this.translate.use('en');

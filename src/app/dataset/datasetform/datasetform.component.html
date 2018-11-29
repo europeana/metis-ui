@@ -95,8 +95,9 @@
       </div>
 
       <div class="form-group form-group-btns user-profile-edit-btns">
+        <button class="reset-btn" type="button" *ngIf="formMode !== 'read'" (click)="cancel()">{{ 'cancel' | translate }}</button>
         <button class="submit submit-submit" type="button" *ngIf="formMode !== 'read'" [disabled]="!datasetForm.valid" (click)="onSubmit()">{{ 'submit' | translate }}</button>
-        <button class="submit submit-update" type="button" *ngIf="formMode === 'read'" (click)="updateForm()">{{ 'update' | translate }}</button>
+        <button class="submit submit-update" type="button" *ngIf="formMode === 'read'" (click)="editForm()">{{ 'edit' | translate }}</button>
       </div>
     </div>
   </form>
