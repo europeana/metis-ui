@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter, OnDestroy} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import {timer as observableTimer, Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { SubTaskInfo } from '../../_models/subtask-info';
   selector: 'app-datasetlog',
   templateUrl: './datasetlog.component.html'
 })
-export class DatasetlogComponent implements OnInit {
+export class DatasetlogComponent implements OnInit, OnDestroy {
 
   constructor(private workflows: WorkflowService,
     private authentication: AuthenticationService,
@@ -44,6 +44,12 @@ export class DatasetlogComponent implements OnInit {
 
     this.translate.use('en');
     this.noLogs = this.translate.instant('nologs');
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   /** closeLog
