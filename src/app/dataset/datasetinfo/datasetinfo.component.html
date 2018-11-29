@@ -1,0 +1,10 @@
+<div class="metis-form metis-form-horizontal">
+  <div class="form-fields">
+    <div class="form-group">
+      <label>{{ 'identifier' | translate }}</label>
+      <span>{{ datasetData.datasetId }}</span>
+    </div>
+  </div>
+
+  <app-datasetform style="width: 100%" [datasetData]="datasetData" [harvestPublicationData]="harvestPublicationData" [isNew]="false"></app-datasetform>
+</div>
