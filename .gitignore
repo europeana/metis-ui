@@ -1,6 +1,8 @@
 .DS_Store
 .idea
+.scannerwork
 
+/coverage
 /dist
 /node_modules
 /src/environments/apisettings.ts
