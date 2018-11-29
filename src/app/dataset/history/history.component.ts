@@ -67,6 +67,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
       this.getLatestExecution();
     }
 
+    /*
+    TODO???
     this.workflows.reloadWorkflowExecution.subscribe(
       () => {
         this.allExecutions = [];
@@ -79,6 +81,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.checkStatusStarted = false;
       }
     );
+    */
 
     this.translate.use('en');
   }
@@ -242,7 +245,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  onReportClosed(): void {
+  closeReport(): void {
     this.report = undefined;
   }
 

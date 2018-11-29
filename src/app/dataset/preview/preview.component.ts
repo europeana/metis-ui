@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService, TranslateService, ErrorService, DatasetsService, PreviewFilters } from '../../_services';
+import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
+import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
@@ -15,11 +15,10 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/comment-fold';
 
-import * as beautify from 'vkbeautify';
 import { Dataset } from '../../_models/dataset';
 import { XmlSample } from '../../_models/xml-sample';
 import { WorkflowExecution } from '../../_models/workflow-execution';
-import { Workflow } from '../../_models/workflow';
+import { PreviewFilters } from '../dataset.component';
 
 @Component({
   selector: 'app-preview',
@@ -38,10 +37,14 @@ export class PreviewComponent implements OnInit {
     private datasets: DatasetsService,
     private router: Router) { }
 
-  @Input('datasetData') datasetData: Dataset;
+  @Input() datasetData: Dataset;
+  @Input() previewFilters: PreviewFilters;
+  @Input() tempXSLT?: string;
+
+  @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
+
   editorConfig: EditorConfiguration;
-  allWorkflows: Array<Workflow> = [];
-  allWorkflowDates: Array<WorkflowExecution> = [];
+  allWorkflowExecutions: Array<WorkflowExecution> = [];
   allPlugins: Array<{ type: string, error: boolean }> = [];
   allSamples: Array<XmlSample> = [];
   allTransformedSamples: XmlSample[];
@@ -52,22 +55,9 @@ export class PreviewComponent implements OnInit {
   expandedSample?: number;
   nosample: string;
   errorMessage: string;
-  nextPage = 0;
-  nextPageDate = 0;
   execution: WorkflowExecution;
-  tempFilterSelection: PreviewFilters = {};
-  prefill: PreviewFilters;
   loadingSamples = false;
-  tempXSLT: string | null;
 
-  /** ngOnInit
-  /*  init this component
-  /* set values for codemirror editor
-  /* set translation language
-  /* set translation for nosmaple key
-  /* add a workflow filter if dataset is know
-  /* get prefilled values and prefill filters if available
-  */
   ngOnInit(): void {
     this.editorConfig = {
       mode: 'application/xml',
@@ -84,53 +74,32 @@ export class PreviewComponent implements OnInit {
     this.translate.use('en');
     this.nosample = this.translate.instant('nosample');
 
-    if (this.datasetData) {
-      this.addDateFilter();
-    }
+    this.addExecutionsFilter();
 
-    this.prefill = this.datasets.getPreviewFilters();
     this.prefillFilters();
 
-    this.tempXSLT = this.datasets.getTempXSLT();
     if (this.tempXSLT) {
       this.transformSamples(this.tempXSLT);
     }
   }
 
-  /** addDateFilter
-  /* populate a filter with dates based on selected workflow
-  /* sorted by date
-  /* save selection, when switching tab
-  /* @param {string} workflow - selected workflow
-  */
-  addDateFilter(): void {
-    this.workflows.getDatasetExecutions(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
-      for (let i = 0; i < result['results'].length; i++) {
-        this.allWorkflowDates.push(result['results'][i]);
-      }
-      this.nextPageDate = result['nextPage'];
-      if (this.nextPageDate >= 0) {
-        this.addDateFilter();
-      }
+  // populate a filter with executions based on selected workflow
+  addExecutionsFilter(): void {
+    this.workflows.getDatasetExecutionsCollectingPages(this.datasetData.datasetId).subscribe(result => {
+      this.allWorkflowExecutions = result;
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
   }
 
-  /** addDateFilter
-  /* populate a filter with plugins based on selected execution/date
-  /* send complete execution object to function and not only date,
-  /* to prevent a second (duplicate) call
-  /* save selection, when switching tab
-  /* @param {object} execution - selected execution
-  */
-  addPluginFilter(execution: WorkflowExecution): void {
+  // populate a filter with plugins based on selected execution
+  addPluginsFilter(execution: WorkflowExecution): void {
     this.filterDate = false;
     this.allPlugins = [];
     this.execution = execution;
     this.selectedDate = execution.startedDate;
-    this.nextPageDate = 0;
-    this.saveTempFilterSelection('date', execution);
+    this.previewFilters.execution = execution;
+    this.setPreviewFilters.emit(this.previewFilters);
     for (let i = 0; i < execution['metisPlugins'].length; i++) {
       if (execution['metisPlugins'][i]['pluginStatus'] === 'FINISHED') {
         this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
@@ -144,16 +113,13 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-  /** getXMLSamples
-  /* get and show samples based on plugin
-  /* show loader while fetching the samples
-  /* @param {string} plugin - selected plugin
-  */
+  // get and show samples based on plugin
   getXMLSamples(plugin: string): void {
     this.loadingSamples = true;
     this.onClickedOutside();
     this.selectedPlugin = plugin;
-    this.saveTempFilterSelection('plugin', plugin);
+    this.previewFilters.plugin = plugin;
+    this.setPreviewFilters.emit(this.previewFilters);
     this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe(result => {
       this.allSamples = this.undoNewLines(result);
       if (this.allSamples.length === 1) {
@@ -166,11 +132,7 @@ export class PreviewComponent implements OnInit {
     });
   }
 
-  /** transformSamples
-  /* transform samples on the fly
-  /* based on temp saved XSLT
-  /* @param {string} type - either default or custom
-  */
+  // transform samples on the fly based on temp saved XSLT
   transformSamples(type: string): void {
     this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(result => {
       if (!result['results'][0]) { return; }
@@ -192,39 +154,23 @@ export class PreviewComponent implements OnInit {
     });
   }
 
-  /** saveTempFilterSelection
-  /* save selected options from filters
-  /* so they can be prefilled after switching tabs
-  /* @param {string} filter - name of filter
-  /* @param {object | string} toSave - string or object to save temporarily
-  */
-  saveTempFilterSelection(filter: keyof PreviewFilters, toSave: WorkflowExecution | string): void {
-    this.tempFilterSelection[filter] = toSave;
-    this.datasets.setPreviewFilters(this.tempFilterSelection);
-  }
-
-  /** prefillFilters
-  /* prefill filters, when temporarily saved options are available
-  */
+  // prefill filters, when temporarily saved options are available
   prefillFilters(): void {
-    if (this.prefill) {
-      if (this.prefill.date) {
-        this.selectedDate = this.prefill.date.startedDate;
-        this.addPluginFilter(this.prefill.date);
-      }
+    const execution = this.previewFilters.execution;
+    if (execution) {
+      this.selectedDate = execution.startedDate;
+      this.addPluginsFilter(execution);
+    }
 
-      if (this.prefill.plugin) {
-        this.selectedPlugin = this.prefill.plugin;
-        this.getXMLSamples(this.prefill.plugin);
-      }
+    const plugin = this.previewFilters.plugin;
+    if (plugin) {
+      this.selectedPlugin = plugin;
+      this.getXMLSamples(plugin);
     }
   }
 
-  /** expandSample
-  /* expand the editor, so you can view more lines of code
-  /* only one sample can be expanded
-  /* @param {number} index - index of sample to expand
-  */
+  // expand the editor, so you can view more lines of code
+  // only one sample can be expanded
   expandSample(index: number): void {
     const sample = this.allSamples[index]['xmlRecord'];
     const samples = this.undoNewLines(this.allSamples);
@@ -243,44 +189,24 @@ export class PreviewComponent implements OnInit {
     return clearSamples;
   }
 
-  /** gotoMapping
-  /* go to mapping tab, after transformation on the fly
-  */
   gotoMapping(): void {
     this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]);
   }
 
-  /** toggleFilterDate
-  /* show or hide date filter
-  */
   toggleFilterDate(): void {
     this.onClickedOutside();
-    this.nextPageDate = 0;
     this.allPlugins = [];
     this.selectedPlugin = undefined;
-    if (this.filterDate === false) {
-      this.filterDate = true;
-    } else {
-      this.filterDate = false;
-    }
+    this.filterDate = !this.filterDate;
   }
 
-  /** toggleFilterPlugin
-  /* show or hide plugin filter
-  */
   toggleFilterPlugin(): void {
     this.onClickedOutside();
-    if (this.filterPlugin === false) {
-      this.filterPlugin = true;
-    } else {
-      this.filterPlugin = false;
-    }
+    this.filterPlugin = !this.filterPlugin;
   }
 
-  /** onClickedOutside
-  /* close all open filters when click outside the filters
-  */
-  onClickedOutside(e?: Event): void {
+  // close all open filters when click outside the filters
+  onClickedOutside(): void {
     this.filterDate = false;
     this.filterPlugin = false;
   }

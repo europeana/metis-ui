@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService, WorkflowService, ErrorService, AuthenticationService } from '../_services';
 
 import { environment } from '../../environments/environment';
-import { LogStatus } from '../_models/log-status';
-import { WorkflowExecution } from '../_models/workflow-execution';
+import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   userName: string;
   runningExecutions: WorkflowExecution[];
@@ -23,8 +22,7 @@ export class DashboardComponent implements OnInit {
   finishedIsLoading = true;
   finishedIsFirstLoading = true;
   finishedCurrentPage = 0;
-
-  public isShowingLog?: LogStatus;
+  showPluginLog?: PluginExecution;
 
   constructor(private authentication: AuthenticationService,
               private translate: TranslateService,
@@ -49,11 +47,8 @@ export class DashboardComponent implements OnInit {
     clearTimeout(this.finishedTimer);
   }
 
-  /** onNotifyShowLogStatus
-  /*  opens/closes the log messages
-  */
-  onNotifyShowLogStatus(message: LogStatus): void {
-    this.isShowingLog = message;
+  setShowPluginLog(plugin: PluginExecution | undefined): void {
+    this.showPluginLog = plugin;
   }
 
   getNextPage(): void {

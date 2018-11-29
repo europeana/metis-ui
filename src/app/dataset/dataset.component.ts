@@ -10,14 +10,23 @@ import { AuthenticationService, DatasetsService, WorkflowService, ErrorService, 
 import { Dataset } from '../_models/dataset';
 import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
-import { WorkflowExecution } from '../_models/workflow-execution';
+import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
+
+export interface PreviewFilters {
+  execution?: WorkflowExecution;
+  plugin?: string;
+}
+
+export interface ProcessingInfo {
+  totalProcessed: number;
+  currentPluginName: string;
+}
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss']
 })
-
 export class DatasetComponent implements OnInit, OnDestroy {
 
   constructor(private authentication: AuthenticationService,
@@ -28,7 +37,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute) { }
 
   activeTab = 'new';
-  prevTab: string | undefined;
+  activeSet: string;
+  prevTab?: string;
   errorMessage?: string;
   successMessage?: string;
   harvestIsLoading = true;
@@ -38,43 +48,29 @@ export class DatasetComponent implements OnInit, OnDestroy {
   lastExecutionIsLoading = true;
   lastExecutionSubscription: Subscription;
 
-  public isShowingLog: boolean;
-  public datasetData: Dataset;
-  public activeSet: string;
-  public workflowData?: Workflow;
-  public harvestPublicationData?: HarvestData;
-  public lastExecutionData?: WorkflowExecution;
+  datasetData: Dataset;
+  workflowData?: Workflow;
+  harvestPublicationData?: HarvestData;
+  lastExecutionData?: WorkflowExecution;
+
+  showPluginLog?: PluginExecution;
+  tempXSLT?: string;
+  previewFilters: PreviewFilters;
+  processingInfo?: ProcessingInfo;
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
-      this.activeSet = params['id']; // if no id defined, let's create a new dataset
-      if (this.activeTab === 'preview' && this.prevTab === 'mapping') {
-        this.datasets.setTempXSLT(this.datasets.getTempXSLT());
-      } else {
-        this.datasets.setTempXSLT(null);
+      this.activeTab = params.tab;
+      this.activeSet = params.id; // if no id defined, let's create a new dataset
+      if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+        this.tempXSLT = undefined;
       }
       this.prevTab = this.activeTab;
-      this.successMessage = this.datasets.getDatasetMessage();
 
       this.loadData();
     });
 
     this.translate.use('en');
-
-    this.workflows.reloadWorkflowExecution.subscribe(() => {
-      this.loadHarvestData();
-      this.loadLastExecution();
-    });
-
-    this.workflows.startNewWorkflow.subscribe(() => {
-      this.workflows.startWorkflow(this.datasetData.datasetId).subscribe(() => {
-        this.workflows.reloadWorkflowExecution.emit();
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
-      });
-    });
   }
 
   ngOnDestroy(): void {
@@ -153,19 +149,39 @@ export class DatasetComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** onNotifyShowLogStatus
-  /*  opens/closes the log messages
-  */
-  onNotifyShowLogStatus(message: boolean): void {
-    this.isShowingLog = message;
+  startWorkflow(): void {
+    this.workflows.startWorkflow(this.datasetData.datasetId).subscribe(() => {
+      this.loadHarvestData();
+      this.loadLastExecution();
+    }, (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.errorMessage = `${StringifyHttpError(error)}`;
+    });
   }
 
-  /** clickOutsideMessage
-  /*  click outside message to close it
-  */
+  setSuccessMessage(successMessage: string | undefined): void {
+    this.successMessage = successMessage;
+  }
+
+  setShowPluginLog(plugin: PluginExecution | undefined): void {
+    this.showPluginLog = plugin;
+  }
+
+  setTempXSLT(tempXSLT: string | undefined): void {
+    this.tempXSLT = tempXSLT;
+  }
+
+  setPreviewFilters(previewFilters: PreviewFilters): void {
+    this.previewFilters = previewFilters;
+  }
+
+  setProcessingInfo(processingInfo: ProcessingInfo | undefined): void {
+    this.processingInfo = processingInfo;
+  }
+
+  // click outside message to close it
   clickOutsideMessage(): void {
     this.errorMessage = undefined;
     this.successMessage = undefined;
-    this.datasets.clearDatasetMessage();
   }
 }

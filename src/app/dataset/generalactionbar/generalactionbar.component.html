@@ -1,6 +1,6 @@
 <div>
-	<a class="btn" routerLink="/dataset/workflow/{{datasetData.datasetId}}" *ngIf="!workflowData">{{ 'addworkflow' | translate }}</a>
-	<a class="btn" *ngIf="workflowData && lastExecutionData && lastExecutionData.workflowStatus !== 'INQUEUE' && lastExecutionData.workflowStatus !== 'RUNNING'" (click)="startWorkflow()">{{ 'run workflow' | translate }}</a>
+	<a class="btn" routerLink="/dataset/workflow/{{datasetId}}" *ngIf="!workflowData">{{ 'addworkflow' | translate }}</a>
+	<a class="btn" *ngIf="workflowData && lastExecutionData && lastExecutionData.workflowStatus !== 'INQUEUE' && lastExecutionData.workflowStatus !== 'RUNNING'" (click)="startWorkflow.emit()">{{ 'run workflow' | translate }}</a>
 
 	<div class="progress" *ngIf="workflowData && lastExecutionData && lastExecutionData && (lastExecutionData.workflowStatus === 'INQUEUE' || lastExecutionData.workflowStatus === 'RUNNING')">
 		<div class="progress-status">

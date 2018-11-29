@@ -3,12 +3,12 @@
 </div>
 
 <div class="filter-wrapper" *ngIf="!tempXSLT">
-  <ul class="filter" (clickOutside)="onClickedOutside($event)">
-    <li class="dropdown dropdown-date" *ngIf="allWorkflowDates && allWorkflowDates.length > 0">
+  <ul class="filter" (clickOutside)="onClickedOutside()">
+    <li class="dropdown dropdown-date" *ngIf="allWorkflowExecutions && allWorkflowExecutions.length > 0">
       <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
       <div *ngIf="filterDate" class="dropdown-wrapper">
         <ul>
-          <li *ngFor="let w of allWorkflowDates;"><a (click)="addPluginFilter(w)">{{w.startedDate | date:'dd/MM/yyyy - HH:mm'}}</a></li>
+          <li *ngFor="let w of allWorkflowExecutions;"><a (click)="addPluginsFilter(w)">{{w.startedDate | date:'dd/MM/yyyy - HH:mm'}}</a></li>
         </ul>
       </div>
     </li>

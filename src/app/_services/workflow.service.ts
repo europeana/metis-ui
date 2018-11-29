@@ -15,7 +15,6 @@ import { Results } from '../_models/results';
 import { XmlSample } from '../_models/xml-sample';
 import { Statistics } from '../_models/statistics';
 import { DatasetsService } from './datasets.service';
-import { LogStatus } from '../_models/log-status';
 
 @Injectable()
 export class WorkflowService {
@@ -24,14 +23,39 @@ export class WorkflowService {
     private datasetService: DatasetsService,
     private errors: ErrorService) { }
 
-  public startNewWorkflow: EventEmitter<void> = new EventEmitter<void>();
-  public reloadWorkflowExecution: EventEmitter<void> = new EventEmitter();
   public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
-  public updateLog: EventEmitter<LogStatus> = new EventEmitter();
 
-  currentTaskId?: string;
-  currentProcessing: { processed: number; topology: string };
   reportByKey: { [key: string]: Observable<Report> } = {};
+
+  private collectAllResults<T>(
+    getResults: (page: number) => Observable<Results<T[]>>,
+    page: number
+  ): Observable<T[]> {
+    return getResults(page).pipe(
+      switchMap(({ results, nextPage }) => {
+        if (nextPage !== -1) {
+          return this.collectAllResults(getResults, page + 1).pipe(
+            map((nextResults) => results.concat(nextResults))
+          );
+        } else {
+          return of(results);
+        }
+      })
+    );
+  }
+
+  private collectResultsUptoPage<T>(
+    getResults: (page: number) => Observable<Results<T[]>>,
+    endPage: number
+  ): Observable<T[]> {
+    const observables: Observable<Results<T[]>>[] = [];
+    for (let i = 0; i <= endPage; i ++) {
+      observables.push(getResults(i));
+    }
+    return forkJoin(observables).pipe(
+      map((resultList) => ([] as T[]).concat(...resultList.map(r => r.results)))
+    );
+  }
 
   getWorkflowForDataset (id: string): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
@@ -82,7 +106,6 @@ export class WorkflowService {
     if (observable) {
       return observable;
     }
-    // tslint:disable-next-line: no-any
     observable = this.getReport(taskId, topologyName).pipe(publishLast());
     (observable as ConnectableObservable<Report>).connect();
     this.reportByKey[key] = observable;
@@ -100,6 +123,13 @@ export class WorkflowService {
   getDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+  }
+
+  getDatasetExecutionsCollectingPages(id: string): Observable<WorkflowExecution[]> {
+    const getResults = (page: number) => this.getDatasetExecutions(id, page);
+    return this.collectAllResults(getResults, 0).pipe(
+      switchMap((executions => this.addDatasetNameAndCurrentPlugin(executions)))
+    );
   }
 
   //  get history of finished executions for specific datasetid
@@ -128,61 +158,13 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
 
-  private collectAllResults<T>(
-    getResults: (page: number) => Observable<Results<T[]>>,
-    page: number
-  ): Observable<T[]> {
-    return getResults(page).pipe(
-      switchMap(({ results, nextPage }) => {
-        if (nextPage !== -1) {
-          return this.collectAllResults(getResults, page + 1).pipe(
-            map((nextResults) => results.concat(nextResults))
-          );
-        } else {
-          return of(results);
-        }
-      })
-    );
-  }
-
-  private collectResultsUptoPage<T>(
-    getResults: (page: number) => Observable<Results<T[]>>,
-    endPage: number
-  ): Observable<T[]> {
-    const observables: Observable<Results<T[]>>[] = [];
-    for (let i = 0; i <= endPage; i ++) {
-      observables.push(getResults(i));
-    }
-    return forkJoin(observables).pipe(
-      map((resultList) => ([] as T[]).concat(...resultList.map(r => r.results)))
-    );
-  }
-
-  private addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[], currentDatasetId?: string): Observable<WorkflowExecution[]> {
+  private addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[]): Observable<WorkflowExecution[]> {
     if (executions.length === 0) {
       return of(executions);
     }
 
-    // TODO: extract this, call this from component after getting executions?
     executions.forEach((execution) => {
       execution.currentPlugin = this.getCurrentPlugin(execution);
-
-      const thisPlugin = execution['metisPlugins'][execution.currentPlugin];
-
-      if (execution.datasetId === currentDatasetId) {
-        if (this.currentTaskId !== thisPlugin['externalTaskId']) {
-          const message = {
-            'externalTaskId' : thisPlugin['externalTaskId'],
-            'topology' : thisPlugin['topologyName'],
-            'plugin': thisPlugin['pluginType'],
-            'processed': thisPlugin['executionProgress'].processedRecords,
-            'status': thisPlugin['pluginStatus']
-          };
-          this.updateLog.emit(message);
-        }
-        this.setCurrentProcessed(thisPlugin['executionProgress'].processedRecords, thisPlugin['pluginType']);
-        this.currentTaskId = thisPlugin['externalTaskId'];
-      }
     });
 
     const observables = executions.map(({ datasetId }) => this.datasetService.getDataset(datasetId));
@@ -265,15 +247,5 @@ export class WorkflowService {
   getStatistics(topologyName: string, taskId: string): Observable<Statistics> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
     return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
-  }
-
-  // set information about the currently processing topology
-  setCurrentProcessed(processed: number, topology: string): void {
-    this.currentProcessing = {'processed': processed, 'topology': topology};
-  }
-
-  // get information about currently processing topology
-  getCurrentProcessed(): { processed: number; topology: string } {
-    return this.currentProcessing;
   }
 }

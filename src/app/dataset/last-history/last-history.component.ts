@@ -20,7 +20,6 @@ export class LastHistoryComponent implements OnInit {
   @Input() datasetId: string;
 
   errorMessage?: string;
-  successMessage?: string;
   report?: Report;
   completedPlugins: PluginExecution[] = [];
 
@@ -55,7 +54,7 @@ export class LastHistoryComponent implements OnInit {
     });
   }
 
-  onReportClosed(): void {
+  closeReport(): void {
     this.report = undefined;
   }
 

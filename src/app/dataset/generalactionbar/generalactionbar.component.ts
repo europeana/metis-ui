@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, Input } from '@angular/core';
+import { Component, OnChanges, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { WorkflowService, TranslateService } from '../../_services';
 import { WorkflowExecution } from '../../_models/workflow-execution';
@@ -15,9 +15,12 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
   constructor(private workflows: WorkflowService,
     private translate: TranslateService) { }
 
-  @Input() datasetData: Dataset;
+  @Input() datasetId: string;
   @Input() lastExecutionData?: WorkflowExecution;
   @Input() workflowData?: Workflow;
+
+  @Output() startWorkflow = new EventEmitter<void>();
+
   currentPlugin = 0;
   totalPlugins = 0;
   pluginPercentage = 0;
@@ -32,10 +35,6 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
       this.totalPlugins = this.lastExecutionData.metisPlugins.length;
       this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
     }
-  }
-
-  startWorkflow(): void {
-    this.workflows.startNewWorkflow.emit();
   }
 
 }

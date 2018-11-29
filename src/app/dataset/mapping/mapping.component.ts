@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { WorkflowService, DatasetsService, TranslateService, ErrorService } from '../../_services';
 import { EditorConfiguration } from 'codemirror';
 
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError } from '../../_helpers';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
@@ -16,7 +16,6 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/comment-fold';
 
-import * as beautify from 'vkbeautify';
 import { NodeStatistics } from '../../_models/statistics';
 import { Dataset } from '../../_models/dataset';
 
@@ -34,9 +33,12 @@ export class MappingComponent implements OnInit {
     private router: Router) { }
 
   @Input() datasetData: Dataset;
+  @Input() tempXSLT?: string;
+
+  @Output() setTempXSLT = new EventEmitter<string | undefined>();
+
   editorConfigEdit: EditorConfiguration;
   statistics: NodeStatistics[];
-  statisticsMap = new Map();
   fullXSLT: string;
   xsltType = 'default';
   xslt: Array<string> = [];
@@ -89,7 +91,19 @@ export class MappingComponent implements OnInit {
       if (!taskId) { return; }
       this.successMessage = 'Loading statistics';
       this.workflows.getStatistics('validation', taskId).subscribe(resultStatistics => {
-        this.statistics = resultStatistics['nodeStatistics'];
+        let statistics = resultStatistics['nodeStatistics'];
+
+        if (statistics.length > 100) {
+          statistics = statistics.slice(0, 100);
+        }
+        statistics.forEach((statistic) => {
+          const attrs = statistic.attributesStatistics;
+          if (attrs.length > 100) {
+            statistic.attributesStatistics = attrs.slice(0, 100);
+          }
+        });
+
+        this.statistics = statistics;
         this.successMessage = undefined;
       }, (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
@@ -106,11 +120,11 @@ export class MappingComponent implements OnInit {
   /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
   */
   loadEditor(): void {
-    let type = this.datasets.getTempXSLT();
+    let type = this.tempXSLT;
     if (!type) {
       type = 'default';
     }
-    this.datasets.setTempXSLT(null);
+    this.setTempXSLT.emit(undefined);
     this.loadXSLT(type);
   }
 
@@ -165,7 +179,7 @@ export class MappingComponent implements OnInit {
   /* @param {string} type - either custom or default
   */
   tryOutXSLT(type: string): void {
-    this.datasets.setTempXSLT(type);
+    this.setTempXSLT.emit(type);
     if (type === 'default') { // no need to save, but move to preview directly
       this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
     } else {
@@ -202,7 +216,7 @@ export class MappingComponent implements OnInit {
   saveXSLT(tryout?: boolean): void {
     const xsltValue = this.getFullXSLT();
     const datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };
-    this.datasets.updateDataset(datasetValues).subscribe(result => {
+    this.datasets.updateDataset(datasetValues).subscribe(() => {
       this.loadXSLT('custom');
       this.successMessage = this.msgXSLTSuccess;
       if (tryout === true) {

@@ -1,12 +1,13 @@
-import {Component, OnInit, Input, Output, EventEmitter, OnDestroy} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import {timer as observableTimer, Subscription } from 'rxjs';
+import { timer as observableTimer, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 import { WorkflowService, AuthenticationService, TranslateService, ErrorService } from '../../_services';
-import { LogStatus } from '../../_models/log-status';
 import { SubTaskInfo } from '../../_models/subtask-info';
+import { ProcessingInfo } from '../dataset.component';
+import { PluginExecution } from '../../_models/workflow-execution';
 
 @Component({
   selector: 'app-datasetlog',
@@ -19,26 +20,19 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private translate: TranslateService) { }
 
-  @Input('isShowingLog') isShowingLog: LogStatus;
-  @Output() notifyShowLogStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input() showPluginLog: PluginExecution;
+  @Input() processingInfo?: ProcessingInfo;
+
+  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
 
   logMessages?: SubTaskInfo[];
   logPerStep = 100;
   logStep = 1;
-  logFrom = 1;
   logTo = this.logStep * this.logPerStep;
-  logPlugin: string;
   subscription: Subscription;
-  intervalTimer = environment.intervalStatus;
   noLogs: string;
   noLogMessage?: string;
 
-
-  /** ngOnInit
-  /* init for this specific component
-  /* return the log information
-  /* and set translation langugaes
-  */
   ngOnInit(): void {
     this.startPolling();
 
@@ -52,67 +46,51 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** closeLog
-  /* close log modal window
-  */
   closeLog(): void {
-    this.notifyShowLogStatus.emit(false);
+    this.setShowPluginLog.emit(undefined);
     if (this.subscription) { this.subscription.unsubscribe(); }
   }
 
-  /** startPolling
-  /*  check for new logs
-  */
   startPolling(): void {
     if (this.subscription) { this.subscription.unsubscribe(); }
-    const timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
+    const timer = observableTimer(0, environment.intervalStatusMedium);
+    this.subscription = timer.subscribe(() => {
       this.returnLog();
     });
   }
 
-  /** returnLog
-  /* get content of log, based on external taskid and topology
-  */
   returnLog(): void {
+    const processed = this.showPluginLog.executionProgress.processedRecords;
+    const status = this.showPluginLog.pluginStatus;
 
-    const currentProcessed = this.workflows.getCurrentProcessed();
-    this.logTo = (currentProcessed ? currentProcessed.processed : this.isShowingLog.processed) || 0;
-    this.logPlugin = currentProcessed ? currentProcessed.topology : this.isShowingLog.plugin;
+    this.logTo = (this.processingInfo ? this.processingInfo.totalProcessed : processed) || 0;
 
-    if (this.isShowingLog['processed'] && (this.isShowingLog['status'] === 'FINISHED' || this.isShowingLog['status'] === 'CANCELLED' || this.isShowingLog['status'] === 'FAILED')) {
+    if (processed && (status === 'FINISHED' || status === 'CANCELLED' || status === 'FAILED')) {
       if (this.subscription) { this.subscription.unsubscribe(); }
     }
 
     if (this.logTo <= 1) {
-      this.showWindowOutput(this.noLogs, undefined);
+      this.showWindowOutput(undefined);
       return;
     }
 
-    this.workflows.getLogs(this.isShowingLog['externalTaskId'], this.isShowingLog['topology'], this.getLogFrom(), this.logTo).subscribe(result => {
-      if (result.length > 0) {
-        this.showWindowOutput(undefined, result);
-      } else {
-        this.showWindowOutput(this.noLogs, undefined);
-      }
+    this.workflows.getLogs(this.showPluginLog.externalTaskId, this.showPluginLog.topologyName, this.getLogFrom(), this.logTo).subscribe(result => {
+      this.showWindowOutput(result);
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
   }
 
-  /** showWindowOutput
-  /* show correct information in log modal window
-  /* this good be a "no logs found" message or the actual log
-  */
-  showWindowOutput(nolog: string | undefined, log: SubTaskInfo[] | undefined): void {
-    this.noLogMessage = nolog;
+  // show correct information in log modal window
+  // this could be a "no logs found" message or the actual log
+  showWindowOutput(log: SubTaskInfo[] | undefined): void {
+    if (log && log.length === 0) {
+      log = undefined;
+    }
+    this.noLogMessage = log ? undefined : this.noLogs;
     this.logMessages = log;
   }
 
-  /** getLogFrom
-  /* calculate from
-  /* used to get logs
-  */
   getLogFrom(): number {
     return (this.logTo - this.logPerStep) >= 1 ? (this.logTo - this.logPerStep) + 1 : 1;
   }

@@ -1,6 +1,5 @@
 <div class="messages">
   <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
 </div>
 
 <table class="table-horizontal-layout history-table">
@@ -49,4 +48,4 @@
 </table>
 <div #starttab></div>
 
-<app-report [report]="report" (closed)="onReportClosed()"></app-report>
+<app-report [report]="report" (closed)="closeReport()"></app-report>

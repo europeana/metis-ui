@@ -3,17 +3,16 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, ErrorService, TranslateService } from '../../_services';
-import { LogStatus } from '../../_models/log-status';
 import { Report } from '../../_models/report';
 import { WorkflowExecution, PluginExecution } from '../../_models/workflow-execution';
 import { Workflow } from '../../_models/workflow';
+import { ProcessingInfo } from '../dataset.component';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
   styleUrls: ['./actionbar.component.scss']
 })
-
 export class ActionbarComponent {
 
   constructor(public workflows: WorkflowService,
@@ -22,8 +21,13 @@ export class ActionbarComponent {
 
   private _lastExecutionData?: WorkflowExecution;
 
-  @Input() isShowingLog: LogStatus;
+  @Input() showPluginLog?: PluginExecution;
   @Input() workflowData?: Workflow;
+
+  @Output() startWorkflow = new EventEmitter<void>();
+  @Output() setProcessingInfo = new EventEmitter<ProcessingInfo>();
+  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
+
   errorMessage: string;
   currentPluginIndex = -1;
   currentPlugin?: PluginExecution;
@@ -40,8 +44,6 @@ export class ActionbarComponent {
 
   contentCopied = false;
   report?: Report;
-
-  @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
@@ -75,19 +77,11 @@ export class ActionbarComponent {
         }
         this.currentStatus = value.workflowStatus;
       } else {
-        if (index !== this.currentPluginIndex) {
-          if (this.isShowingLog) {
-            this.showLog(
-              this.currentPlugin.externalTaskId,
-              this.currentPlugin.topologyName,
-              this.currentPlugin.pluginType,
-              this.currentPlugin.executionProgress.processedRecords,
-              this.currentPlugin.pluginStatus
-            );
-          }
+        if (index !== this.currentPluginIndex && this.showPluginLog) {
+          this.showLog();
         }
 
-        this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
+        this.setProcessingInfo.emit({ totalProcessed: this.totalProcessed, currentPluginName: this.currentPluginName });
 
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
@@ -109,18 +103,10 @@ export class ActionbarComponent {
     this.workflows.promptCancelThisWorkflow(this.lastExecutionData!.id);
   }
 
-  showLog(taskId: string | undefined, topology: string, plugin: string, processed: number, status: string): void {
-    const message = {'externalTaskId' : taskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
-    this.notifyShowLogStatus.emit(message);
+  showLog(): void {
+    this.setShowPluginLog.emit(this.currentPlugin);
   }
 
-  startWorkflow(): void {
-    this.workflows.startNewWorkflow.emit();
-  }
-
-  /** getReport
-  /*  get the report for a specific workflow step
-  */
   openReport(taskId: string, topology: string): void {
     this.workflows.getReport(taskId, topology).subscribe(result => {
       this.report = result;
@@ -130,16 +116,11 @@ export class ActionbarComponent {
     });
   }
 
-  onReportClosed(): void {
+  closeReport(): void {
     this.report = undefined;
   }
 
-  /** copyInformation
-  /* after double clicking, copy the execution and task id to the clipboard
-  /* @param {string} type - execution or plugin
-  /* @param {string} id1 - an id, depending on type
-  /* @param {string} id2 - an id, depending on type
-  */
+  // after double clicking, copy the execution and task id to the clipboard
   copyInformation (type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;

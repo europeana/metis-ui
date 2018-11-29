@@ -12,8 +12,8 @@
   <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>
-      <app-ongoingexecutions [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)" [runningExecutions]="runningExecutions"></app-ongoingexecutions>
-      <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
+      <app-ongoingexecutions [showPluginLog]="showPluginLog" [runningExecutions]="runningExecutions" (setShowPluginLog)="setShowPluginLog($event)"></app-ongoingexecutions>
+      <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" (setShowPluginLog)="setShowPluginLog($event)"></app-datasetlog>
     </div>
 
     <div class="metis-dashboard-right">

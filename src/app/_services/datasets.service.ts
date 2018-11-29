@@ -11,45 +11,14 @@ import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
 import { WorkflowExecution } from '../_models/workflow-execution';
 
-export interface PreviewFilters {
-  date?: WorkflowExecution;
-  plugin?: string;
-}
-
 @Injectable()
 export class DatasetsService {
 
-  datasetMessage?: string;
-  tempPreviewFilers: PreviewFilters;
-  tempXSLT: string | null;
   datasetById: { [id: string]: Observable<Dataset> } = {};
 
   constructor(private http: HttpClient,
     private errors: ErrorService) { }
 
-  /** setDatasetMessage
-  /* set message that is displayed on the dataset page
-  /* @param {string} message - text to display
-  */
-  setDatasetMessage(message: string): void {
-    this.datasetMessage = message;
-  }
-
-  clearDatasetMessage(): void {
-    this.datasetMessage = undefined;
-  }
-
-  /** getDatasetMessage
-  /* get message that is displayed on the dataset page
-  */
-  getDatasetMessage(): string | undefined {
-    return this.datasetMessage;
-  }
-
-  /** getDataset
-  /* get all information related to the dataset
-  /* @param {string} id - datasetid
-  */
   private requestDataset(id: string): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;
     return this.http.get<Dataset>(url).pipe(this.errors.handleRetry());
@@ -66,20 +35,12 @@ export class DatasetsService {
     return observable;
   }
 
-  /** createDataset
-  /* create a new dataset
-  /* @param {array} datasetFormValues - values from dataset form
-  */
   //tslint:disable-next-line: no-any
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.post<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }
 
-  /** updateDataset
-  /* update an existing dataset
-  /* @param {array} datasetFormValues - values from dataset form
-  */
   //tslint:disable-next-line: no-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
     const url = `${apiSettings.apiHostCore}/datasets`;
@@ -92,25 +53,6 @@ export class DatasetsService {
     );
   }
 
-  /** setPreviewFilters
-  /* set filters used in the preview tab
-  /* @param {array} tempFilters - options selected in the filter, removed after page refresh/tab switch
-  */
-  setPreviewFilters(tempFilters: PreviewFilters): void {
-    this.tempPreviewFilers = tempFilters;
-  }
-
-  /** getPreviewFilters
-  /* get filters used in the preview tab
-  */
-  getPreviewFilters(): PreviewFilters {
-    return this.tempPreviewFilers;
-  }
-
-  /** getXSLT
-  /* get default xslt
-  /* the default one
-  */
   getXSLT(type: string, id?: string): Observable<string> {
     let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
     //tslint:disable-next-line: no-any
@@ -126,32 +68,15 @@ export class DatasetsService {
     })).pipe(this.errors.handleRetry());
   }
 
-  /** getTransform
-  /* get transformed samples for specific dataset
-  /* either using default xslt or custom
-  /* @param {string} id - dataset identifier
-  /* @param {object} samples - samples to transform
-  */
+  // get transformed samples for specific dataset
   getTransform(id: string, samples: XmlSample[], type: string): Observable<XmlSample[]> {
     let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;
     if (type === 'default') {
       url += '/default';
+    } else {
+      // JH TODO: is this correct? don't we have to add the type to the url?
     }
     return this.http.post<XmlSample[]>(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(this.errors.handleRetry());
-  }
-
-  /** setTempXSLT
-  /* temporary save xslt to use in transformation on the fly
-  */
-  setTempXSLT(xslttype: string | null): void {
-    this.tempXSLT = xslttype;
-  }
-
-  /** getTempXSLT
-  /* temporary save xslt to use in transformation on the fly
-  */
-  getTempXSLT(): string | null {
-    return this.tempXSLT;
   }
 
 }
