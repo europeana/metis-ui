@@ -9,7 +9,7 @@ export const LANG_EN_TRANS = {
   'cancel': 'Cancel',
   'cancelareyousure': 'Are you sure you want to cancel?',
   'cancelling': 'Cancelling',
-  'changepassword': 'Change password', //NOSONAR
+  'changepassword': 'Change password',
   'chooseworkflow': 'Choose workflow to preview',
   'country': 'Country',
   'create dataset': 'Create a dataset first',
@@ -36,7 +36,7 @@ export const LANG_EN_TRANS = {
   'expand': 'Expand info',
   'firstname': 'First name',
   'firstpublished': 'First published',
-  'ftppassword': 'FTP/HTTP password', //NOSONAR
+  'ftppassword': 'FTP/HTTP password',
   'ftpuser': 'FTP/HTTP user',
   'fullhistory': 'See full processing history',
   'generalinfo': 'General info',
@@ -77,12 +77,12 @@ export const LANG_EN_TRANS = {
   'ongoingexecutions': 'Ongoing executions',
   'organization': 'Organization',
   'overallprogress': 'Overall Progress',
-  'password': 'Password', //NOSONAR
-  'passworderror': 'Please enter a valid password', //NOSONAR
-  'passwordmatcherror': 'Passwords do not match', //NOSONAR
-  'passwordold': 'Old password', //NOSONAR
-  'passwordolderror': 'The new password cannot be the same as the old password', //NOSONAR
-  'passwordweakerror': 'Password is too weak', //NOSONAR
+  'password': 'Password',
+  'passworderror': 'Please enter a valid password',
+  'passwordmatcherror': 'Passwords do not match',
+  'passwordold': 'Old password',
+  'passwordolderror': 'The new password cannot be the same as the old password',
+  'passwordweakerror': 'Password is too weak',
   'plugin': 'Plugin',
   'preview': 'Preview',
   'processinghistory': 'Processing history',
