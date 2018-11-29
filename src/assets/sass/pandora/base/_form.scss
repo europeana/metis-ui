@@ -109,8 +109,7 @@
     }
 
     select:disabled {
-      border-color: $opacity-gray-light;
-      color: $opacity-gray-light;
+      border-color: $opacity-gray-very-light;
     }
   }
 
@@ -286,8 +285,7 @@
         }
 
         &:disabled {
-          border-color: $opacity-gray-light;
-          color: $opacity-gray-light;
+          border-color: $opacity-gray-very-light;
 
           .svg-icon-search {
             display: none;
@@ -295,8 +293,7 @@
         }
 
         &:read-only {
-          border-color: $opacity-gray-light;
-          color: $opacity-gray-light;
+          border-color: $opacity-gray-very-light;
         }
 
         &.ng-invalid.ng-touched {
