@@ -160,15 +160,10 @@ export class WorkflowComponent implements OnInit {
   /* make step before and after available for selection
   */
   workflowStepAllowed(selectedPlugin: string): void {
-    this.pluginsOrdered.findIndex((element) =>
-      element === selectedPlugin
-    );
-
     let hasValue = 0;
 
     this.pluginsOrdered.forEach((value, index) => {
       this.workflowForm.get(value)!.disable();
-      hasValue = 0;
     });
 
     this.pluginsOrdered.forEach((value, index) => {

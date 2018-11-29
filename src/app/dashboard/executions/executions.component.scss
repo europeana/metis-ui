@@ -20,7 +20,7 @@
 table {
   tr:not(.loadmore) td a {
     &:hover {
-      text-decoration: underline; //NOSONAR
+      text-decoration: underline;
     }
   }
 }
