@@ -57,6 +57,7 @@ export class PreviewComponent implements OnInit {
   errorMessage: string;
   execution: WorkflowExecution;
   loadingSamples = false;
+  loadingTransformSamples = false;
 
   ngOnInit(): void {
     this.editorConfig = {
@@ -129,28 +130,37 @@ export class PreviewComponent implements OnInit {
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(error)}`;
+      this.loadingSamples = false;
     });
   }
 
   // transform samples on the fly based on temp saved XSLT
   transformSamples(type: string): void {
+    this.loadingTransformSamples = true;
     this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(result => {
-      if (!result['results'][0]) { return; }
+      if (!result['results'][0]) {
+        this.loadingTransformSamples = false;
+        return;
+      }
       this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
         this.allSamples = this.undoNewLines(samples);
         this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
           this.allTransformedSamples = this.undoNewLines(transformed);
+          this.loadingTransformSamples = false;
         }, (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.errorMessage = `${StringifyHttpError(error)}`;
+          this.loadingTransformSamples = false;
         });
       }, (err: HttpErrorResponse) => {
         this.errors.handleError(err);
+        this.loadingTransformSamples = false;
       });
       return;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(error)}`;
+      this.loadingTransformSamples = false;
     });
   }
 
