@@ -8,11 +8,11 @@
     </div>
     <div class="form-group">
       <label>{{ 'datecreated' | translate }}</label>
-      <span>{{ datasetData.createdDate }}</span>
+      <span>{{ datasetData.createdDate | date:'dd/MM/yyyy - HH:mm' }}</span>
     </div>
     <div class="form-group">
       <label>{{ 'dateupdated' | translate }}</label>
-      <span>{{ datasetData.updatedDate }}</span>
+      <span>{{ datasetData.updatedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
     </div>
     <div class="form-group">
       <label>{{ 'createdby' | translate }}</label>
@@ -21,11 +21,11 @@
     <div *ngIf="harvestPublicationData">
       <div class="form-group">
         <label>{{ 'firstpublished' | translate }}</label>
-        <span>{{ harvestPublicationData.firstPublishedDate }}</span>
+        <span>{{ harvestPublicationData.firstPublishedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
       </div>
       <div class="form-group">
         <label>{{ 'lastpublished' | translate }}</label>
-        <span>{{ harvestPublicationData.lastPublishedDate }}</span>
+        <span>{{ harvestPublicationData.lastPublishedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
       </div>
       <div class="form-group">
         <label>{{ 'numberpublished' | translate }}</label>
@@ -33,7 +33,7 @@
       </div>
       <div class="form-group">
         <label>{{ 'lastharvest' | translate }}</label>
-        <span>{{ harvestPublicationData.lastHarvestedDate }}</span>
+        <span>{{ harvestPublicationData.lastHarvestedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
       </div>
       <div class="form-group">
         <label>{{ 'numberharvested' | translate }}</label>
