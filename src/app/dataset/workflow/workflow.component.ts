@@ -53,7 +53,6 @@ export class WorkflowComponent implements OnInit {
   harvestprotocol: string;
   newWorkflow = true;
   workflowForm: FormGroup;
-  fragment: string;
   currentUrl: string;
   selectedSteps = true;
   showLimitConnectionMedia = false;
