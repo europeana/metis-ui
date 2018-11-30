@@ -27,6 +27,7 @@ import { HeaderComponent,
          PasswordCheckComponent } from './shared';
 import { HomeComponent } from './home';
 import { DatasetComponent,
+         NewDatasetComponent,
          DatasetformComponent,
          DatasetinfoComponent,
          GeneralinfoComponent,
@@ -65,6 +66,7 @@ import { LoadAnimationComponent } from './load-animation';
     HeaderComponent,
     HomeComponent,
     DatasetComponent,
+    NewDatasetComponent,
     DashboardComponent,
     DatasetinfoComponent,
     DatasetformComponent,

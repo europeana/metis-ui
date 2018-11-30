@@ -22,7 +22,7 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
 })
 export class DatasetformComponent implements OnInit {
 
-  @Input() datasetData: Dataset;
+  @Input() datasetData: Partial<Dataset>;
   @Input() isNew: boolean;
 
   @Output() datasetUpdated = new EventEmitter<void>();
@@ -168,7 +168,6 @@ export class DatasetformComponent implements OnInit {
     } else {
       const dataset = { datasetId: this.datasetData.datasetId, ...this.datasetForm.value };
       this.datasets.updateDataset({ dataset }).subscribe(result => {
-        console.log(result);
         localStorage.removeItem(DATASET_TEMP_LSKEY);
         this.successMessage = 'Dataset updated!';
         this.datasetUpdated.emit();

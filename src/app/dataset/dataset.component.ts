@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StringifyHttpError } from '../_helpers';
 import { environment } from '../../environments/environment';
 import { timer, Subscription } from 'rxjs';
@@ -33,10 +33,11 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private router: Router) { }
 
-  activeTab = 'new';
-  activeSet: string;
+  activeTab = 'edit';
+  datasetId: string;
   prevTab?: string;
   errorMessage?: string;
   successMessage?: string;
@@ -59,38 +60,21 @@ export class DatasetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.activeTab = params.tab;
-      this.activeSet = params.id; // if no id defined, let's create a new dataset
+      const { tab, id } = params;
+      if (tab === 'new') {
+        this.successMessage = 'New dataset created! Id: ' + id;
+        this.router.navigate([`/dataset/edit/${id}`]);
+        return;
+      }
+
+      this.activeTab = tab;
+      this.datasetId = id;
       if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
         this.tempXSLT = undefined;
       }
       this.prevTab = this.activeTab;
 
-      if (this.activeSet) {
-        this.loadData();
-      } else {
-        this.datasetData = {
-          id: '',
-          datasetId: '',
-          ecloudDatasetId: '',
-          datasetName: '',
-          organizationId: '',
-          organizationName: '',
-          createdByUserId: '',
-          createdDate: '',
-          country: {
-            enum: 'NL',
-            isoCode: 'nl',
-            name: 'Netherlands'
-          }, language: {
-            enum: 'EN',
-            name: 'English'
-          }
-        };
-        this.harvestIsLoading = false;
-        this.workflowIsLoading = false;
-        this.lastExecutionIsLoading = false;
-      }
+      this.loadData();
     });
 
     this.translate.use('en');
@@ -103,11 +87,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    if (!this.activeSet) {
-      return;
-    }
-
-    this.datasets.getDataset(this.activeSet, true).subscribe(result => {
+    this.datasets.getDataset(this.datasetId, true).subscribe(result => {
       this.datasetData = result;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
@@ -141,7 +121,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   loadHarvestData(): void {
-    this.workflows.getPublishedHarvestedData(this.activeSet).subscribe(resultHarvest => {
+    this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(resultHarvest => {
       this.harvestPublicationData = resultHarvest;
       this.harvestIsLoading = false;
     }, (err: HttpErrorResponse) => {
@@ -153,7 +133,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   loadWorkflow(): void {
-    this.workflows.getWorkflowForDataset(this.activeSet).subscribe(workflow => {
+    this.workflows.getWorkflowForDataset(this.datasetId).subscribe(workflow => {
       this.workflowData = workflow;
       this.workflowIsLoading = false;
     }, (err: HttpErrorResponse) => {
@@ -165,7 +145,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   loadLastExecution(): void {
-    this.workflows.getLastDatasetExecution(this.activeSet).subscribe(execution => {
+    this.workflows.getLastDatasetExecution(this.datasetId).subscribe(execution => {
       this.lastExecutionData = execution;
       this.lastExecutionIsLoading = false;
     }, (err: HttpErrorResponse) => {
@@ -177,17 +157,13 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   startWorkflow(): void {
-    this.workflows.startWorkflow(this.datasetData.datasetId).subscribe(() => {
+    this.workflows.startWorkflow(this.datasetId).subscribe(() => {
       this.loadHarvestData();
       this.loadLastExecution();
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(error)}`;
     });
-  }
-
-  setSuccessMessage(successMessage: string | undefined): void {
-    this.successMessage = successMessage;
   }
 
   setShowPluginLog(plugin: PluginExecution | undefined): void {

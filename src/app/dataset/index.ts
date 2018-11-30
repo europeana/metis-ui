@@ -7,5 +7,6 @@ export * from './generalinfo/generalinfo.component';
 export * from './history/history.component';
 export * from './last-history/last-history.component';
 export * from './mapping/mapping.component';
+export * from './newdataset/newdataset.component';
 export * from './preview/preview.component';
 export * from './workflow/workflow.component';
