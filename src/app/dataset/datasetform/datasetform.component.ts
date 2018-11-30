@@ -113,7 +113,6 @@ export class DatasetformComponent implements OnInit {
 
   buildForm(): void {
     this.datasetForm = this.fb.group({
-      datasetId: ['', [Validators.required]],
       datasetName: ['', [Validators.required]],
       dataProvider: [''],
       provider: ['', [Validators.required]],
@@ -167,7 +166,8 @@ export class DatasetformComponent implements OnInit {
         this.scrollToTop();
       });
     } else {
-      this.datasets.updateDataset({ dataset: this.datasetForm.value }).subscribe(result => {
+      const dataset = { datasetId: this.datasetData.datasetId, ...this.datasetForm.value };
+      this.datasets.updateDataset({ dataset }).subscribe(result => {
         console.log(result);
         localStorage.removeItem(DATASET_TEMP_LSKEY);
         this.successMessage = 'Dataset updated!';
