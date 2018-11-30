@@ -5,7 +5,7 @@ import { StringifyHttpError } from '../_helpers';
 import { environment } from '../../environments/environment';
 import { timer, Subscription } from 'rxjs';
 
-import { AuthenticationService, DatasetsService, WorkflowService, ErrorService, TranslateService } from '../_services';
+import { DatasetsService, WorkflowService, ErrorService, TranslateService } from '../_services';
 
 import { Dataset } from '../_models/dataset';
 import { Workflow } from '../_models/workflow';
@@ -29,8 +29,7 @@ export interface ProcessingInfo {
 })
 export class DatasetComponent implements OnInit, OnDestroy {
 
-  constructor(private authentication: AuthenticationService,
-    private datasets: DatasetsService,
+  constructor(private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService,
@@ -116,7 +115,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     });
 
     // check for harvest data every x seconds
-    if (this.harvestSubscription || !this.authentication.validatedUser()) { this.harvestSubscription.unsubscribe(); }
+    if (this.harvestSubscription) { this.harvestSubscription.unsubscribe(); }
     const harvestTimer = timer(0, environment.intervalStatusMedium);
     this.harvestSubscription = harvestTimer.subscribe(() => {
       this.loadHarvestData();
@@ -130,11 +129,15 @@ export class DatasetComponent implements OnInit, OnDestroy {
     });
 
     // check for last execution every x seconds
-    if (this.lastExecutionSubscription || !this.authentication.validatedUser()) { this.lastExecutionSubscription.unsubscribe(); }
+    if (this.lastExecutionSubscription) { this.lastExecutionSubscription.unsubscribe(); }
     const executionsTimer = timer(0, environment.intervalStatus);
     this.lastExecutionSubscription = executionsTimer.subscribe(() => {
       this.loadLastExecution();
     });
+  }
+
+  datasetUpdated(): void {
+    this.loadData();
   }
 
   loadHarvestData(): void {

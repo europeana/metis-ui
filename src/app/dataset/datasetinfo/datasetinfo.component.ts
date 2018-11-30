@@ -1,17 +1,16 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Dataset} from '../../_models/dataset';
-import {HarvestData} from '../../_models/harvest-data';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Dataset } from '../../_models/dataset';
+import { HarvestData } from '../../_models/harvest-data';
 
 @Component({
   selector: 'app-datasetinfo',
-  templateUrl: './datasetinfo.component.html'
+  templateUrl: './datasetinfo.component.html',
+  styleUrls: ['./datasetinfo.component.scss']
 })
-export class DatasetinfoComponent implements OnInit {
+export class DatasetinfoComponent {
 
   @Input() datasetData: Dataset;
-  @Input() harvestPublicationData: HarvestData;
-  @Input() isNew: boolean;
+  @Input() harvestPublicationData?: HarvestData;
 
-  ngOnInit(): void {
-  }
+  @Output() datasetUpdated = new EventEmitter<void>();
 }
