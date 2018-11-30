@@ -55,7 +55,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
 
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
-  previewFilters: PreviewFilters;
+  previewFilters: PreviewFilters = {};
   processingInfo?: ProcessingInfo;
 
   ngOnInit(): void {

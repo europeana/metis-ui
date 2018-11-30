@@ -75,7 +75,7 @@
     <app-workflow *ngIf="activeTab === 'workflow'"
       [datasetData]="datasetData" [workflowData]="workflowData"></app-workflow>
     <app-mapping *ngIf="activeTab === 'mapping'"
-      [datasetData]="datasetData"></app-mapping>
+      [datasetData]="datasetData" (setTempXSLT)="setTempXSLT($event)"></app-mapping>
     <app-preview *ngIf="activeTab === 'preview'"
       [datasetData]="datasetData" [previewFilters]="previewFilters" [tempXSLT]="tempXSLT" (setPreviewFilters)="setPreviewFilters($event)"></app-preview>
     <app-history *ngIf="activeTab === 'log'"
