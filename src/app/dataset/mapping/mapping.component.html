@@ -36,26 +36,35 @@
 </div>
 
 <div class="btns-set">
-  <button (click)="loadXSLT('default')" [ngClass]="{'active': xsltType === 'default' }">{{ 'xsltloaddefault' | translate }}</button> 
-  <button (click)="loadXSLT('custom')" [ngClass]="{'active': xsltType === 'custom' }">{{ 'xsltloadcustom' | translate }}</button>
+  <button (click)="tryOutXSLT('default');">{{ 'xslttryoutdefault' | translate }}</button>
 </div>
 
-<div class="view-sample"  *ngFor="let card of xslt; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
-  <div class="view-sample-title">
-    <h3>{{xsltHeading}}</h3>
-    <div class="toggle-expand" *ngIf="expandedSample === i && xslt.length > 1"> 
-      <a (click)="expandSample(i)">-</a>
-    </div>
-  </div>
-  <div class="view-sample-editor" *ngIf="card">
-    <div class="view-sample-editor-codemirror">
-      <codemirror [ngModel]="(i > 0 ? (splitter + card) : card) | beautifyXML" (ngModelChange)="xsltToSave[i]=$event" [config]="editorConfigEdit"></codemirror>
-    </div>
-    <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
-  </div>
+<div class="messages" *ngIf="xsltStatus === 'loading'">
+  <div class="success-message"><span class="svg-icon-spin-inbutton"></span> Loading XSLT...</div>
 </div>
 
-<div class="btns-set btns-set-save" *ngIf="xslt[0]">
-  <button (click)="tryOutXSLT('default');">{{ 'xslttryoutdefault' | translate }}</button> 
-  <button (click)="tryOutXSLT('custom');">{{ 'xslttryout' | translate }}</button> 
+<div class="btns-set" *ngIf="xsltStatus === 'no-custom'">
+  <span>This dataset has no custom XSLT. Do you want to load a default XSLT for editing?</span>
+  <button (click)="loadDefaultXSLT()">{{ 'xsltinitdefault' | translate }}</button>
+</div>
+
+<div *ngIf="xsltStatus === 'has-custom' || xsltStatus === 'new-custom'">
+  <div class="view-sample view-sample-expanded">
+    <div class="view-sample-title">
+      <h3>Custom XSLT</h3>
+    </div>
+    <div class="view-sample-editor">
+      <div class="view-sample-editor-codemirror">
+        <codemirror [ngModel]="xslt! | beautifyXML" (ngModelChange)="xsltToSave = $event" [config]="editorConfigEdit"></codemirror>
+      </div>
+    </div>
+  </div>
+
+  <div class="btns-set btns-set-save">
+    <button (click)="cancel()" *ngIf="xsltStatus === 'new-custom'">{{ 'cancel' | translate }}</button>
+    <button (click)="loadDefaultXSLT()">{{ 'xsltresetdefault' | translate }}</button>
+    <button (click)="loadCustomXSLT()" *ngIf="xsltStatus === 'has-custom'">{{ 'xsltreloadcustom' | translate }}</button>
+    <button (click)="saveCustomXSLT(false)">{{ 'save' | translate }}</button>
+    <button (click)="saveCustomXSLT(true)">{{ 'xslttryout' | translate }}</button>
+  </div>
 </div>
