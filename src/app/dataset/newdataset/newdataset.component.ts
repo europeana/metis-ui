@@ -6,7 +6,7 @@ import { TranslateService } from '../../_services';
   templateUrl: './newdataset.component.html',
   styleUrls: ['./newdataset.component.scss']
 })
-export class NewDatasetComponent implements OnInit{
+export class NewDatasetComponent implements OnInit {
   constructor(private translate: TranslateService) {
   }
 
