@@ -13,10 +13,16 @@ function getHistoryRow(index: number, sel: string): Cypress.Chainable {
   return cy.get(`.history-table tbody tr:nth-child(${index + 1}) ${sel}`);
 }
 
-function checkFormGroup(name: string, value: string): void {
+function checkFormField(name: string, value: string): void {
   const label = cy.get('.form-group label').contains(name);
   const input = label.closest('.form-group').find('input');
   input.should('have.value', value);
+}
+
+function checkStaticField(name: string, value: string): void {
+  const label = cy.get('.form-group label').contains(name);
+  const input = label.closest('.form-group').find('span');
+  input.contains(value);
 }
 
 function checkPluginStatus(name: string, enabled: boolean): void {
@@ -57,7 +63,7 @@ context('metis-ui', () => {
 
     it('should show the tabs', () => {
       cy.get('.tabs .tab-title').as('tabTitle');
-      checkAHref(cy.get('@tabTitle').contains('Dataset Information'), '/dataset/new/64');
+      checkAHref(cy.get('@tabTitle').contains('Dataset Information'), '/dataset/edit/64');
       checkAHref(cy.get('@tabTitle').contains('Workflow'), '/dataset/workflow/64');
       checkAHref(cy.get('@tabTitle').contains('Mapping'), '/dataset/mapping/64');
       checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/64');
@@ -67,21 +73,20 @@ context('metis-ui', () => {
 
   describe('dataset infomation', () => {
     beforeEach(() => {
-      setupDatasetPage('new');
+      setupDatasetPage('edit');
       cy.wait(['@getCountries', '@getLanguages']);
     });
 
     it('should show the fields', () => {
-      checkFormGroup('Identifier', '58');
-      checkFormGroup('Dataset Name *', 'datasetName');
-      checkFormGroup('Provider *', 'Europeana');
-      checkFormGroup('Date Created', '06/09/2018 - 09:29');
-      checkFormGroup('Created by', '1482250000003948017');
-      checkFormGroup('First published', '05/11/2018 - 16:38');
-      checkFormGroup('Last published', '06/11/2018 - 10:27');
-      checkFormGroup('Number of items published', '760');
-      checkFormGroup('Last date of harvest', '19/11/2018 - 10:10');
-      checkFormGroup('Number of items harvested', '760');
+      checkFormField('Dataset Name *', 'datasetName');
+      checkFormField('Provider *', 'Europeana');
+      checkStaticField('Date Created', '06/09/2018 - 09:29');
+      checkStaticField('Created by', '1482250000003948017');
+      checkStaticField('First published', '05/11/2018 - 16:38');
+      checkStaticField('Last published', '06/11/2018 - 10:27');
+      checkStaticField('Number of items published', '760');
+      checkStaticField('Last date of harvest', '19/11/2018 - 10:10');
+      checkStaticField('Number of items harvested', '760');
     });
 
     // TODO: edit
