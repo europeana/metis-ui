@@ -210,5 +210,5 @@ export const finishedExecutions: Results<WorkflowExecution[]> = {
       }
   ],
   'listSize': 5,
-  'nextPage': -1
+  'nextPage': 1
 };
