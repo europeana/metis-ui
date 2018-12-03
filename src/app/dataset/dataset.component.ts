@@ -41,6 +41,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   prevTab?: string;
   errorMessage?: string;
   successMessage?: string;
+  datasetIsLoading = true;
   harvestIsLoading = true;
   harvestSubscription: Subscription;
   workflowIsLoading = true;
@@ -89,9 +90,11 @@ export class DatasetComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.datasets.getDataset(this.datasetId, true).subscribe(result => {
       this.datasetData = result;
+      this.datasetIsLoading = false;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(error)}`;
+      this.datasetIsLoading = false;
     });
 
     // check for harvest data every x seconds
