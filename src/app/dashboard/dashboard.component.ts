@@ -70,6 +70,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.runningIsLoading = false;
       this.runningIsFirstLoading = false;
 
+      if (this.showPluginLog) {
+        const showingId = this.showPluginLog.id;
+        executions.forEach((execution) => {
+          const plugin = execution.metisPlugins.filter(p => p.id === showingId);
+          if (plugin) {
+            const currentPlugin = execution.metisPlugins[this.workflows.getCurrentPlugin(execution)];
+            this.showPluginLog = currentPlugin;
+          }
+        });
+      }
+
       this.runningTimer = window.setTimeout(() => {
         this.getRunningExecutions();
       }, environment.intervalStatus);
