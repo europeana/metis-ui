@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   finishedIsLoading = true;
   finishedIsFirstLoading = true;
   finishedCurrentPage = 0;
+  finishedHasMore = false;
   showPluginLog?: PluginExecution;
 
   constructor(private authentication: AuthenticationService,
@@ -85,8 +86,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getFinishedExecutions(): void {
     this.finishedIsLoading = true;
     this.workflows.getAllExecutionsUptoPage(this.finishedCurrentPage, false)
-      .subscribe(executions => {
-      this.finishedExecutions = executions;
+      .subscribe(({ results, more }) => {
+      this.finishedExecutions = results;
+      this.finishedHasMore = more;
       this.finishedIsLoading = false;
       this.finishedIsFirstLoading = false;
 

@@ -11,7 +11,7 @@ import { HarvestData } from '../_models/harvest-data';
 import { WorkflowExecution } from '../_models/workflow-execution';
 import { Report } from '../_models/report';
 import { SubTaskInfo } from '../_models/subtask-info';
-import { Results } from '../_models/results';
+import { MoreResults, Results } from '../_models/results';
 import { XmlSample } from '../_models/xml-sample';
 import { Statistics } from '../_models/statistics';
 import { DatasetsService } from './datasets.service';
@@ -47,13 +47,18 @@ export class WorkflowService {
   private collectResultsUptoPage<T>(
     getResults: (page: number) => Observable<Results<T[]>>,
     endPage: number
-  ): Observable<T[]> {
+  ): Observable<MoreResults<T[]>> {
     const observables: Observable<Results<T[]>>[] = [];
     for (let i = 0; i <= endPage; i ++) {
       observables.push(getResults(i));
     }
     return forkJoin(observables).pipe(
-      map((resultList) => ([] as T[]).concat(...resultList.map(r => r.results)))
+      map((resultList) => {
+        const results = ([] as T[]).concat(...resultList.map(r => r.results));
+        const lastResult = resultList[resultList.length - 1];
+        const more = lastResult.nextPage >= 0;
+        return { results, more };
+      })
     );
   }
 
@@ -117,6 +122,11 @@ export class WorkflowService {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+  }
+
+  getCompletedDatasetExecutionsUptoPage(id: string, endPage: number): Observable<MoreResults<WorkflowExecution[]>> {
+    const getResults = (page: number) => this.getCompletedDatasetExecutions(id, page);
+    return this.collectResultsUptoPage(getResults, endPage);
   }
 
   //  get history of executions for specific datasetid, every status
@@ -187,10 +197,14 @@ export class WorkflowService {
     );
   }
 
-  getAllExecutionsUptoPage(endPage: number, ongoing: boolean): Observable<WorkflowExecution[]> {
+  getAllExecutionsUptoPage(endPage: number, ongoing: boolean): Observable<MoreResults<WorkflowExecution[]>> {
     const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectResultsUptoPage(getResults, endPage).pipe(
-      switchMap((executions => this.addDatasetNameAndCurrentPlugin(executions)))
+      switchMap(({ results, more }) =>
+        this.addDatasetNameAndCurrentPlugin(results).pipe(
+          map(r2 => ({ results: r2, more }))
+        )
+      )
     );
   }
 

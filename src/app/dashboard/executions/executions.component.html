@@ -25,7 +25,7 @@
       <tr class="loadmore">
         <td colspan="9">
           <div>
-            <a class="load-more-btn" (click)="loadNextPage()">{{ 'loadmore' | translate }}</a><span class="svg-icon-spin" *ngIf="isLoading"></span>
+            <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{ 'loadmore' | translate }}</a><span class="svg-icon-spin" *ngIf="isLoading"></span>
           </div>
         </td>
       </tr>

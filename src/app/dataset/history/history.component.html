@@ -1,9 +1,8 @@
 <div class="messages">
   <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-  <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
 </div>
 
-<table *ngIf="datasetData" class="table-horizontal-layout history-table" [ngClass]="{'table-in-tab': !inCollapsablePanel}">
+<table class="table-horizontal-layout table-in-tab history-table">
   <thead>
   	<tr>
       <th colspan="2"></th>
@@ -18,7 +17,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let ex of allExecutions">
-      <td *ngIf="ex.createdDate && !inCollapsablePanel" colspan="9" class="workflow-head">
+      <td *ngIf="ex.createdDate" colspan="9" class="workflow-head">
         <div class="head-whitespace"></div>
         <div class="head-text" (dblclick)="copyInformation('execution', ex.id, ex.ecloudDatasetId);">
           <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}">{{ 'workflowcreated' | translate }} {{ex.createdDate | date:'dd/MM/yyyy HH:mm' }}</span>
@@ -44,14 +43,9 @@
     </tr>
   </tbody>
   <tfoot>
-    <tr class="loadmore loadmore-history" *ngIf="inCollapsablePanel">
+    <tr class="loadmore">
       <td colspan="10">
-        <a class="load-more-btn" routerLink="/dataset/log/{{datasetData ? datasetData.datasetId : ''}}" (click)="scroll(starttab)">{{ 'fullhistory' | translate }}</a>
-      </td>
-    </tr>
-    <tr class="loadmore" *ngIf="!inCollapsablePanel">
-      <td colspan="10">
-        <a class="load-more-btn" (click)="loadNextPage()" *ngIf="nextPage > 0">{{ 'loadmore' | translate }}</a>
+        <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{ 'loadmore' | translate }}</a>
       </td>
     </tr>
   </tfoot>

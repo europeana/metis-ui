@@ -81,7 +81,7 @@
       <app-preview *ngIf="activeTab === 'preview'"
         [datasetData]="datasetData" [previewFilters]="previewFilters" [tempXSLT]="tempXSLT" (setPreviewFilters)="setPreviewFilters($event)"></app-preview>
       <app-history *ngIf="activeTab === 'log'"
-        [datasetData]="datasetData"></app-history>
+        [datasetData]="datasetData" [lastExecutionData]="lastExecutionData"></app-history>
     </div>
 
   </div>

@@ -5,3 +5,8 @@ export interface Results<T> {
   listSize: number;
   nextPage: number;
 }
+
+export interface MoreResults<T> {
+  results: T;
+  more: boolean;
+}
