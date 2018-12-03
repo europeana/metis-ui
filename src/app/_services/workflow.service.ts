@@ -149,7 +149,7 @@ export class WorkflowService {
   }
 
   //  get most recent execution for specific datasetid
-  getLastDatasetExecution(id: string): Observable<WorkflowExecution> {
+  getLastDatasetExecution(id: string): Observable<WorkflowExecution | undefined> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?&orderField=CREATED_DATE&ascending=false`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(map(lastExecution => {
       return lastExecution.results[0];
