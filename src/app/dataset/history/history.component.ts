@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
-import { WorkflowExecution, PluginExecution } from '../../_models/workflow-execution';
+import { PluginExecution, WorkflowExecution, WorkflowStatus } from '../../_models/workflow-execution';
 import { Report } from '../../_models/report';
 
 @Component({
@@ -20,7 +20,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
     private translate: TranslateService) { }
 
   @Input() datasetData: Dataset;
-  @Input() lastExecutionData: WorkflowExecution;
 
   errorMessage?: string;
   currentPage = 0;
@@ -29,6 +28,19 @@ export class HistoryComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   report?: Report;
   contentCopied = false;
+
+  lastWorkflowDoneId?: string;
+
+  @Input()
+  set lastExecutionData(execution: WorkflowExecution | undefined) {
+    if (execution) {
+      const status = execution.workflowStatus;
+      if ((status === WorkflowStatus.FINISHED || status === WorkflowStatus.FAILED || status === WorkflowStatus.CANCELLED) &&
+        execution.id !== this.lastWorkflowDoneId) {
+        this.returnAllExecutions();
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.returnAllExecutions();
@@ -56,7 +68,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
       });
 
       this.hasMore = more;
-
+      this.lastWorkflowDoneId = results[0] && results[0].id;
     }, (err: HttpErrorResponse) => {
       const error = this.errors.handleError(err);
       this.errorMessage = `${StringifyHttpError(error)}`;
