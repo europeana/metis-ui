@@ -73,8 +73,6 @@ export class DatasetsService {
     let url = `${apiSettings.apiHostCore}/datasets/${id}/xslt/transform`;
     if (type === 'default') {
       url += '/default';
-    } else {
-      // JH TODO: is this correct? don't we have to add the type to the url?
     }
     return this.http.post<XmlSample[]>(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(this.errors.handleRetry());
   }
