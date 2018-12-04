@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
@@ -6,7 +6,7 @@ import { WorkflowService, ErrorService, TranslateService } from '../../_services
 import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
 import { PluginExecution, WorkflowExecution, WorkflowStatus } from '../../_models/workflow-execution';
-import { Report } from '../../_models/report';
+import { Report, ReportRequest } from '../../_models/report';
 
 @Component({
   selector: 'app-history',
@@ -20,6 +20,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     private translate: TranslateService) { }
 
   @Input() datasetData: Dataset;
+
+  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
   errorMessage?: string;
   currentPage = 0;
@@ -84,13 +86,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.returnAllExecutions();
   }
 
-  openReport (taskid: string, topology: string): void {
-    this.workflows.getReport(taskid, topology).subscribe(result => {
-      this.report = result;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+  openReport (taskId: string, topology: string): void {
+    this.setReportRequest.emit({ taskId, topology });
   }
 
   closeReport(): void {

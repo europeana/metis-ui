@@ -1,9 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
+import { copyExecutionAndTaskId } from '../../_helpers';
 
-import { WorkflowService, ErrorService, TranslateService } from '../../_services';
-import { Report } from '../../_models/report';
+import { WorkflowService, TranslateService } from '../../_services';
+import { Report, ReportRequest } from '../../_models/report';
 import { WorkflowExecution, PluginExecution } from '../../_models/workflow-execution';
 import { Workflow } from '../../_models/workflow';
 import { ProcessingInfo } from '../dataset.component';
@@ -16,7 +15,6 @@ import { ProcessingInfo } from '../dataset.component';
 export class ActionbarComponent {
 
   constructor(public workflows: WorkflowService,
-      private errors: ErrorService,
       private translate: TranslateService) { }
 
   private _lastExecutionData?: WorkflowExecution;
@@ -27,6 +25,7 @@ export class ActionbarComponent {
   @Output() startWorkflow = new EventEmitter<void>();
   @Output() setProcessingInfo = new EventEmitter<ProcessingInfo>();
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
+  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
   errorMessage: string;
   currentPluginIndex = -1;
@@ -108,16 +107,7 @@ export class ActionbarComponent {
   }
 
   openReport(taskId: string, topology: string): void {
-    this.workflows.getReport(taskId, topology).subscribe(result => {
-      this.report = result;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
-  }
-
-  closeReport(): void {
-    this.report = undefined;
+    this.setReportRequest.emit({ taskId, topology });
   }
 
   // after double clicking, copy the execution and task id to the clipboard

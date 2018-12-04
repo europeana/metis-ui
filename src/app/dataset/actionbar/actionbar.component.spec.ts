@@ -20,8 +20,8 @@ describe('ActionbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
       declarations: [ ActionbarComponent, TranslatePipe, RenameWorkflowPipe ],
-      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService},
-        {provide: DatasetsService, useClass: MockDatasetService},
+      providers:    [ { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: AuthenticationService, useClass: MockAuthenticationService},
         ErrorService,
         RedirectPreviousUrl,
@@ -101,9 +101,10 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();
 
+    spyOn(component.setReportRequest, 'emit');
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
     reportBtn.triggerEventHandler('click', null);
-    expect(component.report).not.toBe(undefined);
+    expect(component.setReportRequest.emit).toHaveBeenCalledWith({ taskId: '123', topology: 'mocked' });
   });
 
   it('should copy information', (): void => {

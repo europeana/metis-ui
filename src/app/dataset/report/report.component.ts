@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TranslateService } from '../../_services';
-import { Report } from '../../_models/report';
+import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { ReportRequest } from '../../_models/report';
+import { HttpErrorResponse } from '@angular/common/http';
+import { StringifyHttpError } from '../../_helpers';
 
 @Component({
   selector: 'app-report',
@@ -8,18 +10,40 @@ import { Report } from '../../_models/report';
 })
 export class ReportComponent implements OnInit {
 
-  constructor(private translate: TranslateService) { }
+  constructor(private translate: TranslateService, private workflows: WorkflowService, private errorService: ErrorService) { }
+
+  isVisible: boolean;
+  isLoading: boolean;
+  errorMessage?: string;
 
   // tslint:disable-next-line: no-any
   errors: any;
 
   @Output() closed = new EventEmitter<void>();
 
-  @Input() set report(value: Report | undefined) {
-    if (value && value.errors && value.errors.length) {
-      this.errors = value.errors;
+  @Input() set reportRequest(request: ReportRequest | undefined) {
+    this.errorMessage = undefined;
+    this.errors = undefined;
+
+    if (request) {
+      this.isVisible = true;
+      this.isLoading = true;
+      this.workflows.getReport(request.taskId, request.topology).subscribe((report) => {
+        this.isLoading = false;
+        if (report && report.errors && report.errors.length) {
+          this.errors = report.errors;
+        } else {
+          this.errors = [];
+          this.errorMessage = 'Report is empty.';
+        }
+      }, (err: HttpErrorResponse) => {
+        const error = this.errorService.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.isLoading = false;
+      });
     } else {
-      this.errors = undefined;
+      this.isVisible = false;
+      this.isLoading = false;
     }
   }
 

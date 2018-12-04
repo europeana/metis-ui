@@ -43,9 +43,10 @@ describe('HistoryComponent', () => {
   });
 
   it('should open a report', () => {
+    spyOn(component.setReportRequest, 'emit');
     component.openReport('123', 'mocked');
     fixture.detectChanges();
-    expect(component.report).toBeTruthy();
+    expect(component.setReportRequest.emit).toHaveBeenCalledWith({ taskId: '123', topology: 'mocked' });
   });
 
   it('should display history in tabs', () => {

@@ -19,13 +19,13 @@ describe('DatasetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientModule, RouterTestingModule],
+      imports: [ HttpClientModule, RouterTestingModule ],
       declarations: [ DatasetComponent, TranslatePipe ],
       providers: [
-        {provide: DatasetsService, useClass: MockDatasetService},
-        {provide: WorkflowService, useClass: MockWorkflowService},
+        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService }
       ],

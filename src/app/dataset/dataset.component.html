@@ -32,9 +32,10 @@
         <app-generalinfo [datasetData]="datasetData" [harvestPublicationData]="harvestPublicationData"></app-generalinfo>
       </div>
       <div class="metis-dashboard-right">
-        <app-actionbar [workflowData]="workflowData" [lastExecutionData]="lastExecutionData" [showPluginLog]="showPluginLog" (setShowPluginLog)="setShowPluginLog($event)" (startWorkflow)="startWorkflow()"></app-actionbar>
-        <app-lastexecution [datasetId]="datasetId" [lastExecutionData]="lastExecutionData"></app-lastexecution>
-        <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" [processingInfo]="processingInfo" (setShowPluginLog)="setShowPluginLog($event)"></app-datasetlog>
+        <app-actionbar [workflowData]="workflowData" [lastExecutionData]="lastExecutionData" [showPluginLog]="showPluginLog" (setShowPluginLog)="setShowPluginLog($event)" (startWorkflow)="startWorkflow()" (setReportRequest)="setReportRequest($event)"></app-actionbar>
+        <app-lastexecution [datasetId]="datasetId" [lastExecutionData]="lastExecutionData" (setReportRequest)="setReportRequest($event)"></app-lastexecution>
+        <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" [processingInfo]="processingInfo" (closed)="setShowPluginLog(undefined)"></app-datasetlog>
+        <app-report [reportRequest]="reportRequest" (closed)="setReportRequest(undefined)"></app-report>
       </div>
     </div>
 
@@ -81,7 +82,7 @@
       <app-preview *ngIf="activeTab === 'preview'"
         [datasetData]="datasetData" [previewFilters]="previewFilters" [tempXSLT]="tempXSLT" (setPreviewFilters)="setPreviewFilters($event)"></app-preview>
       <app-history *ngIf="activeTab === 'log'"
-        [datasetData]="datasetData" [lastExecutionData]="lastExecutionData"></app-history>
+        [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" (setReportRequest)="setReportRequest($event)"></app-history>
     </div>
 
   </div>

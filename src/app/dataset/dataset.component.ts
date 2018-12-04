@@ -11,6 +11,7 @@ import { Dataset } from '../_models/dataset';
 import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
 import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
+import { ReportRequest } from '../_models/report';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;
@@ -58,6 +59,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
   processingInfo?: ProcessingInfo;
+  reportRequest?: ReportRequest;
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -183,6 +185,10 @@ export class DatasetComponent implements OnInit, OnDestroy {
 
   setProcessingInfo(processingInfo: ProcessingInfo | undefined): void {
     this.processingInfo = processingInfo;
+  }
+
+  setReportRequest(reportRequest: ReportRequest | undefined): void {
+    this.reportRequest = reportRequest;
   }
 
   // click outside message to close it

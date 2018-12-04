@@ -18,3 +18,8 @@ export interface Report {
   id: number;
   errors: ReportError[];
 }
+
+export interface ReportRequest {
+  taskId: string;
+  topology: string;
+}

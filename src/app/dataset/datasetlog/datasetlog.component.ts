@@ -23,7 +23,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   @Input() showPluginLog: PluginExecution;
   @Input() processingInfo?: ProcessingInfo;
 
-  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
+  @Output() closed = new EventEmitter<void>();
 
   logMessages?: SubTaskInfo[];
   logPerStep = 100;
@@ -47,7 +47,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   closeLog(): void {
-    this.setShowPluginLog.emit(undefined);
+    this.closed.emit(undefined);
     if (this.subscription) { this.subscription.unsubscribe(); }
   }
 

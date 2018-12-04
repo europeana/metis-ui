@@ -1,10 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { copyExecutionAndTaskId, StringifyHttpError } from '../../_helpers';
+import { TranslateService, WorkflowService } from '../../_services';
+import { copyExecutionAndTaskId } from '../../_helpers';
 import { PluginExecution, PluginStatus, WorkflowExecution } from '../../_models/workflow-execution';
-import { Report } from '../../_models/report';
+import {Report, ReportRequest} from '../../_models/report';
 
 @Component({
   selector: 'app-lastexecution',
@@ -14,10 +13,11 @@ import { Report } from '../../_models/report';
 export class LastExecutionComponent implements OnInit {
 
   constructor(public workflows: WorkflowService,
-    private errors: ErrorService,
     private translate: TranslateService) { }
 
   @Input() datasetId: string;
+
+  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
   errorMessage?: string;
   report?: Report;
@@ -44,18 +44,8 @@ export class LastExecutionComponent implements OnInit {
     el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  //  click on link to open report, if available
-  openReport (taskid: string, topology: string): void {
-    this.workflows.getReport(taskid, topology).subscribe(result => {
-      this.report = result;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
-  }
-
-  closeReport(): void {
-    this.report = undefined;
+  openReport (taskId: string, topology: string): void {
+    this.setReportRequest.emit({ taskId, topology });
   }
 
   // after double clicking, copy the execution and task id to the clipboard
