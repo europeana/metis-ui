@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
@@ -28,7 +28,7 @@ import { PreviewFilters } from '../dataset.component';
    ]
 })
 
-export class PreviewComponent implements OnInit {
+export class PreviewComponent implements OnInit, OnDestroy {
 
   constructor(private workflows: WorkflowService,
     private http: HttpClient,
@@ -58,6 +58,7 @@ export class PreviewComponent implements OnInit {
   execution: WorkflowExecution;
   loadingSamples = false;
   loadingTransformSamples = false;
+  timeout?: number;
 
   ngOnInit(): void {
     this.editorConfig = {
@@ -82,6 +83,10 @@ export class PreviewComponent implements OnInit {
     if (this.tempXSLT) {
       this.transformSamples(this.tempXSLT);
     }
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.timeout);
   }
 
   // populate a filter with executions based on selected workflow
@@ -186,7 +191,7 @@ export class PreviewComponent implements OnInit {
     const samples = this.undoNewLines(this.allSamples);
     this.allSamples[index]['xmlRecord'] = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
-    setTimeout(() => {
+    this.timeout = window.setTimeout(() => {
       samples[index]['xmlRecord'] = sample;
     }, 500);
   }

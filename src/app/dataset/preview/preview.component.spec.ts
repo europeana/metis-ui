@@ -34,6 +34,7 @@ describe('PreviewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PreviewComponent);
     component = fixture.componentInstance;
+    component.previewFilters = {};
   });
 
   it('should create', () => {
@@ -42,7 +43,7 @@ describe('PreviewComponent', () => {
 
   it('should prefill filters', (): void => {
     component.datasetData = currentDataset;
-    component.prefill = {date: currentWorkflow['results'][0], plugin: 'MOCKED'};
+    component.previewFilters = {execution: currentWorkflow['results'][0], plugin: 'MOCKED'};
     component.prefillFilters();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
@@ -50,7 +51,7 @@ describe('PreviewComponent', () => {
 
   it('should expand sample', (): void => {
     component.datasetData = currentDataset;
-    component.prefill = {date: currentWorkflow['results'][0], plugin: 'MOCKED'};
+    component.previewFilters = {execution: currentWorkflow['results'][0], plugin: 'MOCKED'};
     component.prefillFilters();
     component.expandSample(0);
     fixture.detectChanges();
