@@ -44,7 +44,6 @@ export class MappingComponent implements OnInit {
   xsltToSave?: string;
   errorMessage?: string;
   successMessage?: string;
-  fullView = true;
   expandedStatistics = false;
   msgXSLTSuccess: string;
 
