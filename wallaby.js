@@ -84,6 +84,6 @@ module.exports = function(wallaby) {
       window.__moduleBundler.loadTests();
     },
 
-    debug: true,
+    debug: false,
   };
 };
