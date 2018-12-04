@@ -1,17 +1,17 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {HttpErrorResponse} from '@angular/common/http';
+import { Component, Input, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
-import {ErrorService, TranslateService, WorkflowService} from '../../_services';
-import {copyExecutionAndTaskId, StringifyHttpError} from '../../_helpers';
-import {PluginExecution, PluginStatus, WorkflowExecution} from '../../_models/workflow-execution';
-import {Report} from '../../_models/report';
+import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { copyExecutionAndTaskId, StringifyHttpError } from '../../_helpers';
+import { PluginExecution, PluginStatus, WorkflowExecution } from '../../_models/workflow-execution';
+import { Report } from '../../_models/report';
 
 @Component({
-  selector: 'app-last-history',
-  templateUrl: './last-history.component.html',
-  styleUrls: ['./last-history.component.scss']
+  selector: 'app-lastexecution',
+  templateUrl: './lastexecution.component.html',
+  styleUrls: ['./lastexecution.component.scss']
 })
-export class LastHistoryComponent implements OnInit {
+export class LastExecutionComponent implements OnInit {
 
   constructor(public workflows: WorkflowService,
     private errors: ErrorService,

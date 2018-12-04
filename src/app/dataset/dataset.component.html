@@ -33,7 +33,7 @@
       </div>
       <div class="metis-dashboard-right">
         <app-actionbar [workflowData]="workflowData" [lastExecutionData]="lastExecutionData" [showPluginLog]="showPluginLog" (setShowPluginLog)="setShowPluginLog($event)" (startWorkflow)="startWorkflow()"></app-actionbar>
-        <app-last-history [datasetId]="datasetId" [lastExecutionData]="lastExecutionData"></app-last-history>
+        <app-lastexecution [datasetId]="datasetId" [lastExecutionData]="lastExecutionData"></app-lastexecution>
         <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" [processingInfo]="processingInfo" (setShowPluginLog)="setShowPluginLog($event)"></app-datasetlog>
       </div>
     </div>

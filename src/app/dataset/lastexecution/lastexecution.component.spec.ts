@@ -8,17 +8,17 @@ import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
 
-import { LastHistoryComponent } from './last-history.component';
+import { LastExecutionComponent } from './lastexecution.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-describe('HistoryComponent', () => {
-  let component: LastHistoryComponent;
-  let fixture: ComponentFixture<LastHistoryComponent>;
+describe('LastExecutionComponent', () => {
+  let component: LastExecutionComponent;
+  let fixture: ComponentFixture<LastExecutionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ LastHistoryComponent, TranslatePipe, RenameWorkflowPipe ],
+      declarations: [ LastExecutionComponent, TranslatePipe, RenameWorkflowPipe ],
       providers: [ DatasetsService,
         {provide: WorkflowService, useClass: MockWorkflowService},
         RedirectPreviousUrl,
@@ -32,7 +32,7 @@ describe('HistoryComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LastHistoryComponent);
+    fixture = TestBed.createComponent(LastExecutionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
