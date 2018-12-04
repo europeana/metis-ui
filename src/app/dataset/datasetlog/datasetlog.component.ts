@@ -20,7 +20,6 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private translate: TranslateService) { }
 
-  @Input() showPluginLog: PluginExecution;
   @Input() processingInfo?: ProcessingInfo;
 
   @Output() closed = new EventEmitter<void>();
@@ -33,9 +32,30 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   noLogs: string;
   noLogMessage?: string;
 
-  ngOnInit(): void {
-    this.startPolling();
+  private _showPluginLog: PluginExecution;
 
+  @Input()
+  set showPluginLog(value: PluginExecution) {
+    const old = this._showPluginLog;
+    let changed = true;
+    if (old) {
+      changed = value.externalTaskId !== old.externalTaskId ||
+        value.pluginStatus !== old.pluginStatus ||
+        value.executionProgress.processedRecords !== old.executionProgress.processedRecords;
+    }
+
+    this._showPluginLog = value;
+
+    if (changed) {
+      this.startPolling();
+    }
+  }
+
+  get showPluginLog(): PluginExecution {
+    return this._showPluginLog;
+  }
+
+  ngOnInit(): void {
     this.translate.use('en');
     this.noLogs = this.translate.instant('nologs');
   }

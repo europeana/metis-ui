@@ -76,15 +76,15 @@ export class ActionbarComponent {
         }
         this.currentStatus = value.workflowStatus;
       } else {
-        if (index !== this.currentPluginIndex && this.showPluginLog) {
-          this.showLog();
-        }
-
         this.setProcessingInfo.emit({ totalProcessed: this.totalProcessed, currentPluginName: this.currentPluginName });
 
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
         }
+      }
+
+      if (this.showPluginLog) {
+        this.showLog();
       }
     }
   }
