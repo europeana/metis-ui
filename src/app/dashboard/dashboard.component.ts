@@ -59,9 +59,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getFinishedExecutions();
   }
 
-  /** getRunningExecutions
-  /*  get all running executions and start polling again
-  */
+  checkUpdateLog(executions: WorkflowExecution[]): void {
+    if (this.showPluginLog) {
+      const showingId = this.showPluginLog.externalTaskId;
+      executions.forEach((execution) => {
+        const plugin = execution.metisPlugins.find(p => p.externalTaskId === showingId);
+        if (plugin) {
+          const currentPlugin = execution.metisPlugins[this.workflows.getCurrentPlugin(execution)];
+          this.showPluginLog = currentPlugin;
+        }
+      });
+    }
+  }
+
+  //  get all running executions and start polling again
   getRunningExecutions(): void {
     this.runningIsLoading = true;
     this.workflows.getAllExecutionsCollectingPages(true)
@@ -70,16 +81,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.runningIsLoading = false;
       this.runningIsFirstLoading = false;
 
-      if (this.showPluginLog) {
-        const showingId = this.showPluginLog.id;
-        executions.forEach((execution) => {
-          const plugin = execution.metisPlugins.filter(p => p.id === showingId);
-          if (plugin) {
-            const currentPlugin = execution.metisPlugins[this.workflows.getCurrentPlugin(execution)];
-            this.showPluginLog = currentPlugin;
-          }
-        });
-      }
+      this.checkUpdateLog(executions);
 
       this.runningTimer = window.setTimeout(() => {
         this.getRunningExecutions();
@@ -91,9 +93,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** getFinishedExecutions
-  /*  get history of all executions (finished, cancelled, failed) and start polling again
-  */
+  //  get history of all executions (finished, cancelled, failed) and start polling again
   getFinishedExecutions(): void {
     this.finishedIsLoading = true;
     this.workflows.getAllExecutionsUptoPage(this.finishedCurrentPage, false)
@@ -102,6 +102,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.finishedHasMore = more;
       this.finishedIsLoading = false;
       this.finishedIsFirstLoading = false;
+
+      this.checkUpdateLog(results);
 
       this.finishedTimer = window.setTimeout(() => {
         this.getFinishedExecutions();
