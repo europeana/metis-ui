@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthenticationService, TranslateService } from '../_services';
@@ -12,7 +12,7 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./register.component.scss']
 })
 
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   loading = false;
   errorMessage?: string;
   successMessage: string;
@@ -21,10 +21,10 @@ export class RegisterComponent implements OnInit {
   msgPasswordWeak: string;
   msgRegistrationFailed: string;
   msgAlreadyRegistered: string;
+  registerForm: FormGroup;
+  timeout?: number;
 
   public password?: string;
-
-  registerForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -53,6 +53,10 @@ export class RegisterComponent implements OnInit {
     this.msgPasswordWeak = this.translate.instant('passwordweakerror');
     this.msgRegistrationFailed = this.translate.instant('registrationfailed');
     this.msgAlreadyRegistered = this.translate.instant('registrationalready');
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.timeout);
   }
 
   /** onKeyupPassword
@@ -100,7 +104,7 @@ export class RegisterComponent implements OnInit {
   */
   private onRegistration(msg: string): void {
     this.successMessage = msg;
-    setTimeout(() => {
+    this.timeout = window.setTimeout(() => {
       this.router.navigate(['/signin']);
     }, 3000);
   }
