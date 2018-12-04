@@ -39,10 +39,10 @@ describe('OngoingexecutionsComponent', () => {
   });
 
   it('should show a log', () => {
-    spyOn(component.notifyShowLogStatus, 'emit');
-    component.showLog('1', 'mocked', 'testplugin');
+    spyOn(component.setShowPluginLog, 'emit');
+    component.showLog(currentWorkflow.results[0]);
     fixture.detectChanges();
-    expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
+    expect(component.setShowPluginLog.emit).toHaveBeenCalled();
   });
 
   it('should click view all', () => {

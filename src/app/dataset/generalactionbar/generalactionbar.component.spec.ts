@@ -6,7 +6,8 @@ import { TranslatePipe } from '../../_translate';
 
 import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
 import { GeneralactionbarComponent } from './generalactionbar.component';
-import { MockAuthenticationService, MockWorkflowService, currentWorkflow, currentDataset, MockTranslateService, MockDatasetService } from '../../_mocked';
+import { MockAuthenticationService, MockWorkflowService, currentWorkflow, currentDataset, MockTranslateService, MockDatasetService, currentWorkflowDataset } from '../../_mocked';
+import { WorkflowStatus } from '../../_models/workflow-execution';
 
 describe('GeneralactionbarComponent', () => {
   let component: GeneralactionbarComponent;
@@ -30,6 +31,8 @@ describe('GeneralactionbarComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GeneralactionbarComponent);
     component = fixture.componentInstance;
+    component.workflowData = currentWorkflowDataset;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -37,24 +40,23 @@ describe('GeneralactionbarComponent', () => {
   });
 
   it('should check the status', () => {
-    component.datasetData = currentDataset;
     component.lastExecutionData = currentWorkflow['results'][0];
-    component.returnLastExecution();
-    fixture.detectChanges();
-    expect(component.currentWorkflowStatus).toBe('INQUEUE');
+    component.ngOnChanges();
+    expect(component.workflowStatus).toBe(WorkflowStatus.INQUEUE);
   });
 
   it('should start a workflow', () => {
-    component.datasetData = currentDataset;
-    component.selectWorkflow();
+    component.lastExecutionData = currentWorkflow['results'][4];
+    component.ngOnChanges();
     fixture.detectChanges();
+    expect(component.workflowStatus).toBe(WorkflowStatus.FINISHED);
 
-    component.displayWorkflowButton = true;
-    component.workflowInfoAvailable = true;
-    component.currentWorkflowStatus = 'INQUEUE';
+    spyOn(component.startWorkflow, 'emit');
+    const run = fixture.debugElement.query(By.css('.btn'));
+    expect(run.nativeElement.textContent).toBe('en:run workflow');
+    run.triggerEventHandler('click', null);
     fixture.detectChanges();
-
-    expect(fixture.debugElement.queryAll(By.css('.progress')).length).toBeTruthy();
+    expect(component.startWorkflow.emit).toHaveBeenCalledWith();
   });
 
 });

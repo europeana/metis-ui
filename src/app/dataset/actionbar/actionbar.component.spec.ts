@@ -9,6 +9,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionbarComponent } from './actionbar.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { WorkflowStatus } from '../../_models/workflow-execution';
 
 
 describe('ActionbarComponent', () => {
@@ -55,7 +56,7 @@ describe('ActionbarComponent', () => {
   it('should do click to show logging', (): void => {
     component.lastExecutionData = currentWorkflow['results'][1];
     fixture.detectChanges();
-    expect(component.lastExecutionData.workflowStatus).toBe('RUNNING');
+    expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
     spyOn(component.setShowPluginLog, 'emit');
     const button = fixture.debugElement.query(By.css('.log-btn'));
@@ -67,7 +68,7 @@ describe('ActionbarComponent', () => {
   it('should cancel', (): void => {
     component.lastExecutionData = currentWorkflow['results'][1];
     fixture.detectChanges();
-    expect(component.lastExecutionData.workflowStatus).toBe('RUNNING');
+    expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
     spyOn(component.workflows, 'promptCancelThisWorkflow');
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
@@ -79,7 +80,7 @@ describe('ActionbarComponent', () => {
   it('should run a workflow', (): void => {
     component.lastExecutionData = currentWorkflow.results[4];
     fixture.detectChanges();
-    expect(component.lastExecutionData.workflowStatus).toBe('FINISHED');
+    expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.FINISHED);
 
     spyOn(component.startWorkflow, 'emit');
     const run = fixture.debugElement.query(By.css('.newaction-btn'));
