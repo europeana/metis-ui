@@ -11,7 +11,7 @@
     "test": "npm run lint && npm run template-check && npm run test:ci && npm run cypress:ci",
     "lint": "ng lint",
     "template-check": "ng build --output-path=tmp/template-check --aot",
-    "test:ci": "echo TODO ng test --watch=false --code-coverage --source-map=false",
+    "test:ci": "ng test --watch=false --code-coverage --source-map=false",
     "cypress:ci": "run-p --race start:ci cypress:run",
     "start:ci": "ng serve --port 4280 --live-reload=false",
     "cypress:run": "sleep 10 && cypress run",
