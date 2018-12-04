@@ -30,6 +30,7 @@ describe('DatasetlogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DatasetlogComponent);
     component = fixture.componentInstance;
+    component.isShowingLog = { topology: 'import', plugin: 'import' };
     fixture.detectChanges();
   });
 
