@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit {
   openSearch = false;
   searchfilter: string;
 
-  @Input('loggedIn') loggedIn: boolean;
+  @Input() loggedIn: boolean;
 
   /** ngOnInit
   /* init for this component
