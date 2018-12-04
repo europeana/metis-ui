@@ -7,6 +7,7 @@ import { DatasetlogComponent } from './datasetlog.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { TranslatePipe } from '../../_translate';
+import { PluginStatus } from '../../_models/workflow-execution';
 
 describe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;
@@ -30,7 +31,14 @@ describe('DatasetlogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DatasetlogComponent);
     component = fixture.componentInstance;
-    component.isShowingLog = { topology: 'import', plugin: 'import' };
+    component.showPluginLog = {
+      id: 'xx5',
+      pluginType: 'import',
+      pluginStatus: PluginStatus.RUNNING,
+      executionProgress: { expectedRecords: 1000, processedRecords: 500, progressPercentage: 50, errors: 5 },
+      pluginMetadata: { pluginType: 'import' },
+      topologyName: 'import'
+    };
     fixture.detectChanges();
   });
 
@@ -39,8 +47,6 @@ describe('DatasetlogComponent', () => {
   });
 
   it('should open and close the logs', () => {
-    component.isShowingLog = {'externalTaskId' : 'mocked', 'topology' : 'mocked', 'plugin': 'testplugin', 'processed': 100, 'status': 'RUNNING'};
-    fixture.detectChanges();
     component.returnLog();
     expect(component.logMessages).toBeTruthy();
     component.closeLog();

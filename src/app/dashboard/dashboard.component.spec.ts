@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MockWorkflowService, MockAuthenticationService, MockTranslateService } from '../_mocked';
+import { PluginStatus } from '../_models/workflow-execution';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -41,8 +42,16 @@ describe('DashboardComponent', () => {
   });
 
   it('should open log messages', () => {
-    component.onNotifyShowLogStatus({ externalTaskId: '543534', topology: 'fsgas', plugin: 'harvest' });
-    expect(component.isShowingLog).toBeTruthy();
+    component.setShowPluginLog({
+      id: 'xx5',
+      pluginType: 'import',
+      pluginStatus: PluginStatus.RUNNING,
+      executionProgress: { expectedRecords: 1000, processedRecords: 500, progressPercentage: 50, errors: 5 },
+      pluginMetadata: { pluginType: 'import' },
+      topologyName: 'import'
+    });
+    fixture.detectChanges();
+    expect(component.showPluginLog).toBeTruthy();
   });
 
   it('should open more than 1 page', () => {

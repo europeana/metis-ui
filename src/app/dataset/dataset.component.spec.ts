@@ -12,6 +12,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TranslatePipe } from '../_translate';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { PluginStatus } from '../_models/workflow-execution';
 
 describe('DatasetComponent', () => {
   let component: DatasetComponent;
@@ -45,49 +46,52 @@ describe('DatasetComponent', () => {
   });
 
   it('should get dataset info', () => {
-    component.activeTab = undefined;
-    component.returnDataset('1');
+    component.loadData();
     fixture.detectChanges();
-    expect(component.executionsSubscription.closed).toBe(false);
+    expect(component.lastExecutionSubscription.closed).toBe(false);
   });
 
   it('should switch tabs', () => {
     fixture.detectChanges();
 
     component.activeTab = 'edit';
-    component.getCurrentTab();
+    component.datasetIsLoading = component.workflowIsLoading = component.lastExecutionIsLoading = component.harvestIsLoading = false;
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'workflow';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'mapping';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'preview';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'log';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
   });
 
   it('should be possible to display a message', () => {
-    component.onNotifyShowLogStatus(true);
+    component.setShowPluginLog({
+      id: 'xx5',
+      pluginType: 'import',
+      pluginStatus: PluginStatus.RUNNING,
+      executionProgress: { expectedRecords: 1000, processedRecords: 500, progressPercentage: 50, errors: 5 },
+      pluginMetadata: { pluginType: 'import' },
+      topologyName: 'import'
+    });
     fixture.detectChanges();
-    expect(component.isShowingLog).toBe(true);
+    expect(component.showPluginLog).toBeTruthy();
 
+    component.errorMessage = 'error!';
     component.clickOutsideMessage();
     fixture.detectChanges();
-    expect(component.errorMessage).toBe(undefined);
+    expect(component.errorMessage).toBeFalsy();
   });
 });
