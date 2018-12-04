@@ -13,7 +13,7 @@
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>
       <app-ongoingexecutions [showPluginLog]="showPluginLog" [runningExecutions]="runningExecutions" (setShowPluginLog)="setShowPluginLog($event)"></app-ongoingexecutions>
-      <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" (setShowPluginLog)="setShowPluginLog($event)"></app-datasetlog>
+      <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" (closed)="setShowPluginLog(undefined)"></app-datasetlog>
     </div>
 
     <div class="metis-dashboard-right">
