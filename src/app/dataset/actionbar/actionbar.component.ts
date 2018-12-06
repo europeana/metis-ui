@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { copyExecutionAndTaskId } from '../../_helpers';
 
 import { WorkflowService, TranslateService } from '../../_services';
@@ -12,7 +12,7 @@ import { ProcessingInfo } from '../dataset.component';
   templateUrl: './actionbar.component.html',
   styleUrls: ['./actionbar.component.scss'],
 })
-export class ActionbarComponent {
+export class ActionbarComponent implements OnInit {
   constructor(public workflows: WorkflowService, private translate: TranslateService) {}
 
   private _lastExecutionData?: WorkflowExecution;

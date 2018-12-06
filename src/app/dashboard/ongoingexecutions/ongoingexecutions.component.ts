@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import { WorkflowService, TranslateService } from '../../_services';
@@ -9,7 +9,7 @@ import { PluginExecution, WorkflowExecution } from '../../_models/workflow-execu
   templateUrl: './ongoingexecutions.component.html',
   styleUrls: ['./ongoingexecutions.component.scss'],
 })
-export class OngoingexecutionsComponent {
+export class OngoingexecutionsComponent implements OnInit {
   constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   @Input() showPluginLog: PluginExecution;

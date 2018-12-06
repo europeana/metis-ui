@@ -141,6 +141,7 @@ export class WorkflowService {
     page?: number,
   ): Observable<Results<WorkflowExecution[]>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
+    // tslint:disable-next-line: max-line-length
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }

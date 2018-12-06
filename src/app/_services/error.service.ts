@@ -46,6 +46,7 @@ export class ErrorService {
           }),
         )
         .pipe(take(this.numberOfRetries))
+        // tslint:disable-next-line: deprecation
         .pipe(concat(throwError({ status: 0, error: { errorMessage: 'Retry failed' } })));
     });
   }
