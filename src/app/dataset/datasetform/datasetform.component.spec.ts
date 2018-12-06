@@ -1,26 +1,25 @@
-import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
-
-import { DatasetformComponent } from './datasetform.component';
-import {
-  CountriesService,
-  DatasetsService,
-  RedirectPreviousUrl,
-  ErrorService,
-  TranslateService,
-} from '../../_services';
-import {
-  MockDatasetService,
-  MockCountriesService,
-  currentDataset,
-  MockTranslateService,
-} from '../../_mocked';
-
+import { HttpClientModule } from '@angular/common/http';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
 
+import {
+  currentDataset,
+  MockCountriesService,
+  MockDatasetService,
+  MockTranslateService,
+} from '../../_mocked';
+import {
+  CountriesService,
+  DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+} from '../../_services';
 import { TranslatePipe } from '../../_translate';
+
+import { DatasetformComponent } from './datasetform.component';
 
 describe('DatasetformComponent', () => {
   let component: DatasetformComponent;

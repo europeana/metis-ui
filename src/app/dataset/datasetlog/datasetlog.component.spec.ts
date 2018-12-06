@@ -1,23 +1,23 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+
 import {
-  WorkflowService,
+  currentWorkflow,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
+} from '../../_mocked';
+import {
+  DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
   TranslateService,
-  DatasetsService,
+  WorkflowService,
 } from '../../_services';
-import {
-  MockWorkflowService,
-  MockTranslateService,
-  MockDatasetService,
-  currentWorkflow,
-} from '../../_mocked';
+import { TranslatePipe } from '../../_translate';
 
 import { DatasetlogComponent } from './datasetlog.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-
-import { TranslatePipe } from '../../_translate';
 
 describe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;

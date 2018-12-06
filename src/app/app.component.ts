@@ -1,12 +1,13 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Router, Event, RouterEvent } from '@angular/router';
+import { Event, Router, RouterEvent } from '@angular/router';
+
 import {
-  WorkflowService,
   AuthenticationService,
   ErrorService,
   TranslateService,
+  WorkflowService,
 } from './_services';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',

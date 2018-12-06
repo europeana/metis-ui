@@ -1,20 +1,20 @@
-import { map, publishLast, switchMap } from 'rxjs/operators';
-import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { EventEmitter, Injectable } from '@angular/core';
+import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
+import { map, publishLast, switchMap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
-
-import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
-import { ErrorService } from './error.service';
-import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
-import { WorkflowExecution } from '../_models/workflow-execution';
 import { Report } from '../_models/report';
-import { SubTaskInfo } from '../_models/subtask-info';
 import { MoreResults, Results } from '../_models/results';
-import { XmlSample } from '../_models/xml-sample';
 import { Statistics } from '../_models/statistics';
+import { SubTaskInfo } from '../_models/subtask-info';
+import { Workflow } from '../_models/workflow';
+import { WorkflowExecution } from '../_models/workflow-execution';
+import { XmlSample } from '../_models/xml-sample';
+
 import { DatasetsService } from './datasets.service';
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class WorkflowService {

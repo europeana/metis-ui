@@ -1,30 +1,29 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { CodemirrorModule } from 'ng2-codemirror';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import {
-  MockWorkflowService,
-  MockDatasetService,
-  currentDataset,
-  statistics,
-  MockTranslateService,
-} from '../../_mocked';
-
-import {
-  DatasetsService,
-  WorkflowService,
-  TranslateService,
-  RedirectPreviousUrl,
-  ErrorService,
-} from '../../_services';
-
-import { MappingComponent } from './mapping.component';
-
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TranslatePipe } from '../../_translate';
+import { RouterTestingModule } from '@angular/router/testing';
+import { CodemirrorModule } from 'ng2-codemirror';
+
 import { XmlPipe } from '../../_helpers';
+import {
+  currentDataset,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
+  statistics,
+} from '../../_mocked';
+import {
+  DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
+} from '../../_services';
+import { TranslatePipe } from '../../_translate';
+
+import { MappingComponent } from './mapping.component';
 
 describe('MappingComponent', () => {
   let component: MappingComponent;

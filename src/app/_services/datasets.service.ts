@@ -1,14 +1,13 @@
-import { map, publishLast, tap } from 'rxjs/operators';
-import { ConnectableObservable, Observable } from 'rxjs';
-
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { ConnectableObservable, Observable } from 'rxjs';
+import { map, publishLast, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
-
-import { ErrorService } from './error.service';
 import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
+
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class DatasetsService {

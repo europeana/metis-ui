@@ -1,7 +1,8 @@
-import { of as observableOf, Observable } from 'rxjs';
-import { DatasetsService } from '../_services';
+import { Observable, of as observableOf } from 'rxjs';
+
 import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
+import { DatasetsService } from '../_services';
 
 export const currentDataset: Dataset = {
   country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },

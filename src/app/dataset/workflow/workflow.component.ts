@@ -1,14 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { FormGroup, FormBuilder, FormArray, Validators, AbstractControl } from '@angular/forms';
-
-import { WorkflowService, ErrorService, TranslateService } from '../../_services';
-
 import { HttpErrorResponse } from '@angular/common/http';
-import { StringifyHttpError, harvestValidator } from '../../_helpers';
-import { PluginMetadata } from '../../_models/plugin-metadata';
+import { Component, Input, OnInit } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NavigationEnd, Router } from '@angular/router';
+
+import { harvestValidator, StringifyHttpError } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
+import { PluginMetadata } from '../../_models/plugin-metadata';
 import { Workflow } from '../../_models/workflow';
+import { ErrorService, TranslateService, WorkflowService } from '../../_services';
 
 interface Connections {
   [host: string]: number;
@@ -384,9 +383,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginTRANSFORMATION === true) {
       plugins.push({
         pluginType: 'TRANSFORMATION',
-        customXslt: this.workflowForm.value.customXslt
-          ? this.workflowForm.value.customXslt
-          : false,
+        customXslt: this.workflowForm.value.customXslt ? this.workflowForm.value.customXslt : false,
         mocked: false,
       });
     }
@@ -468,9 +465,7 @@ export class WorkflowComponent implements OnInit {
     const connections: Connections = {};
     for (let c = 0; c < formValuesConnections.length; c++) {
       if (formValuesConnections[c].host && formValuesConnections[c].connections) {
-        connections[formValuesConnections[c].host] = Number(
-          formValuesConnections[c].connections,
-        );
+        connections[formValuesConnections[c].host] = Number(formValuesConnections[c].connections);
       }
     }
     return connections;

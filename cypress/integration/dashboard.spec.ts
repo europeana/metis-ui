@@ -1,4 +1,4 @@
-import { setupUser, setupWorkflowRoutes, checkAHref } from '../support/helpers';
+import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
   return cy.get('.latest-ongoing');

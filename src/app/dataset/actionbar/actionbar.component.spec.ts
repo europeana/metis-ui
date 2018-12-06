@@ -1,27 +1,27 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+
+import {
+  currentWorkflow,
+  currentWorkflowDataset,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
+} from '../../_mocked';
+import { WorkflowStatus } from '../../_models/workflow-execution';
 import {
   DatasetsService,
-  WorkflowService,
   ErrorService,
   RedirectPreviousUrl,
   TranslateService,
+  WorkflowService,
 } from '../../_services';
-import {
-  MockWorkflowService,
-  MockDatasetService,
-  currentWorkflow,
-  MockTranslateService,
-  currentWorkflowDataset,
-} from '../../_mocked';
+import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 
-import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
-import { By } from '@angular/platform-browser';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionbarComponent } from './actionbar.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { WorkflowStatus } from '../../_models/workflow-execution';
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;

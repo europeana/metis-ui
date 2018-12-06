@@ -1,28 +1,28 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CodemirrorModule } from 'ng2-codemirror';
-import {
-  MockDatasetService,
-  MockWorkflowService,
-  currentWorkflow,
-  currentDataset,
-  MockTranslateService,
-} from '../../_mocked';
 
-import { PreviewComponent } from './preview.component';
+import { XmlPipe } from '../../_helpers';
 import {
-  WorkflowService,
-  TranslateService,
+  currentDataset,
+  currentWorkflow,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
+} from '../../_mocked';
+import {
+  DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  DatasetsService,
+  TranslateService,
+  WorkflowService,
 } from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 
-import { By } from '@angular/platform-browser';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
-import { XmlPipe } from '../../_helpers';
+import { PreviewComponent } from './preview.component';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;

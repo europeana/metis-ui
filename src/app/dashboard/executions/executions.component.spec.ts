@@ -1,13 +1,13 @@
-import { TranslateService } from '../../_services';
-import { MockTranslateService } from '../../_mocked';
-import { TranslatePipe } from '../../_translate';
-
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
+import { MockTranslateService } from '../../_mocked';
+import { TranslateService } from '../../_services';
+import { TranslatePipe } from '../../_translate';
+
 import { ExecutionsComponent } from './executions.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ExecutionsComponent', () => {
   let component: ExecutionsComponent;

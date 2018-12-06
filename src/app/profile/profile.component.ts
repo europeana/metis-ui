@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { AuthenticationService, TranslateService, ErrorService } from '../_services';
-import { User } from '../_models';
-import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
 import { environment } from '../../environments/environment';
+import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
+import { User } from '../_models';
+import { AuthenticationService, ErrorService, TranslateService } from '../_services';
 
 @Component({
   selector: 'app-profile',

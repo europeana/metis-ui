@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { TranslateService, WorkflowService } from '../../_services';
 import { copyExecutionAndTaskId } from '../../_helpers';
-import { PluginExecution, PluginStatus, WorkflowExecution } from '../../_models/workflow-execution';
 import { Report, ReportRequest } from '../../_models/report';
+import { PluginExecution, PluginStatus, WorkflowExecution } from '../../_models/workflow-execution';
+import { TranslateService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-lastexecution',

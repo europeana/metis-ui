@@ -1,6 +1,7 @@
-import { of as observableOf, Observable } from 'rxjs';
+import { Observable, of as observableOf } from 'rxjs';
+
+import { AccountRole, User } from '../_models';
 import { AuthenticationService } from '../_services';
-import { User, AccountRole } from '../_models';
 
 export const currentUser: User = {
   accountRole: AccountRole.EUROPEANA_DATA_OFFICER,

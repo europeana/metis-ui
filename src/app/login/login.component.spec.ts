@@ -1,21 +1,19 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-
-import { LoginComponent } from './login.component';
-
+import { HttpClientModule } from '@angular/common/http';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
 
+import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 import {
-  RedirectPreviousUrl,
-  TranslateService,
   AuthenticationService,
   ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
 } from '../_services';
 import { TranslatePipe } from '../_translate';
 
-import { MockAuthenticationService, MockTranslateService } from '../_mocked';
+import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

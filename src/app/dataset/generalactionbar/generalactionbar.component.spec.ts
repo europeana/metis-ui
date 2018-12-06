@@ -1,25 +1,26 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TranslatePipe } from '../../_translate';
 
 import {
-  WorkflowService,
-  TranslateService,
-  ErrorService,
-  RedirectPreviousUrl,
-  DatasetsService,
-} from '../../_services';
-import { GeneralactionbarComponent } from './generalactionbar.component';
-import {
-  MockWorkflowService,
   currentWorkflow,
-  MockTranslateService,
-  MockDatasetService,
   currentWorkflowDataset,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
 } from '../../_mocked';
 import { WorkflowStatus } from '../../_models/workflow-execution';
+import {
+  DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
+} from '../../_services';
+import { TranslatePipe } from '../../_translate';
+
+import { GeneralactionbarComponent } from './generalactionbar.component';
 
 describe('GeneralactionbarComponent', () => {
   let component: GeneralactionbarComponent;

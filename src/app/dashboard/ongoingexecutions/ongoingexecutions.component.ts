@@ -1,8 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
-import { WorkflowService, TranslateService } from '../../_services';
 import { PluginExecution, WorkflowExecution } from '../../_models/workflow-execution';
+import { TranslateService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-ongoingexecutions',

@@ -1,19 +1,19 @@
+import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
 
-import { ReportComponent } from './report.component';
-
+import { MockDatasetService, MockTranslateService, MockWorkflowService } from '../../_mocked';
 import {
-  WorkflowService,
-  TranslateService,
+  DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  DatasetsService,
+  TranslateService,
+  WorkflowService,
 } from '../../_services';
 import { TranslatePipe } from '../../_translate';
-import { MockDatasetService, MockWorkflowService, MockTranslateService } from '../../_mocked';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+
+import { ReportComponent } from './report.component';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;

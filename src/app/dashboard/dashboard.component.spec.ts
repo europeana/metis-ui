@@ -1,22 +1,21 @@
+import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { DashboardComponent } from './dashboard.component';
+import { MockAuthenticationService, MockTranslateService, MockWorkflowService } from '../_mocked';
+import { PluginStatus } from '../_models/workflow-execution';
 import {
   AuthenticationService,
   DatasetsService,
-  TranslateService,
-  WorkflowService,
   ErrorService,
   RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
 } from '../_services';
 import { TranslatePipe } from '../_translate';
 
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
-
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockWorkflowService, MockAuthenticationService, MockTranslateService } from '../_mocked';
-import { PluginStatus } from '../_models/workflow-execution';
+import { DashboardComponent } from './dashboard.component';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;

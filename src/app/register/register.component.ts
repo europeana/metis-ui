@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService, TranslateService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StringifyHttpError, MatchPasswordValidator, PasswordStrength } from '../_helpers';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import { environment } from '../../environments/environment';
+import { MatchPasswordValidator, PasswordStrength, StringifyHttpError } from '../_helpers';
+import { AuthenticationService, TranslateService } from '../_services';
 
 @Component({
   selector: 'app-register',

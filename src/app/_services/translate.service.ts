@@ -1,4 +1,5 @@
-import { Injectable, Inject } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+
 import { TRANSLATIONS } from '../_translate/translation';
 
 interface Translations {

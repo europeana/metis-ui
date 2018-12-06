@@ -1,10 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { copyExecutionAndTaskId } from '../../_helpers';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { WorkflowService, TranslateService } from '../../_services';
+import { copyExecutionAndTaskId } from '../../_helpers';
 import { Report, ReportRequest } from '../../_models/report';
-import { WorkflowExecution, PluginExecution } from '../../_models/workflow-execution';
 import { Workflow } from '../../_models/workflow';
+import { PluginExecution, WorkflowExecution } from '../../_models/workflow-execution';
+import { TranslateService, WorkflowService } from '../../_services';
 import { ProcessingInfo } from '../dataset.component';
 
 @Component({

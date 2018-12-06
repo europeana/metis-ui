@@ -1,13 +1,13 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { ConnectableObservable, Observable } from 'rxjs';
 import { publishLast } from 'rxjs/operators';
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 import { apiSettings } from '../../environments/apisettings';
-
-import { ErrorService } from './error.service';
 import { Country } from '../_models/country';
 import { Language } from '../_models/language';
+
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class CountriesService {

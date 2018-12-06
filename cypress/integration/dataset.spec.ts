@@ -1,4 +1,4 @@
-import { setupUser, setupWorkflowRoutes, checkAHref } from '../support/helpers';
+import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
 
 function setupDatasetPage(name: string): void {
   cy.server({ force404: true });

@@ -1,13 +1,12 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subscription, timer as observableTimer } from 'rxjs';
 
-import { timer as observableTimer, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
-
-import { WorkflowService, TranslateService, ErrorService } from '../../_services';
 import { SubTaskInfo } from '../../_models/subtask-info';
-import { ProcessingInfo } from '../dataset.component';
 import { PluginExecution } from '../../_models/workflow-execution';
+import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { ProcessingInfo } from '../dataset.component';
 
 @Component({
   selector: 'app-datasetlog',

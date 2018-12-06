@@ -1,4 +1,5 @@
-import { Component, OnChanges, Input, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+
 import { PasswordStrength } from '../../_helpers';
 
 @Component({

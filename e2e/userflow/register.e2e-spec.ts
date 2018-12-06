@@ -1,4 +1,5 @@
 import { browser, by, element } from 'protractor';
+
 import { environment } from '../../src/environments/environment';
 
 describe('Register', () => {

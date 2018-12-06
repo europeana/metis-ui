@@ -1,14 +1,13 @@
-import { AuthenticationService } from './authentication.service';
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { TestBed, async } from '@angular/core/testing';
+import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-
-import { RedirectPreviousUrl, ErrorService } from '../_services';
 
 import { currentUser } from '../_mocked';
+import { ErrorService, RedirectPreviousUrl } from '../_services';
+
+import { AuthenticationService } from './authentication.service';
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;

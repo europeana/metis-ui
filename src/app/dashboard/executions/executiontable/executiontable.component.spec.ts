@@ -1,23 +1,23 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import {
-  WorkflowService,
-  TranslateService,
+  currentWorkflow,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
+} from '../../../_mocked';
+import {
+  DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  DatasetsService,
+  TranslateService,
+  WorkflowService,
 } from '../../../_services';
-import {
-  MockWorkflowService,
-  currentWorkflow,
-  MockTranslateService,
-  MockDatasetService,
-} from '../../../_mocked';
-import { ExecutiontableComponent } from './executiontable.component';
-
 import { TranslatePipe } from '../../../_translate';
+
+import { ExecutiontableComponent } from './executiontable.component';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;

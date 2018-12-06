@@ -1,22 +1,22 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {} from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+
 import {
-  WorkflowService,
-  TranslateService,
+  currentWorkflow,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
+} from '../../_mocked';
+import {
   DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
 } from '../../_services';
-import {
-  MockWorkflowService,
-  currentWorkflow,
-  MockTranslateService,
-  MockDatasetService,
-} from '../../_mocked';
 import { TranslatePipe } from '../../_translate';
-
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import {} from '@angular/platform-browser';
 
 import { OngoingexecutionsComponent } from './ongoingexecutions.component';
 

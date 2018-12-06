@@ -1,23 +1,21 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-
-import { StringifyHttpError } from '../../_helpers';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
-
-import 'codemirror/mode/xml/xml';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
-import 'codemirror/addon/fold/comment-fold';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/mode/xml/xml';
 
+import { StringifyHttpError } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
-import { XmlSample } from '../../_models/xml-sample';
 import { WorkflowExecution } from '../../_models/workflow-execution';
+import { XmlSample } from '../../_models/xml-sample';
+import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
 import { PreviewFilters } from '../dataset.component';
 
 @Component({
@@ -164,10 +162,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
           return;
         }
         this.workflows
-          .getWorkflowSamples(
-            result.results[0].id,
-            result.results[0].metisPlugins[0].pluginType,
-          )
+          .getWorkflowSamples(result.results[0].id, result.results[0].metisPlugins[0].pluginType)
           .subscribe(
             (samples) => {
               this.allSamples = this.undoNewLines(samples);

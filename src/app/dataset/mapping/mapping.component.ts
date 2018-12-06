@@ -1,22 +1,22 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
 import { EditorConfiguration } from 'codemirror';
+import { switchMap } from 'rxjs/operators';
 
-import 'codemirror/mode/xml/xml';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
-import 'codemirror/addon/fold/comment-fold';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/mode/xml/xml';
 
 import { StringifyHttpError } from '../../_helpers';
-import { NodeStatistics } from '../../_models/statistics';
 import { Dataset } from '../../_models/dataset';
-import { WorkflowService, DatasetsService, TranslateService, ErrorService } from '../../_services';
+import { NodeStatistics } from '../../_models/statistics';
+import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
 
 type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 

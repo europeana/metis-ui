@@ -1,9 +1,9 @@
 import { Results } from '../../src/app/_models/results';
 import {
-  WorkflowExecution,
-  WorkflowStatus,
   PluginStatus,
   TaskState,
+  WorkflowExecution,
+  WorkflowStatus,
 } from '../../src/app/_models/workflow-execution';
 
 export const workflowExecutions: Results<WorkflowExecution[]> = {
