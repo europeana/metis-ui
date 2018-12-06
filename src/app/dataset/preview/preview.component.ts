@@ -23,19 +23,17 @@ import { PreviewFilters } from '../dataset.component';
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
-  styleUrls: [
-    './preview.component.scss'
-   ]
+  styleUrls: ['./preview.component.scss'],
 })
-
 export class PreviewComponent implements OnInit, OnDestroy {
-
-  constructor(private workflows: WorkflowService,
+  constructor(
+    private workflows: WorkflowService,
     private http: HttpClient,
     private translate: TranslateService,
     private errors: ErrorService,
     private datasets: DatasetsService,
-    private router: Router) { }
+    private router: Router,
+  ) {}
 
   @Input() datasetData: Dataset;
   @Input() previewFilters: PreviewFilters;
@@ -45,7 +43,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecution> = [];
-  allPlugins: Array<{ type: string, error: boolean }> = [];
+  allPlugins: Array<{ type: string; error: boolean }> = [];
   allSamples: Array<XmlSample> = [];
   allTransformedSamples: XmlSample[];
   filterDate = false;
@@ -70,7 +68,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       indentWithTabs: true,
       viewportMargin: Infinity,
       lineWrapping: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     };
 
     this.translate.use('en');
@@ -91,11 +89,14 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   // populate a filter with executions based on selected workflow
   addExecutionsFilter(): void {
-    this.workflows.getDatasetExecutionsCollectingPages(this.datasetData.datasetId).subscribe(result => {
-      this.allWorkflowExecutions = result;
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);
-    });
+    this.workflows.getDatasetExecutionsCollectingPages(this.datasetData.datasetId).subscribe(
+      (result) => {
+        this.allWorkflowExecutions = result;
+      },
+      (err: HttpErrorResponse) => {
+        this.errors.handleError(err);
+      },
+    );
   }
 
   // populate a filter with plugins based on selected execution
@@ -108,12 +109,24 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.setPreviewFilters.emit(this.previewFilters);
     for (let i = 0; i < execution['metisPlugins'].length; i++) {
       if (execution['metisPlugins'][i]['pluginStatus'] === 'FINISHED') {
-        this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
+        this.allPlugins.push({
+          type: execution['metisPlugins'][i].pluginType,
+          error: false,
+        });
       } else {
-        if (execution['metisPlugins'][i]['executionProgress']['processedRecords'] > execution['metisPlugins'][i]['executionProgress']['errors']) {
-          this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
+        if (
+          execution['metisPlugins'][i]['executionProgress']['processedRecords'] >
+          execution['metisPlugins'][i]['executionProgress']['errors']
+        ) {
+          this.allPlugins.push({
+            type: execution['metisPlugins'][i].pluginType,
+            error: false,
+          });
         } else {
-          this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': true});
+          this.allPlugins.push({
+            type: execution['metisPlugins'][i].pluginType,
+            error: true,
+          });
         }
       }
     }
@@ -126,47 +139,64 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedPlugin = plugin;
     this.previewFilters.plugin = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
-    this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe(result => {
-      this.allSamples = this.undoNewLines(result);
-      if (this.allSamples.length === 1) {
-       this.expandedSample = 0;
-      }
-      this.loadingSamples = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-      this.loadingSamples = false;
-    });
+    this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe(
+      (result) => {
+        this.allSamples = this.undoNewLines(result);
+        if (this.allSamples.length === 1) {
+          this.expandedSample = 0;
+        }
+        this.loadingSamples = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.loadingSamples = false;
+      },
+    );
   }
 
   // transform samples on the fly based on temp saved XSLT
   transformSamples(type: string): void {
     this.loadingTransformSamples = true;
-    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(result => {
-      if (!result['results'][0]) {
-        this.loadingTransformSamples = false;
+    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
+      (result) => {
+        if (!result['results'][0]) {
+          this.loadingTransformSamples = false;
+          return;
+        }
+        this.workflows
+          .getWorkflowSamples(
+            result['results'][0]['id'],
+            result['results'][0]['metisPlugins'][0]['pluginType'],
+          )
+          .subscribe(
+            (samples) => {
+              this.allSamples = this.undoNewLines(samples);
+              this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(
+                (transformed) => {
+                  this.allTransformedSamples = this.undoNewLines(transformed);
+                  this.loadingTransformSamples = false;
+                },
+                (err: HttpErrorResponse) => {
+                  const error = this.errors.handleError(err);
+                  this.errorMessage = `${StringifyHttpError(error)}`;
+                  this.loadingTransformSamples = false;
+                },
+              );
+            },
+            (err: HttpErrorResponse) => {
+              this.errors.handleError(err);
+              this.loadingTransformSamples = false;
+            },
+          );
         return;
-      }
-      this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
-        this.allSamples = this.undoNewLines(samples);
-        this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
-          this.allTransformedSamples = this.undoNewLines(transformed);
-          this.loadingTransformSamples = false;
-        }, (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.errorMessage = `${StringifyHttpError(error)}`;
-          this.loadingTransformSamples = false;
-        });
-      }, (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
         this.loadingTransformSamples = false;
-      });
-      return;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-      this.loadingTransformSamples = false;
-    });
+      },
+    );
   }
 
   // prefill filters, when temporarily saved options are available

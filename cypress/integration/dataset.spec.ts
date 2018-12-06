@@ -1,12 +1,12 @@
 import { setupUser, setupWorkflowRoutes, checkAHref } from '../support/helpers';
 
 function setupDatasetPage(name: string): void {
-    cy.server({ force404: true });
-    setupUser();
-    setupWorkflowRoutes();
+  cy.server({ force404: true });
+  setupUser();
+  setupWorkflowRoutes();
 
-    cy.visit(`/dataset/${name}/64`);
-    cy.wait(['@getDataset', '@getWorkflow', '@getWorkflowExecutions', '@getHarvestData']);
+  cy.visit(`/dataset/${name}/64`);
+  cy.wait(['@getDataset', '@getWorkflow', '@getWorkflowExecutions', '@getHarvestData']);
 }
 
 function getHistoryRow(index: number, sel: string): Cypress.Chainable {
@@ -26,10 +26,13 @@ function checkStaticField(name: string, value: string): void {
 }
 
 function checkPluginStatus(name: string, enabled: boolean): void {
-  cy.get(enabled ? '.predefined-steps li' : '.predefined-steps li.inactive')
-    .contains(name);
+  cy.get(enabled ? '.predefined-steps li' : '.predefined-steps li.inactive').contains(name);
 
-  const input = cy.get('.plugin').contains(name).closest('.plugin').find('input');
+  const input = cy
+    .get('.plugin')
+    .contains(name)
+    .closest('.plugin')
+    .find('input');
   input.should(enabled ? 'be.checked' : 'not.be.checked');
 }
 
@@ -128,15 +131,31 @@ context('metis-ui', () => {
         .closest('tr')
         .as('headRow');
 
-      cy.get('@headRow').next().as('row');
-      cy.get('@row').find('td').contains('Validate (EDM external)');
-      cy.get('@row').find('td').contains('0 (760)');
-      cy.get('@row').find('td').contains('FINISHED');
+      cy.get('@headRow')
+        .next()
+        .as('row');
+      cy.get('@row')
+        .find('td')
+        .contains('Validate (EDM external)');
+      cy.get('@row')
+        .find('td')
+        .contains('0 (760)');
+      cy.get('@row')
+        .find('td')
+        .contains('FINISHED');
 
-      cy.get('@row').next().as('row');
-      cy.get('@row').find('td').contains('Import OAI-PMH');
-      cy.get('@row').find('td').contains('760');
-      cy.get('@row').find('td').contains('FINISHED');
+      cy.get('@row')
+        .next()
+        .as('row');
+      cy.get('@row')
+        .find('td')
+        .contains('Import OAI-PMH');
+      cy.get('@row')
+        .find('td')
+        .contains('760');
+      cy.get('@row')
+        .find('td')
+        .contains('FINISHED');
     });
   });
 });

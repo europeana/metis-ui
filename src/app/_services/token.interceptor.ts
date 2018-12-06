@@ -5,9 +5,7 @@ import { AuthenticationService } from './authentication.service';
 import { Observable } from 'rxjs';
 
 @Injectable()
-
 export class TokenInterceptor implements HttpInterceptor {
-
   private auth: AuthenticationService;
   constructor(private inj: Injector) {}
 
@@ -21,8 +19,12 @@ export class TokenInterceptor implements HttpInterceptor {
   /* @param {httprequest} request - identify the http request, url
   /* @param {httphandler} next
   */
-  //tslint:disable-next-line: no-any
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    //tslint:disable-next-line: no-any
+    request: HttpRequest<any>,
+    next: HttpHandler,
+    //tslint:disable-next-line: no-any
+  ): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
       const auth = this.inj.get<AuthenticationService>(AuthenticationService);
       const token = auth.getToken();
@@ -30,7 +32,7 @@ export class TokenInterceptor implements HttpInterceptor {
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };
         request = request.clone({
-          setHeaders: headers
+          setHeaders: headers,
         });
       }
     }

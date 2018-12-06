@@ -11,7 +11,7 @@ describe('ErrorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientModule],
-      providers: [ErrorService, AuthenticationService, RedirectPreviousUrl]
+      providers: [ErrorService, AuthenticationService, RedirectPreviousUrl],
     });
   });
 

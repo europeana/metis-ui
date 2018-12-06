@@ -9,9 +9,8 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
-
 export class RegisterComponent implements OnInit, OnDestroy {
   loading = false;
   errorMessage?: string;
@@ -30,7 +29,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private router: Router,
     private authentication: AuthenticationService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+  ) {}
 
   /** ngOnInit
   /* init for this component
@@ -40,12 +40,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      passwords: this.fb.group({
-        password: ['', Validators.required ],
-        confirm: ['', Validators.required ]
-      }, {
-        validator: MatchPasswordValidator
-      })
+      passwords: this.fb.group(
+        {
+          password: ['', Validators.required],
+          confirm: ['', Validators.required],
+        },
+        {
+          validator: MatchPasswordValidator,
+        },
+      ),
     });
 
     this.translate.use('en');
@@ -85,15 +88,18 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.errorMessage = this.msgPasswordWeak;
       this.loading = false;
     } else {
-      this.authentication.register(email, password).subscribe(result => {
-        this.loading = false;
-        if (result === true) {
-          this.onRegistration(this.msgSuccess);
-        }
-      }, (err: HttpErrorResponse) => {
-        this.loading = false;
-        this.errorMessage = `${StringifyHttpError(err)}`;
-      });
+      this.authentication.register(email, password).subscribe(
+        (result) => {
+          this.loading = false;
+          if (result === true) {
+            this.onRegistration(this.msgSuccess);
+          }
+        },
+        (err: HttpErrorResponse) => {
+          this.loading = false;
+          this.errorMessage = `${StringifyHttpError(err)}`;
+        },
+      );
     }
   }
 
@@ -109,4 +115,3 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }, 3000);
   }
 }
-

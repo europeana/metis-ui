@@ -1,11 +1,23 @@
-import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService, DatasetsService } from '../../_services';
-import { MockWorkflowService, currentWorkflow, MockAuthenticationService, MockTranslateService } from '../../_mocked';
+import {
+  WorkflowService,
+  ErrorService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  TranslateService,
+  DatasetsService,
+} from '../../_services';
+import {
+  MockWorkflowService,
+  currentWorkflow,
+  MockAuthenticationService,
+  MockTranslateService,
+} from '../../_mocked';
 import { TranslatePipe } from '../../_translate';
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import {  } from '@angular/platform-browser';
+import {} from '@angular/platform-browser';
 
 import { OngoingexecutionsComponent } from './ongoingexecutions.component';
 
@@ -15,17 +27,17 @@ describe('OngoingexecutionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ OngoingexecutionsComponent, TranslatePipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      declarations: [OngoingexecutionsComponent, TranslatePipe],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
         DatasetsService,
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
-      ]
-    })
-    .compileComponents();
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -56,5 +68,4 @@ describe('OngoingexecutionsComponent', () => {
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
   });
-
 });

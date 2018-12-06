@@ -11,9 +11,7 @@ import { Language } from '../_models/language';
 
 @Injectable()
 export class CountriesService {
-
-  constructor(private http: HttpClient,
-    private errors: ErrorService) {}
+  constructor(private http: HttpClient, private errors: ErrorService) {}
 
   private countries?: Observable<Country[]>;
   private languages?: Observable<Language[]>;
@@ -45,5 +43,4 @@ export class CountriesService {
     (this.languages as ConnectableObservable<Language[]>).connect();
     return this.languages;
   }
-
 }

@@ -10,8 +10,8 @@ $gray-hero: #e7e7e7;
 $gray-dark: #212121;
 
 $black: #1a1a1a;
-$opacity-black: rgba(0, 0, 0, .7);
-$opacity-gray-light: rgba(119, 119, 119, .6);
+$opacity-black: rgba(0, 0, 0, 0.7);
+$opacity-gray-light: rgba(119, 119, 119, 0.6);
 $opacity-gray-very-light: rgb(230, 230, 230);
 
 $eu-red: #f22f24;
@@ -29,11 +29,11 @@ $textcolour_highlight: $accent;
 $textcolour_link: $linkblue;
 $text_secondary: $gray-light;
 
-$font-primary: "Open Sans", "Arial", sans-serif;
-$font-secondary: "Ubuntu", "Arial", sans-serif;
+$font-primary: 'Open Sans', 'Arial', sans-serif;
+$font-secondary: 'Ubuntu', 'Arial', sans-serif;
 
-$font-size-slightly-smaller: .875em;
-$font-size-sm: .75em;
+$font-size-slightly-smaller: 0.875em;
+$font-size-sm: 0.75em;
 $font-size-med: 1.2em;
 $font-size-large: 1.6em;
 $base-font-multiplier: 1;
@@ -88,4 +88,3 @@ $bp-med: 50em;
 $bp-large: 60em;
 $bp-xl: 70em;
 $bp-xxl: 90em;
-

@@ -13,7 +13,6 @@ import { User } from '../_models';
 
 @Injectable()
 export class AuthenticationService {
-
   private readonly key = 'currentUser';
   private token: string | null;
   public currentUser: User | null = null;
@@ -22,7 +21,8 @@ export class AuthenticationService {
     private http: HttpClient,
     private router: Router,
     private errors: ErrorService,
-    private redirectPreviousUrl: RedirectPreviousUrl) {
+    private redirectPreviousUrl: RedirectPreviousUrl,
+  ) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
     if (value) {
@@ -47,7 +47,7 @@ export class AuthenticationService {
   */
   getToken(): string | null {
     const s = localStorage.getItem(this.key);
-    if (!s)  {
+    if (!s) {
       return null;
     }
     const h = JSON.parse(s);
@@ -59,10 +59,17 @@ export class AuthenticationService {
   /* @param {string} password - password
   */
   updatePassword(password: string, oldpassword: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
-    return this.http.put(url, {}).pipe(map(data => {
-      return true;
-    })).pipe(this.errors.handleRetry());
+    const url = `${
+      apiSettings.apiHostAuth
+    }/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
+    return this.http
+      .put(url, {})
+      .pipe(
+        map((data) => {
+          return true;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** register
@@ -73,10 +80,17 @@ export class AuthenticationService {
   */
   register(email: string, password: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
-    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, {}, { headers: headers }).pipe(map(data => {
-      return true;
-    })).pipe(this.errors.handleRetry());
+    const headers = new HttpHeaders({
+      Authorization: 'Basic ' + btoa(email + ':' + password),
+    });
+    return this.http
+      .post(url, {}, { headers: headers })
+      .pipe(
+        map((data) => {
+          return true;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** login
@@ -86,7 +100,8 @@ export class AuthenticationService {
   /* @param {string} password - password
   */
   login(email: string, password: string): Observable<boolean> {
-    if (this.currentUser) { // check beforehand if there is already an user
+    if (this.currentUser) {
+      // check beforehand if there is already an user
       const prevUrl = this.redirectPreviousUrl.get();
       if (prevUrl && prevUrl !== 'login') {
         this.router.navigateByUrl(`/${prevUrl}`);
@@ -97,15 +112,22 @@ export class AuthenticationService {
     }
 
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
-    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post<User>(url, {}, { headers: headers }).pipe(map(user => {
-      if (user && user.metisUserAccessToken) {
-        this.setCurrentUser(user);
-        return true;
-      } else {
-        return false;
-      }
-    })).pipe(this.errors.handleRetry());
+    const headers = new HttpHeaders({
+      Authorization: 'Basic ' + btoa(email + ':' + password),
+    });
+    return this.http
+      .post<User>(url, {}, { headers: headers })
+      .pipe(
+        map((user) => {
+          if (user && user.metisUserAccessToken) {
+            this.setCurrentUser(user);
+            return true;
+          } else {
+            return false;
+          }
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** logout
@@ -126,14 +148,19 @@ export class AuthenticationService {
   */
   reloadCurrentUser(email: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;
-    return this.http.put<User>(url, {}).pipe(map(user => {
-      if (user) {
-        this.setCurrentUser(user);
-        return true;
-      } else {
-        return false;
-      }
-    })).pipe(this.errors.handleRetry());
+    return this.http
+      .put<User>(url, {})
+      .pipe(
+        map((user) => {
+          if (user) {
+            this.setCurrentUser(user);
+            return true;
+          } else {
+            return false;
+          }
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** setCurrentUser
@@ -146,7 +173,10 @@ export class AuthenticationService {
   private setCurrentUser(user: User): void {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
-    localStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
+    localStorage.setItem(
+      this.key,
+      JSON.stringify({ user: user, email: user.email, token: this.token }),
+    );
   }
 
   /** getCurrentUser
@@ -155,5 +185,4 @@ export class AuthenticationService {
   getCurrentUser(): User | null {
     return this.currentUser;
   }
-
 }

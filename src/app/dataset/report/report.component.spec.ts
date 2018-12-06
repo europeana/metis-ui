@@ -4,7 +4,13 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { ReportComponent } from './report.component';
 
-import { WorkflowService, TranslateService, ErrorService, RedirectPreviousUrl, DatasetsService } from '../../_services';
+import {
+  WorkflowService,
+  TranslateService,
+  ErrorService,
+  RedirectPreviousUrl,
+  DatasetsService,
+} from '../../_services';
 import { TranslatePipe } from '../../_translate';
 import { MockDatasetService, MockWorkflowService, MockTranslateService } from '../../_mocked';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -15,18 +21,17 @@ describe('ReportComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule],
-      declarations: [ ReportComponent, TranslatePipe ],
+      imports: [RouterTestingModule, HttpClientModule],
+      declarations: [ReportComponent, TranslatePipe],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: TranslateService, useClass: MockTranslateService },
         ErrorService,
-        RedirectPreviousUrl
+        RedirectPreviousUrl,
       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

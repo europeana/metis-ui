@@ -4,7 +4,7 @@
 .ongoing-executions {
   display: block;
   float: right;
-  font-size: .75rem;
+  font-size: 0.75rem;
   width: 100%;
 
   .tooltip {
@@ -26,7 +26,7 @@
     border-bottom: 1px solid $offwhite;
     box-sizing: border-box;
     display: inline-flex;
-    padding: .75rem;
+    padding: 0.75rem;
     width: 100%;
   }
 
@@ -48,7 +48,6 @@
       bottom: 2.5rem;
       transform: translate(0, 0);
     }
-
   }
 
   .progress {
@@ -74,7 +73,6 @@
     span {
       display: block;
     }
-
   }
 
   nav {
@@ -83,7 +81,7 @@
     li {
       border-left: 1px solid $offwhite;
       display: inline-block;
-      padding: .25rem;
+      padding: 0.25rem;
       position: relative;
     }
 
@@ -98,7 +96,7 @@
     li a {
       color: $gray-med;
       font-size: $font-size-slightly-smaller;
-      padding: .25rem .5rem .25rem 1.25rem;
+      padding: 0.25rem 0.5rem 0.25rem 1.25rem;
     }
   }
 
@@ -106,12 +104,11 @@
     background: $white;
     box-sizing: border-box;
     display: block;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     text-align: center;
     width: 100%;
   }
 }
-
 
 @media (max-width: $bp-xxl) {
   .ongoing-executions {

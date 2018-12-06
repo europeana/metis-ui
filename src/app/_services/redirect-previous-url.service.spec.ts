@@ -5,7 +5,7 @@ import { RedirectPreviousUrl } from './redirect-previous-url.service';
 describe('RedirectPreviousUrl', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RedirectPreviousUrl]
+      providers: [RedirectPreviousUrl],
     });
   });
 

@@ -5,8 +5,20 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService, DatasetsService } from './_services';
-import { MockAuthenticationService, MockWorkflowService, MockTranslateService, MockDatasetService } from './_mocked';
+import {
+  WorkflowService,
+  ErrorService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  TranslateService,
+  DatasetsService,
+} from './_services';
+import {
+  MockAuthenticationService,
+  MockWorkflowService,
+  MockTranslateService,
+  MockDatasetService,
+} from './_mocked';
 
 import { TranslatePipe } from './_translate';
 
@@ -19,9 +31,9 @@ describe('AppComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ AppComponent, TranslatePipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      declarations: [AppComponent, TranslatePipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
@@ -29,16 +41,14 @@ describe('AppComponent', () => {
         ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
-      ]
-    })
-      .compileComponents();
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.debugElement.componentInstance;
   });
-
 
   it('should create', () => {
     fixture.detectChanges();

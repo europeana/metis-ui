@@ -17,7 +17,7 @@
   }
 
   .hero-text {
-    background-color: rgba(#000, .7);
+    background-color: rgba(#000, 0.7);
     border-radius: 4px;
     bottom: 2em;
     padding: $space;
@@ -45,7 +45,7 @@
     }
   }
 
-  .attribution{
+  .attribution {
     bottom: 4px;
     position: absolute;
     right: 4px;
@@ -65,10 +65,9 @@
     margin-bottom: $space-half;
     text-transform: uppercase;
   }
-
 }
 
-.site-hero{
+.site-hero {
   margin-top: $globalnavheight;
   @media all and (min-width: $bp-small) {
     height: 50%;

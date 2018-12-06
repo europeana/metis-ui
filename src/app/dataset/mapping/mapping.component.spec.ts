@@ -2,9 +2,23 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core
 import { CodemirrorModule } from 'ng2-codemirror';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockWorkflowService, MockDatasetService, currentDataset, MockAuthenticationService, statistics, MockTranslateService } from '../../_mocked';
+import {
+  MockWorkflowService,
+  MockDatasetService,
+  currentDataset,
+  MockAuthenticationService,
+  statistics,
+  MockTranslateService,
+} from '../../_mocked';
 
-import { DatasetsService, WorkflowService, TranslateService, RedirectPreviousUrl, ErrorService, AuthenticationService } from '../../_services';
+import {
+  DatasetsService,
+  WorkflowService,
+  TranslateService,
+  RedirectPreviousUrl,
+  ErrorService,
+  AuthenticationService,
+} from '../../_services';
 
 import { MappingComponent } from './mapping.component';
 
@@ -21,17 +35,17 @@ describe('MappingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule, CodemirrorModule, FormsModule ],
-      declarations: [ MappingComponent, TranslatePipe, XmlPipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
+      imports: [RouterTestingModule, HttpClientTestingModule, CodemirrorModule, FormsModule],
+      declarations: [MappingComponent, TranslatePipe, XmlPipe],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: TranslateService, useClass: MockTranslateService },
         RedirectPreviousUrl,
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService}
-      ]
-    })
-    .compileComponents();
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,7 +66,9 @@ describe('MappingComponent', () => {
 
     component.toggleStatistics();
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.view-statistics.view-sample-expanded')).length).toBeTruthy();
+    expect(
+      fixture.debugElement.queryAll(By.css('.view-statistics.view-sample-expanded')).length,
+    ).toBeTruthy();
   });
 
   it('should display xslt', () => {
@@ -87,11 +103,10 @@ describe('MappingComponent', () => {
   });
 
   it('should try out the xslt', fakeAsync((): void => {
-    spyOn(router, 'navigate').and.callFake(() => { });
+    spyOn(router, 'navigate').and.callFake(() => {});
     tick();
 
     component.tryOutXSLT('default');
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
   }));
-
 });

@@ -4,7 +4,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
-import { TranslateService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
+import {
+  TranslateService,
+  AuthenticationService,
+  ErrorService,
+  RedirectPreviousUrl,
+} from '../_services';
 import { TranslatePipe } from '../_translate';
 import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 
@@ -17,17 +22,16 @@ describe('ProfileComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
-      declarations: [ ProfileComponent, TranslatePipe ],
+      imports: [RouterTestingModule, HttpClientModule, ReactiveFormsModule],
+      declarations: [ProfileComponent, TranslatePipe],
       providers: [
         ErrorService,
         RedirectPreviousUrl,
-        {provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -61,5 +65,4 @@ describe('ProfileComponent', () => {
     fixture.detectChanges();
     expect(component.successMessage).not.toBe('');
   });
-
 });

@@ -3,10 +3,9 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent {
-
   heroimage: string;
   attributiontext: string;
   attributionlink: string;
@@ -25,7 +24,8 @@ export class HomeComponent {
     this.attributionrightslink = 'https://creativecommons.org/publicdomain/zero/1.0/';
 
     this.bannerheading = 'What can you do with Metis?';
-    this.bannertext = 'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
+    this.bannertext =
+      'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
     this.bannerlinktext = 'Register to Metis here';
   }
 }

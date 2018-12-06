@@ -2,43 +2,43 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { HttpClientModule,
-         HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './routing/app-routing.module';
 
-import { AuthUserGuard,
-         AuthVisitorGuard } from './_guards';
-import { AuthenticationService,
-         DatasetsService,
-         TokenInterceptor,
-         RedirectPreviousUrl,
-         CountriesService,
-         SettingsService,
-         WorkflowService,
-         ErrorService,
-         TranslateService } from './_services';
+import { AuthUserGuard, AuthVisitorGuard } from './_guards';
+import {
+  AuthenticationService,
+  DatasetsService,
+  TokenInterceptor,
+  RedirectPreviousUrl,
+  CountriesService,
+  SettingsService,
+  WorkflowService,
+  ErrorService,
+  TranslateService,
+} from './_services';
 
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register';
 import { LoginComponent } from './login';
 import { ProfileComponent } from './profile';
-import { HeaderComponent,
-         PasswordCheckComponent } from './shared';
+import { HeaderComponent, PasswordCheckComponent } from './shared';
 import { HomeComponent } from './home';
-import { DatasetComponent,
-         NewDatasetComponent,
-         DatasetformComponent,
-         GeneralinfoComponent,
-         DatasetlogComponent,
-         HistoryComponent,
-         LastExecutionComponent,
-         ActionbarComponent,
-         MappingComponent,
-         PreviewComponent,
-         WorkflowComponent } from './dataset';
-import { DashboardComponent,
-         DashboardactionsComponent } from './dashboard';
+import {
+  DatasetComponent,
+  NewDatasetComponent,
+  DatasetformComponent,
+  GeneralinfoComponent,
+  DatasetlogComponent,
+  HistoryComponent,
+  LastExecutionComponent,
+  ActionbarComponent,
+  MappingComponent,
+  PreviewComponent,
+  WorkflowComponent,
+} from './dataset';
+import { DashboardComponent, DashboardactionsComponent } from './dashboard';
 import { PageNotFoundComponent } from './page-not-found';
 
 import { ExecutionsComponent } from './dashboard/executions/executions.component';
@@ -86,7 +86,7 @@ import { LoadAnimationComponent } from './load-animation';
     XmlPipe,
     RenameWorkflowPipe,
     GeneralactionbarComponent,
-    ExecutiontableComponent
+    ExecutiontableComponent,
   ],
   imports: [
     BrowserModule,
@@ -95,9 +95,15 @@ import { LoadAnimationComponent } from './load-animation';
     HttpClientModule,
     AppRoutingModule,
     CodemirrorModule,
-    ClickOutsideModule
+    ClickOutsideModule,
   ],
-  entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, WorkflowComponent ],
+  entryComponents: [
+    DatasetformComponent,
+    HistoryComponent,
+    MappingComponent,
+    PreviewComponent,
+    WorkflowComponent,
+  ],
   providers: [
     AuthVisitorGuard,
     AuthUserGuard,
@@ -113,10 +119,9 @@ import { LoadAnimationComponent } from './load-animation';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-
-export class AppModule { }
+export class AppModule {}

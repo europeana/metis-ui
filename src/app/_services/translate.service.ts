@@ -2,9 +2,11 @@ import { Injectable, Inject } from '@angular/core';
 import { TRANSLATIONS } from '../_translate/translation';
 
 interface Translations {
-  [language: string]: {
-    [key: string]: string | undefined;
-  } | undefined;
+  [language: string]:
+    | {
+        [key: string]: string | undefined;
+      }
+    | undefined;
 }
 
 @Injectable()
@@ -12,7 +14,7 @@ export class TranslateService {
   private _currentLang: string;
 
   public get currentLang(): string {
-      return this._currentLang;
+    return this._currentLang;
   }
 
   constructor(@Inject(TRANSLATIONS) private _translations: Translations) {}
@@ -33,7 +35,7 @@ export class TranslateService {
   protected translate(key: string): string {
     const translation = key;
     if (this._translations[this.currentLang] && this._translations[this.currentLang]![key]) {
-        return this._translations[this.currentLang]![key]!;
+      return this._translations[this.currentLang]![key]!;
     }
     return translation;
   }

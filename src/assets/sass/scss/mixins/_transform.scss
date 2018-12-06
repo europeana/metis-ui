@@ -6,19 +6,19 @@
   transform: $transforms;
 }
 
-@mixin rotate ($deg) {
+@mixin rotate($deg) {
   @include transform(rotate(#{$deg}deg));
 }
 
-@mixin rotateY ($deg) {
+@mixin rotateY($deg) {
   @include transform(rotateY(#{$deg}deg));
 }
 
-@mixin rotateX ($deg) {
+@mixin rotateX($deg) {
   @include transform(rotateX(#{$deg}deg));
 }
 
-@mixin rotateZ ($deg) {
+@mixin rotateZ($deg) {
   @include transform(rotateZ(#{$deg}deg));
 }
 
@@ -26,15 +26,15 @@
   @include transform(scale($scale));
 }
 
-@mixin translate ($x, $y) {
+@mixin translate($x, $y) {
   @include transform(translate($x, $y));
 }
 
-@mixin skew ($x, $y) {
+@mixin skew($x, $y) {
   @include transform(skew(#{$x}deg, #{$y}deg));
 }
 
-@mixin transform-origin ($origin) {
+@mixin transform-origin($origin) {
   -moz-transform-origin: $origin;
   -o-transform-origin: $origin;
   -ms-transform-origin: $origin;

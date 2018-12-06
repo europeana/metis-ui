@@ -10,9 +10,8 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+  styleUrls: ['./profile.component.scss'],
 })
-
 export class ProfileComponent implements OnInit {
   editMode = false;
   loading = false;
@@ -23,11 +22,13 @@ export class ProfileComponent implements OnInit {
   emailInfo: string = environment.links.updateProfileMain;
   profileForm: FormGroup;
 
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private authentication: AuthenticationService,
     private fb: FormBuilder,
     private translate: TranslateService,
-    private errors: ErrorService) { }
+    private errors: ErrorService,
+  ) {}
 
   /** ngOnInit
   /* init of this component
@@ -48,24 +49,40 @@ export class ProfileComponent implements OnInit {
 
     if (user) {
       this.profileForm = this.fb.group({
-        'user-id': [{value: user.userId, disabled: true}],
-        'email': [{value: user.email, disabled: true}],
-        'first-name': [{value: user.firstName, disabled: true}],
-        'last-name': [{value: user.lastName, disabled: true}],
-        'organization-name': [{value: user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown', disabled: true}],
-        'country': [{value: user.country ? user.country : 'Unknown', disabled: true}],
-        'network-member': [{value: user.networkMember ? 'Yes' : 'No', disabled: true}],
-        'metis-user-flag': [{value: user.metisUserFlag, disabled: true}],
-        'account-role': [{value: user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown', disabled: true}],
-        'created-date': [{value: new Date(user.createdDate), disabled: true}],
-        'updated-date': [{value: new Date(user.updatedDate), disabled: true}],
-        passwords: this.fb.group({
-          oldpassword: ['', Validators.required ],
-          password: ['', Validators.required ],
-          confirm: ['', Validators.required ]
-        }, {
-          validator: MatchPasswordValidator
-        })
+        'user-id': [{ value: user.userId, disabled: true }],
+        email: [{ value: user.email, disabled: true }],
+        'first-name': [{ value: user.firstName, disabled: true }],
+        'last-name': [{ value: user.lastName, disabled: true }],
+        'organization-name': [
+          {
+            value:
+              user.organizationName && user.organizationName.length > 0
+                ? user.organizationName
+                : 'Unknown',
+            disabled: true,
+          },
+        ],
+        country: [{ value: user.country ? user.country : 'Unknown', disabled: true }],
+        'network-member': [{ value: user.networkMember ? 'Yes' : 'No', disabled: true }],
+        'metis-user-flag': [{ value: user.metisUserFlag, disabled: true }],
+        'account-role': [
+          {
+            value: user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown',
+            disabled: true,
+          },
+        ],
+        'created-date': [{ value: new Date(user.createdDate), disabled: true }],
+        'updated-date': [{ value: new Date(user.updatedDate), disabled: true }],
+        passwords: this.fb.group(
+          {
+            oldpassword: ['', Validators.required],
+            password: ['', Validators.required],
+            confirm: ['', Validators.required],
+          },
+          {
+            validator: MatchPasswordValidator,
+          },
+        ),
       });
     }
   }
@@ -113,19 +130,22 @@ export class ProfileComponent implements OnInit {
     const password = passwords.get('password')!.value;
     const oldpassword = passwords.get('oldpassword')!.value;
 
-    this.authentication.updatePassword(password, oldpassword).subscribe(result => {
-      if (result === true) {
-        this.successMessage = 'Update password successful!';
-      } else {
-        this.errorMessage = 'Update password failed, please try again later';
-      }
-      this.loading = false;
-      this.toggleEditMode();
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `Update password failed: ${StringifyHttpError(error)}`;
-      this.loading = false;
-    });
+    this.authentication.updatePassword(password, oldpassword).subscribe(
+      (result) => {
+        if (result === true) {
+          this.successMessage = 'Update password successful!';
+        } else {
+          this.errorMessage = 'Update password failed, please try again later';
+        }
+        this.loading = false;
+        this.toggleEditMode();
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `Update password failed: ${StringifyHttpError(error)}`;
+        this.loading = false;
+      },
+    );
   }
 
   /** onReloadProfile
@@ -135,23 +155,25 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = undefined;
     this.loading = true;
 
-    this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(result => {
-      if (result === true) {
-        this.successMessage = 'Your profile has been updated';
-        this.createForm();
-      } else {
-        this.errorMessage = 'Refresh failed, please try again later';
-      }
-      this.loading = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `Refresh failed: ${StringifyHttpError(error)}`;
-      this.loading = false;
-    });
+    this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(
+      (result) => {
+        if (result === true) {
+          this.successMessage = 'Your profile has been updated';
+          this.createForm();
+        } else {
+          this.errorMessage = 'Refresh failed, please try again later';
+        }
+        this.loading = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `Refresh failed: ${StringifyHttpError(error)}`;
+        this.loading = false;
+      },
+    );
 
     setTimeout(() => {
       window.scrollTo(0, 0);
     }, 500);
   }
-
 }

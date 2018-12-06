@@ -1,7 +1,6 @@
 import { TranslateService } from '../_services';
 
 export class MockTranslateService extends TranslateService {
-
   public constructor() {
     super({});
   }
@@ -9,5 +8,4 @@ export class MockTranslateService extends TranslateService {
   protected translate(key: string): string {
     return this.currentLang + ':' + key;
   }
-
 }

@@ -7,15 +7,14 @@ import { User } from '../../_models';
   selector: 'app-header',
   templateUrl: './header.component.html',
 })
-
 export class HeaderComponent implements OnInit {
-
   constructor(
     private authentication: AuthenticationService,
     public router: Router,
     private route: ActivatedRoute,
     private redirectPreviousUrl: RedirectPreviousUrl,
-    private translate: TranslateService) {}
+    private translate: TranslateService,
+  ) {}
 
   openSignIn = false;
   openSearch = false;
@@ -117,5 +116,4 @@ export class HeaderComponent implements OnInit {
   onClickedOutsideSearch(e?: Event): void {
     this.openSearch = false;
   }
-
 }

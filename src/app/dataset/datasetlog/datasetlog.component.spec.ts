@@ -1,7 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService, DatasetsService } from '../../_services';
-import { MockWorkflowService, MockAuthenticationService, MockTranslateService, MockDatasetService, currentWorkflow } from '../../_mocked';
+import {
+  WorkflowService,
+  AuthenticationService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+  DatasetsService,
+} from '../../_services';
+import {
+  MockWorkflowService,
+  MockAuthenticationService,
+  MockTranslateService,
+  MockDatasetService,
+  currentWorkflow,
+} from '../../_mocked';
 
 import { DatasetlogComponent } from './datasetlog.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -14,17 +27,17 @@ describe('DatasetlogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ DatasetlogComponent, TranslatePipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      declarations: [DatasetlogComponent, TranslatePipe],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
-      ]
-    })
-    .compileComponents();
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -50,5 +63,4 @@ describe('DatasetlogComponent', () => {
     fixture.detectChanges();
     expect(component.getLogFrom()).toBe(101);
   });
-
 });

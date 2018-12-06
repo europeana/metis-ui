@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { switchMap} from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { EditorConfiguration } from 'codemirror';
 
 import 'codemirror/mode/xml/xml';
@@ -23,15 +23,16 @@ type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
-  styleUrls: ['./mapping.component.scss']
+  styleUrls: ['./mapping.component.scss'],
 })
 export class MappingComponent implements OnInit {
-
-  constructor(private workflows: WorkflowService,
+  constructor(
+    private workflows: WorkflowService,
     private errors: ErrorService,
     private datasets: DatasetsService,
     private translate: TranslateService,
-    private router: Router) { }
+    private router: Router,
+  ) {}
 
   @Input() datasetData: Dataset;
 
@@ -57,7 +58,7 @@ export class MappingComponent implements OnInit {
       readOnly: false,
       viewportMargin: Infinity,
       lineWrapping: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     };
 
     this.translate.use('en');
@@ -69,42 +70,50 @@ export class MappingComponent implements OnInit {
 
   // load the data on statistics and display this in a card (=readonly editor)
   loadStatistics(): void {
-    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(result => {
-      let taskId: string | undefined;
-      if (result['results'].length > 0) {
-        // find validation in the latest run, and if available, find taskid
-        for (let i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
-          if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
-            taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
+    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
+      (result) => {
+        let taskId: string | undefined;
+        if (result['results'].length > 0) {
+          // find validation in the latest run, and if available, find taskid
+          for (let i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
+            if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
+              taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
+            }
           }
         }
-      }
 
-      if (!taskId) { return; }
-      this.successMessage = 'Loading statistics';
-      this.workflows.getStatistics('validation', taskId).subscribe(resultStatistics => {
-        let statistics = resultStatistics['nodeStatistics'];
-
-        if (statistics.length > 100) {
-          statistics = statistics.slice(0, 100);
+        if (!taskId) {
+          return;
         }
-        statistics.forEach((statistic) => {
-          const attrs = statistic.attributesStatistics;
-          if (attrs.length > 100) {
-            statistic.attributesStatistics = attrs.slice(0, 100);
-          }
-        });
+        this.successMessage = 'Loading statistics';
+        this.workflows.getStatistics('validation', taskId).subscribe(
+          (resultStatistics) => {
+            let statistics = resultStatistics['nodeStatistics'];
 
-        this.statistics = statistics;
-        this.successMessage = undefined;
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
-      });
-      return;
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);
-    });
+            if (statistics.length > 100) {
+              statistics = statistics.slice(0, 100);
+            }
+            statistics.forEach((statistic) => {
+              const attrs = statistic.attributesStatistics;
+              if (attrs.length > 100) {
+                statistic.attributesStatistics = attrs.slice(0, 100);
+              }
+            });
+
+            this.statistics = statistics;
+            this.successMessage = undefined;
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            this.errorMessage = `${StringifyHttpError(error)}`;
+          },
+        );
+        return;
+      },
+      (err: HttpErrorResponse) => {
+        this.errors.handleError(err);
+      },
+    );
   }
 
   loadCustomXSLT(): void {
@@ -114,27 +123,33 @@ export class MappingComponent implements OnInit {
     }
 
     this.xsltStatus = 'loading';
-    this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(result => {
-      this.xsltToSave = this.xslt = result;
-      this.xsltStatus = 'has-custom';
-    }, (err: HttpErrorResponse) => {
-      this.xsltStatus = 'no-custom';
-      this.errors.handleError(err);
-      this.xsltToSave = this.xslt = '';
-    });
+    this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
+      (result) => {
+        this.xsltToSave = this.xslt = result;
+        this.xsltStatus = 'has-custom';
+      },
+      (err: HttpErrorResponse) => {
+        this.xsltStatus = 'no-custom';
+        this.errors.handleError(err);
+        this.xsltToSave = this.xslt = '';
+      },
+    );
   }
 
   loadDefaultXSLT(): void {
     const hasCustom = this.xsltStatus === 'has-custom';
     this.xsltStatus = 'loading';
-    this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(result => {
-      this.xsltToSave = this.xslt = result;
-      this.xsltStatus = hasCustom ? 'has-custom' : 'new-custom';
-    }, (err: HttpErrorResponse) => {
-      this.xsltStatus = 'no-custom';
-      this.errors.handleError(err);
-      this.xsltToSave = this.xslt = '';
-    });
+    this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
+      (result) => {
+        this.xsltToSave = this.xslt = result;
+        this.xsltStatus = hasCustom ? 'has-custom' : 'new-custom';
+      },
+      (err: HttpErrorResponse) => {
+        this.xsltStatus = 'no-custom';
+        this.errors.handleError(err);
+        this.xsltToSave = this.xslt = '';
+      },
+    );
   }
 
   tryOutXSLT(type: string): void {
@@ -143,20 +158,28 @@ export class MappingComponent implements OnInit {
   }
 
   saveCustomXSLT(tryout: boolean): void {
-    const datasetValues = { 'dataset': this.datasetData, 'xslt': this.xsltToSave };
-    this.datasets.updateDataset(datasetValues).pipe(switchMap(() => {
-      return this.datasets.getDataset(this.datasetData.datasetId, true);
-    })).subscribe((newDataset) => {
-      this.datasetData.xsltId = newDataset.xsltId;
-      this.loadCustomXSLT();
-      this.successMessage = this.msgXSLTSuccess;
-      if (tryout) {
-        this.tryOutXSLT('custom');
-      }
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+    const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
+    this.datasets
+      .updateDataset(datasetValues)
+      .pipe(
+        switchMap(() => {
+          return this.datasets.getDataset(this.datasetData.datasetId, true);
+        }),
+      )
+      .subscribe(
+        (newDataset) => {
+          this.datasetData.xsltId = newDataset.xsltId;
+          this.loadCustomXSLT();
+          this.successMessage = this.msgXSLTSuccess;
+          if (tryout) {
+            this.tryOutXSLT('custom');
+          }
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.errorMessage = `${StringifyHttpError(error)}`;
+        },
+      );
   }
 
   cancel(): void {
@@ -173,5 +196,4 @@ export class MappingComponent implements OnInit {
     this.errorMessage = undefined;
     this.successMessage = undefined;
   }
-
 }

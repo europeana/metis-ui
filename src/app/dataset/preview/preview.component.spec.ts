@@ -2,10 +2,24 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from 'ng2-codemirror';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
+import {
+  MockDatasetService,
+  MockWorkflowService,
+  currentWorkflow,
+  currentDataset,
+  MockAuthenticationService,
+  MockTranslateService,
+} from '../../_mocked';
 
 import { PreviewComponent } from './preview.component';
-import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
+import {
+  WorkflowService,
+  TranslateService,
+  ErrorService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  DatasetsService,
+} from '../../_services';
 
 import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -18,17 +32,17 @@ describe('PreviewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule ],
-      declarations: [ PreviewComponent, TranslatePipe, XmlPipe, RenameWorkflowPipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService},
-        {provide: DatasetsService, useClass: MockDatasetService},
+      imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule],
+      declarations: [PreviewComponent, TranslatePipe, XmlPipe, RenameWorkflowPipe],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: DatasetsService, useClass: MockDatasetService },
         ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
-      ]
-    })
-    .compileComponents();
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -43,7 +57,10 @@ describe('PreviewComponent', () => {
 
   it('should prefill filters', (): void => {
     component.datasetData = currentDataset;
-    component.previewFilters = {execution: currentWorkflow['results'][0], plugin: 'MOCKED'};
+    component.previewFilters = {
+      execution: currentWorkflow['results'][0],
+      plugin: 'MOCKED',
+    };
     component.prefillFilters();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
@@ -51,7 +68,10 @@ describe('PreviewComponent', () => {
 
   it('should expand sample', (): void => {
     component.datasetData = currentDataset;
-    component.previewFilters = {execution: currentWorkflow['results'][0], plugin: 'MOCKED'};
+    component.previewFilters = {
+      execution: currentWorkflow['results'][0],
+      plugin: 'MOCKED',
+    };
     component.prefillFilters();
     component.expandSample(0);
     fixture.detectChanges();
@@ -62,12 +82,16 @@ describe('PreviewComponent', () => {
     component.datasetData = currentDataset;
     component.toggleFilterDate();
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length).toBeTruthy();
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
+    ).toBeTruthy();
 
     component.allPlugins = [{ type: 'mocked', error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length).toBeTruthy();
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+    ).toBeTruthy();
   });
 
   it('should get transformed samples', () => {
@@ -76,5 +100,4 @@ describe('PreviewComponent', () => {
     fixture.detectChanges();
     expect(component.allSamples.length).not.toBe(0);
   });
-
 });

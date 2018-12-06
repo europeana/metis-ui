@@ -6,7 +6,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
-import { AuthenticationService, TranslateService, RedirectPreviousUrl, ErrorService } from '../_services';
+import {
+  AuthenticationService,
+  TranslateService,
+  RedirectPreviousUrl,
+  ErrorService,
+} from '../_services';
 import { TranslatePipe } from '../_translate';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -19,17 +24,16 @@ describe('RegisterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule ],
-      declarations: [ RegisterComponent, TranslatePipe ],
+      imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      declarations: [RegisterComponent, TranslatePipe],
       providers: [
         RedirectPreviousUrl,
         ErrorService,
-        {provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-      .compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -54,11 +58,14 @@ describe('RegisterComponent', () => {
   it('should submit the form', () => {
     submitBtn = fixture.nativeElement.querySelector('.submit-btn');
     component.registerForm.controls.email.setValue('test@mocked.com');
-    (component.registerForm.controls.passwords as FormGroup).controls.password.setValue('!Passw0rd123');
-    (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue('!Passw0rd123');
+    (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
+      '!Passw0rd123',
+    );
+    (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue(
+      '!Passw0rd123',
+    );
     component.onSubmit();
     fixture.detectChanges();
     expect(submitBtn.disabled).toBe(false);
   });
-
 });

@@ -19,10 +19,9 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss'],
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class DatasetformComponent implements OnInit {
-
   @Input() datasetData: Partial<Dataset>;
   @Input() harvestPublicationData?: HarvestData;
   @Input() isNew: boolean;
@@ -49,13 +48,15 @@ export class DatasetformComponent implements OnInit {
     return this._formMode;
   }
 
-  constructor(private countries: CountriesService,
+  constructor(
+    private countries: CountriesService,
     private datasets: DatasetsService,
     private router: Router,
     private fb: FormBuilder,
     private errors: ErrorService,
     private datePipe: DatePipe,
-    private translate: TranslateService) {}
+    private translate: TranslateService,
+  ) {}
 
   private updateFormEnabled(): void {
     if (this.datasetForm) {
@@ -78,39 +79,45 @@ export class DatasetformComponent implements OnInit {
   }
 
   returnCountries(): void {
-    this.countries.getCountries().subscribe(result => {
-      this.countryOptions = result;
-      if (this.datasetData && this.countryOptions) {
-        if (this.datasetData.country) {
-          for (let i = 0; i < this.countryOptions.length; i++) {
-            if (this.countryOptions[i].enum === this.datasetData.country.enum) {
-              this.selectedCountry = this.countryOptions[i];
+    this.countries.getCountries().subscribe(
+      (result) => {
+        this.countryOptions = result;
+        if (this.datasetData && this.countryOptions) {
+          if (this.datasetData.country) {
+            for (let i = 0; i < this.countryOptions.length; i++) {
+              if (this.countryOptions[i].enum === this.datasetData.country.enum) {
+                this.selectedCountry = this.countryOptions[i];
+              }
             }
           }
         }
-      }
-      this.updateForm();
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);
-    });
+        this.updateForm();
+      },
+      (err: HttpErrorResponse) => {
+        this.errors.handleError(err);
+      },
+    );
   }
 
   returnLanguages(): void {
-    this.countries.getLanguages().subscribe(result => {
-      this.languageOptions = result;
-      if (this.datasetData && this.languageOptions) {
-        if (this.datasetData.language) {
-          for (let i = 0; i < this.languageOptions.length; i++) {
-            if (this.languageOptions[i].enum === this.datasetData.language.enum) {
-              this.selectedLanguage = this.languageOptions[i];
+    this.countries.getLanguages().subscribe(
+      (result) => {
+        this.languageOptions = result;
+        if (this.datasetData && this.languageOptions) {
+          if (this.datasetData.language) {
+            for (let i = 0; i < this.languageOptions.length; i++) {
+              if (this.languageOptions[i].enum === this.datasetData.language.enum) {
+                this.selectedLanguage = this.languageOptions[i];
+              }
             }
           }
         }
-      }
-      this.updateForm();
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);
-    });
+        this.updateForm();
+      },
+      (err: HttpErrorResponse) => {
+        this.errors.handleError(err);
+      },
+    );
   }
 
   buildForm(): void {
@@ -156,33 +163,42 @@ export class DatasetformComponent implements OnInit {
 
     this.formMode = 'save';
     if (this.isNew) {
-      this.datasets.createDataset(this.datasetForm.value).subscribe(result => {
-        localStorage.removeItem(DATASET_TEMP_LSKEY);
+      this.datasets.createDataset(this.datasetForm.value).subscribe(
+        (result) => {
+          localStorage.removeItem(DATASET_TEMP_LSKEY);
 
-        this.router.navigate(['/dataset/new/' + result['datasetId']]);
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+          this.router.navigate(['/dataset/new/' + result['datasetId']]);
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.errorMessage = `${StringifyHttpError(error)}`;
 
-        this.formMode = 'edit';
-        this.scrollToTop();
-      });
+          this.formMode = 'edit';
+          this.scrollToTop();
+        },
+      );
     } else {
-      const dataset = { datasetId: this.datasetData.datasetId, ...this.datasetForm.value };
-      this.datasets.updateDataset({ dataset }).subscribe(result => {
-        localStorage.removeItem(DATASET_TEMP_LSKEY);
-        this.successMessage = 'Dataset updated!';
-        this.datasetUpdated.emit();
+      const dataset = {
+        datasetId: this.datasetData.datasetId,
+        ...this.datasetForm.value,
+      };
+      this.datasets.updateDataset({ dataset }).subscribe(
+        (result) => {
+          localStorage.removeItem(DATASET_TEMP_LSKEY);
+          this.successMessage = 'Dataset updated!';
+          this.datasetUpdated.emit();
 
-        this.formMode = 'show';
-        this.scrollToTop();
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+          this.formMode = 'show';
+          this.scrollToTop();
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.errorMessage = `${StringifyHttpError(error)}`;
 
-        this.formMode = 'edit';
-        this.scrollToTop();
-      });
+          this.formMode = 'edit';
+          this.scrollToTop();
+        },
+      );
     }
   }
 

@@ -12,7 +12,6 @@ import { currentUser } from '../_mocked';
 import { apiSettings } from '../../environments/apisettings';
 
 describe('AuthenticationService', () => {
-
   let service: AuthenticationService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
@@ -20,12 +19,11 @@ describe('AuthenticationService', () => {
   let errors;
   let redirect: RedirectPreviousUrl;
 
-   beforeEach(async(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule ],
-      providers: [ RedirectPreviousUrl, HttpTestingController, ErrorService]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule, HttpClientModule],
+      providers: [RedirectPreviousUrl, HttpTestingController, ErrorService],
+    }).compileComponents();
 
     router = TestBed.get(Router);
     redirect = TestBed.get(RedirectPreviousUrl);

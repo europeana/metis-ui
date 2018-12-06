@@ -10,8 +10,12 @@ context('metis-ui', () => {
     it('should show the home screen and have a signin button', () => {
       cy.get('h2').contains('What can you do with Metis?');
 
-      cy.get('a.signup').contains('Sign in').click();
-      cy.get('ul.menu-sublevel a').contains('Sign in').click();
+      cy.get('a.signup')
+        .contains('Sign in')
+        .click();
+      cy.get('ul.menu-sublevel a')
+        .contains('Sign in')
+        .click();
       cy.url().should('contain', '/signin');
     });
   });
@@ -29,7 +33,9 @@ context('metis-ui', () => {
       cy.get('.svg-icon-dashboard').should('have.attr', 'href', '/dashboard');
 
       cy.get('.svg-icon-loggedin-user').click();
-      cy.get('ul.menu-sublevel a').contains('Sign out').click();
+      cy.get('ul.menu-sublevel a')
+        .contains('Sign out')
+        .click();
       cy.get('a.signup').contains('Sign in');
     });
   });

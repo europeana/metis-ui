@@ -10,12 +10,10 @@ import { ProcessingInfo } from '../dataset.component';
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
-  styleUrls: ['./actionbar.component.scss']
+  styleUrls: ['./actionbar.component.scss'],
 })
 export class ActionbarComponent {
-
-  constructor(public workflows: WorkflowService,
-      private translate: TranslateService) { }
+  constructor(public workflows: WorkflowService, private translate: TranslateService) {}
 
   private _lastExecutionData?: WorkflowExecution;
 
@@ -68,7 +66,11 @@ export class ActionbarComponent {
       this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
       this.workflowPercentage = 0;
 
-      if (value.workflowStatus === 'FINISHED' || value.workflowStatus === 'CANCELLED' || value.workflowStatus === 'FAILED') {
+      if (
+        value.workflowStatus === 'FINISHED' ||
+        value.workflowStatus === 'CANCELLED' ||
+        value.workflowStatus === 'FAILED'
+      ) {
         if (value.workflowStatus === 'CANCELLED' || value.workflowStatus === 'FAILED') {
           this.now = value.updatedDate;
         } else {
@@ -76,7 +78,10 @@ export class ActionbarComponent {
         }
         this.currentStatus = value.workflowStatus;
       } else {
-        this.setProcessingInfo.emit({ totalProcessed: this.totalProcessed, currentPluginName: this.currentPluginName });
+        this.setProcessingInfo.emit({
+          totalProcessed: this.totalProcessed,
+          currentPluginName: this.currentPluginName,
+        });
 
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
@@ -98,7 +103,7 @@ export class ActionbarComponent {
     this.cancelling = this.translate.instant('cancelling');
   }
 
-  cancelWorkflow (): void {
+  cancelWorkflow(): void {
     this.workflows.promptCancelThisWorkflow(this.lastExecutionData!.id);
   }
 
@@ -111,9 +116,8 @@ export class ActionbarComponent {
   }
 
   // after double clicking, copy the execution and task id to the clipboard
-  copyInformation (type: string, id1: string, id2: string): void {
+  copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
-
 }

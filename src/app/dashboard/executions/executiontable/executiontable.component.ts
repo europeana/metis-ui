@@ -8,10 +8,9 @@ import { WorkflowExecution, PluginExecution } from '../../../_models/workflow-ex
 @Component({
   selector: '[app-executiontable]',
   templateUrl: './executiontable.component.html',
-  styleUrls: ['./executiontable.component.scss']
+  styleUrls: ['./executiontable.component.scss'],
 })
 export class ExecutiontableComponent implements OnInit {
-
   @Input() execution: WorkflowExecution;
   @Input() plugin: PluginExecution;
 
@@ -20,9 +19,11 @@ export class ExecutiontableComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
 
-  constructor(private workflows: WorkflowService,
+  constructor(
+    private workflows: WorkflowService,
     private errors: ErrorService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+  ) {}
 
   /** ngOnInit
   /* init this component:
@@ -38,7 +39,9 @@ export class ExecutiontableComponent implements OnInit {
   /* @param {number} id - id of the dataset to cancel
   */
   cancelWorkflow(id: string): void {
-    if (!id) { return; }
+    if (!id) {
+      return;
+    }
     this.workflows.promptCancelThisWorkflow(id);
   }
 
@@ -48,7 +51,7 @@ export class ExecutiontableComponent implements OnInit {
   /* @param {string} id1 - an id, depending on type
   /* @param {string} id2 - an id, depending on type
   */
-  copyInformation (type: string, id1: string, id2: string): void {
+  copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }

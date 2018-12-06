@@ -6,7 +6,6 @@
 }
 
 .metis-form .form-fields .form-group:not(.form-group-btns) {
-
   .messages {
     margin-left: 14rem;
     margin-top: 1rem;
@@ -16,12 +15,13 @@
     border-color: $eu-red;
   }
 
-  input:not([type='checkbox']), textarea, select {
+  input:not([type='checkbox']),
+  textarea,
+  select {
     &:disabled {
       background: transparent;
       border-color: $opacity-gray-very-light;
       color: $gray-light;
     }
   }
-
 }

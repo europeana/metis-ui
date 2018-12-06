@@ -5,10 +5,8 @@ export const TRANSLATIONS = new InjectionToken('translations'); // translation t
 
 // all translations
 export const dictionary = {
-  [LANG_EN_NAME]: LANG_EN_TRANS
+  [LANG_EN_NAME]: LANG_EN_TRANS,
 };
 
 // providers
-export const TRANSLATION_PROVIDERS = [
-  { provide: TRANSLATIONS, useValue: dictionary },
-];
+export const TRANSLATION_PROVIDERS = [{ provide: TRANSLATIONS, useValue: dictionary }];

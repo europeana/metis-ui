@@ -6,14 +6,13 @@
 }
 
 .form-fields {
-
   padding-bottom: 1.5rem;
   padding-top: 1.5rem;
 
   input:focus {
     border-color: $eu-jade;
-    -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, .3);
-    box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, .3);
+    -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+    box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
   }
 
   > label {
@@ -36,7 +35,7 @@
     .connections::after {
       content: '\25bc';
       display: inline-block;
-      font-size: .5rem;
+      font-size: 0.5rem;
       height: 1rem;
       text-align: center;
       width: 1rem;
@@ -54,7 +53,7 @@
   .form-group-connections > div {
     display: inline-block;
     font-size: $font-size-slightly-smaller;
-    margin: 0 .1rem 1rem;
+    margin: 0 0.1rem 1rem;
     width: 65%;
   }
 
@@ -69,7 +68,7 @@
   .form-group-connections > a {
     display: inline-block;
     height: 1.2rem;
-    margin: 0 .5rem;
+    margin: 0 0.5rem;
   }
 
   .svg-icon-plus::before {
@@ -81,12 +80,12 @@
   }
 
   .form-group-radios label {
-    padding: .5rem 2rem .5rem 0;
+    padding: 0.5rem 2rem 0.5rem 0;
   }
 
   .form-group label + input[type='checkbox'] {
     flex: initial;
- }
+  }
 }
 
 .form-fields.inactive {
@@ -132,7 +131,6 @@
 }
 
 .form-fields.inactive .plugin {
-
   color: $gray-lighter;
 
   &::after {
@@ -172,8 +170,8 @@
     padding: 1rem 1rem;
 
     li {
-      font-size: .8rem;
-      padding: 0 .2rem;
+      font-size: 0.8rem;
+      padding: 0 0.2rem;
     }
 
     li::before {
@@ -191,10 +189,10 @@
 
     a:hover::after {
       background: $eu-jade;
-      bottom: -.3rem;
+      bottom: -0.3rem;
       content: '';
       display: block;
-      height: .2rem;
+      height: 0.2rem;
       left: 0;
       position: absolute;
       width: 100%;
@@ -203,7 +201,5 @@
     .inactive a {
       color: $gray-lighter;
     }
-
   }
-
 }

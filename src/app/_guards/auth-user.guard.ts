@@ -5,16 +5,17 @@ import { DOCUMENT } from '@angular/common';
 
 @Injectable()
 export class AuthUserGuard implements CanActivate {
-
-  constructor(private authentication: AuthenticationService,
-              private router: Router,
-              @Inject (DOCUMENT) private document: Document,
-              private redirectPreviousUrl: RedirectPreviousUrl) { }
+  constructor(
+    private authentication: AuthenticationService,
+    private router: Router,
+    @Inject(DOCUMENT) private document: Document,
+    private redirectPreviousUrl: RedirectPreviousUrl,
+  ) {}
 
   canActivate(): boolean {
     if (this.authentication.validatedUser()) {
-        // logged in so return true
-        return true;
+      // logged in so return true
+      return true;
     }
 
     // save original url to be redirected to after signin

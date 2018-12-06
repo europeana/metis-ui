@@ -1,6 +1,20 @@
 import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, MockTranslateService, currentWorkflowDataset } from '../../_mocked';
+import {
+  DatasetsService,
+  WorkflowService,
+  AuthenticationService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+} from '../../_services';
+import {
+  MockAuthenticationService,
+  MockWorkflowService,
+  MockDatasetService,
+  currentWorkflow,
+  MockTranslateService,
+  currentWorkflowDataset,
+} from '../../_mocked';
 
 import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import { By } from '@angular/platform-browser';
@@ -11,23 +25,23 @@ import { ActionbarComponent } from './actionbar.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { WorkflowStatus } from '../../_models/workflow-execution';
 
-
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ ActionbarComponent, TranslatePipe, RenameWorkflowPipe ],
-      providers:    [ { provide: WorkflowService, useClass: MockWorkflowService },
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      declarations: [ActionbarComponent, TranslatePipe, RenameWorkflowPipe],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
-        schemas: [ NO_ERRORS_SCHEMA ]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
@@ -104,7 +118,10 @@ describe('ActionbarComponent', () => {
     spyOn(component.setReportRequest, 'emit');
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
     reportBtn.triggerEventHandler('click', null);
-    expect(component.setReportRequest.emit).toHaveBeenCalledWith({ taskId: '123', topology: 'mocked' });
+    expect(component.setReportRequest.emit).toHaveBeenCalledWith({
+      taskId: '123',
+      topology: 'mocked',
+    });
   });
 
   it('should copy information', (): void => {
@@ -112,5 +129,4 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
   });
-
 });

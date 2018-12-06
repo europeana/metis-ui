@@ -4,8 +4,21 @@ import { DatasetComponent } from './dataset.component';
 
 import { By } from '@angular/platform-browser';
 
-import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../_services';
-import { MockDatasetService, MockWorkflowService, MockAuthenticationService, MockTranslateService, currentWorkflow } from '../_mocked';
+import {
+  DatasetsService,
+  TranslateService,
+  ErrorService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  WorkflowService,
+} from '../_services';
+import {
+  MockDatasetService,
+  MockWorkflowService,
+  MockAuthenticationService,
+  MockTranslateService,
+  currentWorkflow,
+} from '../_mocked';
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -19,19 +32,18 @@ describe('DatasetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientModule, RouterTestingModule ],
-      declarations: [ DatasetComponent, TranslatePipe ],
+      imports: [HttpClientModule, RouterTestingModule],
+      declarations: [DatasetComponent, TranslatePipe],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -73,7 +85,6 @@ describe('DatasetComponent', () => {
     component.activeTab = 'log';
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
   });
 
   it('should be possible to display a message', () => {

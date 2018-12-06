@@ -3,17 +3,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService, WorkflowService } from '../../_services';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import { PluginExecution, PluginStatus, WorkflowExecution } from '../../_models/workflow-execution';
-import {Report, ReportRequest} from '../../_models/report';
+import { Report, ReportRequest } from '../../_models/report';
 
 @Component({
   selector: 'app-lastexecution',
   templateUrl: './lastexecution.component.html',
-  styleUrls: ['./lastexecution.component.scss']
+  styleUrls: ['./lastexecution.component.scss'],
 })
 export class LastExecutionComponent implements OnInit {
-
-  constructor(public workflows: WorkflowService,
-    private translate: TranslateService) { }
+  constructor(public workflows: WorkflowService, private translate: TranslateService) {}
 
   @Input() datasetId: string;
 
@@ -28,8 +26,11 @@ export class LastExecutionComponent implements OnInit {
     if (value) {
       this.workflows.getReportsForExecution(value);
 
-      this.completedPlugins = value.metisPlugins.filter(({ pluginStatus }) =>
-        pluginStatus === PluginStatus.FINISHED || pluginStatus === PluginStatus.FAILED || pluginStatus === PluginStatus.CANCELLED
+      this.completedPlugins = value.metisPlugins.filter(
+        ({ pluginStatus }) =>
+          pluginStatus === PluginStatus.FINISHED ||
+          pluginStatus === PluginStatus.FAILED ||
+          pluginStatus === PluginStatus.CANCELLED,
       );
       this.completedPlugins.reverse();
     }
@@ -44,12 +45,12 @@ export class LastExecutionComponent implements OnInit {
     el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  openReport (taskId: string, topology: string): void {
+  openReport(taskId: string, topology: string): void {
     this.setReportRequest.emit({ taskId, topology });
   }
 
   // after double clicking, copy the execution and task id to the clipboard
-  copyInformation (type: string, id1: string, id2: string): void {
+  copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
   }
 }

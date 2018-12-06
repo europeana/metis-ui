@@ -2,8 +2,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../../_services';
-import { MockWorkflowService, currentWorkflow, MockAuthenticationService, MockTranslateService, MockDatasetService } from '../../../_mocked';
+import {
+  WorkflowService,
+  TranslateService,
+  ErrorService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  DatasetsService,
+} from '../../../_services';
+import {
+  MockWorkflowService,
+  currentWorkflow,
+  MockAuthenticationService,
+  MockTranslateService,
+  MockDatasetService,
+} from '../../../_mocked';
 import { ExecutiontableComponent } from './executiontable.component';
 
 import { TranslatePipe } from '../../../_translate';
@@ -14,18 +27,17 @@ describe('ExecutiontableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ ExecutiontableComponent, TranslatePipe ],
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      declarations: [ExecutiontableComponent, TranslatePipe],
       providers: [
         ErrorService,
         RedirectPreviousUrl,
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService, useClass: MockTranslateService }
-       ]
-    })
-    .compileComponents();
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
