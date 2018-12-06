@@ -1,27 +1,28 @@
-<div class="view-sample view-statistics" *ngIf="statistics" [ngClass]="{'view-sample-expanded': expandedStatistics}">
+<div
+  class="view-sample view-statistics"
+  *ngIf="statistics"
+  [ngClass]="{ 'view-sample-expanded': expandedStatistics }"
+>
   <div class="view-sample-title">
-    <h3>{{'statistics' | translate}}</h3>
-    <div class="toggle-expand"> 
-      <a (click)="toggleStatistics()">-</a>
-    </div>
+    <h3>{{ 'statistics' | translate }}</h3>
+    <div class="toggle-expand"><a (click)="toggleStatistics()">-</a></div>
   </div>
   <div class="view-sample-editor">
-    
     <div>
       <ul>
-        <li *ngFor="let s of statistics;">
-          <strong>attributesStatistics:</strong> <br/>
-            <ul>
-              <li *ngFor="let sa of s.attributesStatistics;">
-                <strong>name:</strong> {{sa.name}}<br/>
-                <strong>occurrence:</strong> {{sa.occurrence}}<br/>
-                <strong>value:</strong> {{sa.value}}<br/>
-              </li>
-            </ul>
-          <strong>occurrence:</strong> {{s.occurrence}} <br/>
-          <strong>parentXpath:</strong> {{s.parentXpath}} <br/>
-          <strong>value:</strong> {{s.value}} <br/>
-          <strong>xpath:</strong> {{s.xpath}}
+        <li *ngFor="let s of statistics">
+          <strong>attributesStatistics:</strong> <br />
+          <ul>
+            <li *ngFor="let sa of s.attributesStatistics">
+              <strong>name:</strong> {{ sa.name }}<br />
+              <strong>occurrence:</strong> {{ sa.occurrence }}<br />
+              <strong>value:</strong> {{ sa.value }}<br />
+            </li>
+          </ul>
+          <strong>occurrence:</strong> {{ s.occurrence }} <br />
+          <strong>parentXpath:</strong> {{ s.parentXpath }} <br />
+          <strong>value:</strong> {{ s.value }} <br />
+          <strong>xpath:</strong> {{ s.xpath }}
         </li>
       </ul>
     </div>
@@ -31,16 +32,20 @@
 </div>
 
 <div #messagebar class="messages" (clickOutside)="closeMessages()">
-  <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-  <div class="success-message" *ngIf="successMessage"><span class="svg-icon-spin-inbutton" *ngIf="!statistics"></span> {{successMessage}}</div>
+  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="success-message" *ngIf="successMessage">
+    <span class="svg-icon-spin-inbutton" *ngIf="!statistics"></span> {{ successMessage }}
+  </div>
 </div>
 
 <div class="btns-set">
-  <button (click)="tryOutXSLT('default');">{{ 'xslttryoutdefault' | translate }}</button>
+  <button (click)="tryOutXSLT('default')">{{ 'xslttryoutdefault' | translate }}</button>
 </div>
 
 <div class="messages" *ngIf="xsltStatus === 'loading'">
-  <div class="success-message"><span class="svg-icon-spin-inbutton"></span> {{ 'xsltloading' | translate }}</div>
+  <div class="success-message">
+    <span class="svg-icon-spin-inbutton"></span> {{ 'xsltloading' | translate }}
+  </div>
 </div>
 
 <div class="btns-set" *ngIf="xsltStatus === 'no-custom'">
@@ -55,15 +60,23 @@
     </div>
     <div class="view-sample-editor">
       <div class="view-sample-editor-codemirror">
-        <codemirror [ngModel]="xslt! | beautifyXML" (ngModelChange)="xsltToSave = $event" [config]="editorConfigEdit"></codemirror>
+        <codemirror
+          [ngModel]="xslt! | beautifyXML"
+          (ngModelChange)="xsltToSave = $event"
+          [config]="editorConfigEdit"
+        ></codemirror>
       </div>
     </div>
   </div>
 
   <div class="btns-set btns-set-save">
-    <button (click)="cancel()" *ngIf="xsltStatus === 'new-custom'">{{ 'cancel' | translate }}</button>
+    <button (click)="cancel()" *ngIf="xsltStatus === 'new-custom'">
+      {{ 'cancel' | translate }}
+    </button>
     <button (click)="loadDefaultXSLT()">{{ 'xsltresetdefault' | translate }}</button>
-    <button (click)="loadCustomXSLT()" *ngIf="xsltStatus === 'has-custom'">{{ 'xsltreloadcustom' | translate }}</button>
+    <button (click)="loadCustomXSLT()" *ngIf="xsltStatus === 'has-custom'">
+      {{ 'xsltreloadcustom' | translate }}
+    </button>
     <button (click)="saveCustomXSLT(false)">{{ 'save' | translate }}</button>
     <button (click)="saveCustomXSLT(true)">{{ 'xslttryout' | translate }}</button>
   </div>

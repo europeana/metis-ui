@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit {
   loading = false;
@@ -24,7 +24,8 @@ export class LoginComponent implements OnInit {
     private authentication: AuthenticationService,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private fb: FormBuilder,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+  ) {}
 
   /** ngOnInit
   /* init of this component
@@ -44,8 +45,8 @@ export class LoginComponent implements OnInit {
     this.authentication.logout();
 
     this.loginForm = this.fb.group({
-      'email': ['', [Validators.required, Validators.email] ],
-      'password': ['', Validators.required ]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
     });
 
     this.translate.use('en');
@@ -56,7 +57,12 @@ export class LoginComponent implements OnInit {
   /* submit login form
   */
   onSubmit(): void {
-    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return; }
+    if (
+      this.loginForm.controls.email.value === '' ||
+      this.loginForm.controls.password.value === ''
+    ) {
+      return;
+    }
 
     this.loading = true;
 
@@ -67,23 +73,31 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {
-      if (result === true) {
-        this.redirectAfterLogin();
-      } else {
-        this.errorMessage = this.msgBadCredentials;
-      }
-      this.loading = false;
-    }, (err: HttpErrorResponse) => {
-      this.errorMessage = err.status === 406 ? this.msgBadCredentials : `Signin failed: ${StringifyHttpError(err)}`;
-      this.loading = false;
-    });
+    this.authentication
+      .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
+      .subscribe(
+        (result) => {
+          if (result === true) {
+            this.redirectAfterLogin();
+          } else {
+            this.errorMessage = this.msgBadCredentials;
+          }
+          this.loading = false;
+        },
+        (err: HttpErrorResponse) => {
+          this.errorMessage =
+            err.status === 406
+              ? this.msgBadCredentials
+              : `Signin failed: ${StringifyHttpError(err)}`;
+          this.loading = false;
+        },
+      );
   }
 
   /** redirectAfterLogin
   /* redirect to previous page after login or default page
   */
-  redirectAfterLogin (): void {
+  redirectAfterLogin(): void {
     const url = this.redirectPreviousUrl.get();
 
     if (url && url !== '/signin') {
@@ -93,5 +107,4 @@ export class LoginComponent implements OnInit {
       this.router.navigate([environment.afterLoginGoto]);
     }
   }
-
 }

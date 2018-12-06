@@ -2,28 +2,27 @@
   <div class="modal">
     <div class="head">Report <a class="btn-close" (click)="closeReport()"></a></div>
     <div class="content">
-
       <app-load-animation [resources]="{ errors: true }" *ngIf="isLoading"></app-load-animation>
 
       <div class="messages">
-        <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
+        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
       </div>
 
       <div *ngIf="errors">
         <ul *ngFor="let r of reportKeys(errors)">
-          <li *ngFor="let rk of reportKeys(errors[r])"><strong>{{rk}}:</strong>
-            <span *ngIf="!isObject(errors[r][rk])">{{errors[r][rk]}}</span>
+          <li *ngFor="let rk of reportKeys(errors[r])">
+            <strong>{{ rk }}:</strong>
+            <span *ngIf="!isObject(errors[r][rk])">{{ errors[r][rk] }}</span>
             <div *ngIf="isObject(errors[r][rk])">
               <ul *ngFor="let subrk of reportKeys(errors[r][rk])">
                 <li *ngFor="let sub of reportKeys(errors[r][rk][subrk])">
-                  <strong>{{sub}}:</strong> {{errors[r][rk][subrk][sub]}}
+                  <strong>{{ sub }}:</strong> {{ errors[r][rk][subrk][sub] }}
                 </li>
               </ul>
             </div>
           </li>
         </ul>
       </div>
-
     </div>
   </div>
 </div>

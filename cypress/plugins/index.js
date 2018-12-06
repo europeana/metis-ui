@@ -18,6 +18,6 @@ module.exports = (on, config) => {
     webpackOptions: require('../webpack.config'),
     watchOptions: {},
   };
-  
+
   on('file:preprocessor', webpack(options));
 };

@@ -1,22 +1,22 @@
-.phase-flag{
+.phase-flag {
   font-size: $font-size-sm;
   font-weight: bold;
   left: 0;
-  padding: 0 .5em;
+  padding: 0 0.5em;
   position: absolute;
   top: 4px;
 
-  &.alpha{
+  &.alpha {
     background-color: $eu-orange;
     color: $white;
   }
 
-  &.beta{
+  &.beta {
     background-color: $eu-blue;
     color: $white;
   }
 
-  &:hover{
+  &:hover {
     cursor: help;
   }
 }

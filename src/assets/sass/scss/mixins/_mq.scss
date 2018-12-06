@@ -3,12 +3,11 @@
 $mq-base-font-size: 16px !default;
 $mq-responsive: true !default;
 $mq-breakpoints: (
-  mobile:  320px,
-  tablet:  740px,
+  mobile: 320px,
+  tablet: 740px,
   desktop: 980px,
-  wide:    1300px
+  wide: 1300px,
 ) !default;
-
 
 $mq-static-breakpoint: desktop !default;
 $mq-show-breakpoints: () !default;
@@ -26,20 +25,20 @@ $mq-media-type: all !default;
 
 @function mq-get-breakpoint-width($name, $breakpoints: $mq-breakpoints) {
   @if map-has-key($breakpoints, $name) {
-      @return map-get($breakpoints, $name);
+    @return map-get($breakpoints, $name);
   } @else {
-      @warn "Breakpoint #{$name} wasn't found in $breakpoints.";
+    @warn "Breakpoint #{$name} wasn't found in $breakpoints.";
   }
 }
 
 @mixin mq(
-    $from: false,
-    $until: false,
-    $and: false,
-    $media-type: $mq-media-type,
-    $breakpoints: $mq-breakpoints,
-    $responsive: $mq-responsive,
-    $static-breakpoint: $mq-static-breakpoint
+  $from: false,
+  $until: false,
+  $and: false,
+  $media-type: $mq-media-type,
+  $breakpoints: $mq-breakpoints,
+  $responsive: $mq-responsive,
+  $static-breakpoint: $mq-static-breakpoint
 ) {
   $min-width: 0;
   $max-width: 0;
@@ -48,18 +47,18 @@ $mq-media-type: all !default;
   // From: this breakpoint (inclusive)
   @if $from {
     @if type-of($from) == number {
-        $min-width: mq-px2em($from);
+      $min-width: mq-px2em($from);
     } @else {
-        $min-width: mq-px2em(mq-get-breakpoint-width($from, $breakpoints));
+      $min-width: mq-px2em(mq-get-breakpoint-width($from, $breakpoints));
     }
   }
 
   // Until: that breakpoint (exclusive)
   @if $until {
     @if type-of($until) == number {
-        $max-width: mq-px2em($until);
+      $max-width: mq-px2em($until);
     } @else {
-        $max-width: mq-px2em(mq-get-breakpoint-width($until, $breakpoints)) - .01em;
+      $max-width: mq-px2em(mq-get-breakpoint-width($until, $breakpoints)) - 0.01em;
     }
   }
 
@@ -69,13 +68,24 @@ $mq-media-type: all !default;
     $static-breakpoint-width: mq-get-breakpoint-width($static-breakpoint, $breakpoints);
     $target-width: mq-px2em($static-breakpoint-width);
     // Output only rules that start at or span our target width
-    @if ($and == false and ($min-width <= $target-width) and (($until == false) or ($max-width >= $target-width))) {
-        @content;
+    @if (
+      $and ==
+        false and
+        ($min-width <= $target-width) and
+        (($until == false) or ($max-width >= $target-width))
+    ) {
+      @content;
     }
   } @else {
-    @if $min-width != 0 { $media-query: '#{$media-query} and (min-width: #{$min-width})'; }
-    @if $max-width != 0 { $media-query: '#{$media-query} and (max-width: #{$max-width})'; }
-    @if $and            { $media-query: '#{$media-query} and #{$and}'; }
+    @if $min-width != 0 {
+      $media-query: '#{$media-query} and (min-width: #{$min-width})';
+    }
+    @if $max-width != 0 {
+      $media-query: '#{$media-query} and (max-width: #{$max-width})';
+    }
+    @if $and {
+      $media-query: '#{$media-query} and #{$and}';
+    }
 
     // Remove unnecessary media query prefix 'all and '
     @if ($media-type == 'all' and $media-query != '') {
@@ -90,7 +100,9 @@ $mq-media-type: all !default;
 }
 
 @mixin mq-add-breakpoint($name, $width) {
-  $new-breakpoint: ($name: $width);
+  $new-breakpoint: (
+    $name: $width,
+  );
   $mq-breakpoints: map-merge($mq-breakpoints, $new-breakpoint) !global;
 }
 
@@ -112,12 +124,12 @@ $mq-media-type: all !default;
     @each $show-breakpoint in $show-breakpoints {
       $width: mq-get-breakpoint-width($show-breakpoint, $breakpoints);
       @include mq($show-breakpoint, $breakpoints: $breakpoints) {
-        content: "#{$show-breakpoint} ≥ #{$width} (#{mq-px2em($width)})";
+        content: '#{$show-breakpoint} ≥ #{$width} (#{mq-px2em($width)})';
       }
     }
   }
 }
 
 @if length($mq-show-breakpoints) > 0 {
-    @include mq-show-breakpoints;
+  @include mq-show-breakpoints;
 }

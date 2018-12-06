@@ -4,10 +4,7 @@
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "moduleResolution": "node",
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -17,9 +14,7 @@
     "target": "es5",
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "typeRoots": ["node_modules/@types"]
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

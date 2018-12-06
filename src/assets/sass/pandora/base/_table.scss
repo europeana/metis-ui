@@ -2,7 +2,7 @@
 .table-horizontal-layout {
   border: 0;
   color: $gray-light;
-  font-size: .8125rem;
+  font-size: 0.8125rem;
 
   tr {
     background: $white;
@@ -20,7 +20,7 @@
   td {
     border: 0;
     color: $gray-light;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
 
     &.centered {
       text-align: center;
@@ -29,7 +29,7 @@
 
   th {
     border-bottom: 1px solid $gray-almost-lightest;
-    font-size: .8125rem;
+    font-size: 0.8125rem;
     white-space: nowrap;
 
     &.alignleft {
@@ -39,7 +39,6 @@
     @media (max-width: $bp-xxl) {
       white-space: normal;
     }
-
   }
 }
 
@@ -65,12 +64,12 @@
   }
 
   th:not(.centered) {
-    padding: .5rem .5rem .25rem;
+    padding: 0.5rem 0.5rem 0.25rem;
     text-align: left;
   }
 
   tr:not(.loadmore) td {
-    padding: .5rem .5rem .25rem;
+    padding: 0.5rem 0.5rem 0.25rem;
 
     &.errorindicator {
       padding-left: 0;
@@ -80,7 +79,7 @@
 
     @media (max-width: $bp-xxl) {
       &.errorindicator {
-        padding-top: .85rem;
+        padding-top: 0.85rem;
       }
     }
 
@@ -89,15 +88,15 @@
     }
 
     &.iconplaceholder {
-      padding-bottom: .1rem;
+      padding-bottom: 0.1rem;
       padding-right: 0;
-      padding-top: .65rem;
+      padding-top: 0.65rem;
     }
 
     &.buttonplaceholder {
       min-width: 6rem;
       padding-right: 1rem;
-      padding-top: .3rem;
+      padding-top: 0.3rem;
       text-align: center;
     }
 
@@ -106,7 +105,7 @@
     }
 
     &:first-child {
-      padding-left: .5rem;
+      padding-left: 0.5rem;
     }
 
     &:last-child {
@@ -125,7 +124,6 @@
   }
 
   @media (max-width: $bp-xxl) {
-
     span {
       display: block;
       white-space: nowrap;
@@ -155,7 +153,7 @@
   color: $gray-med;
   display: flex;
   justify-content: center;
-  padding: .25rem .5rem;
+  padding: 0.25rem 0.5rem;
   width: auto;
 
   &:hover {
@@ -174,7 +172,7 @@
 
   @media (max-width: $bp-xxl) {
     &.svg-icon-report {
-      padding-left: .5rem;
+      padding-left: 0.5rem;
     }
     &.svg-icon-report::before {
       display: none;
@@ -185,10 +183,10 @@
 .error {
   background: $eu-red;
   border: 1px solid $eu-red;
-  border-radius: .3rem;
+  border-radius: 0.3rem;
   display: inline-block;
-  height:  .625rem;
-  width: .625rem;
+  height: 0.625rem;
+  width: 0.625rem;
 }
 
 .errors {

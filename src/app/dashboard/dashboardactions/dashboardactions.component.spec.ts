@@ -11,10 +11,9 @@ describe('DashboardactionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardactionsComponent, TranslatePipe ],
-      providers: [ { provide: TranslateService, useClass: MockTranslateService } ]
-    })
-    .compileComponents();
+      declarations: [DashboardactionsComponent, TranslatePipe],
+      providers: [{ provide: TranslateService, useClass: MockTranslateService }],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

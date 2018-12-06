@@ -4,21 +4,27 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { timer as observableTimer, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-import { WorkflowService, AuthenticationService, TranslateService, ErrorService } from '../../_services';
+import {
+  WorkflowService,
+  AuthenticationService,
+  TranslateService,
+  ErrorService,
+} from '../../_services';
 import { SubTaskInfo } from '../../_models/subtask-info';
 import { ProcessingInfo } from '../dataset.component';
 import { PluginExecution } from '../../_models/workflow-execution';
 
 @Component({
   selector: 'app-datasetlog',
-  templateUrl: './datasetlog.component.html'
+  templateUrl: './datasetlog.component.html',
 })
 export class DatasetlogComponent implements OnInit, OnDestroy {
-
-  constructor(private workflows: WorkflowService,
+  constructor(
+    private workflows: WorkflowService,
     private authentication: AuthenticationService,
     private errors: ErrorService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+  ) {}
 
   @Input() processingInfo?: ProcessingInfo;
 
@@ -39,7 +45,8 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     const old = this._showPluginLog;
     let changed = true;
     if (old) {
-      changed = value.externalTaskId !== old.externalTaskId ||
+      changed =
+        value.externalTaskId !== old.externalTaskId ||
         value.pluginStatus !== old.pluginStatus ||
         value.executionProgress.processedRecords !== old.executionProgress.processedRecords;
     }
@@ -68,11 +75,15 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
 
   closeLog(): void {
     this.closed.emit(undefined);
-    if (this.subscription) { this.subscription.unsubscribe(); }
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   startPolling(): void {
-    if (this.subscription) { this.subscription.unsubscribe(); }
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
     const timer = observableTimer(0, environment.intervalStatusMedium);
     this.subscription = timer.subscribe(() => {
       this.returnLog();
@@ -86,7 +97,9 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this.logTo = (this.processingInfo ? this.processingInfo.totalProcessed : processed) || 0;
 
     if (processed && (status === 'FINISHED' || status === 'CANCELLED' || status === 'FAILED')) {
-      if (this.subscription) { this.subscription.unsubscribe(); }
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
     }
 
     if (this.logTo <= 1) {
@@ -94,11 +107,21 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.workflows.getLogs(this.showPluginLog.externalTaskId, this.showPluginLog.topologyName, this.getLogFrom(), this.logTo).subscribe(result => {
-      this.showWindowOutput(result);
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);
-    });
+    this.workflows
+      .getLogs(
+        this.showPluginLog.externalTaskId,
+        this.showPluginLog.topologyName,
+        this.getLogFrom(),
+        this.logTo,
+      )
+      .subscribe(
+        (result) => {
+          this.showWindowOutput(result);
+        },
+        (err: HttpErrorResponse) => {
+          this.errors.handleError(err);
+        },
+      );
   }
 
   // show correct information in log modal window
@@ -112,6 +135,6 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   getLogFrom(): number {
-    return (this.logTo - this.logPerStep) >= 1 ? (this.logTo - this.logPerStep) + 1 : 1;
+    return this.logTo - this.logPerStep >= 1 ? this.logTo - this.logPerStep + 1 : 1;
   }
 }

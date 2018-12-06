@@ -1,5 +1,5 @@
 import { map, publishLast, tap } from 'rxjs/operators';
-import { ConnectableObservable,  Observable } from 'rxjs';
+import { ConnectableObservable, Observable } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -13,11 +13,9 @@ import { WorkflowExecution } from '../_models/workflow-execution';
 
 @Injectable()
 export class DatasetsService {
-
   datasetById: { [id: string]: Observable<Dataset> } = {};
 
-  constructor(private http: HttpClient,
-    private errors: ErrorService) { }
+  constructor(private http: HttpClient, private errors: ErrorService) {}
 
   private requestDataset(id: string): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;
@@ -49,7 +47,7 @@ export class DatasetsService {
         // remove old dataset from cache
         delete this.datasetById[datasetFormValues.dataset.datasetId];
       }),
-      this.errors.handleRetry()
+      this.errors.handleRetry(),
     );
   }
 
@@ -62,10 +60,18 @@ export class DatasetsService {
       options = undefined;
     }
 
-    //tslint:disable-next-line: no-any
-    return this.http.get<any>(url, options).pipe(map(data => { // TODO: fix any
-      return type === 'default' ? data : data['xslt'];
-    })).pipe(this.errors.handleRetry());
+    return (
+      this.http
+        //tslint:disable-next-line: no-any
+        .get<any>(url, options)
+        .pipe(
+          map((data) => {
+            // TODO: fix any
+            return type === 'default' ? data : data['xslt'];
+          }),
+        )
+        .pipe(this.errors.handleRetry())
+    );
   }
 
   // get transformed samples for specific dataset
@@ -74,7 +80,10 @@ export class DatasetsService {
     if (type === 'default') {
       url += '/default';
     }
-    return this.http.post<XmlSample[]>(url, samples, {headers: {'Content-Type': 'application/json'}}).pipe(this.errors.handleRetry());
+    return this.http
+      .post<XmlSample[]>(url, samples, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .pipe(this.errors.handleRetry());
   }
-
 }

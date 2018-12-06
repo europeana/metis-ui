@@ -7,12 +7,10 @@ import { PluginExecution, WorkflowExecution } from '../../_models/workflow-execu
 @Component({
   selector: 'app-ongoingexecutions',
   templateUrl: './ongoingexecutions.component.html',
-  styleUrls: ['./ongoingexecutions.component.scss']
+  styleUrls: ['./ongoingexecutions.component.scss'],
 })
 export class OngoingexecutionsComponent {
-
-  constructor(private workflows: WorkflowService,
-    private translate: TranslateService) { }
+  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   @Input() showPluginLog: PluginExecution;
   @Input() runningExecutions: WorkflowExecution[];
@@ -33,7 +31,9 @@ export class OngoingexecutionsComponent {
   /* @param {number} id - id of the dataset to cancel
   */
   cancelWorkflow(id: string): void {
-    if (!id) { return; }
+    if (!id) {
+      return;
+    }
     this.workflows.promptCancelThisWorkflow(id);
   }
 
@@ -60,9 +60,8 @@ export class OngoingexecutionsComponent {
   /* @param {string} id1 - an id, depending on type
   /* @param {string} id2 - an id, depending on type
   */
-  copyInformation (type: string, id1: string, id2: string): void {
+  copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
-
 }

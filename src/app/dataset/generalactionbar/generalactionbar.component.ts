@@ -7,12 +7,10 @@ import { Workflow } from '../../_models/workflow';
 @Component({
   selector: 'app-generalactionbar',
   templateUrl: './generalactionbar.component.html',
-  styleUrls: ['./generalactionbar.component.scss']
+  styleUrls: ['./generalactionbar.component.scss'],
 })
 export class GeneralactionbarComponent implements OnInit, OnChanges {
-
-  constructor(private workflows: WorkflowService,
-    private translate: TranslateService) { }
+  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   @Input() datasetId: string;
   @Input() lastExecutionData?: WorkflowExecution;
@@ -37,5 +35,4 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
       this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
     }
   }
-
 }

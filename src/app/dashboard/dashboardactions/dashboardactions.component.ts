@@ -5,11 +5,10 @@ import { TranslateService } from '../../_services';
 @Component({
   selector: 'app-dashboardactions',
   templateUrl: './dashboardactions.component.html',
-  styleUrls: ['./dashboardactions.component.scss']
+  styleUrls: ['./dashboardactions.component.scss'],
 })
 export class DashboardactionsComponent implements OnInit {
-
-  constructor(private translate: TranslateService) { }
+  constructor(private translate: TranslateService) {}
 
   linkToZoho: string = environment.links.gotoZoho;
 

@@ -5,9 +5,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class AuthVisitorGuard implements CanActivate {
-
-  constructor( private router: Router,
-    private authentication: AuthenticationService ) {}
+  constructor(private router: Router, private authentication: AuthenticationService) {}
 
   canActivate(): boolean {
     if (this.authentication.validatedUser() === false) {

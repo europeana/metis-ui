@@ -6,12 +6,10 @@ import { HarvestData } from '../../_models/harvest-data';
 
 @Component({
   selector: 'app-generalinfo',
-  templateUrl: './generalinfo.component.html'
+  templateUrl: './generalinfo.component.html',
 })
-
 export class GeneralinfoComponent implements OnInit {
-
-  constructor(private translate: TranslateService) { }
+  constructor(private translate: TranslateService) {}
 
   @Input() datasetData: Dataset;
 
@@ -33,14 +31,18 @@ export class GeneralinfoComponent implements OnInit {
       this.lastPublishedDate = value.lastPublishedDate;
 
       if (value.lastPreviewRecordsReadyForViewing) {
-        this.viewPreview = apiSettings.viewPreview + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
+        this.viewPreview =
+          apiSettings.viewPreview +
+          encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
         this.buttonClassPreview = '';
       } else {
         this.viewPreview = undefined;
         this.buttonClassPreview = 'btn-disabled';
       }
       if (value.lastPublishedRecordsReadyForViewing) {
-        this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
+        this.viewCollections =
+          apiSettings.viewCollections +
+          encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
         this.buttonClassCollections = '';
       } else {
         this.viewCollections = undefined;
@@ -55,7 +57,6 @@ export class GeneralinfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.translate.use('en');
-
   }
 
   // format urls to link and preview

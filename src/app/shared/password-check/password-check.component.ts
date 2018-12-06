@@ -4,7 +4,7 @@ import { PasswordStrength } from '../../_helpers';
 @Component({
   selector: 'app-password-check',
   templateUrl: './password-check.component.html',
-  styleUrls: ['./password-check.component.scss']
+  styleUrls: ['./password-check.component.scss'],
 })
 export class PasswordCheckComponent implements OnChanges {
   @Input() passwordToCheck: string;
@@ -25,7 +25,7 @@ export class PasswordCheckComponent implements OnChanges {
   /* find out which color to use
   /* @param {number} s - index number, used to catch color
   */
-  private getColor(s: number): { idx: number, col: string } {
+  private getColor(s: number): { idx: number; col: string } {
     let idx = 0;
     if (s <= 10) {
       idx = 0;
@@ -41,7 +41,7 @@ export class PasswordCheckComponent implements OnChanges {
     this.strengthText = this.strengths[idx];
     return {
       idx: idx + 1,
-      col: this.colors[idx]
+      col: this.colors[idx],
     };
   }
 
@@ -49,7 +49,7 @@ export class PasswordCheckComponent implements OnChanges {
   /* execute when component changes
   /* @param {object} changes - fields to watch for changes
   */
-  ngOnChanges(changes: {[propName: string]: SimpleChange}): void {
+  ngOnChanges(changes: { [propName: string]: SimpleChange }): void {
     const password = changes['passwordToCheck'].currentValue;
     this.setBarColors(5, '#DDD');
     if (password) {

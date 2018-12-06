@@ -6,11 +6,14 @@ import { StringifyHttpError } from '../../_helpers';
 
 @Component({
   selector: 'app-report',
-  templateUrl: './report.component.html'
+  templateUrl: './report.component.html',
 })
 export class ReportComponent implements OnInit {
-
-  constructor(private translate: TranslateService, private workflows: WorkflowService, private errorService: ErrorService) { }
+  constructor(
+    private translate: TranslateService,
+    private workflows: WorkflowService,
+    private errorService: ErrorService,
+  ) {}
 
   isVisible: boolean;
   isLoading: boolean;
@@ -28,19 +31,22 @@ export class ReportComponent implements OnInit {
     if (request) {
       this.isVisible = true;
       this.isLoading = true;
-      this.workflows.getReport(request.taskId, request.topology).subscribe((report) => {
-        this.isLoading = false;
-        if (report && report.errors && report.errors.length) {
-          this.errors = report.errors;
-        } else {
-          this.errors = [];
-          this.errorMessage = 'Report is empty.';
-        }
-      }, (err: HttpErrorResponse) => {
-        const error = this.errorService.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
-        this.isLoading = false;
-      });
+      this.workflows.getReport(request.taskId, request.topology).subscribe(
+        (report) => {
+          this.isLoading = false;
+          if (report && report.errors && report.errors.length) {
+            this.errors = report.errors;
+          } else {
+            this.errors = [];
+            this.errorMessage = 'Report is empty.';
+          }
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errorService.handleError(err);
+          this.errorMessage = `${StringifyHttpError(error)}`;
+          this.isLoading = false;
+        },
+      );
     } else {
       this.isVisible = false;
       this.isLoading = false;

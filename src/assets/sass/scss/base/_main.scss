@@ -13,10 +13,10 @@ body {
 }
 
 main,
-[role=main] {
+[role='main'] {
   @extend .cf;
 
-  &:not(.after-header-with-search){
+  &:not(.after-header-with-search) {
     padding-top: $globalnavheight;
   }
 }

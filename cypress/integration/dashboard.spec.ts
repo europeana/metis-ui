@@ -58,7 +58,9 @@ context('metis-ui', () => {
     it('should have cancel, log and history buttons for running executions', () => {
       runningByIndex(0, '.svg-icon-cancel').click();
       cy.get('.modal .head').contains('Cancel');
-      cy.get('.modal .button').contains('Yes').click();
+      cy.get('.modal .button')
+        .contains('Yes')
+        .click();
       cy.wait('@deleteExecution');
 
       runningByIndex(0, '.svg-icon-log').click();
@@ -72,7 +74,9 @@ context('metis-ui', () => {
 
     it('should have a "load more" button', () => {
       allExecutions().should('have.length', 7);
-      cy.get('.load-more-btn').contains('Load more').click();
+      cy.get('.load-more-btn')
+        .contains('Load more')
+        .click();
       allExecutions().should('have.length', 12);
     });
   });

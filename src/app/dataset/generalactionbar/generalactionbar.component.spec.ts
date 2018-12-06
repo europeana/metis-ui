@@ -4,9 +4,24 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TranslatePipe } from '../../_translate';
 
-import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
+import {
+  WorkflowService,
+  TranslateService,
+  ErrorService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  DatasetsService,
+} from '../../_services';
 import { GeneralactionbarComponent } from './generalactionbar.component';
-import { MockAuthenticationService, MockWorkflowService, currentWorkflow, currentDataset, MockTranslateService, MockDatasetService, currentWorkflowDataset } from '../../_mocked';
+import {
+  MockAuthenticationService,
+  MockWorkflowService,
+  currentWorkflow,
+  currentDataset,
+  MockTranslateService,
+  MockDatasetService,
+  currentWorkflowDataset,
+} from '../../_mocked';
 import { WorkflowStatus } from '../../_models/workflow-execution';
 
 describe('GeneralactionbarComponent', () => {
@@ -15,17 +30,17 @@ describe('GeneralactionbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ GeneralactionbarComponent, TranslatePipe ],
-      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService},
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      declarations: [GeneralactionbarComponent, TranslatePipe],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService, useClass: MockTranslateService }
-      ]
-    })
-    .compileComponents();
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -58,5 +73,4 @@ describe('GeneralactionbarComponent', () => {
     fixture.detectChanges();
     expect(component.startWorkflow.emit).toHaveBeenCalledWith();
   });
-
 });

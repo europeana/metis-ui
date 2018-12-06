@@ -8,11 +8,11 @@
     color: $white;
     font-size: $font-size-slightly-smaller;
     line-height: 1.25rem;
-    margin-bottom: .6rem;
-    padding: .5rem 1.2rem;
+    margin-bottom: 0.6rem;
+    padding: 0.5rem 1.2rem;
 
     i {
-      padding-right: .6rem;
+      padding-right: 0.6rem;
     }
   }
 
@@ -47,8 +47,8 @@
   }
 
   .form-fields-container {
-    -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, .1);
-    box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, .1);
+    -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
+    box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
   }
 }
 
@@ -62,7 +62,7 @@
     align-items: flex-start;
     color: $white;
     margin-bottom: 0;
-    padding: .4rem 1.2rem;
+    padding: 0.4rem 1.2rem;
 
     legend {
       display: none;
@@ -87,8 +87,8 @@
       border-color: $eu-red;
     }
 
-    input[type="checkbox"],
-    input[type="radio"] {
+    input[type='checkbox'],
+    input[type='radio'] {
       box-shadow: none;
       display: inline;
     }
@@ -126,12 +126,12 @@
       border-radius: 2px;
       color: $white;
       display: inline-block;
-      font-size: .875em;
+      font-size: 0.875em;
       font-weight: bold;
-      margin: 0 .6rem;
-      padding: .5rem 1rem;
+      margin: 0 0.6rem;
+      padding: 0.5rem 1rem;
       text-transform: none;
-      transition: all .5s ease;
+      transition: all 0.5s ease;
     }
 
     button:hover,
@@ -279,7 +279,7 @@
       textarea {
         box-shadow: none;
         color: $gray-light;
-        padding: .75rem;
+        padding: 0.75rem;
 
         &.icon-padding {
           padding-right: 50px;
@@ -313,7 +313,7 @@
           display: inline-block;
           margin: 0;
           margin-left: 1rem;
-          padding: .8rem 5rem;
+          padding: 0.8rem 5rem;
         }
       }
     }

@@ -5,8 +5,21 @@ import { By } from '@angular/platform-browser';
 
 import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 
-import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
-import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
+import {
+  DatasetsService,
+  WorkflowService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  ErrorService,
+  TranslateService,
+} from '../../_services';
+import {
+  MockWorkflowService,
+  currentWorkflow,
+  currentDataset,
+  MockAuthenticationService,
+  MockTranslateService,
+} from '../../_mocked';
 
 import { LastExecutionComponent } from './lastexecution.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -17,18 +30,18 @@ describe('LastExecutionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ LastExecutionComponent, TranslatePipe, RenameWorkflowPipe ],
-      providers: [ DatasetsService,
-        {provide: WorkflowService, useClass: MockWorkflowService},
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      declarations: [LastExecutionComponent, TranslatePipe, RenameWorkflowPipe],
+      providers: [
+        DatasetsService,
+        { provide: WorkflowService, useClass: MockWorkflowService },
         RedirectPreviousUrl,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -45,7 +58,10 @@ describe('LastExecutionComponent', () => {
     spyOn(component.setReportRequest, 'emit');
     component.openReport('123', 'mocked');
     fixture.detectChanges();
-    expect(component.setReportRequest.emit).toHaveBeenCalledWith({ taskId: '123', topology: 'mocked' });
+    expect(component.setReportRequest.emit).toHaveBeenCalledWith({
+      taskId: '123',
+      topology: 'mocked',
+    });
   });
 
   it('should display history in panel', () => {
@@ -53,5 +69,4 @@ describe('LastExecutionComponent', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
   });
-
 });

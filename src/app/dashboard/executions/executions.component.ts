@@ -6,12 +6,10 @@ import { WorkflowExecution } from '../../_models/workflow-execution';
 @Component({
   selector: 'app-executions',
   templateUrl: './executions.component.html',
-  styleUrls: ['./executions.component.scss']
+  styleUrls: ['./executions.component.scss'],
 })
-
 export class ExecutionsComponent implements OnInit {
-
-  constructor(private translate: TranslateService) { }
+  constructor(private translate: TranslateService) {}
 
   @Input() runningExecutions: WorkflowExecution[];
   @Input() finishedExecutions: WorkflowExecution[];

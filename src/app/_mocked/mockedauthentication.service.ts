@@ -1,4 +1,4 @@
-import {of as observableOf,  Observable } from 'rxjs';
+import { of as observableOf, Observable } from 'rxjs';
 import { AuthenticationService } from '../_services';
 import { User, AccountRole } from '../_models';
 
@@ -15,11 +15,10 @@ export const currentUser: User = {
   organizationId: '1',
   organizationName: 'organization',
   updatedDate: 546466545364,
-  userId: '1'
+  userId: '1',
 };
 
 export class MockAuthenticationService extends AuthenticationService {
-
   currentUser = currentUser;
 
   validatedUser(): boolean {

@@ -5,8 +5,22 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
-import { DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, currentDataset, currentWorkflowDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
+import {
+  DatasetsService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  ErrorService,
+  TranslateService,
+  WorkflowService,
+} from '../../_services';
+import {
+  MockDatasetService,
+  MockWorkflowService,
+  currentDataset,
+  currentWorkflowDataset,
+  MockAuthenticationService,
+  MockTranslateService,
+} from '../../_mocked';
 
 import { WorkflowComponent } from './workflow.component';
 import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
@@ -18,21 +32,19 @@ describe('WorkflowComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, ReactiveFormsModule, HttpClientModule ],
-      declarations: [ WorkflowComponent, TranslatePipe, RenameWorkflowPipe ],
+      imports: [RouterTestingModule, ReactiveFormsModule, HttpClientModule],
+      declarations: [WorkflowComponent, TranslatePipe, RenameWorkflowPipe],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
-      ]
-    })
-    .compileComponents();
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+    }).compileComponents();
 
     router = TestBed.get(Router);
-
   }));
 
   beforeEach(() => {
@@ -98,5 +110,4 @@ describe('WorkflowComponent', () => {
     fixture.detectChanges();
     expect(component.successMessage).not.toBe(undefined);
   });
-
 });

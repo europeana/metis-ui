@@ -4,13 +4,11 @@ import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service'
 
 import { Router } from '@angular/router';
 import { retryWhen, delay, take, flatMap, concat } from 'rxjs/operators';
-import {of as observableOf,  Observable, throwError } from 'rxjs';
+import { of as observableOf, Observable, throwError } from 'rxjs';
 
 @Injectable()
 export class ErrorService {
-
-  constructor(private router: Router,
-    private redirectPreviousUrl: RedirectPreviousUrl) { }
+  constructor(private router: Router, private redirectPreviousUrl: RedirectPreviousUrl) {}
 
   numberOfRetries = 5;
   retryDelay = 1000;
@@ -34,14 +32,21 @@ export class ErrorService {
   /* check and retry for a specific error
   */
   handleRetry<T>(): (o: Observable<T>) => Observable<T> {
-    return retryWhen<T>(error => {
-      return error.pipe(flatMap((errorM: HttpErrorResponse) => {
-        if (errorM.status  === 0 || errorM.message  === 'Http failure response for (unknown url): 0 Unknown Error') {
-          return observableOf(errorM.status).pipe(delay(this.retryDelay));
-        }
-        throw errorM;
-      })).pipe(take(this.numberOfRetries))
-        .pipe(concat(throwError({ status: 0, error: {errorMessage: 'Retry failed'}})));
+    return retryWhen<T>((error) => {
+      return error
+        .pipe(
+          flatMap((errorM: HttpErrorResponse) => {
+            if (
+              errorM.status === 0 ||
+              errorM.message === 'Http failure response for (unknown url): 0 Unknown Error'
+            ) {
+              return observableOf(errorM.status).pipe(delay(this.retryDelay));
+            }
+            throw errorM;
+          }),
+        )
+        .pipe(take(this.numberOfRetries))
+        .pipe(concat(throwError({ status: 0, error: { errorMessage: 'Retry failed' } })));
     });
   }
 
@@ -55,5 +60,4 @@ export class ErrorService {
     localStorage.removeItem('currentUser');
     this.router.navigate(['/signin']);
   }
-
 }

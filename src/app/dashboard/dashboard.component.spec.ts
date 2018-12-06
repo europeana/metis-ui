@@ -1,7 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardComponent } from './dashboard.component';
-import { AuthenticationService, DatasetsService, TranslateService, WorkflowService, ErrorService, RedirectPreviousUrl } from '../_services';
+import {
+  AuthenticationService,
+  DatasetsService,
+  TranslateService,
+  WorkflowService,
+  ErrorService,
+  RedirectPreviousUrl,
+} from '../_services';
 import { TranslatePipe } from '../_translate';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,18 +24,18 @@ describe('DashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule ],
-      declarations: [ DashboardComponent, TranslatePipe ],
-      providers: [ { provide: AuthenticationService, useClass: MockAuthenticationService},
-        {provide: WorkflowService, useClass: MockWorkflowService},
+      imports: [RouterTestingModule, HttpClientModule],
+      declarations: [DashboardComponent, TranslatePipe],
+      providers: [
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
         DatasetsService,
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
-       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -46,9 +53,14 @@ describe('DashboardComponent', () => {
       id: 'xx5',
       pluginType: 'import',
       pluginStatus: PluginStatus.RUNNING,
-      executionProgress: { expectedRecords: 1000, processedRecords: 500, progressPercentage: 50, errors: 5 },
+      executionProgress: {
+        expectedRecords: 1000,
+        processedRecords: 500,
+        progressPercentage: 50,
+        errors: 5,
+      },
       pluginMetadata: { pluginType: 'import' },
-      topologyName: 'import'
+      topologyName: 'import',
     });
     fixture.detectChanges();
     expect(component.showPluginLog).toBeTruthy();
@@ -66,5 +78,4 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
     expect(component.finishedCurrentPage).toBe(1);
   });
-
 });

@@ -4,7 +4,7 @@
 .success-message .svg-icon-spin-inbutton {
   padding-left: 0;
   &::after {
-    top: -.1rem;
+    top: -0.1rem;
   }
 }
 
@@ -19,7 +19,7 @@
   .notavailable {
     color: $gray-lighter;
     display: inline-block;
-    padding-left: .5rem;
+    padding-left: 0.5rem;
   }
 }
 
@@ -113,7 +113,7 @@
     background: $eu-jade;
     border: 1px solid $eu-jade;
     font-size: $font-size-slightly-smaller;
-    margin: .5rem 1rem 1rem 0;
+    margin: 0.5rem 1rem 1rem 0;
 
     &:hover,
     &.active {
@@ -126,6 +126,5 @@
       background: $eu-jade;
       color: $white;
     }
-
   }
 }

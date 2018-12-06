@@ -1,9 +1,26 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick  } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 
 import { DatasetformComponent } from './datasetform.component';
-import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, MockCountriesService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser, MockTranslateService} from '../../_mocked';
+import {
+  CountriesService,
+  DatasetsService,
+  AuthenticationService,
+  RedirectPreviousUrl,
+  ErrorService,
+  TranslateService,
+  WorkflowService,
+} from '../../_services';
+import {
+  MockDatasetService,
+  MockWorkflowService,
+  MockCountriesService,
+  currentWorkflow,
+  currentDataset,
+  MockAuthenticationService,
+  currentUser,
+  MockTranslateService,
+} from '../../_mocked';
 
 import { By } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -14,24 +31,23 @@ import { HttpClientModule } from '@angular/common/http';
 import { TranslatePipe } from '../../_translate';
 
 describe('DatasetformComponent', () => {
-
   let component: DatasetformComponent;
   let fixture: ComponentFixture<DatasetformComponent>;
   let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, ReactiveFormsModule, HttpClientModule ],
-      declarations: [ DatasetformComponent, TranslatePipe ],
+      imports: [RouterTestingModule, ReactiveFormsModule, HttpClientModule],
+      declarations: [DatasetformComponent, TranslatePipe],
       providers: [
-        {provide: DatasetsService, useClass: MockDatasetService},
-        {provide: WorkflowService, useClass: MockWorkflowService},
-        {provide: CountriesService, useClass: MockCountriesService},
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: CountriesService, useClass: MockCountriesService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService }
-      ]
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
     });
 
     fixture = TestBed.createComponent(DatasetformComponent);
@@ -67,7 +83,7 @@ describe('DatasetformComponent', () => {
     fixture.detectChanges();
     expect(component.formMode).toBe('edit');
 
-    spyOn(router, 'navigate').and.callFake(() => { });
+    spyOn(router, 'navigate').and.callFake(() => {});
     component.onSubmit();
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);

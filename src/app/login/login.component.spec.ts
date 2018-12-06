@@ -8,7 +8,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { RedirectPreviousUrl, TranslateService, AuthenticationService, ErrorService } from '../_services';
+import {
+  RedirectPreviousUrl,
+  TranslateService,
+  AuthenticationService,
+  ErrorService,
+} from '../_services';
 import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
 
 import { MockAuthenticationService, MockTranslateService } from '../_mocked';
@@ -20,17 +25,17 @@ describe('LoginComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
-      declarations: [ LoginComponent, TranslatePipe ],
-      providers: [ RedirectPreviousUrl, ErrorService,
+      imports: [RouterTestingModule, HttpClientModule, ReactiveFormsModule],
+      declarations: [LoginComponent, TranslatePipe],
+      providers: [
+        RedirectPreviousUrl,
+        ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService, useClass: MockTranslateService }
-      ]
-    })
-    .compileComponents();
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+    }).compileComponents();
 
     router = TestBed.get(Router);
-
   }));
 
   beforeEach(() => {
@@ -45,11 +50,10 @@ describe('LoginComponent', () => {
   });
 
   it('should login', fakeAsync((): void => {
-
     component.loginForm.controls.email.setValue('mocked@mocked.com');
     component.loginForm.controls.password.setValue('mocked123');
 
-    spyOn(router, 'navigate').and.callFake(() => { });
+    spyOn(router, 'navigate').and.callFake(() => {});
     tick(50);
 
     component.onSubmit();
@@ -57,6 +61,4 @@ describe('LoginComponent', () => {
 
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   }));
-
 });
-

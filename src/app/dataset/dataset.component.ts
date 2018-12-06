@@ -26,16 +26,17 @@ export interface ProcessingInfo {
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss']
+  styleUrls: ['./dataset.component.scss'],
 })
 export class DatasetComponent implements OnInit, OnDestroy {
-
-  constructor(private datasets: DatasetsService,
+  constructor(
+    private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService,
     private route: ActivatedRoute,
-    private router: Router) { }
+    private router: Router,
+  ) {}
 
   activeTab = 'edit';
   datasetId: string;
@@ -62,7 +63,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   reportRequest?: ReportRequest;
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       const { tab, id } = params;
       if (tab === 'new') {
         this.successMessage = 'New dataset created! Id: ' + id;
@@ -84,37 +85,52 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.harvestSubscription) { this.harvestSubscription.unsubscribe(); }
-    if (this.workflowSubscription) { this.workflowSubscription.unsubscribe(); }
-    if (this.lastExecutionSubscription) { this.lastExecutionSubscription.unsubscribe(); }
+    if (this.harvestSubscription) {
+      this.harvestSubscription.unsubscribe();
+    }
+    if (this.workflowSubscription) {
+      this.workflowSubscription.unsubscribe();
+    }
+    if (this.lastExecutionSubscription) {
+      this.lastExecutionSubscription.unsubscribe();
+    }
   }
 
   loadData(): void {
-    this.datasets.getDataset(this.datasetId, true).subscribe(result => {
-      this.datasetData = result;
-      this.datasetIsLoading = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-      this.datasetIsLoading = false;
-    });
+    this.datasets.getDataset(this.datasetId, true).subscribe(
+      (result) => {
+        this.datasetData = result;
+        this.datasetIsLoading = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.datasetIsLoading = false;
+      },
+    );
 
     // check for harvest data every x seconds
-    if (this.harvestSubscription) { this.harvestSubscription.unsubscribe(); }
+    if (this.harvestSubscription) {
+      this.harvestSubscription.unsubscribe();
+    }
     const harvestTimer = timer(0, environment.intervalStatusMedium);
     this.harvestSubscription = harvestTimer.subscribe(() => {
       this.loadHarvestData();
     });
 
     // check workflow for every x seconds
-    if (this.workflowSubscription) { this.workflowSubscription.unsubscribe(); }
+    if (this.workflowSubscription) {
+      this.workflowSubscription.unsubscribe();
+    }
     const workflowTimer = timer(0, environment.intervalStatusMedium);
     this.workflowSubscription = workflowTimer.subscribe(() => {
       this.loadWorkflow();
     });
 
     // check for last execution every x seconds
-    if (this.lastExecutionSubscription) { this.lastExecutionSubscription.unsubscribe(); }
+    if (this.lastExecutionSubscription) {
+      this.lastExecutionSubscription.unsubscribe();
+    }
     const executionsTimer = timer(0, environment.intervalStatus);
     this.lastExecutionSubscription = executionsTimer.subscribe(() => {
       this.loadLastExecution();
@@ -126,49 +142,61 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   loadHarvestData(): void {
-    this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(resultHarvest => {
-      this.harvestPublicationData = resultHarvest;
-      this.harvestIsLoading = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-      this.harvestSubscription.unsubscribe();
-      this.harvestIsLoading = false;
-    });
+    this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(
+      (resultHarvest) => {
+        this.harvestPublicationData = resultHarvest;
+        this.harvestIsLoading = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.harvestSubscription.unsubscribe();
+        this.harvestIsLoading = false;
+      },
+    );
   }
 
   loadWorkflow(): void {
-    this.workflows.getWorkflowForDataset(this.datasetId).subscribe(workflow => {
-      this.workflowData = workflow;
-      this.workflowIsLoading = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-      this.workflowSubscription.unsubscribe();
-      this.workflowIsLoading = false;
-    });
+    this.workflows.getWorkflowForDataset(this.datasetId).subscribe(
+      (workflow) => {
+        this.workflowData = workflow;
+        this.workflowIsLoading = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.workflowSubscription.unsubscribe();
+        this.workflowIsLoading = false;
+      },
+    );
   }
 
   loadLastExecution(): void {
-    this.workflows.getLastDatasetExecution(this.datasetId).subscribe(execution => {
-      this.lastExecutionData = execution;
-      this.lastExecutionIsLoading = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-      this.lastExecutionSubscription.unsubscribe();
-      this.lastExecutionIsLoading = false;
-    });
+    this.workflows.getLastDatasetExecution(this.datasetId).subscribe(
+      (execution) => {
+        this.lastExecutionData = execution;
+        this.lastExecutionIsLoading = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.lastExecutionSubscription.unsubscribe();
+        this.lastExecutionIsLoading = false;
+      },
+    );
   }
 
   startWorkflow(): void {
-    this.workflows.startWorkflow(this.datasetId).subscribe(() => {
-      this.loadHarvestData();
-      this.loadLastExecution();
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);
-      this.errorMessage = `${StringifyHttpError(error)}`;
-    });
+    this.workflows.startWorkflow(this.datasetId).subscribe(
+      () => {
+        this.loadHarvestData();
+        this.loadLastExecution();
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+      },
+    );
   }
 
   setShowPluginLog(plugin: PluginExecution | undefined): void {

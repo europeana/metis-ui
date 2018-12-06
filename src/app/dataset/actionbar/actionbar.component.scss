@@ -11,12 +11,12 @@
   box-sizing: border-box;
   display: inline-flex;
   min-height: 4rem;
-  padding: .75rem;
+  padding: 0.75rem;
   width: 100%;
 
   .status {
-    font-size: .75rem;
-    padding-left: .75rem;
+    font-size: 0.75rem;
+    padding-left: 0.75rem;
     padding-right: 1.5rem;
     white-space: nowrap;
 
@@ -28,8 +28,8 @@
   }
 
   .datetime {
-    font-size: .8125rem;
-    padding-right: .5rem;
+    font-size: 0.8125rem;
+    padding-right: 0.5rem;
     text-align: center;
     white-space: nowrap;
 
@@ -49,10 +49,9 @@ nav {
   white-space: nowrap;
 
   li {
-
     border-left: 1px solid $offwhite;
     display: inline-block;
-    padding: .4rem;
+    padding: 0.4rem;
     position: relative;
 
     &:first-child {
@@ -89,7 +88,7 @@ nav {
   li a {
     color: $gray-med;
     font-size: $font-size-slightly-smaller;
-    padding: .25rem .5rem .25rem 1.75rem;
+    padding: 0.25rem 0.5rem 0.25rem 1.75rem;
 
     &:hover {
       background: $offwhite;
@@ -99,8 +98,8 @@ nav {
     &.newaction-btn {
       border: 1px solid $white;
       border-bottom: 0;
-      padding-left: .5rem;
-      transition: all .5s ease;
+      padding-left: 0.5rem;
+      transition: all 0.5s ease;
     }
 
     &.newaction-btn:hover {

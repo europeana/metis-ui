@@ -10,7 +10,6 @@ export interface Settings {
 
 @Injectable()
 export class SettingsService {
-
   constructor() {}
 
   /** returnApiHosts
