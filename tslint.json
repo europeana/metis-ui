@@ -14,6 +14,7 @@
     "no-non-null-assertion": false,
     "no-string-literal": true,
     "no-unused-variable": true,
+    "object-literal-shorthand": true,
     "quotemark": [true, "single", "avoid-escape"],
     "typedef": [true, "call-signature", "parameter", "property-declaration"]
   }

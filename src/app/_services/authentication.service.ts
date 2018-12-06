@@ -84,7 +84,7 @@ export class AuthenticationService {
       Authorization: 'Basic ' + btoa(email + ':' + password),
     });
     return this.http
-      .post(url, {}, { headers: headers })
+      .post(url, {}, { headers })
       .pipe(
         map(() => {
           return true;
@@ -116,7 +116,7 @@ export class AuthenticationService {
       Authorization: 'Basic ' + btoa(email + ':' + password),
     });
     return this.http
-      .post<User>(url, {}, { headers: headers })
+      .post<User>(url, {}, { headers })
       .pipe(
         map((user) => {
           if (user && user.metisUserAccessToken) {
@@ -175,7 +175,7 @@ export class AuthenticationService {
     this.token = user.metisUserAccessToken.accessToken;
     localStorage.setItem(
       this.key,
-      JSON.stringify({ user: user, email: user.email, token: this.token }),
+      JSON.stringify({ user, email: user.email, token: this.token }),
     );
   }
 
