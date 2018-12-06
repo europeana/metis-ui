@@ -1,4 +1,4 @@
-﻿import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export function StringifyHttpError(err: HttpErrorResponse | false): string {
   let errmsg;
@@ -16,7 +16,7 @@ export function StringifyHttpError(err: HttpErrorResponse | false): string {
     // The response body may contain clues as to what went wrong,
     try {
       const h = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
-      errmsg = h['errorMessage'];
+      errmsg = h.errorMessage;
     } catch (e) {
       errmsg = null;
     }

@@ -164,7 +164,7 @@ export class DatasetformComponent implements OnInit {
         (result) => {
           localStorage.removeItem(DATASET_TEMP_LSKEY);
 
-          this.router.navigate(['/dataset/new/' + result['datasetId']]);
+          this.router.navigate(['/dataset/new/' + result.datasetId]);
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);

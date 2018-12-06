@@ -154,7 +154,7 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = undefined;
     this.loading = true;
 
-    this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(
+    this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
       (result) => {
         if (result === true) {
           this.successMessage = 'Your profile has been updated';

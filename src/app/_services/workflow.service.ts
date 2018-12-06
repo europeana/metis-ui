@@ -261,11 +261,11 @@ export class WorkflowService {
   // in case there is no plugin running, return last plugin
   getCurrentPlugin(workflow: WorkflowExecution): number {
     let currentPlugin = 0;
-    for (let i = 0; i < workflow['metisPlugins'].length; i++) {
+    for (let i = 0; i < workflow.metisPlugins.length; i++) {
       currentPlugin = i;
       if (
-        workflow['metisPlugins'][i].pluginStatus === 'INQUEUE' ||
-        workflow['metisPlugins'][i].pluginStatus === 'RUNNING'
+        workflow.metisPlugins[i].pluginStatus === 'INQUEUE' ||
+        workflow.metisPlugins[i].pluginStatus === 'RUNNING'
       ) {
         break;
       }
@@ -317,7 +317,7 @@ export class WorkflowService {
       .get<{ records: XmlSample[] }>(url)
       .pipe(
         map((samples) => {
-          return samples['records'];
+          return samples.records;
         }),
       )
       .pipe(this.errors.handleRetry());

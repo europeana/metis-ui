@@ -73,11 +73,11 @@ export class MappingComponent implements OnInit {
     this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
       (result) => {
         let taskId: string | undefined;
-        if (result['results'].length > 0) {
+        if (result.results.length > 0) {
           // find validation in the latest run, and if available, find taskid
-          for (let i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
-            if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
-              taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
+          for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
+            if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
+              taskId = result.results[0].metisPlugins[i].externalTaskId;
             }
           }
         }
@@ -88,7 +88,7 @@ export class MappingComponent implements OnInit {
         this.successMessage = 'Loading statistics';
         this.workflows.getStatistics('validation', taskId).subscribe(
           (resultStatistics) => {
-            let statistics = resultStatistics['nodeStatistics'];
+            let statistics = resultStatistics.nodeStatistics;
 
             if (statistics.length > 100) {
               statistics = statistics.slice(0, 100);

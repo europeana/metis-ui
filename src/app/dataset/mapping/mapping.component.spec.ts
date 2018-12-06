@@ -58,7 +58,7 @@ describe('MappingComponent', () => {
   });
 
   it('should expand statistics', () => {
-    component.statistics = statistics['nodeStatistics'];
+    component.statistics = statistics.nodeStatistics;
     fixture.detectChanges();
 
     component.toggleStatistics();

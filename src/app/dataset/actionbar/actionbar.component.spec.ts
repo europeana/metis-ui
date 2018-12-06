@@ -54,7 +54,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should update fields based on the last execution', () => {
-    component.lastExecutionData = currentWorkflow['results'][4];
+    component.lastExecutionData = currentWorkflow.results[4];
     expect(component.currentPlugin!.id).toBe('432552345');
     expect(component.currentStatus).toBe('FINISHED');
     expect(component.currentExternalTaskId).toBe('123');
@@ -65,7 +65,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should do click to show logging', (): void => {
-    component.lastExecutionData = currentWorkflow['results'][1];
+    component.lastExecutionData = currentWorkflow.results[1];
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
@@ -77,7 +77,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should cancel', (): void => {
-    component.lastExecutionData = currentWorkflow['results'][1];
+    component.lastExecutionData = currentWorkflow.results[1];
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 

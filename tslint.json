@@ -10,6 +10,7 @@
     "no-any": true,
     "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
     "no-non-null-assertion": false,
+    "no-string-literal": true,
     "no-unused-variable": true,
     "quotemark": [true, "single", "avoid-escape"],
     "typedef": [true, "call-signature", "parameter", "property-declaration"]

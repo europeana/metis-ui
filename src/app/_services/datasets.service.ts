@@ -66,7 +66,7 @@ export class DatasetsService {
         .pipe(
           map((data) => {
             // TODO: fix any
-            return type === 'default' ? data : data['xslt'];
+            return type === 'default' ? data : data.xslt;
           }),
         )
         .pipe(this.errors.handleRetry())

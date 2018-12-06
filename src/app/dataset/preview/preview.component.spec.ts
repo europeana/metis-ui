@@ -55,7 +55,7 @@ describe('PreviewComponent', () => {
   it('should prefill filters', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow['results'][0],
+      execution: currentWorkflow.results[0],
       plugin: 'MOCKED',
     };
     component.prefillFilters();
@@ -66,7 +66,7 @@ describe('PreviewComponent', () => {
   it('should expand sample', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow['results'][0],
+      execution: currentWorkflow.results[0],
       plugin: 'MOCKED',
     };
     component.prefillFilters();

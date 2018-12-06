@@ -40,8 +40,8 @@ describe('ExecutiontableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiontableComponent);
     component = fixture.componentInstance;
-    component.execution = currentWorkflow['results'][0];
-    component.plugin = currentWorkflow['results'][0]['metisPlugins'][0];
+    component.execution = currentWorkflow.results[0];
+    component.plugin = currentWorkflow.results[0].metisPlugins[0];
     fixture.detectChanges();
   });
 
