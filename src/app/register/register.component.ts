@@ -90,7 +90,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.authentication.register(email, password).subscribe(
         (result) => {
           this.loading = false;
-          if (result === true) {
+          if (result) {
             this.onRegistration(this.msgSuccess);
           }
         },

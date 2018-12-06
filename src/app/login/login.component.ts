@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit {
       .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
       .subscribe(
         (result) => {
-          if (result === true) {
+          if (result) {
             this.redirectAfterLogin();
           } else {
             this.errorMessage = this.msgBadCredentials;

@@ -131,7 +131,7 @@ export class ProfileComponent implements OnInit {
 
     this.authentication.updatePassword(password, oldpassword).subscribe(
       (result) => {
-        if (result === true) {
+        if (result) {
           this.successMessage = 'Update password successful!';
         } else {
           this.errorMessage = 'Update password failed, please try again later';
@@ -156,7 +156,7 @@ export class ProfileComponent implements OnInit {
 
     this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
       (result) => {
-        if (result === true) {
+        if (result) {
           this.successMessage = 'Your profile has been updated';
           this.createForm();
         } else {
