@@ -8,17 +8,17 @@ import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import { DatasetsService, WorkflowService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, MockTranslateService } from '../../_mocked';
 
-import { HistoryComponent } from './history.component';
+import { LastExecutionComponent } from './lastexecution.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-describe('HistoryComponent', () => {
-  let component: HistoryComponent;
-  let fixture: ComponentFixture<HistoryComponent>;
+describe('LastExecutionComponent', () => {
+  let component: LastExecutionComponent;
+  let fixture: ComponentFixture<LastExecutionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ HistoryComponent, TranslatePipe, RenameWorkflowPipe ],
+      declarations: [ LastExecutionComponent, TranslatePipe, RenameWorkflowPipe ],
       providers: [ DatasetsService,
         {provide: WorkflowService, useClass: MockWorkflowService},
         RedirectPreviousUrl,
@@ -32,9 +32,8 @@ describe('HistoryComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HistoryComponent);
+    fixture = TestBed.createComponent(LastExecutionComponent);
     component = fixture.componentInstance;
-    component.datasetData = currentDataset;
     fixture.detectChanges();
   });
 
@@ -49,28 +48,10 @@ describe('HistoryComponent', () => {
     expect(component.setReportRequest.emit).toHaveBeenCalledWith({ taskId: '123', topology: 'mocked' });
   });
 
-  it('should display history in tabs', () => {
-    component.datasetData = currentDataset;
-    component.returnAllExecutions();
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
-  });
-
-  it('should load next page', () => {
-    component.datasetData = currentDataset;
-    component.loadNextPage();
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
-  });
-
-  it('should update history panel', () => {
+  it('should display history in panel', () => {
     component.lastExecutionData = currentWorkflow.results[4];
     fixture.detectChanges();
-    expect(component.allExecutions).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
   });
 
-  it('should copy something to the clipboard', () => {
-    component.copyInformation('plugin', '1', '2');
-    expect(component.contentCopied).toBe(true);
-  });
 });

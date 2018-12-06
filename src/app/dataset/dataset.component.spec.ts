@@ -5,7 +5,7 @@ import { DatasetComponent } from './dataset.component';
 import { By } from '@angular/platform-browser';
 
 import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../_services';
-import { MockDatasetService, MockWorkflowService, MockAuthenticationService, MockTranslateService } from '../_mocked';
+import { MockDatasetService, MockWorkflowService, MockAuthenticationService, MockTranslateService, currentWorkflow } from '../_mocked';
 
 import { HttpClientModule } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -19,13 +19,13 @@ describe('DatasetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientModule, RouterTestingModule],
+      imports: [ HttpClientModule, RouterTestingModule ],
       declarations: [ DatasetComponent, TranslatePipe ],
       providers: [
-        {provide: DatasetsService, useClass: MockDatasetService},
-        {provide: WorkflowService, useClass: MockWorkflowService},
+        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService }
       ],
@@ -45,49 +45,45 @@ describe('DatasetComponent', () => {
   });
 
   it('should get dataset info', () => {
-    component.activeTab = undefined;
-    component.returnDataset('1');
+    component.loadData();
     fixture.detectChanges();
-    expect(component.subscription.closed).toBe(false);
+    expect(component.lastExecutionSubscription.closed).toBe(false);
   });
 
   it('should switch tabs', () => {
     fixture.detectChanges();
 
     component.activeTab = 'edit';
-    component.getCurrentTab();
+    component.datasetIsLoading = component.workflowIsLoading = component.lastExecutionIsLoading = component.harvestIsLoading = false;
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'workflow';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'mapping';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'preview';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'log';
-    component.getCurrentTab();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
   });
 
   it('should be possible to display a message', () => {
-    component.onNotifyShowLogStatus(true);
+    component.setShowPluginLog(currentWorkflow.results[0].metisPlugins[0]);
     fixture.detectChanges();
-    expect(component.isShowingLog).toBe(true);
+    expect(component.showPluginLog).toBe(currentWorkflow.results[0].metisPlugins[0]);
 
+    component.errorMessage = 'error!';
     component.clickOutsideMessage();
     fixture.detectChanges();
-    expect(component.errorMessage).toBe(undefined);
+    expect(component.errorMessage).toBeFalsy();
   });
 });

@@ -4,15 +4,20 @@
     <p>Welcome <strong>{{userName}}</strong>, let's ingest a world of Culture!</p>
   </div>
 
-  <div class="metis-dashboard">
+  <app-load-animation
+    *ngIf="runningIsFirstLoading || finishedIsFirstLoading"
+    [resources]="{ 'running workflows': runningIsFirstLoading, 'finished workflows': finishedIsFirstLoading }"
+  ></app-load-animation>
+
+  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>
-      <app-ongoingexecutions [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)" [runningExecutions]="runningExecutions"></app-ongoingexecutions>
-      <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
+      <app-ongoingexecutions [showPluginLog]="showPluginLog" [runningExecutions]="runningExecutions" (setShowPluginLog)="setShowPluginLog($event)"></app-ongoingexecutions>
+      <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" (closed)="setShowPluginLog(undefined)"></app-datasetlog>
     </div>
 
     <div class="metis-dashboard-right">
-      <app-executions [runningExecutions]="runningExecutions" [finishedExecutions]="finishedExecutions" [isLoading]="finishedIsLoading" (nextPage)="getNextPage()"></app-executions>
+      <app-executions [runningExecutions]="runningExecutions" [finishedExecutions]="finishedExecutions" [isLoading]="finishedIsLoading" [hasMore]="finishedHasMore" (nextPage)="getNextPage()"></app-executions>
     </div>
   </div>
 </div>

@@ -1,70 +1,89 @@
-<div class="dashboard-wrapper">
+<app-load-animation
+  *ngIf="datasetIsLoading || harvestIsLoading || workflowIsLoading || lastExecutionIsLoading"
+  [resources]="{ 'dataset': !datasetData, 'harvest data': harvestIsLoading, 'workflow': workflowIsLoading, 'last workflow': lastExecutionIsLoading }"
+></app-load-animation>
 
-  <div class="messages" (clickOutside)="clickOutsideMessage($event);">
+<div class="dashboard-wrapper" *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading">
+
+  <div class="messages" (clickOutside)="clickOutsideMessage()">
     <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
     <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
   </div>
-  
-  <div class="collapse-block metis-dashboard" *ngIf="datasetData">
-    <div class="metis-dashboard-left">  
-      <div class="dataset-name">
-        {{datasetData.datasetName}}
+
+  <div *ngIf="datasetData">
+
+    <div class="collapse-block metis-dashboard">
+      <div class="metis-dashboard-left">
+        <div class="dataset-name">
+          {{datasetData.datasetName}}
+        </div>
+      </div>
+      <div class="metis-dashboard-right">
+        <div class="collapse-block-sticky">
+          <div class="general-actionbar">
+            <app-generalactionbar [datasetId]="datasetId" [lastExecutionData]="lastExecutionData" [workflowData]="workflowData" (startWorkflow)="startWorkflow()"></app-generalactionbar>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="metis-dashboard-right">  
-      <div class="collapse-block-sticky">
-        <div class="general-actionbar">
-          <app-generalactionbar [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" [workflowData]="workflowData"></app-generalactionbar>
-        </div>
-      </div> 
+    <hr/>
+    <div class="dataset-collapse-blocks metis-dashboard">
+      <div class="metis-dashboard-left">
+        <app-generalinfo [datasetData]="datasetData" [harvestPublicationData]="harvestPublicationData"></app-generalinfo>
+      </div>
+      <div class="metis-dashboard-right">
+        <app-actionbar [workflowData]="workflowData" [lastExecutionData]="lastExecutionData" [showPluginLog]="showPluginLog" (setShowPluginLog)="setShowPluginLog($event)" (startWorkflow)="startWorkflow()" (setReportRequest)="setReportRequest($event)"></app-actionbar>
+        <app-lastexecution [datasetId]="datasetId" [lastExecutionData]="lastExecutionData" (setReportRequest)="setReportRequest($event)"></app-lastexecution>
+        <app-datasetlog *ngIf="showPluginLog" [showPluginLog]="showPluginLog" [processingInfo]="processingInfo" (closed)="setShowPluginLog(undefined)"></app-datasetlog>
+        <app-report [reportRequest]="reportRequest" (closed)="setReportRequest(undefined)"></app-report>
+      </div>
     </div>
-  </div>
-  <hr/>
-  <div class="dataset-collapse-blocks metis-dashboard" *ngIf="datasetData">
-    <div class="metis-dashboard-left">        
-      <app-generalinfo [datasetData]="datasetData"></app-generalinfo>
-    </div>
-    <div class="metis-dashboard-right">  
-      <app-actionbar [isShowingLog]="isShowingLog" [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" [workflowData]="workflowData" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-actionbar>
-      <app-history [datasetData]="datasetData" [inCollapsablePanel]=true [lastExecutionData]="lastExecutionData"></app-history>
-      <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
-    </div>
-  </div>
 
-  <div class="metis-dashboard">
-    <ul class="tabs">     
-      <li [ngClass]="{'active': activeTab === 'new' || activeTab === 'edit'}">
-        <a routerLink="/dataset/new/{{activeSet}}">
-          <span class="tab-title">{{ 'datasetinformation' | translate }}</span>
-          <span class="tab-subtitle" *ngIf="datasetData">{{ 'lastharvest' | translate }}</span>
-          <span class="tab-subtitle tab-date" *ngIf="harvestPublicationData">{{harvestPublicationData.lastHarvestedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
-        </a>
-      </li>
-       <li [ngClass]="{'active': activeTab === 'workflow'}">
-        <a routerLink="/dataset/workflow/{{activeSet}}">
-          <span class="tab-title">{{ 'workflow' | translate }}</span>
-        </a>
-      </li>
-      <li [ngClass]="{'active': activeTab === 'mapping'}">
-        <a routerLink="/dataset/mapping/{{activeSet}}">
-          <span class="tab-title">{{ 'mapping' | translate }}</span>
-        </a>
-      </li>
-      <li [ngClass]="{'active': activeTab === 'preview'}">
-        <a routerLink="/dataset/preview/{{activeSet}}">
-          <span class="tab-title">{{ 'rawxml' | translate }}</span>
-        </a>
-      </li>
-      <li [ngClass]="{'active': activeTab === 'log'}">
-        <a routerLink="/dataset/log/{{activeSet}}">
-          <span class="tab-title">{{ 'processinghistory' | translate }}</span>
-          <span class="tab-subtitle">{{ 'lastmodified' | translate }}</span>
-          <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{lastExecutionData.updatedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div class="tab-content">
-    <ng-template dataset-host></ng-template>
+    <div class="metis-dashboard">
+      <ul class="tabs">
+        <li [ngClass]="{'active': activeTab === 'edit'}">
+          <a routerLink="/dataset/edit/{{datasetId}}">
+            <span class="tab-title">{{ 'datasetinformation' | translate }}</span>
+            <span class="tab-subtitle">{{ 'lastharvest' | translate }}</span>
+            <span class="tab-subtitle tab-date" *ngIf="harvestPublicationData">{{harvestPublicationData.lastHarvestedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
+          </a>
+        </li>
+         <li [ngClass]="{'active': activeTab === 'workflow'}">
+          <a routerLink="/dataset/workflow/{{datasetId}}">
+            <span class="tab-title">{{ 'workflow' | translate }}</span>
+          </a>
+        </li>
+        <li [ngClass]="{'active': activeTab === 'mapping'}">
+          <a routerLink="/dataset/mapping/{{datasetId}}">
+            <span class="tab-title">{{ 'mapping' | translate }}</span>
+          </a>
+        </li>
+        <li [ngClass]="{'active': activeTab === 'preview'}">
+          <a routerLink="/dataset/preview/{{datasetId}}">
+            <span class="tab-title">{{ 'rawxml' | translate }}</span>
+          </a>
+        </li>
+        <li [ngClass]="{'active': activeTab === 'log'}">
+          <a routerLink="/dataset/log/{{datasetId}}">
+            <span class="tab-title">{{ 'processinghistory' | translate }}</span>
+            <span class="tab-subtitle">{{ 'lastmodified' | translate }}</span>
+            <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{lastExecutionData.updatedDate | date:'dd/MM/yyyy - HH:mm'}}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="tab-content">
+      <app-datasetform *ngIf="activeTab === 'new' || activeTab === 'edit'"
+        [datasetData]="datasetData" [harvestPublicationData]="harvestPublicationData" [isNew]="false" (datasetUpdated)="datasetUpdated()"></app-datasetform>
+      <app-workflow *ngIf="activeTab === 'workflow'"
+        [datasetData]="datasetData" [workflowData]="workflowData"></app-workflow>
+      <app-mapping *ngIf="activeTab === 'mapping'"
+        [datasetData]="datasetData" (setTempXSLT)="setTempXSLT($event)"></app-mapping>
+      <app-preview *ngIf="activeTab === 'preview'"
+        [datasetData]="datasetData" [previewFilters]="previewFilters" [tempXSLT]="tempXSLT" (setPreviewFilters)="setPreviewFilters($event)"></app-preview>
+      <app-history *ngIf="activeTab === 'log'"
+        [datasetData]="datasetData" [lastExecutionData]="lastExecutionData" (setReportRequest)="setReportRequest($event)"></app-history>
+    </div>
+
   </div>
 </div>

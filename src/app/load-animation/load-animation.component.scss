@@ -1,0 +1,16 @@
+.spinner-holder {
+  height: 25vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  > .svg-icon-spin {
+    transform: scale(3);
+    transform-origin: 50% 50%;
+    opacity: 0.5;
+  }
+  > .spinner-message {
+    margin: 1rem;
+  }
+}

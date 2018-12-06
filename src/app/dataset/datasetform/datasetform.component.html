@@ -5,58 +5,63 @@
       <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
     </div>
     <div class="form-fields">
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="identifier">{{ 'identifier' | translate }}</label>
-        <input id="identifier" type="text" formControlName="datasetId" [readonly]="true" (blur)="saveTempData()"/>
+      <div class="form-group" *ngIf="!isNew">
+        <label>{{ 'identifier' | translate }}</label>
+        <span>{{ datasetData.datasetId }}</span>
       </div>
+
       <div class="form-group">
         <label for="dataset-name">{{ 'datasetname' | translate }} *</label>
-        <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9\\_\\]+" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
-        <div class="messages" *ngIf="datasetForm.controls.datasetName.dirty" [hidden]="datasetForm.controls.datasetName.valid">
+        <input id="dataset-name" type="text" formControlName="datasetName" pattern="[a-zA-Z0-9\\_\\]+" (blur)="saveTempData()"/>
+        <div class="messages" *ngIf="datasetForm.enabled && datasetForm.controls.datasetName.dirty && !datasetForm.controls.datasetName.valid">
           <div class="error-message">{{ 'datasetnamevalidator' | translate }} </div>
         </div>
       </div>
 
       <div class="form-group">
         <label for="data-provider">{{ 'dataprovider' | translate }}</label>
-        <input id="data-provider" type="text" formControlName="dataProvider" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
+        <input id="data-provider" type="text" formControlName="dataProvider" (blur)="saveTempData()"/>
       </div>
       <div class="form-group">
         <label for="provider">{{ 'provider' | translate }} *</label>
-        <input id="provider" type="text" formControlName="provider" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
+        <input id="provider" type="text" formControlName="provider" (blur)="saveTempData()"/>
+        <div class="messages" *ngIf="datasetForm.enabled && datasetForm.controls.provider.dirty && !datasetForm.controls.provider.valid">
+          <div class="error-message">{{ 'fieldrequired' | translate }} </div>
+        </div>
       </div>
       <div class="form-group">
         <label for="intermediate-provider">{{ 'intermediateprovider' | translate }}</label>
-        <input id="intermediate-provider" type="text" formControlName="intermediateProvider" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
+        <input id="intermediate-provider" type="text" formControlName="intermediateProvider" (blur)="saveTempData()"/>
       </div>
 
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="date-created">{{ 'datecreated' | translate }}</label>
-        <input id="date-created" type="text" formControlName="dateCreated" [readonly]="true" (blur)="saveTempData()"/>
+      <div class="form-group" *ngIf="!isNew">
+        <label>{{ 'datecreated' | translate }}</label>
+        <span>{{ datasetData.createdDate | date:'dd/MM/yyyy - HH:mm' }}</span>
       </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="date-updated">{{ 'dateupdated' | translate }}</label>
-        <input id="date-updated" type="text" formControlName="dateUpdated" [readonly]="true" (blur)="saveTempData()"/>
+      <div class="form-group" *ngIf="!isNew">
+        <label>{{ 'dateupdated' | translate }}</label>
+        <span>{{ datasetData.updatedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
       </div>
+
       <div class="form-group">
         <label for="replaces">{{ 'replaces' | translate }}</label>
-        <input id="replaces" formControlName="replaces" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>   
+        <input id="replaces" formControlName="replaces" (blur)="saveTempData()"/>
       </div>
       <div class="form-group">
         <label for="replaced-by">{{ 'replacedby' | translate }}</label>
-        <input id="replaced-by" formControlName="replacedBy" [readonly]="formMode === 'read' ? true : false" (blur)="saveTempData()"/>
+        <input id="replaced-by" formControlName="replacedBy" (blur)="saveTempData()"/>
       </div>
       <div class="form-group">
         <label for="country">{{ 'country' | translate }} *</label>
-        <select id="country" formControlName="country" (blur)="saveTempData()"> 
-          <option value="0"></option> 
-          <option *ngFor="let c of countryOptions" [ngValue]="c">{{c.name}}</option> 
+        <select id="country" formControlName="country" (blur)="saveTempData()">
+          <option *ngIf="isNew" value="0"></option>
+          <option *ngFor="let c of countryOptions" [ngValue]="c">{{c.name}}</option>
         </select>
       </div>
        <div class="form-group">
         <label for="language">{{ 'language' | translate }} *</label>
         <select id="language" formControlName="language" (blur)="saveTempData()">
-          <option value="0"></option> 
+          <option *ngIf="isNew" value="0"></option>
           <option *ngFor="let l of languageOptions" [ngValue]="l">{{l.name}}</option>
         </select>
       </div>
@@ -69,34 +74,37 @@
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
 
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="created-by">{{ 'createdby' | translate }}</label>
-        <input id="created-by" type="text" formControlName="createdBy" [readonly]="true" (blur)="saveTempData()"/>
+      <div class="form-group" *ngIf="!isNew">
+        <label>{{ 'createdby' | translate }}</label>
+        <span>{{ datasetData.createdByUserId }}</span>
       </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="first-published">{{ 'firstpublished' | translate }}</label>
-        <input id="first-published" formControlName="firstPublished" [readonly]="true" (blur)="saveTempData()" />
-      </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="last-published">{{ 'lastpublished' | translate }}</label>
-        <input id="last-published" type="text" formControlName="lastPublished" [readonly]="true" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="number-published">{{ 'numberpublished' | translate }}</label>
-        <input id="number-published" type="text" formControlName="numberOfItemsPublished" [readonly]="true" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="last-date-harvest">{{ 'lastharvest' | translate }}</label>
-        <input id="last-date-harvest" type="text" formControlName="lastDateHarvest"  [readonly]="true" (blur)="saveTempData()"/>
-      </div>
-      <div class="form-group" *ngIf="formMode !== 'create'">
-        <label for="number-items-harvested">{{ 'numberharvested' | translate }}</label>
-        <input id="number-items-harvested" type="text" formControlName="numberOfItemsHarvested" [readonly]="true" (blur)="saveTempData()"/>
+      <div *ngIf="!isNew && harvestPublicationData">
+        <div class="form-group">
+          <label>{{ 'firstpublished' | translate }}</label>
+          <span>{{ harvestPublicationData.firstPublishedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
+        </div>
+        <div class="form-group">
+          <label>{{ 'lastpublished' | translate }}</label>
+          <span>{{ harvestPublicationData.lastPublishedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
+        </div>
+        <div class="form-group">
+          <label>{{ 'numberpublished' | translate }}</label>
+          <span>{{ harvestPublicationData.lastPublishedRecords }}</span>
+        </div>
+        <div class="form-group">
+          <label>{{ 'lastharvest' | translate }}</label>
+          <span>{{ harvestPublicationData.lastHarvestedDate | date:'dd/MM/yyyy - HH:mm' }}</span>
+        </div>
+        <div class="form-group">
+          <label>{{ 'numberharvested' | translate }}</label>
+          <span>{{ harvestPublicationData.lastHarvestedRecords }}</span>
+        </div>
       </div>
 
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="submit submit-submit" type="button" *ngIf="formMode !== 'read'" [disabled]="!datasetForm.valid" (click)="onSubmit()">{{ 'submit' | translate }}</button>
-        <button class="submit submit-update" type="button" *ngIf="formMode === 'read'" (click)="updateForm()">{{ 'update' | translate }}</button>
+        <button class="submit submit-update" type="button" *ngIf="formMode === 'show'" (click)="editForm()">{{ 'edit' | translate }}</button>
+        <button class="reset-btn" type="button" *ngIf="formMode === 'edit'" (click)="cancel()">{{ 'cancel' | translate }}</button>
+        <button class="submit submit-submit" type="button" *ngIf="formMode !== 'show'" [ngClass]="{ 'svg-icon-spin-inbutton': formMode === 'save' }" [disabled]="!datasetForm.valid || formMode === 'save'" (click)="onSubmit()">{{ (isNew ? 'create' : 'save') | translate }}</button>
       </div>
     </div>
   </form>

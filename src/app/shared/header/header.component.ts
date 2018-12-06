@@ -6,7 +6,6 @@ import { User } from '../../_models';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  providers: [AuthenticationService]
 })
 
 export class HeaderComponent implements OnInit {
@@ -22,7 +21,7 @@ export class HeaderComponent implements OnInit {
   openSearch = false;
   searchfilter: string;
 
-  @Input('loggedIn') loggedIn: boolean;
+  @Input() loggedIn: boolean;
 
   /** ngOnInit
   /* init for this component

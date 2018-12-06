@@ -1,17 +1,19 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FormControl, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import 'rxjs';
-
-import { CountriesService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { CountriesService, DatasetsService, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
 import { Language } from '../../_models/language';
 import { Country } from '../../_models/country';
-import { HarvestData } from '../../_models/harvest-data';
 import { Dataset } from '../../_models/dataset';
+import { HarvestData } from '../../_models/harvest-data';
+
+type FormMode = 'show' | 'edit' | 'save';
+
+const DATASET_TEMP_LSKEY = 'tempDatasetData';
 
 @Component({
   selector: 'app-datasetform',
@@ -19,19 +21,16 @@ import { Dataset } from '../../_models/dataset';
   styleUrls: ['./datasetform.component.scss'],
   providers: [DatePipe]
 })
-
 export class DatasetformComponent implements OnInit {
 
-  @Input() datasetData: Dataset;
-  harvestPublicationData: HarvestData;
-  autosuggest: string;
-  autosuggestId: string;
-  datasetOptions: object;
-  formMode: 'create' | 'read' | 'update' = 'create';
-  formSubmitted: boolean;
+  @Input() datasetData: Partial<Dataset>;
+  @Input() harvestPublicationData?: HarvestData;
+  @Input() isNew: boolean;
+
+  @Output() datasetUpdated = new EventEmitter<void>();
+
   errorMessage?: string;
   successMessage?: string;
-  harvestprotocol?: string;
   selectedCountry?: Country;
   selectedLanguage?: Language;
 
@@ -39,51 +38,45 @@ export class DatasetformComponent implements OnInit {
   countryOptions: Country[];
   languageOptions: Language[];
 
+  _formMode: FormMode;
+
+  set formMode(value: FormMode) {
+    this._formMode = value;
+    this.updateFormEnabled();
+  }
+
+  get formMode(): FormMode {
+    return this._formMode;
+  }
+
   constructor(private countries: CountriesService,
-    private workflows: WorkflowService,
     private datasets: DatasetsService,
-    private authentication: AuthenticationService,
     private router: Router,
     private fb: FormBuilder,
-    private redirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
     private datePipe: DatePipe,
     private translate: TranslateService) {}
 
-  /** ngOnInit
-  /* init of this component
-  /* check for temp dataset information
-  /* if dataset exists, check for additional info on harvest and publication
-  /* set translation languages
-  /* get countries and languages
-  /* build the dataset form
-  */
-  ngOnInit(): void {
-
-    if (!this.datasetData) {
-      const tempdata = JSON.parse(localStorage.getItem('tempDatasetData') || '{}');
-      this.datasetData = tempdata;
-      this.formMode = 'create';
-    } else {
-      this.formMode = 'read';
-      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
-        this.harvestPublicationData = result;
-        this.buildForm();
-      }, (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-      });
+  private updateFormEnabled(): void {
+    if (this.datasetForm) {
+      if (this.formMode === 'edit') {
+        this.datasetForm.enable();
+      } else {
+        this.datasetForm.disable();
+      }
     }
+  }
+
+  ngOnInit(): void {
+    this.formMode = this.isNew ? 'edit' : 'show';
 
     this.translate.use('en');
 
-    this.returnCountries();
     this.buildForm();
+    this.returnCountries();
+    this.returnLanguages();
   }
 
-  /** returnCountries
-  /* return all countries
-  /* list can be used in form
-  */
   returnCountries(): void {
     this.countries.getCountries().subscribe(result => {
       this.countryOptions = result;
@@ -96,16 +89,12 @@ export class DatasetformComponent implements OnInit {
           }
         }
       }
-      this.returnLanguages();
+      this.updateForm();
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
   }
 
-  /** returnLanguages
-  /* return all languages
-  /* list can be used in form
-  */
   returnLanguages(): void {
     this.countries.getLanguages().subscribe(result => {
       this.languageOptions = result;
@@ -118,131 +107,104 @@ export class DatasetformComponent implements OnInit {
           }
         }
       }
-      this.buildForm();
+      this.updateForm();
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });
   }
 
-  /** buildForm
-  /* creates a new form
-  /* populate the form or leave empty when creating a new dataset
-  /* if datasetid exists: prefill form
-  /* disable/enable fields
-  */
   buildForm(): void {
     this.datasetForm = this.fb.group({
-      datasetId: [(this.datasetData ? this.datasetData.datasetId : '')],
-      datasetName: [(this.datasetData ? this.datasetData.datasetName : ''), [Validators.required]],
-      dataProvider: [(this.datasetData ? this.datasetData.dataProvider : '')],
-      provider: [(this.datasetData ? this.datasetData.provider : ''), [Validators.required]],
-      intermediateProvider: [(this.datasetData ? this.datasetData.intermediateProvider : '')],
-      dateCreated: [(this.datasetData ? this.datePipe.transform(this.datasetData.createdDate, 'dd/MM/yyyy - HH:mm') : '')],
-      dateUpdated: [(this.datasetData ? this.datePipe.transform(this.datasetData.updatedDate, 'dd/MM/yyyy - HH:mm') : '')],
-      replaces: [(this.datasetData ? this.datasetData.replaces : '')],
-      replacedBy: [(this.datasetData ? this.datasetData.replacedBy : '')],
+      datasetName: ['', [Validators.required]],
+      dataProvider: [''],
+      provider: ['', [Validators.required]],
+      intermediateProvider: [''],
+      replaces: [''],
+      replacedBy: [''],
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
-      description: [(this.datasetData ? this.datasetData.description : '')],
-      notes: [(this.datasetData ? this.datasetData.notes : '')],
-      createdBy: [(this.datasetData ? this.datasetData.createdByUserId : '')],
-      firstPublished: [(this.harvestPublicationData ? this.datePipe.transform(this.harvestPublicationData.firstPublishedDate, 'dd/MM/yyyy - HH:mm') : '')],
-      lastPublished: [(this.harvestPublicationData ? this.datePipe.transform(this.harvestPublicationData.lastPublishedDate, 'dd/MM/yyyy - HH:mm')  : '')],
-      numberOfItemsPublished: [(this.harvestPublicationData ? this.harvestPublicationData.lastPublishedRecords : '')],
-      lastDateHarvest: [(this.harvestPublicationData ? this.datePipe.transform(this.harvestPublicationData.lastHarvestedDate, 'dd/MM/yyyy - HH:mm') : '')],
-      numberOfItemsHarvested: [(this.harvestPublicationData ? this.harvestPublicationData.lastHarvestedRecords : '')]
+      description: [''],
+      notes: [''],
     });
 
-    this.datasetForm.patchValue({country: this.selectedCountry});
-    this.datasetForm.patchValue({language: this.selectedLanguage});
-
-    if (this.formMode === 'read') {
-      this.datasetForm.controls['country'].disable();
-      this.datasetForm.controls['language'].disable();
-      this.datasetForm.controls['description'].disable();
-      this.datasetForm.controls['notes'].disable();
-    }
+    this.updateForm();
+    this.updateFormEnabled();
   }
 
-  /** saveTempData
-  /* temporarily save form values
-  /* after blur/change
-  */
+  updateForm(): void {
+    this.datasetForm.patchValue(this.datasetData);
+    this.datasetForm.patchValue({ country: this.selectedCountry });
+    this.datasetForm.patchValue({ language: this.selectedLanguage });
+  }
+
   saveTempData(): void {
-    if (this.formMode === 'create') {
-      this.formatFormValues();
-      localStorage.removeItem('tempDatasetData');
-      localStorage.setItem('tempDatasetData', JSON.stringify(this.datasetForm.value));
+    if (this.isNew) {
+      localStorage.setItem(DATASET_TEMP_LSKEY, JSON.stringify(this.datasetForm.value));
     }
   }
 
-  /** formatFormValues
-  /* some field values need formating before sending them to the backend
-  */
-  formatFormValues(): void {
-    if (!this.datasetForm.value['country']) {
-      this.datasetForm.value['country'] = null;
-    }
-
-    if (!this.datasetForm.value['language']) {
-      this.datasetForm.value['language'] = null;
+  private scrollToTop(): void {
+    const tabs = document.querySelector('.tabs');
+    if (tabs) {
+      tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
-  /** onSubmit
-  /*  submits the form and shows an error or success message
-  */
   onSubmit(): void {
-
     this.successMessage = undefined;
     this.errorMessage = undefined;
-    this.formatFormValues();
 
-    const datasetValues = { dataset: this.datasetForm.value };
-    if (this.formMode === 'update') {
-      this.datasets.updateDataset(datasetValues).subscribe(result => {
-        localStorage.removeItem('tempDatasetData');
-        this.successMessage = 'Dataset updated!';
-        this.formMode = 'read';
-
-        this.datasetForm.controls['country'].disable();
-        this.datasetForm.controls['language'].disable();
-        this.datasetForm.controls['description'].disable();
-        this.datasetForm.controls['notes'].disable();
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
-      });
-    } else {
+    this.formMode = 'save';
+    if (this.isNew) {
       this.datasets.createDataset(this.datasetForm.value).subscribe(result => {
-        localStorage.removeItem('tempDatasetData');
-        this.datasets.setDatasetMessage('New dataset created! Id: ' + result['datasetId']);
+        localStorage.removeItem(DATASET_TEMP_LSKEY);
+
         this.router.navigate(['/dataset/new/' + result['datasetId']]);
       }, (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.errorMessage = `${StringifyHttpError(error)}`;
+
+        this.formMode = 'edit';
+        this.scrollToTop();
+      });
+    } else {
+      const dataset = { datasetId: this.datasetData.datasetId, ...this.datasetForm.value };
+      this.datasets.updateDataset({ dataset }).subscribe(result => {
+        localStorage.removeItem(DATASET_TEMP_LSKEY);
+        this.successMessage = 'Dataset updated!';
+        this.datasetUpdated.emit();
+
+        this.formMode = 'show';
+        this.scrollToTop();
+      }, (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.errorMessage = `${StringifyHttpError(error)}`;
+
+        this.formMode = 'edit';
+        this.scrollToTop();
       });
     }
-
-    window.scrollTo(0, 0);
   }
 
-  /** updateForm
-  /* update an existing dataset
-  /* using (new) values from the form
-  /* show an error or success message
-  */
-  updateForm(): void {
-    this.formMode = 'update';
-    this.datasets.clearDatasetMessage();
+  cancel(): void {
+    localStorage.removeItem(DATASET_TEMP_LSKEY);
+    this.errorMessage = undefined;
+    this.successMessage = undefined;
+    if (this.isNew) {
+      this.router.navigate(['/dashboard']);
+    } else {
+      this.formMode = 'show';
+      this.updateForm();
+    }
+
+    this.scrollToTop();
+  }
+
+  editForm(): void {
+    this.formMode = 'edit';
     this.errorMessage = undefined;
     this.successMessage = undefined;
 
-    this.datasetForm.controls['country'].enable();
-    this.datasetForm.controls['language'].enable();
-    this.datasetForm.controls['description'].enable();
-    this.datasetForm.controls['notes'].enable();
-
-    window.scrollTo(0, 0);
+    this.scrollToTop();
   }
 }

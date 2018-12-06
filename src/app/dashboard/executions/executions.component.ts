@@ -16,6 +16,7 @@ export class ExecutionsComponent implements OnInit {
   @Input() runningExecutions: WorkflowExecution[];
   @Input() finishedExecutions: WorkflowExecution[];
   @Input() isLoading: boolean;
+  @Input() hasMore: boolean;
 
   @Output() nextPage: EventEmitter<void> = new EventEmitter();
 

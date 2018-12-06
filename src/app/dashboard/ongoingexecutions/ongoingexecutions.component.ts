@@ -1,10 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
-
 import { WorkflowService, TranslateService } from '../../_services';
-import { LogStatus } from '../../_models/log-status';
-import { WorkflowExecution } from '../../_models/workflow-execution';
+import { PluginExecution, WorkflowExecution } from '../../_models/workflow-execution';
 
 @Component({
   selector: 'app-ongoingexecutions',
@@ -16,34 +14,16 @@ export class OngoingexecutionsComponent {
   constructor(private workflows: WorkflowService,
     private translate: TranslateService) { }
 
-  @Output() notifyShowLogStatus: EventEmitter<LogStatus> = new EventEmitter<LogStatus>();
-  @Input('isShowingLog') isShowingLog: LogStatus;
+  @Input() showPluginLog: PluginExecution;
   @Input() runningExecutions: WorkflowExecution[];
+  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
 
-  ongoingExecutions: WorkflowExecution[];
-  ongoingExecutionsTotal: number;
   errorMessage: string;
   cancelling: string;
   viewMore = false;
-  logIsOpen?: string;
   contentCopied = false;
 
-  /** ngOnInit
-  /* init of this component:
-  /* start polling/checking for updates
-  /* set translation languages
-  /* translate some values to use in this component
-  */
   ngOnInit(): void {
-    this.workflows.updateLog.subscribe(
-      (log: LogStatus) => {
-        if (this.isShowingLog) {
-          this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen, log['processed'], log['status']);
-        } else {
-          this.logIsOpen = undefined;
-        }
-    });
-
     this.translate.use('en');
     this.cancelling = this.translate.instant('cancelling');
   }
@@ -59,13 +39,12 @@ export class OngoingexecutionsComponent {
 
   /** showLog
   /*  show the log for the current/last execution
-  /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
+  /* @param {number} externalTaskId - id of the external task that belongs to topology/plugin
   /* @param {string} topology - name of the topology
   */
-  showLog(externaltaskId: string | undefined, topology: string, plugin: string, datasetId?: string, processed?: number, status?: string): void {
-    const message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
-    this.logIsOpen = datasetId;
-    this.notifyShowLogStatus.emit(message);
+  showLog(workflow: WorkflowExecution): void {
+    const plugin = workflow.metisPlugins[this.workflows.getCurrentPlugin(workflow)];
+    this.setShowPluginLog.emit(plugin);
   }
 
   /** viewAll

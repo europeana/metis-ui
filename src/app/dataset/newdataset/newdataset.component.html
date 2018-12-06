@@ -1,0 +1,14 @@
+<div class="dashboard-wrapper">
+  <div class="metis-dashboard">
+    <ul class="tabs">
+      <li class="active"><a><span class="tab-title">{{ 'datasetinformation' | translate }}</span></a></li>
+      <li class="disabled"><a><span class="tab-title">{{ 'workflow' | translate }}</span></a></li>
+      <li class="disabled"><a><span class="tab-title">{{ 'mapping' | translate }}</span></a></li>
+      <li class="disabled"><a><span class="tab-title">{{ 'rawxml' | translate }}</span></a></li>
+      <li class="disabled"><a><span class="tab-title">{{ 'processinghistory' | translate }}</span></a></li>
+    </ul>
+  </div>
+  <div class="tab-content">
+    <app-datasetform [datasetData]="{}" [isNew]="true"></app-datasetform>
+  </div>
+</div>

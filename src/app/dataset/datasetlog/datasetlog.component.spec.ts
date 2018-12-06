@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService, DatasetsService } from '../../_services';
-import { MockWorkflowService, MockAuthenticationService, MockTranslateService, MockDatasetService } from '../../_mocked';
+import { MockWorkflowService, MockAuthenticationService, MockTranslateService, MockDatasetService, currentWorkflow } from '../../_mocked';
 
 import { DatasetlogComponent } from './datasetlog.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -30,7 +30,7 @@ describe('DatasetlogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DatasetlogComponent);
     component = fixture.componentInstance;
-    component.isShowingLog = { topology: 'import', plugin: 'import' };
+    component.showPluginLog = currentWorkflow.results[0].metisPlugins[0];
     fixture.detectChanges();
   });
 
@@ -39,8 +39,6 @@ describe('DatasetlogComponent', () => {
   });
 
   it('should open and close the logs', () => {
-    component.isShowingLog = {'externaltaskId' : 'mocked', 'topology' : 'mocked', 'plugin': 'testplugin', 'processed': 100, 'status': 'RUNNING'};
-    fixture.detectChanges();
     component.returnLog();
     expect(component.logMessages).toBeTruthy();
     component.closeLog();

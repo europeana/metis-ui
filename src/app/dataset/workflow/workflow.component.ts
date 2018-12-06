@@ -1,11 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { FormControl, FormGroup, FormBuilder, FormArray, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray, Validators, AbstractControl } from '@angular/forms';
 
 import { WorkflowService, DatasetsService, AuthenticationService, RedirectPreviousUrl, ErrorService, TranslateService } from '../../_services';
 
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, harvestValidator } from '../../_helpers';
 import { PluginMetadata } from '../../_models/plugin-metadata';
 import { Dataset } from '../../_models/dataset';
@@ -46,14 +46,13 @@ export class WorkflowComponent implements OnInit {
     }
 
   @Input() datasetData: Dataset;
-  @Input() workflowData: Workflow;
+  @Input() workflowData?: Workflow;
+
   errorMessage: string;
   successMessage?: string;
   harvestprotocol: string;
   newWorkflow = true;
-  formIsValid = false;
   workflowForm: FormGroup;
-  fragment: string;
   currentUrl: string;
   selectedSteps = true;
   showLimitConnectionMedia = false;
@@ -162,7 +161,7 @@ export class WorkflowComponent implements OnInit {
   workflowStepAllowed(selectedPlugin: string): void {
     let hasValue = 0;
 
-    this.pluginsOrdered.forEach((value, index) => {
+    this.pluginsOrdered.forEach((value) => {
       this.workflowForm.get(value)!.disable();
     });
 
@@ -180,7 +179,7 @@ export class WorkflowComponent implements OnInit {
     });
 
     if (hasValue === 0) {
-      this.pluginsOrdered.forEach((value, index) => {
+      this.pluginsOrdered.forEach((value) => {
         this.workflowForm.get(value)!.enable();
       });
     }
@@ -263,15 +262,9 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty
   */
   getWorkflow(): void {
-    if (!this.datasetData) {
-      if (typeof this.translate.instant === 'function') {
-        this.errorMessage = this.translate.instant('create dataset');
-      }
-      return;
-    }
-
     const workflow = this.workflowData;
     if (!workflow) { return; }
+
     this.newWorkflow = false;
 
     for (let w = 0; w < workflow['metisPluginsMetadata'].length; w++) {
@@ -428,11 +421,9 @@ export class WorkflowComponent implements OnInit {
       });
     }
 
-    const values = {
+    return {
       'metisPluginsMetadata': plugins
     };
-
-    return values;
   }
 
   /** returnConnections

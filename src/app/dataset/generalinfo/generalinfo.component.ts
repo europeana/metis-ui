@@ -1,10 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { DatasetsService, TranslateService, WorkflowService, ErrorService, AuthenticationService } from '../../_services';
-import { Subscription, timer as observableTimer } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { TranslateService } from '../../_services';
 import { apiSettings } from '../../../environments/apisettings';
-import { Workflow } from '../../_models/workflow';
 import { Dataset } from '../../_models/dataset';
 import { HarvestData } from '../../_models/harvest-data';
 
@@ -15,76 +11,54 @@ import { HarvestData } from '../../_models/harvest-data';
 
 export class GeneralinfoComponent implements OnInit {
 
-  constructor(private datasets: DatasetsService,
-    private workflows: WorkflowService,
-    private translate: TranslateService,
-    private authentication: AuthenticationService,
-    private errors: ErrorService) { }
+  constructor(private translate: TranslateService) { }
 
   @Input() datasetData: Dataset;
-  harvestPublicationData: HarvestData;
-  subscription: Subscription;
-  intervalTimer = environment.intervalStatusLong;
-  viewPreview: string;
-  viewCollections: string;
+
+  lastPublishedRecords?: number;
+  lastPublishedDate?: string;
+  viewPreview?: string;
   buttonClassPreview = 'btn-disabled';
+  viewCollections?: string;
   buttonClassCollections = 'btn-disabled';
 
-  /** ngOnInit
-  /* init for this specific component
-  /* and set translation languages
-  /* if dataset, try to retrieve information about harvest and publication
-  */
-  ngOnInit(): void {
-    this.translate.use('en');
+  private _harvestPublicationData: HarvestData;
 
-    this.workflows.changeWorkflow.subscribe(
-      () => {
-        this.getDatasetInformation();
-      }
-    );
+  @Input()
+  set harvestPublicationData(value: HarvestData) {
+    this._harvestPublicationData = value;
 
-    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    const timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      this.getDatasetInformation();
-    });
-  }
+    if (value) {
+      this.lastPublishedRecords = value.lastPublishedRecords;
+      this.lastPublishedDate = value.lastPublishedDate;
 
-  /** ngOnDestroy
-  /* cancel subscriptions to check for current available dataset information
-  */
-  ngOnDestroy(): void {
-    if (this.subscription) { this.subscription.unsubscribe(); }
-  }
-
-  /** getDatasetInformation
-  /* get information about dataset
-  /* including links to preview and collections
-  */
-  getDatasetInformation (): void {
-    if (!this.authentication.validatedUser()) { return; }
-    if (this.datasetData) {
-
-      if (!this.viewPreview) {
+      if (value.lastPreviewRecordsReadyForViewing) {
         this.viewPreview = apiSettings.viewPreview + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
-        this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
+        this.buttonClassPreview = '';
+      } else {
+        this.viewPreview = undefined;
+        this.buttonClassPreview = 'btn-disabled';
       }
-
-      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
-        this.harvestPublicationData = result;
-        this.buttonClassPreview = this.harvestPublicationData.lastPreviewRecordsReadyForViewing ? '' : 'btn-disabled';
-        this.buttonClassCollections = this.harvestPublicationData.lastPublishedRecordsReadyForViewing ? '' : 'btn-disabled';
-      }, (err: HttpErrorResponse) => {
-        if (this.subscription) { this.subscription.unsubscribe(); }
-        this.errors.handleError(err);
-      });
+      if (value.lastPublishedRecordsReadyForViewing) {
+        this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
+        this.buttonClassCollections = '';
+      } else {
+        this.viewCollections = undefined;
+        this.buttonClassCollections = 'btn-disabled';
+      }
     }
   }
 
-  /** escapeSolr
-  /* format urls to link and preview
-  */
+  get harvestPublicationData(): HarvestData {
+    return this._harvestPublicationData;
+  }
+
+  ngOnInit(): void {
+    this.translate.use('en');
+
+  }
+
+  // format urls to link and preview
   escapeSolr(url: string): string {
     const pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
     return url.replace(pattern, '\\$1');

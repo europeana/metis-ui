@@ -212,7 +212,7 @@ export const harvestData: HarvestData = {
 
 export class MockWorkflowService extends WorkflowService {
 
-  triggerNewWorkflow(): Observable<WorkflowExecution> {
+  startWorkflow(): Observable<WorkflowExecution> {
     return observableOf(currentWorkflow.results[0]);
   }
 
@@ -220,27 +220,23 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(undefined);
   }
 
-  getAllExecutions(): Observable<Results<WorkflowExecution[]>> {
+  getCompletedDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getAllExecutionsEveryStatus(): Observable<Results<WorkflowExecution[]>> {
+  getDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getLastExecution(): Observable<WorkflowExecution> {
+  getLastDatasetExecution(): Observable<WorkflowExecution> {
     return observableOf(currentWorkflow.results[0]);
   }
 
-  setActiveWorkflow(workflow?: WorkflowExecution): void {
-    this.changeWorkflow.emit(currentWorkflow.results[0]);
-  }
-
-  getAllExecutionsPerOrganisation(): Observable<Results<WorkflowExecution[]>> {
+  protected getAllExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
-  getAllFinishedExecutions(): Observable<Results<WorkflowExecution[]>> {
+  getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
     return observableOf(currentWorkflow);
   }
 
@@ -250,10 +246,6 @@ export class MockWorkflowService extends WorkflowService {
 
   getReport(taskid: string, topology: string): Observable<Report> {
     return observableOf(currentReport);
-  }
-
-  getCurrentReport(): Report {
-    return currentReport;
   }
 
   getStatistics(): Observable<Statistics> {

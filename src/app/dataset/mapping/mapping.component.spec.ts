@@ -56,19 +56,27 @@ describe('MappingComponent', () => {
   });
 
   it('should display xslt', () => {
-    component.loadXSLT('default');
-    component.fullView = true;
+    expect(component.xsltStatus).toBe('loading');
     fixture.detectChanges();
+    expect(component.xsltStatus).toBe('no-custom');
+
+    component.loadDefaultXSLT();
+    fixture.detectChanges();
+    expect(component.xsltStatus).toBe('new-custom');
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
   });
 
   it('should save xslt', () => {
-    component.fullView = true;
-    component.loadXSLT('default');
     fixture.detectChanges();
-    component.saveXSLT();
+    expect(component.xsltStatus).toBe('no-custom');
+
+    component.loadDefaultXSLT();
     fixture.detectChanges();
-    expect(component.xsltType).toBe('custom');
+    expect(component.xsltStatus).toBe('new-custom');
+
+    component.saveCustomXSLT(false);
+    fixture.detectChanges();
+    expect(component.successMessage).toBe('en:xsltsuccessful');
   });
 
   it('should not display messages', () => {
@@ -78,39 +86,12 @@ describe('MappingComponent', () => {
     expect(component.successMessage).toBeFalsy();
   });
 
-  it('should display xslt in cards', () => {
-    fixture.detectChanges();
-    component.fullView = false;
-    component.loadXSLT('default');
-    fixture.detectChanges();
-    expect(component.xslt.length).not.toBe(1);
-  });
-
-  it('should expand xslt card', () => {
-    component.fullView = false;
-    component.loadXSLT('default');
-    fixture.detectChanges();
-    component.expandSample(1);
-    expect(component.expandedSample).toBe(1);
-  });
-
-  it('should create a full xslt after viewing cards', () => {
-    component.loadXSLT('default');
-    component.fullView = false;
-    component.getFullXSLT();
-    component.saveXSLT();
-    expect(component.xsltType).toBe('custom');
-  });
-
   it('should try out the xslt', fakeAsync((): void => {
-    component.fullView = false;
-
     spyOn(router, 'navigate').and.callFake(() => { });
     tick();
 
     component.tryOutXSLT('default');
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
-
   }));
 
 });

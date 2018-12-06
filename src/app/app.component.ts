@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, Event, RouterEvent } from '@angular/router';
-import { WorkflowService, AuthenticationService, DatasetsService, ErrorService, TranslateService } from './_services';
+import { WorkflowService, AuthenticationService, ErrorService, TranslateService } from './_services';
 import { StringifyHttpError } from './_helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  providers: [AuthenticationService, DatasetsService],
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
@@ -72,7 +71,6 @@ export class AppComponent implements OnInit {
   cancelWorkflow (): void {
     this.workflows.cancelThisWorkflow(this.currentWorkflowId!).subscribe(result => {
       this.closePrompt();
-      this.workflows.setWorkflowCancelled();
     }, (err: HttpErrorResponse) => {
       this.errors.handleError(err);
     });

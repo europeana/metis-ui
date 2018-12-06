@@ -16,4 +16,12 @@
     border-color: $eu-red;
   }
 
+  input:not([type='checkbox']), textarea, select {
+    &:disabled {
+      background: transparent;
+      border-color: $opacity-gray-very-light;
+      color: $gray-light;
+    }
+  }
+
 }

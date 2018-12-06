@@ -24,5 +24,6 @@
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "preserveWhitespaces": false
-  }
+  },
+  "exclude": ["cypress/**/*"]
 }

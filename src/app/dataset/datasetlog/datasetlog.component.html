@@ -1,6 +1,6 @@
 <div class="modal-wrapper">
   <div class="modal">
-    <div class="head">Log {{ logPlugin }}<a class="btn-close" (click)="closeLog();"></a></div>
+    <div class="head">Log {{ showPluginLog.pluginType }}<a class="btn-close" (click)="closeLog();"></a></div>
     <div class="content">
         <p *ngIf="noLogMessage">{{noLogMessage}}</p>
     	<p *ngFor="let msg of logMessages">

@@ -27,11 +27,12 @@ import { HeaderComponent,
          PasswordCheckComponent } from './shared';
 import { HomeComponent } from './home';
 import { DatasetComponent,
+         NewDatasetComponent,
          DatasetformComponent,
-         DatasetDirective,
          GeneralinfoComponent,
          DatasetlogComponent,
          HistoryComponent,
+         LastExecutionComponent,
          ActionbarComponent,
          MappingComponent,
          PreviewComponent,
@@ -51,6 +52,7 @@ import { XmlPipe } from './_helpers';
 import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
 import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
 import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
+import { LoadAnimationComponent } from './load-animation';
 
 @NgModule({
   declarations: [
@@ -58,17 +60,19 @@ import { ExecutiontableComponent } from './dashboard/executions/executiontable/e
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
+    LoadAnimationComponent,
     PageNotFoundComponent,
     HeaderComponent,
     HomeComponent,
     DatasetComponent,
+    NewDatasetComponent,
     DashboardComponent,
     DatasetformComponent,
-    DatasetDirective,
     PasswordCheckComponent,
     GeneralinfoComponent,
     DashboardactionsComponent,
     ActionbarComponent,
+    LastExecutionComponent,
     HistoryComponent,
     ActionbarComponent,
     WorkflowComponent,

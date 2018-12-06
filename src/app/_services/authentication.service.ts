@@ -60,7 +60,7 @@ export class AuthenticationService {
   */
   updatePassword(password: string, oldpassword: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
-    return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
+    return this.http.put(url, {}).pipe(map(data => {
       return true;
     })).pipe(this.errors.handleRetry());
   }
@@ -74,7 +74,7 @@ export class AuthenticationService {
   register(email: string, password: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
+    return this.http.post(url, {}, { headers: headers }).pipe(map(data => {
       return true;
     })).pipe(this.errors.handleRetry());
   }
@@ -98,7 +98,7 @@ export class AuthenticationService {
 
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post<User>(url, JSON.stringify('{}'), { headers: headers }).pipe(map(user => {
+    return this.http.post<User>(url, {}, { headers: headers }).pipe(map(user => {
       if (user && user.metisUserAccessToken) {
         this.setCurrentUser(user);
         return true;
@@ -126,7 +126,7 @@ export class AuthenticationService {
   */
   reloadCurrentUser(email: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;
-    return this.http.put<User>(url, JSON.stringify('{}')).pipe(map(user => {
+    return this.http.put<User>(url, {}).pipe(map(user => {
       if (user) {
         this.setCurrentUser(user);
         return true;

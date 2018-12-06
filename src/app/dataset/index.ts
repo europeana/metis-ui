@@ -1,11 +1,11 @@
-export * from './dataset.component';
-export * from './dataset.directive';
-
 export * from './actionbar/actionbar.component';
+export * from './dataset.component';
 export * from './datasetform/datasetform.component';
 export * from './datasetlog/datasetlog.component';
 export * from './generalinfo/generalinfo.component';
 export * from './history/history.component';
+export * from './lastexecution/lastexecution.component';
 export * from './mapping/mapping.component';
+export * from './newdataset/newdataset.component';
 export * from './preview/preview.component';
 export * from './workflow/workflow.component';

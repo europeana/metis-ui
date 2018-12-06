@@ -1,129 +1,118 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthenticationService, TranslateService, WorkflowService, ErrorService, DatasetsService } from '../_services';
-import { User } from '../_models';
+import { TranslateService, WorkflowService, ErrorService, AuthenticationService } from '../_services';
 
 import { environment } from '../../environments/environment';
-import { switchMap } from 'rxjs/operators';
-import { LogStatus } from '../_models/log-status';
-import { WorkflowExecution } from '../_models/workflow-execution';
-import { Dataset } from '../_models/dataset';
+import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  providers: [AuthenticationService]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
-  user: User;
   userName: string;
-  datasets: Dataset[];
-  runningExecutions: WorkflowExecution[] = [];
+  runningExecutions: WorkflowExecution[];
   runningTimer: number;
   runningIsLoading = true;
-  finishedExecutions: WorkflowExecution[] = [];
+  runningIsFirstLoading = true;
+  finishedExecutions: WorkflowExecution[];
   finishedTimer: number;
   finishedIsLoading = true;
+  finishedIsFirstLoading = true;
   finishedCurrentPage = 0;
-  stopChecking = true;
+  finishedHasMore = false;
+  showPluginLog?: PluginExecution;
 
-  public isShowingLog?: LogStatus;
-
-  constructor(private translate: TranslateService,
+  constructor(private authentication: AuthenticationService,
+              private translate: TranslateService,
               private workflows: WorkflowService,
               private errors: ErrorService) {
   }
 
-  /** ngOnInit
-  /* init of this component
-  /* start checking the status of running executions
-  /* set translation language
-  */
   ngOnInit(): void {
-    this.stopChecking = false;
     this.getRunningExecutions();
     this.getFinishedExecutions();
 
     this.translate.use('en');
+
+    const user = this.authentication.getCurrentUser();
+    if (user) {
+      this.userName = user.firstName;
+    }
   }
 
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
     clearTimeout(this.finishedTimer);
-    this.stopChecking = true;
   }
 
-  /** onNotifyShowLogStatus
-  /*  opens/closes the log messages
-  /* @param {object} message - message to display in log modal
-  */
-  onNotifyShowLogStatus(message: LogStatus): void {
-    this.isShowingLog = message;
+  setShowPluginLog(plugin: PluginExecution | undefined): void {
+    this.showPluginLog = plugin;
   }
 
   getNextPage(): void {
     this.finishedCurrentPage ++;
+
+    clearTimeout(this.finishedTimer);
     this.getFinishedExecutions();
   }
 
-  /** checkStatusRunningExecutions
-  /*  get the current status of the running executions
-  */
-  checkStatusRunningExecutions(): void {
-    if (this.stopChecking) { return; }
-    this.runningTimer = window.setTimeout(() => {
-        this.getRunningExecutions();
-    }, environment.intervalStatus);
+  checkUpdateLog(executions: WorkflowExecution[]): void {
+    if (this.showPluginLog) {
+      const showingId = this.showPluginLog.externalTaskId;
+      executions.forEach((execution) => {
+        const plugin = execution.metisPlugins.find(p => p.externalTaskId === showingId);
+        if (plugin) {
+          const currentPlugin = execution.metisPlugins[this.workflows.getCurrentPlugin(execution)];
+          this.showPluginLog = currentPlugin;
+        }
+      });
+    }
   }
 
-  /** checkStatusExecutions
-  /*  get the current status of the executions
-  */
-  checkStatusFinishedExecutions(): void {
-    if (this.stopChecking) { return; }
-    this.finishedTimer = window.setTimeout(() => {
-        this.getFinishedExecutions();
-    }, environment.intervalStatusMedium);
-  }
-
-  /** getRunningExecutions
-  /*  get all running executions and start polling again
-  */
+  //  get all running executions and start polling again
   getRunningExecutions(): void {
-    clearTimeout(this.runningTimer);
     this.runningIsLoading = true;
     this.workflows.getAllExecutionsCollectingPages(true)
       .subscribe(executions => {
       this.runningExecutions = executions;
       this.runningIsLoading = false;
-      this.checkStatusRunningExecutions();
+      this.runningIsFirstLoading = false;
+
+      this.checkUpdateLog(executions);
+
+      this.runningTimer = window.setTimeout(() => {
+        this.getRunningExecutions();
+      }, environment.intervalStatus);
     }, (err: HttpErrorResponse) => {
-      this.handleError(err);
+      this.errors.handleError(err);
+      this.runningIsLoading = false;
+      this.runningIsFirstLoading = false;
     });
   }
 
-  /** getExecutions
-  /*  get history of all executions (finished, cancelled, failed) and start polling again
-  */
+  //  get history of all executions (finished, cancelled, failed) and start polling again
   getFinishedExecutions(): void {
-    clearTimeout(this.finishedTimer);
     this.finishedIsLoading = true;
     this.workflows.getAllExecutionsUptoPage(this.finishedCurrentPage, false)
-      .subscribe(executions => {
-      this.finishedExecutions = executions;
+      .subscribe(({ results, more }) => {
+      this.finishedExecutions = results;
+      this.finishedHasMore = more;
       this.finishedIsLoading = false;
-      this.checkStatusFinishedExecutions();
-    }, (err: HttpErrorResponse) => {
-      this.handleError(err);
-    });
-  }
+      this.finishedIsFirstLoading = false;
 
-  private handleError(err: HttpErrorResponse): void {
-    clearTimeout(this.runningTimer);
-    clearTimeout(this.finishedTimer);
-    this.errors.handleError(err);
+      this.checkUpdateLog(results);
+
+      this.finishedTimer = window.setTimeout(() => {
+        this.getFinishedExecutions();
+      }, environment.intervalStatusMedium);
+    }, (err: HttpErrorResponse) => {
+      this.errors.handleError(err);
+      this.finishedIsLoading = false;
+      this.finishedIsFirstLoading = false;
+    });
   }
 
 }

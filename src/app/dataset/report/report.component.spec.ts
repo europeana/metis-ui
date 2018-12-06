@@ -4,9 +4,10 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { ReportComponent } from './report.component';
 
-import { WorkflowService, AuthenticationService, TranslateService, ErrorService, RedirectPreviousUrl, DatasetsService } from '../../_services';
+import { WorkflowService, TranslateService, ErrorService, RedirectPreviousUrl, DatasetsService } from '../../_services';
 import { TranslatePipe } from '../../_translate';
-import { MockWorkflowService, MockAuthenticationService, MockTranslateService, MockDatasetService } from '../../_mocked';
+import { MockDatasetService, MockWorkflowService, MockTranslateService } from '../../_mocked';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -17,13 +18,13 @@ describe('ReportComponent', () => {
       imports: [ RouterTestingModule, HttpClientModule],
       declarations: [ ReportComponent, TranslatePipe ],
       providers: [
-      { provide: DatasetsService, useClass: MockDatasetService },
-      { provide: WorkflowService, useClass: MockWorkflowService },
-      { provide: AuthenticationService, useClass: MockAuthenticationService },
-      { provide: TranslateService, useClass: MockTranslateService },
-      ErrorService,
-      RedirectPreviousUrl]
-
+        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: TranslateService, useClass: MockTranslateService },
+        ErrorService,
+        RedirectPreviousUrl
+      ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     })
     .compileComponents();
   }));
@@ -35,9 +36,10 @@ describe('ReportComponent', () => {
   });
 
   it('should close the report window', () => {
+    spyOn(component.closed, 'emit');
     component.closeReport();
     fixture.detectChanges();
-    expect(component.report).toEqual(undefined);
+    expect(component.closed.emit).toHaveBeenCalledWith();
   });
 
   it('should create', () => {
