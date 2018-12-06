@@ -80,5 +80,11 @@
     "typescript": "^3.1.6",
     "wallaby-webpack": "^3.9.13",
     "webpack": "^4.26.0"
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "printWidth": 100,
+    "singleQuote": true,
+    "trailingComma": "all"
   }
 }
