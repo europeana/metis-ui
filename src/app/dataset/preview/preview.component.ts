@@ -285,15 +285,46 @@ export class PreviewComponent implements OnInit {
     this.filterPlugin = false;
   }
 
-  // if the click is on a http(s) link, open the link in a new tab
-  handleCodeClick(event: MouseEvent): void {
-    const target: Element = event.target as Element;
-    if (target && target.classList.contains('cm-string')) {
-      const text = target.textContent || '';
+  private extractLinkFromElement(element: Element): string | undefined {
+    if (element && element.classList.contains('cm-string')) {
+      const text = element.textContent || '';
       const match = /^"(https?:\/\/\S+)"$/.exec(text);
       if (match) {
-        window.open(match[1], '_blank');
+        return match[1];
       }
+    }
+    return undefined;
+  }
+
+  // if the click is on a http(s) link, open the link in a new tab
+  handleCodeClick(event: MouseEvent): void {
+    const target = event.target as Element;
+    const link = this.extractLinkFromElement(target);
+    if (link) {
+      window.open(link, '_blank');
+    }
+  }
+
+  private clearLinkActive(element: Element): void {
+    Array.from(element.querySelectorAll('.link-active')).forEach((link) => {
+      link.classList.remove('link-active');
+    });
+  }
+
+  handleMouseOver(event: MouseEvent): void {
+    const target = event.target as Element;
+    const link = this.extractLinkFromElement(target);
+    if (link) {
+      this.clearLinkActive(event.currentTarget as Element);
+      target.classList.add('link-active');
+    }
+  }
+
+  handleMouseOut(event: MouseEvent): void {
+    const target = event.target as Element;
+    const link = this.extractLinkFromElement(target);
+    if (link) {
+      this.clearLinkActive(event.currentTarget as Element);
     }
   }
 }

@@ -72,3 +72,13 @@
     }
   }
 }
+
+.cm-string {
+  padding: 5px 0;
+
+  &.link-active {
+    background-color: rgba(180, 220, 200, 0.3);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
