@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { StringifyHttpError } from '../../_helpers';
 import { Router } from '@angular/router';
@@ -28,7 +28,6 @@ import { PreviewFilters } from '../dataset.component';
 export class PreviewComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
-    private http: HttpClient,
     private translate: TranslateService,
     private errors: ErrorService,
     private datasets: DatasetsService,

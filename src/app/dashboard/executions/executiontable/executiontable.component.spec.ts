@@ -6,14 +6,12 @@ import {
   WorkflowService,
   TranslateService,
   ErrorService,
-  AuthenticationService,
   RedirectPreviousUrl,
   DatasetsService,
 } from '../../../_services';
 import {
   MockWorkflowService,
   currentWorkflow,
-  MockAuthenticationService,
   MockTranslateService,
   MockDatasetService,
 } from '../../../_mocked';
@@ -34,7 +32,6 @@ describe('ExecutiontableComponent', () => {
         RedirectPreviousUrl,
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();

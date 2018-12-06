@@ -7,7 +7,6 @@ import {
   MockWorkflowService,
   currentWorkflow,
   currentDataset,
-  MockAuthenticationService,
   MockTranslateService,
 } from '../../_mocked';
 
@@ -16,7 +15,6 @@ import {
   WorkflowService,
   TranslateService,
   ErrorService,
-  AuthenticationService,
   RedirectPreviousUrl,
   DatasetsService,
 } from '../../_services';
@@ -38,7 +36,6 @@ describe('PreviewComponent', () => {
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],

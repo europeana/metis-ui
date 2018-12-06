@@ -9,7 +9,6 @@ import { apiSettings } from '../../environments/apisettings';
 import { ErrorService } from './error.service';
 import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
-import { WorkflowExecution } from '../_models/workflow-execution';
 
 @Injectable()
 export class DatasetsService {

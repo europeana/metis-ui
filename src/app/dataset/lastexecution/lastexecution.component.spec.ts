@@ -8,7 +8,6 @@ import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import {
   DatasetsService,
   WorkflowService,
-  AuthenticationService,
   RedirectPreviousUrl,
   ErrorService,
   TranslateService,
@@ -16,9 +15,8 @@ import {
 import {
   MockWorkflowService,
   currentWorkflow,
-  currentDataset,
-  MockAuthenticationService,
   MockTranslateService,
+  MockDatasetService,
 } from '../../_mocked';
 
 import { LastExecutionComponent } from './lastexecution.component';
@@ -33,10 +31,9 @@ describe('LastExecutionComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [LastExecutionComponent, TranslatePipe, RenameWorkflowPipe],
       providers: [
-        DatasetsService,
+        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         RedirectPreviousUrl,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         { provide: TranslateService, useClass: MockTranslateService },
       ],

@@ -15,7 +15,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   loading = false;
   errorMessage?: string;
   successMessage: string;
-  linkRegister: string = environment.links.registerMetis;
   msgSuccess: string;
   msgPasswordWeak: string;
   msgRegistrationFailed: string;

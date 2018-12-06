@@ -6,7 +6,6 @@ import {
   MockWorkflowService,
   MockDatasetService,
   currentDataset,
-  MockAuthenticationService,
   statistics,
   MockTranslateService,
 } from '../../_mocked';
@@ -17,7 +16,6 @@ import {
   TranslateService,
   RedirectPreviousUrl,
   ErrorService,
-  AuthenticationService,
 } from '../../_services';
 
 import { MappingComponent } from './mapping.component';
@@ -43,7 +41,6 @@ describe('MappingComponent', () => {
         { provide: TranslateService, useClass: MockTranslateService },
         RedirectPreviousUrl,
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
       ],
     }).compileComponents();
   }));

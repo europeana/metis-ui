@@ -2,13 +2,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   DatasetsService,
   WorkflowService,
-  AuthenticationService,
   ErrorService,
   RedirectPreviousUrl,
   TranslateService,
 } from '../../_services';
 import {
-  MockAuthenticationService,
   MockWorkflowService,
   MockDatasetService,
   currentWorkflow,
@@ -36,7 +34,6 @@ describe('ActionbarComponent', () => {
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },

@@ -4,12 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { timer as observableTimer, Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-import {
-  WorkflowService,
-  AuthenticationService,
-  TranslateService,
-  ErrorService,
-} from '../../_services';
+import { WorkflowService, TranslateService, ErrorService } from '../../_services';
 import { SubTaskInfo } from '../../_models/subtask-info';
 import { ProcessingInfo } from '../dataset.component';
 import { PluginExecution } from '../../_models/workflow-execution';
@@ -21,7 +16,6 @@ import { PluginExecution } from '../../_models/workflow-execution';
 export class DatasetlogComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
-    private authentication: AuthenticationService,
     private errors: ErrorService,
     private translate: TranslateService,
   ) {}

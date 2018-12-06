@@ -1,16 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { FormGroup, FormBuilder, FormArray, Validators, AbstractControl } from '@angular/forms';
 
-import {
-  WorkflowService,
-  DatasetsService,
-  AuthenticationService,
-  RedirectPreviousUrl,
-  ErrorService,
-  TranslateService,
-} from '../../_services';
+import { WorkflowService, ErrorService, TranslateService } from '../../_services';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { StringifyHttpError, harvestValidator } from '../../_helpers';
@@ -26,17 +18,12 @@ interface Connections {
   selector: 'app-workflow',
   templateUrl: './workflow.component.html',
   styleUrls: ['./workflow.component.scss'],
-  providers: [DatePipe],
 })
 export class WorkflowComponent implements OnInit {
   constructor(
-    private datasets: DatasetsService,
     private workflows: WorkflowService,
-    private authentication: AuthenticationService,
     private fb: FormBuilder,
-    private redirectPreviousUrl: RedirectPreviousUrl,
     private errors: ErrorService,
-    private datePipe: DatePipe,
     private translate: TranslateService,
     private router: Router,
   ) {

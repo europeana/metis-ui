@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { ActivatedRoute, Router } from '@angular/router';
-import { User } from '../../_models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +10,6 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authentication: AuthenticationService,
     public router: Router,
-    private route: ActivatedRoute,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private translate: TranslateService,
   ) {}

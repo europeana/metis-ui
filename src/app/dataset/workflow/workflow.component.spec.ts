@@ -1,13 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 import {
   DatasetsService,
-  AuthenticationService,
   RedirectPreviousUrl,
   ErrorService,
   TranslateService,
@@ -18,7 +16,6 @@ import {
   MockWorkflowService,
   currentDataset,
   currentWorkflowDataset,
-  MockAuthenticationService,
   MockTranslateService,
 } from '../../_mocked';
 
@@ -28,7 +25,6 @@ import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 describe('WorkflowComponent', () => {
   let component: WorkflowComponent;
   let fixture: ComponentFixture<WorkflowComponent>;
-  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -37,14 +33,11 @@ describe('WorkflowComponent', () => {
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
-
-    router = TestBed.get(Router);
   }));
 
   beforeEach(() => {

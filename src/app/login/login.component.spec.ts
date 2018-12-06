@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 
 import { LoginComponent } from './login.component';
 
@@ -14,7 +13,7 @@ import {
   AuthenticationService,
   ErrorService,
 } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe } from '../_translate';
+import { TranslatePipe } from '../_translate';
 
 import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 

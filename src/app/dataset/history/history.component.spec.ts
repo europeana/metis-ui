@@ -8,7 +8,6 @@ import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
 import {
   DatasetsService,
   WorkflowService,
-  AuthenticationService,
   RedirectPreviousUrl,
   ErrorService,
   TranslateService,
@@ -17,8 +16,8 @@ import {
   MockWorkflowService,
   currentWorkflow,
   currentDataset,
-  MockAuthenticationService,
   MockTranslateService,
+  MockDatasetService,
 } from '../../_mocked';
 
 import { HistoryComponent } from './history.component';
@@ -33,10 +32,9 @@ describe('HistoryComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [HistoryComponent, TranslatePipe, RenameWorkflowPipe],
       providers: [
-        DatasetsService,
+        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         RedirectPreviousUrl,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         { provide: TranslateService, useClass: MockTranslateService },
       ],

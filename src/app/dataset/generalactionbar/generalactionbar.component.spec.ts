@@ -8,16 +8,13 @@ import {
   WorkflowService,
   TranslateService,
   ErrorService,
-  AuthenticationService,
   RedirectPreviousUrl,
   DatasetsService,
 } from '../../_services';
 import { GeneralactionbarComponent } from './generalactionbar.component';
 import {
-  MockAuthenticationService,
   MockWorkflowService,
   currentWorkflow,
-  currentDataset,
   MockTranslateService,
   MockDatasetService,
   currentWorkflowDataset,
@@ -37,7 +34,6 @@ describe('GeneralactionbarComponent', () => {
         { provide: DatasetsService, useClass: MockDatasetService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();

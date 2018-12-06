@@ -1,16 +1,15 @@
 import {
   WorkflowService,
-  ErrorService,
-  AuthenticationService,
-  RedirectPreviousUrl,
   TranslateService,
   DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
 } from '../../_services';
 import {
   MockWorkflowService,
   currentWorkflow,
-  MockAuthenticationService,
   MockTranslateService,
+  MockDatasetService,
 } from '../../_mocked';
 import { TranslatePipe } from '../../_translate';
 
@@ -30,10 +29,9 @@ describe('OngoingexecutionsComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [OngoingexecutionsComponent, TranslatePipe],
       providers: [
+        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        DatasetsService,
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],

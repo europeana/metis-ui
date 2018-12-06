@@ -1,8 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { WorkflowService, TranslateService, ErrorService } from '../../../_services';
+import { WorkflowService, TranslateService } from '../../../_services';
 
-import { StringifyHttpError, copyExecutionAndTaskId } from '../../../_helpers';
+import { copyExecutionAndTaskId } from '../../../_helpers';
 import { WorkflowExecution, PluginExecution } from '../../../_models/workflow-execution';
 
 @Component({
@@ -19,11 +18,7 @@ export class ExecutiontableComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
 
-  constructor(
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private translate: TranslateService,
-  ) {}
+  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   /** ngOnInit
   /* init this component:

@@ -1,28 +1,20 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Observable } from 'rxjs';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 
 import { DatasetformComponent } from './datasetform.component';
 import {
   CountriesService,
   DatasetsService,
-  AuthenticationService,
   RedirectPreviousUrl,
   ErrorService,
   TranslateService,
-  WorkflowService,
 } from '../../_services';
 import {
   MockDatasetService,
-  MockWorkflowService,
   MockCountriesService,
-  currentWorkflow,
   currentDataset,
-  MockAuthenticationService,
-  currentUser,
   MockTranslateService,
 } from '../../_mocked';
 
-import { By } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -41,9 +33,7 @@ describe('DatasetformComponent', () => {
       declarations: [DatasetformComponent, TranslatePipe],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
-        { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: CountriesService, useClass: MockCountriesService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },

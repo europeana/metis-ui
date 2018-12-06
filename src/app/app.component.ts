@@ -6,7 +6,6 @@ import {
   ErrorService,
   TranslateService,
 } from './_services';
-import { StringifyHttpError } from './_helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({

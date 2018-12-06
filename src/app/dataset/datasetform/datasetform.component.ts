@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -19,7 +18,6 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss'],
-  providers: [DatePipe],
 })
 export class DatasetformComponent implements OnInit {
   @Input() datasetData: Partial<Dataset>;
@@ -54,7 +52,6 @@ export class DatasetformComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private datePipe: DatePipe,
     private translate: TranslateService,
   ) {}
 

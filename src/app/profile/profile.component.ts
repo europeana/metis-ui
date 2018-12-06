@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { AuthenticationService, TranslateService, ErrorService } from '../_services';
 import { User } from '../_models';
@@ -23,7 +23,6 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
 
   constructor(
-    private http: HttpClient,
     private authentication: AuthenticationService,
     private fb: FormBuilder,
     private translate: TranslateService,
