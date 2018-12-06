@@ -180,7 +180,7 @@ export class DatasetformComponent implements OnInit {
         ...this.datasetForm.value,
       };
       this.datasets.updateDataset({ dataset }).subscribe(
-        (result) => {
+        () => {
           localStorage.removeItem(DATASET_TEMP_LSKEY);
           this.successMessage = 'Dataset updated!';
           this.datasetUpdated.emit();

@@ -103,7 +103,7 @@ export class HeaderComponent implements OnInit {
   /* close sign in menu after clicking outside
   /* @param {object} e - event, optional
   */
-  onClickedOutsideUser(e?: Event): void {
+  onClickedOutsideUser(_: Event): void {
     this.openSignIn = false;
   }
 
@@ -111,7 +111,7 @@ export class HeaderComponent implements OnInit {
   /* close search menu after clicking outside
   /* @param {object} e - event, optional
   */
-  onClickedOutsideSearch(e?: Event): void {
+  onClickedOutsideSearch(_: Event): void {
     this.openSearch = false;
   }
 }

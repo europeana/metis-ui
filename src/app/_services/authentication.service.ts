@@ -65,7 +65,7 @@ export class AuthenticationService {
     return this.http
       .put(url, {})
       .pipe(
-        map((data) => {
+        map(() => {
           return true;
         }),
       )
@@ -86,7 +86,7 @@ export class AuthenticationService {
     return this.http
       .post(url, {}, { headers: headers })
       .pipe(
-        map((data) => {
+        map(() => {
           return true;
         }),
       )

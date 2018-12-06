@@ -175,7 +175,7 @@ export class WorkflowComponent implements OnInit {
   /** workflowStepAllowed
   /* make step before and after available for selection
   */
-  workflowStepAllowed(selectedPlugin: string): void {
+  workflowStepAllowed(_: string): void {
     let hasValue = 0;
 
     this.pluginsOrdered.forEach((value) => {

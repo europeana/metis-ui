@@ -9,6 +9,8 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "target": "es5",

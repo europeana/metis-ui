@@ -288,7 +288,7 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(xmlSamples);
   }
 
-  getReport(taskid: string, topology: string): Observable<Report> {
+  getReport(_: string, __: string): Observable<Report> {
     return observableOf(currentReport);
   }
 
