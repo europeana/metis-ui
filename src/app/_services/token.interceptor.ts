@@ -19,10 +19,10 @@ export class TokenInterceptor implements HttpInterceptor {
   /* @param {httphandler} next
   */
   intercept(
-    //tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any
     request: HttpRequest<any>,
     next: HttpHandler,
-    //tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any
   ): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
       const auth = this.inj.get<AuthenticationService>(AuthenticationService);

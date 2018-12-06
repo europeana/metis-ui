@@ -65,7 +65,7 @@ export class ReportComponent implements OnInit {
     this.closed.emit();
   }
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   isObject(val: any): boolean {
     return typeof val === 'object';
   }

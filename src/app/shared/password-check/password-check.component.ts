@@ -65,7 +65,7 @@ export class PasswordCheckComponent implements OnChanges {
   */
   private setBarColors(count: number, col: string): void {
     for (let _n = 0; _n < count; _n++) {
-      //tslint:disable-next-line: no-any
+      // tslint:disable-next-line: no-any
       (this as any)['bar' + _n] = col;
     }
   }

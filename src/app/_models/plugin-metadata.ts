@@ -5,6 +5,6 @@ export interface PluginMetadata {
   mocked?: boolean;
   enabled?: boolean;
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   [key: string]: any;
 }

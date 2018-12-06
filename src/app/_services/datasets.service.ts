@@ -32,13 +32,13 @@ export class DatasetsService {
     return observable;
   }
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.post<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(
@@ -52,7 +52,7 @@ export class DatasetsService {
 
   getXSLT(type: string, id?: string): Observable<string> {
     let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
-    //tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any
     let options: { responseType: any } | undefined = { responseType: 'text' };
     if (type === 'custom') {
       url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;
@@ -61,7 +61,7 @@ export class DatasetsService {
 
     return (
       this.http
-        //tslint:disable-next-line: no-any
+        // tslint:disable-next-line: no-any
         .get<any>(url, options)
         .pipe(
           map((data) => {

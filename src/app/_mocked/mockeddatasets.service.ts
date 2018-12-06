@@ -57,7 +57,7 @@ export class MockDatasetService extends DatasetsService {
     return observableOf(undefined);
   }
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   createDataset(_: { dataset: any }): Observable<Dataset> {
     return observableOf(currentDataset);
   }
