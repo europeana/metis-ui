@@ -1,25 +1,36 @@
 <div class="messages">
-  <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
+  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
 </div>
 
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">
     <ul class="filter" (clickOutside)="onClickedOutside()">
-      <li class="dropdown dropdown-date" *ngIf="allWorkflowExecutions && allWorkflowExecutions.length > 0">
-        <a (click)="toggleFilterDate()">{{ 'datestarted' | translate }}<span *ngIf=selectedDate>: {{selectedDate | date:'dd/MM/yyyy - HH:mm'}}</span></a>
+      <li
+        class="dropdown dropdown-date"
+        *ngIf="allWorkflowExecutions && allWorkflowExecutions.length > 0"
+      >
+        <a (click)="toggleFilterDate()"
+          >{{ 'datestarted' | translate
+          }}<span *ngIf="selectedDate">: {{ selectedDate | date: 'dd/MM/yyyy - HH:mm' }}</span></a
+        >
         <div *ngIf="filterDate" class="dropdown-wrapper">
           <ul>
-            <li *ngFor="let w of allWorkflowExecutions;"><a (click)="addPluginsFilter(w)">{{w.startedDate | date:'dd/MM/yyyy - HH:mm'}}</a></li>
+            <li *ngFor="let w of allWorkflowExecutions">
+              <a (click)="addPluginsFilter(w)">{{ w.startedDate | date: 'dd/MM/yyyy - HH:mm' }}</a>
+            </li>
           </ul>
         </div>
       </li>
       <li class="dropdown dropdown-plugin" *ngIf="allPlugins && allPlugins.length > 0">
-        <a (click)="toggleFilterPlugin()">{{ 'plugin' | translate }}<span *ngIf=selectedPlugin>: {{selectedPlugin | renameWorkflow}}</span></a>
+        <a (click)="toggleFilterPlugin()"
+          >{{ 'plugin' | translate
+          }}<span *ngIf="selectedPlugin">: {{ selectedPlugin | renameWorkflow }}</span></a
+        >
         <div *ngIf="filterPlugin" class="dropdown-wrapper">
           <ul>
-            <li *ngFor="let w of allPlugins;">
-              <a (click)="getXMLSamples(w.type)" *ngIf="!w.error">{{w.type | renameWorkflow}}</a>
-              <span class="notavailable" *ngIf="w.error">{{w.type | renameWorkflow}}</span>
+            <li *ngFor="let w of allPlugins">
+              <a (click)="getXMLSamples(w.type)" *ngIf="!w.error">{{ w.type | renameWorkflow }}</a>
+              <span class="notavailable" *ngIf="w.error">{{ w.type | renameWorkflow }}</span>
             </li>
           </ul>
         </div>
@@ -29,16 +40,32 @@
   </div>
 
   <div *ngIf="allSamples">
-    <div class="view-sample" *ngFor="let sample of allSamples; let i = index;" [ngClass]="{'view-sample-expanded': expandedSample===i}">
+    <div
+      class="view-sample"
+      *ngFor="let sample of allSamples; let i = index"
+      [ngClass]="{ 'view-sample-expanded': expandedSample === i }"
+    >
       <div class="view-sample-title">
-        <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin | renameWorkflow}}</span></h3>
+        <h3>
+          {{ sample.ecloudId }}
+          <span *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+        </h3>
         <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
           <a (click)="expandSample(i)">-</a>
         </div>
       </div>
       <div class="view-sample-editor">
-        <div class="view-sample-editor-codemirror" (click)="handleCodeClick($event)" (mouseover)="handleMouseOver($event)" (mouseout)="handleMouseOut($event)">
-          <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
+        <div
+          class="view-sample-editor-codemirror"
+          (click)="handleCodeClick($event)"
+          (mouseover)="handleMouseOver($event)"
+          (mouseout)="handleMouseOut($event)"
+        >
+          <codemirror
+            [ngModel]="sample.xmlRecord | beautifyXML"
+            (ngModelChange)="sample.xmlRecord = $event"
+            [config]="editorConfig"
+          ></codemirror>
         </div>
         <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
       </div>
@@ -47,32 +74,69 @@
 
   <div class="view-sample" *ngIf="!loadingSamples && allSamples.length === 0">
     <div class="view-sample-title">
-      <h3>{{nosample}}</h3>
+      <h3>{{ nosample }}</h3>
     </div>
-    <div class="view-sample-editor" *ngIf="nosample" (click)="handleCodeClick($event)" (mouseover)="handleMouseOver($event)" (mouseout)="handleMouseOut($event)">
-      <codemirror [ngModel]="nosample | beautifyXML" (ngModelChange)="nosample" [config]="editorConfig"></codemirror>
+    <div
+      class="view-sample-editor"
+      *ngIf="nosample"
+      (click)="handleCodeClick($event)"
+      (mouseover)="handleMouseOver($event)"
+      (mouseout)="handleMouseOut($event)"
+    >
+      <codemirror
+        [ngModel]="nosample | beautifyXML"
+        (ngModelChange)="(nosample)"
+        [config]="editorConfig"
+      ></codemirror>
     </div>
   </div>
 </div>
 
 <div *ngIf="tempXSLT">
   <div class="messages" *ngIf="loadingSamples || loadingTransformSamples">
-    <div class="success-message"><span class="svg-icon-spin-inbutton"></span> Loading samples...</div>
+    <div class="success-message">
+      <span class="svg-icon-spin-inbutton"></span> Loading samples...
+    </div>
   </div>
 
   <div *ngIf="allTransformedSamples && allSamples">
-    <div class="view-sample view-sample-expanded view-sample-transformed" *ngFor="let sample of allSamples; let i = index;">
+    <div
+      class="view-sample view-sample-expanded view-sample-transformed"
+      *ngFor="let sample of allSamples; let i = index"
+    >
       <div class="view-sample-title">
-        <h3>{{sample.ecloudId}} <span *ngIf="selectedPlugin">{{selectedPlugin | renameWorkflow}}</span></h3>
+        <h3>
+          {{ sample.ecloudId }}
+          <span *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+        </h3>
       </div>
       <div class="view-sample-editor">
-        <div class="view-sample-editor-codemirror" (click)="handleCodeClick($event)" (mouseover)="handleMouseOver($event)" (mouseout)="handleMouseOut($event)">
-          <codemirror [ngModel]="sample.xmlRecord | beautifyXML" (ngModelChange)="sample.xmlRecord=$event" [config]="editorConfig"></codemirror>
+        <div
+          class="view-sample-editor-codemirror"
+          (click)="handleCodeClick($event)"
+          (mouseover)="handleMouseOver($event)"
+          (mouseout)="handleMouseOut($event)"
+        >
+          <codemirror
+            [ngModel]="sample.xmlRecord | beautifyXML"
+            (ngModelChange)="sample.xmlRecord = $event"
+            [config]="editorConfig"
+          ></codemirror>
         </div>
-        <div class="view-sample-editor-codemirror" (click)="handleCodeClick($event)" (mouseover)="handleMouseOver($event)" (mouseout)="handleMouseOut($event)">
-          <codemirror *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord" [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML" (ngModelChange)="allTransformedSamples[i].xmlRecord=$event" [config]="editorConfig"></codemirror>
+        <div
+          class="view-sample-editor-codemirror"
+          (click)="handleCodeClick($event)"
+          (mouseover)="handleMouseOver($event)"
+          (mouseout)="handleMouseOut($event)"
+        >
+          <codemirror
+            *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
+            [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
+            (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"
+            [config]="editorConfig"
+          ></codemirror>
         </div>
-        <button (click)="gotoMapping();">{{ 'gotomapping' | translate }}</button>
+        <button (click)="gotoMapping()">{{ 'gotomapping' | translate }}</button>
       </div>
     </div>
   </div>

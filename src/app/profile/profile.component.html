@@ -1,4 +1,4 @@
-<div *ngIf="editMode; then editmode else readonly"></div>
+<div *ngIf="editMode; then editmode; else readonly"></div>
 
 <ng-template #readonly>
   <div *ngIf="profileForm" class="metis-profile-form metis-form metis-form-horizontal">
@@ -8,12 +8,11 @@
       </div>
 
       <div class="messages">
-        <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-        <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
       </div>
 
       <div class="form-fields">
-
         <div class="form-group">
           <label for="user-id">{{ 'identifier' | translate }}</label>
           <input id="user-id" name="user-id" type="text" formControlName="user-id" />
@@ -36,8 +35,17 @@
 
         <div class="form-group">
           <label for="organization-name">{{ 'organization' | translate }}</label>
-          <input id="organization-name" name="organization-name" type="text" formControlName="organization-name" />
-          <span *ngIf="profileForm.controls['organization-name'].value==='Unknown'" title="Invalid value" class="svg-icon-exclamation invalid"></span>
+          <input
+            id="organization-name"
+            name="organization-name"
+            type="text"
+            formControlName="organization-name"
+          />
+          <span
+            *ngIf="profileForm.controls['organization-name'].value === 'Unknown'"
+            title="Invalid value"
+            class="svg-icon-exclamation invalid"
+          ></span>
         </div>
 
         <div class="form-group">
@@ -47,58 +55,116 @@
 
         <div class="form-group">
           <label for="network-member">{{ 'networkmember' | translate }}</label>
-          <input id="network-member" name="network-member" type="text" formControlName="network-member" />
+          <input
+            id="network-member"
+            name="network-member"
+            type="text"
+            formControlName="network-member"
+          />
         </div>
 
         <div class="form-group">
           <label for="account-role">{{ 'accountrole' | translate }}</label>
           <input id="account-role" name="account-role" type="text" formControlName="account-role" />
-          <span *ngIf="profileForm.controls['account-role'].value==='Unknown'" title="Invalid value" class="svg-icon-exclamation invalid"></span>
+          <span
+            *ngIf="profileForm.controls['account-role'].value === 'Unknown'"
+            title="Invalid value"
+            class="svg-icon-exclamation invalid"
+          ></span>
         </div>
         <div class="form-group form-group-btns user-profile-edit-btns">
-          <button class="button" type="button" (click)="toggleEditMode()">{{ 'changepassword' | translate }}</button>
-          <button class="button" type="button" (click)="onReloadProfile()" id="refresh-btn" [ngClass]="{'svg-icon-spin-inbutton': loading===true}">
+          <button class="button" type="button" (click)="toggleEditMode()">
+            {{ 'changepassword' | translate }}
+          </button>
+          <button
+            class="button"
+            type="button"
+            (click)="onReloadProfile()"
+            id="refresh-btn"
+            [ngClass]="{ 'svg-icon-spin-inbutton': loading === true }"
+          >
             {{ 'refresh' | translate }}
           </button>
         </div>
 
         <div class="profile-form-extra">
-          <p>{{ 'updateprofile' | translate }}&nbsp; <a href="mailto:{{emailInfo}}">{{emailInfo}}</a>.</p>
+          <p>
+            {{ 'updateprofile' | translate }}&nbsp;
+            <a href="mailto:{{ emailInfo }}">{{ emailInfo }}</a
+            >.
+          </p>
         </div>
-
       </div>
     </form>
   </div>
 </ng-template>
 <ng-template #editmode>
-  <div class="metis-form-bg metis-form" *ngIf="profileForm" >
+  <div class="metis-form-bg metis-form" *ngIf="profileForm">
     <form [formGroup]="profileForm" #formDir="ngForm">
       <div class="form-header">
         <h2>{{ 'changepassword' | translate }}</h2>
       </div>
       <div class="messages">
-        <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-        <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
+        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
       </div>
-      <div class="form-fields">        
+      <div class="form-fields">
         <fieldset class="form-group" formGroupName="passwords">
           <legend>{{ 'password' | translate }}</legend>
-          <input id="oldpassword" type="password" formControlName="oldpassword" placeholder="{{ 'passwordold' | translate }}" />
-          <input id="password" type="password" formControlName="password" (keyup)="onKeyupPassword()" placeholder="{{ 'password' | translate }}" />
+          <input
+            id="oldpassword"
+            type="password"
+            formControlName="oldpassword"
+            placeholder="{{ 'passwordold' | translate }}"
+          />
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            (keyup)="onKeyupPassword()"
+            placeholder="{{ 'password' | translate }}"
+          />
           <app-password-check [passwordToCheck]="password"></app-password-check>
-          <div class="messages" *ngIf="profileForm.controls['passwords'].get('password')!.touched && !profileForm.controls['passwords'].get('password')!.valid">
+          <div
+            class="messages"
+            *ngIf="
+              profileForm.controls['passwords'].get('password')!.touched &&
+              !profileForm.controls['passwords'].get('password')!.valid
+            "
+          >
             <div class="error-message">{{ 'passwordolderror' | translate }}</div>
           </div>
-          
-          <input id="confirm" type="password" formControlName="confirm" placeholder="Confirm password" (keyup)="checkMatchingPasswords()" />
-          {{profileForm.controls['passwords'].errors}}
-          <div class="messages" *ngIf="(profileForm.controls['passwords'].get('confirm')!.touched && !profileForm.controls['passwords'].get('confirm')!.valid) || confirmPasswordError">
+
+          <input
+            id="confirm"
+            type="password"
+            formControlName="confirm"
+            placeholder="Confirm password"
+            (keyup)="checkMatchingPasswords()"
+          />
+          {{ profileForm.controls['passwords'].errors }}
+          <div
+            class="messages"
+            *ngIf="
+              (profileForm.controls['passwords'].get('confirm')!.touched &&
+                !profileForm.controls['passwords'].get('confirm')!.valid) ||
+              confirmPasswordError
+            "
+          >
             <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
           </div>
         </fieldset>
-         <div class="form-group form-group-btns user-profile-edit-btns">
-          <button class="button" type="button" (click)="toggleEditMode()">{{ 'cancel' | translate }}</button>
-          <button class="submit" type="button" [disabled]="!profileForm.valid" (click)="onSubmit()" [ngClass]="{'svg-icon-spin-inbutton': loading===true}">
+        <div class="form-group form-group-btns user-profile-edit-btns">
+          <button class="button" type="button" (click)="toggleEditMode()">
+            {{ 'cancel' | translate }}
+          </button>
+          <button
+            class="submit"
+            type="button"
+            [disabled]="!profileForm.valid"
+            (click)="onSubmit()"
+            [ngClass]="{ 'svg-icon-spin-inbutton': loading === true }"
+          >
             {{ 'submit' | translate }}
           </button>
         </div>

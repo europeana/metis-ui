@@ -1,14 +1,18 @@
 <div class="modal-wrapper">
   <div class="modal">
-    <div class="head">Log {{ showPluginLog.pluginType }}<a class="btn-close" (click)="closeLog();"></a></div>
+    <div class="head">
+      Log {{ showPluginLog.pluginType }}<a class="btn-close" (click)="closeLog()"></a>
+    </div>
     <div class="content">
-        <p *ngIf="noLogMessage">{{noLogMessage}}</p>
-    	<p *ngFor="let msg of logMessages">
-    		{{msg.resourceNum}} <strong>{{msg.state}} {{msg.info}}</strong><br/>
-        {{msg.resource !== 'null' ? msg.resource : ''}} {{msg.resultResource !== 'null' ? msg.resultResource : ''}} 
+      <p *ngIf="noLogMessage">{{ noLogMessage }}</p>
+      <p *ngFor="let msg of logMessages">
+        {{ msg.resourceNum }} <strong>{{ msg.state }} {{ msg.info }}</strong
+        ><br />
+        {{ msg.resource !== 'null' ? msg.resource : '' }}
+        {{ msg.resultResource !== 'null' ? msg.resultResource : '' }}
         <br *ngIf="msg.resource !== 'null' || msg.resultResource !== 'null'" />
-        {{msg.additionalInformations}} 
-    	</p>
+        {{ msg.additionalInformations }}
+      </p>
     </div>
   </div>
 </div>
