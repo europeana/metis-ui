@@ -1,5 +1,4 @@
 {
-  "emitErrors": true,
   "extends": ["tslint-angular"],
   "rules": {
     "angular-whitespace": false,
