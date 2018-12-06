@@ -73,8 +73,8 @@
       </ul>
     </div>
     <div class="tab-content">
-      <app-datasetinfo *ngIf="activeTab === 'new' || activeTab === 'edit'"
-        [datasetData]="datasetData" [harvestPublicationData]="harvestPublicationData" (datasetUpdated)="datasetUpdated()"></app-datasetinfo>
+      <app-datasetform *ngIf="activeTab === 'new' || activeTab === 'edit'"
+        [datasetData]="datasetData" [harvestPublicationData]="harvestPublicationData" [isNew]="false" (datasetUpdated)="datasetUpdated()"></app-datasetform>
       <app-workflow *ngIf="activeTab === 'workflow'"
         [datasetData]="datasetData" [workflowData]="workflowData"></app-workflow>
       <app-mapping *ngIf="activeTab === 'mapping'"

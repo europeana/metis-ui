@@ -9,6 +9,7 @@ import { StringifyHttpError } from '../../_helpers';
 import { Language } from '../../_models/language';
 import { Country } from '../../_models/country';
 import { Dataset } from '../../_models/dataset';
+import { HarvestData } from '../../_models/harvest-data';
 
 type FormMode = 'show' | 'edit' | 'save';
 
@@ -23,6 +24,7 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
 export class DatasetformComponent implements OnInit {
 
   @Input() datasetData: Partial<Dataset>;
+  @Input() harvestPublicationData?: HarvestData;
   @Input() isNew: boolean;
 
   @Output() datasetUpdated = new EventEmitter<void>();
