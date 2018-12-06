@@ -1,30 +1,28 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 import { CodemirrorModule } from 'ng2-codemirror';
+
+import { XmlPipe } from '../../_helpers';
 import {
-  MockDatasetService,
-  MockWorkflowService,
-  currentWorkflow,
   currentDataset,
-  MockAuthenticationService,
+  currentWorkflow,
+  MockDatasetService,
   MockTranslateService,
+  MockWorkflowService,
 } from '../../_mocked';
+import {
+  DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
+} from '../../_services';
+import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
 
 import { PreviewComponent } from './preview.component';
-import {
-  WorkflowService,
-  TranslateService,
-  ErrorService,
-  AuthenticationService,
-  RedirectPreviousUrl,
-  DatasetsService,
-} from '../../_services';
-
-import { By } from '@angular/platform-browser';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TranslatePipe, RenameWorkflowPipe } from '../../_translate';
-import { XmlPipe } from '../../_helpers';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -38,7 +36,6 @@ describe('PreviewComponent', () => {
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],
@@ -58,7 +55,7 @@ describe('PreviewComponent', () => {
   it('should prefill filters', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow['results'][0],
+      execution: currentWorkflow.results[0],
       plugin: 'MOCKED',
     };
     component.prefillFilters();
@@ -69,7 +66,7 @@ describe('PreviewComponent', () => {
   it('should expand sample', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow['results'][0],
+      execution: currentWorkflow.results[0],
       plugin: 'MOCKED',
     };
     component.prefillFilters();

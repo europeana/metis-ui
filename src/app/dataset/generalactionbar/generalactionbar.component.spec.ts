@@ -1,28 +1,26 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TranslatePipe } from '../../_translate';
 
 import {
-  WorkflowService,
-  TranslateService,
-  ErrorService,
-  AuthenticationService,
-  RedirectPreviousUrl,
-  DatasetsService,
-} from '../../_services';
-import { GeneralactionbarComponent } from './generalactionbar.component';
-import {
-  MockAuthenticationService,
-  MockWorkflowService,
   currentWorkflow,
-  currentDataset,
-  MockTranslateService,
-  MockDatasetService,
   currentWorkflowDataset,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
 } from '../../_mocked';
 import { WorkflowStatus } from '../../_models/workflow-execution';
+import {
+  DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
+} from '../../_services';
+import { TranslatePipe } from '../../_translate';
+
+import { GeneralactionbarComponent } from './generalactionbar.component';
 
 describe('GeneralactionbarComponent', () => {
   let component: GeneralactionbarComponent;
@@ -37,7 +35,6 @@ describe('GeneralactionbarComponent', () => {
         { provide: DatasetsService, useClass: MockDatasetService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
@@ -55,13 +52,13 @@ describe('GeneralactionbarComponent', () => {
   });
 
   it('should check the status', () => {
-    component.lastExecutionData = currentWorkflow['results'][0];
+    component.lastExecutionData = currentWorkflow.results[0];
     component.ngOnChanges();
     expect(component.workflowStatus).toBe(WorkflowStatus.INQUEUE);
   });
 
   it('should start a workflow', () => {
-    component.lastExecutionData = currentWorkflow['results'][4];
+    component.lastExecutionData = currentWorkflow.results[4];
     component.ngOnChanges();
     fixture.detectChanges();
     expect(component.workflowStatus).toBe(WorkflowStatus.FINISHED);

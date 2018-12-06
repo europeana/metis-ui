@@ -1,12 +1,11 @@
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-import { AuthenticationService } from './authentication.service';
-
 import { Observable } from 'rxjs';
+
+import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  private auth: AuthenticationService;
   constructor(private inj: Injector) {}
 
   /** intercept
@@ -20,10 +19,10 @@ export class TokenInterceptor implements HttpInterceptor {
   /* @param {httphandler} next
   */
   intercept(
-    //tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any
     request: HttpRequest<any>,
     next: HttpHandler,
-    //tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any
   ): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
       const auth = this.inj.get<AuthenticationService>(AuthenticationService);

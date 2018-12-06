@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
-
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { retryWhen, delay, take, flatMap, concat } from 'rxjs/operators';
-import { of as observableOf, Observable, throwError } from 'rxjs';
+import { Observable, of as observableOf, throwError } from 'rxjs';
+import { concat, delay, flatMap, retryWhen, take } from 'rxjs/operators';
+
+import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
 
 @Injectable()
 export class ErrorService {
@@ -33,20 +33,23 @@ export class ErrorService {
   */
   handleRetry<T>(): (o: Observable<T>) => Observable<T> {
     return retryWhen<T>((error) => {
-      return error
-        .pipe(
-          flatMap((errorM: HttpErrorResponse) => {
-            if (
-              errorM.status === 0 ||
-              errorM.message === 'Http failure response for (unknown url): 0 Unknown Error'
-            ) {
-              return observableOf(errorM.status).pipe(delay(this.retryDelay));
-            }
-            throw errorM;
-          }),
-        )
-        .pipe(take(this.numberOfRetries))
-        .pipe(concat(throwError({ status: 0, error: { errorMessage: 'Retry failed' } })));
+      return (
+        error
+          .pipe(
+            flatMap((errorM: HttpErrorResponse) => {
+              if (
+                errorM.status === 0 ||
+                errorM.message === 'Http failure response for (unknown url): 0 Unknown Error'
+              ) {
+                return observableOf(errorM.status).pipe(delay(this.retryDelay));
+              }
+              throw errorM;
+            }),
+          )
+          .pipe(take(this.numberOfRetries))
+          // tslint:disable-next-line: deprecation
+          .pipe(concat(throwError({ status: 0, error: { errorMessage: 'Retry failed' } })))
+      );
     });
   }
 

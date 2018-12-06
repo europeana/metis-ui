@@ -1,30 +1,25 @@
+import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { DatasetComponent } from './dataset.component';
-
 import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 
+import {
+  currentWorkflow,
+  MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
+} from '../_mocked';
 import {
   DatasetsService,
-  TranslateService,
   ErrorService,
-  AuthenticationService,
   RedirectPreviousUrl,
+  TranslateService,
   WorkflowService,
 } from '../_services';
-import {
-  MockDatasetService,
-  MockWorkflowService,
-  MockAuthenticationService,
-  MockTranslateService,
-  currentWorkflow,
-} from '../_mocked';
-
-import { HttpClientModule } from '@angular/common/http';
-import { RouterTestingModule } from '@angular/router/testing';
 import { TranslatePipe } from '../_translate';
 
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { DatasetComponent } from './dataset.component';
 
 describe('DatasetComponent', () => {
   let component: DatasetComponent;
@@ -38,7 +33,6 @@ describe('DatasetComponent', () => {
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],

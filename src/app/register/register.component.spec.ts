@@ -1,21 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { RegisterComponent } from './register.component';
-
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-
-import {
-  AuthenticationService,
-  TranslateService,
-  RedirectPreviousUrl,
-  ErrorService,
-} from '../_services';
-import { TranslatePipe } from '../_translate';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { MockAuthenticationService, MockTranslateService } from '../_mocked';
+import {
+  AuthenticationService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+} from '../_services';
+import { TranslatePipe } from '../_translate';
+
+import { RegisterComponent } from './register.component';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;

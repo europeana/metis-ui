@@ -1,15 +1,14 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
-import { CountriesService, DatasetsService, ErrorService, TranslateService } from '../../_services';
 import { StringifyHttpError } from '../../_helpers';
-import { Language } from '../../_models/language';
 import { Country } from '../../_models/country';
 import { Dataset } from '../../_models/dataset';
 import { HarvestData } from '../../_models/harvest-data';
+import { Language } from '../../_models/language';
+import { CountriesService, DatasetsService, ErrorService, TranslateService } from '../../_services';
 
 type FormMode = 'show' | 'edit' | 'save';
 
@@ -19,7 +18,6 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss'],
-  providers: [DatePipe],
 })
 export class DatasetformComponent implements OnInit {
   @Input() datasetData: Partial<Dataset>;
@@ -54,7 +52,6 @@ export class DatasetformComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private datePipe: DatePipe,
     private translate: TranslateService,
   ) {}
 
@@ -167,7 +164,7 @@ export class DatasetformComponent implements OnInit {
         (result) => {
           localStorage.removeItem(DATASET_TEMP_LSKEY);
 
-          this.router.navigate(['/dataset/new/' + result['datasetId']]);
+          this.router.navigate(['/dataset/new/' + result.datasetId]);
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
@@ -183,7 +180,7 @@ export class DatasetformComponent implements OnInit {
         ...this.datasetForm.value,
       };
       this.datasets.updateDataset({ dataset }).subscribe(
-        (result) => {
+        () => {
           localStorage.removeItem(DATASET_TEMP_LSKEY);
           this.successMessage = 'Dataset updated!';
           this.datasetUpdated.emit();

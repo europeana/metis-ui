@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { ActivatedRoute, Router } from '@angular/router';
-import { User } from '../../_models';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +11,6 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authentication: AuthenticationService,
     public router: Router,
-    private route: ActivatedRoute,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private translate: TranslateService,
   ) {}
@@ -105,7 +104,7 @@ export class HeaderComponent implements OnInit {
   /* close sign in menu after clicking outside
   /* @param {object} e - event, optional
   */
-  onClickedOutsideUser(e?: Event): void {
+  onClickedOutsideUser(_: Event): void {
     this.openSignIn = false;
   }
 
@@ -113,7 +112,7 @@ export class HeaderComponent implements OnInit {
   /* close search menu after clicking outside
   /* @param {object} e - event, optional
   */
-  onClickedOutsideSearch(e?: Event): void {
+  onClickedOutsideSearch(_: Event): void {
     this.openSearch = false;
   }
 }

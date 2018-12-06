@@ -1,20 +1,20 @@
-import { map, publishLast, switchMap } from 'rxjs/operators';
-import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { EventEmitter, Injectable } from '@angular/core';
+import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
+import { map, publishLast, switchMap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
-
-import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
-import { ErrorService } from './error.service';
-import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
-import { WorkflowExecution } from '../_models/workflow-execution';
 import { Report } from '../_models/report';
-import { SubTaskInfo } from '../_models/subtask-info';
 import { MoreResults, Results } from '../_models/results';
-import { XmlSample } from '../_models/xml-sample';
 import { Statistics } from '../_models/statistics';
+import { SubTaskInfo } from '../_models/subtask-info';
+import { Workflow } from '../_models/workflow';
+import { WorkflowExecution } from '../_models/workflow-execution';
+import { XmlSample } from '../_models/xml-sample';
+
 import { DatasetsService } from './datasets.service';
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class WorkflowService {
@@ -141,6 +141,7 @@ export class WorkflowService {
     page?: number,
   ): Observable<Results<WorkflowExecution[]>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
+    // tslint:disable-next-line: max-line-length
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
   }
@@ -260,11 +261,11 @@ export class WorkflowService {
   // in case there is no plugin running, return last plugin
   getCurrentPlugin(workflow: WorkflowExecution): number {
     let currentPlugin = 0;
-    for (let i = 0; i < workflow['metisPlugins'].length; i++) {
+    for (let i = 0; i < workflow.metisPlugins.length; i++) {
       currentPlugin = i;
       if (
-        workflow['metisPlugins'][i].pluginStatus === 'INQUEUE' ||
-        workflow['metisPlugins'][i].pluginStatus === 'RUNNING'
+        workflow.metisPlugins[i].pluginStatus === 'INQUEUE' ||
+        workflow.metisPlugins[i].pluginStatus === 'RUNNING'
       ) {
         break;
       }
@@ -316,7 +317,7 @@ export class WorkflowService {
       .get<{ records: XmlSample[] }>(url)
       .pipe(
         map((samples) => {
-          return samples['records'];
+          return samples.records;
         }),
       )
       .pipe(this.errors.handleRetry());

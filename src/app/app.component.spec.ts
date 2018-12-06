@@ -1,29 +1,24 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-
-import { AppComponent } from './app.component';
-
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import {
-  WorkflowService,
-  ErrorService,
-  AuthenticationService,
-  RedirectPreviousUrl,
-  TranslateService,
-  DatasetsService,
-} from './_services';
 import {
   MockAuthenticationService,
-  MockWorkflowService,
-  MockTranslateService,
   MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
 } from './_mocked';
-
+import {
+  AuthenticationService,
+  DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
+} from './_services';
 import { TranslatePipe } from './_translate';
-
-// Can't bind to 'loggedIn' since it isn't a known property of 'app-header'.
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;

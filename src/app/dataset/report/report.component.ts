@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ErrorService, TranslateService, WorkflowService } from '../../_services';
-import { ReportRequest } from '../../_models/report';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+
 import { StringifyHttpError } from '../../_helpers';
+import { ReportRequest } from '../../_models/report';
+import { ErrorService, TranslateService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-report',
@@ -65,7 +66,7 @@ export class ReportComponent implements OnInit {
     this.closed.emit();
   }
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   isObject(val: any): boolean {
     return typeof val === 'object';
   }

@@ -1,14 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  TranslateService,
-  WorkflowService,
-  ErrorService,
-  AuthenticationService,
-} from '../_services';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
+import {
+  AuthenticationService,
+  ErrorService,
+  TranslateService,
+  WorkflowService,
+} from '../_services';
 
 @Component({
   selector: 'app-dashboard',

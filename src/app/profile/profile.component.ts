@@ -1,11 +1,11 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { AuthenticationService, TranslateService, ErrorService } from '../_services';
-import { User } from '../_models';
-import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
 import { environment } from '../../environments/environment';
+import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
+import { User } from '../_models';
+import { AuthenticationService, ErrorService, TranslateService } from '../_services';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +23,6 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
 
   constructor(
-    private http: HttpClient,
     private authentication: AuthenticationService,
     private fb: FormBuilder,
     private translate: TranslateService,
@@ -132,7 +131,7 @@ export class ProfileComponent implements OnInit {
 
     this.authentication.updatePassword(password, oldpassword).subscribe(
       (result) => {
-        if (result === true) {
+        if (result) {
           this.successMessage = 'Update password successful!';
         } else {
           this.errorMessage = 'Update password failed, please try again later';
@@ -155,9 +154,9 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = undefined;
     this.loading = true;
 
-    this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(
+    this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
       (result) => {
-        if (result === true) {
+        if (result) {
           this.successMessage = 'Your profile has been updated';
           this.createForm();
         } else {

@@ -1,25 +1,23 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import {
-  WorkflowService,
-  TranslateService,
-  ErrorService,
-  AuthenticationService,
-  RedirectPreviousUrl,
-  DatasetsService,
-} from '../../../_services';
-import {
-  MockWorkflowService,
   currentWorkflow,
-  MockAuthenticationService,
-  MockTranslateService,
   MockDatasetService,
+  MockTranslateService,
+  MockWorkflowService,
 } from '../../../_mocked';
-import { ExecutiontableComponent } from './executiontable.component';
-
+import {
+  DatasetsService,
+  ErrorService,
+  RedirectPreviousUrl,
+  TranslateService,
+  WorkflowService,
+} from '../../../_services';
 import { TranslatePipe } from '../../../_translate';
+
+import { ExecutiontableComponent } from './executiontable.component';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;
@@ -34,7 +32,6 @@ describe('ExecutiontableComponent', () => {
         RedirectPreviousUrl,
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
@@ -43,8 +40,8 @@ describe('ExecutiontableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiontableComponent);
     component = fixture.componentInstance;
-    component.execution = currentWorkflow['results'][0];
-    component.plugin = currentWorkflow['results'][0]['metisPlugins'][0];
+    component.execution = currentWorkflow.results[0];
+    component.plugin = currentWorkflow.results[0].metisPlugins[0];
     fixture.detectChanges();
   });
 

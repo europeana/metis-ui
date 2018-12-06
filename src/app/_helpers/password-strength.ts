@@ -11,7 +11,7 @@ export function PasswordStrength(p: string): number {
 
   let _passedMatches = 0;
   for (const _flag of _flags) {
-    _passedMatches += _flag === true ? 1 : 0;
+    _passedMatches += _flag ? 1 : 0;
   }
 
   strength += 2 * p.length + (p.length >= 10 ? 1 : 0);

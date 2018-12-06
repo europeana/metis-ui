@@ -1,22 +1,22 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
 import { EditorConfiguration } from 'codemirror';
+import { switchMap } from 'rxjs/operators';
 
-import 'codemirror/mode/xml/xml';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
-import 'codemirror/addon/fold/comment-fold';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/mode/xml/xml';
 
 import { StringifyHttpError } from '../../_helpers';
-import { NodeStatistics } from '../../_models/statistics';
 import { Dataset } from '../../_models/dataset';
-import { WorkflowService, DatasetsService, TranslateService, ErrorService } from '../../_services';
+import { NodeStatistics } from '../../_models/statistics';
+import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
 
 type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 
@@ -73,11 +73,11 @@ export class MappingComponent implements OnInit {
     this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
       (result) => {
         let taskId: string | undefined;
-        if (result['results'].length > 0) {
+        if (result.results.length > 0) {
           // find validation in the latest run, and if available, find taskid
-          for (let i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
-            if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
-              taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
+          for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
+            if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
+              taskId = result.results[0].metisPlugins[i].externalTaskId;
             }
           }
         }
@@ -88,7 +88,7 @@ export class MappingComponent implements OnInit {
         this.successMessage = 'Loading statistics';
         this.workflows.getStatistics('validation', taskId).subscribe(
           (resultStatistics) => {
-            let statistics = resultStatistics['nodeStatistics'];
+            let statistics = resultStatistics.nodeStatistics;
 
             if (statistics.length > 100) {
               statistics = statistics.slice(0, 100);

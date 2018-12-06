@@ -1,4 +1,5 @@
-import { Component, OnChanges, Input, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+
 import { PasswordStrength } from '../../_helpers';
 
 @Component({
@@ -50,7 +51,7 @@ export class PasswordCheckComponent implements OnChanges {
   /* @param {object} changes - fields to watch for changes
   */
   ngOnChanges(changes: { [propName: string]: SimpleChange }): void {
-    const password = changes['passwordToCheck'].currentValue;
+    const password = changes.passwordToCheck.currentValue;
     this.setBarColors(5, '#DDD');
     if (password) {
       const c = this.getColor(PasswordStrength(password));
@@ -65,7 +66,7 @@ export class PasswordCheckComponent implements OnChanges {
   */
   private setBarColors(count: number, col: string): void {
     for (let _n = 0; _n < count; _n++) {
-      //tslint:disable-next-line: no-any
+      // tslint:disable-next-line: no-any
       (this as any)['bar' + _n] = col;
     }
   }

@@ -8,7 +8,7 @@ import { LoginComponent } from '../login';
 import { ProfileComponent } from '../profile';
 import { RegisterComponent } from '../register';
 
-import { AuthVisitorGuard, AuthUserGuard } from '../_guards';
+import { AuthUserGuard, AuthVisitorGuard } from '../_guards';
 import { PageNotFoundComponent } from '../page-not-found';
 
 const routes: Routes = [

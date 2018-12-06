@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StringifyHttpError } from '../_helpers';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
+import { StringifyHttpError } from '../_helpers';
+import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../_services';
 
 @Component({
   selector: 'app-login',
@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit {
       .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
       .subscribe(
         (result) => {
-          if (result === true) {
+          if (result) {
             this.redirectAfterLogin();
           } else {
             this.errorMessage = this.msgBadCredentials;

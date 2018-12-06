@@ -1,15 +1,14 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
-import { ErrorService } from '../_services/error.service';
 
 import { apiSettings } from '../../environments/apisettings';
 import { environment } from '../../environments/environment';
-
 import { User } from '../_models';
+import { ErrorService } from '../_services/error.service';
+import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -65,7 +64,7 @@ export class AuthenticationService {
     return this.http
       .put(url, {})
       .pipe(
-        map((data) => {
+        map(() => {
           return true;
         }),
       )
@@ -84,9 +83,9 @@ export class AuthenticationService {
       Authorization: 'Basic ' + btoa(email + ':' + password),
     });
     return this.http
-      .post(url, {}, { headers: headers })
+      .post(url, {}, { headers })
       .pipe(
-        map((data) => {
+        map(() => {
           return true;
         }),
       )
@@ -116,7 +115,7 @@ export class AuthenticationService {
       Authorization: 'Basic ' + btoa(email + ':' + password),
     });
     return this.http
-      .post<User>(url, {}, { headers: headers })
+      .post<User>(url, {}, { headers })
       .pipe(
         map((user) => {
           if (user && user.metisUserAccessToken) {
@@ -173,10 +172,7 @@ export class AuthenticationService {
   private setCurrentUser(user: User): void {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
-    localStorage.setItem(
-      this.key,
-      JSON.stringify({ user: user, email: user.email, token: this.token }),
-    );
+    localStorage.setItem(this.key, JSON.stringify({ user, email: user.email, token: this.token }));
   }
 
   /** getCurrentUser

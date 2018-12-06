@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { TranslateService } from '../../_services';
 import { WorkflowExecution } from '../../_models/workflow-execution';
+import { TranslateService } from '../../_services';
 
 @Component({
   selector: 'app-executions',

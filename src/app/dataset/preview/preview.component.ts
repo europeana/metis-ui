@@ -1,23 +1,21 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
-import { StringifyHttpError } from '../../_helpers';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
-
-import 'codemirror/mode/xml/xml';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
-import 'codemirror/addon/fold/comment-fold';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/mode/xml/xml';
 
+import { StringifyHttpError } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
-import { XmlSample } from '../../_models/xml-sample';
 import { WorkflowExecution } from '../../_models/workflow-execution';
+import { XmlSample } from '../../_models/xml-sample';
+import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
 import { PreviewFilters } from '../dataset.component';
 
 @Component({
@@ -28,7 +26,6 @@ import { PreviewFilters } from '../dataset.component';
 export class PreviewComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
-    private http: HttpClient,
     private translate: TranslateService,
     private errors: ErrorService,
     private datasets: DatasetsService,
@@ -107,24 +104,24 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedDate = execution.startedDate;
     this.previewFilters.execution = execution;
     this.setPreviewFilters.emit(this.previewFilters);
-    for (let i = 0; i < execution['metisPlugins'].length; i++) {
-      if (execution['metisPlugins'][i]['pluginStatus'] === 'FINISHED') {
+    for (let i = 0; i < execution.metisPlugins.length; i++) {
+      if (execution.metisPlugins[i].pluginStatus === 'FINISHED') {
         this.allPlugins.push({
-          type: execution['metisPlugins'][i].pluginType,
+          type: execution.metisPlugins[i].pluginType,
           error: false,
         });
       } else {
         if (
-          execution['metisPlugins'][i]['executionProgress']['processedRecords'] >
-          execution['metisPlugins'][i]['executionProgress']['errors']
+          execution.metisPlugins[i].executionProgress.processedRecords >
+          execution.metisPlugins[i].executionProgress.errors
         ) {
           this.allPlugins.push({
-            type: execution['metisPlugins'][i].pluginType,
+            type: execution.metisPlugins[i].pluginType,
             error: false,
           });
         } else {
           this.allPlugins.push({
-            type: execution['metisPlugins'][i].pluginType,
+            type: execution.metisPlugins[i].pluginType,
             error: true,
           });
         }
@@ -160,15 +157,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.loadingTransformSamples = true;
     this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
       (result) => {
-        if (!result['results'][0]) {
+        if (!result.results[0]) {
           this.loadingTransformSamples = false;
           return;
         }
         this.workflows
-          .getWorkflowSamples(
-            result['results'][0]['id'],
-            result['results'][0]['metisPlugins'][0]['pluginType'],
-          )
+          .getWorkflowSamples(result.results[0].id, result.results[0].metisPlugins[0].pluginType)
           .subscribe(
             (samples) => {
               this.allSamples = this.undoNewLines(samples);
@@ -217,19 +211,19 @@ export class PreviewComponent implements OnInit, OnDestroy {
   // expand the editor, so you can view more lines of code
   // only one sample can be expanded
   expandSample(index: number): void {
-    const sample = this.allSamples[index]['xmlRecord'];
+    const sample = this.allSamples[index].xmlRecord;
     const samples = this.undoNewLines(this.allSamples);
-    this.allSamples[index]['xmlRecord'] = '';
+    this.allSamples[index].xmlRecord = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
     this.timeout = window.setTimeout(() => {
-      samples[index]['xmlRecord'] = sample;
+      samples[index].xmlRecord = sample;
     }, 500);
   }
 
   undoNewLines(samples: XmlSample[]): XmlSample[] {
     const clearSamples = samples;
     for (let i = 0; i < samples.length; i++) {
-      clearSamples[i]['xmlRecord'] = samples[i]['xmlRecord'].replace(/[\r\n]/g, '').trim();
+      clearSamples[i].xmlRecord = samples[i].xmlRecord.replace(/[\r\n]/g, '').trim();
     }
     return clearSamples;
   }

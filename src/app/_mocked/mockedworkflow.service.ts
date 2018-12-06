@@ -1,18 +1,19 @@
-import { of as observableOf, Observable } from 'rxjs';
-import { WorkflowService } from '../_services';
-import { Workflow } from '../_models/workflow';
-import { Results } from '../_models/results';
-import {
-  WorkflowExecution,
-  PluginStatus,
-  WorkflowStatus,
-  TaskState,
-} from '../_models/workflow-execution';
-import { XmlSample } from '../_models/xml-sample';
-import { Report } from '../_models/report';
+import { Observable, of as observableOf } from 'rxjs';
+
 import { HarvestData } from '../_models/harvest-data';
+import { Report } from '../_models/report';
+import { Results } from '../_models/results';
 import { Statistics } from '../_models/statistics';
 import { SubTaskInfo } from '../_models/subtask-info';
+import { Workflow } from '../_models/workflow';
+import {
+  PluginStatus,
+  TaskState,
+  WorkflowExecution,
+  WorkflowStatus,
+} from '../_models/workflow-execution';
+import { XmlSample } from '../_models/xml-sample';
+import { WorkflowService } from '../_services';
 
 export const currentWorkflowDataset: Workflow = {
   datasetId: '1',
@@ -288,7 +289,7 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(xmlSamples);
   }
 
-  getReport(taskid: string, topology: string): Observable<Report> {
+  getReport(_: string, __: string): Observable<Report> {
     return observableOf(currentReport);
   }
 

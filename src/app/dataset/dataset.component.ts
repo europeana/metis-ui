@@ -1,17 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StringifyHttpError } from '../_helpers';
+import { Subscription, timer } from 'rxjs';
+
 import { environment } from '../../environments/environment';
-import { timer, Subscription } from 'rxjs';
-
-import { DatasetsService, WorkflowService, ErrorService, TranslateService } from '../_services';
-
+import { StringifyHttpError } from '../_helpers';
 import { Dataset } from '../_models/dataset';
-import { Workflow } from '../_models/workflow';
 import { HarvestData } from '../_models/harvest-data';
-import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
 import { ReportRequest } from '../_models/report';
+import { Workflow } from '../_models/workflow';
+import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
+import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../_services';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;

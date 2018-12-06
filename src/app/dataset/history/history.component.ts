@@ -1,16 +1,16 @@
-import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { WorkflowService, ErrorService, TranslateService } from '../../_services';
-import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
+import { copyExecutionAndTaskId, StringifyHttpError } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
+import { Report, ReportRequest } from '../../_models/report';
 import {
   PluginExecution,
   WorkflowExecution,
   WorkflowStatus,
 } from '../../_models/workflow-execution';
-import { Report, ReportRequest } from '../../_models/report';
+import { ErrorService, TranslateService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-history',

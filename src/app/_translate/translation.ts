@@ -1,4 +1,5 @@
 import { InjectionToken } from '@angular/core';
+
 import { LANG_EN_NAME, LANG_EN_TRANS } from './lang-en'; // import translations
 
 export const TRANSLATIONS = new InjectionToken('translations'); // translation token

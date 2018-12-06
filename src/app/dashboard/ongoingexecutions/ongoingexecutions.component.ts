@@ -1,15 +1,15 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
-import { WorkflowService, TranslateService } from '../../_services';
 import { PluginExecution, WorkflowExecution } from '../../_models/workflow-execution';
+import { TranslateService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-ongoingexecutions',
   templateUrl: './ongoingexecutions.component.html',
   styleUrls: ['./ongoingexecutions.component.scss'],
 })
-export class OngoingexecutionsComponent {
+export class OngoingexecutionsComponent implements OnInit {
   constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   @Input() showPluginLog: PluginExecution;

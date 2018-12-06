@@ -1,13 +1,13 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Router, Event, RouterEvent } from '@angular/router';
+import { Event, Router, RouterEvent } from '@angular/router';
+
 import {
-  WorkflowService,
   AuthenticationService,
   ErrorService,
   TranslateService,
+  WorkflowService,
 } from './_services';
-import { StringifyHttpError } from './_helpers';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -76,7 +76,7 @@ export class AppComponent implements OnInit {
   */
   cancelWorkflow(): void {
     this.workflows.cancelThisWorkflow(this.currentWorkflowId!).subscribe(
-      (result) => {
+      () => {
         this.closePrompt();
       },
       (err: HttpErrorResponse) => {

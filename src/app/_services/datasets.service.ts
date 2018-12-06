@@ -1,15 +1,13 @@
-import { map, publishLast, tap } from 'rxjs/operators';
-import { ConnectableObservable, Observable } from 'rxjs';
-
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { ConnectableObservable, Observable } from 'rxjs';
+import { map, publishLast, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
-
-import { ErrorService } from './error.service';
 import { Dataset } from '../_models/dataset';
 import { XmlSample } from '../_models/xml-sample';
-import { WorkflowExecution } from '../_models/workflow-execution';
+
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class DatasetsService {
@@ -33,13 +31,13 @@ export class DatasetsService {
     return observable;
   }
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.post<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }
 
-  //tslint:disable-next-line: no-any
+  // tslint:disable-next-line: no-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(
@@ -53,7 +51,7 @@ export class DatasetsService {
 
   getXSLT(type: string, id?: string): Observable<string> {
     let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
-    //tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any
     let options: { responseType: any } | undefined = { responseType: 'text' };
     if (type === 'custom') {
       url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;
@@ -62,12 +60,12 @@ export class DatasetsService {
 
     return (
       this.http
-        //tslint:disable-next-line: no-any
+        // tslint:disable-next-line: no-any
         .get<any>(url, options)
         .pipe(
           map((data) => {
             // TODO: fix any
-            return type === 'default' ? data : data['xslt'];
+            return type === 'default' ? data : data.xslt;
           }),
         )
         .pipe(this.errors.handleRetry())
