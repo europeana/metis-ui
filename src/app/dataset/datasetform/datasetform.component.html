@@ -1,5 +1,5 @@
 <div class="metis-form metis-form-horizontal">
-  <form class="metis-form-element" [formGroup]="datasetForm" #formDir="ngForm">
+  <form [formGroup]="datasetForm" #formDir="ngForm">
     <div class="messages">
       <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
       <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
