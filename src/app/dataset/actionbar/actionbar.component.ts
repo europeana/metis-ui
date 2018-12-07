@@ -25,8 +25,6 @@ export class ActionbarComponent implements OnInit {
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
-  errorMessage: string;
-  currentPluginIndex = -1;
   currentPlugin?: PluginExecution;
   now?: string;
   cancelling?: string;
