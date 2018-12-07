@@ -6,7 +6,7 @@ import {
   WorkflowStatus,
 } from '../../src/app/_models/workflow-execution';
 
-export const runningExecutions: Results<WorkflowExecution[]> = {
+export const runningExecutions: Results<WorkflowExecution> = {
   results: [
     {
       id: 'vfvdsvfdv',

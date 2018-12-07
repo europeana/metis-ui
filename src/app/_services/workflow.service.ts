@@ -29,7 +29,7 @@ export class WorkflowService {
   reportByKey: { [key: string]: Observable<Report> } = {};
 
   private collectAllResults<T>(
-    getResults: (page: number) => Observable<Results<T[]>>,
+    getResults: (page: number) => Observable<Results<T>>,
     page: number,
   ): Observable<T[]> {
     return getResults(page).pipe(
@@ -46,10 +46,10 @@ export class WorkflowService {
   }
 
   private collectResultsUptoPage<T>(
-    getResults: (page: number) => Observable<Results<T[]>>,
+    getResults: (page: number) => Observable<Results<T>>,
     endPage: number,
-  ): Observable<MoreResults<T[]>> {
-    const observables: Observable<Results<T[]>>[] = [];
+  ): Observable<MoreResults<T>> {
+    const observables: Observable<Results<T>>[] = [];
     for (let i = 0; i <= endPage; i++) {
       observables.push(getResults(i));
     }
@@ -136,30 +136,27 @@ export class WorkflowService {
   }
 
   //  get history of finished, failed or canceled executions for specific datasetid
-  getCompletedDatasetExecutions(
-    id: string,
-    page?: number,
-  ): Observable<Results<WorkflowExecution[]>> {
+  getCompletedDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
     // tslint:disable-next-line: max-line-length
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
   getCompletedDatasetExecutionsUptoPage(
     id: string,
     endPage: number,
-  ): Observable<MoreResults<WorkflowExecution[]>> {
+  ): Observable<MoreResults<WorkflowExecution>> {
     const getResults = (page: number) => this.getCompletedDatasetExecutions(id, page);
     return this.collectResultsUptoPage(getResults, endPage);
   }
 
   //  get history of executions for specific datasetid, every status
-  getDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution[]>> {
+  getDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
     const url = `${
       apiSettings.apiHostCore
     }/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
   getDatasetExecutionsCollectingPages(id: string): Observable<WorkflowExecution[]> {
@@ -170,14 +167,11 @@ export class WorkflowService {
   }
 
   //  get history of finished executions for specific datasetid
-  getFinishedDatasetExecutions(
-    id: string,
-    page?: number,
-  ): Observable<Results<WorkflowExecution[]>> {
+  getFinishedDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
     const url = `${
       apiSettings.apiHostCore
     }/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
   //  get most recent execution for specific datasetid
@@ -186,7 +180,7 @@ export class WorkflowService {
       apiSettings.apiHostCore
     }/orchestrator/workflows/executions/dataset/${id}?&orderField=CREATED_DATE&ascending=false`;
     return this.http
-      .get<Results<WorkflowExecution[]>>(url)
+      .get<Results<WorkflowExecution>>(url)
       .pipe(
         map((lastExecution) => {
           return lastExecution.results[0];
@@ -199,7 +193,7 @@ export class WorkflowService {
   protected getAllExecutions(
     page: number,
     ongoing?: boolean,
-  ): Observable<Results<WorkflowExecution[]>> {
+  ): Observable<Results<WorkflowExecution>> {
     let url = `${
       apiSettings.apiHostCore
     }/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
@@ -209,7 +203,7 @@ export class WorkflowService {
       url += '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED';
     }
 
-    return this.http.get<Results<WorkflowExecution[]>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
   private addDatasetNameAndCurrentPlugin(
@@ -248,7 +242,7 @@ export class WorkflowService {
   getAllExecutionsUptoPage(
     endPage: number,
     ongoing: boolean,
-  ): Observable<MoreResults<WorkflowExecution[]>> {
+  ): Observable<MoreResults<WorkflowExecution>> {
     const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectResultsUptoPage(getResults, endPage).pipe(
       switchMap(({ results, more }) =>
