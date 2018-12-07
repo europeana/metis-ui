@@ -75,7 +75,7 @@ context('metis-ui', () => {
         .blur();
       cy.get('.login-btn').click();
 
-      cy.get('.error-message').contains('401 Oops!');
+      cy.get('.error-notification').contains('401 Oops!');
     });
 
     it('should login', () => {

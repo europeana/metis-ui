@@ -10,10 +10,10 @@
       <h2>{{ 'register' | translate }}</h2>
     </div>
 
-    <div class="messages">
-      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-      <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-    </div>
+    <app-notification
+      [notification]="notification"
+      (closed)="notification = undefined"
+    ></app-notification>
 
     <div class="form-fields">
       <fieldset class="form-group">

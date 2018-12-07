@@ -53,10 +53,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     clearTimeout(this.finishedTimer);
   }
 
-  setShowPluginLog(plugin: PluginExecution | undefined): void {
-    this.showPluginLog = plugin;
-  }
-
   getNextPage(): void {
     this.finishedCurrentPage++;
 

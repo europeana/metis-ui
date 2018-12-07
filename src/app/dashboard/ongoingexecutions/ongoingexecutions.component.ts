@@ -16,9 +16,7 @@ export class OngoingexecutionsComponent implements OnInit {
   @Input() runningExecutions: WorkflowExecution[];
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
 
-  errorMessage: string;
   cancelling: string;
-  viewMore = false;
   contentCopied = false;
 
   ngOnInit(): void {

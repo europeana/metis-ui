@@ -4,6 +4,8 @@
       Log {{ showPluginLog.pluginType }}<a class="btn-close" (click)="closeLog()"></a>
     </div>
     <div class="content">
+      <app-load-animation [resources]="{ logs: true }" *ngIf="isFirstLoading"></app-load-animation>
+
       <p *ngIf="noLogMessage">{{ noLogMessage }}</p>
       <p *ngFor="let msg of logMessages">
         {{ msg.resourceNum }} <strong>{{ msg.state }} {{ msg.info }}</strong

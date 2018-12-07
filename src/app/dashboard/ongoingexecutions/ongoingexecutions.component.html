@@ -1,8 +1,6 @@
 <div class="ongoing-executions" *ngIf="runningExecutions && runningExecutions.length > 0">
   <h3>{{ 'ongoingexecutions' | translate }}</h3>
-  <div class="messages">
-    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-  </div>
+
   <div class="ongoing-list">
     <div class="latest-ongoing" *ngFor="let ongoing of runningExecutions">
       <div class="status">
@@ -83,8 +81,5 @@
         </ul>
       </nav>
     </div>
-  </div>
-  <div class="loadmore" *ngIf="viewMore">
-    <a class="load-more-btn" (click)="viewAll()">{{ 'viewall' | translate }}</a>
   </div>
 </div>

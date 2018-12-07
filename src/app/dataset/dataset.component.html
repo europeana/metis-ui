@@ -12,10 +12,10 @@
   class="dashboard-wrapper"
   *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading"
 >
-  <div class="messages" (clickOutside)="clickOutsideMessage()">
-    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-    <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-  </div>
+  <app-notification
+    [notification]="notification"
+    (closed)="notification = undefined"
+  ></app-notification>
 
   <div *ngIf="datasetData">
     <div class="collapse-block metis-dashboard">
@@ -48,24 +48,25 @@
           [workflowData]="workflowData"
           [lastExecutionData]="lastExecutionData"
           [showPluginLog]="showPluginLog"
-          (setShowPluginLog)="setShowPluginLog($event)"
+          (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"
-          (setReportRequest)="setReportRequest($event)"
+          (setReportRequest)="reportRequest = $event"
+          (setProcessingInfo)="processingInfo = $event"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
           [lastExecutionData]="lastExecutionData"
-          (setReportRequest)="setReportRequest($event)"
+          (setReportRequest)="reportRequest = $event"
         ></app-lastexecution>
         <app-datasetlog
           *ngIf="showPluginLog"
           [showPluginLog]="showPluginLog"
           [processingInfo]="processingInfo"
-          (closed)="setShowPluginLog(undefined)"
+          (closed)="showPluginLog = undefined"
         ></app-datasetlog>
         <app-report
           [reportRequest]="reportRequest"
-          (closed)="setReportRequest(undefined)"
+          (closed)="reportRequest = undefined"
         ></app-report>
       </div>
     </div>
@@ -123,20 +124,20 @@
       <app-mapping
         *ngIf="activeTab === 'mapping'"
         [datasetData]="datasetData"
-        (setTempXSLT)="setTempXSLT($event)"
+        (setTempXSLT)="tempXSLT = $event"
       ></app-mapping>
       <app-preview
         *ngIf="activeTab === 'preview'"
         [datasetData]="datasetData"
         [previewFilters]="previewFilters"
         [tempXSLT]="tempXSLT"
-        (setPreviewFilters)="setPreviewFilters($event)"
+        (setPreviewFilters)="previewFilters = $event"
       ></app-preview>
       <app-history
         *ngIf="activeTab === 'log'"
         [datasetData]="datasetData"
         [lastExecutionData]="lastExecutionData"
-        (setReportRequest)="setReportRequest($event)"
+        (setReportRequest)="reportRequest = $event"
       ></app-history>
     </div>
   </div>

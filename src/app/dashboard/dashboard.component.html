@@ -20,12 +20,12 @@
       <app-ongoingexecutions
         [showPluginLog]="showPluginLog"
         [runningExecutions]="runningExecutions"
-        (setShowPluginLog)="setShowPluginLog($event)"
+        (setShowPluginLog)="showPluginLog = $event"
       ></app-ongoingexecutions>
       <app-datasetlog
         *ngIf="showPluginLog"
         [showPluginLog]="showPluginLog"
-        (closed)="setShowPluginLog(undefined)"
+        (closed)="showPluginLog = undefined"
       ></app-datasetlog>
     </div>
 

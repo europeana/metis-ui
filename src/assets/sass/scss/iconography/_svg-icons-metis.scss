@@ -13,7 +13,7 @@
 .svg-icon-log,
 .svg-icon-report,
 .svg-icon-plus,
-.error-message,
+.notification,
 .svg-icon-dashboard {
   padding-left: 1.5rem;
   position: relative;
@@ -71,7 +71,7 @@
   }
 }
 
-.error-message {
+.notification {
   &::before {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='32' viewBox='0 0 23 32'%3E%3Cpath fill='%23fff' d='M21.71 19.044q.135.189.135.35t-.135.35l-3.421 3.421q-.189.135-.35.135t-.35-.135l-5.953-5.953-5.953 5.953q-.189.135-.35.135t-.35-.135l-3.421-3.421q-.135-.189-.135-.35t.135-.35l5.953-5.953-5.953-5.953q-.135-.189-.135-.35t.135-.35l3.421-3.421q.189-.135.35-.135t.35.135l5.953 5.953 5.953-5.953q.189-.135.35-.135t.35.135l3.421 3.421q.135.189.135.35t-.135.35l-5.953 5.953z'%3E%3C/path%3E%3C/svg%3E");
     top: 0.27rem;

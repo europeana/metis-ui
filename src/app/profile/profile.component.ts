@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
 import { User } from '../_models';
+import { errorNotification, Notification, successNotification } from '../_models/notification';
 import { AuthenticationService, ErrorService, TranslateService } from '../_services';
 
 @Component({
@@ -15,8 +16,7 @@ import { AuthenticationService, ErrorService, TranslateService } from '../_servi
 export class ProfileComponent implements OnInit {
   editMode = false;
   loading = false;
-  errorMessage?: string;
-  successMessage?: string;
+  notification?: Notification;
   public password: string;
   confirmPasswordError = false;
   emailInfo: string = environment.links.updateProfileMain;
@@ -93,13 +93,9 @@ export class ProfileComponent implements OnInit {
     this.profileForm.controls.passwords.reset();
     this.onKeyupPassword();
 
-    this.errorMessage = undefined;
+    this.notification = undefined;
     this.confirmPasswordError = false;
     this.editMode = !this.editMode;
-
-    if (this.editMode) {
-      this.successMessage = undefined;
-    }
   }
 
   /** onKeyupPassword
@@ -122,7 +118,7 @@ export class ProfileComponent implements OnInit {
   /* which is a part of the profile form
   */
   onSubmit(): void {
-    this.errorMessage = undefined;
+    this.notification = undefined;
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
@@ -131,17 +127,19 @@ export class ProfileComponent implements OnInit {
 
     this.authentication.updatePassword(password, oldpassword).subscribe(
       (result) => {
-        if (result) {
-          this.successMessage = 'Update password successful!';
-        } else {
-          this.errorMessage = 'Update password failed, please try again later';
-        }
         this.loading = false;
         this.toggleEditMode();
+        if (result) {
+          this.notification = successNotification('Update password successful!');
+        } else {
+          this.notification = errorNotification('Update password failed, please try again later');
+        }
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `Update password failed: ${StringifyHttpError(error)}`;
+        this.notification = errorNotification(
+          `Update password failed: ${StringifyHttpError(error)}`,
+        );
         this.loading = false;
       },
     );
@@ -151,22 +149,22 @@ export class ProfileComponent implements OnInit {
   /* get most accurate user data from zoho
   */
   onReloadProfile(): void {
-    this.errorMessage = undefined;
+    this.notification = undefined;
     this.loading = true;
 
     this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
       (result) => {
         if (result) {
-          this.successMessage = 'Your profile has been updated';
+          this.notification = successNotification('Your profile has been updated');
           this.createForm();
         } else {
-          this.errorMessage = 'Refresh failed, please try again later';
+          this.notification = errorNotification('Refresh failed, please try again later');
         }
         this.loading = false;
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `Refresh failed: ${StringifyHttpError(error)}`;
+        this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
         this.loading = false;
       },
     );

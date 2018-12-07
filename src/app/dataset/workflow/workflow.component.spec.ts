@@ -1,4 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -30,6 +31,7 @@ describe('WorkflowComponent', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, ReactiveFormsModule, HttpClientModule],
       declarations: [WorkflowComponent, TranslatePipe, RenameWorkflowPipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
@@ -101,6 +103,6 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
     component.onSubmit();
     fixture.detectChanges();
-    expect(component.successMessage).not.toBe(undefined);
+    expect(component.notification!.content).toBe('Workflow saved');
   });
 });

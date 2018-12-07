@@ -3,11 +3,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { StringifyHttpError } from '../../_helpers';
 import { Country } from '../../_models/country';
 import { Dataset } from '../../_models/dataset';
 import { HarvestData } from '../../_models/harvest-data';
 import { Language } from '../../_models/language';
+import {
+  httpErrorNotification,
+  Notification,
+  successNotification,
+} from '../../_models/notification';
 import { CountriesService, DatasetsService, ErrorService, TranslateService } from '../../_services';
 
 type FormMode = 'show' | 'edit' | 'save';
@@ -26,8 +30,7 @@ export class DatasetformComponent implements OnInit {
 
   @Output() datasetUpdated = new EventEmitter<void>();
 
-  errorMessage?: string;
-  successMessage?: string;
+  notification?: Notification;
   selectedCountry?: Country;
   selectedLanguage?: Language;
 
@@ -155,8 +158,7 @@ export class DatasetformComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.successMessage = undefined;
-    this.errorMessage = undefined;
+    this.notification = undefined;
 
     this.formMode = 'save';
     if (this.isNew) {
@@ -168,7 +170,7 @@ export class DatasetformComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.errorMessage = `${StringifyHttpError(error)}`;
+          this.notification = httpErrorNotification(error);
 
           this.formMode = 'edit';
           this.scrollToTop();
@@ -182,7 +184,7 @@ export class DatasetformComponent implements OnInit {
       this.datasets.updateDataset({ dataset }).subscribe(
         () => {
           localStorage.removeItem(DATASET_TEMP_LSKEY);
-          this.successMessage = 'Dataset updated!';
+          this.notification = successNotification('Dataset updated!');
           this.datasetUpdated.emit();
 
           this.formMode = 'show';
@@ -190,7 +192,7 @@ export class DatasetformComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.errorMessage = `${StringifyHttpError(error)}`;
+          this.notification = httpErrorNotification(error);
 
           this.formMode = 'edit';
           this.scrollToTop();
@@ -201,8 +203,7 @@ export class DatasetformComponent implements OnInit {
 
   cancel(): void {
     localStorage.removeItem(DATASET_TEMP_LSKEY);
-    this.errorMessage = undefined;
-    this.successMessage = undefined;
+    this.notification = undefined;
     if (this.isNew) {
       this.router.navigate(['/dashboard']);
     } else {
@@ -215,8 +216,7 @@ export class DatasetformComponent implements OnInit {
 
   editForm(): void {
     this.formMode = 'edit';
-    this.errorMessage = undefined;
-    this.successMessage = undefined;
+    this.notification = undefined;
 
     this.scrollToTop();
   }

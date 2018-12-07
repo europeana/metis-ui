@@ -15,8 +15,6 @@ export class ExecutiontableComponent implements OnInit {
 
   contentCopied = false;
   msgCancelling: string;
-  errorMessage: string;
-  successMessage: string;
 
   constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 

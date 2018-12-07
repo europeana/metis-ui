@@ -51,6 +51,7 @@ import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_tra
 import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
 import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
 import { LoadAnimationComponent } from './load-animation';
+import { NotificationComponent } from './shared/notification/notification.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { LoadAnimationComponent } from './load-animation';
     RenameWorkflowPipe,
     GeneralactionbarComponent,
     ExecutiontableComponent,
+    NotificationComponent,
   ],
   imports: [
     BrowserModule,

@@ -17,7 +17,6 @@ export class LastExecutionComponent implements OnInit {
 
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
-  errorMessage?: string;
   report?: Report;
   completedPlugins: PluginExecution[] = [];
 

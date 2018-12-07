@@ -31,12 +31,16 @@
   </div>
 </div>
 
-<div #messagebar class="messages" (clickOutside)="closeMessages()">
-  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-  <div class="success-message" *ngIf="successMessage">
-    <span class="svg-icon-spin-inbutton" *ngIf="!statistics"></span> {{ successMessage }}
+<div class="messages" *ngIf="isLoadingStatistics">
+  <div class="success-message">
+    <span class="svg-icon-spin-inbutton"></span> Loading statistics...
   </div>
 </div>
+
+<app-notification
+  [notification]="notification"
+  (closed)="notification = undefined"
+></app-notification>
 
 <div class="btns-set">
   <button (click)="tryOutXSLT('default')">{{ 'xslttryoutdefault' | translate }}</button>

@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { StringifyHttpError } from '../_helpers';
 import { Dataset } from '../_models/dataset';
 import { HarvestData } from '../_models/harvest-data';
+import { httpErrorNotification, Notification, successNotification } from '../_models/notification';
 import { ReportRequest } from '../_models/report';
 import { Workflow } from '../_models/workflow';
 import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
@@ -40,8 +40,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   activeTab = 'edit';
   datasetId: string;
   prevTab?: string;
-  errorMessage?: string;
-  successMessage?: string;
+  notification?: Notification;
   datasetIsLoading = true;
   harvestIsLoading = true;
   harvestSubscription: Subscription;
@@ -65,7 +64,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.route.params.subscribe((params) => {
       const { tab, id } = params;
       if (tab === 'new') {
-        this.successMessage = 'New dataset created! Id: ' + id;
+        this.notification = successNotification('New dataset created! Id: ' + id);
         this.router.navigate([`/dataset/edit/${id}`]);
         return;
       }
@@ -103,7 +102,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.notification = httpErrorNotification(error);
         this.datasetIsLoading = false;
       },
     );
@@ -148,7 +147,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.notification = httpErrorNotification(error);
         this.harvestSubscription.unsubscribe();
         this.harvestIsLoading = false;
       },
@@ -163,7 +162,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.notification = httpErrorNotification(error);
         this.workflowSubscription.unsubscribe();
         this.workflowIsLoading = false;
       },
@@ -178,7 +177,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.notification = httpErrorNotification(error);
         this.lastExecutionSubscription.unsubscribe();
         this.lastExecutionIsLoading = false;
       },
@@ -193,34 +192,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.notification = httpErrorNotification(error);
       },
     );
-  }
-
-  setShowPluginLog(plugin: PluginExecution | undefined): void {
-    this.showPluginLog = plugin;
-  }
-
-  setTempXSLT(tempXSLT: string | undefined): void {
-    this.tempXSLT = tempXSLT;
-  }
-
-  setPreviewFilters(previewFilters: PreviewFilters): void {
-    this.previewFilters = previewFilters;
-  }
-
-  setProcessingInfo(processingInfo: ProcessingInfo | undefined): void {
-    this.processingInfo = processingInfo;
-  }
-
-  setReportRequest(reportRequest: ReportRequest | undefined): void {
-    this.reportRequest = reportRequest;
-  }
-
-  // click outside message to close it
-  clickOutsideMessage(): void {
-    this.errorMessage = undefined;
-    this.successMessage = undefined;
   }
 }

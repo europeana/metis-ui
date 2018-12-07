@@ -4,9 +4,10 @@
     <div class="content">
       <app-load-animation [resources]="{ errors: true }" *ngIf="isLoading"></app-load-animation>
 
-      <div class="messages">
-        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-      </div>
+      <app-notification
+        [notification]="notification"
+        (closed)="notification = undefined"
+      ></app-notification>
 
       <div *ngIf="errors">
         <ul *ngFor="let r of reportKeys(errors)">

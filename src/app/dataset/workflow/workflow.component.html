@@ -1,9 +1,10 @@
 <div class="metis-form metis-form-horizontal">
   <form [formGroup]="workflowForm" #formDir="ngForm">
-    <div class="messages" (clickOutside)="onClickedOutside()">
-      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-      <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-    </div>
+    <app-notification
+      [notification]="notification"
+      (closed)="notification = undefined"
+      *ngIf="notification"
+    ></app-notification>
 
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">

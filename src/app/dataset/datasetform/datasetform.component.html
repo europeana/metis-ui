@@ -1,9 +1,10 @@
 <div class="metis-form metis-form-horizontal">
   <form [formGroup]="datasetForm" #formDir="ngForm">
-    <div class="messages">
-      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-      <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-    </div>
+    <app-notification
+      [notification]="notification"
+      (closed)="notification = undefined"
+    ></app-notification>
+
     <div class="form-fields">
       <div class="form-group" *ngIf="!isNew">
         <label>{{ 'identifier' | translate }}</label> <span>{{ datasetData.datasetId }}</span>

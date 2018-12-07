@@ -3,8 +3,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 
-import { harvestValidator, StringifyHttpError } from '../../_helpers';
+import { harvestValidator } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
+import {
+  httpErrorNotification,
+  Notification,
+  successNotification,
+} from '../../_models/notification';
 import { PluginMetadata } from '../../_models/plugin-metadata';
 import { Workflow } from '../../_models/workflow';
 import { ErrorService, TranslateService, WorkflowService } from '../../_services';
@@ -42,8 +47,7 @@ export class WorkflowComponent implements OnInit {
   @Input() datasetData: Dataset;
   @Input() workflowData?: Workflow;
 
-  errorMessage: string;
-  successMessage?: string;
+  notification?: Notification;
   harvestprotocol: string;
   newWorkflow = true;
   workflowForm: FormGroup;
@@ -496,23 +500,16 @@ export class WorkflowComponent implements OnInit {
             .subscribe((workflowDataset) => {
               this.workflowData = workflowDataset;
               this.getWorkflow();
-              this.successMessage = 'Workflow saved';
+              this.notification = successNotification('Workflow saved');
               this.scrollToMessageBox();
             });
         },
         (err: HttpErrorResponse) => {
           const errorSubmit = this.errors.handleError(err);
-          this.errorMessage = `${StringifyHttpError(errorSubmit)}`;
+          this.notification = httpErrorNotification(errorSubmit);
           this.scrollToMessageBox();
         },
       );
-  }
-
-  /** onClickedOutside
-  /* click outside the message = remove messages
-  */
-  onClickedOutside(): void {
-    this.successMessage = undefined;
   }
 
   /** scrollToMessageBox

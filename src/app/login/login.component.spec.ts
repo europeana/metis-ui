@@ -1,4 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -30,6 +31,7 @@ describe('LoginComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     router = TestBed.get(Router);

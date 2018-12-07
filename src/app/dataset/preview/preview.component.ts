@@ -11,8 +11,8 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
-import { StringifyHttpError } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
+import { httpErrorNotification, Notification } from '../../_models/notification';
 import { WorkflowExecution } from '../../_models/workflow-execution';
 import { XmlSample } from '../../_models/xml-sample';
 import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
@@ -49,7 +49,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   selectedPlugin?: string;
   expandedSample?: number;
   nosample: string;
-  errorMessage: string;
+  notification?: Notification;
   execution: WorkflowExecution;
   loadingSamples = false;
   loadingTransformSamples = false;
@@ -146,7 +146,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.notification = httpErrorNotification(error);
         this.loadingSamples = false;
       },
     );
@@ -173,7 +173,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
                 },
                 (err: HttpErrorResponse) => {
                   const error = this.errors.handleError(err);
-                  this.errorMessage = `${StringifyHttpError(error)}`;
+                  this.notification = httpErrorNotification(error);
                   this.loadingTransformSamples = false;
                 },
               );
@@ -187,7 +187,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.notification = httpErrorNotification(error);
         this.loadingTransformSamples = false;
       },
     );

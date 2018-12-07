@@ -1,4 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -39,6 +40,7 @@ describe('PreviewComponent', () => {
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
