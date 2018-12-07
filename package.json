@@ -12,14 +12,14 @@
     "test:dev": "ng test",
     "cypress": "cypress open",
     "test": "npm run prettier:ci && npm run lint:ci && npm run template-check && npm run test:ci && npm run cypress:ci",
-    "template-check": "ng build --output-path=tmp/template-check --aot",
+    "template-check": "ng build --progress=false --output-path=tmp/template-check --aot",
     "prettier:ci": "prettier --list-different '{src,e2e,cypress}/**/*.{ts,js,json,scss,html}' '*.{js,json}'",
     "lint:ci": "ng lint",
-    "test:ci": "ng test --watch=false --code-coverage --source-map=false",
+    "test:ci": "ng test --progress=false --watch=false --code-coverage --source-map=false",
     "cypress:ci": "run-p --race start:ci cypress:run",
-    "start:ci": "ng serve --port 4280 --live-reload=false",
+    "start:ci": "ng serve --progress=false --port 4280 --live-reload=false",
     "cypress:run": "sleep 10 && cypress run",
-    "dist": "ng build --prod --output-hashing=all && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
+    "dist": "ng build --progress=false --prod --output-hashing=all && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
   },
   "private": true,
   "dependencies": {
