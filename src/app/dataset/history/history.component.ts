@@ -2,9 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { copyExecutionAndTaskId, StringifyHttpError } from '../../_helpers';
+import { copyExecutionAndTaskId } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
-import { errorNotification, Notification } from '../../_models/notification';
+import { httpErrorNotification, Notification } from '../../_models/notification';
 import { Report, ReportRequest } from '../../_models/report';
 import {
   PluginExecution,
@@ -88,7 +88,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.notification = errorNotification(StringifyHttpError(error));
+          this.notification = httpErrorNotification(error);
         },
       );
   }

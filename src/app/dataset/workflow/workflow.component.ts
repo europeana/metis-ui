@@ -3,9 +3,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 
-import { harvestValidator, StringifyHttpError } from '../../_helpers';
+import { harvestValidator } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
-import { errorNotification, Notification, successNotification } from '../../_models/notification';
+import {
+  httpErrorNotification,
+  Notification,
+  successNotification,
+} from '../../_models/notification';
 import { PluginMetadata } from '../../_models/plugin-metadata';
 import { Workflow } from '../../_models/workflow';
 import { ErrorService, TranslateService, WorkflowService } from '../../_services';
@@ -502,7 +506,7 @@ export class WorkflowComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const errorSubmit = this.errors.handleError(err);
-          this.notification = errorNotification(StringifyHttpError(errorSubmit));
+          this.notification = httpErrorNotification(errorSubmit);
           this.scrollToMessageBox();
         },
       );

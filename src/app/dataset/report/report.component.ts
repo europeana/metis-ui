@@ -1,8 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { StringifyHttpError } from '../../_helpers';
-import { errorNotification, Notification } from '../../_models/notification';
+import { errorNotification, httpErrorNotification, Notification } from '../../_models/notification';
 import { ReportRequest } from '../../_models/report';
 import { ErrorService, TranslateService, WorkflowService } from '../../_services';
 
@@ -45,7 +44,7 @@ export class ReportComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errorService.handleError(err);
-          this.notification = errorNotification(StringifyHttpError(error));
+          this.notification = httpErrorNotification(error);
           this.isLoading = false;
         },
       );

@@ -4,10 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { StringifyHttpError } from '../_helpers';
 import { Dataset } from '../_models/dataset';
 import { HarvestData } from '../_models/harvest-data';
-import { errorNotification, Notification, successNotification } from '../_models/notification';
+import { httpErrorNotification, Notification, successNotification } from '../_models/notification';
 import { ReportRequest } from '../_models/report';
 import { Workflow } from '../_models/workflow';
 import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
@@ -103,7 +102,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(StringifyHttpError(error));
+        this.notification = httpErrorNotification(error);
         this.datasetIsLoading = false;
       },
     );
@@ -148,7 +147,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(StringifyHttpError(error));
+        this.notification = httpErrorNotification(error);
         this.harvestSubscription.unsubscribe();
         this.harvestIsLoading = false;
       },
@@ -163,7 +162,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(StringifyHttpError(error));
+        this.notification = httpErrorNotification(error);
         this.workflowSubscription.unsubscribe();
         this.workflowIsLoading = false;
       },
@@ -178,7 +177,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(StringifyHttpError(error));
+        this.notification = httpErrorNotification(error);
         this.lastExecutionSubscription.unsubscribe();
         this.lastExecutionIsLoading = false;
       },
@@ -193,7 +192,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(StringifyHttpError(error));
+        this.notification = httpErrorNotification(error);
       },
     );
   }

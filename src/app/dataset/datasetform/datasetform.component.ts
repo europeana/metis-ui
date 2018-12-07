@@ -3,12 +3,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { StringifyHttpError } from '../../_helpers';
 import { Country } from '../../_models/country';
 import { Dataset } from '../../_models/dataset';
 import { HarvestData } from '../../_models/harvest-data';
 import { Language } from '../../_models/language';
-import { errorNotification, Notification, successNotification } from '../../_models/notification';
+import {
+  httpErrorNotification,
+  Notification,
+  successNotification,
+} from '../../_models/notification';
 import { CountriesService, DatasetsService, ErrorService, TranslateService } from '../../_services';
 
 type FormMode = 'show' | 'edit' | 'save';
@@ -167,7 +170,7 @@ export class DatasetformComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.notification = errorNotification(StringifyHttpError(error));
+          this.notification = httpErrorNotification(error);
 
           this.formMode = 'edit';
           this.scrollToTop();
@@ -189,7 +192,7 @@ export class DatasetformComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.notification = errorNotification(StringifyHttpError(error));
+          this.notification = httpErrorNotification(error);
 
           this.formMode = 'edit';
           this.scrollToTop();

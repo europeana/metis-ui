@@ -4,8 +4,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
-import { MatchPasswordValidator, PasswordStrength, StringifyHttpError } from '../_helpers';
-import { errorNotification, Notification, successNotification } from '../_models/notification';
+import { MatchPasswordValidator, PasswordStrength } from '../_helpers';
+import {
+  errorNotification,
+  httpErrorNotification,
+  Notification,
+  successNotification,
+} from '../_models/notification';
 import { AuthenticationService, TranslateService } from '../_services';
 
 @Component({
@@ -97,7 +102,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         },
         (err: HttpErrorResponse) => {
           this.loading = false;
-          this.notification = errorNotification(StringifyHttpError(err));
+          this.notification = httpErrorNotification(err);
         },
       );
     }
