@@ -30,6 +30,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   noLogs: string;
   noLogMessage?: string;
+  isFirstLoading = true;
 
   private _showPluginLog: PluginExecution;
 
@@ -109,9 +110,11 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         (result) => {
+          this.isFirstLoading = false;
           this.showWindowOutput(result);
         },
         (err: HttpErrorResponse) => {
+          this.isFirstLoading = false;
           this.errors.handleError(err);
         },
       );
