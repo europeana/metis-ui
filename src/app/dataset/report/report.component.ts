@@ -1,8 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { errorNotification, httpErrorNotification, Notification } from '../../_models';
-import { ReportRequest } from '../../_models';
+import {
+  errorNotification,
+  httpErrorNotification,
+  Notification,
+  ReportRequest,
+} from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 

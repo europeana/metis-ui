@@ -4,14 +4,17 @@ import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
 import { map, publishLast, switchMap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
-import { HarvestData } from '../_models';
-import { Report } from '../_models';
-import { MoreResults, Results } from '../_models';
-import { Statistics } from '../_models';
-import { SubTaskInfo } from '../_models';
-import { Workflow } from '../_models';
-import { WorkflowExecution } from '../_models';
-import { XmlSample } from '../_models';
+import {
+  HarvestData,
+  MoreResults,
+  Report,
+  Results,
+  Statistics,
+  SubTaskInfo,
+  Workflow,
+  WorkflowExecution,
+  XmlSample,
+} from '../_models';
 
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';

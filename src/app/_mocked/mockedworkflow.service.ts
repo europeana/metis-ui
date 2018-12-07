@@ -1,13 +1,18 @@
 import { Observable, of as observableOf } from 'rxjs';
 
-import { HarvestData } from '../_models';
-import { Report } from '../_models';
-import { Results } from '../_models';
-import { Statistics } from '../_models';
-import { SubTaskInfo } from '../_models';
-import { Workflow } from '../_models';
-import { PluginStatus, TaskState, WorkflowExecution, WorkflowStatus } from '../_models';
-import { XmlSample } from '../_models';
+import {
+  HarvestData,
+  PluginStatus,
+  Report,
+  Results,
+  Statistics,
+  SubTaskInfo,
+  TaskState,
+  Workflow,
+  WorkflowExecution,
+  WorkflowStatus,
+  XmlSample,
+} from '../_models';
 import { WorkflowService } from '../_services';
 
 export const currentWorkflowDataset: Workflow = {

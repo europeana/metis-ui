@@ -4,10 +4,14 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { NavigationEnd, Router } from '@angular/router';
 
 import { harvestValidator } from '../../_helpers';
-import { Dataset } from '../../_models';
-import { httpErrorNotification, Notification, successNotification } from '../../_models';
-import { PluginMetadata } from '../../_models';
-import { Workflow } from '../../_models';
+import {
+  Dataset,
+  httpErrorNotification,
+  Notification,
+  PluginMetadata,
+  successNotification,
+  Workflow,
+} from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 

@@ -13,9 +13,13 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
-import { Dataset } from '../../_models';
-import { httpErrorNotification, Notification, successNotification } from '../../_models';
-import { NodeStatistics } from '../../_models';
+import {
+  Dataset,
+  httpErrorNotification,
+  NodeStatistics,
+  Notification,
+  successNotification,
+} from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 

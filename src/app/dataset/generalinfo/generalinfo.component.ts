@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
-import { Dataset } from '../../_models';
-import { HarvestData } from '../../_models';
+import { Dataset, HarvestData } from '../../_models';
 import { TranslateService } from '../../_translate';
 
 @Component({

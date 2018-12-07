@@ -4,8 +4,7 @@ import { ConnectableObservable, Observable } from 'rxjs';
 import { map, publishLast, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
-import { Dataset } from '../_models';
-import { XmlSample } from '../_models';
+import { Dataset, XmlSample } from '../_models';
 
 import { ErrorService } from './error.service';
 

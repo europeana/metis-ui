@@ -3,10 +3,16 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
-import { Dataset } from '../../_models';
-import { httpErrorNotification, Notification } from '../../_models';
-import { Report, ReportRequest } from '../../_models';
-import { PluginExecution, WorkflowExecution, WorkflowStatus } from '../../_models';
+import {
+  Dataset,
+  httpErrorNotification,
+  Notification,
+  PluginExecution,
+  Report,
+  ReportRequest,
+  WorkflowExecution,
+  WorkflowStatus,
+} from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 

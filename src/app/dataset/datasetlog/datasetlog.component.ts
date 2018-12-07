@@ -3,8 +3,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { Subscription, timer as observableTimer } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { SubTaskInfo } from '../../_models';
-import { PluginExecution } from '../../_models';
+import { PluginExecution, SubTaskInfo } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { ProcessingInfo } from '../dataset.component';

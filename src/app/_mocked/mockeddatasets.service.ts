@@ -1,7 +1,6 @@
 import { Observable, of as observableOf } from 'rxjs';
 
-import { Dataset } from '../_models';
-import { XmlSample } from '../_models';
+import { Dataset, XmlSample } from '../_models';
 import { DatasetsService } from '../_services';
 
 export const currentDataset: Dataset = {
