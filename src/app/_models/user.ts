@@ -1,4 +1,4 @@
-﻿import { UserToken } from './user-token';
+import { UserToken } from './user-token';
 
 // Java name: MetisUser
 

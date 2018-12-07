@@ -1,1 +1,1 @@
-﻿export * from './load-animation.component';
+export * from './load-animation.component';

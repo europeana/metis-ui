@@ -1,4 +1,4 @@
-﻿export * from './authentication.service';
+export * from './authentication.service';
 export * from './countries.service';
 export * from './datasets.service';
 export * from './error.service';
