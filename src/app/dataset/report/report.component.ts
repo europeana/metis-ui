@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { StringifyHttpError } from '../../_helpers';
+import { errorNotification, Notification } from '../../_models/notification';
 import { ReportRequest } from '../../_models/report';
 import { ErrorService, TranslateService, WorkflowService } from '../../_services';
 
@@ -18,7 +19,7 @@ export class ReportComponent implements OnInit {
 
   isVisible: boolean;
   isLoading: boolean;
-  errorMessage?: string;
+  notification?: Notification;
 
   // tslint:disable-next-line: no-any
   errors: any;
@@ -26,7 +27,7 @@ export class ReportComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
 
   @Input() set reportRequest(request: ReportRequest | undefined) {
-    this.errorMessage = undefined;
+    this.notification = undefined;
     this.errors = undefined;
 
     if (request) {
@@ -39,12 +40,12 @@ export class ReportComponent implements OnInit {
             this.errors = report.errors;
           } else {
             this.errors = [];
-            this.errorMessage = 'Report is empty.';
+            this.notification = errorNotification('Report is empty.');
           }
         },
         (err: HttpErrorResponse) => {
           const error = this.errorService.handleError(err);
-          this.errorMessage = `${StringifyHttpError(error)}`;
+          this.notification = errorNotification(`${StringifyHttpError(error)}`);
           this.isLoading = false;
         },
       );
