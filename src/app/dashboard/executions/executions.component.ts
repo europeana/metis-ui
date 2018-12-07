@@ -18,9 +18,6 @@ export class ExecutionsComponent implements OnInit {
 
   @Output() nextPage: EventEmitter<void> = new EventEmitter();
 
-  errorMessage: string;
-  successMessage: string;
-
   ngOnInit(): void {
     this.translate.use('en');
   }
