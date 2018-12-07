@@ -146,7 +146,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.errorMessage = StringifyHttpError(error);
         this.loadingSamples = false;
       },
     );
@@ -173,7 +173,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
                 },
                 (err: HttpErrorResponse) => {
                   const error = this.errors.handleError(err);
-                  this.errorMessage = `${StringifyHttpError(error)}`;
+                  this.errorMessage = StringifyHttpError(error);
                   this.loadingTransformSamples = false;
                 },
               );
@@ -187,7 +187,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+        this.errorMessage = StringifyHttpError(error);
         this.loadingTransformSamples = false;
       },
     );

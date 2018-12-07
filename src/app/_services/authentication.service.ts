@@ -106,7 +106,7 @@ export class AuthenticationService {
         this.router.navigateByUrl(`/${prevUrl}`);
         this.redirectPreviousUrl.set(undefined);
       } else {
-        this.router.navigate([`${environment.afterLoginGoto}`]);
+        this.router.navigate([environment.afterLoginGoto]);
       }
     }
 

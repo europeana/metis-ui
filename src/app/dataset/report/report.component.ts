@@ -45,7 +45,7 @@ export class ReportComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errorService.handleError(err);
-          this.notification = errorNotification(`${StringifyHttpError(error)}`);
+          this.notification = errorNotification(StringifyHttpError(error));
           this.isLoading = false;
         },
       );

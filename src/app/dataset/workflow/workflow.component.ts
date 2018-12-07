@@ -502,7 +502,7 @@ export class WorkflowComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const errorSubmit = this.errors.handleError(err);
-          this.notification = errorNotification(`${StringifyHttpError(errorSubmit)}`);
+          this.notification = errorNotification(StringifyHttpError(errorSubmit));
           this.scrollToMessageBox();
         },
       );

@@ -105,7 +105,7 @@ export class MappingComponent implements OnInit {
           },
           (err: HttpErrorResponse) => {
             const error = this.errors.handleError(err);
-            this.errorMessage = `${StringifyHttpError(error)}`;
+            this.errorMessage = StringifyHttpError(error);
           },
         );
         return;
@@ -177,7 +177,7 @@ export class MappingComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.errorMessage = `${StringifyHttpError(error)}`;
+          this.errorMessage = StringifyHttpError(error);
         },
       );
   }

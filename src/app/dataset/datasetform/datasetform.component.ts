@@ -167,7 +167,7 @@ export class DatasetformComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.notification = errorNotification(`${StringifyHttpError(error)}`);
+          this.notification = errorNotification(StringifyHttpError(error));
 
           this.formMode = 'edit';
           this.scrollToTop();
@@ -189,7 +189,7 @@ export class DatasetformComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.notification = errorNotification(`${StringifyHttpError(error)}`);
+          this.notification = errorNotification(StringifyHttpError(error));
 
           this.formMode = 'edit';
           this.scrollToTop();

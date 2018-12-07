@@ -97,7 +97,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         },
         (err: HttpErrorResponse) => {
           this.loading = false;
-          this.notification = errorNotification(`${StringifyHttpError(err)}`);
+          this.notification = errorNotification(StringifyHttpError(err));
         },
       );
     }

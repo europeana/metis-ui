@@ -103,7 +103,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(`${StringifyHttpError(error)}`);
+        this.notification = errorNotification(StringifyHttpError(error));
         this.datasetIsLoading = false;
       },
     );
@@ -148,7 +148,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(`${StringifyHttpError(error)}`);
+        this.notification = errorNotification(StringifyHttpError(error));
         this.harvestSubscription.unsubscribe();
         this.harvestIsLoading = false;
       },
@@ -163,7 +163,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(`${StringifyHttpError(error)}`);
+        this.notification = errorNotification(StringifyHttpError(error));
         this.workflowSubscription.unsubscribe();
         this.workflowIsLoading = false;
       },
@@ -178,7 +178,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(`${StringifyHttpError(error)}`);
+        this.notification = errorNotification(StringifyHttpError(error));
         this.lastExecutionSubscription.unsubscribe();
         this.lastExecutionIsLoading = false;
       },
@@ -193,7 +193,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
-        this.notification = errorNotification(`${StringifyHttpError(error)}`);
+        this.notification = errorNotification(StringifyHttpError(error));
       },
     );
   }
