@@ -82,7 +82,7 @@ describe('DatasetComponent', () => {
   });
 
   it('should be possible to display a message', () => {
-    component.setShowPluginLog(currentWorkflow.results[0].metisPlugins[0]);
+    component.showPluginLog = currentWorkflow.results[0].metisPlugins[0];
     fixture.detectChanges();
     expect(component.showPluginLog).toBe(currentWorkflow.results[0].metisPlugins[0]);
 

@@ -48,7 +48,7 @@ describe('DashboardComponent', () => {
   });
 
   it('should open log messages', () => {
-    component.setShowPluginLog({
+    component.showPluginLog = {
       id: 'xx5',
       pluginType: 'import',
       pluginStatus: PluginStatus.RUNNING,
@@ -60,7 +60,7 @@ describe('DashboardComponent', () => {
       },
       pluginMetadata: { pluginType: 'import' },
       topologyName: 'import',
-    });
+    };
     fixture.detectChanges();
     expect(component.showPluginLog).toBeTruthy();
   });
