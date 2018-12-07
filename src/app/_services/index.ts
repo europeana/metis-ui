@@ -3,7 +3,7 @@ export * from './countries.service';
 export * from './datasets.service';
 export * from './error.service';
 export * from './redirect-previous-url.service';
-export * from './token.interceptor';
 export * from './settings.service';
+export * from './token.interceptor';
 export * from './translate.service';
 export * from './workflow.service';

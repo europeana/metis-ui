@@ -1,2 +1,3 @@
-export * from './header/header.component';
-export * from './password-check/password-check.component';
+export * from './header/';
+export * from './notification/';
+export * from './password-check/';
