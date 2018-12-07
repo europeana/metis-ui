@@ -14,10 +14,9 @@ import {
   DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  TranslateService,
   WorkflowService,
 } from '../../_services';
-import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
 import { LastExecutionComponent } from './lastexecution.component';
 

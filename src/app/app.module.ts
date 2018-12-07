@@ -16,7 +16,6 @@ import {
   RedirectPreviousUrl,
   SettingsService,
   TokenInterceptor,
-  TranslateService,
   WorkflowService,
 } from './_services';
 
@@ -47,7 +46,12 @@ import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoin
 import { ReportComponent } from './dataset/report/report.component';
 
 import { XmlPipe } from './_helpers';
-import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
+import {
+  RenameWorkflowPipe,
+  TranslatePipe,
+  TranslateService,
+  TRANSLATION_PROVIDERS,
+} from './_translate';
 import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
 import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
 import { LoadAnimationComponent } from './load-animation';

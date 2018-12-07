@@ -1,4 +1,4 @@
-import { TranslateService } from '../_services';
+import { TranslateService } from '../_translate';
 
 export class MockTranslateService extends TranslateService {
   public constructor() {

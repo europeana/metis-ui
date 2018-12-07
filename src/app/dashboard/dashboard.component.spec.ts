@@ -10,10 +10,9 @@ import {
   DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  TranslateService,
   WorkflowService,
 } from '../_services';
-import { TranslatePipe } from '../_translate';
+import { TranslatePipe, TranslateService } from '../_translate';
 
 import { DashboardComponent } from './dashboard.component';
 

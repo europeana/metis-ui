@@ -3,12 +3,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
-import {
-  AuthenticationService,
-  ErrorService,
-  TranslateService,
-  WorkflowService,
-} from '../_services';
+import { AuthenticationService, ErrorService, WorkflowService } from '../_services';
+import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-dashboard',

@@ -10,7 +10,8 @@ import { httpErrorNotification, Notification, successNotification } from '../_mo
 import { ReportRequest } from '../_models/report';
 import { Workflow } from '../_models/workflow';
 import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
-import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../_services';
+import { DatasetsService, ErrorService, WorkflowService } from '../_services';
+import { TranslateService } from '../_translate';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;

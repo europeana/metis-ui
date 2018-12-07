@@ -20,7 +20,8 @@ import {
   successNotification,
 } from '../../_models/notification';
 import { NodeStatistics } from '../../_models/statistics';
-import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 

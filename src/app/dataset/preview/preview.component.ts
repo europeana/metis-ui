@@ -15,7 +15,8 @@ import { Dataset } from '../../_models/dataset';
 import { httpErrorNotification, Notification } from '../../_models/notification';
 import { WorkflowExecution } from '../../_models/workflow-execution';
 import { XmlSample } from '../../_models/xml-sample';
-import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 import { PreviewFilters } from '../dataset.component';
 
 @Component({

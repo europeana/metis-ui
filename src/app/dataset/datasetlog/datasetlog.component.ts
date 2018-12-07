@@ -5,7 +5,8 @@ import { Subscription, timer as observableTimer } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SubTaskInfo } from '../../_models/subtask-info';
 import { PluginExecution } from '../../_models/workflow-execution';
-import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 import { ProcessingInfo } from '../dataset.component';
 
 @Component({

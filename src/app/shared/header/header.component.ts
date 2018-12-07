@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
+import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-header',

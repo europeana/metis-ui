@@ -2,7 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 import { Workflow } from '../../_models/workflow';
 import { WorkflowExecution, WorkflowStatus } from '../../_models/workflow-execution';
-import { TranslateService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-generalactionbar',

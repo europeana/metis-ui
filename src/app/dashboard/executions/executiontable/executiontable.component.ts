@@ -2,7 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../../_helpers';
 import { PluginExecution, WorkflowExecution } from '../../../_models/workflow-execution';
-import { TranslateService, WorkflowService } from '../../../_services';
+import { WorkflowService } from '../../../_services';
+import { TranslateService } from '../../../_translate';
 
 @Component({
   selector: '[app-executiontable]',

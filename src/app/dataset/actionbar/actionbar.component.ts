@@ -4,7 +4,8 @@ import { copyExecutionAndTaskId } from '../../_helpers';
 import { Report, ReportRequest } from '../../_models/report';
 import { Workflow } from '../../_models/workflow';
 import { PluginExecution, WorkflowExecution } from '../../_models/workflow-execution';
-import { TranslateService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 import { ProcessingInfo } from '../dataset.component';
 
 @Component({

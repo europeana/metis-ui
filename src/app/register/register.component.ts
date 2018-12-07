@@ -11,7 +11,8 @@ import {
   Notification,
   successNotification,
 } from '../_models/notification';
-import { AuthenticationService, TranslateService } from '../_services';
+import { AuthenticationService } from '../_services';
+import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-register',

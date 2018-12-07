@@ -12,7 +12,8 @@ import {
 } from '../../_models/notification';
 import { PluginMetadata } from '../../_models/plugin-metadata';
 import { Workflow } from '../../_models/workflow';
-import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 interface Connections {
   [host: string]: number;

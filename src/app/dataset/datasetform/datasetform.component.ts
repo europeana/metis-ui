@@ -12,7 +12,8 @@ import {
   Notification,
   successNotification,
 } from '../../_models/notification';
-import { CountriesService, DatasetsService, ErrorService, TranslateService } from '../../_services';
+import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 type FormMode = 'show' | 'edit' | 'save';
 

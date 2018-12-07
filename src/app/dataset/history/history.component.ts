@@ -11,7 +11,8 @@ import {
   WorkflowExecution,
   WorkflowStatus,
 } from '../../_models/workflow-execution';
-import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+import { ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-history',

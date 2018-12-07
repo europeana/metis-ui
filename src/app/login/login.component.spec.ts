@@ -6,13 +6,8 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { MockAuthenticationService, MockTranslateService } from '../_mocked';
-import {
-  AuthenticationService,
-  ErrorService,
-  RedirectPreviousUrl,
-  TranslateService,
-} from '../_services';
-import { TranslatePipe } from '../_translate';
+import { AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
+import { TranslatePipe, TranslateService } from '../_translate';
 
 import { LoginComponent } from './login.component';
 
