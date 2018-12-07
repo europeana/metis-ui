@@ -198,26 +198,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
-  setShowPluginLog(plugin: PluginExecution | undefined): void {
-    this.showPluginLog = plugin;
-  }
-
-  setTempXSLT(tempXSLT: string | undefined): void {
-    this.tempXSLT = tempXSLT;
-  }
-
-  setPreviewFilters(previewFilters: PreviewFilters): void {
-    this.previewFilters = previewFilters;
-  }
-
-  setProcessingInfo(processingInfo: ProcessingInfo | undefined): void {
-    this.processingInfo = processingInfo;
-  }
-
-  setReportRequest(reportRequest: ReportRequest | undefined): void {
-    this.reportRequest = reportRequest;
-  }
-
   // click outside message to close it
   clickOutsideMessage(): void {
     this.errorMessage = undefined;
