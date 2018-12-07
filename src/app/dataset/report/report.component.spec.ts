@@ -12,7 +12,7 @@ import {
 } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { ReportComponent } from './report.component';
+import { ReportComponent } from '.';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;

@@ -1,6 +1,6 @@
 import { inject, TestBed } from '@angular/core/testing';
 
-import { RedirectPreviousUrl } from './redirect-previous-url.service';
+import { RedirectPreviousUrl } from '.';
 
 describe('RedirectPreviousUrl', () => {
   beforeEach(() => {

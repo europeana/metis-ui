@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { environment } from '../../environments/environment';
-import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
+import { PluginExecution, WorkflowExecution } from '../_models';
 import { AuthenticationService, ErrorService, WorkflowService } from '../_services';
 import { TranslateService } from '../_translate';
 

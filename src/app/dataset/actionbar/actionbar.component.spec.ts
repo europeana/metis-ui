@@ -11,7 +11,7 @@ import {
   MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
-import { WorkflowStatus } from '../../_models/workflow-execution';
+import { WorkflowStatus } from '../../_models';
 import {
   DatasetsService,
   ErrorService,
@@ -20,7 +20,7 @@ import {
 } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
-import { ActionbarComponent } from './actionbar.component';
+import { ActionbarComponent } from '.';
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;

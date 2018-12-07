@@ -8,7 +8,7 @@ import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 import { AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 
-import { RegisterComponent } from './register.component';
+import { RegisterComponent } from '.';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;

@@ -9,7 +9,7 @@ import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 import { AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 
-import { ProfileComponent } from './profile.component';
+import { ProfileComponent } from '.';
 
 describe('ProfileComponent', () => {
   let component: ProfileComponent;

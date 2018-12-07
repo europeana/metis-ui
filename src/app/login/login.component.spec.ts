@@ -9,7 +9,7 @@ import { MockAuthenticationService, MockTranslateService } from '../_mocked';
 import { AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 
-import { LoginComponent } from './login.component';
+import { LoginComponent } from '.';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

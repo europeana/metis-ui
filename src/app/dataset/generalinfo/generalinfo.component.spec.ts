@@ -6,7 +6,7 @@ import { apiSettings } from '../../../environments/apisettings';
 import { currentDataset, harvestData, MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { GeneralinfoComponent } from './generalinfo.component';
+import { GeneralinfoComponent } from '.';
 
 describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;

@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
-import { AppRoutingModule } from './routing/app-routing.module';
+import { AppRoutingModule } from './routing';
 
 import { AuthUserGuard, AuthVisitorGuard } from './_guards';
 import {
@@ -41,9 +41,9 @@ import { ProfileComponent } from './profile';
 import { RegisterComponent } from './register';
 import { HeaderComponent, PasswordCheckComponent } from './shared';
 
-import { ExecutionsComponent } from './dashboard/executions/executions.component';
-import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoingexecutions.component';
-import { ReportComponent } from './dataset/report/report.component';
+import { ExecutionsComponent } from './dashboard/executions';
+import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions';
+import { ReportComponent } from './dataset/report';
 
 import { XmlPipe } from './_helpers';
 import {
@@ -52,10 +52,10 @@ import {
   TranslateService,
   TRANSLATION_PROVIDERS,
 } from './_translate';
-import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
-import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
+import { ExecutiontableComponent } from './dashboard/executions/executiontable';
+import { GeneralactionbarComponent } from './dataset/generalactionbar';
 import { LoadAnimationComponent } from './load-animation';
-import { NotificationComponent } from './shared/notification/notification.component';
+import { NotificationComponent } from './shared/notification';
 
 @NgModule({
   declarations: [

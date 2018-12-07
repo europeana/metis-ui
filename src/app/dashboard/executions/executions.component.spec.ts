@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { ExecutionsComponent } from './executions.component';
+import { ExecutionsComponent } from '.';
 
 describe('ExecutionsComponent', () => {
   let component: ExecutionsComponent;

@@ -13,7 +13,7 @@ import {
 import { DatasetsService, ErrorService, RedirectPreviousUrl, WorkflowService } from '../_services';
 import { TranslatePipe, TranslateService } from '../_translate';
 
-import { DatasetComponent } from './dataset.component';
+import { DatasetComponent } from '.';
 
 describe('DatasetComponent', () => {
   let component: DatasetComponent;

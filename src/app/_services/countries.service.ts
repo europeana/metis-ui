@@ -4,8 +4,8 @@ import { ConnectableObservable, Observable } from 'rxjs';
 import { publishLast } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
-import { Country } from '../_models/country';
-import { Language } from '../_models/language';
+import { Country } from '../_models';
+import { Language } from '../_models';
 
 import { ErrorService } from './error.service';
 

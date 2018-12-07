@@ -1,4 +1,4 @@
-import { LoadAnimationComponent } from './load-animation.component';
+import { LoadAnimationComponent } from '.';
 
 describe('LoadAnimationComponent', () => {
   let component: LoadAnimationComponent;

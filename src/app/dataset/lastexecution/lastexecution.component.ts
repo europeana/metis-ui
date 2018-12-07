@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
-import { Report, ReportRequest } from '../../_models/report';
-import { PluginExecution, PluginStatus, WorkflowExecution } from '../../_models/workflow-execution';
+import { Report, ReportRequest } from '../../_models';
+import { PluginExecution, PluginStatus, WorkflowExecution } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 

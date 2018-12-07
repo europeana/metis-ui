@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { Dataset } from '../_models/dataset';
-import { HarvestData } from '../_models/harvest-data';
-import { httpErrorNotification, Notification, successNotification } from '../_models/notification';
-import { ReportRequest } from '../_models/report';
-import { Workflow } from '../_models/workflow';
-import { PluginExecution, WorkflowExecution } from '../_models/workflow-execution';
+import { Dataset } from '../_models';
+import { HarvestData } from '../_models';
+import { httpErrorNotification, Notification, successNotification } from '../_models';
+import { ReportRequest } from '../_models';
+import { Workflow } from '../_models';
+import { PluginExecution, WorkflowExecution } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 import { TranslateService } from '../_translate';
 

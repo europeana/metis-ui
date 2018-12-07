@@ -22,7 +22,7 @@ import {
 } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
-import { PreviewComponent } from './preview.component';
+import { PreviewComponent } from '.';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;

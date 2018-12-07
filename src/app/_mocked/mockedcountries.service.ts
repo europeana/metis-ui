@@ -1,7 +1,7 @@
 import { Observable, of as observableOf } from 'rxjs';
 
-import { Country } from '../_models/country';
-import { Language } from '../_models/language';
+import { Country } from '../_models';
+import { Language } from '../_models';
 import { CountriesService } from '../_services';
 
 export const mockedCountries: Country[] = [

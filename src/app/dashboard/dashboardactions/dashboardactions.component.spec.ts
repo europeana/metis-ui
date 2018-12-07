@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockTranslateService } from '../../_mocked';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { DashboardactionsComponent } from './dashboardactions.component';
+import { DashboardactionsComponent } from '.';
 
 describe('DashboardactionsComponent', () => {
   let component: DashboardactionsComponent;

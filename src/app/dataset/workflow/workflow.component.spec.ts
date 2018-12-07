@@ -20,7 +20,7 @@ import {
 } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
-import { WorkflowComponent } from './workflow.component';
+import { WorkflowComponent } from '.';
 
 describe('WorkflowComponent', () => {
   let component: WorkflowComponent;

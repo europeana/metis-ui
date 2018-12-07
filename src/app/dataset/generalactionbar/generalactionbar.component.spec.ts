@@ -10,7 +10,7 @@ import {
   MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
-import { WorkflowStatus } from '../../_models/workflow-execution';
+import { WorkflowStatus } from '../../_models';
 import {
   DatasetsService,
   ErrorService,
@@ -19,7 +19,7 @@ import {
 } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { GeneralactionbarComponent } from './generalactionbar.component';
+import { GeneralactionbarComponent } from '.';
 
 describe('GeneralactionbarComponent', () => {
   let component: GeneralactionbarComponent;

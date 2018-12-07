@@ -17,7 +17,7 @@ import {
 } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { DatasetlogComponent } from './datasetlog.component';
+import { DatasetlogComponent } from '.';
 
 describe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;

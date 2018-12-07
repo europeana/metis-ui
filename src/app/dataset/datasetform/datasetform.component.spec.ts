@@ -19,7 +19,7 @@ import {
 } from '../../_services';
 import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { DatasetformComponent } from './datasetform.component';
+import { DatasetformComponent } from '.';
 
 describe('DatasetformComponent', () => {
   let component: DatasetformComponent;

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { WorkflowExecution } from '../../_models/workflow-execution';
+import { WorkflowExecution } from '../../_models';
 import { TranslateService } from '../../_translate';
 
 @Component({

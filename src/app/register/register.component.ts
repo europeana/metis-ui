@@ -10,7 +10,7 @@ import {
   httpErrorNotification,
   Notification,
   successNotification,
-} from '../_models/notification';
+} from '../_models';
 import { AuthenticationService } from '../_services';
 import { TranslateService } from '../_translate';
 

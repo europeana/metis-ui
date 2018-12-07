@@ -18,7 +18,7 @@ import {
 } from '../../_services';
 import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
-import { LastExecutionComponent } from './lastexecution.component';
+import { LastExecutionComponent } from '.';
 
 describe('LastExecutionComponent', () => {
   let component: LastExecutionComponent;
