@@ -4,7 +4,6 @@
 
   .error-message,
   .success-message {
-    background-color: $eu-jade;
     color: $white;
     font-size: $font-size-slightly-smaller;
     line-height: 1.25rem;
@@ -18,7 +17,9 @@
 
   .error-message {
     background-color: $eu-red;
-    padding-left: 2.2rem;
+  }
+  .success-message {
+    background-color: $eu-jade;
   }
 }
 

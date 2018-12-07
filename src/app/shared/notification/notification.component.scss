@@ -1,0 +1,23 @@
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
+
+:host {
+  display: block;
+}
+
+.notification {
+  color: $white;
+  font-size: $font-size-slightly-smaller;
+  line-height: 1.25rem;
+  margin-bottom: 0.6rem;
+  border-radius: 1rem;
+  padding: 0.5rem 1.2rem 0.5rem 2.2rem;
+  cursor: pointer;
+}
+
+.error-notification {
+  background-color: $eu-red;
+}
+.success-notification {
+  background-color: $eu-jade;
+}
