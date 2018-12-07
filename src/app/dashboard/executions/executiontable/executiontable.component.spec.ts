@@ -49,12 +49,6 @@ describe('ExecutiontableComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should cancel a workflow', () => {
-    component.cancelWorkflow('1');
-    fixture.detectChanges();
-    expect(component.successMessage).not.toBe('');
-  });
-
   it('should copy information', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
