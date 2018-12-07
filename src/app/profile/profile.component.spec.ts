@@ -52,7 +52,7 @@ describe('ProfileComponent', () => {
     reload.triggerEventHandler('click', null);
     fixture.detectChanges();
 
-    expect(component.successMessage).not.toBe('');
+    expect(component.notification!.content).toBe('Your profile has been updated');
   });
 
   it('should submit the form', () => {
@@ -63,6 +63,6 @@ describe('ProfileComponent', () => {
     const submit = fixture.debugElement.query(By.css('.submit'));
     submit.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(component.successMessage).not.toBe('');
+    expect(component.notification!.content).toBe('Update password successful!');
   });
 });

@@ -7,10 +7,10 @@
         <h2>{{ 'userprofile' | translate }}</h2>
       </div>
 
-      <div class="messages">
-        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-        <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-      </div>
+      <app-notification
+        [notification]="notification"
+        (closed)="notification = undefined"
+      ></app-notification>
 
       <div class="form-fields">
         <div class="form-group">
@@ -104,10 +104,12 @@
       <div class="form-header">
         <h2>{{ 'changepassword' | translate }}</h2>
       </div>
-      <div class="messages">
-        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-        <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-      </div>
+
+      <app-notification
+        [notification]="notification"
+        (closed)="notification = undefined"
+      ></app-notification>
+
       <div class="form-fields">
         <fieldset class="form-group" formGroupName="passwords">
           <legend>{{ 'password' | translate }}</legend>

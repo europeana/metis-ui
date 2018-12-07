@@ -1,4 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -41,6 +42,7 @@ describe('MappingComponent', () => {
         RedirectPreviousUrl,
         ErrorService,
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
@@ -88,14 +90,7 @@ describe('MappingComponent', () => {
 
     component.saveCustomXSLT(false);
     fixture.detectChanges();
-    expect(component.successMessage).toBe('en:xsltsuccessful');
-  });
-
-  it('should not display messages', () => {
-    component.successMessage = 'test';
-    component.closeMessages();
-    fixture.detectChanges();
-    expect(component.successMessage).toBeFalsy();
+    expect(component.notification!.content).toBe('en:xsltsuccessful');
   });
 
   it('should try out the xslt', fakeAsync((): void => {

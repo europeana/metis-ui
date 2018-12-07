@@ -1,6 +1,7 @@
-<div class="messages">
-  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-</div>
+<app-notification
+  [notification]="notification"
+  (closed)="notification = undefined"
+></app-notification>
 
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">

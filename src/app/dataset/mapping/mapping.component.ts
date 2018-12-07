@@ -13,8 +13,12 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
-import { StringifyHttpError } from '../../_helpers';
 import { Dataset } from '../../_models/dataset';
+import {
+  httpErrorNotification,
+  Notification,
+  successNotification,
+} from '../../_models/notification';
 import { NodeStatistics } from '../../_models/statistics';
 import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
 
@@ -43,8 +47,8 @@ export class MappingComponent implements OnInit {
   xsltStatus: XSLTStatus = 'loading';
   xslt?: string;
   xsltToSave?: string;
-  errorMessage?: string;
-  successMessage?: string;
+  notification?: Notification;
+  isLoadingStatistics = false;
   expandedStatistics = false;
   msgXSLTSuccess: string;
 
@@ -85,7 +89,7 @@ export class MappingComponent implements OnInit {
         if (!taskId) {
           return;
         }
-        this.successMessage = 'Loading statistics';
+        this.isLoadingStatistics = true;
         this.workflows.getStatistics('validation', taskId).subscribe(
           (resultStatistics) => {
             let statistics = resultStatistics.nodeStatistics;
@@ -101,11 +105,12 @@ export class MappingComponent implements OnInit {
             });
 
             this.statistics = statistics;
-            this.successMessage = undefined;
+            this.isLoadingStatistics = false;
           },
           (err: HttpErrorResponse) => {
             const error = this.errors.handleError(err);
-            this.errorMessage = StringifyHttpError(error);
+            this.notification = httpErrorNotification(error);
+            this.isLoadingStatistics = false;
           },
         );
         return;
@@ -170,14 +175,14 @@ export class MappingComponent implements OnInit {
         (newDataset) => {
           this.datasetData.xsltId = newDataset.xsltId;
           this.loadCustomXSLT();
-          this.successMessage = this.msgXSLTSuccess;
+          this.notification = successNotification(this.msgXSLTSuccess);
           if (tryout) {
             this.tryOutXSLT('custom');
           }
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
-          this.errorMessage = StringifyHttpError(error);
+          this.notification = httpErrorNotification(error);
         },
       );
   }
@@ -190,10 +195,5 @@ export class MappingComponent implements OnInit {
 
   toggleStatistics(): void {
     this.expandedStatistics = !this.expandedStatistics;
-  }
-
-  closeMessages(): void {
-    this.errorMessage = undefined;
-    this.successMessage = undefined;
   }
 }
