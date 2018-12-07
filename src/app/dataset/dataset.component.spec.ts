@@ -85,10 +85,5 @@ describe('DatasetComponent', () => {
     component.showPluginLog = currentWorkflow.results[0].metisPlugins[0];
     fixture.detectChanges();
     expect(component.showPluginLog).toBe(currentWorkflow.results[0].metisPlugins[0]);
-
-    component.errorMessage = 'error!';
-    component.clickOutsideMessage();
-    fixture.detectChanges();
-    expect(component.errorMessage).toBeFalsy();
   });
 });

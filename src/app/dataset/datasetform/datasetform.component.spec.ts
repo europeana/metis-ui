@@ -1,4 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -37,6 +38,7 @@ describe('DatasetformComponent', () => {
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     });
 
     fixture = TestBed.createComponent(DatasetformComponent);
@@ -63,7 +65,7 @@ describe('DatasetformComponent', () => {
 
     component.onSubmit();
     fixture.detectChanges();
-    expect(component.successMessage).toBe('Dataset updated!');
+    expect(component.notification!.content).toBe('Dataset updated!');
     expect(component.formMode).toBe('show');
   }));
 

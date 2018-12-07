@@ -12,10 +12,10 @@
   class="dashboard-wrapper"
   *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading"
 >
-  <div class="messages" (clickOutside)="clickOutsideMessage()">
-    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-    <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-  </div>
+  <app-notification
+    [notification]="notification"
+    (closed)="notification = undefined"
+  ></app-notification>
 
   <div *ngIf="datasetData">
     <div class="collapse-block metis-dashboard">

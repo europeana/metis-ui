@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, PasswordStrength, StringifyHttpError } from '../_helpers';
+import { errorNotification, Notification, successNotification } from '../_models/notification';
 import { AuthenticationService, TranslateService } from '../_services';
 
 @Component({
@@ -14,8 +15,7 @@ import { AuthenticationService, TranslateService } from '../_services';
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   loading = false;
-  errorMessage?: string;
-  successMessage: string;
+  notification?: Notification;
   msgSuccess: string;
   msgPasswordWeak: string;
   msgRegistrationFailed: string;
@@ -75,7 +75,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   /* and are strict
   */
   onSubmit(): void {
-    this.errorMessage = undefined;
+    this.notification = undefined;
     this.loading = true;
     const controls = this.registerForm.controls;
     const email = controls.email.value;
@@ -85,7 +85,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     const min = environment.passwordStrength;
 
     if (strength <= min) {
-      this.errorMessage = this.msgPasswordWeak;
+      this.notification = errorNotification(this.msgPasswordWeak);
       this.loading = false;
     } else {
       this.authentication.register(email, password).subscribe(
@@ -97,7 +97,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         },
         (err: HttpErrorResponse) => {
           this.loading = false;
-          this.errorMessage = `${StringifyHttpError(err)}`;
+          this.notification = errorNotification(`${StringifyHttpError(err)}`);
         },
       );
     }
@@ -109,7 +109,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   /* @param {string} msg - success message
   */
   private onRegistration(msg: string): void {
-    this.successMessage = msg;
+    this.notification = successNotification(msg);
     this.timeout = window.setTimeout(() => {
       this.router.navigate(['/signin']);
     }, 3000);

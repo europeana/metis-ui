@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
+import { errorNotification, Notification } from '../_models/notification';
 import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../_services';
 
 @Component({
@@ -13,8 +14,7 @@ import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '..
 })
 export class LoginComponent implements OnInit {
   loading = false;
-  errorMessage: string;
-  successMessage: string;
+  notification?: Notification;
   loginForm: FormGroup;
   msgBadCredentials: string;
   checkLogin = true;
@@ -80,15 +80,16 @@ export class LoginComponent implements OnInit {
           if (result) {
             this.redirectAfterLogin();
           } else {
-            this.errorMessage = this.msgBadCredentials;
+            this.notification = errorNotification(this.msgBadCredentials);
           }
           this.loading = false;
         },
         (err: HttpErrorResponse) => {
-          this.errorMessage =
+          this.notification = errorNotification(
             err.status === 406
               ? this.msgBadCredentials
-              : `Signin failed: ${StringifyHttpError(err)}`;
+              : `Signin failed: ${StringifyHttpError(err)}`,
+          );
           this.loading = false;
         },
       );
