@@ -4,15 +4,16 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { NavigationEnd, Router } from '@angular/router';
 
 import { harvestValidator } from '../../_helpers';
-import { Dataset } from '../../_models/dataset';
 import {
+  Dataset,
   httpErrorNotification,
   Notification,
+  PluginMetadata,
   successNotification,
-} from '../../_models/notification';
-import { PluginMetadata } from '../../_models/plugin-metadata';
-import { Workflow } from '../../_models/workflow';
-import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+  Workflow,
+} from '../../_models';
+import { ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 interface Connections {
   [host: string]: number;

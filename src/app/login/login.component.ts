@@ -5,8 +5,9 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
-import { errorNotification, Notification } from '../_models/notification';
-import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../_services';
+import { errorNotification, Notification } from '../_models';
+import { AuthenticationService, RedirectPreviousUrl } from '../_services';
+import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-login',

@@ -12,12 +12,11 @@ import {
   DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  TranslateService,
   WorkflowService,
 } from '../../_services';
-import { TranslatePipe } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { OngoingexecutionsComponent } from './ongoingexecutions.component';
+import { OngoingexecutionsComponent } from '.';
 
 describe('OngoingexecutionsComponent', () => {
   let component: OngoingexecutionsComponent;

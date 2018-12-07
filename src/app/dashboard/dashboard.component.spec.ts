@@ -4,18 +4,17 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { MockAuthenticationService, MockTranslateService, MockWorkflowService } from '../_mocked';
-import { PluginStatus } from '../_models/workflow-execution';
+import { PluginStatus } from '../_models';
 import {
   AuthenticationService,
   DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  TranslateService,
   WorkflowService,
 } from '../_services';
-import { TranslatePipe } from '../_translate';
+import { TranslatePipe, TranslateService } from '../_translate';
 
-import { DashboardComponent } from './dashboard.component';
+import { DashboardComponent } from '.';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;

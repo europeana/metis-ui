@@ -11,21 +11,21 @@ import {
   MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
-import { WorkflowStatus } from '../../_models/workflow-execution';
+import { WorkflowStatus } from '../../_models';
 import {
   DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  TranslateService,
   WorkflowService,
 } from '../../_services';
-import { RenameWorkflowPipe, TranslatePipe } from '../../_translate';
+import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
 
-import { ActionbarComponent } from './actionbar.component';
+import { ActionbarComponent } from '.';
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -47,6 +47,7 @@ describe('ActionbarComponent', () => {
     component = fixture.componentInstance;
     component.workflowData = currentWorkflowDataset;
     fixture.detectChanges();
+    workflows = TestBed.get(WorkflowService);
   });
 
   it('should create', () => {
@@ -81,11 +82,11 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
-    spyOn(component.workflows, 'promptCancelThisWorkflow');
+    spyOn(workflows, 'promptCancelThisWorkflow');
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
     cancel.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(component.workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('253453453');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('253453453');
   });
 
   it('should run a workflow', (): void => {

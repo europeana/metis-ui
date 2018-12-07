@@ -3,15 +3,18 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
-import { Dataset } from '../../_models/dataset';
-import { httpErrorNotification, Notification } from '../../_models/notification';
-import { Report, ReportRequest } from '../../_models/report';
 import {
+  Dataset,
+  httpErrorNotification,
+  Notification,
   PluginExecution,
+  Report,
+  ReportRequest,
   WorkflowExecution,
   WorkflowStatus,
-} from '../../_models/workflow-execution';
-import { ErrorService, TranslateService, WorkflowService } from '../../_services';
+} from '../../_models';
+import { ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-history',
@@ -20,7 +23,7 @@ import { ErrorService, TranslateService, WorkflowService } from '../../_services
 })
 export class HistoryComponent implements OnInit, OnDestroy {
   constructor(
-    public workflows: WorkflowService,
+    private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService,
   ) {}

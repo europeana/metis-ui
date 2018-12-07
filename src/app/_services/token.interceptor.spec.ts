@@ -1,6 +1,6 @@
 import { inject, TestBed } from '@angular/core/testing';
 
-import { TokenInterceptor } from './token.interceptor';
+import { TokenInterceptor } from '.';
 
 describe('TokenInterceptor', () => {
   beforeEach(() => {

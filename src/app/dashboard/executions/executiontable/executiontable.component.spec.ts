@@ -12,12 +12,11 @@ import {
   DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
-  TranslateService,
   WorkflowService,
 } from '../../../_services';
-import { TranslatePipe } from '../../../_translate';
+import { TranslatePipe, TranslateService } from '../../../_translate';
 
-import { ExecutiontableComponent } from './executiontable.component';
+import { ExecutiontableComponent } from '.';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;

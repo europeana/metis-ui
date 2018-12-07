@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { TranslateService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-newdataset',

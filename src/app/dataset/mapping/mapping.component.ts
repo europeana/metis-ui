@@ -13,14 +13,15 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
-import { Dataset } from '../../_models/dataset';
 import {
+  Dataset,
   httpErrorNotification,
+  NodeStatistics,
   Notification,
   successNotification,
-} from '../../_models/notification';
-import { NodeStatistics } from '../../_models/statistics';
-import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
+} from '../../_models';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 

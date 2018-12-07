@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 
-import { TRANSLATIONS } from '../_translate/translation';
+import { TRANSLATIONS } from './translation';
 
 interface Translations {
   [language: string]:

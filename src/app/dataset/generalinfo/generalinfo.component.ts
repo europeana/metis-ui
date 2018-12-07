@@ -1,9 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
-import { Dataset } from '../../_models/dataset';
-import { HarvestData } from '../../_models/harvest-data';
-import { TranslateService } from '../../_services';
+import { Dataset, HarvestData } from '../../_models';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-generalinfo',

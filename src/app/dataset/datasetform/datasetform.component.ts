@@ -3,16 +3,17 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Country } from '../../_models/country';
-import { Dataset } from '../../_models/dataset';
-import { HarvestData } from '../../_models/harvest-data';
-import { Language } from '../../_models/language';
 import {
+  Country,
+  Dataset,
+  HarvestData,
   httpErrorNotification,
+  Language,
   Notification,
   successNotification,
-} from '../../_models/notification';
-import { CountriesService, DatasetsService, ErrorService, TranslateService } from '../../_services';
+} from '../../_models';
+import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 type FormMode = 'show' | 'edit' | 'save';
 

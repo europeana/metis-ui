@@ -1,18 +1,18 @@
 import { Observable, of as observableOf } from 'rxjs';
 
-import { HarvestData } from '../_models/harvest-data';
-import { Report } from '../_models/report';
-import { Results } from '../_models/results';
-import { Statistics } from '../_models/statistics';
-import { SubTaskInfo } from '../_models/subtask-info';
-import { Workflow } from '../_models/workflow';
 import {
+  HarvestData,
   PluginStatus,
+  Report,
+  Results,
+  Statistics,
+  SubTaskInfo,
   TaskState,
+  Workflow,
   WorkflowExecution,
   WorkflowStatus,
-} from '../_models/workflow-execution';
-import { XmlSample } from '../_models/xml-sample';
+  XmlSample,
+} from '../_models';
 import { WorkflowService } from '../_services';
 
 export const currentWorkflowDataset: Workflow = {
@@ -44,7 +44,7 @@ export const currentWorkflowDataset: Workflow = {
   ],
 };
 
-export const currentWorkflow: Results<WorkflowExecution[]> = {
+export const currentWorkflow: Results<WorkflowExecution> = {
   results: [
     {
       id: '253453453',
@@ -265,11 +265,11 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(undefined);
   }
 
-  getCompletedDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
+  getCompletedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
     return observableOf(currentWorkflow);
   }
 
-  getDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
+  getDatasetExecutions(): Observable<Results<WorkflowExecution>> {
     return observableOf(currentWorkflow);
   }
 
@@ -277,11 +277,11 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(currentWorkflow.results[0]);
   }
 
-  protected getAllExecutions(): Observable<Results<WorkflowExecution[]>> {
+  protected getAllExecutions(): Observable<Results<WorkflowExecution>> {
     return observableOf(currentWorkflow);
   }
 
-  getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution[]>> {
+  getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
     return observableOf(currentWorkflow);
   }
 

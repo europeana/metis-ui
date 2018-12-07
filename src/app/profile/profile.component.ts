@@ -4,9 +4,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
-import { User } from '../_models';
-import { errorNotification, Notification, successNotification } from '../_models/notification';
-import { AuthenticationService, ErrorService, TranslateService } from '../_services';
+import { errorNotification, Notification, successNotification, User } from '../_models';
+import { AuthenticationService, ErrorService } from '../_services';
+import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-profile',

@@ -4,10 +4,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { MockTranslateService } from '../../_mocked';
-import { TranslateService } from '../../_services';
-import { TranslatePipe } from '../../_translate';
+import { TranslatePipe, TranslateService } from '../../_translate';
 
-import { ExecutionsComponent } from './executions.component';
+import { ExecutionsComponent } from '.';
 
 describe('ExecutionsComponent', () => {
   let component: ExecutionsComponent;

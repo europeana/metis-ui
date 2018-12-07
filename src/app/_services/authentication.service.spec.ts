@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { currentUser } from '../_mocked';
 import { ErrorService, RedirectPreviousUrl } from '../_services';
 
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from '.';
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;

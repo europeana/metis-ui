@@ -11,11 +11,15 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 
-import { Dataset } from '../../_models/dataset';
-import { httpErrorNotification, Notification } from '../../_models/notification';
-import { WorkflowExecution } from '../../_models/workflow-execution';
-import { XmlSample } from '../../_models/xml-sample';
-import { DatasetsService, ErrorService, TranslateService, WorkflowService } from '../../_services';
+import {
+  Dataset,
+  httpErrorNotification,
+  Notification,
+  WorkflowExecution,
+  XmlSample,
+} from '../../_models';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 import { PreviewFilters } from '../dataset.component';
 
 @Component({

@@ -10,8 +10,9 @@ import {
   httpErrorNotification,
   Notification,
   successNotification,
-} from '../_models/notification';
-import { AuthenticationService, TranslateService } from '../_services';
+} from '../_models';
+import { AuthenticationService } from '../_services';
+import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-register',
