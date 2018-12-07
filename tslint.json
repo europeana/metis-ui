@@ -10,6 +10,7 @@
     "no-any": true,
     "no-boolean-literal-compare": true,
     "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
+    "no-implicit-dependencies": [true, "dev"],
     "no-non-null-assertion": false,
     "no-string-literal": true,
     "no-unused-variable": true,
