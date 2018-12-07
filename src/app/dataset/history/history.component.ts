@@ -20,7 +20,7 @@ import { ErrorService, TranslateService, WorkflowService } from '../../_services
 })
 export class HistoryComponent implements OnInit, OnDestroy {
   constructor(
-    public workflows: WorkflowService,
+    private workflows: WorkflowService,
     private errors: ErrorService,
     private translate: TranslateService,
   ) {}

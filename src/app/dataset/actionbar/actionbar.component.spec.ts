@@ -26,6 +26,7 @@ import { ActionbarComponent } from './actionbar.component';
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -47,6 +48,7 @@ describe('ActionbarComponent', () => {
     component = fixture.componentInstance;
     component.workflowData = currentWorkflowDataset;
     fixture.detectChanges();
+    workflows = TestBed.get(WorkflowService);
   });
 
   it('should create', () => {
@@ -81,11 +83,11 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
-    spyOn(component.workflows, 'promptCancelThisWorkflow');
+    spyOn(workflows, 'promptCancelThisWorkflow');
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
     cancel.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(component.workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('253453453');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('253453453');
   });
 
   it('should run a workflow', (): void => {

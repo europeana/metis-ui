@@ -10,7 +10,7 @@ import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '..
 export class HeaderComponent implements OnInit {
   constructor(
     private authentication: AuthenticationService,
-    public router: Router,
+    private router: Router,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private translate: TranslateService,
   ) {}

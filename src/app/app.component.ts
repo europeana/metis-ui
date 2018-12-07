@@ -22,10 +22,10 @@ export class AppComponent implements OnInit {
   public loggedIn = false;
 
   constructor(
-    public workflows: WorkflowService,
+    private workflows: WorkflowService,
     private authentication: AuthenticationService,
     private errors: ErrorService,
-    public router: Router,
+    private router: Router,
     private translate: TranslateService,
   ) {}
 

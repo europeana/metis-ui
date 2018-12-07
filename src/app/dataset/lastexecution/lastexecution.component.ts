@@ -11,7 +11,7 @@ import { TranslateService, WorkflowService } from '../../_services';
   styleUrls: ['./lastexecution.component.scss'],
 })
 export class LastExecutionComponent implements OnInit {
-  constructor(public workflows: WorkflowService, private translate: TranslateService) {}
+  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   @Input() datasetId: string;
 

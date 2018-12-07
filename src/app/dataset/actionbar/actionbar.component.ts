@@ -13,7 +13,7 @@ import { ProcessingInfo } from '../dataset.component';
   styleUrls: ['./actionbar.component.scss'],
 })
 export class ActionbarComponent implements OnInit {
-  constructor(public workflows: WorkflowService, private translate: TranslateService) {}
+  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   private _lastExecutionData?: WorkflowExecution;
 
