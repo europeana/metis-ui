@@ -68,7 +68,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   closeLog(): void {
-    this.closed.emit(undefined);
+    this.closed.emit();
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
