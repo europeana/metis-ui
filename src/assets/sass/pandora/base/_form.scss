@@ -130,29 +130,18 @@
       font-size: 0.875em;
       font-weight: bold;
       margin: 0 0.6rem;
-      padding: 0.5rem 1rem;
-      text-transform: none;
-      transition: all 0.5s ease;
-    }
+      padding: 0.8rem 3rem;
+      text-transform: uppercase;
 
-    button:hover,
-    button:focus {
-      background: transparent;
-      border-color: $eu-jade;
-      color: $eu-jade;
+      &:disabled {
+        background: lighten($eu-jade, 30%);
+        cursor: not-allowed;
+      }
     }
 
     button.reset-btn {
       background-color: $white;
       color: $eu-jade;
-    }
-
-    button:disabled,
-    button:disabled:hover,
-    button:disabled:focus {
-      background: $black;
-      border-color: $black;
-      color: $white;
     }
 
     .svg-icon-spin-inbutton {

@@ -18,6 +18,7 @@ export class ActionbarComponent implements OnInit {
 
   @Input() showPluginLog?: PluginExecution;
   @Input() workflowData?: Workflow;
+  @Input() isStarting = false;
 
   @Output() startWorkflow = new EventEmitter<void>();
   @Output() setProcessingInfo = new EventEmitter<ProcessingInfo>();

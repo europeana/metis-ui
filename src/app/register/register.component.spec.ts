@@ -44,12 +44,12 @@ describe('RegisterComponent', () => {
   });
 
   it('should contain a disabled button at first', () => {
-    submitBtn = fixture.nativeElement.querySelector('.submit-btn');
+    submitBtn = fixture.nativeElement.querySelector('app-loading-button');
     expect(submitBtn.disabled).toBe(true);
   });
 
   it('should submit the form', () => {
-    submitBtn = fixture.nativeElement.querySelector('.submit-btn');
+    submitBtn = fixture.nativeElement.querySelector('app-loading-button');
     component.registerForm.controls.email.setValue('test@mocked.com');
     (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
       '!Passw0rd123',

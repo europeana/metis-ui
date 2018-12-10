@@ -11,7 +11,6 @@ import { TranslateService } from '../_translate';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
   editMode = false;
@@ -161,16 +160,14 @@ export class ProfileComponent implements OnInit {
           this.notification = errorNotification('Refresh failed, please try again later');
         }
         this.loading = false;
+        window.scrollTo(0, 0);
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
         this.loading = false;
+        window.scrollTo(0, 0);
       },
     );
-
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 500);
   }
 }

@@ -13,6 +13,7 @@
     "no-duplicate-imports": true,
     "no-implicit-dependencies": [true, "dev"],
     "no-non-null-assertion": false,
+    "no-output-named-after-standard-event": true,
     "no-string-literal": true,
     "no-unused-variable": true,
     "object-literal-shorthand": true,

@@ -55,7 +55,7 @@ describe('ProfileComponent', () => {
     component.toggleEditMode();
     fixture.detectChanges();
 
-    const submit = fixture.debugElement.query(By.css('.submit'));
+    const submit = fixture.debugElement.query(By.css('app-loading-button'));
     submit.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(component.notification!.content).toBe('Update password successful!');

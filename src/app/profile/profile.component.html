@@ -76,15 +76,13 @@
           <button class="button" type="button" (click)="toggleEditMode()">
             {{ 'changepassword' | translate }}
           </button>
-          <button
-            class="button"
-            type="button"
-            (click)="onReloadProfile()"
+          <app-loading-button
             id="refresh-btn"
-            [ngClass]="{ 'svg-icon-spin-inbutton': loading === true }"
-          >
-            {{ 'refresh' | translate }}
-          </button>
+            classes="button"
+            [isLoading]="loading"
+            [title]="'refresh' | translate"
+            (click)="onReloadProfile()"
+          ></app-loading-button>
         </div>
 
         <div class="profile-form-extra">
@@ -160,15 +158,14 @@
           <button class="button" type="button" (click)="toggleEditMode()">
             {{ 'cancel' | translate }}
           </button>
-          <button
-            class="submit"
-            type="button"
+          <app-loading-button
+            classes="submit"
             [disabled]="!profileForm.valid"
+            [isLoading]="loading"
+            [title]="'save' | translate"
+            [loadingTitle]="'saving' | translate"
             (click)="onSubmit()"
-            [ngClass]="{ 'svg-icon-spin-inbutton': loading === true }"
-          >
-            {{ 'submit' | translate }}
-          </button>
+          ></app-loading-button>
         </div>
       </div>
     </form>
