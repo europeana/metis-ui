@@ -39,7 +39,12 @@ import { LoginComponent } from './login';
 import { PageNotFoundComponent } from './page-not-found';
 import { ProfileComponent } from './profile';
 import { RegisterComponent } from './register';
-import { HeaderComponent, PasswordCheckComponent } from './shared';
+import {
+  HeaderComponent,
+  LoadingButtonComponent,
+  NotificationComponent,
+  PasswordCheckComponent,
+} from './shared';
 
 import { ExecutionsComponent } from './dashboard/executions';
 import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions';
@@ -55,7 +60,6 @@ import {
 import { ExecutiontableComponent } from './dashboard/executions/executiontable';
 import { GeneralactionbarComponent } from './dataset/generalactionbar';
 import { LoadAnimationComponent } from './load-animation';
-import { NotificationComponent } from './shared/notification';
 
 @NgModule({
   declarations: [
@@ -91,6 +95,7 @@ import { NotificationComponent } from './shared/notification';
     GeneralactionbarComponent,
     ExecutiontableComponent,
     NotificationComponent,
+    LoadingButtonComponent,
   ],
   imports: [
     BrowserModule,
