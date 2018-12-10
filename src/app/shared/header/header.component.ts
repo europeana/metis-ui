@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { environment } from '../../../environments/environment';
+
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -56,6 +58,10 @@ export class HeaderComponent implements OnInit {
   filterSearch(filter: string): void {
     this.openSearch = false;
     this.searchfilter = filter;
+  }
+
+  logoLink(): string {
+    return this.isLoggedIn() ? environment.afterLoginGoto : '/home';
   }
 
   /** gotoProfile
