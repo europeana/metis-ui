@@ -510,14 +510,14 @@
 
       <div class="form-fields form-fields-buttons">
         <div class="form-group form-group-btns user-profile-edit-btns">
-          <button
-            class="submit"
-            type="button"
-            (click)="onSubmit()"
+          <app-loading-button
+            classes="submit"
             [disabled]="!workflowForm.valid"
-          >
-            {{ 'save' | translate }}
-          </button>
+            [isLoading]="isSaving"
+            [title]="'save' | translate"
+            [loadingTitle]="'saving' | translate"
+            (click)="onSubmit()"
+          ></app-loading-button>
         </div>
       </div>
     </div>

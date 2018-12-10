@@ -131,27 +131,21 @@
       </div>
 
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button
-          class="submit submit-update"
-          type="button"
-          *ngIf="formMode === 'show'"
-          (click)="editForm()"
-        >
+        <button class="submit" type="button" *ngIf="formMode === 'show'" (click)="editForm()">
           {{ 'edit' | translate }}
         </button>
         <button class="reset-btn" type="button" *ngIf="formMode === 'edit'" (click)="cancel()">
           {{ 'cancel' | translate }}
         </button>
-        <button
-          class="submit submit-submit"
-          type="button"
+        <app-loading-button
           *ngIf="formMode !== 'show'"
-          [ngClass]="{ 'svg-icon-spin-inbutton': formMode === 'save' }"
-          [disabled]="!datasetForm.valid || formMode === 'save'"
+          classes="submit"
+          [disabled]="!datasetForm.valid"
+          [isLoading]="formMode == 'save'"
+          [title]="(isNew ? 'create' : 'save') | translate"
+          [loadingTitle]="(isNew ? 'creating' : 'saving') | translate"
           (click)="onSubmit()"
-        >
-          {{ (isNew ? 'create' : 'save') | translate }}
-        </button>
+        ></app-loading-button>
       </div>
     </div>
   </form>

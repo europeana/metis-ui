@@ -1,4 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -36,6 +37,7 @@ describe('GeneralactionbarComponent', () => {
         RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
@@ -63,8 +65,7 @@ describe('GeneralactionbarComponent', () => {
     expect(component.workflowStatus).toBe(WorkflowStatus.FINISHED);
 
     spyOn(component.startWorkflow, 'emit');
-    const run = fixture.debugElement.query(By.css('.btn'));
-    expect(run.nativeElement.textContent).toBe('en:run workflow');
+    const run = fixture.debugElement.query(By.css('app-loading-button'));
     run.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(component.startWorkflow.emit).toHaveBeenCalledWith();
