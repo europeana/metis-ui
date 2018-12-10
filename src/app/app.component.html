@@ -1,8 +1,6 @@
 <app-header [loggedIn]="loggedIn" class="page-{{ bodyClass }}"></app-header>
 <div class="pusher pusher-{{ bodyClass }}">
-  <div class="metis-main-content">
-    <router-outlet></router-outlet>
-  </div>
+  <div class="metis-main-content"><router-outlet></router-outlet></div>
 </div>
 
 <div class="modal-wrapper" *ngIf="showWrapper">
