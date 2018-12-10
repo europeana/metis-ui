@@ -2,6 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 
+import { environment } from '../environments/environment';
+
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 import { TranslateService } from './_translate';
 
@@ -47,6 +49,10 @@ export class AppComponent implements OnInit {
         }
 
         this.isLessMargin = url.includes('home') || url === '/' || url.includes('dashboard');
+
+        if ((url === '/' || url === '/home') && this.loggedIn) {
+          this.router.navigate([environment.afterLoginGoto]);
+        }
       }
     });
 
