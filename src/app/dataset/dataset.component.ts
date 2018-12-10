@@ -54,6 +54,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   workflowSubscription: Subscription;
   lastExecutionIsLoading = true;
   lastExecutionSubscription: Subscription;
+  isStarting = false;
 
   datasetData: Dataset;
   workflowData?: Workflow;
@@ -180,25 +181,30 @@ export class DatasetComponent implements OnInit, OnDestroy {
       (execution) => {
         this.lastExecutionData = execution;
         this.lastExecutionIsLoading = false;
+        this.isStarting = false;
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.lastExecutionSubscription.unsubscribe();
         this.lastExecutionIsLoading = false;
+        this.isStarting = false;
       },
     );
   }
 
   startWorkflow(): void {
+    this.isStarting = true;
     this.workflows.startWorkflow(this.datasetId).subscribe(
       () => {
         this.loadHarvestData();
         this.loadLastExecution();
+        // isStarting should be set to false in loadLastExecution
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
+        this.isStarting = false;
       },
     );
   }

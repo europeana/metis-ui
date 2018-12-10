@@ -2,12 +2,14 @@
   <a class="btn" routerLink="/dataset/workflow/{{ datasetId }}" *ngIf="!workflowData">{{
     'addworkflow' | translate
   }}</a>
-  <a
-    class="btn"
+  <app-loading-button
     *ngIf="workflowData && workflowStatus !== 'INQUEUE' && workflowStatus !== 'RUNNING'"
+    [classes]="'btn'"
+    [isLoading]="isStarting"
+    [title]="'run workflow' | translate"
+    [loadingTitle]="'starting' | translate"
     (click)="startWorkflow.emit()"
-    >{{ 'run workflow' | translate }}</a
-  >
+  ></app-loading-button>
 
   <div
     class="progress"
