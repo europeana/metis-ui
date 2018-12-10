@@ -15,6 +15,7 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
   @Input() datasetId: string;
   @Input() lastExecutionData?: WorkflowExecution;
   @Input() workflowData?: Workflow;
+  @Input() isStarting = false;
 
   @Output() startWorkflow = new EventEmitter<void>();
 

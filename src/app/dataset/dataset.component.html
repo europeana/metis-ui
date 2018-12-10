@@ -31,6 +31,7 @@
               [datasetId]="datasetId"
               [lastExecutionData]="lastExecutionData"
               [workflowData]="workflowData"
+              [isStarting]="isStarting"
               (startWorkflow)="startWorkflow()"
             ></app-generalactionbar>
           </div>
@@ -49,6 +50,7 @@
         <app-actionbar
           [workflowData]="workflowData"
           [lastExecutionData]="lastExecutionData"
+          [isStarting]="isStarting"
           [showPluginLog]="showPluginLog"
           (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"

@@ -116,6 +116,7 @@ export const LANG_EN_TRANS = {
   showrandom: 'Show random',
   startdate: 'Start date',
   'start workflow': 'Start your next workflow!',
+  starting: 'Starting',
   statistics: 'Statistics',
   status: 'Status',
   step: 'step',
