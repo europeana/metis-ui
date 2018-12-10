@@ -67,6 +67,7 @@ export class WorkflowComponent implements OnInit {
     'pluginPREVIEW',
     'pluginPUBLISH',
   ];
+  isSaving = false;
 
   /** ngOnInit
   /* init for this component
@@ -488,6 +489,7 @@ export class WorkflowComponent implements OnInit {
     if (!this.datasetData) {
       return;
     }
+    this.isSaving = true;
     this.workflows
       .createWorkflowForDataset(
         this.datasetData.datasetId,
@@ -503,12 +505,14 @@ export class WorkflowComponent implements OnInit {
               this.getWorkflow();
               this.notification = successNotification('Workflow saved');
               this.scrollToMessageBox();
+              this.isSaving = false;
             });
         },
         (err: HttpErrorResponse) => {
           const errorSubmit = this.errors.handleError(err);
           this.notification = httpErrorNotification(errorSubmit);
           this.scrollToMessageBox();
+          this.isSaving = false;
         },
       );
   }
