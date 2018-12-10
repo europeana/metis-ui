@@ -74,3 +74,6 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/pandora/components/modal';
 @import 'assets/sass/pandora/components/sitehero';
 @import 'assets/sass/pandora/components/viewxmlsamples';
+
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/addon/fold/foldgutter.css';
