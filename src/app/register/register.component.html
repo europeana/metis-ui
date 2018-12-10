@@ -57,14 +57,13 @@
       </fieldset>
 
       <div class="form-group form-group-btns">
-        <button
-          class="submit-btn"
+        <app-loading-button
+          classes="submit-btn"
           type="submit"
-          [disabled]="!registerForm.valid || loading"
-          [ngClass]="{ 'svg-icon-spin-inbutton': loading === true }"
-        >
-          {{ 'submit' | translate }}
-        </button>
+          [disabled]="!registerForm.valid"
+          [isLoading]="loading"
+          [title]="'submit' | translate"
+        ></app-loading-button>
       </div>
     </div>
   </form>
