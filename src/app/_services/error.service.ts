@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, of as observableOf, throwError } from 'rxjs';
 import { concat, delay, flatMap, retryWhen, take } from 'rxjs/operators';
 
-import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
+import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable()
 export class ErrorService {
