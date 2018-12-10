@@ -13,7 +13,6 @@ import { TranslateService } from './_translate';
 })
 export class AppComponent implements OnInit {
   title = 'Metis-UI';
-  isLessMargin = false;
   bodyClass: string;
   showWrapper = false;
   currentWorkflowId?: string;
@@ -47,8 +46,6 @@ export class AppComponent implements OnInit {
         if (url === '/') {
           this.bodyClass = 'home';
         }
-
-        this.isLessMargin = url.includes('home') || url === '/' || url.includes('dashboard');
 
         if ((url === '/' || url === '/home') && this.loggedIn) {
           this.router.navigate([environment.afterLoginGoto]);
