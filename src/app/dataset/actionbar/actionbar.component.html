@@ -68,9 +68,10 @@
       </li>
       <li
         *ngIf="
-          currentStatus === 'CANCELLED' ||
-          currentStatus === 'FINISHED' ||
-          currentStatus === 'FAILED'
+          (currentStatus === 'CANCELLED' ||
+            currentStatus === 'FINISHED' ||
+            currentStatus === 'FAILED') &&
+          !isStarting
         "
       >
         <a class="newaction-btn" (click)="startWorkflow.emit()">
@@ -81,7 +82,7 @@
   </nav>
 </div>
 
-<div class="metis-dataset-info-block dataset-actionbar" *ngIf="!lastExecutionData">
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf="!lastExecutionData && !isStarting">
   <div class="status status-new">{{ 'start workflow' | translate }}</div>
   <nav *ngIf="workflowData">
     <ul>
