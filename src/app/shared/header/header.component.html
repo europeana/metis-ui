@@ -9,10 +9,10 @@
         <div *ngIf="isLoggedIn(); then loggedIn; else loggedOut"></div>
         <ng-template #loggedIn>
           <div class="settings-menu cf nav-loggedin">
-            <a routerLink="/dashboard" class="link-to-dashboard svg-icon-dashboard"></a>
+            <a routerLink="/dashboard" routerLinkActive="svg-icon-dashboard-active" class="link-to-dashboard svg-icon-dashboard"></a>
             <div class="metis-user" (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"
-                ><span class="svg-icon-loggedin-user"></span
+                ><span class="svg-icon-loggedin-user {{ userIconActive() ? 'svg-icon-loggedin-user-active' : '' }}"></span
               ></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li>

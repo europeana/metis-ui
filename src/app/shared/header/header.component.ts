@@ -64,6 +64,10 @@ export class HeaderComponent implements OnInit {
     return this.isLoggedIn() ? environment.afterLoginGoto : '/home';
   }
 
+  userIconActive(): boolean {
+    return this.router.isActive('/profile', false);
+  }
+
   /** gotoProfile
   /* go to profile page
   */
