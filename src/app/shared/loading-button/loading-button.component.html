@@ -1,9 +1,4 @@
-<button
-  type="button"
-  [ngClass]="ngClass"
-  [disabled]="disabled || isLoading"
-  (click)="click.emit($event)"
->
+<button type="button" [ngClass]="classes" [disabled]="disabled || isLoading">
   <span class="loading-button-spinner" *ngIf="isLoading"></span>
   <span>{{ isLoading && loadingTitle ? loadingTitle : title }}</span>
 </button>
