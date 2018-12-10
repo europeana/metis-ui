@@ -27,3 +27,17 @@ hr {
   height: 1px;
   margin: $space 0;
 }
+
+.svg-icon-dataset {
+  display: inline-block;
+  top: 0.5rem;
+  margin-right: 0.2rem;
+  border-radius: 32px;
+  width: 32px;
+  height: 32px;
+  background: white;
+
+  &::before {
+    top: 8px;
+  }
+}
