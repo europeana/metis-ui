@@ -78,7 +78,7 @@
           </button>
           <app-loading-button
             id="refresh-btn"
-            [classes]="'button'"
+            classes="button"
             [isLoading]="loading"
             [title]="'refresh' | translate"
             (click)="onReloadProfile()"
@@ -159,7 +159,7 @@
             {{ 'cancel' | translate }}
           </button>
           <app-loading-button
-            [classes]="'submit'"
+            classes="submit"
             [disabled]="!profileForm.valid"
             [isLoading]="loading"
             [title]="'save' | translate"
