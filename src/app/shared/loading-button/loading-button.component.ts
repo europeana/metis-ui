@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 export type NgClass =
   | string
@@ -14,11 +14,9 @@ export type NgClass =
   styleUrls: ['./loading-button.component.scss'],
 })
 export class LoadingButtonComponent {
-  @Input() ngClass: NgClass = '';
+  @Input() classes: NgClass = '';
   @Input() disabled = false;
   @Input() isLoading = false;
   @Input() title: string;
   @Input() loadingTitle?: string;
-
-  @Output() click = new EventEmitter<MouseEvent>();
 }

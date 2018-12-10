@@ -139,7 +139,7 @@
         </button>
         <app-loading-button
           *ngIf="formMode !== 'show'"
-          [ngClass]="'submit'"
+          [classes]="'submit'"
           [disabled]="!datasetForm.valid"
           [isLoading]="formMode == 'save'"
           [title]="(isNew ? 'create' : 'save') | translate"
