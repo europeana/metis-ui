@@ -9,7 +9,7 @@
   font-weight: bold;
   margin: 0;
   padding: 0.8rem 5rem;
-  text-transform: none;
+  text-transform: uppercase;
 
   @media (max-width: $bp-xxl) {
     padding: 0.8rem 2rem;
@@ -17,20 +17,16 @@
 
   &:hover,
   &:focus {
-    background: transparent;
-    border-color: $eu-jade;
-    color: $eu-jade;
+    color: $white;
   }
 
   &.disabled,
   &.is-disabled {
-    background: lighten($text_secondary, 10%);
-    border-color: $text_secondary;
-    color: darken($text_secondary, 20%);
+    background: lighten($eu-jade, 30%);
     cursor: not-allowed;
 
     &:hover {
-      border-color: $text_secondary;
+      color: darken($text_secondary, 20%);
     }
   }
 
@@ -40,8 +36,7 @@
     color: $white;
 
     &:hover {
-      background-color: $textcolour_highlight;
-      border-color: $textcolour_highlight;
+      color: $white;
     }
   }
 }
