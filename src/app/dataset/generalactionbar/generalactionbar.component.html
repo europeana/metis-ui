@@ -4,7 +4,7 @@
   }}</a>
   <app-loading-button
     *ngIf="workflowData && workflowStatus !== 'INQUEUE' && workflowStatus !== 'RUNNING'"
-    [classes]="'btn'"
+    classes="btn"
     [isLoading]="isStarting"
     [title]="'run workflow' | translate"
     [loadingTitle]="'starting' | translate"
