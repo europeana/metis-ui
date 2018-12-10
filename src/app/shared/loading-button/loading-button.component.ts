@@ -15,6 +15,7 @@ export type NgClass =
 })
 export class LoadingButtonComponent {
   @Input() classes: NgClass = '';
+  @Input() type = 'button';
   @Input() disabled = false;
   @Input() isLoading = false;
   @Input() title: string;
