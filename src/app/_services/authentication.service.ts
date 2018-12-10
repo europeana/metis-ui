@@ -7,8 +7,9 @@ import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import { environment } from '../../environments/environment';
 import { User } from '../_models';
-import { ErrorService } from '../_services/error.service';
-import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
+
+import { ErrorService } from './error.service';
+import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable()
 export class AuthenticationService {

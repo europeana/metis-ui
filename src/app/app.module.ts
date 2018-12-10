@@ -5,9 +5,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
-import { AppRoutingModule } from './routing';
-
 import { AuthUserGuard, AuthVisitorGuard } from './_guards';
+import { XmlPipe } from './_helpers';
 import {
   AuthenticationService,
   CountriesService,
@@ -18,48 +17,48 @@ import {
   TokenInterceptor,
   WorkflowService,
 } from './_services';
-
-import { AppComponent } from './app.component';
-import { DashboardactionsComponent, DashboardComponent } from './dashboard';
-import {
-  ActionbarComponent,
-  DatasetComponent,
-  DatasetformComponent,
-  DatasetlogComponent,
-  GeneralinfoComponent,
-  HistoryComponent,
-  LastExecutionComponent,
-  MappingComponent,
-  NewDatasetComponent,
-  PreviewComponent,
-  WorkflowComponent,
-} from './dataset';
-import { HomeComponent } from './home';
-import { LoginComponent } from './login';
-import { PageNotFoundComponent } from './page-not-found';
-import { ProfileComponent } from './profile';
-import { RegisterComponent } from './register';
-import {
-  HeaderComponent,
-  LoadingButtonComponent,
-  NotificationComponent,
-  PasswordCheckComponent,
-} from './shared';
-
-import { ExecutionsComponent } from './dashboard/executions';
-import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions';
-import { ReportComponent } from './dataset/report';
-
-import { XmlPipe } from './_helpers';
 import {
   RenameWorkflowPipe,
   TranslatePipe,
   TranslateService,
   TRANSLATION_PROVIDERS,
 } from './_translate';
-import { ExecutiontableComponent } from './dashboard/executions/executiontable';
-import { GeneralactionbarComponent } from './dataset/generalactionbar';
+import { AppComponent } from './app.component';
+import {
+  DashboardactionsComponent,
+  DashboardComponent,
+  ExecutionsComponent,
+  ExecutiontableComponent,
+  OngoingexecutionsComponent,
+} from './dashboard';
+import {
+  ActionbarComponent,
+  DatasetComponent,
+  DatasetformComponent,
+  DatasetlogComponent,
+  GeneralactionbarComponent,
+  GeneralinfoComponent,
+  HistoryComponent,
+  LastExecutionComponent,
+  MappingComponent,
+  NewDatasetComponent,
+  PreviewComponent,
+  ReportComponent,
+  WorkflowComponent,
+} from './dataset';
+import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
+import { LoginComponent } from './login';
+import { PageNotFoundComponent } from './page-not-found';
+import { ProfileComponent } from './profile';
+import { RegisterComponent } from './register';
+import { AppRoutingModule } from './routing';
+import {
+  HeaderComponent,
+  LoadingButtonComponent,
+  NotificationComponent,
+  PasswordCheckComponent,
+} from './shared';
 
 @NgModule({
   declarations: [
