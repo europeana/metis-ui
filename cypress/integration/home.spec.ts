@@ -1,4 +1,4 @@
-import { setupUser } from '../support/helpers';
+import { setupUser, setupWorkflowRoutes } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('home (not logged in)', () => {
@@ -24,11 +24,12 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server({ force404: true });
       setupUser();
+      setupWorkflowRoutes();
       cy.visit('/home');
     });
 
-    it('should show the home screen and have a dashboard and signout button', () => {
-      cy.get('h2').contains('What can you do with Metis?');
+    it('should show the dashboard screen and have a dashboard and signout button', () => {
+      cy.get('.metis-welcome-message').contains('Welcome Valentine');
 
       cy.get('.svg-icon-dashboard').should('have.attr', 'href', '/dashboard');
 
