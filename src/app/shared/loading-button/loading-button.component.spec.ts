@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoadingButtonComponent } from './loading-button.component';
+import { LoadingButtonComponent } from '.';
 
 describe('LoadingButtonComponent', () => {
   let component: LoadingButtonComponent;
