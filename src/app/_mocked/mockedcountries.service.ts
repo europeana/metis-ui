@@ -8,12 +8,17 @@ export const mockedCountries: Country[] = [
   { enum: 'FRANCE', name: 'France', isoCode: 'FR' },
 ];
 
+export const mockedLanguages: Language[] = [
+  { enum: 'EN', name: 'English' },
+  { enum: 'FR', name: 'French' },
+];
+
 export class MockCountriesService extends CountriesService {
   getCountries(): Observable<Country[]> {
     return observableOf(mockedCountries);
   }
 
   getLanguages(): Observable<Language[]> {
-    return observableOf(mockedCountries);
+    return observableOf(mockedLanguages);
   }
 }
