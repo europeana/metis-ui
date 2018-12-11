@@ -14,11 +14,13 @@
           pattern="[a-zA-Z0-9\\_\\]+"
           (blur)="saveTempData()"
         />
-        <div
-          class="messages"
-          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.datasetName.valid"
-        >
-          <div class="error-message">{{ 'datasetnamevalidator' | translate }}</div>
+        <div class="messages" *ngIf="showError('datasetName')">
+          <div class="error-message">
+            {{
+              (datasetForm.controls.datasetName.value ? 'datasetnamevalidator' : 'fieldrequired')
+                | translate
+            }}
+          </div>
         </div>
       </div>
 
@@ -34,10 +36,7 @@
       <div class="form-group">
         <label for="provider">{{ 'provider' | translate }} *</label>
         <input id="provider" type="text" formControlName="provider" (blur)="saveTempData()" />
-        <div
-          class="messages"
-          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.provider.valid"
-        >
+        <div class="messages" *ngIf="showError('provider')">
           <div class="error-message">{{ 'fieldrequired' | translate }}</div>
         </div>
       </div>
@@ -74,10 +73,7 @@
           <option *ngIf="isNew" value="0"></option>
           <option *ngFor="let c of countryOptions" [ngValue]="c">{{ c.name }}</option>
         </select>
-        <div
-          class="messages"
-          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.country.valid"
-        >
+        <div class="messages" *ngIf="showError('country')">
           <div class="error-message">{{ 'fieldrequired' | translate }}</div>
         </div>
       </div>
@@ -87,10 +83,7 @@
           <option *ngIf="isNew" value="0"></option>
           <option *ngFor="let l of languageOptions" [ngValue]="l">{{ l.name }}</option>
         </select>
-        <div
-          class="messages"
-          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.language.valid"
-        >
+        <div class="messages" *ngIf="showError('language')">
           <div class="error-message">{{ 'fieldrequired' | translate }}</div>
         </div>
       </div>

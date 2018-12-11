@@ -81,6 +81,12 @@ export class DatasetformComponent implements OnInit {
     }
   }
 
+  showError(fieldName: keyof Dataset): boolean {
+    return (
+      this.showErrors && this.datasetForm.enabled && !this.datasetForm.controls[fieldName].valid
+    );
+  }
+
   returnCountries(): void {
     this.countries.getCountries().subscribe(
       (result) => {
