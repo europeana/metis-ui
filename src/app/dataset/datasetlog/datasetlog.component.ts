@@ -88,7 +88,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     const processed = this.showPluginLog.executionProgress.processedRecords;
     const status = this.showPluginLog.pluginStatus;
 
-    this.logTo = (this.processingInfo ? this.processingInfo.totalProcessed : processed) || 0;
+    this.logTo = processed || 0;
 
     if (processed && (status === 'FINISHED' || status === 'CANCELLED' || status === 'FAILED')) {
       if (this.subscription) {
