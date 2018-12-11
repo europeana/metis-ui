@@ -17,6 +17,7 @@ import { CountriesService, DatasetsService, ErrorService } from '../../_services
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
+const INVALID_NOTIFICATION = errorNotification('Please check the form for errors.');
 
 @Component({
   selector: 'app-datasetform',
@@ -144,14 +145,29 @@ export class DatasetformComponent implements OnInit {
       notes: [''],
     });
 
+    this.datasetForm.valueChanges.subscribe(() => {
+      this.updateFormMessage();
+    });
+
     this.updateForm();
     this.updateFormEnabled();
+    this.updateFormMessage();
   }
 
   updateForm(): void {
     this.datasetForm.patchValue(this.datasetData);
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
+  }
+
+  updateFormMessage(): void {
+    if (this.datasetForm.valid) {
+      if (this.notification === INVALID_NOTIFICATION) {
+        this.notification = undefined;
+      }
+    } else {
+      this.notification = INVALID_NOTIFICATION;
+    }
   }
 
   saveTempData(): void {
@@ -162,12 +178,6 @@ export class DatasetformComponent implements OnInit {
 
   onSubmit(): void {
     this.notification = undefined;
-
-    // check this before setting isSaving to true, otherwise the form will be disabled
-    if (!this.datasetForm.valid) {
-      this.notification = errorNotification('Submit failed. Please check the form for errors.');
-      return;
-    }
 
     this.isSaving = true;
     if (this.isNew) {
