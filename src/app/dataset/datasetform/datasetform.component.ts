@@ -15,8 +15,6 @@ import {
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
-type FormMode = 'show' | 'edit' | 'save';
-
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
 
 @Component({
@@ -39,15 +37,16 @@ export class DatasetformComponent implements OnInit {
   countryOptions: Country[];
   languageOptions: Language[];
 
-  _formMode: FormMode;
+  showErrors = false;
+  _isSaving = false;
 
-  set formMode(value: FormMode) {
-    this._formMode = value;
+  set isSaving(value: boolean) {
+    this._isSaving = value;
     this.updateFormEnabled();
   }
 
-  get formMode(): FormMode {
-    return this._formMode;
+  get isSaving(): boolean {
+    return this._isSaving;
   }
 
   constructor(
@@ -57,26 +56,29 @@ export class DatasetformComponent implements OnInit {
     private fb: FormBuilder,
     private errors: ErrorService,
     private translate: TranslateService,
-  ) {}
+  ) {
+  }
 
   private updateFormEnabled(): void {
     if (this.datasetForm) {
-      if (this.formMode === 'edit') {
-        this.datasetForm.enable();
-      } else {
+      if (this.isSaving) {
         this.datasetForm.disable();
+      } else {
+        this.datasetForm.enable();
       }
     }
   }
 
   ngOnInit(): void {
-    this.formMode = this.isNew ? 'edit' : 'show';
-
     this.translate.use('en');
 
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();
+
+    if (!this.isNew) {
+      this.showErrors = true;
+    }
   }
 
   returnCountries(): void {
@@ -161,7 +163,13 @@ export class DatasetformComponent implements OnInit {
   onSubmit(): void {
     this.notification = undefined;
 
-    this.formMode = 'save';
+    this.showErrors = true;
+    // check this before set isSaving to true, otherwise the form will be disabled
+    if (!this.datasetForm.valid) {
+      return;
+    }
+
+    this.isSaving = true;
     if (this.isNew) {
       this.datasets.createDataset(this.datasetForm.value).subscribe(
         (result) => {
@@ -173,7 +181,7 @@ export class DatasetformComponent implements OnInit {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
 
-          this.formMode = 'edit';
+          this.isSaving = false;
           this.scrollToTop();
         },
       );
@@ -188,14 +196,14 @@ export class DatasetformComponent implements OnInit {
           this.notification = successNotification('Dataset updated!');
           this.datasetUpdated.emit();
 
-          this.formMode = 'show';
+          this.isSaving = false;
           this.scrollToTop();
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
 
-          this.formMode = 'edit';
+          this.isSaving = false;
           this.scrollToTop();
         },
       );
@@ -204,21 +212,6 @@ export class DatasetformComponent implements OnInit {
 
   cancel(): void {
     localStorage.removeItem(DATASET_TEMP_LSKEY);
-    this.notification = undefined;
-    if (this.isNew) {
-      this.router.navigate(['/dashboard']);
-    } else {
-      this.formMode = 'show';
-      this.updateForm();
-    }
-
-    this.scrollToTop();
-  }
-
-  editForm(): void {
-    this.formMode = 'edit';
-    this.notification = undefined;
-
-    this.scrollToTop();
+    this.router.navigate(['/dashboard']);
   }
 }
