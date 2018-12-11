@@ -38,7 +38,6 @@ export class DatasetformComponent implements OnInit {
   countryOptions: Country[];
   languageOptions: Language[];
 
-  showErrors = false;
   _isSaving = false;
 
   set isSaving(value: boolean) {
@@ -75,16 +74,10 @@ export class DatasetformComponent implements OnInit {
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();
-
-    if (!this.isNew) {
-      this.showErrors = true;
-    }
   }
 
   showError(fieldName: keyof Dataset): boolean {
-    return (
-      this.showErrors && this.datasetForm.enabled && !this.datasetForm.controls[fieldName].valid
-    );
+    return this.datasetForm.enabled && !this.datasetForm.controls[fieldName].valid;
   }
 
   returnCountries(): void {
@@ -162,7 +155,6 @@ export class DatasetformComponent implements OnInit {
   onSubmit(): void {
     this.notification = undefined;
 
-    this.showErrors = true;
     // check this before setting isSaving to true, otherwise the form will be disabled
     if (!this.datasetForm.valid) {
       this.notification = errorNotification('Submit failed. Please check the form for errors.');
