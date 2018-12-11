@@ -23,11 +23,6 @@ export interface PreviewFilters {
   plugin?: string;
 }
 
-export interface ProcessingInfo {
-  totalProcessed: number;
-  currentPluginName: string;
-}
-
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
@@ -64,7 +59,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
-  processingInfo?: ProcessingInfo;
   reportRequest?: ReportRequest;
 
   ngOnInit(): void {

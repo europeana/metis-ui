@@ -6,7 +6,6 @@ import { environment } from '../../../environments/environment';
 import { PluginExecution, SubTaskInfo } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-import { ProcessingInfo } from '../dataset.component';
 
 @Component({
   selector: 'app-datasetlog',
@@ -18,8 +17,6 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private translate: TranslateService,
   ) {}
-
-  @Input() processingInfo?: ProcessingInfo;
 
   @Output() closed = new EventEmitter<void>();
 
@@ -88,7 +85,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     const processed = this.showPluginLog.executionProgress.processedRecords;
     const status = this.showPluginLog.pluginStatus;
 
-    this.logTo = (this.processingInfo ? this.processingInfo.totalProcessed : processed) || 0;
+    this.logTo = processed || 0;
 
     if (processed && (status === 'FINISHED' || status === 'CANCELLED' || status === 'FAILED')) {
       if (this.subscription) {

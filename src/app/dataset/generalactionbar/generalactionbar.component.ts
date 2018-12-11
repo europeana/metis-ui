@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { Workflow, WorkflowExecution, WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -9,13 +9,22 @@ import { TranslateService } from '../../_translate';
   templateUrl: './generalactionbar.component.html',
   styleUrls: ['./generalactionbar.component.scss'],
 })
-export class GeneralactionbarComponent implements OnInit, OnChanges {
+export class GeneralactionbarComponent implements OnInit {
   constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
   @Input() datasetId: string;
-  @Input() lastExecutionData?: WorkflowExecution;
   @Input() workflowData?: Workflow;
   @Input() isStarting = false;
+
+  @Input()
+  set lastExecutionData(value: WorkflowExecution | undefined) {
+    if (value) {
+      this.workflowStatus = value.workflowStatus;
+      this.currentPlugin = this.workflows.getCurrentPlugin(value);
+      this.totalPlugins = value.metisPlugins.length;
+      this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
+    }
+  }
 
   @Output() startWorkflow = new EventEmitter<void>();
 
@@ -26,14 +35,5 @@ export class GeneralactionbarComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.translate.use('en');
-  }
-
-  ngOnChanges(): void {
-    if (this.lastExecutionData) {
-      this.workflowStatus = this.lastExecutionData.workflowStatus;
-      this.currentPlugin = this.workflows.getCurrentPlugin(this.lastExecutionData);
-      this.totalPlugins = this.lastExecutionData.metisPlugins.length;
-      this.pluginPercentage = (this.currentPlugin / this.totalPlugins) * 100;
-    }
   }
 }
