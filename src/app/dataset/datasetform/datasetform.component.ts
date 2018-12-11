@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import {
   Country,
   Dataset,
+  errorNotification,
   HarvestData,
   httpErrorNotification,
   Language,
@@ -152,19 +153,13 @@ export class DatasetformComponent implements OnInit {
     }
   }
 
-  private scrollToTop(): void {
-    const tabs = document.querySelector('.tabs');
-    if (tabs) {
-      tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
   onSubmit(): void {
     this.notification = undefined;
 
     this.showErrors = true;
     // check this before set isSaving to true, otherwise the form will be disabled
     if (!this.datasetForm.valid) {
+      this.notification = errorNotification('Submit failed. Please check the form for errors.');
       return;
     }
 
@@ -181,7 +176,6 @@ export class DatasetformComponent implements OnInit {
           this.notification = httpErrorNotification(error);
 
           this.isSaving = false;
-          this.scrollToTop();
         },
       );
     } else {
@@ -196,14 +190,12 @@ export class DatasetformComponent implements OnInit {
           this.datasetUpdated.emit();
 
           this.isSaving = false;
-          this.scrollToTop();
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
 
           this.isSaving = false;
-          this.scrollToTop();
         },
       );
     }
