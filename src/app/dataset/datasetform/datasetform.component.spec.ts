@@ -51,11 +51,6 @@ describe('DatasetformComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have a new dataset form', () => {
-    component.isNew = true;
-    fixture.detectChanges();
-  });
-
   it('should submit form and update the dataset', fakeAsync((): void => {
     fixture.detectChanges();
     component.onSubmit();

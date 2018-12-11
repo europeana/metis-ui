@@ -55,7 +55,6 @@
           (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"
           (setReportRequest)="reportRequest = $event"
-          (setProcessingInfo)="processingInfo = $event"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
@@ -65,7 +64,6 @@
         <app-datasetlog
           *ngIf="showPluginLog"
           [showPluginLog]="showPluginLog"
-          [processingInfo]="processingInfo"
           (closed)="showPluginLog = undefined"
         ></app-datasetlog>
         <app-report
