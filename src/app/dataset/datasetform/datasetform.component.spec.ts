@@ -54,24 +54,18 @@ describe('DatasetformComponent', () => {
   it('should have a new dataset form', () => {
     component.isNew = true;
     fixture.detectChanges();
-    expect(component.formMode).toBe('edit');
   });
 
   it('should submit form and update the dataset', fakeAsync((): void => {
     fixture.detectChanges();
-    component.editForm();
-    expect(component.formMode).toBe('edit');
-
     component.onSubmit();
     fixture.detectChanges();
     expect(component.notification!.content).toBe('Dataset updated!');
-    expect(component.formMode).toBe('show');
   }));
 
   it('should submit form and create the dataset', fakeAsync((): void => {
     component.isNew = true;
     fixture.detectChanges();
-    expect(component.formMode).toBe('edit');
 
     spyOn(router, 'navigate').and.callFake(() => {});
     component.onSubmit();
@@ -79,23 +73,9 @@ describe('DatasetformComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
   }));
 
-  it('should have a preview dataset form', () => {
-    fixture.detectChanges();
-    expect(component.formMode).toBe('show');
-    expect(component.datasetForm.get('datasetName')!.enabled).toBeFalsy();
-  });
-
-  it('should have an edit dataset form', () => {
-    fixture.detectChanges();
-    component.editForm();
-    expect(component.formMode).toBe('edit');
-    expect(component.datasetForm.get('datasetName')!.enabled).toBeTruthy();
-  });
-
   it('should temp save the form', () => {
     component.isNew = true;
     fixture.detectChanges();
-    expect(component.formMode).toBe('edit');
     component.saveTempData();
     fixture.detectChanges();
 
