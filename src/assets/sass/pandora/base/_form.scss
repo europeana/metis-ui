@@ -263,6 +263,9 @@
         &::placeholder {
           color: $eu-blue;
         }
+        &:focus {
+          border-color: $eu-jade;
+        }
       }
 
       input:not([type='checkbox']),
