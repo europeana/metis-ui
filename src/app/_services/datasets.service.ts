@@ -24,7 +24,12 @@ export class DatasetsService {
     if (observable && !refresh) {
       return observable;
     }
-    observable = this.requestDataset(id).pipe(publishLast());
+    observable = this.requestDataset(id).pipe(
+      tap(undefined, () => {
+        delete this.datasetById[id];
+      }),
+      publishLast(),
+    );
     (observable as ConnectableObservable<Dataset>).connect();
     this.datasetById[id] = observable;
     return observable;

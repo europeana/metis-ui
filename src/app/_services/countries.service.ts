@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConnectableObservable, Observable } from 'rxjs';
-import { publishLast } from 'rxjs/operators';
+import { publishLast, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import { Country, Language } from '../_models';
@@ -24,7 +24,12 @@ export class CountriesService {
     if (this.countries) {
       return this.countries;
     }
-    this.countries = this.requestCountries().pipe(publishLast());
+    this.countries = this.requestCountries().pipe(
+      tap(undefined, () => {
+        this.countries = undefined;
+      }),
+      publishLast(),
+    );
     (this.countries as ConnectableObservable<Country[]>).connect();
     return this.countries;
   }
@@ -38,7 +43,12 @@ export class CountriesService {
     if (this.languages) {
       return this.languages;
     }
-    this.languages = this.requestLanguages().pipe(publishLast());
+    this.languages = this.requestLanguages().pipe(
+      tap(undefined, () => {
+        this.languages = undefined;
+      }),
+      publishLast(),
+    );
     (this.languages as ConnectableObservable<Language[]>).connect();
     return this.languages;
   }
