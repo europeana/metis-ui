@@ -14,7 +14,11 @@
           pattern="[a-zA-Z0-9\\_\\]+"
           (blur)="saveTempData()"
         />
-        <div class="input-clear" *ngIf="fieldHasValue('datasetName')" (click)="clearField('datasetName')"></div>
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('datasetName')"
+          (click)="clearField('datasetName')"
+        ></div>
         <div class="input-subtitle">
           <div class="input-subtitle-error" *ngIf="showError('datasetName')">
             {{
@@ -29,7 +33,11 @@
       <div class="form-group">
         <label for="provider">{{ 'provider' | translate }}</label>
         <input id="provider" type="text" formControlName="provider" (blur)="saveTempData()" />
-        <div class="input-clear" *ngIf="fieldHasValue('provider')" (click)="clearField('provider')"></div>
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('provider')"
+          (click)="clearField('provider')"
+        ></div>
         <div class="input-subtitle">
           <div class="input-subtitle-error" *ngIf="showError('provider')">
             {{ 'fieldrequired' | translate }}
@@ -45,7 +53,11 @@
           formControlName="dataProvider"
           (blur)="saveTempData()"
         />
-        <div class="input-clear" *ngIf="fieldHasValue('dataProvider')" (click)="clearField('dataProvider')"></div>
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('dataProvider')"
+          (click)="clearField('dataProvider')"
+        ></div>
       </div>
       <div class="form-group">
         <label for="intermediate-provider">{{ 'intermediateprovider' | translate }}</label>
@@ -55,7 +67,11 @@
           formControlName="intermediateProvider"
           (blur)="saveTempData()"
         />
-        <div class="input-clear" *ngIf="fieldHasValue('intermediateProvider')" (click)="clearField('intermediateProvider')"></div>
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('intermediateProvider')"
+          (click)="clearField('intermediateProvider')"
+        ></div>
       </div>
 
       <div class="form-group" *ngIf="!isNew">
@@ -70,12 +86,20 @@
       <div class="form-group">
         <label for="replaces">{{ 'replaces' | translate }}</label>
         <input id="replaces" formControlName="replaces" (blur)="saveTempData()" />
-        <div class="input-clear" *ngIf="fieldHasValue('replaces')" (click)="clearField('replaces')"></div>
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('replaces')"
+          (click)="clearField('replaces')"
+        ></div>
       </div>
       <div class="form-group">
         <label for="replaced-by">{{ 'replacedby' | translate }}</label>
         <input id="replaced-by" formControlName="replacedBy" (blur)="saveTempData()" />
-        <div class="input-clear" *ngIf="fieldHasValue('replacedBy')" (click)="clearField('replacedBy')"></div>
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('replacedBy')"
+          (click)="clearField('replacedBy')"
+        ></div>
       </div>
       <div class="form-group">
         <label for="country">{{ 'country' | translate }}</label>
