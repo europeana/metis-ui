@@ -11,7 +11,6 @@ const TEXTS = ['Very bad', 'Bad', 'Weak', 'Good', 'Strong'];
   styleUrls: ['./password-check.component.scss'],
 })
 export class PasswordCheckComponent {
-
   info = false;
   index = 0;
 
