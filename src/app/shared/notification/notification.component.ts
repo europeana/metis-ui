@@ -12,4 +12,10 @@ export class NotificationComponent {
   @Input() variant = 'medium';
 
   @Output() closed = new EventEmitter<void>();
+
+  close(): void {
+    if (this.notification && !this.notification.sticky) {
+      this.closed.emit();
+    }
+  }
 }
