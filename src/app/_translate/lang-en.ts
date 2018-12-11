@@ -103,6 +103,7 @@ export const LANG_EN_TRANS = {
   replacedby: 'Replaced by',
   replaces: 'Replaces',
   report: 'Report',
+  required: 'Required',
   restart: 'Restart',
   'run workflow': 'Run workflow',
   runaction: 'Run specific action',

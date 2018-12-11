@@ -11,7 +11,17 @@
     margin-top: 1rem;
   }
 
-  .ng-touched.ng-invalid {
+  .input-subtitle {
+    margin-left: 14.85rem;
+    margin-bottom: -1.5rem;
+    width: 100%;
+    font-size: $font-size-sm;
+  }
+  .input-subtitle-error {
+    color: $eu-red;
+  }
+
+  .ng-invalid {
     border-color: $eu-red;
   }
 
