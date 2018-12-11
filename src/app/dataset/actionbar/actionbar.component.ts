@@ -4,7 +4,6 @@ import { copyExecutionAndTaskId } from '../../_helpers';
 import { PluginExecution, Report, ReportRequest, Workflow, WorkflowExecution } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-import { ProcessingInfo } from '../dataset.component';
 
 @Component({
   selector: 'app-actionbar',
@@ -21,7 +20,6 @@ export class ActionbarComponent implements OnInit {
   @Input() isStarting = false;
 
   @Output() startWorkflow = new EventEmitter<void>();
-  @Output() setProcessingInfo = new EventEmitter<ProcessingInfo>();
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
@@ -76,11 +74,6 @@ export class ActionbarComponent implements OnInit {
         }
         this.currentStatus = value.workflowStatus;
       } else {
-        this.setProcessingInfo.emit({
-          totalProcessed: this.totalProcessed,
-          currentPluginName: this.currentPluginName,
-        });
-
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
         }
