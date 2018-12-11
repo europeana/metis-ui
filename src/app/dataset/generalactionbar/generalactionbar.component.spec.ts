@@ -54,15 +54,13 @@ describe('GeneralactionbarComponent', () => {
 
   it('should check the status', () => {
     component.lastExecutionData = currentWorkflow.results[0];
-    component.ngOnChanges();
     expect(component.workflowStatus).toBe(WorkflowStatus.INQUEUE);
   });
 
   it('should start a workflow', () => {
     component.lastExecutionData = currentWorkflow.results[4];
-    component.ngOnChanges();
-    fixture.detectChanges();
     expect(component.workflowStatus).toBe(WorkflowStatus.FINISHED);
+    fixture.detectChanges();
 
     spyOn(component.startWorkflow, 'emit');
     const run = fixture.debugElement.query(By.css('app-loading-button'));
