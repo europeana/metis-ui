@@ -1,4 +1,4 @@
-<div class="messages" (click)="closed.emit()" *ngIf="notification">
+<div class="messages messages-{{ variant }}" (click)="closed.emit()" *ngIf="notification">
   <div class="notification {{ notification.type.toString().toLowerCase() }}-notification">
     {{ notification.content }}
   </div>

@@ -9,6 +9,7 @@ import { Notification } from '../../_models';
 })
 export class NotificationComponent {
   @Input() notification?: Notification;
+  @Input() variant = 'medium';
 
   @Output() closed = new EventEmitter<void>();
 }
