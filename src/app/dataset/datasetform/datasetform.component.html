@@ -1,17 +1,12 @@
 <div class="metis-form metis-form-horizontal">
   <form [formGroup]="datasetForm" #formDir="ngForm">
-    <app-notification
-      [notification]="notification"
-      (closed)="notification = undefined"
-    ></app-notification>
-
     <div class="form-fields">
       <div class="form-group" *ngIf="!isNew">
         <label>{{ 'identifier' | translate }}</label> <span>{{ datasetData.datasetId }}</span>
       </div>
 
       <div class="form-group">
-        <label for="dataset-name">{{ 'datasetname' | translate }} *</label>
+        <label for="dataset-name">{{ 'datasetname' | translate }}</label>
         <input
           id="dataset-name"
           type="text"
@@ -20,17 +15,36 @@
           (blur)="saveTempData()"
         />
         <div
-          class="messages"
-          *ngIf="
-            datasetForm.enabled &&
-            datasetForm.controls.datasetName.dirty &&
-            !datasetForm.controls.datasetName.valid
-          "
-        >
-          <div class="error-message">{{ 'datasetnamevalidator' | translate }}</div>
+          class="input-clear"
+          *ngIf="fieldHasValue('datasetName')"
+          (click)="clearField('datasetName')"
+        ></div>
+        <div class="input-subtitle">
+          <div class="input-subtitle-error" *ngIf="showError('datasetName')">
+            {{
+              (datasetForm.controls.datasetName.value ? 'datasetnamevalidator' : 'fieldrequired')
+                | translate
+            }}
+          </div>
+          <div *ngIf="!showError('datasetName')">{{ 'required' | translate }}</div>
         </div>
       </div>
 
+      <div class="form-group">
+        <label for="provider">{{ 'provider' | translate }}</label>
+        <input id="provider" type="text" formControlName="provider" (blur)="saveTempData()" />
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('provider')"
+          (click)="clearField('provider')"
+        ></div>
+        <div class="input-subtitle">
+          <div class="input-subtitle-error" *ngIf="showError('provider')">
+            {{ 'fieldrequired' | translate }}
+          </div>
+          <div *ngIf="!showError('provider')">{{ 'required' | translate }}</div>
+        </div>
+      </div>
       <div class="form-group">
         <label for="data-provider">{{ 'dataprovider' | translate }}</label>
         <input
@@ -39,20 +53,11 @@
           formControlName="dataProvider"
           (blur)="saveTempData()"
         />
-      </div>
-      <div class="form-group">
-        <label for="provider">{{ 'provider' | translate }} *</label>
-        <input id="provider" type="text" formControlName="provider" (blur)="saveTempData()" />
         <div
-          class="messages"
-          *ngIf="
-            datasetForm.enabled &&
-            datasetForm.controls.provider.dirty &&
-            !datasetForm.controls.provider.valid
-          "
-        >
-          <div class="error-message">{{ 'fieldrequired' | translate }}</div>
-        </div>
+          class="input-clear"
+          *ngIf="fieldHasValue('dataProvider')"
+          (click)="clearField('dataProvider')"
+        ></div>
       </div>
       <div class="form-group">
         <label for="intermediate-provider">{{ 'intermediateprovider' | translate }}</label>
@@ -62,6 +67,11 @@
           formControlName="intermediateProvider"
           (blur)="saveTempData()"
         />
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('intermediateProvider')"
+          (click)="clearField('intermediateProvider')"
+        ></div>
       </div>
 
       <div class="form-group" *ngIf="!isNew">
@@ -76,24 +86,46 @@
       <div class="form-group">
         <label for="replaces">{{ 'replaces' | translate }}</label>
         <input id="replaces" formControlName="replaces" (blur)="saveTempData()" />
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('replaces')"
+          (click)="clearField('replaces')"
+        ></div>
       </div>
       <div class="form-group">
         <label for="replaced-by">{{ 'replacedby' | translate }}</label>
         <input id="replaced-by" formControlName="replacedBy" (blur)="saveTempData()" />
+        <div
+          class="input-clear"
+          *ngIf="fieldHasValue('replacedBy')"
+          (click)="clearField('replacedBy')"
+        ></div>
       </div>
       <div class="form-group">
-        <label for="country">{{ 'country' | translate }} *</label>
+        <label for="country">{{ 'country' | translate }}</label>
         <select id="country" formControlName="country" (blur)="saveTempData()">
-          <option *ngIf="isNew" value="0"></option>
+          <option *ngIf="isNew" value=""></option>
           <option *ngFor="let c of countryOptions" [ngValue]="c">{{ c.name }}</option>
         </select>
+        <div class="input-subtitle">
+          <div class="input-subtitle-error" *ngIf="showError('country')">
+            {{ 'fieldrequired' | translate }}
+          </div>
+          <div *ngIf="!showError('country')">{{ 'required' | translate }}</div>
+        </div>
       </div>
       <div class="form-group">
-        <label for="language">{{ 'language' | translate }} *</label>
+        <label for="language">{{ 'language' | translate }}</label>
         <select id="language" formControlName="language" (blur)="saveTempData()">
-          <option *ngIf="isNew" value="0"></option>
+          <option *ngIf="isNew" value=""></option>
           <option *ngFor="let l of languageOptions" [ngValue]="l">{{ l.name }}</option>
         </select>
+        <div class="input-subtitle">
+          <div class="input-subtitle-error" *ngIf="showError('language')">
+            {{ 'fieldrequired' | translate }}
+          </div>
+          <div *ngIf="!showError('language')">{{ 'required' | translate }}</div>
+        </div>
       </div>
       <div class="form-group">
         <label for="description">{{ 'description' | translate }}</label>
@@ -131,17 +163,20 @@
       </div>
 
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="submit" type="button" *ngIf="formMode === 'show'" (click)="editForm()">
-          {{ 'edit' | translate }}
-        </button>
-        <button class="reset-btn" type="button" *ngIf="formMode === 'edit'" (click)="cancel()">
+        <app-notification
+          variant="small"
+          [notification]="notification"
+          (closed)="notification = undefined"
+        ></app-notification>
+        <div style="flex-grow: 1"></div>
+
+        <button class="reset-btn" type="button" *ngIf="isNew" (click)="cancel()">
           {{ 'cancel' | translate }}
         </button>
         <app-loading-button
-          *ngIf="formMode !== 'show'"
           classes="submit"
           [disabled]="!datasetForm.valid"
-          [isLoading]="formMode == 'save'"
+          [isLoading]="isSaving"
           [title]="(isNew ? 'create' : 'save') | translate"
           [loadingTitle]="(isNew ? 'creating' : 'saving') | translate"
           (click)="onSubmit()"

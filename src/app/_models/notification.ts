@@ -10,14 +10,15 @@ export enum NotificationType {
 export interface Notification {
   type: NotificationType;
   content: string;
+  sticky: boolean;
 }
 
-export function errorNotification(content: string): Notification {
-  return { type: NotificationType.ERROR, content };
+export function errorNotification(content: string, sticky: boolean = false): Notification {
+  return { type: NotificationType.ERROR, content, sticky };
 }
 
-export function successNotification(content: string): Notification {
-  return { type: NotificationType.SUCCESS, content };
+export function successNotification(content: string, sticky: boolean = false): Notification {
+  return { type: NotificationType.SUCCESS, content, sticky };
 }
 
 export function httpErrorNotification(error: false | HttpErrorResponse): Notification {

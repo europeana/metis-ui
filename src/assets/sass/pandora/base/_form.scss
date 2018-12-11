@@ -99,6 +99,8 @@
       border: 1px solid $gray-light;
       color: $gray-light;
       height: 3rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
 
     select option {
@@ -110,8 +112,9 @@
     }
 
     select:disabled {
-      border-color: $opacity-gray-light;
-      color: $opacity-gray-light;
+      background: transparent;
+      border-color: $opacity-gray-very-light;
+      color: $gray-light;
     }
   }
 
@@ -263,6 +266,9 @@
         &::placeholder {
           color: $eu-blue;
         }
+        &:focus {
+          border-color: $eu-jade;
+        }
       }
 
       input:not([type='checkbox']),
@@ -276,8 +282,9 @@
         }
 
         &:disabled {
-          border-color: $opacity-gray-light;
-          color: $opacity-gray-light;
+          background: transparent;
+          border-color: $opacity-gray-very-light;
+          color: $gray-light;
 
           .svg-icon-search {
             display: none;
