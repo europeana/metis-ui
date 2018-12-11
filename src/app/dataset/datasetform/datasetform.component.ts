@@ -56,8 +56,7 @@ export class DatasetformComponent implements OnInit {
     private fb: FormBuilder,
     private errors: ErrorService,
     private translate: TranslateService,
-  ) {
-  }
+  ) {}
 
   private updateFormEnabled(): void {
     if (this.datasetForm) {

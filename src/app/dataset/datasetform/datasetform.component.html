@@ -21,11 +21,7 @@
         />
         <div
           class="messages"
-          *ngIf="
-            showErrors &&
-            datasetForm.enabled &&
-            !datasetForm.controls.datasetName.valid
-          "
+          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.datasetName.valid"
         >
           <div class="error-message">{{ 'datasetnamevalidator' | translate }}</div>
         </div>
@@ -45,11 +41,7 @@
         <input id="provider" type="text" formControlName="provider" (blur)="saveTempData()" />
         <div
           class="messages"
-          *ngIf="
-            showErrors &&
-            datasetForm.enabled &&
-            !datasetForm.controls.provider.valid
-          "
+          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.provider.valid"
         >
           <div class="error-message">{{ 'fieldrequired' | translate }}</div>
         </div>
@@ -89,11 +81,7 @@
         </select>
         <div
           class="messages"
-          *ngIf="
-            showErrors &&
-            datasetForm.enabled &&
-            !datasetForm.controls.country.valid
-          "
+          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.country.valid"
         >
           <div class="error-message">{{ 'fieldrequired' | translate }}</div>
         </div>
@@ -106,11 +94,7 @@
         </select>
         <div
           class="messages"
-          *ngIf="
-            showErrors &&
-            datasetForm.enabled &&
-            !datasetForm.controls.language.valid
-          "
+          *ngIf="showErrors && datasetForm.enabled && !datasetForm.controls.language.valid"
         >
           <div class="error-message">{{ 'fieldrequired' | translate }}</div>
         </div>
