@@ -81,8 +81,8 @@ context('metis-ui', () => {
     });
 
     it('should show the fields', () => {
-      checkFormField('Dataset Name *', 'datasetName');
-      checkFormField('Provider *', 'Europeana');
+      checkFormField('Dataset Name', 'datasetName');
+      checkFormField('Provider', 'Europeana');
       checkStaticField('Date Created', '06/09/2018 - 09:29');
       checkStaticField('Created by', '1482250000003948017');
       checkStaticField('First published', '05/11/2018 - 16:38');
