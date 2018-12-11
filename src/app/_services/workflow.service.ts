@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
-import { map, publishLast, switchMap } from 'rxjs/operators';
+import { map, publishLast, switchMap, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -132,7 +132,12 @@ export class WorkflowService {
     if (observable) {
       return observable;
     }
-    observable = this.getReport(taskId, topologyName).pipe(publishLast());
+    observable = this.getReport(taskId, topologyName).pipe(
+      tap(undefined, () => {
+        delete this.reportByKey[key];
+      }),
+      publishLast(),
+    );
     (observable as ConnectableObservable<Report>).connect();
     this.reportByKey[key] = observable;
     return observable;
