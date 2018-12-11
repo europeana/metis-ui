@@ -175,6 +175,7 @@
         </button>
         <app-loading-button
           classes="submit"
+          [disabled]="!datasetForm.valid"
           [isLoading]="isSaving"
           [title]="(isNew ? 'create' : 'save') | translate"
           [loadingTitle]="(isNew ? 'creating' : 'saving') | translate"
