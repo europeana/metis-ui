@@ -6,7 +6,6 @@ import { environment } from '../../../environments/environment';
 import { PluginExecution, SubTaskInfo } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-import { ProcessingInfo } from '../dataset.component';
 
 @Component({
   selector: 'app-datasetlog',
@@ -18,8 +17,6 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private translate: TranslateService,
   ) {}
-
-  @Input() processingInfo?: ProcessingInfo;
 
   @Output() closed = new EventEmitter<void>();
 
