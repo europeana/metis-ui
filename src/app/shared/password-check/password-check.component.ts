@@ -1,81 +1,49 @@
-import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { PasswordStrength } from '../../_helpers';
+
+const COLORS = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
+const TEXTS = ['Very bad', 'Bad', 'Weak', 'Good', 'Strong'];
 
 @Component({
   selector: 'app-password-check',
   templateUrl: './password-check.component.html',
   styleUrls: ['./password-check.component.scss'],
 })
-export class PasswordCheckComponent implements OnChanges {
-  @Input() passwordToCheck: string;
+export class PasswordCheckComponent {
 
-  bar0: string;
-  bar1: string;
-  bar2: string;
-  bar3: string;
-  bar4: string;
+  info = false;
+  index = 0;
 
-  public info = false;
-  private colors = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
-  private strengths = ['Worst', 'Bad', 'Weak', 'Good', 'Strong'];
-
-  strengthText = this.strengths[0];
-
-  /** getColor
-  /* find out which color to use
-  /* @param {number} s - index number, used to catch color
-  */
-  private getColor(s: number): { idx: number; col: string } {
-    let idx = 0;
-    if (s <= 10) {
-      idx = 0;
-    } else if (s <= 20) {
-      idx = 1;
-    } else if (s <= 30) {
-      idx = 2;
-    } else if (s <= 40) {
-      idx = 3;
+  @Input()
+  set passwordToCheck(value: string) {
+    const strength = PasswordStrength(value || '');
+    if (strength <= 10) {
+      this.index = 0;
+    } else if (strength <= 20) {
+      this.index = 1;
+    } else if (strength <= 30) {
+      this.index = 2;
+    } else if (strength <= 40) {
+      this.index = 3;
     } else {
-      idx = 4;
-    }
-    this.strengthText = this.strengths[idx];
-    return {
-      idx: idx + 1,
-      col: this.colors[idx],
-    };
-  }
-
-  /** ngOnChanges
-  /* execute when component changes
-  /* @param {object} changes - fields to watch for changes
-  */
-  ngOnChanges(changes: { [propName: string]: SimpleChange }): void {
-    const password = changes.passwordToCheck.currentValue;
-    this.setBarColors(5, '#DDD');
-    if (password) {
-      const c = this.getColor(PasswordStrength(password));
-      this.setBarColors(c.idx, c.col);
+      this.index = 4;
     }
   }
 
-  /** setBarColors
-  /* set colors of the bar to indicate password strength
-  /* @param {number} count - strength
-  /* @param {string} color - color of the bar
-  */
-  private setBarColors(count: number, col: string): void {
-    for (let _n = 0; _n < count; _n++) {
-      // tslint:disable-next-line: no-any
-      (this as any)['bar' + _n] = col;
+  getBarColor(i: number): string {
+    if (i <= this.index) {
+      return COLORS[this.index];
+    } else {
+      return '#ddd';
     }
   }
 
-  /** toggleInfo
-  /* toggle hinting/help
-  */
-  toggleInfo(): boolean {
+  getStrength(): string {
+    return TEXTS[this.index];
+  }
+
+  toggleInfo(): void {
     this.info = !this.info;
-    return false;
   }
 }
