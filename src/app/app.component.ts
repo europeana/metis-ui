@@ -5,7 +5,6 @@ import { Event, Router, RouterEvent } from '@angular/router';
 import { environment } from '../environments/environment';
 
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
-import { TranslateService } from './_translate';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +22,6 @@ export class AppComponent implements OnInit {
     private authentication: AuthenticationService,
     private errors: ErrorService,
     private router: Router,
-    private translate: TranslateService,
   ) {}
 
   /** ngOnInit
@@ -59,8 +57,6 @@ export class AppComponent implements OnInit {
         this.showWrapper = true;
       }
     });
-
-    this.translate.use('en');
   }
 
   /** closePrompt

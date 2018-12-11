@@ -5,7 +5,7 @@ export class MockTranslateService extends TranslateService {
     super({});
   }
 
-  protected translate(key: string): string {
+  public instant(key: string): string {
     return this.currentLang + ':' + key;
   }
 }
