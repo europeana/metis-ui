@@ -15,6 +15,15 @@
   cursor: pointer;
 }
 
+.notification-sticky {
+  padding-left: 1.2rem;
+  cursor: auto;
+
+  &::before {
+    display: none;
+  }
+}
+
 .error-notification {
   background-color: $eu-red;
 }
@@ -27,6 +36,10 @@
     background-color: transparent;
     padding: 0 0 0 1rem;
     margin-top: 0.6rem;
+  }
+
+  .notification-sticky {
+    padding-left: 0;
   }
 
   .error-notification {

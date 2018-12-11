@@ -17,7 +17,7 @@ import { CountriesService, DatasetsService, ErrorService } from '../../_services
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
-const INVALID_NOTIFICATION = errorNotification('Please check the form for errors.');
+const INVALID_NOTIFICATION = errorNotification('Please check the form for errors.', true);
 
 @Component({
   selector: 'app-datasetform',
@@ -161,7 +161,7 @@ export class DatasetformComponent implements OnInit {
   }
 
   updateFormMessage(): void {
-    if (this.datasetForm.valid) {
+    if (this.datasetForm.valid || this.datasetForm.disabled) {
       if (this.notification === INVALID_NOTIFICATION) {
         this.notification = undefined;
       }
