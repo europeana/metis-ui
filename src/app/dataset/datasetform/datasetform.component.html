@@ -22,8 +22,8 @@
         <div
           class="messages"
           *ngIf="
+            showErrors &&
             datasetForm.enabled &&
-            datasetForm.controls.datasetName.dirty &&
             !datasetForm.controls.datasetName.valid
           "
         >
@@ -46,8 +46,8 @@
         <div
           class="messages"
           *ngIf="
+            showErrors &&
             datasetForm.enabled &&
-            datasetForm.controls.provider.dirty &&
             !datasetForm.controls.provider.valid
           "
         >
@@ -87,6 +87,16 @@
           <option *ngIf="isNew" value="0"></option>
           <option *ngFor="let c of countryOptions" [ngValue]="c">{{ c.name }}</option>
         </select>
+        <div
+          class="messages"
+          *ngIf="
+            showErrors &&
+            datasetForm.enabled &&
+            !datasetForm.controls.country.valid
+          "
+        >
+          <div class="error-message">{{ 'fieldrequired' | translate }}</div>
+        </div>
       </div>
       <div class="form-group">
         <label for="language">{{ 'language' | translate }} *</label>
@@ -94,6 +104,16 @@
           <option *ngIf="isNew" value="0"></option>
           <option *ngFor="let l of languageOptions" [ngValue]="l">{{ l.name }}</option>
         </select>
+        <div
+          class="messages"
+          *ngIf="
+            showErrors &&
+            datasetForm.enabled &&
+            !datasetForm.controls.language.valid
+          "
+        >
+          <div class="error-message">{{ 'fieldrequired' | translate }}</div>
+        </div>
       </div>
       <div class="form-group">
         <label for="description">{{ 'description' | translate }}</label>
@@ -131,17 +151,13 @@
       </div>
 
       <div class="form-group form-group-btns user-profile-edit-btns">
-        <button class="submit" type="button" *ngIf="formMode === 'show'" (click)="editForm()">
-          {{ 'edit' | translate }}
-        </button>
-        <button class="reset-btn" type="button" *ngIf="formMode === 'edit'" (click)="cancel()">
+        <button class="reset-btn" type="button" *ngIf="isNew" (click)="cancel()">
           {{ 'cancel' | translate }}
         </button>
         <app-loading-button
-          *ngIf="formMode !== 'show'"
           classes="submit"
-          [disabled]="!datasetForm.valid"
-          [isLoading]="formMode == 'save'"
+          [disabled]="!datasetForm.valid && showErrors"
+          [isLoading]="isSaving"
           [title]="(isNew ? 'create' : 'save') | translate"
           [loadingTitle]="(isNew ? 'creating' : 'saving') | translate"
           (click)="onSubmit()"
