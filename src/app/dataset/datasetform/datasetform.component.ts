@@ -157,7 +157,7 @@ export class DatasetformComponent implements OnInit {
     this.notification = undefined;
 
     this.showErrors = true;
-    // check this before set isSaving to true, otherwise the form will be disabled
+    // check this before setting isSaving to true, otherwise the form will be disabled
     if (!this.datasetForm.valid) {
       this.notification = errorNotification('Submit failed. Please check the form for errors.');
       return;
