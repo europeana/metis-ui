@@ -112,8 +112,9 @@
     }
 
     select:disabled {
-      border-color: $opacity-gray-light;
-      color: $opacity-gray-light;
+      background: transparent;
+      border-color: $opacity-gray-very-light;
+      color: $gray-light;
     }
   }
 
@@ -281,8 +282,9 @@
         }
 
         &:disabled {
-          border-color: $opacity-gray-light;
-          color: $opacity-gray-light;
+          background: transparent;
+          border-color: $opacity-gray-very-light;
+          color: $gray-light;
 
           .svg-icon-search {
             display: none;
