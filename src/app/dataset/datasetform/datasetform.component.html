@@ -78,10 +78,10 @@
           <option *ngFor="let c of countryOptions" [ngValue]="c">{{ c.name }}</option>
         </select>
         <div class="input-subtitle">
-          <div class="input-subtitle-error" *ngIf="showError('provider')">
+          <div class="input-subtitle-error" *ngIf="showError('country')">
             {{ 'fieldrequired' | translate }}
           </div>
-          <div *ngIf="!showError('provider')">{{ 'required' | translate }}</div>
+          <div *ngIf="!showError('country')">{{ 'required' | translate }}</div>
         </div>
       </div>
       <div class="form-group">
