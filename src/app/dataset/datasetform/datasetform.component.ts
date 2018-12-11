@@ -80,6 +80,14 @@ export class DatasetformComponent implements OnInit {
     return this.datasetForm.enabled && !this.datasetForm.controls[fieldName].valid;
   }
 
+  fieldHasValue(fieldName: keyof Dataset): boolean {
+    return !!this.datasetForm.controls[fieldName].value;
+  }
+
+  clearField(fieldName: keyof Dataset): void {
+    this.datasetForm.controls[fieldName].setValue('');
+  }
+
   returnCountries(): void {
     this.countries.getCountries().subscribe(
       (result) => {
