@@ -94,6 +94,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     }
 
     if (this.logTo <= 1) {
+      this.isFirstLoading = false;
       this.showWindowOutput(undefined);
       return;
     }
