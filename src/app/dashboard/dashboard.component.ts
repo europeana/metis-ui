@@ -2,8 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { environment } from '../../environments/environment';
-import { PluginExecution, WorkflowExecution } from '../_models';
-import { AuthenticationService, ErrorService, WorkflowService } from '../_services';
+import { Dataset, PluginExecution, WorkflowExecution } from '../_models';
+import {
+  AuthenticationService,
+  DatasetsService,
+  ErrorService,
+  WorkflowService,
+} from '../_services';
 import { TranslateService } from '../_translate';
 
 @Component({
@@ -24,10 +29,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   finishedCurrentPage = 0;
   finishedHasMore = false;
   showPluginLog?: PluginExecution;
+  favoriteDatasets?: Dataset[];
 
   constructor(
     private authentication: AuthenticationService,
     private translate: TranslateService,
+    private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
   ) {}
@@ -35,6 +42,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getRunningExecutions();
     this.getFinishedExecutions();
+    this.datasets.getFavorites().subscribe((datasets) => {
+      datasets.reverse();
+      this.favoriteDatasets = datasets;
+    });
 
     this.translate.use('en');
 
