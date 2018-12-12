@@ -27,6 +27,7 @@ import { AppComponent } from './app.component';
 import {
   DashboardactionsComponent,
   DashboardComponent,
+  DatasetsComponent,
   ExecutionsComponent,
   ExecutiontableComponent,
   OngoingexecutionsComponent,
@@ -95,6 +96,7 @@ import {
     ExecutiontableComponent,
     NotificationComponent,
     LoadingButtonComponent,
+    DatasetsComponent,
   ],
   imports: [
     BrowserModule,
