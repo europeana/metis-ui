@@ -42,3 +42,13 @@ hr {
     top: 8px;
   }
 }
+
+.star {
+  padding-left: 0.5rem;
+  color: $gray-lighter;
+  cursor: pointer;
+}
+
+.star-active {
+  color: $eu-jade;
+}
