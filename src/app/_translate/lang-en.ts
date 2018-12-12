@@ -37,6 +37,7 @@ export const LANG_EN_TRANS = {
   errorharvestparameters: 'Parameters are not allowed',
   errorharvesturl: 'This is not a valid URL',
   expand: 'Expand info',
+  favoritedatasets: 'Favorite datasets',
   fieldrequired: 'This field is required',
   firstname: 'First name',
   firstpublished: 'First published',
