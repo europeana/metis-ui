@@ -4,15 +4,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from '.';
-import {
-  createMockPipe,
-  MockAuthenticationService,
-  MockDatasetService,
-  MockWorkflowService,
-} from './_mocked';
+import { createMockPipe, MockAuthenticationService, MockWorkflowService } from './_mocked';
 import {
   AuthenticationService,
-  DatasetsService,
   ErrorService,
   RedirectPreviousUrl,
   WorkflowService,
@@ -28,7 +22,6 @@ describe('AppComponent', () => {
       declarations: [AppComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,

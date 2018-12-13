@@ -1,7 +1,9 @@
+import { EventEmitter } from '@angular/core';
 import { Observable, of as observableOf } from 'rxjs';
 
 import {
   HarvestData,
+  MoreResults,
   PluginStatus,
   Report,
   Results,
@@ -256,7 +258,13 @@ export const harvestData: HarvestData = {
   lastHarvestedRecords: 842,
 };
 
-export class MockWorkflowService extends WorkflowService {
+export class MockWorkflowService {
+  public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
+
+  getCurrentPlugin(workflow: WorkflowExecution): number {
+    return WorkflowService.getCurrentPlugin(workflow);
+  }
+
   startWorkflow(): Observable<WorkflowExecution> {
     return observableOf(currentWorkflow.results[0]);
   }
@@ -277,13 +285,29 @@ export class MockWorkflowService extends WorkflowService {
     return observableOf(currentWorkflow.results[0]);
   }
 
-  protected getAllExecutions(): Observable<Results<WorkflowExecution>> {
-    return observableOf(currentWorkflow);
+  getAllExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
+    return observableOf(currentWorkflow.results);
+  }
+
+  getAllExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
+    return observableOf({ results: currentWorkflow.results, more: false });
+  }
+
+  getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
+    return observableOf({ results: currentWorkflow.results, more: false });
   }
 
   getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
     return observableOf(currentWorkflow);
   }
+
+  getDatasetExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
+    return observableOf(currentWorkflow.results);
+  }
+
+  promptCancelThisWorkflow(): void {}
+
+  getReportsForExecution(): void {}
 
   getWorkflowSamples(): Observable<XmlSample[]> {
     return observableOf(xmlSamples);
