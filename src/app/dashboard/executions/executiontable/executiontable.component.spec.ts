@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import {
@@ -10,7 +11,6 @@ import { WorkflowService } from '../../../_services';
 import { TranslateService } from '../../../_translate';
 
 import { ExecutiontableComponent } from '.';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;
