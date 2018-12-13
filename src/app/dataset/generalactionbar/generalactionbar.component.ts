@@ -1,16 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Workflow, WorkflowExecution, WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-generalactionbar',
   templateUrl: './generalactionbar.component.html',
   styleUrls: ['./generalactionbar.component.scss'],
 })
-export class GeneralactionbarComponent implements OnInit {
-  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
+export class GeneralactionbarComponent {
+  constructor(private workflows: WorkflowService) {}
 
   @Input() datasetId: string;
   @Input() workflowData?: Workflow;
@@ -32,8 +31,4 @@ export class GeneralactionbarComponent implements OnInit {
   currentPlugin = 0;
   totalPlugins = 0;
   pluginPercentage = 0;
-
-  ngOnInit(): void {
-    this.translate.use('en');
-  }
 }

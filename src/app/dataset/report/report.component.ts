@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import {
   errorNotification,
@@ -8,18 +8,13 @@ import {
   ReportRequest,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
 })
-export class ReportComponent implements OnInit {
-  constructor(
-    private translate: TranslateService,
-    private workflows: WorkflowService,
-    private errorService: ErrorService,
-  ) {}
+export class ReportComponent {
+  constructor(private workflows: WorkflowService, private errorService: ErrorService) {}
 
   isVisible: boolean;
   isLoading: boolean;
@@ -57,10 +52,6 @@ export class ReportComponent implements OnInit {
       this.isVisible = false;
       this.isLoading = false;
     }
-  }
-
-  ngOnInit(): void {
-    this.translate.use('en');
   }
 
   reportKeys(o: Object): string[] {

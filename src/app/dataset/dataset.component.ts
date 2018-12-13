@@ -16,7 +16,6 @@ import {
   WorkflowExecution,
 } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
-import { TranslateService } from '../_translate';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;
@@ -33,7 +32,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
-    private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
@@ -80,8 +78,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
 
       this.loadData();
     });
-
-    this.translate.use('en');
   }
 
   ngOnDestroy(): void {

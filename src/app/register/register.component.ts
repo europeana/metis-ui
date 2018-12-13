@@ -57,7 +57,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
       ),
     });
 
-    this.translate.use('en');
     this.msgSuccess = this.translate.instant('registrationsuccessful');
     this.msgPasswordWeak = this.translate.instant('passwordweakerror');
     this.msgRegistrationFailed = this.translate.instant('registrationfailed');

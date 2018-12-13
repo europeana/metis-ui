@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -6,18 +5,13 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import {
+  createMockPipe,
   currentDataset,
   MockCountriesService,
   MockDatasetService,
-  MockTranslateService,
+  MockErrorService,
 } from '../../_mocked';
-import {
-  CountriesService,
-  DatasetsService,
-  ErrorService,
-  RedirectPreviousUrl,
-} from '../../_services';
-import { TranslatePipe, TranslateService } from '../../_translate';
+import { CountriesService, DatasetsService, ErrorService } from '../../_services';
 
 import { DatasetformComponent } from '.';
 
@@ -28,14 +22,12 @@ describe('DatasetformComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule, HttpClientModule],
-      declarations: [DatasetformComponent, TranslatePipe],
+      imports: [RouterTestingModule, ReactiveFormsModule],
+      declarations: [DatasetformComponent, createMockPipe('translate')],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: CountriesService, useClass: MockCountriesService },
-        ErrorService,
-        RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: ErrorService, useClass: MockErrorService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     });

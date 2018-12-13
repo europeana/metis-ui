@@ -14,7 +14,6 @@ import {
   successNotification,
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
 const INVALID_NOTIFICATION = errorNotification('Please check the form for errors.', true);
@@ -56,7 +55,6 @@ export class DatasetformComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private translate: TranslateService,
   ) {}
 
   private updateFormEnabled(): void {
@@ -70,8 +68,6 @@ export class DatasetformComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.translate.use('en');
-
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();

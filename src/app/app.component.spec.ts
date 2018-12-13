@@ -1,23 +1,15 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from '.';
 import {
+  createMockPipe,
   MockAuthenticationService,
-  MockDatasetService,
-  MockTranslateService,
+  MockErrorService,
   MockWorkflowService,
 } from './_mocked';
-import {
-  AuthenticationService,
-  DatasetsService,
-  ErrorService,
-  RedirectPreviousUrl,
-  WorkflowService,
-} from './_services';
-import { TranslatePipe, TranslateService } from './_translate';
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -25,16 +17,13 @@ describe('AppComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [AppComponent, TranslatePipe],
+      imports: [RouterTestingModule],
+      declarations: [AppComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        ErrorService,
-        RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: ErrorService, useClass: MockErrorService },
       ],
     }).compileComponents();
   }));

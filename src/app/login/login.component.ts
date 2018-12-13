@@ -50,7 +50,6 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required],
     });
 
-    this.translate.use('en');
     this.msgBadCredentials = this.translate.instant('msgbadcredentials');
   }
 

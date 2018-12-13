@@ -1,13 +1,10 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 
-import { MockAuthenticationService, MockTranslateService } from '../_mocked';
-import { AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TranslatePipe, TranslateService } from '../_translate';
+import { createMockPipe, MockAuthenticationService, MockErrorService } from '../_mocked';
+import { AuthenticationService, ErrorService } from '../_services';
 
 import { ProfileComponent } from '.';
 
@@ -17,13 +14,11 @@ describe('ProfileComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientModule, ReactiveFormsModule],
-      declarations: [ProfileComponent, TranslatePipe],
+      imports: [ReactiveFormsModule],
+      declarations: [ProfileComponent, createMockPipe('translate')],
       providers: [
-        ErrorService,
-        RedirectPreviousUrl,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: ErrorService, useClass: MockErrorService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

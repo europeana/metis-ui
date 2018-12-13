@@ -14,7 +14,6 @@ import {
   WorkflowStatus,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-history',
@@ -22,11 +21,7 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./history.component.scss'],
 })
 export class HistoryComponent implements OnInit, OnDestroy {
-  constructor(
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private translate: TranslateService,
-  ) {}
+  constructor(private workflows: WorkflowService, private errors: ErrorService) {}
 
   @Input() datasetData: Dataset;
 
@@ -59,8 +54,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.returnAllExecutions();
-
-    this.translate.use('en');
   }
 
   ngOnDestroy(): void {
@@ -96,10 +89,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
       );
   }
 
-  scroll(el: Element): void {
-    el.scrollIntoView({ behavior: 'smooth' });
-  }
-
   loadNextPage(): void {
     this.currentPage++;
     this.returnAllExecutions();
@@ -107,10 +96,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   openReport(taskId: string, topology: string): void {
     this.setReportRequest.emit({ taskId, topology });
-  }
-
-  closeReport(): void {
-    this.report = undefined;
   }
 
   copyInformation(type: string, id1: string, id2: string): void {

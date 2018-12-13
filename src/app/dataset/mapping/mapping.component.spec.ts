@@ -1,27 +1,20 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { CodemirrorModule } from 'ng2-codemirror';
 
-import { XmlPipe } from '../../_helpers';
 import {
+  createMockPipe,
   currentDataset,
   MockDatasetService,
+  MockErrorService,
   MockTranslateService,
   MockWorkflowService,
   statistics,
 } from '../../_mocked';
-import {
-  DatasetsService,
-  ErrorService,
-  RedirectPreviousUrl,
-  WorkflowService,
-} from '../../_services';
-import { TranslatePipe, TranslateService } from '../../_translate';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 import { MappingComponent } from '.';
 
@@ -32,14 +25,13 @@ describe('MappingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule, CodemirrorModule, FormsModule],
-      declarations: [MappingComponent, TranslatePipe, XmlPipe],
+      imports: [RouterTestingModule],
+      declarations: [MappingComponent, createMockPipe('translate'), createMockPipe('beautifyXML')],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: TranslateService, useClass: MockTranslateService },
-        RedirectPreviousUrl,
-        ErrorService,
+        { provide: ErrorService, useClass: MockErrorService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

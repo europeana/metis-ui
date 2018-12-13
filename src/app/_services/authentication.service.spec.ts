@@ -4,7 +4,7 @@ import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { currentUser } from '../_mocked';
+import { currentUser, MockErrorService } from '../_mocked';
 import { ErrorService, RedirectPreviousUrl } from '../_services';
 
 import { AuthenticationService } from '.';
@@ -19,7 +19,11 @@ describe('AuthenticationService', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientModule],
-      providers: [RedirectPreviousUrl, HttpTestingController, ErrorService],
+      providers: [
+        RedirectPreviousUrl,
+        HttpTestingController,
+        { provide: ErrorService, useClass: MockErrorService },
+      ],
     }).compileComponents();
 
     router = TestBed.get(Router);
@@ -31,21 +35,25 @@ describe('AuthenticationService', () => {
   }));
 
   it('should return whether a user is validated', () => {
-    if (service) {
-      expect(service.validatedUser()).toBe(false);
-    }
+    expect(service.validatedUser()).toBe(false);
+
+    localStorage.setItem('currentUser', '{}');
+    expect(service.validatedUser()).toBe(true);
   });
 
   it('should try to get a token', () => {
-    if (service) {
-      expect(service.getToken()).toBe(null);
-    }
+    expect(service.getToken()).toBe(null);
+
+    localStorage.setItem('currentUser', '{"token":"svfvdf"}');
+    expect(service.getToken()).toBe('svfvdf');
   });
 
   it('should get the current user', () => {
-    if (service) {
-      service.currentUser = currentUser;
-      expect(service.getCurrentUser()).not.toBe(null);
-    }
+    service.currentUser = currentUser;
+    expect(service.getCurrentUser()).not.toBe(null);
+  });
+
+  afterEach(() => {
+    localStorage.removeItem('currentUser');
   });
 });

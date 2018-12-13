@@ -9,7 +9,6 @@ import {
   ErrorService,
   WorkflowService,
 } from '../_services';
-import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,7 +32,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private authentication: AuthenticationService,
-    private translate: TranslateService,
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
@@ -46,8 +44,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       datasets.reverse();
       this.favoriteDatasets = datasets;
     });
-
-    this.translate.use('en');
 
     const user = this.authentication.getCurrentUser();
     if (user) {

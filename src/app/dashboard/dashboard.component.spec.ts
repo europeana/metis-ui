@@ -1,18 +1,20 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 
-import { MockAuthenticationService, MockTranslateService, MockWorkflowService } from '../_mocked';
+import {
+  createMockPipe,
+  MockAuthenticationService,
+  MockDatasetService,
+  MockErrorService,
+  MockWorkflowService,
+} from '../_mocked';
 import { PluginStatus } from '../_models';
 import {
   AuthenticationService,
   DatasetsService,
   ErrorService,
-  RedirectPreviousUrl,
   WorkflowService,
 } from '../_services';
-import { TranslatePipe, TranslateService } from '../_translate';
 
 import { DashboardComponent } from '.';
 
@@ -22,15 +24,12 @@ describe('DashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientModule],
-      declarations: [DashboardComponent, TranslatePipe],
+      declarations: [DashboardComponent, createMockPipe('translate')],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        DatasetsService,
-        ErrorService,
-        RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: ErrorService, useClass: MockErrorService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

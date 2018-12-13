@@ -1,16 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
 import { Dataset, HarvestData } from '../../_models';
-import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-generalinfo',
   templateUrl: './generalinfo.component.html',
 })
-export class GeneralinfoComponent implements OnInit {
-  constructor(private translate: TranslateService) {}
-
+export class GeneralinfoComponent {
   @Input() datasetData: Dataset;
 
   lastPublishedRecords?: number;
@@ -53,10 +50,6 @@ export class GeneralinfoComponent implements OnInit {
 
   get harvestPublicationData(): HarvestData {
     return this._harvestPublicationData;
-  }
-
-  ngOnInit(): void {
-    this.translate.use('en');
   }
 
   // format urls to link and preview

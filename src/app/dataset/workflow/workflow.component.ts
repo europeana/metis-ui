@@ -13,7 +13,6 @@ import {
   Workflow,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 interface Connections {
   [host: string]: number;
@@ -29,7 +28,6 @@ export class WorkflowComponent implements OnInit {
     private workflows: WorkflowService,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private translate: TranslateService,
     private router: Router,
   ) {
     router.events.subscribe((s) => {
@@ -76,8 +74,6 @@ export class WorkflowComponent implements OnInit {
   /* get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit(): void {
-    this.translate.use('en');
-
     this.buildForm();
     this.getWorkflow();
     this.currentUrl = this.router.url.split('#')[0];

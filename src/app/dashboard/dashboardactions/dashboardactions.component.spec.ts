@@ -1,7 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MockTranslateService } from '../../_mocked';
-import { TranslatePipe, TranslateService } from '../../_translate';
+import { createMockPipe } from '../../_mocked';
 
 import { DashboardactionsComponent } from '.';
 
@@ -11,8 +10,7 @@ describe('DashboardactionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DashboardactionsComponent, TranslatePipe],
-      providers: [{ provide: TranslateService, useClass: MockTranslateService }],
+      declarations: [DashboardactionsComponent, createMockPipe('translate')],
     }).compileComponents();
   }));
 
