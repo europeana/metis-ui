@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { environment } from '../../environments/environment';
-import { Dataset, PluginExecution, WorkflowExecution } from '../_models';
+import { Dataset, getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import {
   AuthenticationService,
   DatasetsService,
@@ -69,8 +69,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       executions.forEach((execution) => {
         const plugin = execution.metisPlugins.find((p) => p.externalTaskId === showingId);
         if (plugin) {
-          const currentPlugin = execution.metisPlugins[this.workflows.getCurrentPlugin(execution)];
-          this.showPluginLog = currentPlugin;
+          this.showPluginLog = getCurrentPlugin(execution);
         }
       });
     }

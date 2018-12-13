@@ -10,16 +10,14 @@
           (dblclick)="
             copyInformation(
               'plugin',
-              ongoing.metisPlugins[ongoing.currentPlugin].externalTaskId,
-              ongoing.metisPlugins[ongoing.currentPlugin].id
+              ongoing.currentPlugin.externalTaskId,
+              ongoing.currentPlugin.id
             )
           "
         >
-          <span>{{ ongoing.metisPlugins[ongoing.currentPlugin].pluginType }}</span>
+          <span>{{ ongoing.currentPlugin.pluginType }}</span>
         </strong>
-        {{
-          ongoing.cancelling ? cancelling : ongoing.metisPlugins[ongoing.currentPlugin].pluginStatus
-        }}
+        {{ ongoing.cancelling ? cancelling : ongoing.currentPlugin.pluginStatus }}
       </div>
       <div class="progress">
         <span>{{ ongoing.datasetId }}</span>
@@ -29,7 +27,7 @@
         <div class="progress-status">
           <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
           <span class="progress-percentage"
-            >{{ 'step' | translate }} {{ ongoing.currentPlugin }}/{{
+            >{{ 'step' | translate }} {{ ongoing.currentPluginIndex }}/{{
               ongoing.metisPlugins.length
             }}</span
           >
@@ -38,8 +36,8 @@
           <div
             class="progressbar-done"
             [style.width.%]="
-              (ongoing.currentPlugin / ongoing.metisPlugins.length) * 100 >= 0
-                ? (ongoing.currentPlugin / ongoing.metisPlugins.length) * 100
+              (ongoing.currentPluginIndex / ongoing.metisPlugins.length) * 100 >= 0
+                ? (ongoing.currentPluginIndex / ongoing.metisPlugins.length) * 100
                 : 0
             "
           ></div>
@@ -54,8 +52,8 @@
           <li
             *ngIf="
               !ongoing.cancelling &&
-              ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'PUBLISH' &&
-              ongoing.metisPlugins[ongoing.currentPlugin].pluginType !== 'MEDIA_PROCESS'
+              ongoing.currentPlugin.pluginType !== 'PUBLISH' &&
+              ongoing.currentPlugin.pluginType !== 'MEDIA_PROCESS'
             "
           >
             <a

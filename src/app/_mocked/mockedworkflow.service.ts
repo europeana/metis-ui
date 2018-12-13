@@ -15,7 +15,6 @@ import {
   WorkflowStatus,
   XmlSample,
 } from '../_models';
-import { WorkflowService } from '../_services';
 
 export const currentWorkflowDataset: Workflow = {
   datasetId: '1',
@@ -260,10 +259,6 @@ export const harvestData: HarvestData = {
 
 export class MockWorkflowService {
   public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
-
-  getCurrentPlugin(workflow: WorkflowExecution): number {
-    return WorkflowService.getCurrentPlugin(workflow);
-  }
 
   startWorkflow(): Observable<WorkflowExecution> {
     return observableOf(currentWorkflow.results[0]);

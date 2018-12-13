@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
+  getCurrentPlugin,
   PluginExecution,
   PluginStatus,
   Report,
@@ -40,7 +41,7 @@ export class LastExecutionComponent {
       ) {
         this.currentPlugin = undefined;
       } else {
-        this.currentPlugin = value.metisPlugins[this.workflows.getCurrentPlugin(value)];
+        this.currentPlugin = getCurrentPlugin(value);
       }
 
       this.pluginExecutions = value.metisPlugins.slice();

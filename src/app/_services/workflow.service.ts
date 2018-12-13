@@ -5,6 +5,8 @@ import { map, publishLast, switchMap, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
+  getCurrentPlugin,
+  getCurrentPluginIndex,
   HarvestData,
   MoreResults,
   Report,
@@ -30,26 +32,6 @@ export class WorkflowService {
   public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
 
   reportByKey: { [key: string]: Observable<Report> } = {};
-
-  // get plugin that is currently running for a specific dataset/workflow
-  // in case there is no plugin running, return last plugin
-  static getCurrentPlugin(workflow: WorkflowExecution): number {
-    let currentPlugin = 0;
-    for (let i = 0; i < workflow.metisPlugins.length; i++) {
-      currentPlugin = i;
-      if (
-        workflow.metisPlugins[i].pluginStatus === 'INQUEUE' ||
-        workflow.metisPlugins[i].pluginStatus === 'RUNNING'
-      ) {
-        break;
-      }
-    }
-    return currentPlugin;
-  }
-
-  public getCurrentPlugin(workflow: WorkflowExecution): number {
-    return WorkflowService.getCurrentPlugin(workflow);
-  }
 
   private collectAllResults<T>(
     getResults: (page: number) => Observable<Results<T>>,
@@ -242,7 +224,8 @@ export class WorkflowService {
     }
 
     executions.forEach((execution) => {
-      execution.currentPlugin = this.getCurrentPlugin(execution);
+      execution.currentPlugin = getCurrentPlugin(execution);
+      execution.currentPluginIndex = getCurrentPluginIndex(execution);
     });
 
     const observables = executions.map(({ datasetId }) =>

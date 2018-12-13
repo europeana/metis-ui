@@ -1,7 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
-import { PluginExecution, Report, ReportRequest, Workflow, WorkflowExecution } from '../../_models';
+import {
+  getCurrentPlugin,
+  PluginExecution,
+  Report,
+  ReportRequest,
+  Workflow,
+  WorkflowExecution,
+} from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -43,8 +50,7 @@ export class ActionbarComponent implements OnInit {
     this._lastExecutionData = value;
 
     if (value) {
-      const index = this.workflows.getCurrentPlugin(value);
-      this.currentPlugin = value.metisPlugins[index];
+      this.currentPlugin = getCurrentPlugin(value);
 
       if (!value.cancelling) {
         this.currentStatus = this.currentPlugin.pluginStatus || '-';
