@@ -1,11 +1,9 @@
-import { TranslateService } from '../_translate';
-
-export class MockTranslateService extends TranslateService {
-  public constructor() {
-    super({});
+export class MockTranslateService {
+  public use(_: string): void {
+    // console.log('translateService.use is deprecated');
   }
 
   public instant(key: string): string {
-    return this.currentLang + ':' + key;
+    return `en:${key}`;
   }
 }

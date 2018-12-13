@@ -13,7 +13,6 @@ import {
 import {
   AuthenticationService,
   ErrorService,
-  RedirectPreviousUrl,
   WorkflowService,
 } from './_services';
 
@@ -30,7 +29,6 @@ describe('AppComponent', () => {
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: ErrorService, useClass: MockErrorService },
-        RedirectPreviousUrl,
       ],
     }).compileComponents();
   }));

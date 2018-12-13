@@ -1,7 +1,6 @@
 import { Observable, of as observableOf } from 'rxjs';
 
 import { AccountRole, User } from '../_models';
-import { AuthenticationService } from '../_services';
 
 export const currentUser: User = {
   accountRole: AccountRole.EUROPEANA_DATA_OFFICER,
@@ -19,7 +18,7 @@ export const currentUser: User = {
   userId: '1',
 };
 
-export class MockAuthenticationService extends AuthenticationService {
+export class MockAuthenticationService {
   currentUser = currentUser;
 
   validatedUser(): boolean {
@@ -38,7 +37,14 @@ export class MockAuthenticationService extends AuthenticationService {
     return observableOf(true);
   }
 
+  logout(): void {
+  }
+
   register(): Observable<boolean> {
     return observableOf(true);
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUser;
   }
 }

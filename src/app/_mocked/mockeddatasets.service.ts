@@ -1,7 +1,6 @@
 import { Observable, of as observableOf } from 'rxjs';
 
 import { Dataset, XmlSample } from '../_models';
-import { DatasetsService } from '../_services';
 
 export const currentDataset: Dataset = {
   country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },
@@ -44,7 +43,7 @@ export const XMLTransformSamples: XmlSample[] = [
   },
 ];
 
-export class MockDatasetService extends DatasetsService {
+export class MockDatasetService {
   getXSLT(): Observable<string> {
     return observableOf(xslt);
   }
@@ -64,5 +63,9 @@ export class MockDatasetService extends DatasetsService {
 
   getTransform(): Observable<XmlSample[]> {
     return observableOf(XMLTransformSamples);
+  }
+
+  isFavorite(): boolean {
+    return false;
   }
 }

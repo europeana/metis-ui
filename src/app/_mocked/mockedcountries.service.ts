@@ -1,7 +1,6 @@
 import { Observable, of as observableOf } from 'rxjs';
 
 import { Country, Language } from '../_models';
-import { CountriesService } from '../_services';
 
 export const mockedCountries: Country[] = [
   { enum: 'CHINA', name: 'China', isoCode: 'CN' },
@@ -13,7 +12,7 @@ export const mockedLanguages: Language[] = [
   { enum: 'FR', name: 'French' },
 ];
 
-export class MockCountriesService extends CountriesService {
+export class MockCountriesService {
   getCountries(): Observable<Country[]> {
     return observableOf(mockedCountries);
   }
