@@ -37,8 +37,7 @@ export class MockAuthenticationService {
     return observableOf(true);
   }
 
-  logout(): void {
-  }
+  logout(): void {}
 
   register(): Observable<boolean> {
     return observableOf(true);

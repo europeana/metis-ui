@@ -10,11 +10,7 @@ import {
   MockErrorService,
   MockWorkflowService,
 } from './_mocked';
-import {
-  AuthenticationService,
-  ErrorService,
-  WorkflowService,
-} from './_services';
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
