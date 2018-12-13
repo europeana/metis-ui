@@ -21,14 +21,9 @@ export class OngoingexecutionsComponent implements OnInit {
   contentCopied = false;
 
   ngOnInit(): void {
-    this.translate.use('en');
     this.cancelling = this.translate.instant('cancelling');
   }
 
-  /** cancelWorkflow
-  /*  start cancellation of the dataset with id
-  /* @param {number} id - id of the dataset to cancel
-  */
   cancelWorkflow(id: string): void {
     if (!id) {
       return;
@@ -36,29 +31,11 @@ export class OngoingexecutionsComponent implements OnInit {
     this.workflows.promptCancelThisWorkflow(id);
   }
 
-  /** showLog
-  /*  show the log for the current/last execution
-  /* @param {number} externalTaskId - id of the external task that belongs to topology/plugin
-  /* @param {string} topology - name of the topology
-  */
   showLog(workflow: WorkflowExecution): void {
     const plugin = workflow.metisPlugins[this.workflows.getCurrentPlugin(workflow)];
     this.setShowPluginLog.emit(plugin);
   }
 
-  /** viewAll
-  /*  scrolls to top of all executions table/top of page
-  */
-  viewAll(): void {
-    window.scrollTo(0, 0);
-  }
-
-  /*** copyInformation
-  /* after double clicking, copy the execution and task id to the clipboard
-  /* @param {string} type - execution or plugin
-  /* @param {string} id1 - an id, depending on type
-  /* @param {string} id2 - an id, depending on type
-  */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;

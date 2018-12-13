@@ -1,15 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { WorkflowExecution } from '../../_models';
-import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-executions',
   templateUrl: './executions.component.html',
   styleUrls: ['./executions.component.scss'],
 })
-export class ExecutionsComponent implements OnInit {
-  constructor(private translate: TranslateService) {}
+export class ExecutionsComponent {
+  constructor() {}
 
   @Input() runningExecutions: WorkflowExecution[];
   @Input() finishedExecutions: WorkflowExecution[];
@@ -17,10 +16,6 @@ export class ExecutionsComponent implements OnInit {
   @Input() hasMore: boolean;
 
   @Output() nextPage: EventEmitter<void> = new EventEmitter();
-
-  ngOnInit(): void {
-    this.translate.use('en');
-  }
 
   loadNextPage(): void {
     this.nextPage.emit();

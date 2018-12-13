@@ -1,8 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { MockTranslateService } from '../../_mocked';
-import { TranslatePipe, TranslateService } from '../../_translate';
+import { createMockPipe } from '../../_mocked';
 
 import { DatasetsComponent } from '.';
 
@@ -13,8 +12,7 @@ describe('DatasetsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      declarations: [DatasetsComponent, TranslatePipe],
-      providers: [{ provide: TranslateService, useClass: MockTranslateService }],
+      declarations: [DatasetsComponent, createMockPipe('translate')],
     }).compileComponents();
   }));
 

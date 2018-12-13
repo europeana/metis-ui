@@ -3,18 +3,13 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import {
+  createMockPipe,
   currentWorkflow,
-  MockDatasetService,
   MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
-import {
-  DatasetsService,
-  ErrorService,
-  RedirectPreviousUrl,
-  WorkflowService,
-} from '../../_services';
-import { TranslatePipe, TranslateService } from '../../_translate';
+import { WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 import { OngoingexecutionsComponent } from '.';
 
@@ -25,12 +20,9 @@ describe('OngoingexecutionsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [OngoingexecutionsComponent, TranslatePipe],
+      declarations: [OngoingexecutionsComponent, createMockPipe('translate')],
       providers: [
-        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        ErrorService,
-        RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
@@ -51,12 +43,6 @@ describe('OngoingexecutionsComponent', () => {
     component.showLog(currentWorkflow.results[0]);
     fixture.detectChanges();
     expect(component.setShowPluginLog.emit).toHaveBeenCalled();
-  });
-
-  it('should click view all', () => {
-    component.viewAll();
-    fixture.detectChanges();
-    expect(window.pageYOffset).toBe(0);
   });
 
   it('should copy information', () => {
