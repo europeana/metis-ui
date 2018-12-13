@@ -22,7 +22,15 @@
           </ul>
         </div>
       </li>
-      <li class="dropdown dropdown-plugin" *ngIf="allPlugins && allPlugins.length > 0">
+      <li
+        class="dropdown dropdown-plugin"
+        *ngIf="
+          allWorkflowExecutions &&
+          allWorkflowExecutions.length > 0 &&
+          allPlugins &&
+          allPlugins.length > 0
+        "
+      >
         <a (click)="toggleFilterPlugin()"
           >{{ 'plugin' | translate
           }}<span *ngIf="selectedPlugin">: {{ selectedPlugin | renameWorkflow }}</span></a
