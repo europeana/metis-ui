@@ -4,13 +4,13 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import {
+  createMockPipe,
   currentWorkflow,
   MockDatasetService,
-  MockTranslateService,
+  MockErrorService,
   MockWorkflowService,
 } from '../_mocked';
-import { DatasetsService, ErrorService, RedirectPreviousUrl, WorkflowService } from '../_services';
-import { TranslatePipe, TranslateService } from '../_translate';
+import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
 import { DatasetComponent } from '.';
 
@@ -21,13 +21,11 @@ describe('DatasetComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      declarations: [DatasetComponent, TranslatePipe],
+      declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        ErrorService,
-        RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: ErrorService, useClass: MockErrorService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
