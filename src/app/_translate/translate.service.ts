@@ -10,6 +10,8 @@ interface Translations {
     | undefined;
 }
 
+const CURRENT_LANG = 'currentLang';
+
 @Injectable()
 export class TranslateService {
   private _currentLang: string;
@@ -19,16 +21,12 @@ export class TranslateService {
   }
 
   constructor(@Inject(TRANSLATIONS) private _translations: Translations) {
-    this._currentLang = localStorage.getItem('currentLang') || 'en';
+    this._currentLang = localStorage.getItem(CURRENT_LANG) || 'en';
   }
 
   public changeLang(lang: string): void {
-    localStorage.setItem('currentLang', lang);
+    localStorage.setItem(CURRENT_LANG, lang);
     window.location.reload();
-  }
-
-  public use(_: string): void {
-    console.log('translateService.use is deprecated');
   }
 
   public instant(key: string): string {
