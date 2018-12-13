@@ -7,6 +7,7 @@ import {
   Report,
   ReportRequest,
   WorkflowExecution,
+  WorkflowStatus,
 } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -24,20 +25,27 @@ export class LastExecutionComponent implements OnInit {
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
   report?: Report;
-  completedPlugins: PluginExecution[] = [];
+  pluginExecutions: PluginExecution[] = [];
+  currentPlugin?: PluginExecution;
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
     if (value) {
       this.workflows.getReportsForExecution(value);
 
-      this.completedPlugins = value.metisPlugins.filter(
-        ({ pluginStatus }) =>
-          pluginStatus === PluginStatus.FINISHED ||
-          pluginStatus === PluginStatus.FAILED ||
-          pluginStatus === PluginStatus.CANCELLED,
-      );
-      this.completedPlugins.reverse();
+      const { workflowStatus } = value;
+      if (
+        workflowStatus === WorkflowStatus.FINISHED ||
+        workflowStatus === WorkflowStatus.FAILED ||
+        workflowStatus === WorkflowStatus.CANCELLED
+      ) {
+        this.currentPlugin = undefined;
+      } else {
+        this.currentPlugin = value.metisPlugins[this.workflows.getCurrentPlugin(value)];
+      }
+
+      this.pluginExecutions = value.metisPlugins.slice();
+      this.pluginExecutions.reverse();
     }
   }
 
@@ -57,5 +65,19 @@ export class LastExecutionComponent implements OnInit {
   // after double clicking, copy the execution and task id to the clipboard
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
+  }
+
+  getPluginStatusClass(plugin: PluginExecution): string {
+    const { executionProgress, pluginStatus } = plugin;
+    if (
+      executionProgress.errors > 0 &&
+      (pluginStatus === PluginStatus.FINISHED || pluginStatus === PluginStatus.CANCELLED)
+    ) {
+      return 'status-warning';
+    } else if (plugin !== this.currentPlugin && pluginStatus === PluginStatus.INQUEUE) {
+      return 'status-scheduled';
+    } else {
+      return `status-${pluginStatus.toString().toLowerCase()}`;
+    }
   }
 }
