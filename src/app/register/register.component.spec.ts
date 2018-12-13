@@ -1,12 +1,11 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { MockAuthenticationService, MockTranslateService } from '../_mocked';
-import { AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TranslatePipe, TranslateService } from '../_translate';
+import { createMockPipe, MockAuthenticationService, MockTranslateService } from '../_mocked';
+import { AuthenticationService } from '../_services';
+import { TranslateService } from '../_translate';
 
 import { RegisterComponent } from '.';
 
@@ -17,11 +16,9 @@ describe('RegisterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      declarations: [RegisterComponent, TranslatePipe],
+      imports: [RouterTestingModule, ReactiveFormsModule],
+      declarations: [RegisterComponent, createMockPipe('translate')],
       providers: [
-        RedirectPreviousUrl,
-        ErrorService,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],

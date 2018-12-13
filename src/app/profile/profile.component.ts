@@ -6,7 +6,6 @@ import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification, successNotification, User } from '../_models';
 import { AuthenticationService, ErrorService } from '../_services';
-import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-profile',
@@ -24,7 +23,6 @@ export class ProfileComponent implements OnInit {
   constructor(
     private authentication: AuthenticationService,
     private fb: FormBuilder,
-    private translate: TranslateService,
     private errors: ErrorService,
   ) {}
 
@@ -35,7 +33,6 @@ export class ProfileComponent implements OnInit {
   */
   ngOnInit(): void {
     this.createForm();
-    this.translate.use('en');
   }
 
   /** createForm
