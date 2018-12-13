@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
@@ -10,15 +10,14 @@ import {
   WorkflowStatus,
 } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-lastexecution',
   templateUrl: './lastexecution.component.html',
   styleUrls: ['./lastexecution.component.scss'],
 })
-export class LastExecutionComponent implements OnInit {
-  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
+export class LastExecutionComponent {
+  constructor(private workflows: WorkflowService) {}
 
   @Input() datasetId: string;
 
@@ -47,10 +46,6 @@ export class LastExecutionComponent implements OnInit {
       this.pluginExecutions = value.metisPlugins.slice();
       this.pluginExecutions.reverse();
     }
-  }
-
-  ngOnInit(): void {
-    this.translate.use('en');
   }
 
   //  scroll to specific point in page after click

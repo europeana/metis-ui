@@ -54,7 +54,6 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.translate.use('en');
     this.noLogs = this.translate.instant('nologs');
   }
 

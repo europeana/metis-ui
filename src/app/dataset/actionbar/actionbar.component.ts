@@ -90,7 +90,6 @@ export class ActionbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.translate.use('en');
     this.cancelling = this.translate.instant('cancelling');
   }
 

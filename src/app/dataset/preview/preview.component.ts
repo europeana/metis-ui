@@ -72,7 +72,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     };
 
-    this.translate.use('en');
     this.nosample = this.translate.instant('nosample');
 
     this.addExecutionsFilter();

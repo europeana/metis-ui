@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -21,7 +20,7 @@ describe('DatasetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
+      imports: [RouterTestingModule],
       declarations: [DatasetComponent, TranslatePipe],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },

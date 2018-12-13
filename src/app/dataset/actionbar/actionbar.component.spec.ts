@@ -1,24 +1,17 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import {
+  createMockPipe,
   currentWorkflow,
   currentWorkflowDataset,
-  MockDatasetService,
   MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
 import { WorkflowStatus } from '../../_models';
-import {
-  DatasetsService,
-  ErrorService,
-  RedirectPreviousUrl,
-  WorkflowService,
-} from '../../_services';
-import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
+import { WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 import { ActionbarComponent } from '.';
 
@@ -29,13 +22,13 @@ describe('ActionbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [ActionbarComponent, TranslatePipe, RenameWorkflowPipe],
+      declarations: [
+        ActionbarComponent,
+        createMockPipe('translate'),
+        createMockPipe('renameWorkflow'),
+      ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: DatasetsService, useClass: MockDatasetService },
-        ErrorService,
-        RedirectPreviousUrl,
         { provide: TranslateService, useClass: MockTranslateService },
       ],
       schemas: [NO_ERRORS_SCHEMA],

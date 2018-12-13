@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -6,19 +5,13 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import {
+  createMockPipe,
   currentDataset,
   currentWorkflowDataset,
-  MockDatasetService,
-  MockTranslateService,
+  MockErrorService,
   MockWorkflowService,
 } from '../../_mocked';
-import {
-  DatasetsService,
-  ErrorService,
-  RedirectPreviousUrl,
-  WorkflowService,
-} from '../../_services';
-import { RenameWorkflowPipe, TranslatePipe, TranslateService } from '../../_translate';
+import { ErrorService, WorkflowService } from '../../_services';
 
 import { WorkflowComponent } from '.';
 
@@ -28,15 +21,16 @@ describe('WorkflowComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule, HttpClientModule],
-      declarations: [WorkflowComponent, TranslatePipe, RenameWorkflowPipe],
+      imports: [RouterTestingModule, ReactiveFormsModule],
+      declarations: [
+        WorkflowComponent,
+        createMockPipe('translate'),
+        createMockPipe('renameWorkflow'),
+      ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        { provide: DatasetsService, useClass: MockDatasetService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        ErrorService,
-        RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: ErrorService, useClass: MockErrorService },
       ],
     }).compileComponents();
   }));
