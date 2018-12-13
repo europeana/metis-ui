@@ -5,9 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from '.';
 import {
+  createMockPipe,
   MockAuthenticationService,
   MockDatasetService,
-  MockTranslateService,
   MockWorkflowService,
 } from './_mocked';
 import {
@@ -17,7 +17,6 @@ import {
   RedirectPreviousUrl,
   WorkflowService,
 } from './_services';
-import { TranslatePipe, TranslateService } from './_translate';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -26,7 +25,7 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [AppComponent, TranslatePipe],
+      declarations: [AppComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: DatasetsService, useClass: MockDatasetService },
@@ -34,7 +33,6 @@ describe('AppComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         ErrorService,
         RedirectPreviousUrl,
-        { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
   }));
