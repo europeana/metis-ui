@@ -4,7 +4,12 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from '.';
-import { createMockPipe, MockAuthenticationService, MockWorkflowService } from './_mocked';
+import {
+  createMockPipe,
+  MockAuthenticationService,
+  MockErrorService,
+  MockWorkflowService,
+} from './_mocked';
 import {
   AuthenticationService,
   ErrorService,
@@ -24,7 +29,7 @@ describe('AppComponent', () => {
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        ErrorService,
+        { provide: ErrorService, useClass: MockErrorService },
         RedirectPreviousUrl,
       ],
     }).compileComponents();
