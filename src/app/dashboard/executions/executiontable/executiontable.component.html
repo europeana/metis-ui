@@ -42,7 +42,7 @@
   <div class="progress">
     <div class="progress-status">
       <span class="progress-percentage"
-        >{{ 'step' | translate }} {{ execution.currentPlugin }}/{{
+        >{{ 'step' | translate }} {{ execution.currentPluginIndex }}/{{
           execution.metisPlugins.length
         }}</span
       >
@@ -51,8 +51,8 @@
       <div
         class="progressbar-done"
         [style.width.%]="
-          ((execution.currentPlugin || 0) / execution.metisPlugins.length) * 100 >= 0
-            ? ((execution.currentPlugin! || 0) / execution.metisPlugins.length) * 100
+          ((execution.currentPluginIndex || 0) / execution.metisPlugins.length) * 100 >= 0
+            ? ((execution.currentPluginIndex! || 0) / execution.metisPlugins.length) * 100
             : 0
         "
       ></div>

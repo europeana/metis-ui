@@ -17,13 +17,13 @@
         *ngFor="let execution of runningExecutions"
         app-executiontable
         [execution]="execution"
-        [plugin]="execution.metisPlugins[execution.currentPlugin]"
+        [plugin]="execution.currentPlugin"
       ></tr>
       <tr
         *ngFor="let execution of finishedExecutions"
         app-executiontable
         [execution]="execution"
-        [plugin]="execution.metisPlugins[execution.currentPlugin]"
+        [plugin]="execution.currentPlugin"
       ></tr>
     </tbody>
     <tfoot>

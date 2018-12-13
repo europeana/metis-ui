@@ -65,5 +65,24 @@ export interface WorkflowExecution {
   metisPlugins: PluginExecution[];
 
   datasetName?: string;
-  currentPlugin?: number;
+  currentPlugin?: PluginExecution;
+  currentPluginIndex?: number;
+}
+
+export function getCurrentPluginIndex(workflow: WorkflowExecution): number {
+  let currentPlugin = 0;
+  for (let i = 0; i < workflow.metisPlugins.length; i++) {
+    currentPlugin = i;
+    if (
+      workflow.metisPlugins[i].pluginStatus === 'INQUEUE' ||
+      workflow.metisPlugins[i].pluginStatus === 'RUNNING'
+    ) {
+      break;
+    }
+  }
+  return currentPlugin;
+}
+
+export function getCurrentPlugin(workflow: WorkflowExecution): PluginExecution {
+  return workflow.metisPlugins[getCurrentPluginIndex(workflow)];
 }
