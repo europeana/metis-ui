@@ -20,4 +20,11 @@ export class LoadingButtonComponent {
   @Input() isLoading = false;
   @Input() title: string;
   @Input() loadingTitle?: string;
+
+  cancelIfDisabled(event: Event): void {
+    if (this.disabled) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }
 }
