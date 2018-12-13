@@ -31,7 +31,7 @@ export class WorkflowService {
 
   public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
 
-  reportByKey: { [key: string]: Observable<Report> } = {};
+  hasErrorsByKey: { [key: string]: Observable<boolean> } = {};
 
   private collectAllResults<T>(
     getResults: (page: number) => Observable<Results<T>>,
@@ -128,20 +128,21 @@ export class WorkflowService {
   }
 
   // only use this for finished tasks
-  getCachedReport(taskId: string, topologyName: string): Observable<Report> {
+  getCachedHasErrors(taskId: string, topologyName: string): Observable<boolean> {
     const key = `${taskId}/${topologyName}`;
-    let observable = this.reportByKey[key];
+    let observable = this.hasErrorsByKey[key];
     if (observable) {
       return observable;
     }
     observable = this.getReport(taskId, topologyName).pipe(
+      map((report) => report.errors && report.errors.length > 0),
       tap(undefined, () => {
-        delete this.reportByKey[key];
+        delete this.hasErrorsByKey[key];
       }),
       publishLast(),
     );
-    (observable as ConnectableObservable<Report>).connect();
-    this.reportByKey[key] = observable;
+    (observable as ConnectableObservable<boolean>).connect();
+    this.hasErrorsByKey[key] = observable;
     return observable;
   }
 
@@ -271,11 +272,9 @@ export class WorkflowService {
         pluginStatus === 'CANCELLED'
       ) {
         if (externalTaskId && topologyName) {
-          this.getCachedReport(externalTaskId, topologyName).subscribe(
-            (report) => {
-              if (report.errors.length) {
-                pluginExecution.hasReport = true;
-              }
+          this.getCachedHasErrors(externalTaskId, topologyName).subscribe(
+            (hasErrors) => {
+              pluginExecution.hasReport = hasErrors;
             },
             (err: HttpErrorResponse) => {
               this.errors.handleError(err);
