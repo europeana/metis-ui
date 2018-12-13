@@ -85,6 +85,7 @@ export const LANG_EN_TRANS = {
   password: 'Password',
   passworderror: 'Please enter a valid password',
   passwordmatcherror: 'Passwords do not match',
+  passwordnew: 'New password',
   passwordold: 'Old password',
   passwordolderror: 'The new password cannot be the same as the old password',
   passwordweakerror: 'Password is too weak',
