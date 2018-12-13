@@ -45,7 +45,7 @@
   background: $eu-red;
 }
 .status-warning {
-  background: $eu-orange;
+  background: lighten($eu-orange, 30%);
 }
 .status-running {
   background: $eu-blue;
