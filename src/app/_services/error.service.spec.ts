@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -9,7 +8,7 @@ describe('ErrorService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientModule],
+      imports: [RouterTestingModule],
       providers: [ErrorService, RedirectPreviousUrl],
     });
     service = TestBed.get(ErrorService);

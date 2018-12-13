@@ -1,6 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
@@ -12,6 +10,7 @@ import { WorkflowService } from '../../../_services';
 import { TranslateService } from '../../../_translate';
 
 import { ExecutiontableComponent } from '.';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;
@@ -19,12 +18,12 @@ describe('ExecutiontableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [ExecutiontableComponent, createMockPipe('translate')],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 

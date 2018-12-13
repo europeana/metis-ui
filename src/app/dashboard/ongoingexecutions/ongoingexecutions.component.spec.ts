@@ -1,6 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
@@ -19,12 +18,12 @@ describe('OngoingexecutionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [OngoingexecutionsComponent, createMockPipe('translate')],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 

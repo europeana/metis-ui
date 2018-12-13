@@ -1,7 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe } from '../../_mocked';
 
@@ -13,7 +11,6 @@ describe('ExecutionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [ExecutionsComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
