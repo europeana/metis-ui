@@ -14,9 +14,9 @@ import {
   successNotification,
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
-const INVALID_NOTIFICATION = errorNotification('Please check the form for errors.', true);
 
 @Component({
   selector: 'app-datasetform',
@@ -39,6 +39,7 @@ export class DatasetformComponent implements OnInit {
   languageOptions: Language[];
 
   _isSaving = false;
+  invalidNotification: Notification;
 
   set isSaving(value: boolean) {
     this._isSaving = value;
@@ -55,6 +56,7 @@ export class DatasetformComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private errors: ErrorService,
+    private translate: TranslateService,
   ) {}
 
   private updateFormEnabled(): void {
@@ -71,6 +73,8 @@ export class DatasetformComponent implements OnInit {
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();
+
+    this.invalidNotification = errorNotification(this.translate.instant('formerror'), true);
   }
 
   showError(fieldName: keyof Dataset): boolean {
@@ -159,11 +163,11 @@ export class DatasetformComponent implements OnInit {
 
   updateFormMessage(): void {
     if (this.datasetForm.valid || this.datasetForm.disabled) {
-      if (this.notification === INVALID_NOTIFICATION) {
+      if (this.notification === this.invalidNotification) {
         this.notification = undefined;
       }
     } else {
-      this.notification = INVALID_NOTIFICATION;
+      this.notification = this.invalidNotification;
     }
   }
 
@@ -208,7 +212,7 @@ export class DatasetformComponent implements OnInit {
       this.datasets.updateDataset({ dataset }).subscribe(
         () => {
           localStorage.removeItem(DATASET_TEMP_LSKEY);
-          this.notification = successNotification('Dataset updated!');
+          this.notification = successNotification(this.translate.instant('datasetsaved'));
           this.datasetUpdated.emit();
 
           this.isSaving = false;
