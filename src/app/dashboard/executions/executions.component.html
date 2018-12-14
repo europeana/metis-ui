@@ -14,13 +14,13 @@
     </thead>
     <tbody>
       <tr
-        *ngFor="let execution of runningExecutions"
+        *ngFor="let execution of runningExecutions; trackBy: byId"
         app-executiontable
         [execution]="execution"
         [plugin]="execution.currentPlugin"
       ></tr>
       <tr
-        *ngFor="let execution of finishedExecutions"
+        *ngFor="let execution of finishedExecutions; trackBy: byId"
         app-executiontable
         [execution]="execution"
         [plugin]="execution.currentPlugin"

@@ -20,4 +20,8 @@ export class ExecutionsComponent {
   loadNextPage(): void {
     this.nextPage.emit();
   }
+
+  byId(_: number, item: { id: string }): string {
+    return item.id;
+  }
 }

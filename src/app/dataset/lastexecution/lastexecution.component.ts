@@ -76,4 +76,8 @@ export class LastExecutionComponent {
       return `status-${pluginStatus.toString().toLowerCase()}`;
     }
   }
+
+  byId(_: number, item: { id: string }): string {
+    return item.id;
+  }
 }

@@ -102,4 +102,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
+
+  byId(_: number, item: { id: string }): string {
+    return item.id;
+  }
 }
