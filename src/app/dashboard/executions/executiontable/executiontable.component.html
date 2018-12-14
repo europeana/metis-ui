@@ -35,10 +35,7 @@
   <span class="datedivider">-</span>
   <span class="time">{{ execution.startedDate | date: 'HH:mm' }}</span>
 </td>
-<td
-  class="centered nowrap"
-  *ngIf="plugin.pluginStatus === 'RUNNING' || plugin.pluginStatus === 'INQUEUE'"
->
+<td class="centered nowrap" *ngIf="!isCompleted()">
   <div class="progress">
     <div class="progress-status">
       <span class="progress-percentage"
@@ -83,7 +80,7 @@
     </ul>
   </nav>
 </td>
-<td class="centered" *ngIf="plugin.pluginStatus !== 'RUNNING' && plugin.pluginStatus !== 'INQUEUE'">
+<td class="centered" *ngIf="isCompleted()">
   <span class="date">{{ execution.finishedDate | date: 'dd/MM/yyyy' }}</span>
   <span class="datedivider">-</span>
   <span class="time">{{ execution.finishedDate | date: 'HH:mm' }}</span>

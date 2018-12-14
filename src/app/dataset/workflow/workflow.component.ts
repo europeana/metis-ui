@@ -8,12 +8,12 @@ import {
   Dataset,
   errorNotification,
   httpErrorNotification,
+  isWorkflowCompleted,
   Notification,
   PluginMetadata,
   successNotification,
   Workflow,
   WorkflowExecution,
-  WorkflowStatus,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -549,11 +549,7 @@ export class WorkflowComponent implements OnInit {
   }
 
   isRunning(): boolean {
-    if (!this.lastExecution) {
-      return false;
-    }
-    const { workflowStatus } = this.lastExecution;
-    return workflowStatus === WorkflowStatus.RUNNING || workflowStatus === WorkflowStatus.INQUEUE;
+    return !!this.lastExecution && !isWorkflowCompleted(this.lastExecution);
   }
 
   getSaveNotification(): Notification | undefined {

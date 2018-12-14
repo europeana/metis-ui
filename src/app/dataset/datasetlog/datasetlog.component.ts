@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { Subscription, timer as observableTimer } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { PluginExecution, SubTaskInfo } from '../../_models';
+import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -82,11 +82,10 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
 
   returnLog(): void {
     const processed = this.showPluginLog.executionProgress.processedRecords;
-    const status = this.showPluginLog.pluginStatus;
 
     this.logTo = processed || 0;
 
-    if (processed && (status === 'FINISHED' || status === 'CANCELLED' || status === 'FAILED')) {
+    if (processed && isPluginCompleted(this.showPluginLog)) {
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
