@@ -8,7 +8,7 @@ import { Country, Language } from '../_models';
 
 import { ErrorService } from './error.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CountriesService {
   constructor(private http: HttpClient, private errors: ErrorService) {}
 

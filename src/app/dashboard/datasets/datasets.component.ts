@@ -8,4 +8,8 @@ import { Dataset } from '../../_models';
 })
 export class DatasetsComponent {
   @Input() datasets: Dataset[];
+
+  byId(_: number, item: Dataset): string {
+    return item.id;
+  }
 }

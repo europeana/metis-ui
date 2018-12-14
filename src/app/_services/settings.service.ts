@@ -9,7 +9,7 @@ export interface Settings {
   viewCollections: string;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SettingsService {
   constructor() {}
 

@@ -39,4 +39,8 @@ export class OngoingexecutionsComponent implements OnInit {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
+
+  byId(_: number, item: WorkflowExecution): string {
+    return item.id;
+  }
 }

@@ -8,13 +8,13 @@ import {
   Dataset,
   HarvestData,
   httpErrorNotification,
+  isWorkflowCompleted,
   Notification,
   PluginExecution,
   ReportRequest,
   successNotification,
   Workflow,
   WorkflowExecution,
-  WorkflowStatus,
 } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
@@ -175,11 +175,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.lastExecutionData = execution;
         this.lastExecutionIsLoading = false;
 
-        if (
-          execution &&
-          (execution.workflowStatus === WorkflowStatus.INQUEUE ||
-            execution.workflowStatus === WorkflowStatus.RUNNING)
-        ) {
+        if (execution && !isWorkflowCompleted(execution)) {
           this.isStarting = false;
         }
       },

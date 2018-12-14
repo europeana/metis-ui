@@ -1,24 +1,25 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
+  isWorkflowCompleted,
   PluginExecution,
   Report,
   ReportRequest,
   Workflow,
   WorkflowExecution,
+  WorkflowStatus,
 } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
   styleUrls: ['./actionbar.component.scss'],
 })
-export class ActionbarComponent implements OnInit {
-  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
+export class ActionbarComponent {
+  constructor(private workflows: WorkflowService) {}
 
   private _lastExecutionData?: WorkflowExecution;
 
@@ -33,7 +34,6 @@ export class ActionbarComponent implements OnInit {
 
   currentPlugin?: PluginExecution;
   now?: string;
-  cancelling?: string;
   workflowPercentage = 0;
   totalErrors = 0;
   totalInDataset = 0;
@@ -42,6 +42,9 @@ export class ActionbarComponent implements OnInit {
   currentPluginName?: string;
   currentExternalTaskId?: string;
   currentTopology?: string;
+
+  isCancelling?: boolean;
+  isCompleted?: boolean;
 
   contentCopied = false;
   report?: Report;
@@ -52,12 +55,10 @@ export class ActionbarComponent implements OnInit {
 
     if (value) {
       this.currentPlugin = getCurrentPlugin(value);
+      this.currentStatus = this.currentPlugin.pluginStatus;
 
-      if (!value.cancelling) {
-        this.currentStatus = this.currentPlugin.pluginStatus || '-';
-      } else {
-        this.currentStatus = this.cancelling;
-      }
+      this.isCancelling = value.cancelling;
+      this.isCompleted = isWorkflowCompleted(value);
       this.currentPluginName = this.currentPlugin.pluginType || '-';
       this.currentExternalTaskId = this.currentPlugin.externalTaskId;
       this.currentTopology = this.currentPlugin.topologyName;
@@ -69,15 +70,11 @@ export class ActionbarComponent implements OnInit {
       this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
       this.workflowPercentage = 0;
 
-      if (
-        value.workflowStatus === 'FINISHED' ||
-        value.workflowStatus === 'CANCELLED' ||
-        value.workflowStatus === 'FAILED'
-      ) {
-        if (value.workflowStatus === 'CANCELLED' || value.workflowStatus === 'FAILED') {
-          this.now = value.updatedDate;
-        } else {
+      if (isWorkflowCompleted(value)) {
+        if (value.workflowStatus === WorkflowStatus.FINISHED) {
           this.now = value.finishedDate;
+        } else {
+          this.now = value.updatedDate;
         }
         this.currentStatus = value.workflowStatus;
       } else {
@@ -94,10 +91,6 @@ export class ActionbarComponent implements OnInit {
 
   get lastExecutionData(): WorkflowExecution | undefined {
     return this._lastExecutionData;
-  }
-
-  ngOnInit(): void {
-    this.cancelling = this.translate.instant('cancelling');
   }
 
   cancelWorkflow(): void {

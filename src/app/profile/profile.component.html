@@ -2,7 +2,7 @@
 
 <ng-template #readonly>
   <div *ngIf="profileForm" class="metis-profile-form metis-form metis-form-horizontal">
-    <form class="profile-form" [formGroup]="profileForm" #formDir="ngForm">
+    <form class="profile-form" [formGroup]="profileForm">
       <div class="form-header">
         <h2>{{ 'userprofile' | translate }}</h2>
       </div>
@@ -98,7 +98,7 @@
 </ng-template>
 <ng-template #editmode>
   <div class="metis-form-bg metis-form" *ngIf="profileForm">
-    <form [formGroup]="profileForm" #formDir="ngForm">
+    <form [formGroup]="profileForm">
       <div class="form-header">
         <h2>{{ 'changepassword' | translate }}</h2>
       </div>

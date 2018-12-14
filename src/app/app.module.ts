@@ -5,24 +5,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
-import { AuthUserGuard, AuthVisitorGuard } from './_guards';
 import { XmlPipe } from './_helpers';
-import {
-  AuthenticationService,
-  CountriesService,
-  DatasetsService,
-  ErrorService,
-  RedirectPreviousUrl,
-  SettingsService,
-  TokenInterceptor,
-  WorkflowService,
-} from './_services';
-import {
-  RenameWorkflowPipe,
-  TranslatePipe,
-  TranslateService,
-  TRANSLATION_PROVIDERS,
-} from './_translate';
+import { TokenInterceptor } from './_services';
+import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
 import { AppComponent } from './app.component';
 import {
   DashboardactionsComponent,
@@ -113,17 +98,7 @@ import {
     WorkflowComponent,
   ],
   providers: [
-    AuthVisitorGuard,
-    AuthUserGuard,
-    AuthenticationService,
-    DatasetsService,
-    RedirectPreviousUrl,
-    CountriesService,
-    SettingsService,
-    WorkflowService,
-    ErrorService,
     TRANSLATION_PROVIDERS,
-    TranslateService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

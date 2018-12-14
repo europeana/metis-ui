@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let ex of allExecutions">
+    <tr *ngFor="let ex of allExecutions; trackBy: byId">
       <td *ngIf="ex.createdDate" colspan="9" class="workflow-head">
         <div class="head-whitespace"></div>
         <div class="head-text" (dblclick)="copyInformation('execution', ex.id, ex.ecloudDatasetId)">
@@ -87,4 +87,3 @@
     </tr>
   </tfoot>
 </table>
-<div #starttab></div>

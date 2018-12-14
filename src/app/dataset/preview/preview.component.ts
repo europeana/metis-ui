@@ -295,4 +295,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
       this.clearLinkActive(event.currentTarget as Element);
     }
   }
+
+  byId(_: number, item: WorkflowExecution): string {
+    return item.id;
+  }
 }

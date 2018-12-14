@@ -6,12 +6,10 @@ import {
   createMockPipe,
   currentWorkflow,
   currentWorkflowDataset,
-  MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
 import { WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
 
 import { ActionbarComponent } from '.';
 
@@ -27,10 +25,7 @@ describe('ActionbarComponent', () => {
         createMockPipe('translate'),
         createMockPipe('renameWorkflow'),
       ],
-      providers: [
-        { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: TranslateService, useClass: MockTranslateService },
-      ],
+      providers: [{ provide: WorkflowService, useClass: MockWorkflowService }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));

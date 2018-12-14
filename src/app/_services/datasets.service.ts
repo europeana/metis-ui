@@ -10,7 +10,7 @@ import { ErrorService } from './error.service';
 
 const FAVORITE_IDS = 'favoriteIds';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DatasetsService {
   datasetById: { [id: string]: Observable<Dataset> } = {};
   favoriteIds: string[];

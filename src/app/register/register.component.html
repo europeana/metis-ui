@@ -1,11 +1,5 @@
 <div class="metis-register-form metis-form">
-  <form
-    (ngSubmit)="onSubmit()"
-    [formGroup]="registerForm"
-    #formDir="ngForm"
-    novalidate
-    autocomplete="off"
-  >
+  <form (ngSubmit)="onSubmit()" [formGroup]="registerForm" novalidate autocomplete="off">
     <div class="form-header">
       <h2>{{ 'register' | translate }}</h2>
     </div>

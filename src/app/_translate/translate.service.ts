@@ -12,7 +12,7 @@ interface Translations {
 
 const CURRENT_LANG = 'currentLang';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TranslateService {
   private _currentLang: string;
 

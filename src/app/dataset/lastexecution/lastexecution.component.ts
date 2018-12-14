@@ -3,12 +3,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
+  isWorkflowCompleted,
   PluginExecution,
   PluginStatus,
   Report,
   ReportRequest,
   WorkflowExecution,
-  WorkflowStatus,
 } from '../../_models';
 import { WorkflowService } from '../../_services';
 
@@ -33,12 +33,7 @@ export class LastExecutionComponent {
     if (value) {
       this.workflows.getReportsForExecution(value);
 
-      const { workflowStatus } = value;
-      if (
-        workflowStatus === WorkflowStatus.FINISHED ||
-        workflowStatus === WorkflowStatus.FAILED ||
-        workflowStatus === WorkflowStatus.CANCELLED
-      ) {
+      if (isWorkflowCompleted(value)) {
         this.currentPlugin = undefined;
       } else {
         this.currentPlugin = getCurrentPlugin(value);
@@ -75,5 +70,9 @@ export class LastExecutionComponent {
     } else {
       return `status-${pluginStatus.toString().toLowerCase()}`;
     }
+  }
+
+  byId(_: number, item: PluginExecution): string {
+    return item.id;
   }
 }

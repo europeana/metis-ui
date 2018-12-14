@@ -6,12 +6,12 @@ import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   Dataset,
   httpErrorNotification,
+  isWorkflowCompleted,
   Notification,
   PluginExecution,
   Report,
   ReportRequest,
   WorkflowExecution,
-  WorkflowStatus,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -40,13 +40,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   @Input()
   set lastExecutionData(execution: WorkflowExecution | undefined) {
     if (execution) {
-      const status = execution.workflowStatus;
-      if (
-        (status === WorkflowStatus.FINISHED ||
-          status === WorkflowStatus.FAILED ||
-          status === WorkflowStatus.CANCELLED) &&
-        execution.id !== this.lastWorkflowDoneId
-      ) {
+      if (isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
         this.returnAllExecutions();
       }
     }
@@ -101,5 +95,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
+  }
+
+  byId(_: number, item: WorkflowExecution | PluginExecution): string {
+    return item.id;
   }
 }

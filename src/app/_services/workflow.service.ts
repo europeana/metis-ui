@@ -8,6 +8,7 @@ import {
   getCurrentPlugin,
   getCurrentPluginIndex,
   HarvestData,
+  isPluginCompleted,
   MoreResults,
   Report,
   Results,
@@ -21,7 +22,7 @@ import {
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class WorkflowService {
   constructor(
     private http: HttpClient,
@@ -265,12 +266,8 @@ export class WorkflowService {
 
   getReportsForExecution(workflowExecution: WorkflowExecution): void {
     workflowExecution.metisPlugins.forEach((pluginExecution) => {
-      const { pluginStatus, externalTaskId, topologyName } = pluginExecution;
-      if (
-        pluginStatus === 'FINISHED' ||
-        pluginStatus === 'FAILED' ||
-        pluginStatus === 'CANCELLED'
-      ) {
+      const { externalTaskId, topologyName } = pluginExecution;
+      if (isPluginCompleted(pluginExecution)) {
         if (externalTaskId && topologyName) {
           this.getCachedHasErrors(externalTaskId, topologyName).subscribe(
             (hasErrors) => {

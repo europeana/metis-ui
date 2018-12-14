@@ -16,7 +16,7 @@
         >
         <div *ngIf="filterDate" class="dropdown-wrapper">
           <ul>
-            <li *ngFor="let w of allWorkflowExecutions">
+            <li *ngFor="let w of allWorkflowExecutions; trackBy: byId">
               <a (click)="addPluginsFilter(w)">{{ w.startedDate | date: 'dd/MM/yyyy - HH:mm' }}</a>
             </li>
           </ul>

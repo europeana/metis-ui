@@ -69,14 +69,29 @@ export interface WorkflowExecution {
   currentPluginIndex?: number;
 }
 
+export function isPluginCompleted(plugin: PluginExecution): boolean {
+  const { pluginStatus } = plugin;
+  return (
+    pluginStatus === PluginStatus.FINISHED ||
+    pluginStatus === PluginStatus.FAILED ||
+    pluginStatus === PluginStatus.CANCELLED
+  );
+}
+
+export function isWorkflowCompleted(workflow: WorkflowExecution): boolean {
+  const { workflowStatus } = workflow;
+  return (
+    workflowStatus === WorkflowStatus.FINISHED ||
+    workflowStatus === WorkflowStatus.FAILED ||
+    workflowStatus === WorkflowStatus.CANCELLED
+  );
+}
+
 export function getCurrentPluginIndex(workflow: WorkflowExecution): number {
   let currentPlugin = 0;
   for (let i = 0; i < workflow.metisPlugins.length; i++) {
     currentPlugin = i;
-    if (
-      workflow.metisPlugins[i].pluginStatus === 'INQUEUE' ||
-      workflow.metisPlugins[i].pluginStatus === 'RUNNING'
-    ) {
+    if (!isPluginCompleted(workflow.metisPlugins[i])) {
       break;
     }
   }

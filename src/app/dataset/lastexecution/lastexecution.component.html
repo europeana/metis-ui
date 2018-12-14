@@ -12,7 +12,10 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let plugin of pluginExecutions" [ngClass]="{ running: plugin === currentPlugin }">
+    <tr
+      *ngFor="let plugin of pluginExecutions; trackBy: byId"
+      [ngClass]="{ running: plugin === currentPlugin }"
+    >
       <td class="centered"><span class="svg-icon-{{ plugin.pluginType }}"></span></td>
       <td class="errorindicator">
         <span class="status {{ getPluginStatusClass(plugin) }}"></span>
