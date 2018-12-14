@@ -2,7 +2,6 @@ export * from './actionbar/';
 export * from './dataset.component';
 export * from './datasetform/';
 export * from './datasetlog/';
-export * from './generalactionbar/';
 export * from './generalinfo/';
 export * from './history/';
 export * from './lastexecution/';

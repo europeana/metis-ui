@@ -9,9 +9,11 @@ import {
   currentDataset,
   currentWorkflowDataset,
   MockErrorService,
+  MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
 import { ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 import { WorkflowComponent } from '.';
 
@@ -31,6 +33,7 @@ describe('WorkflowComponent', () => {
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: ErrorService, useClass: MockErrorService },
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
     }).compileComponents();
   }));
@@ -82,8 +85,6 @@ describe('WorkflowComponent', () => {
 
   it('should submit the changes', () => {
     component.datasetData = currentDataset;
-    component.workflowForm.get('pluginHARVEST')!.setValue(true);
-    component.workflowForm.get('pluginType')!.setValue('OAIPMH_HARVEST');
     component.workflowForm.get('pluginTRANSFORMATION')!.setValue(true);
     component.workflowForm.get('customXslt')!.setValue('mocked');
     component.workflowForm.get('pluginVALIDATION_EXTERNAL')!.setValue(true);
@@ -96,6 +97,6 @@ describe('WorkflowComponent', () => {
     component.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
     component.onSubmit();
     fixture.detectChanges();
-    expect(component.notification!.content).toBe('Workflow saved');
+    expect(component.getRunNotification()!.content).toBe('en:workflowsaved');
   });
 });

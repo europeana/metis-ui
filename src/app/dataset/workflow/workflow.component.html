@@ -1,11 +1,5 @@
 <div class="metis-form metis-form-horizontal">
   <form [formGroup]="workflowForm" #formDir="ngForm">
-    <app-notification
-      [notification]="notification"
-      (closed)="notification = undefined"
-      *ngIf="notification"
-    ></app-notification>
-
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">
         <li class="active">{{ 'currentworkflow' | translate }}</li>
@@ -509,14 +503,54 @@
       </div>
 
       <div class="form-fields form-fields-buttons">
-        <div class="form-group form-group-btns user-profile-edit-btns">
+        <div
+          class="form-group form-group-btns user-profile-edit-btns"
+          *ngIf="newWorkflow || workflowForm.dirty || isSaving"
+        >
+          <app-notification
+            variant="small"
+            [notification]="getSaveNotification()"
+            (closed)="notification = undefined"
+          ></app-notification>
+          <div class="spacer"></div>
+
+          <button
+            type="button"
+            class="reset-btn"
+            *ngIf="!newWorkflow"
+            [disabled]="isSaving || !workflowForm.dirty"
+            (click)="reset()"
+          >
+            {{ 'reset' | translate }}
+          </button>
           <app-loading-button
             classes="submit"
-            [disabled]="!workflowForm.valid"
+            [disabled]="!workflowForm.valid || !workflowForm.dirty"
             [isLoading]="isSaving"
             [title]="'save' | translate"
             [loadingTitle]="'saving' | translate"
             (click)="onSubmit()"
+          ></app-loading-button>
+        </div>
+
+        <div
+          class="form-group form-group-btns user-profile-edit-btns"
+          *ngIf="!newWorkflow && !workflowForm.dirty && !isSaving"
+        >
+          <app-notification
+            variant="small"
+            [notification]="getRunNotification()"
+            (closed)="notification = undefined"
+          ></app-notification>
+          <div class="spacer"></div>
+
+          <app-loading-button
+            classes="submit"
+            [disabled]="isRunning()"
+            [isLoading]="isStarting"
+            [title]="'run workflow' | translate"
+            [loadingTitle]="'starting' | translate"
+            (click)="start()"
           ></app-loading-button>
         </div>
       </div>

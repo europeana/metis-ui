@@ -10,8 +10,10 @@ import {
   MockCountriesService,
   MockDatasetService,
   MockErrorService,
+  MockTranslateService,
 } from '../../_mocked';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 import { DatasetformComponent } from '.';
 
@@ -28,6 +30,7 @@ describe('DatasetformComponent', () => {
         { provide: DatasetsService, useClass: MockDatasetService },
         { provide: CountriesService, useClass: MockCountriesService },
         { provide: ErrorService, useClass: MockErrorService },
+        { provide: TranslateService, useClass: MockTranslateService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     });
@@ -47,7 +50,7 @@ describe('DatasetformComponent', () => {
     fixture.detectChanges();
     component.onSubmit();
     fixture.detectChanges();
-    expect(component.notification!.content).toBe('Dataset updated!');
+    expect(component.notification!.content).toBe('en:datasetsaved');
   }));
 
   it('should submit form and create the dataset', fakeAsync((): void => {

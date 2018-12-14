@@ -22,6 +22,7 @@ export class ActionbarComponent implements OnInit {
 
   private _lastExecutionData?: WorkflowExecution;
 
+  @Input() datasetId: string;
   @Input() showPluginLog?: PluginExecution;
   @Input() workflowData?: Workflow;
   @Input() isStarting = false;

@@ -13,31 +13,19 @@
   *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading"
 >
   <app-notification
+    *ngIf="notification"
     [notification]="notification"
     (closed)="notification = undefined"
   ></app-notification>
 
   <div *ngIf="datasetData">
-    <div class="collapse-block metis-dashboard">
+    <div class="metis-dashboard">
       <div class="metis-dashboard-left">
         <div class="dataset-name">
           <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
           <span class="star {{ isFavorite ? 'star-active' : '' }}" (click)="toggleFavorite()"
             >&#x2605;</span
           >
-        </div>
-      </div>
-      <div class="metis-dashboard-right">
-        <div class="collapse-block-sticky">
-          <div class="general-actionbar">
-            <app-generalactionbar
-              [datasetId]="datasetId"
-              [lastExecutionData]="lastExecutionData"
-              [workflowData]="workflowData"
-              [isStarting]="isStarting"
-              (startWorkflow)="startWorkflow()"
-            ></app-generalactionbar>
-          </div>
         </div>
       </div>
     </div>
@@ -51,6 +39,7 @@
       </div>
       <div class="metis-dashboard-right">
         <app-actionbar
+          [datasetId]="datasetId"
           [workflowData]="workflowData"
           [lastExecutionData]="lastExecutionData"
           [isStarting]="isStarting"
@@ -125,6 +114,9 @@
         *ngIf="activeTab === 'workflow'"
         [datasetData]="datasetData"
         [workflowData]="workflowData"
+        [lastExecution]="lastExecutionData"
+        [isStarting]="isStarting"
+        (startWorkflow)="startWorkflow()"
       ></app-workflow>
       <app-mapping
         *ngIf="activeTab === 'mapping'"

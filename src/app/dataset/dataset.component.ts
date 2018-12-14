@@ -14,6 +14,7 @@ import {
   successNotification,
   Workflow,
   WorkflowExecution,
+  WorkflowStatus,
 } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
@@ -173,14 +174,20 @@ export class DatasetComponent implements OnInit, OnDestroy {
       (execution) => {
         this.lastExecutionData = execution;
         this.lastExecutionIsLoading = false;
-        this.isStarting = false;
+
+        if (
+          execution &&
+          (execution.workflowStatus === WorkflowStatus.INQUEUE ||
+            execution.workflowStatus === WorkflowStatus.RUNNING)
+        ) {
+          this.isStarting = false;
+        }
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.lastExecutionSubscription.unsubscribe();
         this.lastExecutionIsLoading = false;
-        this.isStarting = false;
       },
     );
   }
@@ -191,12 +198,13 @@ export class DatasetComponent implements OnInit, OnDestroy {
       () => {
         this.loadHarvestData();
         this.loadLastExecution();
-        // isStarting should be set to false in loadLastExecution
+        window.scrollTo(0, 0);
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.isStarting = false;
+        window.scrollTo(0, 0);
       },
     );
   }

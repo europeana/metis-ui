@@ -1,18 +1,22 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 
 import { harvestValidator } from '../../_helpers';
 import {
   Dataset,
+  errorNotification,
   httpErrorNotification,
   Notification,
   PluginMetadata,
   successNotification,
   Workflow,
+  WorkflowExecution,
+  WorkflowStatus,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 interface Connections {
   [host: string]: number;
@@ -29,6 +33,7 @@ export class WorkflowComponent implements OnInit {
     private fb: FormBuilder,
     private errors: ErrorService,
     private router: Router,
+    private translate: TranslateService,
   ) {
     router.events.subscribe((s) => {
       if (s instanceof NavigationEnd) {
@@ -45,6 +50,10 @@ export class WorkflowComponent implements OnInit {
 
   @Input() datasetData: Dataset;
   @Input() workflowData?: Workflow;
+  @Input() lastExecution?: WorkflowExecution;
+  @Input() isStarting = false;
+
+  @Output() startWorkflow = new EventEmitter<void>();
 
   notification?: Notification;
   harvestprotocol: string;
@@ -64,8 +73,14 @@ export class WorkflowComponent implements OnInit {
     'pluginMEDIA_PROCESS',
     'pluginPREVIEW',
     'pluginPUBLISH',
+    'pluginLINK_CHECKING',
   ];
   isSaving = false;
+
+  newNotification: Notification;
+  saveNotification: Notification;
+  runningNotification: Notification;
+  invalidNotification: Notification;
 
   /** ngOnInit
   /* init for this component
@@ -77,6 +92,11 @@ export class WorkflowComponent implements OnInit {
     this.buildForm();
     this.getWorkflow();
     this.currentUrl = this.router.url.split('#')[0];
+
+    this.newNotification = successNotification(this.translate.instant('workflowsavenew'), true);
+    this.saveNotification = successNotification(this.translate.instant('workflowsave'), true);
+    this.runningNotification = successNotification(this.translate.instant('workflowrunning'), true);
+    this.invalidNotification = errorNotification(this.translate.instant('formerror'), true);
   }
 
   /** buildForm
@@ -180,7 +200,9 @@ export class WorkflowComponent implements OnInit {
     let hasValue = 0;
 
     this.pluginsOrdered.forEach((value) => {
-      this.workflowForm.get(value)!.disable();
+      if (value !== 'pluginLINK_CHECKING') {
+        this.workflowForm.get(value)!.disable();
+      }
     });
 
     this.pluginsOrdered.forEach((value, index) => {
@@ -275,10 +297,6 @@ export class WorkflowComponent implements OnInit {
     }
   }
 
-  /** getWorkflow
-  /* if dataset does not exist, display message
-  /* get workflow for this dataset, could be empty
-  */
   getWorkflow(): void {
     const workflow = this.workflowData;
     if (!workflow) {
@@ -286,6 +304,10 @@ export class WorkflowComponent implements OnInit {
     }
 
     this.newWorkflow = false;
+
+    this.pluginsOrdered.forEach((pluginName) => {
+      this.workflowForm.get(pluginName)!.setValue(false);
+    });
 
     for (let w = 0; w < workflow.metisPluginsMetadata.length; w++) {
       const thisWorkflow = workflow.metisPluginsMetadata[w];
@@ -346,6 +368,12 @@ export class WorkflowComponent implements OnInit {
         }
       }
     }
+  }
+
+  reset(): void {
+    this.getWorkflow();
+    this.workflowForm.markAsPristine();
+    this.notification = undefined;
   }
 
   /** formatFormValues
@@ -482,9 +510,11 @@ export class WorkflowComponent implements OnInit {
   /* submit the form
   */
   onSubmit(): void {
-    if (!this.datasetData) {
+    if (!this.datasetData || !this.workflowForm.valid) {
       return;
     }
+
+    this.notification = undefined;
     this.isSaving = true;
     this.workflows
       .createWorkflowForDataset(
@@ -499,24 +529,62 @@ export class WorkflowComponent implements OnInit {
             .subscribe((workflowDataset) => {
               this.workflowData = workflowDataset;
               this.getWorkflow();
-              this.notification = successNotification('Workflow saved');
-              this.scrollToMessageBox();
+
+              this.workflowForm.markAsPristine();
               this.isSaving = false;
+              this.notification = successNotification(this.translate.instant('workflowsaved'));
             });
         },
         (err: HttpErrorResponse) => {
           const errorSubmit = this.errors.handleError(err);
           this.notification = httpErrorNotification(errorSubmit);
-          this.scrollToMessageBox();
           this.isSaving = false;
         },
       );
   }
 
-  /** scrollToMessageBox
-  /* scroll to messagebox so it will be in view after changing
-  */
-  scrollToMessageBox(): void {
-    window.scrollTo(0, 0);
+  start(): void {
+    this.notification = undefined;
+    this.startWorkflow.emit();
+  }
+
+  isRunning(): boolean {
+    if (!this.lastExecution) {
+      return false;
+    }
+    const { workflowStatus } = this.lastExecution;
+    return workflowStatus === WorkflowStatus.RUNNING || workflowStatus === WorkflowStatus.INQUEUE;
+  }
+
+  getSaveNotification(): Notification | undefined {
+    if (this.isSaving) {
+      return undefined;
+    }
+
+    if (this.notification) {
+      return this.notification;
+    }
+
+    if (this.workflowForm.valid) {
+      return this.newWorkflow ? this.newNotification : this.saveNotification;
+    } else {
+      return this.invalidNotification;
+    }
+  }
+
+  getRunNotification(): Notification | undefined {
+    if (this.isStarting) {
+      return undefined;
+    }
+
+    if (this.notification) {
+      return this.notification;
+    }
+
+    if (this.isRunning()) {
+      return this.runningNotification;
+    }
+
+    return undefined;
   }
 }

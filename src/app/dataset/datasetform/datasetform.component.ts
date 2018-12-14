@@ -14,9 +14,9 @@ import {
   successNotification,
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
-const INVALID_NOTIFICATION = errorNotification('Please check the form for errors.', true);
 
 @Component({
   selector: 'app-datasetform',
@@ -39,6 +39,7 @@ export class DatasetformComponent implements OnInit {
   languageOptions: Language[];
 
   _isSaving = false;
+  invalidNotification: Notification;
 
   set isSaving(value: boolean) {
     this._isSaving = value;
@@ -55,6 +56,7 @@ export class DatasetformComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private errors: ErrorService,
+    private translate: TranslateService,
   ) {}
 
   private updateFormEnabled(): void {
@@ -71,6 +73,8 @@ export class DatasetformComponent implements OnInit {
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();
+
+    this.invalidNotification = errorNotification(this.translate.instant('formerror'), true);
   }
 
   showError(fieldName: keyof Dataset): boolean {
@@ -83,6 +87,7 @@ export class DatasetformComponent implements OnInit {
 
   clearField(fieldName: keyof Dataset): void {
     this.datasetForm.controls[fieldName].setValue('');
+    this.datasetForm.markAsDirty();
   }
 
   returnCountries(): void {
@@ -141,13 +146,8 @@ export class DatasetformComponent implements OnInit {
       notes: [''],
     });
 
-    this.datasetForm.valueChanges.subscribe(() => {
-      this.updateFormMessage();
-    });
-
     this.updateForm();
     this.updateFormEnabled();
-    this.updateFormMessage();
   }
 
   updateForm(): void {
@@ -156,14 +156,10 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.patchValue({ language: this.selectedLanguage });
   }
 
-  updateFormMessage(): void {
-    if (this.datasetForm.valid || this.datasetForm.disabled) {
-      if (this.notification === INVALID_NOTIFICATION) {
-        this.notification = undefined;
-      }
-    } else {
-      this.notification = INVALID_NOTIFICATION;
-    }
+  reset(): void {
+    this.notification = undefined;
+    this.updateForm();
+    this.datasetForm.markAsPristine();
   }
 
   saveTempData(): void {
@@ -173,12 +169,11 @@ export class DatasetformComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.notification = undefined;
-
     if (!this.datasetForm.valid) {
       return;
     }
 
+    this.notification = undefined;
     this.isSaving = true;
     if (this.isNew) {
       this.datasets.createDataset(this.datasetForm.value).subscribe(
@@ -202,10 +197,11 @@ export class DatasetformComponent implements OnInit {
       this.datasets.updateDataset({ dataset }).subscribe(
         () => {
           localStorage.removeItem(DATASET_TEMP_LSKEY);
-          this.notification = successNotification('Dataset updated!');
+          this.notification = successNotification(this.translate.instant('datasetsaved'));
           this.datasetUpdated.emit();
 
           this.isSaving = false;
+          this.datasetForm.markAsPristine();
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
@@ -220,5 +216,21 @@ export class DatasetformComponent implements OnInit {
   cancel(): void {
     localStorage.removeItem(DATASET_TEMP_LSKEY);
     this.router.navigate(['/dashboard']);
+  }
+
+  getNotification(): Notification | undefined {
+    if (this.isSaving) {
+      return undefined;
+    }
+
+    if (this.notification) {
+      return this.notification;
+    }
+
+    if (this.datasetForm.valid) {
+      return undefined;
+    } else {
+      return this.invalidNotification;
+    }
   }
 }

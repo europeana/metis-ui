@@ -1,4 +1,4 @@
-<div class="metis-dataset-info-block dataset-actionbar" *ngIf="lastExecutionData">
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf="lastExecutionData && !isStarting">
   <div class="status">
     <strong
       class="uppercase tooltip"
@@ -84,13 +84,25 @@
 
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf="!lastExecutionData && !isStarting">
   <div class="status status-new">{{ 'start workflow' | translate }}</div>
-  <nav *ngIf="workflowData">
+  <div class="spacer"></div>
+  <nav>
     <ul>
       <li>
-        <a class="newaction-btn" (click)="startWorkflow.emit()">
+        <a *ngIf="workflowData" class="newaction-btn" (click)="startWorkflow.emit()">
           <span>{{ 'run workflow' | translate }}</span>
+        </a>
+        <a
+          *ngIf="!workflowData"
+          class="newaction-btn"
+          routerLink="/dataset/workflow/{{ datasetId }}"
+        >
+          <span>{{ 'showworkflow' | translate }}</span>
         </a>
       </li>
     </ul>
   </nav>
+</div>
+
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf="isStarting">
+  <div class="status status-new">{{ 'startingworkflow' | translate }}</div>
 </div>

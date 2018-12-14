@@ -145,6 +145,10 @@
     button.reset-btn {
       background-color: $white;
       color: $eu-jade;
+
+      &:disabled {
+        color: lighten($eu-jade, 30%);
+      }
     }
 
     .svg-icon-spin-inbutton {
@@ -305,6 +309,7 @@
         height: 7vh;
         justify-content: flex-end;
         margin-bottom: 0;
+        flex-wrap: nowrap;
 
         button {
           display: inline-block;

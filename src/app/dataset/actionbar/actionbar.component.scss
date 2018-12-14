@@ -96,25 +96,14 @@ nav {
     }
 
     &.newaction-btn {
-      border: 1px solid $white;
-      border-bottom: 0;
-      padding-left: 0.5rem;
-      transition: all 0.5s ease;
-    }
-
-    &.newaction-btn:hover {
-      background: $eu-jade;
+      margin: 0 0.3rem 0 0.8rem;
       border: 1px solid $eu-jade;
       border-radius: $border-radius;
+      padding-left: 0.5rem;
+      background: $eu-jade;
       color: $white;
       font-size: $font-size-slightly-smaller;
-    }
-
-    &.newaction-btn:focus,
-    &.newaction-btn:active {
-      background: $white;
-      border: 1px solid $eu-jade;
-      color: $eu-jade;
+      text-transform: uppercase;
     }
   }
 }
