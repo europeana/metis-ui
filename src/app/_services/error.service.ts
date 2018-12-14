@@ -6,7 +6,7 @@ import { concat, delay, flatMap, retryWhen, take } from 'rxjs/operators';
 
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ErrorService {
   constructor(private router: Router, private redirectPreviousUrl: RedirectPreviousUrl) {}
 

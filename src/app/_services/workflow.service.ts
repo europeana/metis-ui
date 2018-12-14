@@ -21,7 +21,7 @@ import {
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class WorkflowService {
   constructor(
     private http: HttpClient,

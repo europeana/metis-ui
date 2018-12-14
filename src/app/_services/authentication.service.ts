@@ -11,7 +11,7 @@ import { User } from '../_models';
 import { ErrorService } from './error.service';
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthenticationService {
   private readonly key = 'currentUser';
   private token: string | null;

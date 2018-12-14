@@ -4,7 +4,7 @@ import { CanActivate, Router } from '@angular/router';
 
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthUserGuard implements CanActivate {
   constructor(
     private authentication: AuthenticationService,

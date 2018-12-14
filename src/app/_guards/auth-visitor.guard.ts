@@ -4,7 +4,7 @@ import { CanActivate, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthenticationService } from '../_services';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthVisitorGuard implements CanActivate {
   constructor(private router: Router, private authentication: AuthenticationService) {}
 
