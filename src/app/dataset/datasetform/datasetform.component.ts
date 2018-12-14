@@ -83,6 +83,7 @@ export class DatasetformComponent implements OnInit {
 
   clearField(fieldName: keyof Dataset): void {
     this.datasetForm.controls[fieldName].setValue('');
+    this.datasetForm.markAsDirty();
   }
 
   returnCountries(): void {
@@ -166,6 +167,12 @@ export class DatasetformComponent implements OnInit {
     }
   }
 
+  reset(): void {
+    this.notification = undefined;
+    this.updateForm();
+    this.datasetForm.markAsPristine();
+  }
+
   saveTempData(): void {
     if (this.isNew) {
       localStorage.setItem(DATASET_TEMP_LSKEY, JSON.stringify(this.datasetForm.value));
@@ -206,6 +213,7 @@ export class DatasetformComponent implements OnInit {
           this.datasetUpdated.emit();
 
           this.isSaving = false;
+          this.datasetForm.markAsPristine();
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);

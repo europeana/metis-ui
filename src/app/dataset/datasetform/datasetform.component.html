@@ -170,12 +170,27 @@
         ></app-notification>
         <div style="flex-grow: 1"></div>
 
-        <button class="reset-btn" type="button" *ngIf="isNew" (click)="cancel()">
+        <button
+          type="button"
+          class="reset-btn"
+          *ngIf="isNew"
+          [disabled]="isSaving"
+          (click)="cancel()"
+        >
           {{ 'cancel' | translate }}
+        </button>
+        <button
+          type="button"
+          class="reset-btn"
+          *ngIf="!isNew"
+          [disabled]="isSaving || !datasetForm.dirty"
+          (click)="reset()"
+        >
+          {{ 'reset' | translate }}
         </button>
         <app-loading-button
           classes="submit"
-          [disabled]="!datasetForm.valid"
+          [disabled]="!datasetForm.valid || !datasetForm.dirty"
           [isLoading]="isSaving"
           [title]="(isNew ? 'create' : 'save') | translate"
           [loadingTitle]="(isNew ? 'creating' : 'saving') | translate"
