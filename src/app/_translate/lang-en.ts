@@ -123,6 +123,7 @@ export const LANG_EN_TRANS = {
   startdate: 'Start date',
   'start workflow': 'Start your next workflow!',
   starting: 'Starting',
+  startingworkflow: 'Starting workflow...',
   statistics: 'Statistics',
   status: 'Status',
   step: 'step',

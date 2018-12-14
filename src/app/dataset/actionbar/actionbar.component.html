@@ -1,4 +1,4 @@
-<div class="metis-dataset-info-block dataset-actionbar" *ngIf="lastExecutionData">
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf="lastExecutionData && !isStarting">
   <div class="status">
     <strong
       class="uppercase tooltip"
@@ -97,4 +97,8 @@
       </li>
     </ul>
   </nav>
+</div>
+
+<div class="metis-dataset-info-block dataset-actionbar" *ngIf="isStarting">
+  <div class="status status-new">{{ 'startingworkflow' | translate }}</div>
 </div>
