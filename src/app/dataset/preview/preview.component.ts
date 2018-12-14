@@ -296,7 +296,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  byId(_: number, item: { id: string }): string {
+  byId(_: number, item: WorkflowExecution): string {
     return item.id;
   }
 }

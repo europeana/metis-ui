@@ -40,7 +40,7 @@ export class OngoingexecutionsComponent implements OnInit {
     this.contentCopied = true;
   }
 
-  byId(_: number, item: { id: string }): string {
+  byId(_: number, item: WorkflowExecution): string {
     return item.id;
   }
 }

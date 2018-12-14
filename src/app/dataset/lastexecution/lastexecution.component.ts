@@ -77,7 +77,7 @@ export class LastExecutionComponent {
     }
   }
 
-  byId(_: number, item: { id: string }): string {
+  byId(_: number, item: PluginExecution): string {
     return item.id;
   }
 }

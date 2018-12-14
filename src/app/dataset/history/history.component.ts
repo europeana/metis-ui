@@ -103,7 +103,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.contentCopied = true;
   }
 
-  byId(_: number, item: { id: string }): string {
+  byId(_: number, item: WorkflowExecution | PluginExecution): string {
     return item.id;
   }
 }
