@@ -204,6 +204,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.isStarting = false;
+        window.scrollTo(0, 0);
       },
     );
   }
