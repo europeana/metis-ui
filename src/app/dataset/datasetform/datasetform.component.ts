@@ -146,29 +146,14 @@ export class DatasetformComponent implements OnInit {
       notes: [''],
     });
 
-    this.datasetForm.valueChanges.subscribe(() => {
-      this.updateFormMessage();
-    });
-
     this.updateForm();
     this.updateFormEnabled();
-    this.updateFormMessage();
   }
 
   updateForm(): void {
     this.datasetForm.patchValue(this.datasetData);
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
-  }
-
-  updateFormMessage(): void {
-    if (this.datasetForm.valid || this.datasetForm.disabled) {
-      if (this.notification === this.invalidNotification) {
-        this.notification = undefined;
-      }
-    } else {
-      this.notification = this.invalidNotification;
-    }
   }
 
   reset(): void {
@@ -231,5 +216,21 @@ export class DatasetformComponent implements OnInit {
   cancel(): void {
     localStorage.removeItem(DATASET_TEMP_LSKEY);
     this.router.navigate(['/dashboard']);
+  }
+
+  getNotification(): Notification | undefined {
+    if (this.isSaving) {
+      return undefined;
+    }
+
+    if (this.notification) {
+      return this.notification;
+    }
+
+    if (this.datasetForm.valid) {
+      return undefined;
+    } else {
+      return this.invalidNotification;
+    }
   }
 }

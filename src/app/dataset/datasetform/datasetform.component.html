@@ -165,7 +165,7 @@
       <div class="form-group form-group-btns user-profile-edit-btns">
         <app-notification
           variant="small"
-          [notification]="notification"
+          [notification]="getNotification()"
           (closed)="notification = undefined"
         ></app-notification>
         <div style="flex-grow: 1"></div>
