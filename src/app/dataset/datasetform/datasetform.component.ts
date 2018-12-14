@@ -180,12 +180,11 @@ export class DatasetformComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.notification = undefined;
-
     if (!this.datasetForm.valid) {
       return;
     }
 
+    this.notification = undefined;
     this.isSaving = true;
     if (this.isNew) {
       this.datasets.createDataset(this.datasetForm.value).subscribe(
