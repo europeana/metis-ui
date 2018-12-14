@@ -55,6 +55,7 @@ export class ActionbarComponent {
 
     if (value) {
       this.currentPlugin = getCurrentPlugin(value);
+      this.currentStatus = this.currentPlugin.pluginStatus;
 
       this.isCancelling = value.cancelling;
       this.isCompleted = isWorkflowCompleted(value);
