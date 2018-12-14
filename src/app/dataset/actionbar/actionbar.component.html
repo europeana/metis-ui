@@ -84,11 +84,15 @@
 
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf="!lastExecutionData && !isStarting">
   <div class="status status-new">{{ 'start workflow' | translate }}</div>
-  <nav *ngIf="workflowData">
+  <div style="flex-grow: 1"></div>
+  <nav>
     <ul>
       <li>
-        <a class="newaction-btn" (click)="startWorkflow.emit()">
+        <a *ngIf="workflowData" class="newaction-btn" (click)="startWorkflow.emit()">
           <span>{{ 'run workflow' | translate }}</span>
+        </a>
+        <a *ngIf="!workflowData" class="newaction-btn" routerLink="/dataset/workflow/{{ datasetId }}">
+          <span>{{ 'showworkflow' | translate }}</span>
         </a>
       </li>
     </ul>

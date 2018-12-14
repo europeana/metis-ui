@@ -119,6 +119,7 @@ export const LANG_EN_TRANS = {
   signintometis: 'Sign in to Metis',
   signout: 'Sign out',
   showrandom: 'Show random',
+  showworkflow: 'Show workflow',
   startdate: 'Start date',
   'start workflow': 'Start your next workflow!',
   starting: 'Starting',
