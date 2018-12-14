@@ -21,6 +21,6 @@ export function successNotification(content: string, sticky: boolean = false): N
   return { type: NotificationType.SUCCESS, content, sticky };
 }
 
-export function httpErrorNotification(error: false | HttpErrorResponse): Notification {
-  return errorNotification(StringifyHttpError(error));
+export function httpErrorNotification(error: false | HttpErrorResponse, sticky: boolean = false): Notification {
+  return errorNotification(StringifyHttpError(error), sticky);
 }
