@@ -91,7 +91,11 @@
         <a *ngIf="workflowData" class="newaction-btn" (click)="startWorkflow.emit()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
-        <a *ngIf="!workflowData" class="newaction-btn" routerLink="/dataset/workflow/{{ datasetId }}">
+        <a
+          *ngIf="!workflowData"
+          class="newaction-btn"
+          routerLink="/dataset/workflow/{{ datasetId }}"
+        >
           <span>{{ 'showworkflow' | translate }}</span>
         </a>
       </li>
