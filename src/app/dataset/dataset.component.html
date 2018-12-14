@@ -125,6 +125,9 @@
         *ngIf="activeTab === 'workflow'"
         [datasetData]="datasetData"
         [workflowData]="workflowData"
+        [lastExecution]="lastExecutionData"
+        [isStarting]="isStarting"
+        (startWorkflow)="startWorkflow()"
       ></app-workflow>
       <app-mapping
         *ngIf="activeTab === 'mapping'"
