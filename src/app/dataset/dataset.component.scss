@@ -9,16 +9,9 @@ app-notification {
   width: 100%;
 }
 
-.collapse-block {
-  padding-bottom: 0;
-
-  .general-actionbar {
-    width: 75%;
-  }
-
-  .collapse-toggle-block {
-    width: 25%;
-  }
+.dataset-name {
+  display: flex;
+  align-items: center;
 }
 
 hr {
@@ -26,13 +19,12 @@ hr {
   border: 0;
   clear: both;
   height: 1px;
-  margin: $space 0;
+  margin: 0 1rem 1rem 1rem;
 }
 
 .svg-icon-dataset {
   display: inline-block;
-  top: 0.5rem;
-  margin-right: 0.2rem;
+  margin-right: 0.5rem;
   border-radius: 32px;
   width: 32px;
   height: 32px;

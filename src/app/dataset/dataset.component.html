@@ -13,12 +13,13 @@
   *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading"
 >
   <app-notification
+    *ngIf="notification"
     [notification]="notification"
     (closed)="notification = undefined"
   ></app-notification>
 
   <div *ngIf="datasetData">
-    <div class="collapse-block metis-dashboard">
+    <div class="metis-dashboard">
       <div class="metis-dashboard-left">
         <div class="dataset-name">
           <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
