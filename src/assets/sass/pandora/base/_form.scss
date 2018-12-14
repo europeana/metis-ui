@@ -145,6 +145,10 @@
     button.reset-btn {
       background-color: $white;
       color: $eu-jade;
+
+      &:disabled {
+        color: lighten($eu-jade, 30%);
+      }
     }
 
     .svg-icon-spin-inbutton {
