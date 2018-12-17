@@ -5,6 +5,7 @@ import { NavigationEnd, Router } from '@angular/router';
 
 import { harvestValidator } from '../../_helpers';
 import {
+  ConnectionLimits,
   Dataset,
   errorNotification,
   httpErrorNotification,
@@ -17,10 +18,6 @@ import {
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-
-interface Connections {
-  [host: string]: number;
-}
 
 @Component({
   selector: 'app-workflow',
@@ -235,7 +232,7 @@ export class WorkflowComponent implements OnInit {
   /** initLimitConnections
   /* add new host/connections form group to the list
   */
-  initLimitConnections(host?: string, connections?: Connections): FormGroup {
+  initLimitConnections(host?: string, connections?: number): FormGroup {
     return this.fb.group({
       host: [host ? host : ''],
       connections: [connections ? connections : ''],
@@ -246,7 +243,7 @@ export class WorkflowComponent implements OnInit {
   /* add new host/connection to form
   /* @param {string} type - either link checking or media processing
   */
-  addConnection(type: string, host?: string, connections?: Connections): void {
+  addConnection(type: string, host?: string, connections?: number): void {
     let control: FormArray;
     if (type === 'LINK_CHECKING') {
       control = this.workflowForm.controls.limitConnectionsLINK_CHECKING as FormArray;
@@ -386,7 +383,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginHARVEST === true) {
       if (this.workflowForm.value.pluginType === 'OAIPMH_HARVEST') {
         plugins.push({
-          pluginType: this.workflowForm.value.pluginType,
+          pluginType: 'OAIPMH_HARVEST',
           setSpec: this.workflowForm.value.setSpec,
           url: this.workflowForm.value.harvestUrl.trim(),
           metadataFormat: this.workflowForm.value.metadataFormat,
@@ -394,7 +391,7 @@ export class WorkflowComponent implements OnInit {
         });
       } else if (this.workflowForm.value.pluginType === 'HTTP_HARVEST') {
         plugins.push({
-          pluginType: this.workflowForm.value.pluginType,
+          pluginType: 'HTTP_HARVEST',
           url: this.workflowForm.value.url.trim(),
           mocked: false,
         });
@@ -491,8 +488,8 @@ export class WorkflowComponent implements OnInit {
   */
   returnConnections(
     formValuesConnections: Array<{ host: string; connections: number }>,
-  ): Connections {
-    const connections: Connections = {};
+  ): ConnectionLimits {
+    const connections: ConnectionLimits = {};
     for (let c = 0; c < formValuesConnections.length; c++) {
       if (formValuesConnections[c].host && formValuesConnections[c].connections) {
         connections[formValuesConnections[c].host] = Number(formValuesConnections[c].connections);

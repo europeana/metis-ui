@@ -1,4 +1,4 @@
-import { Country } from '../../src/app/_models/country';
+import { Country } from '../../src/app/_models';
 
 export const countries: Country[] = [
   { enum: 'CHINA', name: 'China', isoCode: 'CN' },

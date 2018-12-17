@@ -1,4 +1,4 @@
-import { Report } from '../../src/app/_models/report';
+import { Report } from '../../src/app/_models';
 
 // tslint:disable: max-line-length quotemark
 

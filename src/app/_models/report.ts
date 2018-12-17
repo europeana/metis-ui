@@ -1,3 +1,5 @@
+import { TopologyName } from './workflow-execution';
+
 export interface ErrorDetails {
   identifier: string;
   additionalInfo: string;
@@ -21,5 +23,5 @@ export interface Report {
 
 export interface ReportRequest {
   taskId: string;
-  topology: string;
+  topology: TopologyName;
 }

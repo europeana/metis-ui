@@ -30,7 +30,7 @@ export const currentWorkflowDataset: Workflow = {
     {
       enabled: true,
       pluginType: 'TRANSFORMATION',
-      customXSLT: false,
+      customXslt: false,
     },
     {
       enabled: true,
@@ -56,18 +56,18 @@ export const currentWorkflow: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'mocked',
+          pluginType: 'NORMALIZATION',
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'mocked',
+            pluginType: 'NORMALIZATION',
             mocked: true,
             enabled: false,
           },
           pluginStatus: PluginStatus.INQUEUE,
           externalTaskId: '123',
-          topologyName: 'mocked',
+          topologyName: 'normalization',
           executionProgress: {
             processedRecords: 1000,
             expectedRecords: 1000,
@@ -87,18 +87,18 @@ export const currentWorkflow: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'mocked',
+          pluginType: 'NORMALIZATION',
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'mocked',
+            pluginType: 'NORMALIZATION',
             mocked: true,
             enabled: false,
           },
           pluginStatus: PluginStatus.RUNNING,
           externalTaskId: '123',
-          topologyName: 'mocked',
+          topologyName: 'normalization',
           executionProgress: {
             processedRecords: 1000,
             expectedRecords: 1000,
@@ -118,18 +118,18 @@ export const currentWorkflow: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'mocked',
+          pluginType: 'NORMALIZATION',
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'mocked',
+            pluginType: 'NORMALIZATION',
             mocked: true,
             enabled: false,
           },
           pluginStatus: PluginStatus.FAILED,
           externalTaskId: '123',
-          topologyName: 'mocked',
+          topologyName: 'normalization',
           executionProgress: {
             processedRecords: 1000,
             expectedRecords: 1000,
@@ -149,18 +149,18 @@ export const currentWorkflow: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'mocked',
+          pluginType: 'NORMALIZATION',
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'mocked',
+            pluginType: 'NORMALIZATION',
             mocked: true,
             enabled: false,
           },
           pluginStatus: PluginStatus.CANCELLED,
           externalTaskId: '123',
-          topologyName: 'mocked',
+          topologyName: 'normalization',
           executionProgress: {
             processedRecords: 1000,
             expectedRecords: 1000,
@@ -180,18 +180,18 @@ export const currentWorkflow: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'mocked',
+          pluginType: 'NORMALIZATION',
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'mocked',
+            pluginType: 'NORMALIZATION',
             mocked: true,
             enabled: false,
           },
           pluginStatus: PluginStatus.FINISHED,
           externalTaskId: '123',
-          topologyName: 'mocked',
+          topologyName: 'normalization',
           executionProgress: {
             processedRecords: 1000,
             expectedRecords: 1000,

@@ -15,6 +15,7 @@ import {
   Results,
   Statistics,
   SubTaskInfo,
+  TopologyName,
   Workflow,
   WorkflowExecution,
   XmlSample,
@@ -111,7 +112,7 @@ export class WorkflowService {
   //  get logging information using topology and externaltaskid
   getLogs(
     taskId?: string,
-    topologyName?: string,
+    topologyName?: TopologyName,
     start?: number,
     finish?: number,
   ): Observable<SubTaskInfo[]> {
@@ -122,7 +123,7 @@ export class WorkflowService {
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
-  getReport(taskId: string, topologyName: string): Observable<Report> {
+  getReport(taskId: string, topologyName: TopologyName): Observable<Report> {
     const url = `${
       apiSettings.apiHostCore
     }/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
@@ -131,13 +132,13 @@ export class WorkflowService {
 
   requestHasError(key: string): Observable<boolean> {
     const [taskId, topologyName] = key.split('/');
-    return this.getReport(taskId, topologyName).pipe(
+    return this.getReport(taskId, topologyName as TopologyName).pipe(
       map((report) => report.errors && report.errors.length > 0),
     );
   }
 
   // only use this for finished tasks
-  getCachedHasErrors(taskId: string, topologyName: string): Observable<boolean> {
+  getCachedHasErrors(taskId: string, topologyName: TopologyName): Observable<boolean> {
     return this.hasErrorsCache.get(`${taskId}/${topologyName}`);
   }
 
@@ -303,7 +304,7 @@ export class WorkflowService {
   }
 
   //  get statistics for a certain dataset
-  getStatistics(topologyName: string, taskId: string): Observable<Statistics> {
+  getStatistics(topologyName: TopologyName, taskId: string): Observable<Statistics> {
     const url = `${
       apiSettings.apiHostCore
     }/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;

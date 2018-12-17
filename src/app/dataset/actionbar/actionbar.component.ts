@@ -7,6 +7,7 @@ import {
   PluginExecution,
   Report,
   ReportRequest,
+  TopologyName,
   Workflow,
   WorkflowExecution,
   WorkflowStatus,
@@ -41,7 +42,7 @@ export class ActionbarComponent {
   currentStatus?: string;
   currentPluginName?: string;
   currentExternalTaskId?: string;
-  currentTopology?: string;
+  currentTopology?: TopologyName;
 
   isCancelling?: boolean;
   isCompleted?: boolean;
@@ -101,7 +102,7 @@ export class ActionbarComponent {
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
-  openReport(taskId: string, topology: string): void {
+  openReport(taskId: string, topology: TopologyName): void {
     this.setReportRequest.emit({ taskId, topology });
   }
 

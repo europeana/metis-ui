@@ -1,4 +1,4 @@
-import { XmlSample } from '../../src/app/_models/xml-sample';
+import { XmlSample } from '../../src/app/_models';
 
 // tslint:disable: max-line-length
 

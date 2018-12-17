@@ -47,7 +47,7 @@ describe('ActionbarComponent', () => {
     expect(component.currentPlugin!.id).toBe('432552345');
     expect(component.currentStatus).toBe('FINISHED');
     expect(component.currentExternalTaskId).toBe('123');
-    expect(component.currentTopology).toBe('mocked');
+    expect(component.currentTopology).toBe('normalization');
     expect(component.totalErrors).toBe(0);
     expect(component.totalProcessed).toBe(1000);
     expect(component.totalInDataset).toBe(1000);
@@ -106,7 +106,7 @@ describe('ActionbarComponent', () => {
     reportBtn.triggerEventHandler('click', null);
     expect(component.setReportRequest.emit).toHaveBeenCalledWith({
       taskId: '123',
-      topology: 'mocked',
+      topology: 'normalization',
     });
   });
 

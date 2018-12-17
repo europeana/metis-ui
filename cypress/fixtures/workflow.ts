@@ -1,4 +1,4 @@
-import { Workflow } from '../../src/app/_models/workflow';
+import { Workflow } from '../../src/app/_models';
 
 export const workflow: Workflow = {
   datasetId: '1',
@@ -14,7 +14,7 @@ export const workflow: Workflow = {
     {
       enabled: true,
       pluginType: 'TRANSFORMATION',
-      customXSLT: false,
+      customXslt: false,
     },
     {
       enabled: true,

@@ -1,4 +1,4 @@
-import { Statistics } from '../../src/app/_models/statistics';
+import { Statistics } from '../../src/app/_models';
 
 export const statistics: Statistics = {
   taskId: 5,

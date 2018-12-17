@@ -1,10 +1,10 @@
-import { Results } from '../../src/app/_models/results';
 import {
   PluginStatus,
+  Results,
   TaskState,
   WorkflowExecution,
   WorkflowStatus,
-} from '../../src/app/_models/workflow-execution';
+} from '../../src/app/_models';
 
 export const runningExecutions: Results<WorkflowExecution> = {
   results: [
@@ -37,16 +37,9 @@ export const runningExecutions: Results<WorkflowExecution> = {
             pluginType: 'OAIPMH_HARVEST',
             mocked: false,
             enabled: true,
-            revisionNamePreviousPlugin: null,
-            revisionTimestampPreviousPlugin: null,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
             setSpec: '2021006',
-            fromDate: null,
-            untilDate: null,
-            datasetId: '58',
-            useDefaultIdentifiers: false,
-            identifierPrefixRemoval: null,
           },
           topologyName: 'oai_harvest',
         },
@@ -81,16 +74,9 @@ export const runningExecutions: Results<WorkflowExecution> = {
             pluginType: 'OAIPMH_HARVEST',
             mocked: false,
             enabled: true,
-            revisionNamePreviousPlugin: null,
-            revisionTimestampPreviousPlugin: null,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
             setSpec: '2021006',
-            fromDate: null,
-            untilDate: null,
-            datasetId: '58',
-            useDefaultIdentifiers: false,
-            identifierPrefixRemoval: null,
           },
           topologyName: 'oai_harvest',
         },

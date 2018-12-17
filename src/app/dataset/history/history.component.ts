@@ -11,6 +11,7 @@ import {
   PluginExecution,
   Report,
   ReportRequest,
+  TopologyName,
   WorkflowExecution,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -88,7 +89,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.returnAllExecutions();
   }
 
-  openReport(taskId: string, topology: string): void {
+  openReport(taskId: string, topology: TopologyName): void {
     this.setReportRequest.emit({ taskId, topology });
   }
 
