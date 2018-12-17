@@ -1,10 +1,10 @@
+import { Results } from '../../src/app/_models/results';
 import {
   PluginStatus,
-  Results,
   TaskState,
   WorkflowExecution,
   WorkflowStatus,
-} from '../../src/app/_models';
+} from '../../src/app/_models/workflow-execution';
 
 export const runningExecutions: Results<WorkflowExecution> = {
   results: [

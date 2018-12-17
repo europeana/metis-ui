@@ -1,4 +1,4 @@
-import { HarvestData } from '../../src/app/_models';
+import { HarvestData } from '../../src/app/_models/harvest-data';
 
 export const harvestData: HarvestData = {
   lastPreviewDate: '2018-09-06T11:45:55.168Z',

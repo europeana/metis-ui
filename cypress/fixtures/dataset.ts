@@ -1,4 +1,4 @@
-import { Dataset } from '../../src/app/_models';
+import { Dataset } from '../../src/app/_models/dataset';
 
 export const dataset: Dataset = {
   id: '5b90d759fa974d0009a4fb97',

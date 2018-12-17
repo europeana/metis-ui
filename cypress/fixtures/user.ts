@@ -1,4 +1,4 @@
-import { AccountRole, User } from '../../src/app/_models';
+import { AccountRole, User } from '../../src/app/_models/user';
 
 export const user: User = {
   userId: '1482250000003948001',

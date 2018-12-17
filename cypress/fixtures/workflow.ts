@@ -1,4 +1,4 @@
-import { Workflow } from '../../src/app/_models';
+import { Workflow } from '../../src/app/_models/workflow';
 
 export const workflow: Workflow = {
   datasetId: '1',
