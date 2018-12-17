@@ -12,6 +12,7 @@ import {
   isWorkflowCompleted,
   Notification,
   PluginMetadata,
+  PluginType,
   successNotification,
   Workflow,
   WorkflowExecution,
@@ -243,7 +244,7 @@ export class WorkflowComponent implements OnInit {
   /* add new host/connection to form
   /* @param {string} type - either link checking or media processing
   */
-  addConnection(type: string, host?: string, connections?: number): void {
+  addConnection(type: PluginType, host?: string, connections?: number): void {
     let control: FormArray;
     if (type === 'LINK_CHECKING') {
       control = this.workflowForm.controls.limitConnectionsLINK_CHECKING as FormArray;
