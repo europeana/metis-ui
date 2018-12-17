@@ -14,7 +14,7 @@ export const workflow: Workflow = {
     {
       enabled: true,
       pluginType: 'TRANSFORMATION',
-      customXSLT: false,
+      customXslt: false,
     },
     {
       enabled: true,

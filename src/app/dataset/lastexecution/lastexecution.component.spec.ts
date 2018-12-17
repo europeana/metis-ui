@@ -35,11 +35,11 @@ describe('LastExecutionComponent', () => {
 
   it('should open a report', () => {
     spyOn(component.setReportRequest, 'emit');
-    component.openReport('123', 'mocked');
+    component.openReport('123', 'validation');
     fixture.detectChanges();
     expect(component.setReportRequest.emit).toHaveBeenCalledWith({
       taskId: '123',
-      topology: 'mocked',
+      topology: 'validation',
     });
   });
 

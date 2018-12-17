@@ -28,8 +28,34 @@ export enum PluginStatus {
 
 // Java name: AbstractMetisPlugin
 
+export type PluginType =
+  | 'VALIDATION_EXTERNAL'
+  | 'VALIDATION_INTERNAL'
+  | 'NORMALIZATION'
+  | 'ENRICHMENT'
+  | 'PREVIEW'
+  | 'PUBLISH'
+  | 'OAIPMH_HARVEST'
+  | 'HTTP_HARVEST'
+  | 'TRANSFORMATION'
+  | 'MEDIA_PROCESS'
+  | 'LINK_CHECKING';
+
+// See Topology.java
+
+export type TopologyName =
+  | 'oai_harvest'
+  | 'http_harvest'
+  | 'validation'
+  | 'xslt_transform'
+  | 'normalization'
+  | 'enrichment'
+  | 'media_process'
+  | 'link_checker'
+  | 'indexer';
+
 export interface PluginExecution {
-  pluginType: string;
+  pluginType: PluginType;
   id: string;
   pluginStatus: PluginStatus;
   startedDate?: string;
@@ -38,7 +64,7 @@ export interface PluginExecution {
   externalTaskId?: string;
   executionProgress: ExecutionProgress;
   pluginMetadata: PluginMetadata;
-  topologyName: string;
+  topologyName: TopologyName;
 
   hasReport?: boolean;
 }

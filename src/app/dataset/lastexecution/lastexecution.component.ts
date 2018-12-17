@@ -8,6 +8,7 @@ import {
   PluginStatus,
   Report,
   ReportRequest,
+  TopologyName,
   WorkflowExecution,
 } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -49,7 +50,7 @@ export class LastExecutionComponent {
     el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  openReport(taskId: string, topology: string): void {
+  openReport(taskId: string, topology: TopologyName): void {
     this.setReportRequest.emit({ taskId, topology });
   }
 

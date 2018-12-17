@@ -48,7 +48,7 @@ describe('DashboardComponent', () => {
   it('should open log messages', () => {
     component.showPluginLog = {
       id: 'xx5',
-      pluginType: 'import',
+      pluginType: 'OAIPMH_HARVEST',
       pluginStatus: PluginStatus.RUNNING,
       executionProgress: {
         expectedRecords: 1000,
@@ -56,8 +56,13 @@ describe('DashboardComponent', () => {
         progressPercentage: 50,
         errors: 5,
       },
-      pluginMetadata: { pluginType: 'import' },
-      topologyName: 'import',
+      pluginMetadata: {
+        pluginType: 'OAIPMH_HARVEST',
+        url: 'example.com',
+        setSpec: 'test',
+        metadataFormat: 'edm',
+      },
+      topologyName: 'oai_harvest',
     };
     fixture.detectChanges();
     expect(component.showPluginLog).toBeTruthy();
