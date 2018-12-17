@@ -1,18 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 
 import { harvestValidator } from '../../_helpers';
 import {
-  ConnectionLimits,
   Dataset,
   errorNotification,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
   PluginMetadata,
-  PluginType,
   successNotification,
   Workflow,
   WorkflowExecution,
@@ -59,8 +57,6 @@ export class WorkflowComponent implements OnInit {
   workflowForm: FormGroup;
   currentUrl: string;
   selectedSteps = true;
-  showLimitConnectionMedia = false;
-  showLimitConnectionLinkChecking = false;
   pluginsOrdered: Array<string> = [
     'pluginHARVEST',
     'pluginVALIDATION_EXTERNAL',
@@ -121,8 +117,6 @@ export class WorkflowComponent implements OnInit {
       ftpHttpPassword: [''],
       url: [''],
       customXslt: [''],
-      limitConnectionsLINK_CHECKING: this.fb.array([this.initLimitConnections()]),
-      limitConnectionsMEDIA_PROCESS: this.fb.array([this.initLimitConnections()]),
     });
 
     this.updateRequired();
@@ -230,71 +224,6 @@ export class WorkflowComponent implements OnInit {
     this.harvestprotocol = protocol;
   }
 
-  /** initLimitConnections
-  /* add new host/connections form group to the list
-  */
-  initLimitConnections(host?: string, connections?: number): FormGroup {
-    return this.fb.group({
-      host: [host ? host : ''],
-      connections: [connections ? connections : ''],
-    });
-  }
-
-  /** addConnection
-  /* add new host/connection to form
-  /* @param {string} type - either link checking or media processing
-  */
-  addConnection(type: PluginType, host?: string, connections?: number): void {
-    let control: FormArray;
-    if (type === 'LINK_CHECKING') {
-      control = this.workflowForm.controls.limitConnectionsLINK_CHECKING as FormArray;
-    } else if (type === 'MEDIA_PROCESS') {
-      control = this.workflowForm.controls.limitConnectionsMEDIA_PROCESS as FormArray;
-    } else {
-      console.warn('unknown connection type: ' + type);
-      return;
-    }
-    control.push(this.initLimitConnections(host, connections));
-  }
-
-  /** removeConnection
-  /* remove host/connection from form
-  /* @param {string} type - either link checking or media processing
-  /* @param {number} i - host/connections combination in the list
-  */
-  removeConnection(type: string, i: number): void {
-    let control;
-    if (type === 'LINK_CHECKING') {
-      control = this.workflowForm.controls.limitConnectionsLINK_CHECKING as FormArray;
-    } else if (type === 'MEDIA_PROCESS') {
-      control = this.workflowForm.controls.limitConnectionsMEDIA_PROCESS as FormArray;
-    } else {
-      console.warn('unknown connection type: ' + type);
-      return;
-    }
-    control.removeAt(i);
-  }
-
-  /** removeAllConnections
-  /* remove all host/connection
-  /* @param {string} type - either link checking or media processing
-  */
-  removeAllConnections(type: string): void {
-    let control;
-    if (type === 'LINK_CHECKING') {
-      control = this.workflowForm.controls.limitConnectionsLINK_CHECKING as FormArray;
-    } else if (type === 'MEDIA_PROCESS') {
-      control = this.workflowForm.controls.limitConnectionsMEDIA_PROCESS as FormArray;
-    } else {
-      console.warn('unknown connection type: ' + type);
-      return;
-    }
-
-    while (control.length !== 0) {
-      control.removeAt(0);
-    }
-  }
-
   getWorkflow(): void {
     const workflow = this.workflowData;
     if (!workflow) {
@@ -341,29 +270,6 @@ export class WorkflowComponent implements OnInit {
       // transformation
       if (thisWorkflow.pluginType === 'TRANSFORMATION') {
         this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-      }
-
-      // media processing + link checking
-      if (
-        thisWorkflow.pluginType === 'MEDIA_PROCESS' ||
-        thisWorkflow.pluginType === 'LINK_CHECKING'
-      ) {
-        if (!thisWorkflow.connectionLimitToDomains) {
-          return;
-        }
-        this.removeAllConnections(thisWorkflow.pluginType);
-        const connectionDomains = Object.keys(thisWorkflow.connectionLimitToDomains);
-        for (let lc = 0; lc < connectionDomains.length; lc++) {
-          const host = connectionDomains[lc];
-          const connections = thisWorkflow.connectionLimitToDomains[host];
-          if (host !== '') {
-            this.addConnection(thisWorkflow.pluginType, host, connections);
-          } else {
-            if (connectionDomains.length === 1) {
-              this.addConnection(thisWorkflow.pluginType);
-            }
-          }
-        }
       }
     }
   }
@@ -445,9 +351,6 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         pluginType: 'MEDIA_PROCESS',
         mocked: false,
-        connectionLimitToDomains: this.returnConnections(
-          this.workflowForm.value.limitConnectionsMEDIA_PROCESS,
-        ),
       });
     }
 
@@ -472,35 +375,12 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         pluginType: 'LINK_CHECKING',
         mocked: false,
-        connectionLimitToDomains: this.returnConnections(
-          this.workflowForm.value.limitConnectionsLINK_CHECKING,
-        ),
       });
     }
 
     return {
       metisPluginsMetadata: plugins,
     };
-  }
-
-  /** returnConnections
-  /* build a map with connections
-  /* @param {object} formValuesConnections - connection values from form
-  */
-  returnConnections(
-    formValuesConnections: Array<{ host: string; connections: number }>,
-  ): ConnectionLimits {
-    const connections: ConnectionLimits = {};
-    for (let c = 0; c < formValuesConnections.length; c++) {
-      if (formValuesConnections[c].host && formValuesConnections[c].connections) {
-        connections[formValuesConnections[c].host] = Number(formValuesConnections[c].connections);
-      }
-    }
-    return connections;
-  }
-
-  getFormArrayControls(name: string): AbstractControl[] {
-    return (this.workflowForm.controls[name] as FormArray).controls;
   }
 
   /** onSubmit

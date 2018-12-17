@@ -6,8 +6,10 @@ export interface BasicPluginMetadata {
     | 'VALIDATION_INTERNAL'
     | 'NORMALIZATION'
     | 'ENRICHMENT'
+    | 'MEDIA_PROCESS'
     | 'PREVIEW'
-    | 'PUBLISH';
+    | 'PUBLISH'
+    | 'LINK_CHECKING';
   mocked?: boolean;
   enabled?: boolean;
 }
@@ -38,21 +40,8 @@ export interface TransformationPluginMetadata {
   customXslt: boolean;
 }
 
-export interface ConnectionLimits {
-  [host: string]: number;
-}
-
-export interface ConnectionsPluginMetadata {
-  pluginType: 'MEDIA_PROCESS' | 'LINK_CHECKING';
-  mocked?: boolean;
-  enabled?: boolean;
-
-  connectionLimitToDomains: ConnectionLimits;
-}
-
 export type PluginMetadata =
   | BasicPluginMetadata
   | OAIHarvestPluginMetadata
   | HttpHarvestPluginMetadata
-  | TransformationPluginMetadata
-  | ConnectionsPluginMetadata;
+  | TransformationPluginMetadata;

@@ -19,12 +19,10 @@ export const workflow: Workflow = {
     {
       enabled: true,
       pluginType: 'MEDIA_PROCESS',
-      connectionLimitToDomains: { mocked: 1 },
     },
     {
       enabled: true,
       pluginType: 'LINK_CHECKING',
-      connectionLimitToDomains: { mocked: 1 },
     },
   ],
 };
