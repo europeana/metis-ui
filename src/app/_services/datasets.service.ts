@@ -9,7 +9,7 @@ import { Dataset, XmlSample } from '../_models';
 
 import { ErrorService } from './error.service';
 
-const FAVORITE_IDS = 'favoriteIds';
+const FAVORITE_DATASET_IDS = 'favoriteDatasetIds';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetsService {
@@ -17,7 +17,7 @@ export class DatasetsService {
   favoriteIds: string[];
 
   constructor(private http: HttpClient, private errors: ErrorService) {
-    this.favoriteIds = JSON.parse(localStorage.getItem(FAVORITE_IDS) || '[]');
+    this.favoriteIds = JSON.parse(localStorage.getItem(FAVORITE_DATASET_IDS) || '[]');
   }
 
   private requestDataset(id: string): Observable<Dataset> {
@@ -87,7 +87,7 @@ export class DatasetsService {
   }
 
   saveFavorites(): void {
-    localStorage.setItem(FAVORITE_IDS, JSON.stringify(this.favoriteIds));
+    localStorage.setItem(FAVORITE_DATASET_IDS, JSON.stringify(this.favoriteIds));
   }
 
   sortFavorites(): void {
@@ -118,6 +118,10 @@ export class DatasetsService {
       this.favoriteIds.splice(index, 1);
       this.saveFavorites();
     }
+  }
+
+  hasFavorites(): boolean {
+    return this.favoriteIds.length > 0;
   }
 
   getFavorites(): Observable<Dataset[]> {
