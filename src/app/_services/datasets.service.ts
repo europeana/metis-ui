@@ -1,22 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, publishLast, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
+import { KeyedCache } from '../_helpers';
 import { Dataset, XmlSample } from '../_models';
 
 import { ErrorService } from './error.service';
 
-const FAVORITE_IDS = 'favoriteIds';
+const FAVORITE_DATASET_IDS = 'favoriteDatasetIds';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetsService {
-  datasetById: { [id: string]: Observable<Dataset> } = {};
+  datasetCache = new KeyedCache((id) => this.requestDataset(id));
   favoriteIds: string[];
 
   constructor(private http: HttpClient, private errors: ErrorService) {
-    this.favoriteIds = JSON.parse(localStorage.getItem(FAVORITE_IDS) || '[]');
+    this.favoriteIds = JSON.parse(localStorage.getItem(FAVORITE_DATASET_IDS) || '[]');
   }
 
   private requestDataset(id: string): Observable<Dataset> {
@@ -25,19 +26,7 @@ export class DatasetsService {
   }
 
   getDataset(id: string, refresh: boolean = false): Observable<Dataset> {
-    let observable = this.datasetById[id];
-    if (observable && !refresh) {
-      return observable;
-    }
-    observable = this.requestDataset(id).pipe(
-      tap(undefined, () => {
-        delete this.datasetById[id];
-      }),
-      publishLast(),
-    );
-    (observable as ConnectableObservable<Dataset>).connect();
-    this.datasetById[id] = observable;
-    return observable;
+    return this.datasetCache.get(id, refresh);
   }
 
   // tslint:disable-next-line: no-any
@@ -51,8 +40,7 @@ export class DatasetsService {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(
       tap(() => {
-        // remove old dataset from cache
-        delete this.datasetById[datasetFormValues.dataset.datasetId];
+        this.datasetCache.clear(datasetFormValues.dataset.datasetId);
       }),
       this.errors.handleRetry(),
     );
@@ -99,7 +87,7 @@ export class DatasetsService {
   }
 
   saveFavorites(): void {
-    localStorage.setItem(FAVORITE_IDS, JSON.stringify(this.favoriteIds));
+    localStorage.setItem(FAVORITE_DATASET_IDS, JSON.stringify(this.favoriteIds));
   }
 
   sortFavorites(): void {
@@ -130,6 +118,10 @@ export class DatasetsService {
       this.favoriteIds.splice(index, 1);
       this.saveFavorites();
     }
+  }
+
+  hasFavorites(): boolean {
+    return this.favoriteIds.length > 0;
   }
 
   getFavorites(): Observable<Dataset[]> {

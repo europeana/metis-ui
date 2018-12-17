@@ -5,6 +5,7 @@
     "component-selector": [true, ["element", "attribute"], "app", "kebab-case"],
     "deprecation": { "severity": "error" },
     "directive-selector": [true, "attribute", "app", "camelCase"],
+    "max-classes-per-file": false,
     "no-access-missing-member": false,
     "no-angle-bracket-type-assertion": true,
     "no-any": true,
