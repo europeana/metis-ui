@@ -62,27 +62,6 @@ describe('WorkflowComponent', () => {
     expect(component.harvestprotocol).toBe('OAIPMH_HARVEST');
   });
 
-  it('should add and remove host/connections for link checking', () => {
-    component.datasetData = currentDataset;
-    component.addConnection('LINK_CHECKING');
-    fixture.detectChanges();
-    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(2);
-
-    component.removeConnection('LINK_CHECKING', 0);
-    fixture.detectChanges();
-    expect(component.workflowForm.controls.limitConnectionsLINK_CHECKING.value.length).toBe(1);
-  });
-
-  it('should add and remove host/connections for media processing', () => {
-    component.addConnection('MEDIA_PROCESS');
-    fixture.detectChanges();
-    expect(component.workflowForm.controls.limitConnectionsMEDIA_PROCESS.value.length).toBe(2);
-
-    component.removeConnection('MEDIA_PROCESS', 0);
-    fixture.detectChanges();
-    expect(component.workflowForm.controls.limitConnectionsMEDIA_PROCESS.value.length).toBe(1);
-  });
-
   it('should submit the changes', () => {
     component.datasetData = currentDataset;
     component.workflowForm.get('pluginTRANSFORMATION')!.setValue(true);

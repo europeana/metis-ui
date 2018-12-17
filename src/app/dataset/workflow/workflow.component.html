@@ -353,50 +353,6 @@
             (change)="workflowStepAllowed('pluginMEDIA_PROCESS')"
           />
         </label>
-
-        <div
-          class="form-group"
-          *ngIf="
-            !workflowForm.get('pluginMEDIA_PROCESS')!.disabled &&
-            workflowForm.get('pluginMEDIA_PROCESS')!.value
-          "
-        >
-          <label (click)="showLimitConnectionMedia = true" class="connections"
-            >Limit connections</label
-          >
-
-          <div formArrayName="limitConnectionsMEDIA_PROCESS" *ngIf="showLimitConnectionMedia">
-            <div
-              *ngFor="
-                let connection of getFormArrayControls('limitConnectionsMEDIA_PROCESS');
-                let i = index
-              "
-            >
-              <div class="form-group-connections" [formGroupName]="i">
-                <div><label>Host</label> <input type="text" formControlName="host" /></div>
-                <div>
-                  <label>Connections</label> <input type="text" formControlName="connections" />
-                </div>
-                <a
-                  *ngIf="
-                    getFormArrayControls('limitConnectionsMEDIA_PROCESS').length > 1 &&
-                    workflowForm.get('pluginMEDIA_PROCESS')!.value === true
-                  "
-                  (click)="removeConnection('MEDIA_PROCESS', i)"
-                  class="svg-icon-cancel"
-                ></a>
-              </div>
-            </div>
-          </div>
-          <a
-            class="svg-icon-plus"
-            *ngIf="
-              showLimitConnectionMedia && workflowForm.get('pluginMEDIA_PROCESS')!.value === true
-            "
-            (click)="addConnection('MEDIA_PROCESS')"
-            >Add connection
-          </a>
-        </div>
       </div>
 
       <!-- PUBLISH TO PREVIEW -->
@@ -453,53 +409,6 @@
           >{{ 'LINK_CHECKING' | renameWorkflow }}
           <input type="checkbox" formControlName="pluginLINK_CHECKING" id="pluginLINK_CHECKING"
         /></label>
-        <div
-          class="form-group"
-          *ngIf="
-            !workflowForm.get('pluginLINK_CHECKING')!.disabled &&
-            workflowForm.get('pluginLINK_CHECKING')!.value
-          "
-        >
-          <label (click)="showLimitConnectionLinkChecking = true" class="connections"
-            >Limit connections</label
-          >
-
-          <div
-            formArrayName="limitConnectionsLINK_CHECKING"
-            *ngIf="showLimitConnectionLinkChecking"
-          >
-            <div
-              *ngFor="
-                let connection of getFormArrayControls('limitConnectionsLINK_CHECKING');
-                let i = index
-              "
-            >
-              <div class="form-group-connections" [formGroupName]="i">
-                <div><label>Host</label> <input type="text" formControlName="host" /></div>
-                <div>
-                  <label>Connections</label> <input type="text" formControlName="connections" />
-                </div>
-                <a
-                  *ngIf="
-                    getFormArrayControls('limitConnectionsLINK_CHECKING').length > 1 &&
-                    workflowForm.get('pluginLINK_CHECKING')!.value === true
-                  "
-                  (click)="removeConnection('LINK_CHECKING', i)"
-                  class="svg-icon-cancel"
-                ></a>
-              </div>
-            </div>
-          </div>
-          <a
-            class="svg-icon-plus"
-            *ngIf="
-              showLimitConnectionLinkChecking &&
-              workflowForm.get('pluginLINK_CHECKING')!.value === true
-            "
-            (click)="addConnection('LINK_CHECKING')"
-            >Add connection
-          </a>
-        </div>
       </div>
 
       <div class="form-fields form-fields-buttons">
