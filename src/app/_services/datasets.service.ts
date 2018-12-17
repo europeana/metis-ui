@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, publishLast, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
+import { KeyedCache } from '../_helpers';
 import { Dataset, XmlSample } from '../_models';
 
 import { ErrorService } from './error.service';
@@ -12,7 +13,7 @@ const FAVORITE_IDS = 'favoriteIds';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetsService {
-  datasetById: { [id: string]: Observable<Dataset> } = {};
+  datasetCache = new KeyedCache((id) => this.requestDataset(id));
   favoriteIds: string[];
 
   constructor(private http: HttpClient, private errors: ErrorService) {
@@ -25,19 +26,7 @@ export class DatasetsService {
   }
 
   getDataset(id: string, refresh: boolean = false): Observable<Dataset> {
-    let observable = this.datasetById[id];
-    if (observable && !refresh) {
-      return observable;
-    }
-    observable = this.requestDataset(id).pipe(
-      tap(undefined, () => {
-        delete this.datasetById[id];
-      }),
-      publishLast(),
-    );
-    (observable as ConnectableObservable<Dataset>).connect();
-    this.datasetById[id] = observable;
-    return observable;
+    return this.datasetCache.get(id, refresh);
   }
 
   // tslint:disable-next-line: no-any
@@ -51,8 +40,7 @@ export class DatasetsService {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(
       tap(() => {
-        // remove old dataset from cache
-        delete this.datasetById[datasetFormValues.dataset.datasetId];
+        this.datasetCache.clear(datasetFormValues.dataset.datasetId);
       }),
       this.errors.handleRetry(),
     );

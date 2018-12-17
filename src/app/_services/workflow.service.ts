@@ -1,9 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
-import { ConnectableObservable, forkJoin, Observable, of } from 'rxjs';
-import { map, publishLast, switchMap, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
+import { KeyedCache } from '../_helpers';
 import {
   getCurrentPlugin,
   getCurrentPluginIndex,
@@ -32,7 +33,7 @@ export class WorkflowService {
 
   public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
 
-  hasErrorsByKey: { [key: string]: Observable<boolean> } = {};
+  hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
 
   private collectAllResults<T>(
     getResults: (page: number) => Observable<Results<T>>,
@@ -128,23 +129,16 @@ export class WorkflowService {
     return this.http.get<Report>(url).pipe(this.errors.handleRetry());
   }
 
+  requestHasError(key: string): Observable<boolean> {
+    const [taskId, topologyName] = key.split('/');
+    return this.getReport(taskId, topologyName).pipe(
+      map((report) => report.errors && report.errors.length > 0),
+    );
+  }
+
   // only use this for finished tasks
   getCachedHasErrors(taskId: string, topologyName: string): Observable<boolean> {
-    const key = `${taskId}/${topologyName}`;
-    let observable = this.hasErrorsByKey[key];
-    if (observable) {
-      return observable;
-    }
-    observable = this.getReport(taskId, topologyName).pipe(
-      map((report) => report.errors && report.errors.length > 0),
-      tap(undefined, () => {
-        delete this.hasErrorsByKey[key];
-      }),
-      publishLast(),
-    );
-    (observable as ConnectableObservable<boolean>).connect();
-    this.hasErrorsByKey[key] = observable;
-    return observable;
+    return this.hasErrorsCache.get(`${taskId}/${topologyName}`);
   }
 
   //  get history of finished, failed or canceled executions for specific datasetid
