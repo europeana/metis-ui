@@ -4,6 +4,7 @@ import { Observable, of as observableOf } from 'rxjs';
 import {
   HarvestData,
   MoreResults,
+  PluginExecution,
   PluginStatus,
   Report,
   Results,
@@ -16,7 +17,7 @@ import {
   XmlSample,
 } from '../_models';
 
-export const currentWorkflowDataset: Workflow = {
+export const mockWorkflow: Workflow = {
   datasetId: '1',
   id: '1',
   metisPluginsMetadata: [
@@ -43,7 +44,7 @@ export const currentWorkflowDataset: Workflow = {
   ],
 };
 
-export const currentWorkflow: Results<WorkflowExecution> = {
+export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
   results: [
     {
       id: '253453453',
@@ -205,14 +206,18 @@ export const currentWorkflow: Results<WorkflowExecution> = {
   nextPage: -1,
 };
 
-export const xmlSamples: XmlSample[] = [
+export const mockWorkflowExecution: WorkflowExecution = mockWorkflowExecutionResults.results[0];
+
+export const mockPluginExecution: PluginExecution = mockWorkflowExecution.metisPlugins[0];
+
+export const mockXmlSamples: XmlSample[] = [
   {
     ecloudId: '1',
     xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>',
   },
 ];
 
-export const statistics: Statistics = {
+export const mockStatistics: Statistics = {
   taskId: 5,
   nodeStatistics: [
     {
@@ -231,7 +236,7 @@ export const statistics: Statistics = {
   ],
 };
 
-export const currentReport: Report = {
+export const mockReport: Report = {
   id: 123,
   errors: [
     {
@@ -243,7 +248,7 @@ export const currentReport: Report = {
   ],
 };
 
-export const harvestData: HarvestData = {
+export const mockHarvestData: HarvestData = {
   lastPreviewDate: '2018-03-28T13:53:04.762Z',
   lastPreviewRecords: 842,
   lastPreviewRecordsReadyForViewing: true,
@@ -255,11 +260,21 @@ export const harvestData: HarvestData = {
   lastHarvestedRecords: 842,
 };
 
+export const mockLogs = [
+  {
+    resourceNum: 5,
+    resource: 'dsv',
+    state: 'st',
+    info: 'fdsfsd',
+    resultResource: 'xcsdc',
+  },
+];
+
 export class MockWorkflowService {
   public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
 
   startWorkflow(): Observable<WorkflowExecution> {
-    return observableOf(currentWorkflow.results[0]);
+    return observableOf(mockWorkflowExecution);
   }
 
   cancelThisWorkflow(): Observable<void> {
@@ -267,35 +282,35 @@ export class MockWorkflowService {
   }
 
   getCompletedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
-    return observableOf(currentWorkflow);
+    return observableOf(mockWorkflowExecutionResults);
   }
 
   getDatasetExecutions(): Observable<Results<WorkflowExecution>> {
-    return observableOf(currentWorkflow);
+    return observableOf(mockWorkflowExecutionResults);
   }
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {
-    return observableOf(currentWorkflow.results[0]);
+    return observableOf(mockWorkflowExecution);
   }
 
   getAllExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
-    return observableOf(currentWorkflow.results);
+    return observableOf(mockWorkflowExecutionResults.results);
   }
 
   getAllExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
-    return observableOf({ results: currentWorkflow.results, more: false });
+    return observableOf({ results: mockWorkflowExecutionResults.results, more: false });
   }
 
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
-    return observableOf({ results: currentWorkflow.results, more: false });
+    return observableOf({ results: mockWorkflowExecutionResults.results, more: false });
   }
 
   getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
-    return observableOf(currentWorkflow);
+    return observableOf(mockWorkflowExecutionResults);
   }
 
   getDatasetExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
-    return observableOf(currentWorkflow.results);
+    return observableOf(mockWorkflowExecutionResults.results);
   }
 
   promptCancelThisWorkflow(): void {}
@@ -303,38 +318,30 @@ export class MockWorkflowService {
   getReportsForExecution(): void {}
 
   getWorkflowSamples(): Observable<XmlSample[]> {
-    return observableOf(xmlSamples);
+    return observableOf(mockXmlSamples);
   }
 
   getReport(_: string, __: string): Observable<Report> {
-    return observableOf(currentReport);
+    return observableOf(mockReport);
   }
 
   getStatistics(): Observable<Statistics> {
-    return observableOf(statistics);
+    return observableOf(mockStatistics);
   }
 
   getWorkflowForDataset(): Observable<Workflow> {
-    return observableOf(currentWorkflowDataset);
+    return observableOf(mockWorkflow);
   }
 
   createWorkflowForDataset(): Observable<Workflow> {
-    return observableOf(currentWorkflowDataset);
+    return observableOf(mockWorkflow);
   }
 
   getPublishedHarvestedData(): Observable<HarvestData> {
-    return observableOf(harvestData);
+    return observableOf(mockHarvestData);
   }
 
   getLogs(): Observable<SubTaskInfo[]> {
-    return observableOf([
-      {
-        resourceNum: 5,
-        resource: 'dsv',
-        state: 'st',
-        info: 'fdsfsd',
-        resultResource: 'xcsdc',
-      },
-    ]);
+    return observableOf(mockLogs);
   }
 }

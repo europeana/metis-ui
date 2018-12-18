@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { apiSettings } from '../../../environments/apisettings';
-import { createMockPipe, currentDataset, harvestData } from '../../_mocked';
+import { createMockPipe, currentDataset, mockHarvestData } from '../../_mocked';
 
 import { GeneralinfoComponent } from '.';
 
@@ -27,9 +27,9 @@ describe('GeneralinfoComponent', () => {
   });
 
   it('should try to find publication data', () => {
-    component.harvestPublicationData = harvestData;
+    component.harvestPublicationData = mockHarvestData;
     fixture.detectChanges();
-    expect(component.harvestPublicationData).toBe(harvestData);
+    expect(component.harvestPublicationData).toBe(mockHarvestData);
     expect(component.lastPublishedRecords).toBe(842);
     expect(component.lastPublishedDate).toBe('2018-03-30T13:53:04.762Z');
     expect(component.viewPreview).toBe(apiSettings.viewPreview + '1_*');

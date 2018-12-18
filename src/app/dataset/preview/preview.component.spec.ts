@@ -6,10 +6,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
   currentDataset,
-  currentWorkflow,
   MockDatasetService,
   MockErrorService,
   MockTranslateService,
+  mockWorkflowExecution,
   MockWorkflowService,
 } from '../../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
@@ -53,7 +53,7 @@ describe('PreviewComponent', () => {
   it('should prefill filters', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow.results[0],
+      execution: mockWorkflowExecution,
       plugin: 'MOCKED',
     };
     component.prefillFilters();
@@ -64,7 +64,7 @@ describe('PreviewComponent', () => {
   it('should expand sample', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow.results[0],
+      execution: mockWorkflowExecution,
       plugin: 'MOCKED',
     };
     component.prefillFilters();

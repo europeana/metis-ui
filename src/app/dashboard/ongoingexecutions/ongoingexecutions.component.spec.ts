@@ -3,8 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import {
   createMockPipe,
-  currentWorkflow,
   MockTranslateService,
+  mockWorkflowExecution,
   MockWorkflowService,
 } from '../../_mocked';
 import { WorkflowService } from '../../_services';
@@ -39,7 +39,7 @@ describe('OngoingexecutionsComponent', () => {
 
   it('should show a log', () => {
     spyOn(component.setShowPluginLog, 'emit');
-    component.showLog(currentWorkflow.results[0]);
+    component.showLog(mockWorkflowExecution);
     fixture.detectChanges();
     expect(component.setShowPluginLog.emit).toHaveBeenCalled();
   });

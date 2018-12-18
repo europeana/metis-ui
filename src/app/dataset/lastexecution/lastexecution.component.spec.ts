@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { createMockPipe, currentWorkflow, MockWorkflowService } from '../../_mocked';
+import { createMockPipe, mockWorkflowExecutionResults, MockWorkflowService } from '../../_mocked';
 import { WorkflowService } from '../../_services';
 
 import { LastExecutionComponent } from '.';
@@ -44,7 +44,7 @@ describe('LastExecutionComponent', () => {
   });
 
   it('should display history in panel', () => {
-    component.lastExecutionData = currentWorkflow.results[4];
+    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
   });

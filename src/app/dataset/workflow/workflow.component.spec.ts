@@ -7,9 +7,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
   currentDataset,
-  currentWorkflowDataset,
   MockErrorService,
   MockTranslateService,
+  mockWorkflow,
   MockWorkflowService,
 } from '../../_mocked';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -56,7 +56,7 @@ describe('WorkflowComponent', () => {
 
   it('should get the workflow for this dataset', () => {
     component.datasetData = currentDataset;
-    component.workflowData = currentWorkflowDataset;
+    component.workflowData = mockWorkflow;
     component.getWorkflow();
     fixture.detectChanges();
     expect(component.harvestprotocol).toBe('OAIPMH_HARVEST');

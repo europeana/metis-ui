@@ -9,9 +9,9 @@ import {
   currentDataset,
   MockDatasetService,
   MockErrorService,
+  mockStatistics,
   MockTranslateService,
   MockWorkflowService,
-  statistics,
 } from '../../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -50,7 +50,7 @@ describe('MappingComponent', () => {
   });
 
   it('should expand statistics', () => {
-    component.statistics = statistics.nodeStatistics;
+    component.statistics = mockStatistics.nodeStatistics;
     fixture.detectChanges();
 
     component.toggleStatistics();
