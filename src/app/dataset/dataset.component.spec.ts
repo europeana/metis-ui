@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
-  MockDatasetService,
+  MockDatasetsService,
   MockErrorService,
   mockPluginExecution,
   MockWorkflowService,
@@ -23,7 +23,7 @@ describe('DatasetComponent', () => {
       imports: [RouterTestingModule],
       declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: ErrorService, useClass: MockErrorService },
       ],

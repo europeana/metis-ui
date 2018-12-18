@@ -3,7 +3,7 @@ import { async, TestBed } from '@angular/core/testing';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
-  MockDatasetService,
+  MockDatasetsService,
   MockErrorService,
   mockFirstPageResults,
   mockHarvestData,
@@ -36,7 +36,7 @@ describe('workflow service', () => {
       providers: [
         WorkflowService,
         { provide: ErrorService, useClass: MockErrorService },
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
       ],
       imports: [HttpClientTestingModule],
     }).compileComponents();

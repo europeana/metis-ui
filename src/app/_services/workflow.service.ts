@@ -29,7 +29,7 @@ import { ErrorService } from './error.service';
 export class WorkflowService {
   constructor(
     private http: HttpClient,
-    private datasetService: DatasetsService,
+    private datasetsService: DatasetsService,
     private errors: ErrorService,
   ) {}
 
@@ -227,7 +227,7 @@ export class WorkflowService {
     });
 
     const observables = executions.map(({ datasetId }) =>
-      this.datasetService.getDataset(datasetId),
+      this.datasetsService.getDataset(datasetId),
     );
     return forkJoin(observables).pipe(
       map((datasets) => {

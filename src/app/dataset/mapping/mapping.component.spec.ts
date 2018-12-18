@@ -6,8 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
-  currentDataset,
-  MockDatasetService,
+  mockDataset,
+  MockDatasetsService,
   MockErrorService,
   mockStatistics,
   MockTranslateService,
@@ -29,7 +29,7 @@ describe('MappingComponent', () => {
       declarations: [MappingComponent, createMockPipe('translate'), createMockPipe('beautifyXML')],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: ErrorService, useClass: MockErrorService },
       ],
@@ -40,7 +40,7 @@ describe('MappingComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MappingComponent);
     component = fixture.componentInstance;
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     router = TestBed.get(Router);
   });
 

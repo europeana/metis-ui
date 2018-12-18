@@ -4,7 +4,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   createMockPipe,
   MockAuthenticationService,
-  MockDatasetService,
+  MockDatasetsService,
   MockErrorService,
   MockWorkflowService,
 } from '../_mocked';
@@ -27,7 +27,7 @@ describe('DashboardComponent', () => {
       declarations: [DashboardComponent, createMockPipe('translate')],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: ErrorService, useClass: MockErrorService },
       ],

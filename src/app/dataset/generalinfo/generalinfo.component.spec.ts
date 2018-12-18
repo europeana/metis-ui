@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { apiSettings } from '../../../environments/apisettings';
-import { createMockPipe, currentDataset, mockHarvestData } from '../../_mocked';
+import { createMockPipe, mockDataset, mockHarvestData } from '../../_mocked';
 
 import { GeneralinfoComponent } from '.';
 
@@ -18,7 +18,7 @@ describe('GeneralinfoComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GeneralinfoComponent);
     component = fixture.componentInstance;
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     fixture.detectChanges();
   });
 

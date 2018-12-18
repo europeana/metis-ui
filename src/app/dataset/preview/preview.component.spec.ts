@@ -5,8 +5,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
-  currentDataset,
-  MockDatasetService,
+  mockDataset,
+  MockDatasetsService,
   MockErrorService,
   MockTranslateService,
   mockWorkflowExecution,
@@ -32,7 +32,7 @@ describe('PreviewComponent', () => {
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],
@@ -51,7 +51,7 @@ describe('PreviewComponent', () => {
   });
 
   it('should prefill filters', (): void => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.previewFilters = {
       execution: mockWorkflowExecution,
       plugin: 'NORMALIZATION',
@@ -62,7 +62,7 @@ describe('PreviewComponent', () => {
   });
 
   it('should expand sample', (): void => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.previewFilters = {
       execution: mockWorkflowExecution,
       plugin: 'NORMALIZATION',
@@ -74,7 +74,7 @@ describe('PreviewComponent', () => {
   });
 
   it('should toggle filters', () => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.toggleFilterDate();
     fixture.detectChanges();
     expect(
@@ -90,7 +90,7 @@ describe('PreviewComponent', () => {
   });
 
   it('should get transformed samples', () => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.transformSamples('default');
     fixture.detectChanges();
     expect(component.allSamples.length).not.toBe(0);

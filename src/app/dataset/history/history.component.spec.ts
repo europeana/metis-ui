@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 
 import {
   createMockPipe,
-  currentDataset,
+  mockDataset,
   MockErrorService,
   mockWorkflowExecutionResults,
   MockWorkflowService,
@@ -35,7 +35,7 @@ describe('HistoryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HistoryComponent);
     component = fixture.componentInstance;
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     fixture.detectChanges();
   });
 
@@ -54,14 +54,14 @@ describe('HistoryComponent', () => {
   });
 
   it('should display history in tabs', () => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.returnAllExecutions();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
   });
 
   it('should load next page', () => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.loadNextPage();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();

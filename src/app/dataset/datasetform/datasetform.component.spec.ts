@@ -6,9 +6,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
-  currentDataset,
   MockCountriesService,
-  MockDatasetService,
+  mockDataset,
+  MockDatasetsService,
   MockErrorService,
   MockTranslateService,
 } from '../../_mocked';
@@ -27,7 +27,7 @@ describe('DatasetformComponent', () => {
       imports: [RouterTestingModule, ReactiveFormsModule],
       declarations: [DatasetformComponent, createMockPipe('translate')],
       providers: [
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: CountriesService, useClass: MockCountriesService },
         { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService },
@@ -38,7 +38,7 @@ describe('DatasetformComponent', () => {
     fixture = TestBed.createComponent(DatasetformComponent);
     component = fixture.componentInstance;
     router = TestBed.get(Router);
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
   });
 
   it('should create', () => {
