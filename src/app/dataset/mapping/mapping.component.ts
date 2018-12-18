@@ -116,9 +116,17 @@ export class MappingComponent implements OnInit {
         return;
       },
       (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
       },
     );
+  }
+
+  private handleXSLTError(err: HttpErrorResponse): void {
+    this.xsltStatus = 'no-custom';
+    const error = this.errors.handleError(err);
+    this.notification = httpErrorNotification(error);
+    this.xsltToSave = this.xslt = '';
   }
 
   loadCustomXSLT(): void {
@@ -134,9 +142,7 @@ export class MappingComponent implements OnInit {
         this.xsltStatus = 'has-custom';
       },
       (err: HttpErrorResponse) => {
-        this.xsltStatus = 'no-custom';
-        this.errors.handleError(err);
-        this.xsltToSave = this.xslt = '';
+        this.handleXSLTError(err);
       },
     );
   }
@@ -150,9 +156,7 @@ export class MappingComponent implements OnInit {
         this.xsltStatus = hasCustom ? 'has-custom' : 'new-custom';
       },
       (err: HttpErrorResponse) => {
-        this.xsltStatus = 'no-custom';
-        this.errors.handleError(err);
-        this.xsltToSave = this.xslt = '';
+        this.handleXSLTError(err);
       },
     );
   }
