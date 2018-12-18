@@ -133,7 +133,7 @@ export class WorkflowService {
   requestHasError(key: string): Observable<boolean> {
     const [taskId, topologyName] = key.split('/');
     return this.getReport(taskId, topologyName as TopologyName).pipe(
-      map((report) => report.errors && report.errors.length > 0),
+      map((report) => !!report.errors && report.errors.length > 0),
     );
   }
 
