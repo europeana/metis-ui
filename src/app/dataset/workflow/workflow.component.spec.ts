@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
-  currentDataset,
+  mockDataset,
   MockErrorService,
   MockTranslateService,
   mockWorkflow,
@@ -55,7 +55,7 @@ describe('WorkflowComponent', () => {
   });
 
   it('should get the workflow for this dataset', () => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.workflowData = mockWorkflow;
     component.getWorkflow();
     fixture.detectChanges();
@@ -63,7 +63,7 @@ describe('WorkflowComponent', () => {
   });
 
   it('should submit the changes', () => {
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     component.workflowForm.get('pluginTRANSFORMATION')!.setValue(true);
     component.workflowForm.get('customXslt')!.setValue('mocked');
     component.workflowForm.get('pluginVALIDATION_EXTERNAL')!.setValue(true);

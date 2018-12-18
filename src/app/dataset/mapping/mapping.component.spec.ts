@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
-  currentDataset,
+  mockDataset,
   MockDatasetsService,
   MockErrorService,
   mockStatistics,
@@ -40,7 +40,7 @@ describe('MappingComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MappingComponent);
     component = fixture.componentInstance;
-    component.datasetData = currentDataset;
+    component.datasetData = mockDataset;
     router = TestBed.get(Router);
   });
 

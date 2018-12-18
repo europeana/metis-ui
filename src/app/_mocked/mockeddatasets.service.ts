@@ -2,7 +2,7 @@ import { Observable, of as observableOf } from 'rxjs';
 
 import { Dataset, XmlSample } from '../_models';
 
-export const currentDataset: Dataset = {
+export const mockDataset: Dataset = {
   country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },
   createdByUserId: '1',
   createdDate: '2018-03-30T13:49:55.607Z',
@@ -24,7 +24,7 @@ export const currentDataset: Dataset = {
   xsltId: null,
 };
 
-export const xslt = `<?xml version="1.0" encoding="UTF-8"?>
+export const mockXslt = `<?xml version="1.0" encoding="UTF-8"?>
   <xsl:stylesheet version="2.0">
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <xsl:template match="/">
@@ -36,7 +36,7 @@ export const xslt = `<?xml version="1.0" encoding="UTF-8"?>
     </xsl:template>
   </xsl:stylesheet>`;
 
-export const XMLTransformSamples: XmlSample[] = [
+const mockXmlSamples: XmlSample[] = [
   {
     ecloudId: '1',
     xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>',
@@ -45,11 +45,11 @@ export const XMLTransformSamples: XmlSample[] = [
 
 export class MockDatasetsService {
   getXSLT(): Observable<string> {
-    return observableOf(xslt);
+    return observableOf(mockXslt);
   }
 
   getDataset(): Observable<Dataset> {
-    return observableOf(currentDataset);
+    return observableOf(mockDataset);
   }
 
   updateDataset(): Observable<void> {
@@ -58,11 +58,11 @@ export class MockDatasetsService {
 
   // tslint:disable-next-line: no-any
   createDataset(_: { dataset: any }): Observable<Dataset> {
-    return observableOf(currentDataset);
+    return observableOf(mockDataset);
   }
 
   getTransform(): Observable<XmlSample[]> {
-    return observableOf(XMLTransformSamples);
+    return observableOf(mockXmlSamples);
   }
 
   isFavorite(): boolean {
@@ -70,7 +70,7 @@ export class MockDatasetsService {
   }
 
   getFavorites(): Observable<Dataset[]> {
-    return observableOf([currentDataset]);
+    return observableOf([mockDataset]);
   }
 
   hasFavorites(): boolean {
