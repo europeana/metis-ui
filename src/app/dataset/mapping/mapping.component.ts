@@ -121,6 +121,12 @@ export class MappingComponent implements OnInit {
     );
   }
 
+  private handleXSLTError(err: HttpErrorResponse): void {
+    this.xsltStatus = 'no-custom';
+    this.errors.handleError(err);
+    this.xsltToSave = this.xslt = '';
+  }
+
   loadCustomXSLT(): void {
     if (!this.datasetData.xsltId) {
       this.xsltStatus = 'no-custom';
@@ -134,9 +140,7 @@ export class MappingComponent implements OnInit {
         this.xsltStatus = 'has-custom';
       },
       (err: HttpErrorResponse) => {
-        this.xsltStatus = 'no-custom';
-        this.errors.handleError(err);
-        this.xsltToSave = this.xslt = '';
+        this.handleXSLTError(err);
       },
     );
   }
@@ -150,9 +154,7 @@ export class MappingComponent implements OnInit {
         this.xsltStatus = hasCustom ? 'has-custom' : 'new-custom';
       },
       (err: HttpErrorResponse) => {
-        this.xsltStatus = 'no-custom';
-        this.errors.handleError(err);
-        this.xsltToSave = this.xslt = '';
+        this.handleXSLTError(err);
       },
     );
   }

@@ -173,43 +173,34 @@ export class DatasetformComponent implements OnInit {
       return;
     }
 
+    const handleError = (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.notification = httpErrorNotification(error);
+
+      this.isSaving = false;
+    };
+
     this.notification = undefined;
     this.isSaving = true;
     if (this.isNew) {
-      this.datasets.createDataset(this.datasetForm.value).subscribe(
-        (result) => {
-          localStorage.removeItem(DATASET_TEMP_LSKEY);
+      this.datasets.createDataset(this.datasetForm.value).subscribe((result) => {
+        localStorage.removeItem(DATASET_TEMP_LSKEY);
 
-          this.router.navigate(['/dataset/new/' + result.datasetId]);
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-
-          this.isSaving = false;
-        },
-      );
+        this.router.navigate(['/dataset/new/' + result.datasetId]);
+      }, handleError);
     } else {
       const dataset = {
         datasetId: this.datasetData.datasetId,
         ...this.datasetForm.value,
       };
-      this.datasets.updateDataset({ dataset }).subscribe(
-        () => {
-          localStorage.removeItem(DATASET_TEMP_LSKEY);
-          this.notification = successNotification(this.translate.instant('datasetsaved'));
-          this.datasetUpdated.emit();
+      this.datasets.updateDataset({ dataset }).subscribe(() => {
+        localStorage.removeItem(DATASET_TEMP_LSKEY);
+        this.notification = successNotification(this.translate.instant('datasetsaved'));
+        this.datasetUpdated.emit();
 
-          this.isSaving = false;
-          this.datasetForm.markAsPristine();
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-
-          this.isSaving = false;
-        },
-      );
+        this.isSaving = false;
+        this.datasetForm.markAsPristine();
+      }, handleError);
     }
   }
 
