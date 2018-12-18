@@ -54,7 +54,7 @@ describe('PreviewComponent', () => {
     component.datasetData = currentDataset;
     component.previewFilters = {
       execution: mockWorkflowExecution,
-      plugin: 'MOCKED',
+      plugin: 'NORMALIZATION',
     };
     component.prefillFilters();
     fixture.detectChanges();
@@ -65,7 +65,7 @@ describe('PreviewComponent', () => {
     component.datasetData = currentDataset;
     component.previewFilters = {
       execution: mockWorkflowExecution,
-      plugin: 'MOCKED',
+      plugin: 'NORMALIZATION',
     };
     component.prefillFilters();
     component.expandSample(0);
@@ -81,7 +81,7 @@ describe('PreviewComponent', () => {
       fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
     ).toBeTruthy();
 
-    component.allPlugins = [{ type: 'mocked', error: false }];
+    component.allPlugins = [{ type: 'NORMALIZATION', error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
     expect(
