@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
   currentDataset,
-  MockDatasetService,
+  MockDatasetsService,
   MockErrorService,
   MockTranslateService,
   mockWorkflowExecution,
@@ -32,7 +32,7 @@ describe('PreviewComponent', () => {
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService },
       ],

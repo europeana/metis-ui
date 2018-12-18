@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
   currentDataset,
-  MockDatasetService,
+  MockDatasetsService,
   MockErrorService,
   mockStatistics,
   MockTranslateService,
@@ -29,7 +29,7 @@ describe('MappingComponent', () => {
       declarations: [MappingComponent, createMockPipe('translate'), createMockPipe('beautifyXML')],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: DatasetsService, useClass: MockDatasetService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: ErrorService, useClass: MockErrorService },
       ],

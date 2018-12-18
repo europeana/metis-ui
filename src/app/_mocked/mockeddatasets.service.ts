@@ -43,7 +43,7 @@ export const XMLTransformSamples: XmlSample[] = [
   },
 ];
 
-export class MockDatasetService {
+export class MockDatasetsService {
   getXSLT(): Observable<string> {
     return observableOf(xslt);
   }
