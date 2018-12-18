@@ -60,7 +60,7 @@
   background: $gray-lighter;
 }
 
-tr.running td:first-child::before {
+.running td:first-child::before {
   background: $eu-jade;
   content: '';
   display: inline-block;
