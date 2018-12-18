@@ -206,6 +206,11 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
   nextPage: -1,
 };
 
+export const mockFirstPageResults: Results<WorkflowExecution> = {
+  ...mockWorkflowExecutionResults,
+  nextPage: 1,
+};
+
 export const mockWorkflowExecution: WorkflowExecution = mockWorkflowExecutionResults.results[0];
 
 export const mockPluginExecution: PluginExecution = mockWorkflowExecution.metisPlugins[0];
