@@ -10,14 +10,14 @@ export class SingleCache<Value> {
     if (this.observable && !refresh) {
       return this.observable;
     }
-    this.observable = this.sourceFn().pipe(
+    const observable = (this.observable = this.sourceFn().pipe(
       tap(undefined, () => {
         this.clear();
       }),
       publishLast(),
-    );
-    (this.observable as ConnectableObservable<Value>).connect();
-    return this.observable;
+    ));
+    (observable as ConnectableObservable<Value>).connect();
+    return observable;
   }
 
   public clear(): void {
@@ -31,18 +31,16 @@ export class KeyedCache<Value> {
   constructor(private sourceFn: (key: string) => Observable<Value>) {}
 
   public get(key: string, refresh: boolean = false): Observable<Value> {
-    let observable = this.observableByKey[key];
-    if (observable && !refresh) {
-      return observable;
+    if (this.observableByKey[key] && !refresh) {
+      return this.observableByKey[key];
     }
-    observable = this.sourceFn(key).pipe(
+    const observable = (this.observableByKey[key] = this.sourceFn(key).pipe(
       tap(undefined, () => {
         this.clear(key);
       }),
       publishLast(),
-    );
+    ));
     (observable as ConnectableObservable<Value>).connect();
-    this.observableByKey[key] = observable;
     return observable;
   }
 
