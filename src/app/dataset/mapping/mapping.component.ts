@@ -116,14 +116,16 @@ export class MappingComponent implements OnInit {
         return;
       },
       (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
       },
     );
   }
 
   private handleXSLTError(err: HttpErrorResponse): void {
     this.xsltStatus = 'no-custom';
-    this.errors.handleError(err);
+    const error = this.errors.handleError(err);
+    this.notification = httpErrorNotification(error);
     this.xsltToSave = this.xslt = '';
   }
 

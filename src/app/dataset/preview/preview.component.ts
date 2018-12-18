@@ -182,7 +182,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
               );
             },
             (err: HttpErrorResponse) => {
-              this.errors.handleError(err);
+              const error = this.errors.handleError(err);
+              this.notification = httpErrorNotification(error);
               this.loadingTransformSamples = false;
             },
           );
