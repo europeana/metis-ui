@@ -10,6 +10,7 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
+import { switchMap } from 'rxjs/operators';
 
 import {
   Dataset,
@@ -157,44 +158,33 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   // transform samples on the fly based on temp saved XSLT
   transformSamples(type: string): void {
+    const handleError = (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.notification = httpErrorNotification(error);
+      this.loadingTransformSamples = false;
+    };
+
     this.loadingTransformSamples = true;
-    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
-      (result) => {
+    this.workflows
+      .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
+      .subscribe((result) => {
         if (!result.results[0]) {
           this.loadingTransformSamples = false;
           return;
         }
         this.workflows
           .getWorkflowSamples(result.results[0].id, result.results[0].metisPlugins[0].pluginType)
-          .subscribe(
-            (samples) => {
+          .pipe(
+            switchMap((samples) => {
               this.allSamples = this.undoNewLines(samples);
-              this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(
-                (transformed) => {
-                  this.allTransformedSamples = this.undoNewLines(transformed);
-                  this.loadingTransformSamples = false;
-                },
-                (err: HttpErrorResponse) => {
-                  const error = this.errors.handleError(err);
-                  this.notification = httpErrorNotification(error);
-                  this.loadingTransformSamples = false;
-                },
-              );
-            },
-            (err: HttpErrorResponse) => {
-              const error = this.errors.handleError(err);
-              this.notification = httpErrorNotification(error);
-              this.loadingTransformSamples = false;
-            },
-          );
-        return;
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.loadingTransformSamples = false;
-      },
-    );
+              return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
+            }),
+          )
+          .subscribe((transformed) => {
+            this.allTransformedSamples = this.undoNewLines(transformed);
+            this.loadingTransformSamples = false;
+          }, handleError);
+      }, handleError);
   }
 
   // prefill filters, when temporarily saved options are available
