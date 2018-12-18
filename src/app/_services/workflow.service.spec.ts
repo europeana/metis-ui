@@ -12,7 +12,8 @@ import {
   mockStatistics,
   mockWorkflow,
   mockWorkflowExecution,
-  mockWorkflowExecutionResults, mockXmlSamples,
+  mockWorkflowExecutionResults,
+  mockXmlSamples,
 } from '../_mocked';
 import { WorkflowExecution } from '../_models';
 
