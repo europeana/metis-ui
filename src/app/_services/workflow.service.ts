@@ -11,6 +11,7 @@ import {
   HarvestData,
   isPluginCompleted,
   MoreResults,
+  PluginType,
   Report,
   Results,
   Statistics,
@@ -289,7 +290,7 @@ export class WorkflowService {
   }
 
   // return samples based on executionid and plugintype
-  getWorkflowSamples(executionId: string, pluginType: string): Observable<XmlSample[]> {
+  getWorkflowSamples(executionId: string, pluginType: PluginType): Observable<XmlSample[]> {
     const url = `${
       apiSettings.apiHostCore
     }/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;

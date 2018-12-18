@@ -11,6 +11,7 @@ import {
   isWorkflowCompleted,
   Notification,
   PluginExecution,
+  PluginType,
   ReportRequest,
   successNotification,
   Workflow,
@@ -20,7 +21,7 @@ import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;
-  plugin?: string;
+  plugin?: PluginType;
 }
 
 @Component({
