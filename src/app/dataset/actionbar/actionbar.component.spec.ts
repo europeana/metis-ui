@@ -4,8 +4,9 @@ import { By } from '@angular/platform-browser';
 
 import {
   createMockPipe,
-  currentWorkflow,
-  currentWorkflowDataset,
+  mockWorkflow,
+  mockWorkflowExecution,
+  mockWorkflowExecutionResults,
   MockWorkflowService,
 } from '../../_mocked';
 import { WorkflowStatus } from '../../_models';
@@ -33,7 +34,7 @@ describe('ActionbarComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
     component = fixture.componentInstance;
-    component.workflowData = currentWorkflowDataset;
+    component.workflowData = mockWorkflow;
     fixture.detectChanges();
     workflows = TestBed.get(WorkflowService);
   });
@@ -43,7 +44,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should update fields based on the last execution', () => {
-    component.lastExecutionData = currentWorkflow.results[4];
+    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
     expect(component.currentPlugin!.id).toBe('432552345');
     expect(component.currentStatus).toBe('FINISHED');
     expect(component.currentExternalTaskId).toBe('123');
@@ -54,7 +55,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should do click to show logging', (): void => {
-    component.lastExecutionData = currentWorkflow.results[1];
+    component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
@@ -66,7 +67,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should cancel', (): void => {
-    component.lastExecutionData = currentWorkflow.results[1];
+    component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
@@ -78,7 +79,7 @@ describe('ActionbarComponent', () => {
   });
 
   it('should run a workflow', (): void => {
-    component.lastExecutionData = currentWorkflow.results[4];
+    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.FINISHED);
 
@@ -90,13 +91,13 @@ describe('ActionbarComponent', () => {
   });
 
   it('should have a running workflow', (): void => {
-    component.lastExecutionData = currentWorkflow.results[1];
+    component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress')).toBeTruthy();
   });
 
   it('should show a report button and open report', (): void => {
-    component.lastExecutionData = currentWorkflow.results[0];
+    component.lastExecutionData = mockWorkflowExecution;
     component.totalErrors = 10;
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();

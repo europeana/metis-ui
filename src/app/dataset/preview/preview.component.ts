@@ -16,6 +16,7 @@ import {
   Dataset,
   httpErrorNotification,
   Notification,
+  PluginType,
   WorkflowExecution,
   XmlSample,
 } from '../../_models';
@@ -45,7 +46,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecution> = [];
-  allPlugins: Array<{ type: string; error: boolean }> = [];
+  allPlugins: Array<{ type: PluginType; error: boolean }> = [];
   allSamples: Array<XmlSample> = [];
   allTransformedSamples: XmlSample[];
   filterDate = false;
@@ -134,7 +135,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   // get and show samples based on plugin
-  getXMLSamples(plugin: string): void {
+  getXMLSamples(plugin: PluginType): void {
     this.loadingSamples = true;
     this.onClickedOutside();
     this.selectedPlugin = plugin;

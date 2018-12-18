@@ -5,9 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
-  currentWorkflow,
   MockDatasetService,
   MockErrorService,
+  mockPluginExecution,
   MockWorkflowService,
 } from '../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
@@ -73,8 +73,8 @@ describe('DatasetComponent', () => {
   });
 
   it('should be possible to display a message', () => {
-    component.showPluginLog = currentWorkflow.results[0].metisPlugins[0];
+    component.showPluginLog = mockPluginExecution;
     fixture.detectChanges();
-    expect(component.showPluginLog).toBe(currentWorkflow.results[0].metisPlugins[0]);
+    expect(component.showPluginLog).toBe(mockPluginExecution);
   });
 });

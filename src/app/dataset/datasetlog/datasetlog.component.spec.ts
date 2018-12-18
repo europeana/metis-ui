@@ -2,8 +2,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import {
-  currentWorkflow,
   MockErrorService,
+  mockPluginExecution,
   MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
@@ -31,7 +31,7 @@ describe('DatasetlogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DatasetlogComponent);
     component = fixture.componentInstance;
-    component.showPluginLog = currentWorkflow.results[0].metisPlugins[0];
+    component.showPluginLog = mockPluginExecution;
     fixture.detectChanges();
   });
 

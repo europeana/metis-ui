@@ -11,6 +11,7 @@ import {
   HarvestData,
   isPluginCompleted,
   MoreResults,
+  PluginType,
   Report,
   Results,
   Statistics,
@@ -133,7 +134,7 @@ export class WorkflowService {
   requestHasError(key: string): Observable<boolean> {
     const [taskId, topologyName] = key.split('/');
     return this.getReport(taskId, topologyName as TopologyName).pipe(
-      map((report) => report.errors && report.errors.length > 0),
+      map((report) => !!report.errors && report.errors.length > 0),
     );
   }
 
@@ -185,7 +186,7 @@ export class WorkflowService {
   getLastDatasetExecution(id: string): Observable<WorkflowExecution | undefined> {
     const url = `${
       apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/dataset/${id}?&orderField=CREATED_DATE&ascending=false`;
+    }/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false`;
     return this.http
       .get<Results<WorkflowExecution>>(url)
       .pipe(
@@ -289,7 +290,7 @@ export class WorkflowService {
   }
 
   // return samples based on executionid and plugintype
-  getWorkflowSamples(executionId: string, pluginType: string): Observable<XmlSample[]> {
+  getWorkflowSamples(executionId: string, pluginType: PluginType): Observable<XmlSample[]> {
     const url = `${
       apiSettings.apiHostCore
     }/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;

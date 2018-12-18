@@ -6,10 +6,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
   currentDataset,
-  currentWorkflow,
   MockDatasetService,
   MockErrorService,
   MockTranslateService,
+  mockWorkflowExecution,
   MockWorkflowService,
 } from '../../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
@@ -53,8 +53,8 @@ describe('PreviewComponent', () => {
   it('should prefill filters', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow.results[0],
-      plugin: 'MOCKED',
+      execution: mockWorkflowExecution,
+      plugin: 'NORMALIZATION',
     };
     component.prefillFilters();
     fixture.detectChanges();
@@ -64,8 +64,8 @@ describe('PreviewComponent', () => {
   it('should expand sample', (): void => {
     component.datasetData = currentDataset;
     component.previewFilters = {
-      execution: currentWorkflow.results[0],
-      plugin: 'MOCKED',
+      execution: mockWorkflowExecution,
+      plugin: 'NORMALIZATION',
     };
     component.prefillFilters();
     component.expandSample(0);
@@ -81,7 +81,7 @@ describe('PreviewComponent', () => {
       fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
     ).toBeTruthy();
 
-    component.allPlugins = [{ type: 'mocked', error: false }];
+    component.allPlugins = [{ type: 'NORMALIZATION', error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
     expect(

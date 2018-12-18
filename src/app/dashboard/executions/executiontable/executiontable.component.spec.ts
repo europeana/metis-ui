@@ -3,8 +3,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import {
   createMockPipe,
-  currentWorkflow,
+  mockPluginExecution,
   MockTranslateService,
+  mockWorkflowExecution,
   MockWorkflowService,
 } from '../../../_mocked';
 import { WorkflowService } from '../../../_services';
@@ -30,8 +31,8 @@ describe('ExecutiontableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExecutiontableComponent);
     component = fixture.componentInstance;
-    component.execution = currentWorkflow.results[0];
-    component.plugin = currentWorkflow.results[0].metisPlugins[0];
+    component.execution = mockWorkflowExecution;
+    component.plugin = mockPluginExecution;
     fixture.detectChanges();
   });
 

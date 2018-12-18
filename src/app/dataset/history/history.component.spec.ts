@@ -5,8 +5,8 @@ import { By } from '@angular/platform-browser';
 import {
   createMockPipe,
   currentDataset,
-  currentWorkflow,
   MockErrorService,
+  mockWorkflowExecutionResults,
   MockWorkflowService,
 } from '../../_mocked';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -68,7 +68,7 @@ describe('HistoryComponent', () => {
   });
 
   it('should update history panel', () => {
-    component.lastExecutionData = currentWorkflow.results[4];
+    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
     fixture.detectChanges();
     expect(component.allExecutions).toBeTruthy();
   });
