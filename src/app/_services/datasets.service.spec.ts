@@ -108,8 +108,7 @@ describe('dataset service', () => {
 
   it('should know if a dataset is a favorite', () => {
     expect(service.isFavorite(mockDataset)).toBe(false);
-    expect(
-      service.isFavorite({ ...mockDataset, datasetId: '5' })).toBe(true);
+    expect(service.isFavorite({ ...mockDataset, datasetId: '5' })).toBe(true);
   });
 
   it('should have favorites', () => {
@@ -130,7 +129,7 @@ describe('dataset service', () => {
 
   it('should get favorites', () => {
     service.getFavorites().subscribe((datasets) => {
-      expect(datasets).toEqual([ mockDataset, mockDataset ]);
+      expect(datasets).toEqual([mockDataset, mockDataset]);
     });
     expectHttp('GET', '/datasets/5', null, mockDataset);
     expectHttp('GET', '/datasets/6736', null, mockDataset);
