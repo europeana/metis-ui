@@ -13,6 +13,11 @@
   margin-bottom: 0.6rem;
   padding: 0.5rem 1.2rem 0.5rem 2.2rem;
   cursor: pointer;
+  transition: opacity 0.4s linear;
+}
+
+.notification-hidden {
+  opacity: 0;
 }
 
 .notification-sticky {
