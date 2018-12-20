@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -109,6 +109,7 @@ export class AuthenticationService {
       } else {
         this.router.navigate([environment.afterLoginGoto]);
       }
+      return of(true);
     }
 
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
