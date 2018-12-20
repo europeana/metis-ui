@@ -22,7 +22,7 @@ In this Licence, the following terms have the following meaning:
 - *Distribution and/or Communication*: any act of selling, giving, lending, renting, distributing, communicating, transmitting, or otherwise making available, on-line or off-line, copies of the Work or providing access to its essential functionalities at the disposal of any other natural or legal person.
 
 ## 2. Scope of the rights granted by the Licence
-The Licensor hereby grants You a world-wide, royalty-free, non-exclusive, sub- licensable licence to do the following, for the duration of copyright vested in the Original Work:
+The Licensor hereby grants You a world-wide, royalty-free, non-exclusive, sub-licensable licence to do the following, for the duration of copyright vested in the Original Work:
 - use the Work in any circumstance and for all usage,
 - reproduce the Work,
 - modify the Original Work, and make Derivative Works based upon the Work,
@@ -55,7 +55,7 @@ The grant of the rights mentioned above is subject to some restrictions and obli
 **Provision of Source Code**: When distributing and/or communicating copies of the Work, the Licensee will provide a machine-readable copy of the Source Code or indicate a repository where this Source will be easily and freely available for as long as the Licensee continues to distribute and/or communicate the Work.
 
 **Legal Protection**: This Licence does not grant permission to use the trade names, trademarks, service marks, or names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the copyright notice.
-￼
+
 ## 6. Chain of Authorship
 The original Licensor warrants that the copyright in the Original Work granted hereunder is owned by him/her or licensed to him/her and that he/she has the power and authority to grant the Licence.
 
