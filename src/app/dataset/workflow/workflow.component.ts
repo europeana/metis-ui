@@ -87,10 +87,18 @@ export class WorkflowComponent implements OnInit {
     this.getWorkflow();
     this.currentUrl = this.router.url.split('#')[0];
 
-    this.newNotification = successNotification(this.translate.instant('workflowsavenew'), true);
-    this.saveNotification = successNotification(this.translate.instant('workflowsave'), true);
-    this.runningNotification = successNotification(this.translate.instant('workflowrunning'), true);
-    this.invalidNotification = errorNotification(this.translate.instant('formerror'), true);
+    this.newNotification = successNotification(this.translate.instant('workflowsavenew'), {
+      sticky: true,
+    });
+    this.saveNotification = successNotification(this.translate.instant('workflowsave'), {
+      sticky: true,
+    });
+    this.runningNotification = successNotification(this.translate.instant('workflowrunning'), {
+      sticky: true,
+    });
+    this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
+      sticky: true,
+    });
   }
 
   /** buildForm
@@ -410,7 +418,10 @@ export class WorkflowComponent implements OnInit {
 
               this.workflowForm.markAsPristine();
               this.isSaving = false;
-              this.notification = successNotification(this.translate.instant('workflowsaved'));
+              this.notification = successNotification(this.translate.instant('workflowsaved'), {
+                fadeTime: 1500,
+                sticky: true,
+              });
             });
         },
         (err: HttpErrorResponse) => {

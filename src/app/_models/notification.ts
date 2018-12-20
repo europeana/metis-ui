@@ -8,22 +8,34 @@ export enum NotificationType {
 }
 
 export interface Notification {
-  type: NotificationType;
   content: string;
-  sticky: boolean;
+  type: NotificationType;
+  sticky?: boolean;
+  fadeTime?: number;
 }
 
-export function errorNotification(content: string, sticky: boolean = false): Notification {
-  return { type: NotificationType.ERROR, content, sticky };
+export interface NotificationOptions {
+  sticky?: boolean;
+  fadeTime?: number;
 }
 
-export function successNotification(content: string, sticky: boolean = false): Notification {
-  return { type: NotificationType.SUCCESS, content, sticky };
+export function errorNotification(
+  content: string,
+  options: NotificationOptions = {},
+): Notification {
+  return { type: NotificationType.ERROR, content, ...options };
+}
+
+export function successNotification(
+  content: string,
+  options: NotificationOptions = {},
+): Notification {
+  return { type: NotificationType.SUCCESS, content, ...options };
 }
 
 export function httpErrorNotification(
   error: false | HttpErrorResponse,
-  sticky: boolean = false,
+  options: NotificationOptions = {},
 ): Notification {
-  return errorNotification(StringifyHttpError(error), sticky);
+  return errorNotification(StringifyHttpError(error), options);
 }

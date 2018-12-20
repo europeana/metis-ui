@@ -2,7 +2,8 @@
   <form [formGroup]="datasetForm">
     <div class="form-fields">
       <div class="form-group" *ngIf="!isNew">
-        <label>{{ 'identifier' | translate }}</label> <span>{{ datasetData.datasetId }}</span>
+        <label>{{ 'identifier' | translate }}</label>
+        <span class="readonly-field">{{ datasetData.datasetId }}</span>
       </div>
 
       <div class="form-group">
@@ -76,11 +77,15 @@
 
       <div class="form-group" *ngIf="!isNew">
         <label>{{ 'datecreated' | translate }}</label>
-        <span>{{ datasetData.createdDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
+        <span class="readonly-field">{{
+          datasetData.createdDate | date: 'dd/MM/yyyy - HH:mm'
+        }}</span>
       </div>
       <div class="form-group" *ngIf="!isNew">
         <label>{{ 'dateupdated' | translate }}</label>
-        <span>{{ datasetData.updatedDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
+        <span class="readonly-field">{{
+          datasetData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
+        }}</span>
       </div>
 
       <div class="form-group">
@@ -137,28 +142,35 @@
       </div>
 
       <div class="form-group" *ngIf="!isNew">
-        <label>{{ 'createdby' | translate }}</label> <span>{{ datasetData.createdByUserId }}</span>
+        <label>{{ 'createdby' | translate }}</label>
+        <span class="readonly-field">{{ datasetData.createdByUserId }}</span>
       </div>
       <div *ngIf="!isNew && harvestPublicationData">
         <div class="form-group">
           <label>{{ 'firstpublished' | translate }}</label>
-          <span>{{ harvestPublicationData.firstPublishedDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
+          <span class="readonly-field">{{
+            harvestPublicationData.firstPublishedDate | date: 'dd/MM/yyyy - HH:mm'
+          }}</span>
         </div>
         <div class="form-group">
           <label>{{ 'lastpublished' | translate }}</label>
-          <span>{{ harvestPublicationData.lastPublishedDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
+          <span class="readonly-field">{{
+            harvestPublicationData.lastPublishedDate | date: 'dd/MM/yyyy - HH:mm'
+          }}</span>
         </div>
         <div class="form-group">
           <label>{{ 'numberpublished' | translate }}</label>
-          <span>{{ harvestPublicationData.lastPublishedRecords }}</span>
+          <span class="readonly-field">{{ harvestPublicationData.lastPublishedRecords }}</span>
         </div>
         <div class="form-group">
           <label>{{ 'lastharvest' | translate }}</label>
-          <span>{{ harvestPublicationData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
+          <span class="readonly-field">{{
+            harvestPublicationData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm'
+          }}</span>
         </div>
         <div class="form-group">
           <label>{{ 'numberharvested' | translate }}</label>
-          <span>{{ harvestPublicationData.lastHarvestedRecords }}</span>
+          <span class="readonly-field">{{ harvestPublicationData.lastHarvestedRecords }}</span>
         </div>
       </div>
 
