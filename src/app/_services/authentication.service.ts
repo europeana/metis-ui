@@ -171,7 +171,7 @@ export class AuthenticationService {
   /* and in localstorage, to keep user logged in between page refreshes
   /* @param {object} user - user related information
   */
-  private setCurrentUser(user: User): void {
+  public setCurrentUser(user: User): void {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
     localStorage.setItem(this.key, JSON.stringify({ user, email: user.email, token: this.token }));
