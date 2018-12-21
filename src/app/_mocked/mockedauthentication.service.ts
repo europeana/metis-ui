@@ -46,4 +46,8 @@ export class MockAuthenticationService {
   getCurrentUser(): User | null {
     return this.currentUser;
   }
+
+  getToken(): string | null {
+    return this.currentUser.metisUserAccessToken.accessToken;
+  }
 }
