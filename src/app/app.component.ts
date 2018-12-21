@@ -51,9 +51,9 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.workflows.promptCancelWorkflow.subscribe((workflow: string) => {
-      if (workflow) {
-        this.currentWorkflowId = workflow;
+    this.workflows.promptCancelWorkflow.subscribe((workflowId: string) => {
+      if (workflowId) {
+        this.currentWorkflowId = workflowId;
         this.showWrapper = true;
       }
     });
