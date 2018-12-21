@@ -41,7 +41,9 @@ describe('ErrorService', () => {
     localStorage.setItem('currentUser', 'user3');
     spyOn(router, 'navigate');
 
-    expect(service.handleError(new HttpErrorResponse({ error: { errorMessage: 'Wrong access token' } }))).toBe(false);
+    expect(
+      service.handleError(new HttpErrorResponse({ error: { errorMessage: 'Wrong access token' } })),
+    ).toBe(false);
 
     expect(redirect.get()).toBe('/');
     expect(localStorage.getItem('currentUser')).toBe(null);
@@ -53,9 +55,17 @@ describe('ErrorService', () => {
     localStorage.setItem('currentUser', 'user3');
     spyOn(router, 'navigate');
 
-    const err1 = new HttpErrorResponse({ status: 404, statusText: 'not found', error: new Error('not found') });
+    const err1 = new HttpErrorResponse({
+      status: 404,
+      statusText: 'not found',
+      error: new Error('not found'),
+    });
     expect(service.handleError(err1)).toBe(err1);
-    const err2 = new HttpErrorResponse({ status: 500, statusText: 'server err', error: new Error('server err') });
+    const err2 = new HttpErrorResponse({
+      status: 500,
+      statusText: 'server err',
+      error: new Error('server err'),
+    });
     expect(service.handleError(err2)).toBe(err2);
 
     expect(redirect.get()).toBe('test2');
