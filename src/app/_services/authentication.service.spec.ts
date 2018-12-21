@@ -4,24 +4,17 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { apiSettings } from '../../environments/apisettings';
+import { MockHttp } from '../_helpers/test-helpers';
 import { MockErrorService, mockUser } from '../_mocked';
 import { ErrorService, RedirectPreviousUrl } from '../_services';
 
 import { AuthenticationService } from '.';
 
 describe('AuthenticationService', () => {
-  let mockHttp: HttpTestingController;
+  let mockHttp: MockHttp;
   let router: Router;
   let redirect: RedirectPreviousUrl;
   let service: AuthenticationService;
-
-  // tslint:disable-next-line: no-any
-  function expectHttp(method: string, url: string, body: any, data: any): void {
-    const req = mockHttp.expectOne(apiSettings.apiHostAuth + url);
-    expect(req.request.method).toBe(method);
-    expect(req.request.body).toEqual(body);
-    req.flush(data);
-  }
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,7 +26,7 @@ describe('AuthenticationService', () => {
       ],
     }).compileComponents();
 
-    mockHttp = TestBed.get(HttpTestingController);
+    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostAuth);
     router = TestBed.get(Router);
     redirect = TestBed.get(RedirectPreviousUrl);
     service = TestBed.get(AuthenticationService);
@@ -68,17 +61,19 @@ describe('AuthenticationService', () => {
     service.updatePassword('123', '456').subscribe((result) => {
       expect(result).toBe(true);
     });
-    expectHttp('PUT', '/authentication/update/password?newPassword=123&oldPassword=456', {}, {});
+    mockHttp
+      .expect('PUT', '/authentication/update/password?newPassword=123&oldPassword=456')
+      .send({});
   });
 
   it('should register a new user', () => {
     service.register('jan@example.com', 'safe').subscribe((result) => {
       expect(result).toBe(true);
     });
-    const req = mockHttp.expectOne(apiSettings.apiHostAuth + '/authentication/register');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.headers.get('Authorization')).toBe('Basic amFuQGV4YW1wbGUuY29tOnNhZmU=');
-    req.flush({});
+    mockHttp
+      .expect('POST', '/authentication/register')
+      .basicAuth('amFuQGV4YW1wbGUuY29tOnNhZmU=')
+      .send({});
   });
 
   it('should redirect on login if already logged in', () => {
@@ -103,17 +98,17 @@ describe('AuthenticationService', () => {
       expect(result).toBe(true);
       expect(service.getCurrentUser()).toEqual(mockUser);
     });
-    const req = mockHttp.expectOne(apiSettings.apiHostAuth + '/authentication/login');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.headers.get('Authorization')).toBe('Basic amFuQGV4YW1wbGUuY29tOnNhZmU=');
-    req.flush(mockUser);
+    mockHttp
+      .expect('POST', '/authentication/login')
+      .basicAuth('amFuQGV4YW1wbGUuY29tOnNhZmU=')
+      .send(mockUser);
 
     service.currentUser = null;
     service.login('jan@example.com', 'safe').subscribe((result) => {
       expect(result).toBe(false);
       expect(service.getCurrentUser()).toEqual(null);
     });
-    expectHttp('POST', '/authentication/login', {}, {});
+    mockHttp.expect('POST', '/authentication/login').send({});
   });
 
   it('should logout', () => {
@@ -134,6 +129,8 @@ describe('AuthenticationService', () => {
       expect(result).toBe(true);
       expect(service.getCurrentUser()).toBe(mockUser);
     });
-    expectHttp('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com', {}, mockUser);
+    mockHttp
+      .expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com')
+      .send(mockUser);
   });
 });
