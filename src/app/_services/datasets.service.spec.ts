@@ -2,21 +2,14 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, TestBed } from '@angular/core/testing';
 
 import { apiSettings } from '../../environments/apisettings';
+import { MockHttp } from '../_helpers/test-helpers';
 import { mockDataset, MockErrorService, mockXmlSamples, mockXslt } from '../_mocked';
 
 import { DatasetsService, ErrorService } from '.';
 
 describe('dataset service', () => {
-  let mockHttp: HttpTestingController;
+  let mockHttp: MockHttp;
   let service: DatasetsService;
-
-  // tslint:disable-next-line: no-any
-  function expectHttp<Data>(method: string, url: string, body: any, data: Data): void {
-    const req = mockHttp.expectOne(apiSettings.apiHostCore + url);
-    expect(req.request.method).toBe(method);
-    expect(req.request.body).toEqual(body);
-    req.flush(data);
-  }
 
   beforeEach(async(() => {
     localStorage.setItem('favoriteDatasetIds', '["5", "6736"]');
@@ -25,7 +18,7 @@ describe('dataset service', () => {
       providers: [DatasetsService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule],
     }).compileComponents();
-    mockHttp = TestBed.get(HttpTestingController);
+    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.get(DatasetsService);
   }));
 
@@ -42,18 +35,18 @@ describe('dataset service', () => {
     service.getDataset('664').subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
-    expectHttp('GET', '/datasets/664', null, mockDataset);
+    mockHttp.expect('GET', '/datasets/664').send(mockDataset);
   });
 
   it('should get a dataset (uncached)', () => {
     service.getDataset('665', true).subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
-    expectHttp('GET', '/datasets/665', null, mockDataset);
+    mockHttp.expect('GET', '/datasets/665').send(mockDataset);
     service.getDataset('665', true).subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
-    expectHttp('GET', '/datasets/665', null, mockDataset);
+    mockHttp.expect('GET', '/datasets/665').send(mockDataset);
   });
 
   it('should create a dataset', () => {
@@ -61,49 +54,61 @@ describe('dataset service', () => {
     service.createDataset(formValues).subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
-    expectHttp('POST', '/datasets', formValues, mockDataset);
+    mockHttp
+      .expect('POST', '/datasets')
+      .body(formValues)
+      .send(mockDataset);
   });
 
   it('should update a dataset', () => {
     service.getDataset('5').subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
-    expectHttp('GET', '/datasets/5', null, mockDataset);
+    mockHttp.expect('GET', '/datasets/5').send(mockDataset);
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
     service.updateDataset(formValues).subscribe(() => {});
-    expectHttp('PUT', '/datasets', formValues, mockDataset);
+    mockHttp
+      .expect('PUT', '/datasets')
+      .body(formValues)
+      .send(mockDataset);
 
     // the cache was cleared for this dataset
     // so retrieving this dataset should cause a new request
     service.getDataset('5').subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
-    expectHttp('GET', '/datasets/5', null, mockDataset);
+    mockHttp.expect('GET', '/datasets/5').send(mockDataset);
   });
 
   it('should get the xslt', () => {
     service.getXSLT('custom', '87').subscribe((xslt) => {
       expect(xslt).toBe(mockXslt);
     });
-    expectHttp('GET', '/datasets/87/xslt', null, { xslt: mockXslt });
+    mockHttp.expect('GET', '/datasets/87/xslt').send({ xslt: mockXslt });
 
     service.getXSLT('default').subscribe((xslt) => {
       expect(xslt).toBe(mockXslt);
     });
-    expectHttp('GET', '/datasets/xslt/default', null, mockXslt);
+    mockHttp.expect('GET', '/datasets/xslt/default').send(mockXslt);
   });
 
   it('should transform samples', () => {
     service.getTransform('9783', mockXmlSamples, 'custom').subscribe((samples) => {
       expect(samples).toEqual(mockXmlSamples);
     });
-    expectHttp('POST', '/datasets/9783/xslt/transform', mockXmlSamples, mockXmlSamples);
+    mockHttp
+      .expect('POST', '/datasets/9783/xslt/transform')
+      .body(mockXmlSamples)
+      .send(mockXmlSamples);
 
     service.getTransform('9783', mockXmlSamples, 'default').subscribe((samples) => {
       expect(samples).toEqual(mockXmlSamples);
     });
-    expectHttp('POST', '/datasets/9783/xslt/transform/default', mockXmlSamples, mockXmlSamples);
+    mockHttp
+      .expect('POST', '/datasets/9783/xslt/transform/default')
+      .body(mockXmlSamples)
+      .send(mockXmlSamples);
   });
 
   it('should know if a dataset is a favorite', () => {
@@ -131,7 +136,7 @@ describe('dataset service', () => {
     service.getFavorites().subscribe((datasets) => {
       expect(datasets).toEqual([mockDataset, mockDataset]);
     });
-    expectHttp('GET', '/datasets/5', null, mockDataset);
-    expectHttp('GET', '/datasets/6736', null, mockDataset);
+    mockHttp.expect('GET', '/datasets/5').send(mockDataset);
+    mockHttp.expect('GET', '/datasets/6736').send(mockDataset);
   });
 });

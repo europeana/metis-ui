@@ -1,38 +1,42 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { currentUser, MockErrorService } from '../_mocked';
+import { apiSettings } from '../../environments/apisettings';
+import { MockHttp } from '../_helpers/test-helpers';
+import { MockErrorService, mockUser } from '../_mocked';
 import { ErrorService, RedirectPreviousUrl } from '../_services';
 
 import { AuthenticationService } from '.';
 
 describe('AuthenticationService', () => {
-  let service: AuthenticationService;
-  let httpClient: HttpClient;
+  let mockHttp: MockHttp;
   let router: Router;
-  let errors;
   let redirect: RedirectPreviousUrl;
+  let service: AuthenticationService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
+        AuthenticationService,
         RedirectPreviousUrl,
-        HttpTestingController,
         { provide: ErrorService, useClass: MockErrorService },
       ],
     }).compileComponents();
 
+    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostAuth);
     router = TestBed.get(Router);
     redirect = TestBed.get(RedirectPreviousUrl);
-    httpClient = TestBed.get(HttpClient);
-    errors = TestBed.get(ErrorService);
-
-    service = new AuthenticationService(httpClient, router, errors, redirect);
+    service = TestBed.get(AuthenticationService);
   }));
+
+  afterEach(() => {
+    mockHttp.verify();
+    localStorage.removeItem('currentUser');
+    redirect.set(undefined);
+  });
 
   it('should return whether a user is validated', () => {
     expect(service.validatedUser()).toBe(false);
@@ -49,11 +53,91 @@ describe('AuthenticationService', () => {
   });
 
   it('should get the current user', () => {
-    service.currentUser = currentUser;
-    expect(service.getCurrentUser()).not.toBe(null);
+    service.currentUser = mockUser;
+    expect(service.getCurrentUser()).toBe(mockUser);
   });
 
-  afterEach(() => {
-    localStorage.removeItem('currentUser');
+  it('should update the password', () => {
+    service.updatePassword('123', '456').subscribe((result) => {
+      expect(result).toBe(true);
+    });
+    mockHttp
+      .expect('PUT', '/authentication/update/password?newPassword=123&oldPassword=456')
+      .send({});
+  });
+
+  it('should register a new user', () => {
+    service.register('jan@example.com', 'safe').subscribe((result) => {
+      expect(result).toBe(true);
+    });
+    mockHttp
+      .expect('POST', '/authentication/register')
+      .basicAuth('amFuQGV4YW1wbGUuY29tOnNhZmU=')
+      .send({});
+  });
+
+  it('should redirect on login if already logged in', () => {
+    service.currentUser = mockUser;
+
+    spyOn(router, 'navigate');
+    service.login('jan@example.com', 'fjgdf').subscribe((result) => {
+      expect(result).toBe(true);
+    });
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+
+    spyOn(router, 'navigateByUrl');
+    redirect.set('dash');
+    service.login('jan@example.com', 'fjgdf').subscribe((result) => {
+      expect(result).toBe(true);
+    });
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/dash');
+  });
+
+  it('should login and save the user', () => {
+    service.login('jan@example.com', 'safe').subscribe((result) => {
+      expect(result).toBe(true);
+      expect(service.getCurrentUser()).toEqual(mockUser);
+    });
+    mockHttp
+      .expect('POST', '/authentication/login')
+      .basicAuth('amFuQGV4YW1wbGUuY29tOnNhZmU=')
+      .send(mockUser);
+
+    service.currentUser = null;
+    service.login('jan@example.com', 'safe').subscribe((result) => {
+      expect(result).toBe(false);
+      expect(service.getCurrentUser()).toEqual(null);
+    });
+    mockHttp.expect('POST', '/authentication/login').send({});
+  });
+
+  it('should logout', () => {
+    service.setCurrentUser(mockUser);
+    expect(service.getCurrentUser()).toBe(mockUser);
+    expect(service.getToken()).toBe('ffsafre');
+    expect(localStorage.getItem('currentUser')).toBeTruthy();
+
+    service.logout();
+
+    expect(service.getCurrentUser()).toBeFalsy();
+    expect(service.getToken()).toBeFalsy();
+    expect(localStorage.getItem('currentUser')).toBeFalsy();
+  });
+
+  it('should reload the user', () => {
+    service.reloadCurrentUser('jan@example.com').subscribe((result) => {
+      expect(result).toBe(true);
+      expect(service.getCurrentUser()).toBe(mockUser);
+    });
+    mockHttp
+      .expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com')
+      .send(mockUser);
+
+    service.currentUser = null;
+    service.reloadCurrentUser('jan@example.com').subscribe((result) => {
+      expect(result).toBe(false);
+      expect(service.getCurrentUser()).toBe(null);
+    });
+    mockHttp.expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com').send(null);
   });
 });

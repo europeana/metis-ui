@@ -2,7 +2,7 @@ import { Observable, of as observableOf } from 'rxjs';
 
 import { AccountRole, User } from '../_models';
 
-export const currentUser: User = {
+export const mockUser: User = {
   accountRole: AccountRole.EUROPEANA_DATA_OFFICER,
   country: 'Netherlands',
   createdDate: 453256554364,
@@ -19,7 +19,7 @@ export const currentUser: User = {
 };
 
 export class MockAuthenticationService {
-  currentUser = currentUser;
+  currentUser = mockUser;
 
   validatedUser(): boolean {
     return true;
@@ -45,5 +45,9 @@ export class MockAuthenticationService {
 
   getCurrentUser(): User | null {
     return this.currentUser;
+  }
+
+  getToken(): string | null {
+    return this.currentUser.metisUserAccessToken.accessToken;
   }
 }

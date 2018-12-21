@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -109,6 +109,7 @@ export class AuthenticationService {
       } else {
         this.router.navigate([environment.afterLoginGoto]);
       }
+      return of(true);
     }
 
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
@@ -170,7 +171,7 @@ export class AuthenticationService {
   /* and in localstorage, to keep user logged in between page refreshes
   /* @param {object} user - user related information
   */
-  private setCurrentUser(user: User): void {
+  public setCurrentUser(user: User): void {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
     localStorage.setItem(this.key, JSON.stringify({ user, email: user.email, token: this.token }));

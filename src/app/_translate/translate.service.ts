@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 
 import { TRANSLATIONS } from './translation';
 
-interface Translations {
+export interface Translations {
   [language: string]:
     | {
         [key: string]: string | undefined;
@@ -26,6 +26,10 @@ export class TranslateService {
 
   public changeLang(lang: string): void {
     localStorage.setItem(CURRENT_LANG, lang);
+    this.reload();
+  }
+
+  reload(): void {
     window.location.reload();
   }
 
