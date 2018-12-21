@@ -4,7 +4,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { successNotification } from '../../_models';
 import {
   createMockPipe,
   mockDataset,
@@ -13,6 +12,7 @@ import {
   mockWorkflow,
   MockWorkflowService,
 } from '../../_mocked';
+import { successNotification } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
