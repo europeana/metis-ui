@@ -6,5 +6,4 @@
 /dist
 /node_modules
 /src/environments/apisettings.ts
-/src/environments/workflowparams.ts
 /tmp
