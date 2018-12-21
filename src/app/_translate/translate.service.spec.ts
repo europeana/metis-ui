@@ -1,7 +1,6 @@
 import { TranslateService, Translations } from '.';
 
 describe('translate service', () => {
-
   const mockTranslations: Translations = {
     nl: {
       hello: 'Hallo',
@@ -10,7 +9,7 @@ describe('translate service', () => {
     en: {
       hello: 'Hello',
       world: 'World',
-    }
+    },
   };
 
   afterEach(() => {
