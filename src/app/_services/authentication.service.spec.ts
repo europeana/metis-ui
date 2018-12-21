@@ -16,7 +16,7 @@ describe('AuthenticationService', () => {
   let service: AuthenticationService;
 
   // tslint:disable-next-line: no-any
-  function expectHttp<Data>(method: string, url: string, body: any, data: Data): void {
+  function expectHttp(method: string, url: string, body: any, data: any): void {
     const req = mockHttp.expectOne(apiSettings.apiHostAuth + url);
     expect(req.request.method).toBe(method);
     expect(req.request.body).toEqual(body);
