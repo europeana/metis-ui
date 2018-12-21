@@ -132,5 +132,12 @@ describe('AuthenticationService', () => {
     mockHttp
       .expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com')
       .send(mockUser);
+
+    service.currentUser = null;
+    service.reloadCurrentUser('jan@example.com').subscribe((result) => {
+      expect(result).toBe(false);
+      expect(service.getCurrentUser()).toBe(null);
+    });
+    mockHttp.expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com').send(null);
   });
 });
