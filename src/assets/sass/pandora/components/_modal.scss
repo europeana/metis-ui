@@ -94,4 +94,12 @@
       text-align: center;
     }
   }
+
+  .modal-big {
+    width: 90vw;
+
+    .content {
+      height: 80vh;
+    }
+  }
 }
