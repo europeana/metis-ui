@@ -11,6 +11,9 @@ import { RegisterComponent } from '../register';
 import { AuthUserGuard, AuthVisitorGuard } from '../_guards';
 import { PageNotFoundComponent } from '../page-not-found';
 
+// if you add a route, make sure to use the DocumentTitleService in the component to set the title
+// see NewDatasetComponent for an example
+
 const routes: Routes = [
   {
     path: 'dashboard',

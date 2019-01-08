@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification, successNotification, User } from '../_models';
-import { AuthenticationService, ErrorService } from '../_services';
+import { AuthenticationService, DocumentTitleService, ErrorService } from '../_services';
 
 @Component({
   selector: 'app-profile',
@@ -24,6 +24,7 @@ export class ProfileComponent implements OnInit {
     private authentication: AuthenticationService,
     private fb: FormBuilder,
     private errors: ErrorService,
+    private documentTitleService: DocumentTitleService,
   ) {}
 
   /** ngOnInit
@@ -32,6 +33,8 @@ export class ProfileComponent implements OnInit {
   /* set translation language
   */
   ngOnInit(): void {
+    this.documentTitleService.setTitle('Profile');
+
     this.createForm();
   }
 

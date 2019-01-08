@@ -11,7 +11,7 @@ import {
   Notification,
   successNotification,
 } from '../_models';
-import { AuthenticationService } from '../_services';
+import { AuthenticationService, DocumentTitleService } from '../_services';
 import { TranslateService } from '../_translate';
 
 @Component({
@@ -36,6 +36,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private router: Router,
     private authentication: AuthenticationService,
     private translate: TranslateService,
+    private documentTitleService: DocumentTitleService,
   ) {}
 
   /** ngOnInit
@@ -44,6 +45,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   /* set translation language
   */
   ngOnInit(): void {
+    this.documentTitleService.setTitle('Register');
+
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       passwords: this.fb.group(

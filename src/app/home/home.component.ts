@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+import { DocumentTitleService } from '../_services';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   heroimage: string;
   attributiontext: string;
   attributionlink: string;
@@ -16,7 +18,7 @@ export class HomeComponent {
   bannertext: string;
   bannerlinktext: string;
 
-  constructor() {
+  constructor(private documentTitleService: DocumentTitleService) {
     this.heroimage = 'url(/assets/images/hero_metis_1600x650_jade.png)';
     this.attributiontext = 'Cyclopides metis L., Cyclopides qua... Museum Fur Naturkunde Berlin';
     this.attributionlink = 'https://www.europeana.eu/portal/';
@@ -27,5 +29,9 @@ export class HomeComponent {
     this.bannertext =
       'Ever wondered how to automagically digest huge amounts of data with the push of a button?';
     this.bannerlinktext = 'Register to Metis here';
+  }
+
+  ngOnInit(): void {
+    this.documentTitleService.setTitle('Welcome');
   }
 }
