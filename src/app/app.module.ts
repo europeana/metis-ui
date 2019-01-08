@@ -43,6 +43,7 @@ import {
   LoadingButtonComponent,
   NotificationComponent,
   PasswordCheckComponent,
+  TextWithLinksComponent,
 } from './shared';
 
 @NgModule({
@@ -60,6 +61,7 @@ import {
     DashboardComponent,
     DatasetformComponent,
     PasswordCheckComponent,
+    TextWithLinksComponent,
     GeneralinfoComponent,
     DashboardactionsComponent,
     ActionbarComponent,
