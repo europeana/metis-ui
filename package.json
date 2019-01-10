@@ -19,7 +19,7 @@
     "cypress:ci": "run-p --race start:ci cypress:run",
     "start:ci": "ng serve --progress=false --port 4280 --live-reload=false",
     "cypress:run": "sleep 10 && cypress run",
-    "dist": "ng build --progress=false --prod --output-hashing=all && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
+    "dist": "ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
   },
   "private": true,
   "dependencies": {
