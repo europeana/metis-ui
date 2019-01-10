@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification } from '../_models';
-import { AuthenticationService, RedirectPreviousUrl } from '../_services';
+import { AuthenticationService, DocumentTitleService, RedirectPreviousUrl } from '../_services';
 import { TranslateService } from '../_translate';
 
 @Component({
@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit {
     private redirectPreviousUrl: RedirectPreviousUrl,
     private fb: FormBuilder,
     private translate: TranslateService,
+    private documentTitleService: DocumentTitleService,
   ) {}
 
   /** ngOnInit
@@ -35,6 +36,8 @@ export class LoginComponent implements OnInit {
   /* set translation language
   */
   ngOnInit(): void {
+    this.documentTitleService.setTitle('Sign In');
+
     // already logged in, then redirect
     if (this.authentication.validatedUser() && this.checkLogin) {
       this.checkLogin = true;

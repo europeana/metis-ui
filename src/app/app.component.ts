@@ -11,7 +11,6 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
-  title = 'Metis-UI';
   bodyClass: string;
   showWrapper = false;
   currentWorkflowId?: string;

@@ -6,6 +6,7 @@ import { Dataset, getCurrentPlugin, PluginExecution, WorkflowExecution } from '.
 import {
   AuthenticationService,
   DatasetsService,
+  DocumentTitleService,
   ErrorService,
   WorkflowService,
 } from '../_services';
@@ -35,9 +36,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
+    private documentTitleService: DocumentTitleService,
   ) {}
 
   ngOnInit(): void {
+    this.documentTitleService.setTitle('Dashboard');
+
     this.getRunningExecutions();
     this.getFinishedExecutions();
     this.datasets.getFavorites().subscribe((datasets) => {

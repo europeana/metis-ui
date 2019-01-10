@@ -1,6 +1,9 @@
 <div class="modal-wrapper" *ngIf="isVisible">
   <div class="modal modal-big">
-    <div class="head">Report <a class="btn-close" (click)="closeReport()"></a></div>
+    <div class="head">
+      Report <a class="btn-close" (click)="closeReport()"></a>
+      <a class="btn-right" (click)="copyReport()" *ngIf="errors">Copy</a>
+    </div>
     <div class="content">
       <app-load-animation [resources]="{ errors: true }" *ngIf="isLoading"></app-load-animation>
 
@@ -9,15 +12,18 @@
         (closed)="notification = undefined"
       ></app-notification>
 
-      <div *ngIf="errors">
+      <div *ngIf="errors" #errorsRef>
         <ul *ngFor="let r of reportKeys(errors)">
           <li *ngFor="let rk of reportKeys(errors[r])">
-            <strong>{{ rk }}:</strong>
-            <span *ngIf="!isObject(errors[r][rk])">{{ errors[r][rk] }}</span>
+            <strong>{{ rk }}:&nbsp;</strong>
+            <span *ngIf="!isObject(errors[r][rk])">
+              <app-text-with-links [text]="errors[r][rk]"></app-text-with-links>
+            </span>
             <div *ngIf="isObject(errors[r][rk])">
               <ul *ngFor="let subrk of reportKeys(errors[r][rk])">
                 <li *ngFor="let sub of reportKeys(errors[r][rk][subrk])">
-                  <strong>{{ sub }}:</strong> {{ errors[r][rk][subrk][sub] }}
+                  <strong>{{ sub }}:&nbsp;</strong>
+                  <app-text-with-links [text]="errors[r][rk][subrk][sub]"></app-text-with-links>
                 </li>
               </ul>
             </div>

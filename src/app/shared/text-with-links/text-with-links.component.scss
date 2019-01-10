@@ -1,0 +1,9 @@
+.text-link {
+  padding: 5px 0;
+
+  &:hover {
+    background-color: rgba(180, 220, 200, 0.3);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

@@ -17,7 +17,7 @@ import {
   Workflow,
   WorkflowExecution,
 } from '../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../_services';
+import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;
@@ -36,6 +36,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private route: ActivatedRoute,
     private router: Router,
+    private documentTitleService: DocumentTitleService,
   ) {}
 
   activeTab = 'edit';
@@ -64,6 +65,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
   reportRequest?: ReportRequest;
 
   ngOnInit(): void {
+    this.documentTitleService.setTitle('Dataset');
+
     this.route.params.subscribe((params) => {
       const { tab, id } = params;
       if (tab === 'new') {
@@ -101,6 +104,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.datasetData = result;
         this.isFavorite = this.datasets.isFavorite(this.datasetData);
         this.datasetIsLoading = false;
+
+        this.documentTitleService.setTitle(this.datasetData.datasetName || 'Dataset');
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);

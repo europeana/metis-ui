@@ -1,17 +1,19 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
 import {
   errorNotification,
   httpErrorNotification,
   Notification,
   ReportRequest,
+  successNotification,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
+  styleUrls: ['./report.component.scss'],
 })
 export class ReportComponent {
   constructor(private workflows: WorkflowService, private errorService: ErrorService) {}
@@ -22,6 +24,8 @@ export class ReportComponent {
 
   // tslint:disable-next-line: no-any
   errors: any;
+
+  @ViewChild('errorsRef') errorsRef: ElementRef;
 
   @Output() closed = new EventEmitter<void>();
 
@@ -55,11 +59,26 @@ export class ReportComponent {
   }
 
   reportKeys(o: Object): string[] {
-    return Object.keys(o);
+    return o ? Object.keys(o) : [];
   }
 
   closeReport(): void {
     this.closed.emit();
+  }
+
+  copyReport(): void {
+    const element = this.errorsRef.nativeElement;
+
+    window.getSelection().removeAllRanges();
+    const range = document.createRange();
+    range.selectNode(element);
+    window.getSelection().addRange(range);
+
+    document.execCommand('copy');
+
+    window.getSelection().removeAllRanges();
+
+    this.notification = successNotification('The report has beend copied');
   }
 
   // tslint:disable-next-line: no-any
