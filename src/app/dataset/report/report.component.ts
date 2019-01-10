@@ -78,7 +78,7 @@ export class ReportComponent {
 
     window.getSelection().removeAllRanges();
 
-    this.notification = successNotification('The report has beend copied');
+    this.notification = successNotification('The report has been copied');
   }
 
   // tslint:disable-next-line: no-any
