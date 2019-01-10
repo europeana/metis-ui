@@ -49,13 +49,7 @@
       </div>
       <nav>
         <ul>
-          <li
-            *ngIf="
-              !ongoing.cancelling &&
-              ongoing.currentPlugin.pluginType !== 'PUBLISH' &&
-              ongoing.currentPlugin.pluginType !== 'MEDIA_PROCESS'
-            "
-          >
+          <li *ngIf="!ongoing.cancelling && ongoing.currentPlugin.pluginType !== 'PUBLISH'">
             <a
               class="cancel-btn svg-icon-cancel tooltip"
               attr.data-tooltip="{{ 'cancel' | translate }}"
