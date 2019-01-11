@@ -27,7 +27,6 @@
             "production": {
               "aot": true,
               "buildOptimizer": true,
-              "extractCss": true,
               "extractLicenses": true,
               "namedChunks": false,
               "optimization": true,
