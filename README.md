@@ -65,7 +65,7 @@ To run the unit tests in development (watch mode):
 
     npm run test:dev
     
-You can also use Wallaby (heartily recommended!) by using the included wallaby.js file.
+You can also use Wallaby (heartily recommended!) by using the included `wallaby.js` file.
 
 ### E2E tests (development)
 
@@ -79,7 +79,7 @@ To run the cypress tests in development (watch mode), start the dev server in on
 
 ### Template check (development)
 
-We use Angular AOT compiling with `fullTemplateTypeCheck: true` to do some type checking of the templates. This is run as part of `npm test` but you can also run it manually:
+We use Angular AOT compiling with `fullTemplateTypeCheck: true` to do limited checking of the templates. This is run as part of `npm test` but you can also run it manually:
 
     npm run template-check
 
