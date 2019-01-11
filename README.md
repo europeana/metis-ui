@@ -32,7 +32,7 @@ The main branch for development is the `develop` branch. But do NOT use this bra
 
 If you push a branch or commit to GitHub, it will automatically be tested by Travis CI. This will take about 5 mins and the results will be shown in GitHub, e.g. in the pull request page.
 
-If the tests fail, there is often a small linting or formatting error (see [Linting and code formatting](#Linting and code formatting) above). Run this command and check if it fixes the tests:
+If the tests fail, there is often a small linting or formatting error (see [Linting and code formatting](#linting-and-code-formatting) ). Run this command and check if it fixes the tests:
 
     npm run fix
 
