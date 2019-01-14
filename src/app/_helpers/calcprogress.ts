@@ -6,8 +6,8 @@ export function calcProgress(ongoing: WorkflowExecution): number {
   }
 
   const pct: number = (ongoing.currentPluginIndex / ongoing.metisPlugins.length) * 100;
-  let subPct: number = ongoing.metisPlugins[ongoing.currentPluginIndex].executionProgress.progressPercentage;
+  let subPct: number =
+    ongoing.metisPlugins[ongoing.currentPluginIndex].executionProgress.progressPercentage;
   subPct = Math.max(subPct, 0) / ongoing.metisPlugins.length;
   return pct + subPct;
-
 }
