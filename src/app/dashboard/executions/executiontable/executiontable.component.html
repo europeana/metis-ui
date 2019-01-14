@@ -39,7 +39,8 @@
   <div class="progress">
     <div class="progress-status">
       <span class="progress-percentage"
-        >{{ 'step' | translate }} {{ execution.currentPluginIndex + 1 }}/{{
+        >{{ 'step' | translate }}
+        {{ execution.currentPluginIndex ? execution.currentPluginIndex + 1 : 1 }}/{{
           execution.metisPlugins.length
         }}</span
       >
