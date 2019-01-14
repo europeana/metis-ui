@@ -27,7 +27,7 @@
         <div class="progress-status">
           <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
           <span class="progress-percentage"
-            >{{ 'step' | translate }} {{ ongoing.currentPluginIndex }}/{{
+            >{{ 'step' | translate }} {{ ongoing.currentPluginIndex + 1 }}/{{
               ongoing.metisPlugins.length
             }}</span
           >
@@ -35,11 +35,7 @@
         <div class="progressbar">
           <div
             class="progressbar-done"
-            [style.width.%]="
-              (ongoing.currentPluginIndex / ongoing.metisPlugins.length) * 100 >= 0
-                ? (ongoing.currentPluginIndex / ongoing.metisPlugins.length) * 100
-                : 0
-            "
+            [style.width.%]="calcProgress(ongoing)"
           ></div>
         </div>
       </div>

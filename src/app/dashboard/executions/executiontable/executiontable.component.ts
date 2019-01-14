@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { copyExecutionAndTaskId } from '../../../_helpers';
+import { calcProgress, copyExecutionAndTaskId } from '../../../_helpers';
 import { isPluginCompleted, PluginExecution, WorkflowExecution } from '../../../_models';
 import { WorkflowService } from '../../../_services';
 import { TranslateService } from '../../../_translate';
@@ -28,6 +28,10 @@ export class ExecutiontableComponent implements OnInit {
       return;
     }
     this.workflows.promptCancelThisWorkflow(id);
+  }
+
+  calcProgress(ongoing: WorkflowExecution): number {
+    return calcProgress(ongoing);
   }
 
   copyInformation(type: string, id1: string, id2: string): void {
