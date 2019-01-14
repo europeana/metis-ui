@@ -147,7 +147,7 @@ export const LANG_EN_TRANS = {
   workflowrunning: 'The workflow is already running.',
   'workflow step': 'Workflow step',
   workflowsave: 'You have made changes to the workflow. You must save it before you can run it.',
-  workflowsavenew: 'Configure the plugins and click the "Save" button to create a workflow.',
+  workflowsavenew: 'Configure the workflow steps and click the "Save" button to create a workflow.',
   workflowsaved: 'The workflow has been saved.',
   xsltaskloaddefault:
     'This dataset has no custom XSLT. Do you want to load a default XSLT for editing?',
