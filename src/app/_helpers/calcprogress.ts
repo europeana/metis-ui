@@ -1,13 +1,10 @@
 import { WorkflowExecution } from '../_models';
 
 export function calcProgress(ongoing: WorkflowExecution): number {
-  if (!ongoing.currentPluginIndex) {
-    return 0;
-  }
+  const currIndex: number = ongoing.currentPluginIndex ? ongoing.currentPluginIndex : 0;
 
-  const pct: number = (ongoing.currentPluginIndex / ongoing.metisPlugins.length) * 100;
-  let subPct: number =
-    ongoing.metisPlugins[ongoing.currentPluginIndex].executionProgress.progressPercentage;
+  const pct: number = (currIndex / ongoing.metisPlugins.length) * 100;
+  let subPct: number = ongoing.metisPlugins[currIndex].executionProgress.progressPercentage;
   subPct = Math.max(subPct, 0) / ongoing.metisPlugins.length;
   return pct + subPct;
 }
