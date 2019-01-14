@@ -2,6 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Observable } from 'rxjs';
+
+import { gatherAll } from '../_helpers/test-helpers';
 
 import { ErrorService, RedirectPreviousUrl } from '.';
 
@@ -71,5 +74,26 @@ describe('ErrorService', () => {
     expect(redirect.get()).toBe('test2');
     expect(localStorage.getItem('currentUser')).toBe('user3');
     expect(router.navigate).not.toHaveBeenCalled();
+  }));
+
+  it('should retry', async(() => {
+    function fromValues(array: (number | string)[]): Observable<string> {
+      return new Observable<string>((subscriber) => {
+        const value = array.shift();
+        if (typeof value === 'string') {
+          subscriber.next(value);
+        } else {
+          subscriber.error({ status: value });
+        }
+        subscriber.complete();
+      });
+    }
+
+    const fn = service.handleRetry(true);
+    expect(gatherAll(fn(fromValues(['5'])))).toEqual(['5']);
+    expect(gatherAll(fn(fromValues([3, '6'])))).toEqual([{ status: 3 }]);
+    expect(gatherAll(fn(fromValues([0, 0, '7'])))).toEqual(['7']);
+    // TODO: should throw error?
+    expect(gatherAll(fn(fromValues([0, 0, 0, 0, 0, 0, 0, '8'])))).toEqual([]);
   }));
 });

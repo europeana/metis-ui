@@ -5,28 +5,39 @@ export class TestSubscriber<Value> implements NextObserver<Value> {
   values: Value[] = [];
   // tslint:disable-next-line: no-any
   errors: any[] = [];
+  // tslint:disable-next-line: no-any
+  all: any[] = [];
 
   next(value: Value): void {
     this.values.push(value);
+    this.all.push(value);
   }
 
   // tslint:disable-next-line: no-any
   error(err: any): void {
     this.errors.push(err);
+    this.all.push(err);
   }
 }
 
-export function gatherValues<Value>(observable: Observable<Value>): Value[] {
+function gather<Value>(observable: Observable<Value>): TestSubscriber<Value> {
   const subscriber = new TestSubscriber<Value>();
   observable.subscribe(subscriber);
-  return subscriber.values;
+  return subscriber;
+}
+
+export function gatherValues<Value>(observable: Observable<Value>): Value[] {
+  return gather(observable).values;
 }
 
 // tslint:disable-next-line: no-any
 export function gatherErrors<Value>(observable: Observable<Value>): any[] {
-  const subscriber = new TestSubscriber<Value>();
-  observable.subscribe(subscriber);
-  return subscriber.errors;
+  return gather(observable).errors;
+}
+
+// tslint:disable-next-line: no-any
+export function gatherAll<Value>(observable: Observable<Value>): any[] {
+  return gather(observable).all;
 }
 
 export class MockHttpRequest {

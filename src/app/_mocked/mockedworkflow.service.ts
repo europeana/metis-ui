@@ -286,14 +286,6 @@ export class MockWorkflowService {
     return observableOf(undefined);
   }
 
-  getCompletedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
-    return observableOf(mockWorkflowExecutionResults);
-  }
-
-  getDatasetExecutions(): Observable<Results<WorkflowExecution>> {
-    return observableOf(mockWorkflowExecutionResults);
-  }
-
   getLastDatasetExecution(): Observable<WorkflowExecution> {
     return observableOf(mockWorkflowExecution);
   }

@@ -31,7 +31,7 @@ export class ErrorService {
   /* retry http call
   /* check and retry for a specific error
   */
-  handleRetry<T>(): (o: Observable<T>) => Observable<T> {
+  handleRetry<T>(noDelay: boolean = false): (o: Observable<T>) => Observable<T> {
     return retryWhen<T>((error) => {
       return (
         error
@@ -41,7 +41,11 @@ export class ErrorService {
                 errorM.status === 0 ||
                 errorM.message === 'Http failure response for (unknown url): 0 Unknown Error'
               ) {
-                return observableOf(errorM.status).pipe(delay(this.retryDelay));
+                if (noDelay) {
+                  return observableOf(errorM.status);
+                } else {
+                  return observableOf(errorM.status).pipe(delay(this.retryDelay));
+                }
               }
               throw errorM;
             }),

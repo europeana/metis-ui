@@ -40,7 +40,7 @@ describe('ReportComponent', () => {
   });
 
   it('should show a report request', () => {
-    spyOn(workflows, 'getReport').and.returnValue(of(mockReport));
+    spyOn(workflows, 'getReport').and.callThrough();
     component.reportRequest = { taskId: '-5635646', topology: 'validation' };
     expect(workflows.getReport).toHaveBeenCalledWith('-5635646', 'validation');
 
