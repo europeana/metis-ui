@@ -5,18 +5,14 @@ export class TestSubscriber<Value> implements NextObserver<Value> {
   values: Value[] = [];
   // tslint:disable-next-line: no-any
   errors: any[] = [];
-  // tslint:disable-next-line: no-any
-  all: any[] = [];
 
   next(value: Value): void {
     this.values.push(value);
-    this.all.push(value);
   }
 
   // tslint:disable-next-line: no-any
   error(err: any): void {
     this.errors.push(err);
-    this.all.push(err);
   }
 }
 
