@@ -35,11 +35,6 @@ export function gatherErrors<Value>(observable: Observable<Value>): any[] {
   return gather(observable).errors;
 }
 
-// tslint:disable-next-line: no-any
-export function gatherAll<Value>(observable: Observable<Value>): any[] {
-  return gather(observable).all;
-}
-
 export class MockHttpRequest {
   private hasBody = false;
   public isClosed = false;

@@ -80,7 +80,7 @@ describe('ErrorService', () => {
   it('should retry', async(() => {
     // generate an observable that, when started, will take 1 value or error from the array and yield it
     // so on each (re)start, the observable will yield the next item from the array
-    // the items of the array can be string or numbers
+    // the items of the array can be strings or numbers
     // a string will map to itself as a value
     // a number will map to an error with the number as status field
     function fromValues(array: (string | number)[]): Observable<string> {
