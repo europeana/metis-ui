@@ -16,6 +16,7 @@ import { ExecutiontableComponent } from '.';
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;
   let fixture: ComponentFixture<ExecutiontableComponent>;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -29,6 +30,7 @@ describe('ExecutiontableComponent', () => {
   }));
 
   beforeEach(() => {
+    workflows = TestBed.get(WorkflowService);
     fixture = TestBed.createComponent(ExecutiontableComponent);
     component = fixture.componentInstance;
     component.execution = mockWorkflowExecution;
@@ -44,5 +46,13 @@ describe('ExecutiontableComponent', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
+  });
+
+  it('should cancel a workflow', () => {
+    spyOn(workflows, 'promptCancelThisWorkflow');
+    component.cancelWorkflow('');
+    expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
+    component.cancelWorkflow('10');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('10');
   });
 });
