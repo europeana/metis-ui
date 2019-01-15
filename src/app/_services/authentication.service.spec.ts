@@ -141,3 +141,23 @@ describe('AuthenticationService', () => {
     mockHttp.expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com').send(null);
   });
 });
+
+it('should use the user from localstorage', () => {
+  localStorage.setItem(
+    'currentUser',
+    JSON.stringify({ user: mockUser, email: 'jan@example.com', token: 'tggij534$' }),
+  );
+  TestBed.configureTestingModule({
+    imports: [RouterTestingModule, HttpClientTestingModule],
+    providers: [
+      AuthenticationService,
+      RedirectPreviousUrl,
+      { provide: ErrorService, useClass: MockErrorService },
+    ],
+  }).compileComponents();
+
+  const service: AuthenticationService = TestBed.get(AuthenticationService);
+  expect(service.currentUser).toEqual(mockUser);
+
+  localStorage.removeItem('currentUser');
+});

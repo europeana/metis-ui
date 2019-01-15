@@ -214,9 +214,7 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
-  private addDatasetNameAndCurrentPlugin(
-    executions: WorkflowExecution[],
-  ): Observable<WorkflowExecution[]> {
+  addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[]): Observable<WorkflowExecution[]> {
     if (executions.length === 0) {
       return of(executions);
     }

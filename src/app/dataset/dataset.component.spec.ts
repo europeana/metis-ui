@@ -77,4 +77,8 @@ describe('DatasetComponent', () => {
     fixture.detectChanges();
     expect(component.showPluginLog).toBe(mockPluginExecution);
   });
+
+  it('should start a workflow', () => {
+    component.startWorkflow();
+  });
 });

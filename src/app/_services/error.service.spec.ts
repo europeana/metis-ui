@@ -2,6 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { ErrorService, RedirectPreviousUrl } from '.';
 
@@ -18,6 +20,8 @@ describe('ErrorService', () => {
     service = TestBed.get(ErrorService);
     router = TestBed.get(Router);
     redirect = TestBed.get(RedirectPreviousUrl);
+
+    service.retryDelay = 5;
   });
 
   afterEach(() => {
@@ -71,5 +75,38 @@ describe('ErrorService', () => {
     expect(redirect.get()).toBe('test2');
     expect(localStorage.getItem('currentUser')).toBe('user3');
     expect(router.navigate).not.toHaveBeenCalled();
+  }));
+
+  it('should retry', async(() => {
+    // generate an observable that, when started, will take 1 value or error from the array and yield it
+    // so on each (re)start, the observable will yield the next item from the array
+    // the items of the array can be strings or numbers
+    // a string will map to itself as a value
+    // a number will map to an error with the number as status field
+    function fromValues(array: (string | number)[]): Observable<string> {
+      return new Observable<string>((subscriber) => {
+        const value = array.shift();
+        if (typeof value === 'string') {
+          subscriber.next(value);
+          subscriber.complete();
+        } else {
+          subscriber.error({ status: value });
+        }
+      });
+    }
+
+    const rawResponses = [['ans1'], [3, 'ans2'], [0, 0, 'ans3'], [0, 0, 0, 0, 0, 0, 0, 'ans4']];
+    const expectedResponses = ['ans1', 'error:3', 'ans3', 'error:0'];
+
+    forkJoin(
+      rawResponses.map((x) =>
+        fromValues(x).pipe(
+          service.handleRetry<string>(),
+          catchError((err) => of(`error:${err.status}`)),
+        ),
+      ),
+    ).subscribe((actualResponses) => {
+      expect(actualResponses).toEqual(expectedResponses);
+    });
   }));
 });

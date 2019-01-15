@@ -361,4 +361,16 @@ describe('workflow service', () => {
       .expect('GET', '/orchestrator/proxies/normalization/task/-4354/statistics')
       .send(mockStatistics);
   });
+
+  it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {
+    service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
+      expect(res).toEqual([]);
+    });
+  });
+
+  it('should cancel a workflow', () => {
+    spyOn(service.promptCancelWorkflow, 'emit');
+    service.promptCancelThisWorkflow('15');
+    expect(service.promptCancelWorkflow.emit).toHaveBeenCalledWith('15');
+  });
 });
