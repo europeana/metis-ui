@@ -1,34 +1,23 @@
 import { HttpTestingController, TestRequest } from '@angular/common/http/testing';
-import { NextObserver, Observable } from 'rxjs';
-
-export class TestSubscriber<Value> implements NextObserver<Value> {
-  values: Value[] = [];
-  // tslint:disable-next-line: no-any
-  errors: any[] = [];
-
-  next(value: Value): void {
-    this.values.push(value);
-  }
-
-  // tslint:disable-next-line: no-any
-  error(err: any): void {
-    this.errors.push(err);
-  }
-}
-
-function gather<Value>(observable: Observable<Value>): TestSubscriber<Value> {
-  const subscriber = new TestSubscriber<Value>();
-  observable.subscribe(subscriber);
-  return subscriber;
-}
+import { Observable } from 'rxjs';
 
 export function gatherValues<Value>(observable: Observable<Value>): Value[] {
-  return gather(observable).values;
+  const values: Value[] = [];
+  observable.subscribe((value) => {
+    values.push(value);
+  });
+  return values;
 }
 
 // tslint:disable-next-line: no-any
-export function gatherErrors<Value>(observable: Observable<Value>): any[] {
-  return gather(observable).errors;
+export function gatherError<Value>(observable: Observable<Value>): any {
+  let error;
+  observable.subscribe({
+    error: (e) => {
+      error = e;
+    },
+  });
+  return error;
 }
 
 export class MockHttpRequest {

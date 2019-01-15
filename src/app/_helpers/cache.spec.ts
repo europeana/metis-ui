@@ -1,7 +1,7 @@
 import { of, throwError } from 'rxjs';
 
 import { KeyedCache, SingleCache } from './cache';
-import { gatherErrors, gatherValues } from './test-helpers';
+import { gatherError, gatherValues } from './test-helpers';
 
 describe('single cache', () => {
   it('should get the value', () => {
@@ -35,9 +35,9 @@ describe('single cache', () => {
   it('should not cache an error', () => {
     const fn = jasmine.createSpy().and.callFake(() => throwError('wrong'));
     const cache = new SingleCache<number>(fn);
-    expect(gatherErrors(cache.get())).toEqual(['wrong']);
-    expect(gatherErrors(cache.get())).toEqual(['wrong']);
-    expect(gatherErrors(cache.get())).toEqual(['wrong']);
+    expect(gatherError(cache.get())).toEqual('wrong');
+    expect(gatherError(cache.get())).toEqual('wrong');
+    expect(gatherError(cache.get())).toEqual('wrong');
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
@@ -80,11 +80,11 @@ describe('single cache', () => {
     it('should not cache an error', () => {
       const fn = jasmine.createSpy().and.callFake(() => throwError('wrong'));
       const cache = new KeyedCache<string>(fn);
-      expect(gatherErrors(cache.get('1'))).toEqual(['wrong']);
-      expect(gatherErrors(cache.get('2'))).toEqual(['wrong']);
-      expect(gatherErrors(cache.get('3'))).toEqual(['wrong']);
-      expect(gatherErrors(cache.get('2'))).toEqual(['wrong']);
-      expect(gatherErrors(cache.get('3'))).toEqual(['wrong']);
+      expect(gatherError(cache.get('1'))).toEqual('wrong');
+      expect(gatherError(cache.get('2'))).toEqual('wrong');
+      expect(gatherError(cache.get('3'))).toEqual('wrong');
+      expect(gatherError(cache.get('2'))).toEqual('wrong');
+      expect(gatherError(cache.get('3'))).toEqual('wrong');
       expect(fn).toHaveBeenCalledTimes(5);
     });
   });
