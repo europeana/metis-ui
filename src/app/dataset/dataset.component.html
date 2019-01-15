@@ -24,10 +24,7 @@
         <div class="dataset-name">
           <span class="svg-icon-dataset" (dblclick)="toggleFavorite()"></span>
           {{ datasetData.datasetName }}
-          <span
-            *ngIf="showFavorites"
-            class="star {{ isFavorite ? 'star-active' : '' }}"
-            (click)="toggleFavorite()"
+          <span class="star {{ isFavorite ? 'star-active' : '' }}" (click)="toggleFavorite()"
             >&#x2605;</span
           >
         </div>

@@ -120,10 +120,6 @@ export class DatasetsService {
     }
   }
 
-  hasFavorites(): boolean {
-    return this.favoriteIds.length > 0;
-  }
-
   getFavorites(): Observable<Dataset[]> {
     if (this.favoriteIds.length === 0) {
       return of([]);

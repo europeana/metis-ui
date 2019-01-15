@@ -54,7 +54,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
 
   datasetData: Dataset;
   isFavorite = false;
-  showFavorites = this.datasets.hasFavorites();
   workflowData?: Workflow;
   harvestPublicationData?: HarvestData;
   lastExecutionData?: WorkflowExecution;
@@ -219,6 +218,5 @@ export class DatasetComponent implements OnInit, OnDestroy {
     } else {
       this.datasets.removeFavorite(this.datasetData);
     }
-    this.showFavorites = true;
   }
 }
