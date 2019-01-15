@@ -72,8 +72,4 @@ export class MockDatasetsService {
   getFavorites(): Observable<Dataset[]> {
     return observableOf([mockDataset]);
   }
-
-  hasFavorites(): boolean {
-    return false;
-  }
 }
