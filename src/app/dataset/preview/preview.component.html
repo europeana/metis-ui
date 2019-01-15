@@ -77,6 +77,7 @@
           ></codemirror>
         </div>
         <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
+        <a [href]="downloadUrl(sample)" download="sample{{ sample.ecloudId }}.xml">download</a>
       </div>
     </div>
   </div>
@@ -146,6 +147,15 @@
           ></codemirror>
         </div>
         <button (click)="gotoMapping()">{{ 'gotomapping' | translate }}</button>
+        <a [href]="downloadUrl(sample)" download="sample{{ sample.ecloudId }}.xml">
+          download original
+        </a>
+        <a
+          [href]="downloadUrl(allTransformedSamples[i], 'transformed')"
+          download="sample{{ allTransformedSamples[i].ecloudId }}.xml"
+        >
+          download transformed
+        </a>
       </div>
     </div>
   </div>

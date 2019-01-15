@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
@@ -11,6 +12,7 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 import { switchMap } from 'rxjs/operators';
+import * as beautify from 'vkbeautify';
 
 import {
   Dataset,
@@ -36,6 +38,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private datasets: DatasetsService,
     private router: Router,
+    private sanitizer: DomSanitizer,
   ) {}
 
   @Input() datasetData: Dataset;
@@ -60,6 +63,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   loadingSamples = false;
   loadingTransformSamples = false;
   timeout?: number;
+  downloadUrlCache: { [key: string]: string } = {};
 
   ngOnInit(): void {
     this.editorConfig = {
@@ -87,6 +91,11 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.timeout);
+
+    Object.keys(this.downloadUrlCache).forEach((key) => {
+      const url = this.downloadUrlCache[key];
+      URL.revokeObjectURL(url);
+    });
   }
 
   // populate a filter with executions based on selected workflow
@@ -290,5 +299,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   byId(_: number, item: WorkflowExecution): string {
     return item.id;
+  }
+
+  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group: string = ''): SafeUrl {
+    const key = `${group}:${ecloudId}`;
+    let url = this.downloadUrlCache[key];
+    if (!url) {
+      const parts = [beautify.xml(xmlRecord)];
+      const blob = new Blob(parts, { type: 'text/xml' });
+      url = URL.createObjectURL(blob);
+      this.downloadUrlCache[key] = url;
+    }
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 }
