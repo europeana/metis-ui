@@ -80,6 +80,18 @@ input[type='radio'] {
 .view-sample-transformed {
   .view-sample-editor-codemirror {
     display: inline-block;
+    position: relative;
     width: 49.7%;
+  }
+
+  .download-link {
+    border: 1px solid #fff;
+    border-radius: 3px;
+    display: block;
+    padding: 0.4rem;
+
+    &:hover {
+      border-color: #37b98b;
+    }
   }
 }

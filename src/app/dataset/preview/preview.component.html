@@ -45,7 +45,7 @@
         </div>
       </li>
     </ul>
-    <span *ngIf="loadingSamples" class="svg-icon-spin"></span>
+    <span *ngIf="loadingSamples" class="svg-icon-spin showing"></span>
   </div>
 
   <div *ngIf="allSamples">
@@ -133,6 +133,7 @@
             [config]="editorConfig"
           ></codemirror>
         </div>
+
         <div
           class="view-sample-editor-codemirror"
           (click)="handleCodeClick($event)"
@@ -146,16 +147,30 @@
             [config]="editorConfig"
           ></codemirror>
         </div>
-        <button (click)="gotoMapping()">{{ 'gotomapping' | translate }}</button>
-        <a [href]="downloadUrl(sample)" download="sample{{ sample.ecloudId }}.xml">
-          download original
-        </a>
-        <a
-          [href]="downloadUrl(allTransformedSamples[i], 'transformed')"
-          download="sample{{ allTransformedSamples[i].ecloudId }}.xml"
-        >
-          download transformed
-        </a>
+
+        <div class="preview-controls">
+          <div>
+            <a
+              [href]="downloadUrl(sample)"
+              class="download-link"
+              download="sample{{ sample.ecloudId }}.xml"
+              title="download original"
+            >
+              <span class="svg-icon-download"></span>
+            </a>
+          </div>
+          <div>
+            <a
+              [href]="downloadUrl(allTransformedSamples[i], 'transformed')"
+              class="download-link"
+              download="sample{{ allTransformedSamples[i].ecloudId }}.xml"
+              title="download transformed"
+            >
+              <span class="svg-icon-download"></span>
+            </a>
+            <button (click)="gotoMapping()">{{ 'gotomapping' | translate }}</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

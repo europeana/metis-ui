@@ -33,7 +33,7 @@
             <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{
               'loadmore' | translate
             }}</a
-            ><span class="svg-icon-spin" *ngIf="isLoading"></span>
+            ><span class="svg-icon-spin" [class.showing]="isLoading"></span>
           </div>
         </td>
       </tr>
