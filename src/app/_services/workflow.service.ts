@@ -138,9 +138,17 @@ export class WorkflowService {
     );
   }
 
-  // only use this for finished tasks
-  getCachedHasErrors(taskId: string, topologyName: TopologyName): Observable<boolean> {
-    return this.hasErrorsCache.get(`${taskId}/${topologyName}`);
+  getCachedHasErrors(
+    taskId: string,
+    topologyName: TopologyName,
+    pluginIsCompleted: boolean,
+  ): Observable<boolean> {
+    const key = `${taskId}/${topologyName}/${pluginIsCompleted}`;
+    if (pluginIsCompleted) {
+      return this.hasErrorsCache.get(key);
+    } else {
+      return this.hasErrorsCache.getStaleAndRefresh(key);
+    }
   }
 
   //  get history of finished, failed or canceled executions for specific datasetid
@@ -261,17 +269,19 @@ export class WorkflowService {
   getReportsForExecution(workflowExecution: WorkflowExecution): void {
     workflowExecution.metisPlugins.forEach((pluginExecution) => {
       const { externalTaskId, topologyName } = pluginExecution;
-      if (isPluginCompleted(pluginExecution)) {
-        if (externalTaskId && topologyName) {
-          this.getCachedHasErrors(externalTaskId, topologyName).subscribe(
-            (hasErrors) => {
-              pluginExecution.hasReport = hasErrors;
-            },
-            (err: HttpErrorResponse) => {
-              this.errors.handleError(err);
-            },
-          );
-        }
+      if (externalTaskId && topologyName) {
+        this.getCachedHasErrors(
+          externalTaskId,
+          topologyName,
+          isPluginCompleted(pluginExecution),
+        ).subscribe(
+          (hasErrors) => {
+            pluginExecution.hasReport = hasErrors;
+          },
+          (err: HttpErrorResponse) => {
+            this.errors.handleError(err);
+          },
+        );
       }
     });
   }
