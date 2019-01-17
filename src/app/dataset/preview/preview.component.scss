@@ -130,20 +130,19 @@
   display: flex;
 
   .preview-controls-left,
-  .preview-controls-right{
+  .preview-controls-right {
     align-items: center;
-    display:     flex;
-    width:       50%;
+    display: flex;
+    width: 50%;
   }
 
-  .preview-controls-left{
-    border-right:    7px solid #ddd;
+  .preview-controls-left {
+    border-right: 7px solid #ddd;
     justify-content: left;
   }
 
-  .preview-controls-right{
-    border-left:     3px solid #ddd;
+  .preview-controls-right {
+    border-left: 3px solid #ddd;
     justify-content: space-between;
   }
-
 }
