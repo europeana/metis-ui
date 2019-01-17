@@ -1,5 +1,6 @@
 import { HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { Observable } from 'rxjs';
+import { reduce } from 'rxjs/operators';
 
 export function gatherValues<Value>(observable: Observable<Value>): Value[] {
   const values: Value[] = [];
@@ -7,6 +8,10 @@ export function gatherValues<Value>(observable: Observable<Value>): Value[] {
     values.push(value);
   });
   return values;
+}
+
+export function gatherValuesAsync<Value>(observable: Observable<Value>): Observable<Value[]> {
+  return observable.pipe(reduce<Value>((acc, value) => acc.concat(value), []));
 }
 
 // tslint:disable-next-line: no-any
@@ -67,6 +72,17 @@ export class MockHttp {
     const mockHttp = new MockHttpRequest(req, url);
     this.openRequests.push(mockHttp);
     return mockHttp;
+  }
+
+  public expectMulti(method: string, url: string, count: number): MockHttpRequest[] {
+    const reqs = this.controller.match(this.prefix + url);
+    expect(reqs.length).toBe(count);
+    return reqs.map((req) => {
+      expect(req.request.method).toBe(method);
+      const mockHttp = new MockHttpRequest(req, url);
+      this.openRequests.push(mockHttp);
+      return mockHttp;
+    });
   }
 
   public verify(): void {
