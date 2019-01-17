@@ -37,6 +37,7 @@ export class ActionbarComponent {
   now?: string;
   workflowPercentage = 0;
   totalErrors = 0;
+  hasReport = false;
   totalInDataset = 0;
   totalProcessed = 0;
   currentStatus?: string;
@@ -65,6 +66,7 @@ export class ActionbarComponent {
       this.currentTopology = this.currentPlugin.topologyName;
       const { executionProgress } = this.currentPlugin;
       this.totalErrors = executionProgress.errors;
+      this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
       this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
       this.totalInDataset = executionProgress.expectedRecords;
 

@@ -178,6 +178,10 @@ export class DatasetComponent implements OnInit, OnDestroy {
   loadLastExecution(): void {
     this.workflows.getLastDatasetExecution(this.datasetId).subscribe(
       (execution) => {
+        if (execution) {
+          this.workflows.getReportsForExecution(execution);
+        }
+
         this.lastExecutionData = execution;
         this.lastExecutionIsLoading = false;
 

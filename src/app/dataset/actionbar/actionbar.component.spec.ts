@@ -99,6 +99,7 @@ describe('ActionbarComponent', () => {
   it('should show a report button and open report', (): void => {
     component.lastExecutionData = mockWorkflowExecution;
     component.totalErrors = 10;
+    component.hasReport = true;
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();
 

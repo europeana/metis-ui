@@ -11,7 +11,6 @@ import {
   TopologyName,
   WorkflowExecution,
 } from '../../_models';
-import { WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-lastexecution',
@@ -19,8 +18,6 @@ import { WorkflowService } from '../../_services';
   styleUrls: ['./lastexecution.component.scss'],
 })
 export class LastExecutionComponent {
-  constructor(private workflows: WorkflowService) {}
-
   @Input() datasetId: string;
 
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
@@ -32,8 +29,6 @@ export class LastExecutionComponent {
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
     if (value) {
-      this.workflows.getReportsForExecution(value);
-
       if (isWorkflowCompleted(value)) {
         this.currentPlugin = undefined;
       } else {
