@@ -77,7 +77,12 @@
           ></codemirror>
         </div>
         <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
-        <a [href]="downloadUrl(sample)" download="sample{{ sample.ecloudId }}.xml">download</a>
+        <a
+          [href]="downloadUrl(sample)"
+          class="download-link smaller"
+          download="sample{{ sample.ecloudId }}.xml"
+          ><span class="svg-icon-download"></span
+        ></a>
       </div>
     </div>
   </div>
