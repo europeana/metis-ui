@@ -50,12 +50,9 @@
   .view-sample-editor {
     background: $white;
     display: inline-block;
+    position: relative;
     text-align: right;
     width: 70%;
-
-    a {
-      margin-right: 1rem;
-    }
   }
 
   .view-sample-editor-codemirror {
@@ -113,7 +110,7 @@
     background: $eu-jade;
     border: 1px solid $eu-jade;
     font-size: $font-size-slightly-smaller;
-    margin: 0.5rem 1rem 1rem 0;
+    margin: 0.5rem 1rem 0.5rem 0.5rem;
 
     &:hover,
     &.active {
@@ -126,5 +123,26 @@
       background: $eu-jade;
       color: $white;
     }
+  }
+}
+
+.preview-controls {
+  display: flex;
+
+  .preview-controls-left,
+  .preview-controls-right {
+    align-items: center;
+    display: flex;
+    width: 50%;
+  }
+
+  .preview-controls-left {
+    border-right: 7px solid #ddd;
+    justify-content: left;
+  }
+
+  .preview-controls-right {
+    border-left: 3px solid #ddd;
+    justify-content: space-between;
   }
 }
