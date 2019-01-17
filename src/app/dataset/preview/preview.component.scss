@@ -129,10 +129,21 @@
 .preview-controls {
   display: flex;
 
-  > div {
+  .preview-controls-left,
+  .preview-controls-right{
     align-items: center;
-    display: flex;
-    justify-content: right;
-    width: 50%;
+    display:     flex;
+    width:       50%;
   }
+
+  .preview-controls-left{
+    border-right:    7px solid #ddd;
+    justify-content: left;
+  }
+
+  .preview-controls-right{
+    border-left:     3px solid #ddd;
+    justify-content: space-between;
+  }
+
 }
