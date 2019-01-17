@@ -15,6 +15,7 @@ import { OngoingexecutionsComponent } from '.';
 describe('OngoingexecutionsComponent', () => {
   let component: OngoingexecutionsComponent;
   let fixture: ComponentFixture<OngoingexecutionsComponent>;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -30,6 +31,7 @@ describe('OngoingexecutionsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OngoingexecutionsComponent);
     component = fixture.componentInstance;
+    workflows = TestBed.get(WorkflowService);
   });
 
   it('should create', () => {
@@ -48,5 +50,17 @@ describe('OngoingexecutionsComponent', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
+  });
+
+  it('should cancel a workflow', () => {
+    spyOn(workflows, 'promptCancelThisWorkflow');
+    component.cancelWorkflow('');
+    expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
+    component.cancelWorkflow('10');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('10');
+  });
+
+  it('should have a tracking function', () => {
+    expect(component.byId(10, mockWorkflowExecution)).toBe('253453453');
   });
 });

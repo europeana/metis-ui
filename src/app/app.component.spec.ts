@@ -2,7 +2,6 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
 
 import { AppComponent } from '.';
 import {
@@ -77,7 +76,7 @@ describe('AppComponent', () => {
   it('should cancel a workflow', () => {
     app.showWrapper = true;
     app.currentWorkflowId = '16';
-    spyOn(workflows, 'cancelThisWorkflow').and.returnValue(of({}));
+    spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
     app.cancelWorkflow();
     expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');
     expect(app.showWrapper).toBe(false);

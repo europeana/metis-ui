@@ -1,5 +1,6 @@
 export * from './beautifyxml.pipe';
 export * from './cache';
+export * from './calcprogress';
 export * from './copycontent';
 export * from './harvest.validator';
 export * from './match-password-validator';

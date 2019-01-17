@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { copyExecutionAndTaskId } from '../../_helpers';
+import { calcProgress, copyExecutionAndTaskId } from '../../_helpers';
+
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -33,6 +34,10 @@ export class OngoingexecutionsComponent implements OnInit {
 
   showLog(workflow: WorkflowExecution): void {
     this.setShowPluginLog.emit(getCurrentPlugin(workflow));
+  }
+
+  calcProgress(ongoing: WorkflowExecution): number {
+    return calcProgress(ongoing);
   }
 
   copyInformation(type: string, id1: string, id2: string): void {
