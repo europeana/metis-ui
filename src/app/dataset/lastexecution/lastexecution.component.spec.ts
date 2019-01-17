@@ -2,8 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { createMockPipe, mockWorkflowExecutionResults, MockWorkflowService } from '../../_mocked';
-import { WorkflowService } from '../../_services';
+import { createMockPipe, mockWorkflowExecutionResults } from '../../_mocked';
 
 import { LastExecutionComponent } from '.';
 
@@ -18,7 +17,6 @@ describe('LastExecutionComponent', () => {
         createMockPipe('translate'),
         createMockPipe('renameWorkflow'),
       ],
-      providers: [{ provide: WorkflowService, useClass: MockWorkflowService }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
