@@ -18,6 +18,11 @@ import {
 import { ErrorService, WorkflowService } from '../../_services';
 import { PreviewFilters } from '../dataset.component';
 
+interface IWorkflowOrPluginExecution {
+  execution: WorkflowExecution;
+  pluginExecution?: PluginExecution;
+}
+
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
@@ -37,7 +42,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   notification?: Notification;
   currentPage = 0;
-  allExecutions: Array<WorkflowExecution | PluginExecution> = [];
+  allExecutions: Array<IWorkflowOrPluginExecution> = [];
   hasMore = false;
   subscription: Subscription;
   report?: Report;
@@ -75,10 +80,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
             this.workflows.getReportsForExecution(execution);
             execution.metisPlugins.reverse();
 
-            this.allExecutions.push(execution);
+            this.allExecutions.push({ execution });
             execution.metisPlugins.forEach((pluginExecution) => {
-              this.allExecutions.push(pluginExecution);
-              pluginExecution.belongsToWorkflow = execution;
+              this.allExecutions.push({ execution, pluginExecution });
             });
           });
 
@@ -106,16 +110,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.contentCopied = true;
   }
 
-  byId(_: number, item: WorkflowExecution | PluginExecution): string {
-    return item.id;
+  byId(_: number, item: IWorkflowOrPluginExecution): string {
+    return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
   }
 
   hasPreview(plugin: PluginExecution): boolean {
     return plugin.executionProgress.processedRecords > plugin.executionProgress.errors;
   }
 
-  goToPreview(plugin: PluginExecution): void {
-    this.setPreviewFilters.emit({ execution: plugin.belongsToWorkflow, plugin: plugin.pluginType });
+  goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
+    this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 }
