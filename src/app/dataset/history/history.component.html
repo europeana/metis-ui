@@ -74,6 +74,7 @@
         >
           {{ 'report' | translate }}
         </a>
+        <a *ngIf="hasPreview(ex)" class="table-btn" (click)="goToPreview(ex)">XML</a>
       </td>
     </tr>
   </tbody>

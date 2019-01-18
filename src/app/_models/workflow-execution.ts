@@ -67,6 +67,7 @@ export interface PluginExecution {
   topologyName: TopologyName;
 
   hasReport?: boolean;
+  belongsToWorkflow?: WorkflowExecution;
 }
 
 export enum WorkflowStatus {

@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
@@ -15,6 +16,7 @@ import {
   WorkflowExecution,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+import { PreviewFilters } from '../dataset.component';
 
 @Component({
   selector: 'app-history',
@@ -22,11 +24,16 @@ import { ErrorService, WorkflowService } from '../../_services';
   styleUrls: ['./history.component.scss'],
 })
 export class HistoryComponent implements OnInit, OnDestroy {
-  constructor(private workflows: WorkflowService, private errors: ErrorService) {}
+  constructor(
+    private workflows: WorkflowService,
+    private errors: ErrorService,
+    private router: Router,
+  ) {}
 
   @Input() datasetData: Dataset;
 
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
+  @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
 
   notification?: Notification;
   currentPage = 0;
@@ -71,6 +78,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
             this.allExecutions.push(execution);
             execution.metisPlugins.forEach((pluginExecution) => {
               this.allExecutions.push(pluginExecution);
+              pluginExecution.belongsToWorkflow = execution;
             });
           });
 
@@ -100,5 +108,14 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   byId(_: number, item: WorkflowExecution | PluginExecution): string {
     return item.id;
+  }
+
+  hasPreview(plugin: PluginExecution): boolean {
+    return plugin.executionProgress.processedRecords > plugin.executionProgress.errors;
+  }
+
+  goToPreview(plugin: PluginExecution): void {
+    this.setPreviewFilters.emit({ execution: plugin.belongsToWorkflow, plugin: plugin.pluginType });
+    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 }
