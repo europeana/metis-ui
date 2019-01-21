@@ -1,20 +1,2 @@
 @import '../../assets/sass/scss/generic/variables';
 @import '../../assets/sass/pandora/settings/metis-variables';
-
-.dashboard-wrapper {
-  @media (max-width: $bp-xxl) {
-    .metis-dashboard {
-      display: inline;
-
-      .metis-dashboard-left,
-      .metis-dashboard-right {
-        margin: 0;
-        width: 100%;
-      }
-
-      .metis-dashboard-right {
-        clear: both;
-      }
-    }
-  }
-}

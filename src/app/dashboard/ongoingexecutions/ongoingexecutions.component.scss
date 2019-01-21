@@ -2,8 +2,6 @@
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
 .ongoing-executions {
-  display: block;
-  float: right;
   font-size: 0.75rem;
   width: 100%;
 
@@ -12,8 +10,7 @@
   }
 
   @media (max-width: $bp-xxl) {
-    margin-left: 1rem;
-    width: 63%;
+    margin-bottom: 2rem;
   }
 
   h3 {
@@ -25,9 +22,13 @@
     background: $white;
     border-bottom: 1px solid $offwhite;
     box-sizing: border-box;
-    display: inline-flex;
     padding: 0.75rem;
+    display: block;
     width: 100%;
+
+    @media (min-width: $bp-med) {
+      display: inline-flex;
+    }
   }
 
   .status {
@@ -106,12 +107,5 @@
     padding: 0.5rem 1rem;
     text-align: center;
     width: 100%;
-  }
-}
-
-@media (max-width: $bp-xxl) {
-  .ongoing-executions {
-    margin-left: 1rem;
-    margin-top: -2.1rem;
   }
 }

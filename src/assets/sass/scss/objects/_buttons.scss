@@ -45,9 +45,8 @@
 .btn.btn-right {
   border: solid 1px $white;
   color: $gray-light;
-  float: left;
   font-weight: 500;
-  padding: 1em 2.4em;
+  padding: 0.5em;
   text-transform: none;
 
   &:hover {
@@ -62,17 +61,23 @@
       transition: opacity 0.4s linear;
     }
   }
+
+  @media (min-width: $bp-small) {
+    padding: 1em 2.4em;
+  }
 }
 
-.btn.btn-left::after {
-  background-color: #ccc;
-  content: '';
-  display: block;
-  height: 2.6rem;
-  left: 101%;
-  position: absolute;
-  top: 3px;
-  width: 1px;
+@media (min-width: $bp-small) {
+  .btn.btn-left::after {
+    background-color: #ccc;
+    content: '';
+    display: block;
+    height: 2.6rem;
+    left: 101%;
+    position: absolute;
+    top: 3px;
+    width: 1px;
+  }
 }
 
 .btn.cta,
@@ -220,12 +225,8 @@
       padding-right: 10px;
     }
     .right-btn-under-text {
-      bottom: 0;
+      display: block;
       font-size: 0.7em;
-      left: 0;
-      margin: auto;
-      position: absolute;
-      right: 0;
     }
   }
 }
