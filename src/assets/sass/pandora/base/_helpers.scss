@@ -13,6 +13,10 @@ body {
   margin-right: 0;
   width: 100%;
 
+  &.btns-set-right {
+    justify-content: flex-end;
+  }
+
   .btn-padding {
     align-items: start;
     display: flex;
