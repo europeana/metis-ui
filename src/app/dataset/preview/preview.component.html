@@ -77,12 +77,6 @@
           ></codemirror>
         </div>
         <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
-        <a
-          [href]="downloadUrl(sample)"
-          class="download-link smaller"
-          download="sample{{ sample.ecloudId }}.xml"
-          ><span class="svg-icon-download"></span
-        ></a>
       </div>
     </div>
   </div>
@@ -154,25 +148,8 @@
         </div>
 
         <div class="preview-controls">
-          <div class="preview-controls-left">
-            <a
-              [href]="downloadUrl(sample)"
-              class="download-link"
-              download="sample{{ sample.ecloudId }}.xml"
-              title="download original"
-            >
-              <span class="svg-icon-download"></span>
-            </a>
-          </div>
+          <div class="preview-controls-left"></div>
           <div class="preview-controls-right">
-            <a
-              [href]="downloadUrl(allTransformedSamples[i], 'transformed')"
-              class="download-link"
-              download="sample{{ allTransformedSamples[i].ecloudId }}.xml"
-              title="download transformed"
-            >
-              <span class="svg-icon-download"></span>
-            </a>
             <button (click)="gotoMapping()">{{ 'gotomapping' | translate }}</button>
           </div>
         </div>

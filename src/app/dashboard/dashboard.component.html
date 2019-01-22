@@ -37,11 +37,6 @@
         [hasMore]="finishedHasMore"
         (nextPage)="getNextPage()"
       ></app-executions>
-
-      <app-datasets
-        *ngIf="favoriteDatasets && favoriteDatasets.length"
-        [datasets]="favoriteDatasets"
-      ></app-datasets>
     </div>
   </div>
 </div>
