@@ -126,6 +126,10 @@
   }
 }
 
+.load-more-btn {
+  margin-right: 1rem;
+}
+
 .preview-controls {
   display: flex;
 
@@ -137,12 +141,10 @@
   }
 
   .preview-controls-left {
-    border-right: 7px solid #ddd;
     justify-content: flex-start;
   }
 
   .preview-controls-right {
-    border-left: 3px solid #ddd;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
 }
