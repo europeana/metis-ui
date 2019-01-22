@@ -1,4 +1,4 @@
-.nav-global{
+.nav-global {
   display: table;
   float: right;
   z-index: 20;
@@ -16,47 +16,45 @@
   }
 
   > span,
-    .link-text{
+  .link-text {
     font-weight: 900;
     text-transform: uppercase;
   }
-
 }
 
 // col override
 
-.settings-menu.sm.as-cols{
-  .menu-sublevel{
+.settings-menu.sm.as-cols {
+  .menu-sublevel {
     min-width: 25em;
-    li{
+    li {
       float: left;
       width: 33.3%;
     }
   }
 }
 
-
 // OFF CANVAS MENUS
-.globallink{
+.globallink {
   margin-bottom: $space-half;
 
-  a{
+  a {
     color: $textcolour_body;
   }
 }
-.globallink-title{
+.globallink-title {
   @include fontSize(16px);
   color: $black;
   margin-bottom: $space-quarter;
 }
-.globallink-desc{
+.globallink-desc {
   @include fontSize(12px);
 }
 
 .pusher,
-.nav-global{
-  -webkit-transition: -webkit-transform .3s;
-  transition: transform .3s;
+.nav-global {
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
 
   .is-open-menu-right & {
     -webkit-transform: translate3d(-$menuwidth_right, 0, 0);
@@ -93,8 +91,8 @@
   top: 0;
   -webkit-transform: translate3d(0, -3em, 0);
   transform: translate3d(0, -3em, 0);
-  -webkit-transition: max-height .3s, -webkit-transform .3s;
-  transition: max-height .3s, transform .3s;
+  -webkit-transition: max-height 0.3s, -webkit-transform 0.3s;
+  transition: max-height 0.3s, transform 0.3s;
   width: 100%;
   z-index: 200;
 
@@ -106,25 +104,24 @@
 }
 
 @media all and (min-width: $bp-med) {
-
   .menu-right,
-  .nav-toggle-menu{
+  .nav-toggle-menu {
     display: none;
   }
 
   .menu-top,
-  .nav-toggle-sites{
+  .nav-toggle-sites {
     display: block;
   }
 
   .nav-toggle-search,
-  .nav-toggle-settings{
+  .nav-toggle-settings {
     display: table-cell;
   }
 }
 
 @media all and (min-width: $bp-large) {
-  .nav-toggle-settings .link-text{
+  .nav-toggle-settings .link-text {
     display: inline;
   }
 }

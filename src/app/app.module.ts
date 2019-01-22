@@ -1,56 +1,50 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-import { HttpClientModule,
-         HTTP_INTERCEPTORS } from '@angular/common/http';
-
-import { AppRoutingModule } from './routing/app-routing.module';
-
-import { AuthUserGuard,
-         AuthVisitorGuard } from './_guards';
-import { AuthenticationService,
-         DatasetsService,
-         TokenInterceptor,
-         RedirectPreviousUrl, 
-         CountriesService,          
-         SettingsService, 
-         WorkflowService,
-         ErrorService,
-         TranslateService } from './_services';
-
-import { AppComponent } from './app.component';
-import { RegisterComponent } from './register';
-import { LoginComponent } from './login';
-import { ProfileComponent } from './profile';
-import { HeaderComponent,
-         PasswordCheckComponent } from './shared';
-import { HomeComponent } from './home';
-import { DatasetComponent,
-         DatasetformComponent,
-         DatasetDirective,
-         GeneralinfoComponent,
-         DatasetlogComponent,
-         HistoryComponent,
-         ActionbarComponent,
-         MappingComponent,
-         PreviewComponent,
-         WorkflowComponent } from './dataset';
-import { DashboardComponent,
-         DashboardactionsComponent } from './dashboard';
-import { PageNotFoundComponent } from './page-not-found';
-
-import { ExecutionsComponent } from './dashboard/executions/executions.component';
-import { OngoingexecutionsComponent } from './dashboard/ongoingexecutions/ongoingexecutions.component';
-import { ReportComponent } from './dataset/report/report.component';
-
+import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
-import { XmlPipe }   from './_helpers';
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe } from './_translate';
-import { GeneralactionbarComponent } from './dataset/generalactionbar/generalactionbar.component';
-import { ExecutiontableComponent } from './dashboard/executions/executiontable/executiontable.component';
+import { XmlPipe } from './_helpers';
+import { TokenInterceptor } from './_services';
+import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
+import { AppComponent } from './app.component';
+import {
+  DashboardactionsComponent,
+  DashboardComponent,
+  DatasetsComponent,
+  ExecutionsComponent,
+  ExecutiontableComponent,
+  OngoingexecutionsComponent,
+} from './dashboard';
+import {
+  ActionbarComponent,
+  DatasetComponent,
+  DatasetformComponent,
+  DatasetlogComponent,
+  GeneralinfoComponent,
+  HistoryComponent,
+  LastExecutionComponent,
+  MappingComponent,
+  NewDatasetComponent,
+  PreviewComponent,
+  ReportComponent,
+  WorkflowComponent,
+} from './dataset';
+import { HomeComponent } from './home';
+import { LoadAnimationComponent } from './load-animation';
+import { LoginComponent } from './login';
+import { PageNotFoundComponent } from './page-not-found';
+import { ProfileComponent } from './profile';
+import { RegisterComponent } from './register';
+import { AppRoutingModule } from './routing';
+import {
+  HeaderComponent,
+  LoadingButtonComponent,
+  NotificationComponent,
+  PasswordCheckComponent,
+  TextWithLinksComponent,
+} from './shared';
 
 @NgModule({
   declarations: [
@@ -58,17 +52,20 @@ import { ExecutiontableComponent } from './dashboard/executions/executiontable/e
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
+    LoadAnimationComponent,
     PageNotFoundComponent,
     HeaderComponent,
     HomeComponent,
     DatasetComponent,
+    NewDatasetComponent,
     DashboardComponent,
     DatasetformComponent,
-    DatasetDirective,
     PasswordCheckComponent,
+    TextWithLinksComponent,
     GeneralinfoComponent,
     DashboardactionsComponent,
     ActionbarComponent,
+    LastExecutionComponent,
     HistoryComponent,
     ActionbarComponent,
     WorkflowComponent,
@@ -81,38 +78,35 @@ import { ExecutiontableComponent } from './dashboard/executions/executiontable/e
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe,
-    GeneralactionbarComponent,
-    ExecutiontableComponent
+    ExecutiontableComponent,
+    NotificationComponent,
+    LoadingButtonComponent,
+    DatasetsComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule,    
+    ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
     CodemirrorModule,
-    ClickOutsideModule 
+    ClickOutsideModule,
   ],
-  entryComponents: [ DatasetformComponent, HistoryComponent, MappingComponent, PreviewComponent, WorkflowComponent ],
+  entryComponents: [
+    DatasetformComponent,
+    HistoryComponent,
+    MappingComponent,
+    PreviewComponent,
+    WorkflowComponent,
+  ],
   providers: [
-    AuthVisitorGuard,
-    AuthUserGuard,
-    AuthenticationService,
-    DatasetsService,
-    RedirectPreviousUrl,
-    CountriesService,    
-    SettingsService,
-    WorkflowService,
-    ErrorService,
-    TRANSLATION_PROVIDERS, 
-    TranslateService,
+    TRANSLATION_PROVIDERS,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
-      multi: true
-    }    
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-
-export class AppModule { }
+export class AppModule {}

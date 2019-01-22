@@ -11,7 +11,6 @@
   }
 
   dl {
-
     border-bottom: 1px solid $offwhite;
     margin-bottom: 0;
     overflow: hidden;
@@ -21,20 +20,20 @@
       border-top: 1px solid $offwhite;
       float: left;
       font-size: $font-size-slightly-smaller;
-      padding: .75rem 0;
+      padding: 0.75rem 0;
       width: 50%;
     }
 
     dt {
       clear: left;
       color: $gray-light;
-      font-size: .75rem;
+      font-size: 0.75rem;
       font-weight: bold;
     }
 
     .extra-info {
       background: $eu-jade;
-      border-radius: .7rem;
+      border-radius: 0.7rem;
       color: $white;
       display: inline-block;
       font-weight: normal;
@@ -43,7 +42,6 @@
       text-align: center;
       width: 1rem;
     }
-
   }
 
   .dataset-btns {

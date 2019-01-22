@@ -1,15 +1,19 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import { RedirectPreviousUrl } from './redirect-previous-url.service';
+import { RedirectPreviousUrl } from '.';
 
 describe('RedirectPreviousUrl', () => {
+  let service: RedirectPreviousUrl;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RedirectPreviousUrl]
+      providers: [RedirectPreviousUrl],
     });
+    service = TestBed.get(RedirectPreviousUrl);
   });
 
-  it('should be created', inject([RedirectPreviousUrl], (service: RedirectPreviousUrl) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should store a url', () => {
+    service.set('example.com');
+    expect(service.get()).toBe('example.com');
+  });
 });

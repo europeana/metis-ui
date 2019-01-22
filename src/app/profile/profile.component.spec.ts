@@ -1,15 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
-import { TranslateService, AuthenticationService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
-import { MockAuthenticationService, currentUser } from '../_mocked';
+import { createMockPipe, MockAuthenticationService, MockErrorService } from '../_mocked';
+import { AuthenticationService, ErrorService } from '../_services';
 
-import { ReactiveFormsModule } from '@angular/forms';
-import { ProfileComponent } from './profile.component';
+import { ProfileComponent } from '.';
 
 describe('ProfileComponent', () => {
   let component: ProfileComponent;
@@ -17,22 +14,14 @@ describe('ProfileComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
-      declarations: [ ProfileComponent, TranslatePipe ],
-      providers: [ 
-        ErrorService,
-        RedirectPreviousUrl,
-        {provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-      }],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      imports: [ReactiveFormsModule],
+      declarations: [ProfileComponent, createMockPipe('translate')],
+      providers: [
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: ErrorService, useClass: MockErrorService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -48,12 +37,12 @@ describe('ProfileComponent', () => {
   it('should reload the profile form', () => {
     component.editMode = false;
     fixture.detectChanges();
-    
+
     const reload = fixture.debugElement.query(By.css('#refresh-btn'));
     reload.triggerEventHandler('click', null);
     fixture.detectChanges();
-    
-    expect(component.successMessage).not.toBe('');
+
+    expect(component.notification!.content).toBe('Your profile has been updated');
   });
 
   it('should submit the form', () => {
@@ -61,10 +50,9 @@ describe('ProfileComponent', () => {
     component.toggleEditMode();
     fixture.detectChanges();
 
-    const submit = fixture.debugElement.query(By.css('.submit'));
+    const submit = fixture.debugElement.query(By.css('app-loading-button'));
     submit.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(component.successMessage).not.toBe('');
+    expect(component.notification!.content).toBe('Update password successful!');
   });
-
 });

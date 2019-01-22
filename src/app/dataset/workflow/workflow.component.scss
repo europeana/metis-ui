@@ -1,19 +1,14 @@
-@import '../../assets/sass/scss/generic/variables';
-@import '../../assets/sass/pandora/settings/metis-variables';
-
-.messages {
-  margin-bottom: 2rem;
-}
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
 
 .form-fields {
-
   padding-bottom: 1.5rem;
   padding-top: 1.5rem;
 
   input:focus {
     border-color: $eu-jade;
-    -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, .3);
-    box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, .3);
+    -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+    box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
   }
 
   > label {
@@ -28,19 +23,6 @@
     label {
       font-weight: normal;
     }
-
-    .connections {
-      cursor: pointer;
-    }
-
-    .connections::after {
-      content: '\25bc';
-      display: inline-block;
-      font-size: .5rem;
-      height: 1rem;
-      text-align: center;
-      width: 1rem;
-    }
   }
 
   .form-group.form-group-checkbox {
@@ -49,27 +31,6 @@
     label {
       max-width: 10rem;
     }
-  }
-
-  .form-group-connections > div {
-    display: inline-block;
-    font-size: $font-size-slightly-smaller;
-    margin: 0 .1rem 1rem;
-    width: 65%;
-  }
-
-  .form-group-connections > div:nth-child(2) {
-    width: 25%;
-  }
-
-  .form-group-connections:first-child > div {
-    margin-top: 1rem;
-  }
-
-  .form-group-connections > a {
-    display: inline-block;
-    height: 1.2rem;
-    margin: 0 .5rem;
   }
 
   .svg-icon-plus::before {
@@ -81,12 +42,12 @@
   }
 
   .form-group-radios label {
-    padding: .5rem 2rem .5rem 0;
+    padding: 0.5rem 2rem 0.5rem 0;
   }
 
   .form-group label + input[type='checkbox'] {
     flex: initial;
- }
+  }
 }
 
 .form-fields.inactive {
@@ -98,10 +59,22 @@
     border-color: $gray-lighter;
     color: $gray-lighter;
   }
+
+  &:hover {
+    background-color: white;
+  }
 }
 
 .form-fields.disabled {
   background-color: $gray-almost-lightest;
+
+  &:hover {
+    background-color: $gray-almost-lightest;
+  }
+
+  .plugin {
+    cursor: auto;
+  }
 }
 
 .plugin {
@@ -111,6 +84,7 @@
   font-size: 1.5rem;
   padding-right: 2rem;
   position: relative;
+  cursor: pointer;
 
   input {
     display: none;
@@ -132,7 +106,6 @@
 }
 
 .form-fields.inactive .plugin {
-
   color: $gray-lighter;
 
   &::after {
@@ -172,8 +145,8 @@
     padding: 1rem 1rem;
 
     li {
-      font-size: .8rem;
-      padding: 0 .2rem;
+      font-size: 0.8rem;
+      padding: 0 0.2rem;
     }
 
     li::before {
@@ -191,10 +164,10 @@
 
     a:hover::after {
       background: $eu-jade;
-      bottom: -.3rem;
+      bottom: -0.3rem;
       content: '';
       display: block;
-      height: .2rem;
+      height: 0.2rem;
       left: 0;
       position: absolute;
       width: 100%;
@@ -203,7 +176,5 @@
     .inactive a {
       color: $gray-lighter;
     }
-
   }
-
 }

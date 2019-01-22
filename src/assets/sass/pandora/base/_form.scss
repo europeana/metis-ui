@@ -4,21 +4,22 @@
 
   .error-message,
   .success-message {
-    background-color: $eu-jade;
     color: $white;
     font-size: $font-size-slightly-smaller;
     line-height: 1.25rem;
-    margin-bottom: .6rem;
-    padding: .5rem 1.2rem;
+    margin-bottom: 0.6rem;
+    padding: 0.5rem 1.2rem;
 
     i {
-      padding-right: .6rem;
+      padding-right: 0.6rem;
     }
   }
 
   .error-message {
     background-color: $eu-red;
-    padding-left: 2.2rem;
+  }
+  .success-message {
+    background-color: $eu-jade;
   }
 }
 
@@ -47,8 +48,8 @@
   }
 
   .form-fields-container {
-    -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, .1);
-    box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, .1);
+    -webkit-box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
+    box-shadow: 1px 1px 10px 1px rgba(77, 77, 77, 0.1);
   }
 }
 
@@ -62,7 +63,7 @@
     align-items: flex-start;
     color: $white;
     margin-bottom: 0;
-    padding: .4rem 1.2rem;
+    padding: 0.4rem 1.2rem;
 
     legend {
       display: none;
@@ -87,8 +88,8 @@
       border-color: $eu-red;
     }
 
-    input[type="checkbox"],
-    input[type="radio"] {
+    input[type='checkbox'],
+    input[type='radio'] {
       box-shadow: none;
       display: inline;
     }
@@ -98,6 +99,8 @@
       border: 1px solid $gray-light;
       color: $gray-light;
       height: 3rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
 
     select option {
@@ -109,8 +112,9 @@
     }
 
     select:disabled {
-      border-color: $opacity-gray-light;
-      color: $opacity-gray-light;
+      background: transparent;
+      border-color: $opacity-gray-very-light;
+      color: $gray-light;
     }
   }
 
@@ -126,32 +130,25 @@
       border-radius: 2px;
       color: $white;
       display: inline-block;
-      font-size: .875em;
+      font-size: 0.875em;
       font-weight: bold;
-      margin: 0 .6rem;
-      padding: .5rem 1rem;
-      text-transform: none;
-      transition: all .5s ease;
-    }
+      margin: 0 0.6rem;
+      padding: 0.8rem 3rem;
+      text-transform: uppercase;
 
-    button:hover,
-    button:focus {
-      background: transparent;
-      border-color: $eu-jade;
-      color: $eu-jade;
+      &:disabled {
+        background: lighten($eu-jade, 30%);
+        cursor: not-allowed;
+      }
     }
 
     button.reset-btn {
       background-color: $white;
-      color: $gray-dark;
-    }
+      color: $eu-jade;
 
-    button:disabled,
-    button:disabled:hover,
-    button:disabled:focus {
-      background: $black;
-      border-color: $black;
-      color: $white;
+      &:disabled {
+        color: lighten($eu-jade, 30%);
+      }
     }
 
     .svg-icon-spin-inbutton {
@@ -273,21 +270,25 @@
         &::placeholder {
           color: $eu-blue;
         }
+        &:focus {
+          border-color: $eu-jade;
+        }
       }
 
       input:not([type='checkbox']),
       textarea {
         box-shadow: none;
         color: $gray-light;
-        padding: .75rem;
+        padding: 0.75rem;
 
         &.icon-padding {
           padding-right: 50px;
         }
 
         &:disabled {
-          border-color: $opacity-gray-light;
-          color: $opacity-gray-light;
+          background: transparent;
+          border-color: $opacity-gray-very-light;
+          color: $gray-light;
 
           .svg-icon-search {
             display: none;
@@ -308,12 +309,13 @@
         height: 7vh;
         justify-content: flex-end;
         margin-bottom: 0;
+        flex-wrap: nowrap;
 
         button {
           display: inline-block;
           margin: 0;
           margin-left: 1rem;
-          padding: .8rem 5rem;
+          padding: 0.8rem 5rem;
         }
       }
     }

@@ -1,0 +1,15 @@
+.tabs {
+  li {
+    &.disabled:hover {
+      background: transparent;
+      color: inherit;
+    }
+    a {
+      cursor: auto;
+    }
+  }
+}
+
+app-datasetform {
+  width: 100%;
+}

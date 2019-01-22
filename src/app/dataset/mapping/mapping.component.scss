@@ -1,10 +1,10 @@
-@import '../../assets/sass/scss/generic/variables';
-@import '../../assets/sass/pandora/settings/metis-variables';
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
 
 .success-message .svg-icon-spin-inbutton {
   padding-left: 0;
   &::after {
-    top: -.1rem;
+    top: -0.1rem;
   }
 }
 
@@ -65,7 +65,7 @@
   background: $eu-jade;
   border: 1px solid $eu-jade;
   margin-left: 1rem;
-  transition: background-color .5s ease;
+  transition: background-color 0.5s ease;
 
   &:hover,
   &.active {
@@ -79,5 +79,4 @@
     box-shadow: none;
     color: $white;
   }
-
 }

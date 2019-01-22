@@ -1,46 +1,88 @@
-import { Component, OnInit } from '@angular/core';
-import { WorkflowService, TranslateService } from '../../_services';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+
+import {
+  errorNotification,
+  httpErrorNotification,
+  Notification,
+  ReportRequest,
+  successNotification,
+} from '../../_models';
+import { ErrorService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-report',
-  templateUrl: './report.component.html'
+  templateUrl: './report.component.html',
+  styleUrls: ['./report.component.scss'],
 })
-export class ReportComponent implements OnInit {
+export class ReportComponent {
+  constructor(private workflows: WorkflowService, private errorService: ErrorService) {}
 
-  constructor(private workflows: WorkflowService,
-    private translate: TranslateService) { }
+  isVisible: boolean;
+  isLoading: boolean;
+  notification?: Notification;
 
-  report;
-  reportKeys;
+  // tslint:disable-next-line: no-any
+  errors: any;
 
-  /** ngOnInit
-  /* init this component
-  /* if report not empty, create a report object
-  /* set translation language
-  */  
-  ngOnInit() {
-    if (this.workflows.getCurrentReport()) {
-      this.reportKeys = Object.keys; 
-      this.report = this.workflows.getCurrentReport().errors; 
-    }
+  @ViewChild('errorsRef') errorsRef: ElementRef;
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
+  @Output() closed = new EventEmitter<void>();
+
+  @Input() set reportRequest(request: ReportRequest | undefined) {
+    this.notification = undefined;
+    this.errors = undefined;
+
+    if (request) {
+      this.isVisible = true;
+      this.isLoading = true;
+      this.workflows.getReport(request.taskId, request.topology).subscribe(
+        (report) => {
+          this.isLoading = false;
+          if (report && report.errors && report.errors.length) {
+            this.errors = report.errors;
+          } else {
+            this.errors = [];
+            this.notification = errorNotification('Report is empty.');
+          }
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errorService.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.isLoading = false;
+        },
+      );
+    } else {
+      this.isVisible = false;
+      this.isLoading = false;
     }
   }
 
-  /** closeReport
-  /* set report to empty, to close the repot
-  */  
-  closeReport() {
-  	this.report = undefined;
+  reportKeys(o: Object): string[] {
+    return o ? Object.keys(o) : [];
   }
 
-  /** isObject
-  /* is value 
-  */ 
-  isObject(val) {
+  closeReport(): void {
+    this.closed.emit();
+  }
+
+  copyReport(): void {
+    const element = this.errorsRef.nativeElement;
+
+    window.getSelection().removeAllRanges();
+    const range = document.createRange();
+    range.selectNode(element);
+    window.getSelection().addRange(range);
+
+    document.execCommand('copy');
+
+    window.getSelection().removeAllRanges();
+
+    this.notification = successNotification('The report has been copied');
+  }
+
+  // tslint:disable-next-line: no-any
+  isObject(val: any): boolean {
     return typeof val === 'object';
   }
-
 }

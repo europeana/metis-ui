@@ -1,58 +1,69 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
-
 import { Router } from '@angular/router';
-import { retryWhen, delay, take, flatMap, concat } from 'rxjs/operators';
-import {of as observableOf,  Observable, throwError } from 'rxjs';
+import { concat, Observable, of, throwError } from 'rxjs';
+import { delay, flatMap, retryWhen, take } from 'rxjs/operators';
 
-@Injectable()
+import { RedirectPreviousUrl } from './redirect-previous-url.service';
+
+@Injectable({ providedIn: 'root' })
 export class ErrorService {
+  constructor(private router: Router, private redirectPreviousUrl: RedirectPreviousUrl) {}
 
-  constructor(private router: Router,
-    private RedirectPreviousUrl: RedirectPreviousUrl) { }
-
-  numberOfRetries: number = 5;
-  retryDelay: number = 1000;
+  numberOfRetries = 5;
+  retryDelay = 1000;
 
   /** handleError
   /* default error handler
   /* check for specific error message, and act upon
   /* @param {object} err - details of error
-  */  
-  handleError(err) {
+  */
+  handleError(err: HttpErrorResponse): HttpErrorResponse | false {
     if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
-  		this.expiredToken();
+      this.expiredToken();
       return false;
-  	} else {
-  		return err;
-  	}
+    } else {
+      return err;
+    }
+  }
+
+  private shouldRetry(errorM: HttpErrorResponse): boolean {
+    return (
+      errorM.status === 0 ||
+      errorM.message === 'Http failure response for (unknown url): 0 Unknown Error'
+    );
   }
 
   /** handleRetry
   /* retry http call
   /* check and retry for a specific error
-  */  
-  handleRetry() {
-    return retryWhen(error => {
-      return error.pipe(flatMap((error: any) => {
-        if(error.status  === 0 || error.message  === 'Http failure response for (unknown url): 0 Unknown Error') {
-          return observableOf(error.status).pipe(delay(this.retryDelay))
-        }
-        throw error;
-      })).pipe(take(this.numberOfRetries))
-        .pipe(concat(throwError({ status: 0, error: {errorMessage: 'Retry failed'}})));
-    })
+  */
+  handleRetry<T>(): (o: Observable<T>) => Observable<T> {
+    return retryWhen<T>((error) =>
+      concat(
+        error.pipe(
+          flatMap((errorM: HttpErrorResponse) => {
+            if (this.shouldRetry(errorM)) {
+              return of(true).pipe(delay(this.retryDelay));
+            } else {
+              throw errorM;
+            }
+          }),
+          take(this.numberOfRetries),
+        ),
+        throwError({ status: 0, error: { errorMessage: 'Retry failed' } }),
+      ),
+    );
   }
 
   /** expiredToken
   /* if token expired: remember current url,
   /* logout,
   /* navigato to signin page
-  */ 
-  expiredToken() {
-  	this.RedirectPreviousUrl.set(this.router.url);
+  */
+  expiredToken(): void {
+    this.redirectPreviousUrl.set(this.router.url);
     localStorage.removeItem('currentUser');
-    this.router.navigate(['/signin']);    
+    this.router.navigate(['/signin']);
   }
-
 }

@@ -1,43 +1,40 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl } from '../../../_services';
-import { MockWorkflowService, currentWorkflow, MockAuthenticationService } from '../../../_mocked';
-import { ExecutiontableComponent } from './executiontable.component';
+import {
+  createMockPipe,
+  mockPluginExecution,
+  MockTranslateService,
+  mockWorkflowExecution,
+  MockWorkflowService,
+} from '../../../_mocked';
+import { WorkflowService } from '../../../_services';
+import { TranslateService } from '../../../_translate';
 
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../../_translate';
+import { ExecutiontableComponent } from '.';
 
 describe('ExecutiontableComponent', () => {
   let component: ExecutiontableComponent;
   let fixture: ComponentFixture<ExecutiontableComponent>;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ ExecutiontableComponent, TranslatePipe ],
-      providers: [ 
-        ErrorService,
-        RedirectPreviousUrl,
-        { provide: WorkflowService, useClass: MockWorkflowService },  
-        { provide: AuthenticationService, useClass: MockAuthenticationService }, 
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        }
-       ]
-    })
-    .compileComponents();
+      declarations: [ExecutiontableComponent, createMockPipe('translate')],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
+    workflows = TestBed.get(WorkflowService);
     fixture = TestBed.createComponent(ExecutiontableComponent);
     component = fixture.componentInstance;
-    component.execution = currentWorkflow['results'][0];
-    component.plugin = currentWorkflow['results'][0]['metisPlugins'][0];
+    component.execution = mockWorkflowExecution;
+    component.plugin = mockPluginExecution;
     fixture.detectChanges();
   });
 
@@ -45,16 +42,17 @@ describe('ExecutiontableComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should cancel a workflow', () => {
-    component.cancelWorkflow(1);    
-    fixture.detectChanges();
-    expect(component.successMessage).not.toBe('');
-  });  
-
   it('should copy information', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
   });
-  
+
+  it('should cancel a workflow', () => {
+    spyOn(workflows, 'promptCancelThisWorkflow');
+    component.cancelWorkflow('');
+    expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
+    component.cancelWorkflow('10');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('10');
+  });
 });

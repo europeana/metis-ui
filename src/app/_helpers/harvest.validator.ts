@@ -1,13 +1,13 @@
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 
-export function harvestValidator(control: AbstractControl) {
+export function harvestValidator(control: AbstractControl): ValidationErrors | null {
   if (control.value.indexOf('?') >= 0) {
-    return {'validParameter': true };
+    return { validParameter: true };
   }
 
-  var regex = /(http(s?))\:\/\//g;
+  const regex = /(http(s?))\:\/\//g;
   if (!regex.test(control.value)) {
-    return {'validUrl': true };
+    return { validUrl: true };
   }
   return null;
 }

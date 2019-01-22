@@ -1,22 +1,22 @@
-.h1{
+.h1 {
   @include fontSize(32px);
 }
 
-.h2{
+.h2 {
   @include fontSize(22px);
 }
 
-.h3{
+.h3 {
   @include fontSize(16px);
 }
 
-.h4{
+.h4 {
   @include fontSize(14px);
   font-weight: bold;
   text-transform: uppercase;
 }
 
-.h5{
+.h5 {
   @include fontSize(12px);
   font-weight: bold;
 }

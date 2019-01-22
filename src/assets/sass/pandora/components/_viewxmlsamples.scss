@@ -27,10 +27,6 @@
     display: inline-block;
     text-align: right;
     width: 70%;
-
-    a {
-      margin-right: 1rem;
-    }
   }
 
   &.view-sample-expanded {
@@ -67,8 +63,17 @@
           height: 100%;
           padding: 0 1.5rem;
         }
-
       }
     }
+  }
+}
+
+.cm-string {
+  padding: 5px 0;
+
+  &.link-active {
+    background-color: rgba(180, 220, 200, 0.3);
+    text-decoration: underline;
+    cursor: pointer;
   }
 }

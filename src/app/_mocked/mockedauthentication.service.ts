@@ -1,44 +1,53 @@
+import { Observable, of as observableOf } from 'rxjs';
 
-import {of as observableOf,  Observable } from 'rxjs';
-import { AuthenticationService } from '../_services';
+import { AccountRole, User } from '../_models';
 
-export const currentUser = {
-  accountRole: 'user',
+export const mockUser: User = {
+  accountRole: AccountRole.EUROPEANA_DATA_OFFICER,
   country: 'Netherlands',
-  createdDate: '',
+  createdDate: 453256554364,
   email: 'mocked@mocked.com',
   firstName: 'mocked',
   lastName: 'test',
-  metisUserAccessToken: {},
+  metisUserAccessToken: { accessToken: 'ffsafre' },
   metisUserFlag: true,
   networkMember: true,
-  organizationId: 1,
+  organizationId: '1',
   organizationName: 'organization',
-  updatedDate: '',
-  userId: 1 
-}; 
+  updatedDate: 546466545364,
+  userId: '1',
+};
 
-export class MockAuthenticationService extends AuthenticationService {
+export class MockAuthenticationService {
+  currentUser = mockUser;
 
-  currentUser = currentUser;
-
-  validatedUser() {    
+  validatedUser(): boolean {
     return true;
   }
 
-  reloadCurrentUser() {
+  reloadCurrentUser(): Observable<boolean> {
     return observableOf(true);
   }
 
-  updatePassword() {
+  updatePassword(): Observable<boolean> {
     return observableOf(true);
   }
 
-  login() {
+  login(): Observable<boolean> {
     return observableOf(true);
   }
 
-  register() {
+  logout(): void {}
+
+  register(): Observable<boolean> {
     return observableOf(true);
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUser;
+  }
+
+  getToken(): string | null {
+    return this.currentUser.metisUserAccessToken.accessToken;
   }
 }

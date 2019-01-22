@@ -1,16 +1,13 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { RegisterComponent } from './register.component';
-
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-
-import { AuthenticationService, TranslateService, RedirectPreviousUrl, ErrorService } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { MockAuthenticationService, currentUser } from '../_mocked';
+import { createMockPipe, MockAuthenticationService, MockTranslateService } from '../_mocked';
+import { AuthenticationService } from '../_services';
+import { TranslateService } from '../_translate';
+
+import { RegisterComponent } from '.';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -19,22 +16,14 @@ describe('RegisterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule ],
-      declarations: [ RegisterComponent, TranslatePipe ],
-      providers: [ 
-        RedirectPreviousUrl, 
-        ErrorService,
-        {provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-      }],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-      .compileComponents();
+      imports: [RouterTestingModule, ReactiveFormsModule],
+      declarations: [RegisterComponent, createMockPipe('translate')],
+      providers: [
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,17 +41,21 @@ describe('RegisterComponent', () => {
   });
 
   it('should contain a disabled button at first', () => {
-    submitBtn = fixture.nativeElement.querySelector('.submit-btn');
+    submitBtn = fixture.nativeElement.querySelector('app-loading-button');
     expect(submitBtn.disabled).toBe(true);
   });
 
   it('should submit the form', () => {
+    submitBtn = fixture.nativeElement.querySelector('app-loading-button');
     component.registerForm.controls.email.setValue('test@mocked.com');
-    component.registerForm.controls.passwords['controls'].password.setValue('!Passw0rd123');
-    component.registerForm.controls.passwords['controls'].confirm.setValue('!Passw0rd123');
+    (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
+      '!Passw0rd123',
+    );
+    (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue(
+      '!Passw0rd123',
+    );
     component.onSubmit();
     fixture.detectChanges();
-    expect(submitBtn.disabled).toBe(true);
+    expect(submitBtn.disabled).toBe(false);
   });
-
 });

@@ -5,26 +5,26 @@
 }
 
 .header {
-  background: rgba($white, .85);
-  -webkit-box-shadow: rgba(77, 77, 77, .2) 0 0 3px;
+  background: rgba($white, 0.85);
+  -webkit-box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
   box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
   min-height: $globalnavheight;
   padding: 0;
   position: relative;
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
-  -webkit-transition: -webkit-transform .3s;
-  transition: transform .3s;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
   width: 100%;
   z-index: 1;
 }
 
-.header > .cf{
+.header > .cf {
   border-top: 6px solid $accent;
   position: relative;
 }
 
-.after-header{
+.after-header {
   margin-top: $globalnavheight;
 }
 
@@ -36,12 +36,12 @@
   display: block;
   float: left;
   height: 58px;
-  margin: .4rem;
+  margin: 0.4rem;
   margin-left: 2%;
   max-width: 168px;
   width: 50%;
 
-  .svg &{
+  .svg & {
     background-image: url('/assets/images/europeana-logo-default.svg');
   }
   h1 {

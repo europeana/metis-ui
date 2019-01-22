@@ -1,31 +1,33 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../_services';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StringifyHttpError } from '../_helpers';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
+import { StringifyHttpError } from '../_helpers';
+import { errorNotification, Notification } from '../_models';
+import { AuthenticationService, DocumentTitleService, RedirectPreviousUrl } from '../_services';
+import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit {
   loading = false;
-  errorMessage: string;
-  successMessage: string;
-  returnUrl: string;
+  notification?: Notification;
   loginForm: FormGroup;
   msgBadCredentials: string;
-  checkLogin: boolean = true;
+  checkLogin = true;
 
   constructor(
     private router: Router,
     private authentication: AuthenticationService,
     private redirectPreviousUrl: RedirectPreviousUrl,
     private fb: FormBuilder,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private documentTitleService: DocumentTitleService,
+  ) {}
 
   /** ngOnInit
   /* init of this component
@@ -33,60 +35,80 @@ export class LoginComponent implements OnInit {
   /* create a login form
   /* set translation language
   */
-  ngOnInit() {
-    // already logged in, then redirect 
+  ngOnInit(): void {
+    this.documentTitleService.setTitle('Sign In');
+
+    // already logged in, then redirect
     if (this.authentication.validatedUser() && this.checkLogin) {
       this.checkLogin = true;
       this.redirectAfterLogin();
+      return;
     }
 
     // else make sure the user is logged out properly and show the form
-    this.authentication.logout(); 
+    this.authentication.logout();
 
     this.loginForm = this.fb.group({
-      'email': ['', [Validators.required, Validators.email] ],
-      'password': ['', Validators.required ]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
     });
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-      this.msgBadCredentials = this.translate.instant('msgbadcredentials');
-    }
+    this.msgBadCredentials = this.translate.instant('msgbadcredentials');
   }
 
   /** onSubmit
   /* submit login form
   */
-  onSubmit() {
-    
-    if (this.loginForm.controls.email.value === '' || this.loginForm.controls.password.value === '') { return false; } 
+  onSubmit(): void {
+    if (
+      this.loginForm.controls.email.value === '' ||
+      this.loginForm.controls.password.value === ''
+    ) {
+      return;
+    }
 
     this.loading = true;
-    this.authentication.login(this.loginForm.controls.email.value, this.loginForm.controls.password.value).subscribe(result => {      
-      if (result === true) {
-        this.redirectAfterLogin();
-      } else {
-        this.errorMessage = this.msgBadCredentials;
-      }
-      this.loading = false;
-    }, (err: HttpErrorResponse) => {
-      this.errorMessage = err.status === 406 ? this.msgBadCredentials : `Signin failed: ${StringifyHttpError(err)}`;   
-      this.loading = false;
-    });
+
+    // already logged in, then redirect
+    if (this.authentication.validatedUser() && this.checkLogin) {
+      this.checkLogin = true;
+      this.redirectAfterLogin();
+      return;
+    }
+
+    this.authentication
+      .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
+      .subscribe(
+        (result) => {
+          if (result) {
+            this.redirectAfterLogin();
+          } else {
+            this.notification = errorNotification(this.msgBadCredentials);
+          }
+          this.loading = false;
+        },
+        (err: HttpErrorResponse) => {
+          this.notification = errorNotification(
+            err.status === 406
+              ? this.msgBadCredentials
+              : `Signin failed: ${StringifyHttpError(err)}`,
+          );
+          this.loading = false;
+        },
+      );
   }
 
   /** redirectAfterLogin
   /* redirect to previous page after login or default page
   */
-  redirectAfterLogin () {
+  redirectAfterLogin(): void {
     const url = this.redirectPreviousUrl.get();
-    
+
     if (url && url !== '/signin') {
       this.router.navigateByUrl(`/${url}`);
       this.redirectPreviousUrl.set(undefined);
     } else {
-      this.router.navigate([`${environment.afterLoginGoto}`]);
+      this.router.navigate([environment.afterLoginGoto]);
     }
   }
-
 }

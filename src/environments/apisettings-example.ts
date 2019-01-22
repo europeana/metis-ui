@@ -1,6 +1,6 @@
 export const apiSettings = {
   apiHostCore: '',
-  apiHostAuth: '' ,
-  viewPreview: '' ,
-  viewCollections: ''
+  apiHostAuth: '',
+  viewPreview: '',
+  viewCollections: '',
 };

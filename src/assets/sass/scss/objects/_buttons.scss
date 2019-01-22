@@ -5,43 +5,38 @@
   border-radius: 2px;
   color: $white;
   display: inline-block;
-  font-size: .875em;
+  font-size: 0.875em;
   font-weight: bold;
   margin: 0;
-  padding: .8rem 5rem;
-  text-transform: none;
+  padding: 0.8rem 5rem;
+  text-transform: uppercase;
 
   @media (max-width: $bp-xxl) {
-    padding: .8rem 2rem;
+    padding: 0.8rem 2rem;
   }
 
   &:hover,
   &:focus {
-    background: transparent;
-    border-color: $eu-jade;
-    color: $eu-jade;
+    color: $white;
   }
 
   &.disabled,
   &.is-disabled {
-    background: lighten($text_secondary, 10%);
-    border-color: $text_secondary;
-    color: darken($text_secondary, 20%);
+    background: lighten($eu-jade, 30%);
     cursor: not-allowed;
 
-    &:hover{
-      border-color: $text_secondary;
+    &:hover {
+      color: darken($text_secondary, 20%);
     }
   }
 
-  &.alt{
+  &.alt {
     background-color: $black;
     border-color: $black;
     color: $white;
 
-    &:hover{
-      background-color: $textcolour_highlight;
-      border-color: $textcolour_highlight;
+    &:hover {
+      color: $white;
     }
   }
 }
@@ -58,13 +53,13 @@
   &:hover {
     background: $offwhite;
     color: $eu_jade;
-    transition: .4s linear;
+    transition: 0.4s linear;
     &.btn-left::after {
       display: none;
     }
     .right-btn-under-text {
       opacity: 0;
-      transition: opacity .4s linear;
+      transition: opacity 0.4s linear;
     }
   }
 }
@@ -81,7 +76,7 @@
 }
 
 .btn.cta,
-.btn.cta_main{
+.btn.cta_main {
   &::after,
   &::before {
     border: solid transparent;
@@ -100,43 +95,43 @@
 }
 
 .btn.cta,
-  .btn.cta_main{
-  &::after{
+.btn.cta_main {
+  &::after {
     border-left-color: $black;
     left: 100%;
   }
 
   &:hover::after,
-  &:focus::after{
+  &:focus::after {
     border-left-color: $textcolour_highlight;
   }
 }
 
 .btn.cta_main {
-  &::before{
+  &::before {
     border-right-color: $black;
     right: 100%;
   }
 
   &:hover::before,
-  &:focus::before{
+  &:focus::before {
     border-right-color: $textcolour_highlight;
   }
 }
 
-.btn{
-  .cta_light{
+.btn {
+  .cta_light {
     border-color: $white;
     color: $white;
-    &::after{
+    &::after {
       border-left-color: $white;
     }
-    &::before{
+    &::before {
       border-right-color: $white;
     }
 
     &:hover,
-    &:focus{
+    &:focus {
       background-color: $textcolour_highlight;
       color: $white;
     }
@@ -149,7 +144,7 @@
     color: $white;
 
     &:hover,
-    &:focus{
+    &:focus {
       background-color: $black;
       color: $white;
     }
@@ -162,7 +157,7 @@
 
 .btn-small {
   font-size: $font-size-sm;
-  padding: .5em;
+  padding: 0.5em;
 }
 
 .btn-large {
@@ -184,7 +179,7 @@
   color: inherit;
   cursor: pointer;
   font-size: $font-size-sm;
-  padding: .5em .8em;
+  padding: 0.5em 0.8em;
   text-decoration: none;
   text-overflow: ellipsis;
   user-select: none;
@@ -196,7 +191,7 @@
     color: $textcolour_link;
   }
 
-  svg.icon{
+  svg.icon {
     margin-right: 0;
   }
 }
@@ -209,7 +204,7 @@
   justify-content: center;
   width: 30rem;
 
-  .btn-padding{
+  .btn-padding {
     .btn {
       background: transparent;
       position: relative;
@@ -226,7 +221,7 @@
     }
     .right-btn-under-text {
       bottom: 0;
-      font-size:  .7em;
+      font-size: 0.7em;
       left: 0;
       margin: auto;
       position: absolute;

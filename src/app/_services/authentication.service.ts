@@ -1,27 +1,28 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { RedirectPreviousUrl } from '../_services/redirect-previous-url.service';
-import { ErrorService } from '../_services/error.service';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import { environment } from '../../environments/environment';
-
 import { User } from '../_models';
 
-@Injectable()
-export class AuthenticationService {
+import { ErrorService } from './error.service';
+import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
+@Injectable({ providedIn: 'root' })
+export class AuthenticationService {
   private readonly key = 'currentUser';
-  private token: string;
-  public currentUser = null;
+  private token: string | null;
+  public currentUser: User | null = null;
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private router: Router,
     private errors: ErrorService,
-    private redirectPreviousUrl: RedirectPreviousUrl) {
+    private redirectPreviousUrl: RedirectPreviousUrl,
+  ) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
     if (value) {
@@ -30,7 +31,7 @@ export class AuthenticationService {
       this.token = hash.token;
     } else {
       this.currentUser = null;
-      this.token = null;  
+      this.token = null;
     }
   }
 
@@ -43,10 +44,10 @@ export class AuthenticationService {
 
   /** getToken
   /* get token from user that is already logged in
-  */  
-  getToken(): string {
+  */
+  getToken(): string | null {
     const s = localStorage.getItem(this.key);
-    if (!s)  {
+    if (!s) {
       return null;
     }
     const h = JSON.parse(s);
@@ -56,12 +57,19 @@ export class AuthenticationService {
   /** updatePassword
   /* update password for this user
   /* @param {string} password - password
-  */ 
-  updatePassword(password: string, oldpassword: string) {
-    const url = `${apiSettings.apiHostAuth}/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
-    return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
-      return true;
-    })).pipe(this.errors.handleRetry());  
+  */
+  updatePassword(password: string, oldpassword: string): Observable<boolean> {
+    const url = `${
+      apiSettings.apiHostAuth
+    }/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
+    return this.http
+      .put(url, {})
+      .pipe(
+        map(() => {
+          return true;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** register
@@ -69,13 +77,20 @@ export class AuthenticationService {
   /* use values from registration form
   /* @param {string} email - email
   /* @param {string} password - password
-  */ 
-  register(email: string, password: string) {
+  */
+  register(email: string, password: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
-    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
-      return true;
-    })).pipe(this.errors.handleRetry());  
+    const headers = new HttpHeaders({
+      Authorization: 'Basic ' + btoa(email + ':' + password),
+    });
+    return this.http
+      .post(url, {}, { headers })
+      .pipe(
+        map(() => {
+          return true;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** login
@@ -83,29 +98,37 @@ export class AuthenticationService {
   /* use values from login form
   /* @param {string} email - email
   /* @param {string} password - password
-  */ 
-  login(email: string, password: string) {
-    if (this.currentUser) { // check beforehand if there is already an user
-      const url = this.redirectPreviousUrl.get();
-      if (url && url !== 'login') {
-        this.router.navigateByUrl(`/${url}`);
+  */
+  login(email: string, password: string): Observable<boolean> {
+    if (this.currentUser) {
+      // check beforehand if there is already an user
+      const prevUrl = this.redirectPreviousUrl.get();
+      if (prevUrl && prevUrl !== 'login') {
+        this.router.navigateByUrl(`/${prevUrl}`);
         this.redirectPreviousUrl.set(undefined);
       } else {
-        this.router.navigate([`${environment.afterLoginGoto}`]);
+        this.router.navigate([environment.afterLoginGoto]);
       }
-    } 
-    
+      return of(true);
+    }
+
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
-    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(email + ':' + password)});
-    return this.http.post(url, JSON.stringify('{}'), { headers: headers }).pipe(map(data => {
-      const user = <User>data;
-      if (user && user.metisUserAccessToken) {
-        this.setCurrentUser(user);
-        return true;
-      } else {
-        return false;
-      }
-    })).pipe(this.errors.handleRetry());  
+    const headers = new HttpHeaders({
+      Authorization: 'Basic ' + btoa(email + ':' + password),
+    });
+    return this.http
+      .post<User>(url, {}, { headers })
+      .pipe(
+        map((user) => {
+          if (user && user.metisUserAccessToken) {
+            this.setCurrentUser(user);
+            return true;
+          } else {
+            return false;
+          }
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** logout
@@ -113,48 +136,51 @@ export class AuthenticationService {
   /* by setting currentUser to null
   /* current token to null
   /* and empty localstorage
-  */ 
+  */
   logout(): void {
     this.currentUser = null;
-    this.token = null;  
+    this.token = null;
     localStorage.removeItem(this.key); // clear token remove user from local storage to log user out
   }
 
   /** reloadCurrentUser
   /* get latest information from user form zoho
   /* @param {string} email - email
-  */ 
-  reloadCurrentUser(email: string) {
-    const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;    
-    return this.http.put(url, JSON.stringify('{}')).pipe(map(data => {
-      const user = <User>data;
-      if (user) {
-        this.setCurrentUser(user);
-        return true;
-      } else {
-        return false;
-      }
-    })).pipe(this.errors.handleRetry());  
+  */
+  reloadCurrentUser(email: string): Observable<boolean> {
+    const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;
+    return this.http
+      .put<User>(url, {})
+      .pipe(
+        map((user) => {
+          if (user) {
+            this.setCurrentUser(user);
+            return true;
+          } else {
+            return false;
+          }
+        }),
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** setCurrentUser
   /* store information about current user
-  /* in currentUser variable, 
+  /* in currentUser variable,
   /* in token variable
   /* and in localstorage, to keep user logged in between page refreshes
   /* @param {object} user - user related information
-  */ 
-  private setCurrentUser(user: User) {
+  */
+  public setCurrentUser(user: User): void {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
-    localStorage.setItem(this.key, JSON.stringify({ user: user, email: user.email, token: this.token}));
+    localStorage.setItem(this.key, JSON.stringify({ user, email: user.email, token: this.token }));
   }
 
   /** getCurrentUser
   /* get information from currently active user
-  */ 
-  getCurrentUser() {
+  */
+  getCurrentUser(): User | null {
     return this.currentUser;
   }
-
 }

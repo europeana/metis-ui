@@ -1,18 +1,42 @@
 <div class="dashboard-wrapper">
-
   <div class="metis-welcome-message">
-    <p>Welcome <strong>{{userName}}</strong>, let's ingest a world of Culture!</p>
+    <p>
+      Welcome <strong>{{ userName }}</strong
+      >, let's ingest a world of Culture!
+    </p>
   </div>
 
-  <div class="metis-dashboard">
+  <app-load-animation
+    *ngIf="runningIsFirstLoading || finishedIsFirstLoading"
+    [resources]="{
+      'running workflows': runningIsFirstLoading,
+      'finished workflows': finishedIsFirstLoading
+    }"
+  ></app-load-animation>
+
+  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
     <div class="metis-dashboard-left">
-      <app-dashboardactions></app-dashboardactions>         
-      <app-ongoingexecutions [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)" [runningExecutionDataOutput]="ongoingExecutionDataOutput"></app-ongoingexecutions>    
-      <app-datasetlog *ngIf="isShowingLog" [isShowingLog]="isShowingLog" (notifyShowLogStatus)="onNotifyShowLogStatus($event)"></app-datasetlog>
+      <app-dashboardactions></app-dashboardactions>
+      <app-ongoingexecutions
+        [showPluginLog]="showPluginLog"
+        [runningExecutions]="runningExecutions"
+        (setShowPluginLog)="showPluginLog = $event"
+      ></app-ongoingexecutions>
+      <app-datasetlog
+        *ngIf="showPluginLog"
+        [showPluginLog]="showPluginLog"
+        (closed)="showPluginLog = undefined"
+      ></app-datasetlog>
     </div>
 
-    <div class="metis-dashboard-right">    
-      <app-executions [runningExecutionDataOutput]="ongoingExecutionDataOutput" [executionDataOutput]="executionDataOutput" (nextPage)="getNextPage($event)"></app-executions>           
+    <div class="metis-dashboard-right">
+      <app-executions
+        [runningExecutions]="runningExecutions"
+        [finishedExecutions]="finishedExecutions"
+        [isLoading]="finishedIsLoading"
+        [hasMore]="finishedHasMore"
+        (nextPage)="getNextPage()"
+      ></app-executions>
     </div>
   </div>
 </div>

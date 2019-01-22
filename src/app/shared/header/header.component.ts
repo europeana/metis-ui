@@ -1,103 +1,57 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { AuthenticationService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { ActivatedRoute, Router } from '@angular/router';
-import { User } from '../../_models';
+import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { environment } from '../../../environments/environment';
+
+import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html',  
-  providers: [AuthenticationService]
+  templateUrl: './header.component.html',
 })
-
-export class HeaderComponent implements OnInit {
-
+export class HeaderComponent {
   constructor(
     private authentication: AuthenticationService,
-    public router: Router, 
-    private route: ActivatedRoute,
+    private router: Router,
     private redirectPreviousUrl: RedirectPreviousUrl,
-    private translate: TranslateService) {}
+  ) {}
 
   openSignIn = false;
-  openSearch = false;
-  searchfilter;
 
-  @Input('loggedIn') loggedIn: boolean;
+  @Input() loggedIn: boolean;
 
-  /** ngOnInit
-  /* init for this component
-  /* close signin menu, wehen open
-  /* set search to default 'All'
-  /* set translation language
-  */
-  ngOnInit() {
-    this.openSignIn = false;
-    this.searchfilter = 'All';
-
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }    
-  }
-
-  /** toggleSignInMenu
-  /* toggle sign in menu
-  */
-  toggleSignInMenu() {
+  toggleSignInMenu(): void {
     this.openSignIn = !this.openSignIn;
   }
 
-  /** toggleSearchMenu
-  /* toggle search menu
-  */
-  toggleSearchMenu() {
-    this.openSearch = !this.openSearch;
+  logoLink(): string {
+    return this.isLoggedIn() ? environment.afterLoginGoto : '/home';
   }
 
-  /** filterSearch
-  /* open search filter
-  /* @param {string} filter - selected filter
-  */
-  filterSearch(filter) {
-    this.openSearch = false;
-    this.searchfilter = filter;
+  userIconActive(): boolean {
+    return this.router.isActive('/profile', false);
   }
 
-  /** gotoProfile
-  /* go to profile page
-  */
-  gotoProfile() {
+  gotoProfile(): void {
     this.openSignIn = false;
     this.router.navigate(['/profile']);
   }
 
-  /** gotoLogin
-  /* go to login(=signin) page
-  */
-  gotoLogin() {
+  gotoLogin(): void {
     this.openSignIn = false;
     this.router.navigate(['/signin']);
   }
 
-  /** gotoRegister
-  /* go to registration page
-  */
-  gotoRegister() {
+  gotoRegister(): void {
     this.openSignIn = false;
     this.router.navigate(['/register']);
   }
 
-  /** isLoggedIn
-  /* get logged in status of a user
-  */
-  isLoggedIn() {
+  isLoggedIn(): boolean {
     return this.loggedIn;
   }
 
-  /** logOut
-  /* logout user
-  /* redirect to homepage
-  */
-  logOut() {
+  logOut(): void {
     this.authentication.logout();
     this.redirectPreviousUrl.set(undefined);
     this.loggedIn = false;
@@ -105,20 +59,7 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  /** onClickedOutsideUser
-  /* close sign in menu after clicking outside
-  /* @param {object} e - event, optional
-  */
-  onClickedOutsideUser(e?) {
+  onClickedOutsideUser(_: Event): void {
     this.openSignIn = false;
   }
-
-  /** onClickedOutsideSearch
-  /* close search menu after clicking outside
-  /* @param {object} e - event, optional
-  */
-  onClickedOutsideSearch(e?) {
-    this.openSearch = false;
-  }
-
 }

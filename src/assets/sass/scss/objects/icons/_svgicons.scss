@@ -3,12 +3,12 @@ svg.icon {
   fill: currentColor;
   height: 1.2em;
   margin-bottom: -0.25em;
-  margin-right: .3em;
+  margin-right: 0.3em;
   width: 1.2em;
 }
 
-a.icon{
-  background-position: 0 .1em;
+a.icon {
+  background-position: 0 0.1em;
   background-size: 1em;
   padding-left: 1.4em;
 }
@@ -16,18 +16,19 @@ a.icon{
 @function str-replace($string, $search, $replace: '') {
   $index: str-index($string, $search);
   @if $index {
-    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    @return str-slice($string, 1, $index - 1) + $replace +
+      str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
   }
   @return $string;
 }
 
 @function url-encode-color($string) {
   $map: (
-    '#': '%23'
+    '#': '%23',
   );
   $new: $string;
   @each $search, $replace in $map {
-    $new: str-replace("#{$new}", $search, $replace);
+    $new: str-replace('#{$new}', $search, $replace);
   }
   @return $new;
 }

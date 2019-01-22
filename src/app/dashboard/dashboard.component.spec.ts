@@ -1,14 +1,22 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardComponent } from './dashboard.component';
-import { AuthenticationService, DatasetsService, TranslateService, WorkflowService, ErrorService, RedirectPreviousUrl } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
+import {
+  createMockPipe,
+  MockAuthenticationService,
+  MockDatasetsService,
+  MockErrorService,
+  MockWorkflowService,
+} from '../_mocked';
+import { PluginStatus } from '../_models';
+import {
+  AuthenticationService,
+  DatasetsService,
+  ErrorService,
+  WorkflowService,
+} from '../_services';
 
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
-
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../_mocked';
+import { DashboardComponent } from '.';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -16,24 +24,15 @@ describe('DashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule ],
-      declarations: [ DashboardComponent, TranslatePipe ], 
-      providers: [ { provide: AuthenticationService, useClass: MockAuthenticationService}, 
-        {provide: WorkflowService, useClass: MockWorkflowService}, 
-        DatasetsService, 
-        ErrorService, 
-        RedirectPreviousUrl,
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        }
-       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      declarations: [DashboardComponent, createMockPipe('translate')],
+      providers: [
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: ErrorService, useClass: MockErrorService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -47,21 +46,38 @@ describe('DashboardComponent', () => {
   });
 
   it('should open log messages', () => {
-    component.onNotifyShowLogStatus('mocked message');
-    expect(component.isShowingLog).not.toBe(false);
+    component.showPluginLog = {
+      id: 'xx5',
+      pluginType: 'OAIPMH_HARVEST',
+      pluginStatus: PluginStatus.RUNNING,
+      executionProgress: {
+        expectedRecords: 1000,
+        processedRecords: 500,
+        progressPercentage: 50,
+        errors: 5,
+      },
+      pluginMetadata: {
+        pluginType: 'OAIPMH_HARVEST',
+        url: 'example.com',
+        setSpec: 'test',
+        metadataFormat: 'edm',
+      },
+      topologyName: 'oai_harvest',
+    };
+    fixture.detectChanges();
+    expect(component.showPluginLog).toBeTruthy();
   });
 
   it('should open more than 1 page', () => {
-    component.getNextPage(1);
+    component.getNextPage();
     fixture.detectChanges();
-    expect(component.currentPageHistory).toBe(1);
+    expect(component.finishedCurrentPage).toBe(1);
   });
 
   it('should get a list of executions', () => {
-    component.currentPageHistory = 1;
-    component.getExecutions();
+    component.finishedCurrentPage = 1;
+    component.getFinishedExecutions();
     fixture.detectChanges();
-    //expect(component.currentPageHistory).toBe(1);
+    expect(component.finishedCurrentPage).toBe(1);
   });
-
 });

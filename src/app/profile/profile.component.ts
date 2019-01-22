@@ -1,101 +1,110 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { AuthenticationService, TranslateService, ErrorService } from '../_services';
-import { User } from '../_models';
-import { StringifyHttpError, MatchPasswordValidator } from '../_helpers';
-import { environment } from 'environments/environment';
+import { environment } from '../../environments/environment';
+import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
+import { errorNotification, Notification, successNotification, User } from '../_models';
+import { AuthenticationService, DocumentTitleService, ErrorService } from '../_services';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
 })
-
 export class ProfileComponent implements OnInit {
   editMode = false;
   loading = false;
-  errorMessage: string;
-  successMessage: string;
-  public password;
-  confirmPasswordError: boolean = false;
+  notification?: Notification;
+  public password: string;
+  confirmPasswordError = false;
   emailInfo: string = environment.links.updateProfileMain;
   profileForm: FormGroup;
 
-  constructor(private http: HttpClient,
+  constructor(
     private authentication: AuthenticationService,
-    private fb: FormBuilder, 
-    private translate: TranslateService,
-    private errors: ErrorService) { }
+    private fb: FormBuilder,
+    private errors: ErrorService,
+    private documentTitleService: DocumentTitleService,
+  ) {}
 
   /** ngOnInit
   /* init of this component
   /* create the profile form
   /* set translation language
   */
-  ngOnInit() {
+  ngOnInit(): void {
+    this.documentTitleService.setTitle('Profile');
+
     this.createForm();
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }
   }
 
   /** createForm
   /* create a profile form
   /* prefill the form with known data
   */
-  createForm() {
-    const user: User = this.authentication.currentUser;
+  createForm(): void {
+    const user: User | null = this.authentication.currentUser;
 
     if (user) {
       this.profileForm = this.fb.group({
-        'user-id': [{value: user.userId, disabled: true}],
-        'email': [{value: user.email, disabled: true}],
-        'first-name': [{value: user.firstName, disabled: true}],
-        'last-name': [{value: user.lastName, disabled: true}],
-        'organization-name': [{value: user.organizationName && user.organizationName.length > 0 ? user.organizationName : 'Unknown', disabled: true}],
-        'country': [{value: user.country ? user.country : 'Unknown', disabled: true}],
-        'network-member': [{value: user.networkMember ? 'Yes' : 'No', disabled: true}],
-        'metis-user-flag': [{value: user.metisUserFlag, disabled: true}],
-        'account-role': [{value: user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown', disabled: true}],
-        'created-date': [{value: new Date(user.createdDate), disabled: true}],
-        'updated-date': [{value: new Date(user.updatedDate), disabled: true}],
-        passwords: this.fb.group({
-          oldpassword: ['', Validators.required ],
-          password: ['', Validators.required ],
-          confirm: ['', Validators.required ]
-        }, {
-          validator: MatchPasswordValidator
-        })
+        'user-id': [{ value: user.userId, disabled: true }],
+        email: [{ value: user.email, disabled: true }],
+        'first-name': [{ value: user.firstName, disabled: true }],
+        'last-name': [{ value: user.lastName, disabled: true }],
+        'organization-name': [
+          {
+            value:
+              user.organizationName && user.organizationName.length > 0
+                ? user.organizationName
+                : 'Unknown',
+            disabled: true,
+          },
+        ],
+        country: [{ value: user.country ? user.country : 'Unknown', disabled: true }],
+        'network-member': [{ value: user.networkMember ? 'Yes' : 'No', disabled: true }],
+        'metis-user-flag': [{ value: user.metisUserFlag, disabled: true }],
+        'account-role': [
+          {
+            value: user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown',
+            disabled: true,
+          },
+        ],
+        'created-date': [{ value: new Date(user.createdDate), disabled: true }],
+        'updated-date': [{ value: new Date(user.updatedDate), disabled: true }],
+        passwords: this.fb.group(
+          {
+            oldpassword: ['', Validators.required],
+            password: ['', Validators.required],
+            confirm: ['', Validators.required],
+          },
+          {
+            validator: MatchPasswordValidator,
+          },
+        ),
       });
     }
-  }  
+  }
 
   /** toggleEditMode
   /* switch between readonly and edit mode
   */
-  toggleEditMode() {
+  toggleEditMode(): void {
     this.profileForm.controls.passwords.reset();
     this.onKeyupPassword();
 
-    this.errorMessage = undefined;
-    this.confirmPasswordError = false
+    this.notification = undefined;
+    this.confirmPasswordError = false;
     this.editMode = !this.editMode;
-
-    if (this.editMode) {
-      this.successMessage = undefined;
-    }
   }
 
   /** onKeyupPassword
   /* get password when keyup
   */
-  onKeyupPassword() {
-    this.password = this.profileForm.controls.passwords.get('password').value;
+  onKeyupPassword(): void {
+    this.password = this.profileForm.controls.passwords.get('password')!.value;
   }
 
-  checkMatchingPasswords() {
+  checkMatchingPasswords(): void {
     if (MatchPasswordValidator(this.profileForm.controls.passwords) !== null) {
       this.confirmPasswordError = true;
     } else {
@@ -107,53 +116,58 @@ export class ProfileComponent implements OnInit {
   /* submit current password form
   /* which is a part of the profile form
   */
-  onSubmit() {
-    this.errorMessage = undefined;
+  onSubmit(): void {
+    this.notification = undefined;
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
-    const password = passwords.get('password').value;
-    const oldpassword = passwords.get('oldpassword').value;
+    const password = passwords.get('password')!.value;
+    const oldpassword = passwords.get('oldpassword')!.value;
 
-    this.authentication.updatePassword(password, oldpassword).subscribe(result => {
-      if (result === true) {
-        this.successMessage = 'Update password successful!';
-      } else {
-        this.errorMessage = 'Update password failed, please try again later';
-      }
-      this.loading = false;
-      this.toggleEditMode();
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `Update password failed: ${StringifyHttpError(error)}`;
-      this.loading = false;
-    });
+    this.authentication.updatePassword(password, oldpassword).subscribe(
+      (result) => {
+        this.loading = false;
+        this.toggleEditMode();
+        if (result) {
+          this.notification = successNotification('Update password successful!');
+        } else {
+          this.notification = errorNotification('Update password failed, please try again later');
+        }
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = errorNotification(
+          `Update password failed: ${StringifyHttpError(error)}`,
+        );
+        this.loading = false;
+      },
+    );
   }
 
   /** onReloadProfile
   /* get most accurate user data from zoho
   */
-  onReloadProfile() {
-    this.errorMessage = undefined;
+  onReloadProfile(): void {
+    this.notification = undefined;
     this.loading = true;
 
-    this.authentication.reloadCurrentUser(this.profileForm.controls['email'].value).subscribe(result => {
-      if (result === true) {
-        this.successMessage = 'Your profile has been updated';
-        this.createForm();
-      } else {
-        this.errorMessage = 'Refresh failed, please try again later';
-      }
-      this.loading = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err);   
-      this.errorMessage = `Refresh failed: ${StringifyHttpError(error)}`;
-      this.loading = false;
-    });
-
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 500);   
+    this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
+      (result) => {
+        if (result) {
+          this.notification = successNotification('Your profile has been updated');
+          this.createForm();
+        } else {
+          this.notification = errorNotification('Refresh failed, please try again later');
+        }
+        this.loading = false;
+        window.scrollTo(0, 0);
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
+        this.loading = false;
+        window.scrollTo(0, 0);
+      },
+    );
   }
-
 }

@@ -5,8 +5,8 @@
 /* @param {string} id2 - an id, depending on type
 */
 
-export function copyExecutionAndTaskId(type, id1, id2) {
-  let selBox = document.createElement('textarea');
+export function copyExecutionAndTaskId(type: string, id1: string, id2: string): void {
+  const selBox = document.createElement('textarea');
   selBox.style.position = 'fixed';
   selBox.style.left = '0';
   selBox.style.top = '0';

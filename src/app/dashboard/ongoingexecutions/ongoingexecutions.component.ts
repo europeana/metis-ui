@@ -1,132 +1,51 @@
-import {timer as observableTimer, Observable} from 'rxjs';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
+import { calcProgress, copyExecutionAndTaskId } from '../../_helpers';
 
-import { WorkflowService, ErrorService, TranslateService, DatasetsService, AuthenticationService } from '../../_services';
-import { environment } from '../../../environments/environment';
+import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../../_models';
+import { WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-ongoingexecutions',
   templateUrl: './ongoingexecutions.component.html',
-  styleUrls: ['./ongoingexecutions.component.scss']
+  styleUrls: ['./ongoingexecutions.component.scss'],
 })
-export class OngoingexecutionsComponent {
+export class OngoingexecutionsComponent implements OnInit {
+  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
 
-  constructor(private workflows: WorkflowService, 
-    private errors: ErrorService,
-    private authentication: AuthenticationService,
-    private translate: TranslateService,
-    private datasets: DatasetsService) { }
+  @Input() showPluginLog: PluginExecution;
+  @Input() runningExecutions: WorkflowExecution[];
+  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
 
-  @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
-  @Input('isShowingLog') isShowingLog;
-  @Input('runningExecutionDataOutput') ongoingExecutionDataOutput;
+  cancelling: string;
+  contentCopied = false;
 
-  ongoingExecutions;
-  ongoingExecutionsTotal: number;
-  errorMessage;
-  subscription;
-  intervalTimer = environment.intervalStatusShort;
-  cancelling;
-  currentPlugin = 0;
-  datasetNames: Array<any> = [];
-  viewMore: boolean = false;
-  logIsOpen;
-  contentCopied: boolean = false;
-
-  /** ngOnInit
-  /* init of this component: 
-  /* start polling/checking for updates
-  /* set translation languages
-  /* translate some values to use in this component
-  */
-  ngOnInit() {
-    this.startPolling();
-    if (!this.datasets.updateLog) { return false; }
-    this.datasets.updateLog.subscribe(
-      log => {
-        if (this.isShowingLog) {
-          this.showLog(log['externaltaskId'], log['topology'], log['plugin'], this.logIsOpen, log['processed'], log['status']);
-        } else {
-          this.logIsOpen = undefined;
-        }
-    });
-
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-      this.cancelling = this.translate.instant('cancelling');
-    } 
+  ngOnInit(): void {
+    this.cancelling = this.translate.instant('cancelling');
   }
 
-  /** startPolling
-  /*  check for ongoing executions
-  */
-  startPolling() {
-    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      this.getOngoing();
-    });
-  }
-
-  /** getOngoing
-  /*  get ongoing executions, either in queue or running, most recent started
-  /*  showing up to 5 executions
-  */
-  getOngoing() {
-    if (!this.authentication.validatedUser()) { return false; }
-
-    let executions = this.ongoingExecutionDataOutput;
-    let max = 5;
-    if (!executions) { return false; }
-
-    this.ongoingExecutions = this.datasets.addDatasetNameAndCurrentPlugin(executions.slice(0, max), this.logIsOpen);
-    if (executions.length > max) {
-      this.viewMore = true;
-    } else {
-      this.viewMore = false;
+  cancelWorkflow(id: string): void {
+    if (!id) {
+      return;
     }
+    this.workflows.promptCancelThisWorkflow(id);
   }
 
-  /** cancelWorkflow
-  /*  start cancellation of the dataset with id
-  /* @param {number} id - id of the dataset to cancel
-  */
-  cancelWorkflow(id) {
-    if (!id) { return false; }
-    this.getOngoing();
-    this.workflows.promptCancelThisWorkflow(id);  
+  showLog(workflow: WorkflowExecution): void {
+    this.setShowPluginLog.emit(getCurrentPlugin(workflow));
   }
 
-  /** showLog
-  /*  show the log for the current/last execution
-  /* @param {number} externaltaskId - id of the external task that belongs to topology/plugin
-  /* @param {string} topology - name of the topology
-  */
-  showLog(externaltaskId, topology, plugin, datasetId?, processed?, status?) {
-    let message = {'externaltaskId' : externaltaskId, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status};
-    this.logIsOpen = datasetId;
-    this.notifyShowLogStatus.emit(message);
+  calcProgress(ongoing: WorkflowExecution): number {
+    return calcProgress(ongoing);
   }
 
-  /** viewAll
-  /*  scrolls to top of all executions table/top of page
-  */
-  viewAll() {
-    window.scrollTo(0, 0);
-  }
-
-  /*** copyInformation
-  /* after double clicking, copy the execution and task id to the clipboard
-  /* @param {string} type - execution or plugin
-  /* @param {string} id1 - an id, depending on type
-  /* @param {string} id2 - an id, depending on type
-  */
-  copyInformation (type, id1, id2) {
+  copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
 
+  byId(_: number, item: WorkflowExecution): string {
+    return item.id;
+  }
 }

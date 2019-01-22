@@ -1,18 +1,18 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { DatasetComponent } from './dataset.component';
-import { DatasetformComponent } from './datasetform/datasetform.component';
-
-import { By } from '@angular/platform-browser';
-
-import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../_services';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../_mocked';
-
-import { HttpClientModule } from '@angular/common/http';
-import { RouterTestingModule } from '@angular/router/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
-
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+
+import {
+  createMockPipe,
+  MockDatasetsService,
+  MockErrorService,
+  mockPluginExecution,
+  MockWorkflowService,
+} from '../_mocked';
+import { DatasetsService, ErrorService, WorkflowService } from '../_services';
+
+import { DatasetComponent } from '.';
 
 describe('DatasetComponent', () => {
   let component: DatasetComponent;
@@ -20,24 +20,15 @@ describe('DatasetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientModule, RouterTestingModule],
-      declarations: [ DatasetComponent, TranslatePipe ],
-      providers: [ 
-        {provide: DatasetsService, useClass: MockDatasetService}, 
-        {provide: WorkflowService, useClass: MockWorkflowService}, 
-        ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},  
-        RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }],
-      schemas: [ NO_ERRORS_SCHEMA ]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule],
+      declarations: [DatasetComponent, createMockPipe('translate')],
+      providers: [
+        { provide: DatasetsService, useClass: MockDatasetsService },
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: ErrorService, useClass: MockErrorService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -51,51 +42,43 @@ describe('DatasetComponent', () => {
   });
 
   it('should get dataset info', () => {
-    component.activeTab = undefined;
-    component.returnDataset('1');
-    fixture.detectChanges();    
-    expect(component.subscription.closed).not.toBe(undefined);
+    component.loadData();
+    fixture.detectChanges();
+    expect(component.lastExecutionSubscription.closed).toBe(false);
   });
 
   it('should switch tabs', () => {
-    fixture.detectChanges();  
+    fixture.detectChanges();
 
     component.activeTab = 'edit';
-    component.getCurrentTab();
-    fixture.detectChanges();  
+    component.datasetIsLoading = component.workflowIsLoading = component.lastExecutionIsLoading = component.harvestIsLoading = false;
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'workflow';
-    component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'mapping';
-    component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'preview';
-    component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 
     component.activeTab = 'log';
-    component.getCurrentTab();
-    fixture.detectChanges();  
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
   });
 
   it('should be possible to display a message', () => {
-    component.onNotifyShowLogStatus('mocked');
+    component.showPluginLog = mockPluginExecution;
     fixture.detectChanges();
-    expect(component.isShowingLog).toBe('mocked');
-
-    component.clickOutsideMessage();
-    fixture.detectChanges();
-    expect(component.errorMessage).toBe(undefined);
-
+    expect(component.showPluginLog).toBe(mockPluginExecution);
   });
 
+  it('should start a workflow', () => {
+    component.startWorkflow();
+  });
 });

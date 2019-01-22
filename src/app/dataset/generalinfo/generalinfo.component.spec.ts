@@ -1,12 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GeneralinfoComponent } from './generalinfo.component';
-import { DatasetsService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, WorkflowService } from '../../_services';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
+import { apiSettings } from '../../../environments/apisettings';
+import { createMockPipe, mockDataset, mockHarvestData } from '../../_mocked';
 
-import { HttpClientModule } from '@angular/common/http';
-import { RouterTestingModule } from '@angular/router/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { GeneralinfoComponent } from '.';
 
 describe('GeneralinfoComponent', () => {
   let component: GeneralinfoComponent;
@@ -14,40 +11,30 @@ describe('GeneralinfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientModule, RouterTestingModule],
-      declarations: [ GeneralinfoComponent, TranslatePipe ],
-      providers: [ 
-        {provide: DatasetsService, useClass: MockDatasetService}, 
-        {provide: WorkflowService, useClass: MockWorkflowService}, 
-        ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
-        RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }]
-    })
-    .compileComponents();
+      declarations: [GeneralinfoComponent, createMockPipe('translate')],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GeneralinfoComponent);
     component = fixture.componentInstance;
+    component.datasetData = mockDataset;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
-    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should try to find publication data', () => {
-    component.datasetData = currentDataset;
-    component.getDatasetInformation();
+    component.harvestPublicationData = mockHarvestData;
     fixture.detectChanges();
-    expect(component.harvestPublicationData).not.toBe(undefined);
+    expect(component.harvestPublicationData).toBe(mockHarvestData);
+    expect(component.lastPublishedRecords).toBe(842);
+    expect(component.lastPublishedDate).toBe('2018-03-30T13:53:04.762Z');
+    expect(component.viewPreview).toBe(apiSettings.viewPreview + '1_*');
+    expect(component.buttonClassPreview).toBe('');
+    expect(component.viewCollections).toBe(apiSettings.viewCollections + '1_*');
+    expect(component.buttonClassCollections).toBe('');
   });
-
 });

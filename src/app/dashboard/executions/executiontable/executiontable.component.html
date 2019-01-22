@@ -1,47 +1,75 @@
-<td class="errorindicator"><span class="error" *ngIf="plugin && plugin.executionProgress.errors !== 0"></span></td>
-<td class="nowrap">{{execution.datasetId}}</td>
-<td><a [routerLink]="['/dataset', 'edit', execution.datasetId]">{{execution.datasetName}}</a></td>
-<td class="iconplaceholder"><span class="svg-icon-{{execution.workflowName}}"></span></td>
+<td class="errorindicator">
+  <span class="error" *ngIf="plugin && plugin.executionProgress.errors !== 0"></span>
+</td>
+<td class="nowrap">{{ execution.datasetId }}</td>
 <td>
-  <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}" (dblclick)="copyInformation('plugin', plugin.externalTaskId, plugin.id);">
-    {{plugin.pluginType}}
+  <a class="datasetName" [routerLink]="['/dataset', 'edit', execution.datasetId]">{{
+    execution.datasetName
+  }}</a>
+</td>
+<td class="iconplaceholder"></td>
+<td>
+  <span
+    class="tooltip"
+    attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+    (dblclick)="copyInformation('plugin', plugin.externalTaskId || '', plugin.id)"
+  >
+    {{ plugin.pluginType }}
   </span>
 </td>
 <td class="nowrap">
-  {{plugin ? (plugin.executionProgress.processedRecords - plugin.executionProgress.errors) : '-'}} 
+  {{ plugin ? plugin.executionProgress.processedRecords - plugin.executionProgress.errors : '-' }}
   <span class="errors" *ngIf="plugin.executionProgress.errors > 0">
-    ({{plugin.executionProgress.errors}})
+    ({{ plugin.executionProgress.errors }})
   </span>
 </td>
 <td class="nowrap uppercase">
-  {{plugin && plugin.executionProgress.expectedRecords >= 0 ? plugin.executionProgress.expectedRecords : ('unknown' | translate)}}
+  {{
+    plugin && plugin.executionProgress.expectedRecords >= 0
+      ? plugin.executionProgress.expectedRecords
+      : ('unknown' | translate)
+  }}
 </td>
 <td class="centered">
-  <span class="date">{{execution.startedDate | date:'dd/MM/yyyy'}}</span> 
-  <span class="datedivider">-</span> 
-  <span class="time">{{execution.startedDate | date:'HH:mm'}}</span>
+  <span class="date">{{ execution.startedDate | date: 'dd/MM/yyyy' }}</span>
+  <span class="datedivider">-</span>
+  <span class="time">{{ execution.startedDate | date: 'HH:mm' }}</span>
 </td>
-<td class="centered nowrap" *ngIf="plugin.pluginStatus === 'RUNNING' || plugin.pluginStatus === 'INQUEUE'">
+<td class="centered nowrap" *ngIf="!isCompleted()">
   <div class="progress">
     <div class="progress-status">
-      <span class="progress-percentage">{{ 'step' | translate }} {{execution.currentPlugin}}/{{execution.metisPlugins.length}}</span>
+      <span class="progress-percentage"
+        >{{ 'step' | translate }}
+        {{ execution.currentPluginIndex ? execution.currentPluginIndex + 1 : 1 }}/{{
+          execution.metisPlugins.length
+        }}</span
+      >
     </div>
     <div class="progressbar">
-      <div class="progressbar-done" [style.width.%]="(execution.currentPlugin / execution.metisPlugins.length * 100) >= 0 ? (execution.currentPlugin / execution.metisPlugins.length * 100) : 0">
-      </div>
+      <div class="progressbar-done" [style.width.%]="calcProgress(execution)"></div>
     </div>
   </div>
   <nav>
     <ul>
-      <li *ngIf="!execution.cancelling && plugin.pluginType !== 'PREVIEW' && plugin.pluginType !== 'PUBLISH' && plugin.pluginType !== 'MEDIA_PROCESS'">
-        <a class="cancel-btn svg-icon-cancel tooltip" attr.data-tooltip="{{ 'cancel' | translate }}" (click)="cancelWorkflow(execution.id)"></a>
+      <li *ngIf="!execution.cancelling && plugin.pluginType !== 'PUBLISH'">
+        <a
+          class="cancel-btn svg-icon-cancel tooltip"
+          attr.data-tooltip="{{ 'cancel' | translate }}"
+          (click)="cancelWorkflow(execution.id)"
+        ></a>
       </li>
-      <li><a [routerLink]="['/dataset', 'log', execution.datasetId]" class="log-btn svg-icon-history tooltip" attr.data-tooltip="{{ 'history' | translate }}"></a></li>
+      <li>
+        <a
+          [routerLink]="['/dataset', 'log', execution.datasetId]"
+          class="log-btn svg-icon-history tooltip"
+          attr.data-tooltip="{{ 'history' | translate }}"
+        ></a>
+      </li>
     </ul>
   </nav>
-</td>   
-<td class="centered" *ngIf="plugin.pluginStatus !== 'RUNNING' && plugin.pluginStatus !== 'INQUEUE'">
-  <span class="date">{{execution.finishedDate | date:'dd/MM/yyyy'}}</span> 
-  <span class="datedivider">-</span> 
-  <span class="time">{{execution.finishedDate | date:'HH:mm'}}</span>
-</td>  
+</td>
+<td class="centered" *ngIf="isCompleted()">
+  <span class="date">{{ execution.finishedDate | date: 'dd/MM/yyyy' }}</span>
+  <span class="datedivider">-</span>
+  <span class="time">{{ execution.finishedDate | date: 'HH:mm' }}</span>
+</td>

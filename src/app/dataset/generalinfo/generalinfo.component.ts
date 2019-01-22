@@ -1,91 +1,60 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { DatasetsService, TranslateService, WorkflowService, ErrorService, AuthenticationService } from '../../_services';
-import { Observable, timer as observableTimer } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Component, Input } from '@angular/core';
+
 import { apiSettings } from '../../../environments/apisettings';
+import { Dataset, HarvestData } from '../../_models';
 
 @Component({
   selector: 'app-generalinfo',
-  templateUrl: './generalinfo.component.html'
+  templateUrl: './generalinfo.component.html',
 })
+export class GeneralinfoComponent {
+  @Input() datasetData: Dataset;
 
-export class GeneralinfoComponent implements OnInit {
-
-  constructor(private datasets: DatasetsService,
-    private workflows: WorkflowService,
-  	private translate: TranslateService,
-    private authentication: AuthenticationService,
-    private errors: ErrorService) { }
-
-  @Input() datasetData: any;
-  harvestPublicationData: any;
-  subscription;
-  intervalTimer = environment.intervalStatusLong;
-  viewPreview;
-  viewCollections;
+  lastPublishedRecords?: number;
+  lastPublishedDate?: string;
+  viewPreview?: string;
   buttonClassPreview = 'btn-disabled';
+  viewCollections?: string;
   buttonClassCollections = 'btn-disabled';
 
-  /** ngOnInit
-  /* init for this specific component
-  /* and set translation languages
-  /* if dataset, try to retrieve information about harvest and publication
-  */
-  ngOnInit() {
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }
+  private _harvestPublicationData: HarvestData;
 
-    this.workflows.changeWorkflow.subscribe(
-      workflow => {
-        this.getDatasetInformation();
+  @Input()
+  set harvestPublicationData(value: HarvestData) {
+    this._harvestPublicationData = value;
+
+    if (value) {
+      this.lastPublishedRecords = value.lastPublishedRecords;
+      this.lastPublishedDate = value.lastPublishedDate;
+
+      if (value.lastPreviewRecordsReadyForViewing) {
+        this.viewPreview =
+          apiSettings.viewPreview +
+          encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
+        this.buttonClassPreview = '';
+      } else {
+        this.viewPreview = undefined;
+        this.buttonClassPreview = 'btn-disabled';
       }
-    );
-
-    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      this.getDatasetInformation();
-    });
-  }
-
-  /** ngOnDestroy
-  /* cancel subscriptions to check for current available dataset information
-  */  
-  ngOnDestroy() {
-    if (this.subscription) { this.subscription.unsubscribe(); }
-  }
-
-  /** getDatasetInformation
-  /* get information about dataset
-  /* including links to preview and collections
-  */ 
-  getDatasetInformation () {
-    if (!this.authentication.validatedUser()) { return false; }
-    if (this.datasetData) {
-
-      if (!this.viewPreview) {
-        this.viewPreview = apiSettings.viewPreview + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
-        this.viewCollections = apiSettings.viewCollections + encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');  
+      if (value.lastPublishedRecordsReadyForViewing) {
+        this.viewCollections =
+          apiSettings.viewCollections +
+          encodeURIComponent(this.escapeSolr(this.datasetData.datasetId + '_') + '*');
+        this.buttonClassCollections = '';
+      } else {
+        this.viewCollections = undefined;
+        this.buttonClassCollections = 'btn-disabled';
       }
-
-      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
-        this.harvestPublicationData = result;
-        this.buttonClassPreview = this.harvestPublicationData.lastPreviewRecordsReadyForViewing ? '' : 'btn-disabled';
-        this.buttonClassCollections = this.harvestPublicationData.lastPublishedRecordsReadyForViewing ? '' : 'btn-disabled';             
-      }, (err: HttpErrorResponse) => {
-        if (this.subscription) { this.subscription.unsubscribe(); }
-        this.errors.handleError(err);   
-      });
     }
   }
 
-  /** escapeSolr
-  /* format urls to link and preview
-  */ 
-  escapeSolr(url) {
-    let pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
+  get harvestPublicationData(): HarvestData {
+    return this._harvestPublicationData;
+  }
+
+  // format urls to link and preview
+  escapeSolr(url: string): string {
+    const pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
     return url.replace(pattern, '\\$1');
   }
 }

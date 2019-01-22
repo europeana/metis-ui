@@ -1,45 +1,49 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { FormsModule } from '@angular/forms';
-import { CodemirrorModule } from 'ng2-codemirror';
-import { MockDatasetService, MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
-
-import { PreviewComponent } from './preview.component';
-import { WorkflowService, TranslateService, ErrorService, AuthenticationService, RedirectPreviousUrl, DatasetsService } from '../../_services';
-
 import { By } from '@angular/platform-browser';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
-import { XmlPipe }   from '../../_helpers';
+import { RouterTestingModule } from '@angular/router/testing';
+
+import {
+  createMockPipe,
+  mockDataset,
+  MockDatasetsService,
+  MockErrorService,
+  MockTranslateService,
+  mockWorkflowExecution,
+  MockWorkflowService,
+} from '../../_mocked';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
+
+import { PreviewComponent } from '.';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
-  let tempWorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule, FormsModule, CodemirrorModule ],
-      declarations: [ PreviewComponent, TranslatePipe, XmlPipe, RenameWorkflowPipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
-        {provide: DatasetsService, useClass: MockDatasetService},
-        ErrorService, 
-        { provide: AuthenticationService, useClass: MockAuthenticationService }, 
-        RedirectPreviousUrl, 
-        { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-      }]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule],
+      declarations: [
+        PreviewComponent,
+        createMockPipe('translate'),
+        createMockPipe('beautifyXML'),
+        createMockPipe('renameWorkflow'),
+      ],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: DatasetsService, useClass: MockDatasetsService },
+        { provide: ErrorService, useClass: MockErrorService },
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PreviewComponent);
     component = fixture.componentInstance;
+    component.previewFilters = {};
   });
 
   it('should create', () => {
@@ -47,16 +51,22 @@ describe('PreviewComponent', () => {
   });
 
   it('should prefill filters', (): void => {
-    component.datasetData = currentDataset; 
-    component.prefill = {date: currentWorkflow['results'][0], plugin: 'MOCKED'};
+    component.datasetData = mockDataset;
+    component.previewFilters = {
+      execution: mockWorkflowExecution,
+      plugin: 'NORMALIZATION',
+    };
     component.prefillFilters();
-    fixture.detectChanges();   
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
   });
 
-  it('should expand sample', (): void => {  
-    component.datasetData = currentDataset; 
-    component.prefill = {date: currentWorkflow['results'][0], plugin: 'MOCKED'};
+  it('should expand sample', (): void => {
+    component.datasetData = mockDataset;
+    component.previewFilters = {
+      execution: mockWorkflowExecution,
+      plugin: 'NORMALIZATION',
+    };
     component.prefillFilters();
     component.expandSample(0);
     fixture.detectChanges();
@@ -64,21 +74,25 @@ describe('PreviewComponent', () => {
   });
 
   it('should toggle filters', () => {
-    component.datasetData = currentDataset; 
+    component.datasetData = mockDataset;
     component.toggleFilterDate();
-    fixture.detectChanges();  
-    expect(fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length).toBeTruthy();
+    fixture.detectChanges();
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
+    ).toBeTruthy();
 
-    component.allPlugins = ['mocked'];
+    component.allPlugins = [{ type: 'NORMALIZATION', error: false }];
     component.toggleFilterPlugin();
-    fixture.detectChanges();  
-    expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length).toBeTruthy();
+    fixture.detectChanges();
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+    ).toBeTruthy();
   });
 
   it('should get transformed samples', () => {
-    component.datasetData = currentDataset; 
+    component.datasetData = mockDataset;
     component.transformSamples('default');
-    fixture.detectChanges();  
+    fixture.detectChanges();
+    expect(component.allSamples.length).not.toBe(0);
   });
-
 });

@@ -2,7 +2,6 @@
 //   $MIXINS
 //------------------------------------*/
 
-
 //
 // Convert font-size from px to rem with px fallback
 //
@@ -15,7 +14,7 @@
 // Function for converting a px based font-size to rem.
 @function calculateRem($size) {
   $remSize: $size / 16px;
-//Default font size on html element is 100%, equivalent to 16px;
+  //Default font size on html element is 100%, equivalent to 16px;
   @return #{$remSize}rem;
 }
 
@@ -28,9 +27,12 @@
 // Rem Unit font sizes with relative fallback http:/seesparkbox.com/foundry/scss_rem_mixin_now_with_a_better_fallback
 //  Usage: @include font-size(1, large);
 //
-@mixin font-size ($decimal-size, $keyword: null) {
-  @if $keyword { font-size: $keyword; }
-  @else { font-size: $decimal-size * $base-font-multiplier * 16px;}
+@mixin font-size($decimal-size, $keyword: null) {
+  @if $keyword {
+    font-size: $keyword;
+  } @else {
+    font-size: $decimal-size * $base-font-multiplier * 16px;
+  }
   font-size: $decimal-size * 1rem;
 }
 
@@ -45,12 +47,11 @@
   transition: $transition-property $transition-time $method;
 }
 
-
 // SVG background with png fallback
 // Needs svg test or modernizr to add .no-svg to the html element to trigger fallback
 @mixin svg-bg-with-fallback($file_name) {
   background-repeat: no-repeat;
-  background-image: inline-image('#{$file_name}.svg', image/svg\+xml);
+  background-image: inline-image('#{$file_name}.svg', image/svg\ + xml);
 
   html.no-svg & {
     background-image: image-url('#{$file_name}.png');

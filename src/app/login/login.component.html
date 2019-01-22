@@ -1,36 +1,51 @@
 <div class="metis-login-form metis-form">
-  <form class="login-form" (ngSubmit)="onSubmit()" [formGroup]="loginForm" #formDir="ngForm" novalidate autocomplete="off">
+  <form
+    class="login-form"
+    (ngSubmit)="onSubmit()"
+    [formGroup]="loginForm"
+    novalidate
+    autocomplete="off"
+  >
     <div class="form-header">
       <h2>{{ 'signintometis' | translate }}</h2>
     </div>
 
-    <div class="messages">
-      <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
-      <div class="success-message" *ngIf="successMessage">{{successMessage}}</div>
-    </div>
+    <app-notification
+      [notification]="notification"
+      (closed)="notification = undefined"
+    ></app-notification>
 
     <div class="form-fields">
       <fieldset class="form-group">
-
         <legend>{{ 'email' | translate }} &amp; {{ 'password' | translate }}</legend>
 
         <label for="email">{{ 'email' | translate }}:</label>
         <input id="email" type="email" formControlName="email" />
-        <div class="messages" *ngIf="loginForm.controls['email'].touched && !loginForm.controls['email'].valid">
+        <div
+          class="messages"
+          *ngIf="loginForm.controls['email'].touched && !loginForm.controls['email'].valid"
+        >
           <div class="error-message">{{ 'emailerror' | translate }}</div>
         </div>
 
         <label for="password">{{ 'password' | translate }}:</label>
         <input id="password" type="password" formControlName="password" />
-        <div class="messages" *ngIf="loginForm.controls['password'].touched && !loginForm.controls['password'].valid">
+        <div
+          class="messages"
+          *ngIf="loginForm.controls['password'].touched && !loginForm.controls['password'].valid"
+        >
           <div class="error-message">{{ 'passworderror' | translate }}</div>
         </div>
       </fieldset>
-     
+
       <div class="form-group form-group-btns">
-        <button class="login-btn" [ngClass]="{'svg-icon-spin-inbutton': loading===true}" type="submit" [disabled]="!loginForm.valid || loading">
-          {{ 'signin' | translate }}
-        </button>
+        <app-loading-button
+          classes="login-btn"
+          type="submit"
+          [disabled]="!loginForm.valid"
+          [isLoading]="loading"
+          [title]="'signin' | translate"
+        ></app-loading-button>
       </div>
     </div>
   </form>

@@ -1,41 +1,37 @@
-import { WorkflowService, ErrorService, AuthenticationService, RedirectPreviousUrl, TranslateService, DatasetsService } from '../../_services';
-import { MockWorkflowService, currentWorkflow, currentDataset, MockAuthenticationService, currentUser } from '../../_mocked';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { By } from '@angular/platform-browser';
 
-import { OngoingexecutionsComponent } from './ongoingexecutions.component';
+import {
+  createMockPipe,
+  MockTranslateService,
+  mockWorkflowExecution,
+  MockWorkflowService,
+} from '../../_mocked';
+import { WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
+
+import { OngoingexecutionsComponent } from '.';
 
 describe('OngoingexecutionsComponent', () => {
   let component: OngoingexecutionsComponent;
   let fixture: ComponentFixture<OngoingexecutionsComponent>;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule ],
-      declarations: [ OngoingexecutionsComponent, TranslatePipe ],
-      providers: [ {provide: WorkflowService, useClass: MockWorkflowService}, 
-        DatasetsService,
-        ErrorService, 
-        { provide: AuthenticationService, useClass: MockAuthenticationService},  
-        RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }]
-    })
-    .compileComponents();
+      declarations: [OngoingexecutionsComponent, createMockPipe('translate')],
+      providers: [
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(OngoingexecutionsComponent);
     component = fixture.componentInstance;
+    workflows = TestBed.get(WorkflowService);
   });
 
   it('should create', () => {
@@ -44,16 +40,10 @@ describe('OngoingexecutionsComponent', () => {
   });
 
   it('should show a log', () => {
-    spyOn(component.notifyShowLogStatus, 'emit');
-    component.showLog(1, 'mocked', 'testplugin');
+    spyOn(component.setShowPluginLog, 'emit');
+    component.showLog(mockWorkflowExecution);
     fixture.detectChanges();
-    expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();
-  });
-
-  it('should click view all', () => {
-    component.viewAll();
-    fixture.detectChanges();
-    expect(window.pageYOffset).toBe(0);
+    expect(component.setShowPluginLog.emit).toHaveBeenCalled();
   });
 
   it('should copy information', () => {
@@ -62,11 +52,15 @@ describe('OngoingexecutionsComponent', () => {
     expect(component.contentCopied).toBe(true);
   });
 
-  it('should get ongoing executions', () => {
-    component.ongoingExecutionsTotal = 1;
-    component.ongoingExecutionDataOutput = [currentWorkflow['results'][1]];
-    component.getOngoing();
-    fixture.detectChanges();
+  it('should cancel a workflow', () => {
+    spyOn(workflows, 'promptCancelThisWorkflow');
+    component.cancelWorkflow('');
+    expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
+    component.cancelWorkflow('10');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('10');
   });
 
+  it('should have a tracking function', () => {
+    expect(component.byId(10, mockWorkflowExecution)).toBe('253453453');
+  });
 });

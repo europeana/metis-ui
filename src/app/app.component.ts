@@ -1,31 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { WorkflowService, AuthenticationService, DatasetsService, ErrorService, TranslateService } from './_services';
-import { StringifyHttpError } from './_helpers';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { Event, Router, RouterEvent } from '@angular/router';
+
+import { environment } from '../environments/environment';
+
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 @Component({
-  providers: [AuthenticationService, DatasetsService],
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
 })
-
 export class AppComponent implements OnInit {
-
-  title = 'Metis-UI';
-  isLessMargin = false;
   bodyClass: string;
-  showWrapper: boolean = false;
-  currentWorkflowId;
+  showWrapper = false;
+  currentWorkflowId?: string;
   public loggedIn = false;
 
   constructor(
-    public workflows: WorkflowService,
+    private workflows: WorkflowService,
     private authentication: AuthenticationService,
-    private errors: ErrorService, 
-    public router: Router,
-    private translate: TranslateService) {
-  }
+    private errors: ErrorService,
+    private router: Router,
+  ) {}
 
   /** ngOnInit
   /* init for this component
@@ -34,50 +30,52 @@ export class AppComponent implements OnInit {
   /* add a body class
   /* and margins
   */
-  public ngOnInit(): void {  
+  public ngOnInit(): void {
+    this.router.events.subscribe((event: Event) => {
+      const url: string | undefined = (event as RouterEvent).url;
+      if (!url) {
+        return;
+      }
+      if (this.router.isActive(url, false)) {
+        this.loggedIn = this.authentication.validatedUser();
 
-    this.router.events.subscribe((event: any) => {
-      if (!event.url) { return false; }
-      if (this.router.isActive(event.url, false)) {
-        this.loggedIn = this.authentication.validatedUser( );
+        this.bodyClass = url.split('/')[1];
+        if (url === '/') {
+          this.bodyClass = 'home';
+        }
 
-        this.bodyClass = event.url.split('/')[1];
-        if (event.url === '/') { this.bodyClass = 'home'; }
-
-        this.isLessMargin = event.url.includes('home') || event.url === '/' || event.url.includes('dashboard');
+        if ((url === '/' || url === '/home') && this.loggedIn) {
+          this.router.navigate([environment.afterLoginGoto]);
+        }
       }
     });
 
-    this.workflows.promptCancelWorkflow.subscribe(workflow => {
-      if (workflow) {
-        this.currentWorkflowId = workflow;
+    this.workflows.promptCancelWorkflow.subscribe((workflowId: string) => {
+      if (workflowId) {
+        this.currentWorkflowId = workflowId;
         this.showWrapper = true;
       }
     });
-
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }
-
   }
 
   /** closePrompt
   /*  as the name suggests, this one closes the prompt or modal window
   */
-  closePrompt () {
+  closePrompt(): void {
     this.showWrapper = false;
   }
 
   /** cancelWorkflow
   /*  cancels the workflow using the currentWorkflow id
   */
-  cancelWorkflow () {
-    this.workflows.cancelThisWorkflow(this.currentWorkflowId).subscribe(result => {
-      this.closePrompt();
-      this.workflows.setWorkflowCancelled();
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err);   
-    });    
+  cancelWorkflow(): void {
+    this.workflows.cancelThisWorkflow(this.currentWorkflowId!).subscribe(
+      () => {
+        this.closePrompt();
+      },
+      (err: HttpErrorResponse) => {
+        this.errors.handleError(err);
+      },
+    );
   }
-
 }

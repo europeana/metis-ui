@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardactionsComponent } from './dashboardactions.component';
-import { TranslateService } from '../../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../../_translate';
+import { createMockPipe } from '../../_mocked';
+
+import { DashboardactionsComponent } from '.';
 
 describe('DashboardactionsComponent', () => {
   let component: DashboardactionsComponent;
@@ -10,16 +10,8 @@ describe('DashboardactionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardactionsComponent, TranslatePipe ],
-      providers: [ { provide: TranslateService,
-          useValue: {
-            translate: () => {
-              return {};
-            }
-          }
-        } ]
-    })
-    .compileComponents();
+      declarations: [DashboardactionsComponent, createMockPipe('translate')],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

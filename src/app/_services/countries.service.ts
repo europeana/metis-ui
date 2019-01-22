@@ -1,38 +1,35 @@
-
-import {map} from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 import { apiSettings } from '../../environments/apisettings';
+import { SingleCache } from '../_helpers';
+import { Country, Language } from '../_models';
 
-import { AuthenticationService } from '../_services/authentication.service';
-import { StringifyHttpError } from '../_helpers';
 import { ErrorService } from './error.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CountriesService {
+  constructor(private http: HttpClient, private errors: ErrorService) {}
 
-  constructor(private http: HttpClient, 
-    private errors: ErrorService,
-    private authentication: AuthenticationService) {}
+  private countries = new SingleCache(() => this.requestCountries());
+  private languages = new SingleCache(() => this.requestLanguages());
 
-  /** getCountriesLanguages
-  /* get a list of countries or languages
-  /* @param {boolean} type - type of values to return, either country or language
-  */
-  getCountriesLanguages(type) {
-    let url = `${apiSettings.apiHostCore}/datasets/countries`;        
-    if (type === 'language') {
-      url = `${apiSettings.apiHostCore}/datasets/languages`;  
-    }
-    return this.http.get(url).pipe(map(data => {      
-      if (data) {
-        return data;
-      } else {
-        return false;
-      }
-    })).pipe(this.errors.handleRetry());  
+  private requestCountries(): Observable<Country[]> {
+    const url = `${apiSettings.apiHostCore}/datasets/countries`;
+    return this.http.get<Country[]>(url).pipe(this.errors.handleRetry());
   }
 
-}
+  private requestLanguages(): Observable<Language[]> {
+    const url = `${apiSettings.apiHostCore}/datasets/languages`;
+    return this.http.get<Language[]>(url).pipe(this.errors.handleRetry());
+  }
 
+  getCountries(): Observable<Country[]> {
+    return this.countries.get();
+  }
+
+  getLanguages(): Observable<Language[]> {
+    return this.languages.get();
+  }
+}

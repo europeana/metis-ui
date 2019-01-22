@@ -1,15 +1,49 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { HttpRequest } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { TokenInterceptor } from './token.interceptor';
+import { MockAuthenticationService } from '../_mocked';
+
+import { AuthenticationService, TokenInterceptor } from '.';
 
 describe('TokenInterceptor', () => {
+  let service: TokenInterceptor;
+  let auth: AuthenticationService;
+
+  function checkAuthorizationForUrl(url: string, authorization: string | null): void {
+    const handler = { handle: jasmine.createSpy('handle') };
+    service.intercept(new HttpRequest('GET', url), handler);
+    const request = handler.handle.calls.first().args[0];
+    expect(request.headers.get('Authorization')).toBe(authorization);
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [TokenInterceptor]
+      providers: [
+        TokenInterceptor,
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+      ],
+      imports: [HttpClientTestingModule, RouterTestingModule],
     });
+    service = TestBed.get(TokenInterceptor);
+    auth = TestBed.get(AuthenticationService);
   });
 
-  it('should be created', inject([TokenInterceptor], (service: TokenInterceptor) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should insert an authorization header if logged in', () => {
+    checkAuthorizationForUrl('/', 'Bearer ffsafre');
+  });
+
+  it('should not insert an authorization header if not logged in', () => {
+    spyOn(auth, 'getToken').and.returnValue(null);
+    checkAuthorizationForUrl('/', null);
+  });
+
+  it('should not insert an authorization header for signin', () => {
+    checkAuthorizationForUrl('/signin', null);
+  });
+
+  it('should not insert an authorization header for register', () => {
+    checkAuthorizationForUrl('/register', null);
+  });
 });

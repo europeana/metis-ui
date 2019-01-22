@@ -1,17 +1,14 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-
-import { LoginComponent } from './login.component';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
 
-import { RedirectPreviousUrl, TranslateService, AuthenticationService, ErrorService } from '../_services';
-import { TRANSLATION_PROVIDERS, TranslatePipe }   from '../_translate';
+import { createMockPipe, MockAuthenticationService, MockTranslateService } from '../_mocked';
+import { AuthenticationService, RedirectPreviousUrl } from '../_services';
+import { TranslateService } from '../_translate';
 
-import { MockAuthenticationService, currentUser } from '../_mocked';
+import { LoginComponent } from '.';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -20,22 +17,17 @@ describe('LoginComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientModule, ReactiveFormsModule ],
-      declarations: [ LoginComponent, TranslatePipe ],
-      providers: [ RedirectPreviousUrl, ErrorService,
-        { provide: AuthenticationService, useClass: MockAuthenticationService},
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule, ReactiveFormsModule],
+      declarations: [LoginComponent, createMockPipe('translate')],
+      providers: [
+        RedirectPreviousUrl,
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: TranslateService, useClass: MockTranslateService },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
     router = TestBed.get(Router);
-
   }));
 
   beforeEach(() => {
@@ -50,11 +42,10 @@ describe('LoginComponent', () => {
   });
 
   it('should login', fakeAsync((): void => {
-
     component.loginForm.controls.email.setValue('mocked@mocked.com');
     component.loginForm.controls.password.setValue('mocked123');
-    
-    spyOn(router, 'navigate').and.callFake(() => { });
+
+    spyOn(router, 'navigate').and.callFake(() => {});
     tick(50);
 
     component.onSubmit();
@@ -62,6 +53,4 @@ describe('LoginComponent', () => {
 
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   }));
-
 });
-

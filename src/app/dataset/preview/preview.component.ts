@@ -1,74 +1,72 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService, TranslateService, ErrorService, DatasetsService } from '../../_services';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
-import { StringifyHttpError } from '../../_helpers';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-
-import 'codemirror/mode/xml/xml';
+import { EditorConfiguration } from 'codemirror';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
-import 'codemirror/addon/fold/comment-fold';
-
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/mode/xml/xml';
+import { switchMap } from 'rxjs/operators';
 import * as beautify from 'vkbeautify';
+
+import {
+  Dataset,
+  httpErrorNotification,
+  Notification,
+  PluginType,
+  WorkflowExecution,
+  XmlSample,
+} from '../../_models';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
+import { PreviewFilters } from '../dataset.component';
 
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
-  styleUrls: [
-    './preview.component.scss'
-   ]
+  styleUrls: ['./preview.component.scss'],
 })
-
-export class PreviewComponent implements OnInit {
-
-  constructor(private workflows: WorkflowService, 
-    private http: HttpClient,
+export class PreviewComponent implements OnInit, OnDestroy {
+  constructor(
+    private workflows: WorkflowService,
     private translate: TranslateService,
     private errors: ErrorService,
     private datasets: DatasetsService,
-    private router: Router) { }
+    private router: Router,
+    private sanitizer: DomSanitizer,
+  ) {}
 
-  @Input('datasetData') datasetData;
-  editorConfig;
-  allWorkflows: Array<any> = [];
-  allWorkflowDates: Array<any> = [];
-  allPlugins: Array<any> = [];
-  allSamples: Array<any> = [];
-  allTransformedSamples;
-  filterDate: boolean = false;
-  filterPlugin: boolean = false;
+  @Input() datasetData: Dataset;
+  @Input() previewFilters: PreviewFilters;
+  @Input() tempXSLT?: string;
+
+  @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
+
+  editorConfig: EditorConfiguration;
+  allWorkflowExecutions: Array<WorkflowExecution> = [];
+  allPlugins: Array<{ type: PluginType; error: boolean }> = [];
+  allSamples: Array<XmlSample> = [];
+  allTransformedSamples: XmlSample[];
+  filterDate = false;
+  filterPlugin = false;
   selectedDate: string;
-  selectedPlugin: string;
-  displayFilterWorkflow;
-  displayFilterDate;
-  displayFilterPlugin;
-  expandedSample;
+  selectedPlugin?: string;
+  expandedSample?: number;
   nosample: string;
-  errorMessage: string;
-  nextPage: number = 0;
-  nextPageDate: number = 0;
-  datasetHistory;
-  execution: number;
-  tempFilterSelection: Array<any> = [];
-  prefill;
-  loadingSamples: boolean = false;
-  tempXSLT;
+  notification?: Notification;
+  execution: WorkflowExecution;
+  loadingSamples = false;
+  loadingTransformSamples = false;
+  timeout?: number;
+  downloadUrlCache: { [key: string]: string } = {};
 
-  /** ngOnInit
-  /*  init this component
-  /* set values for codemirror editor
-  /* set translation language
-  /* set translation for nosmaple key
-  /* add a workflow filter if dataset is know
-  /* get prefilled values and prefill filters if available
-  */  
-  ngOnInit() {
-  	this.editorConfig = { 
+  ngOnInit(): void {
+    this.editorConfig = {
       mode: 'application/xml',
       lineNumbers: true,
       indentUnit: 2,
@@ -77,212 +75,241 @@ export class PreviewComponent implements OnInit {
       indentWithTabs: true,
       viewportMargin: Infinity,
       lineWrapping: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     };
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-      this.nosample = this.translate.instant('nosample');
-    }
-    
-    if (this.datasetData) {
-      this.addDateFilter();
-    }
+    this.nosample = this.translate.instant('nosample');
 
-    this.prefill = this.datasets.getPreviewFilters();
+    this.addExecutionsFilter();
+
     this.prefillFilters();
 
-    this.tempXSLT = this.datasets.getTempXSLT();
     if (this.tempXSLT) {
       this.transformSamples(this.tempXSLT);
     }
-
-  }  
-
-  /** addDateFilter
-  /* populate a filter with dates based on selected workflow
-  /* sorted by date
-  /* save selection, when switching tab
-  /* @param {string} workflow - selected workflow
-  */
-  addDateFilter() {
-    this.workflows.getAllExecutionsEveryStatus(this.datasetData.datasetId, this.nextPageDate).subscribe(result => {
-      for (let i = 0; i < result['results'].length; i++) {  
-        this.allWorkflowDates.push(result['results'][i]);
-      }
-      this.nextPageDate = result['nextPage'];
-      if (this.nextPageDate >= 0) {
-        this.addDateFilter();
-      }
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err); 
-    });     
   }
 
-  /** addDateFilter
-  /* populate a filter with plugins based on selected execution/date
-  /* send complete execution object to function and not only date,
-  /* to prevent a second (duplicate) call 
-  /* save selection, when switching tab
-  /* @param {object} execution - selected execution
-  */
-  addPluginFilter(execution) {
+  ngOnDestroy(): void {
+    clearTimeout(this.timeout);
+
+    Object.keys(this.downloadUrlCache).forEach((key) => {
+      const url = this.downloadUrlCache[key];
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // populate a filter with executions based on selected workflow
+  addExecutionsFilter(): void {
+    this.workflows.getDatasetExecutionsCollectingPages(this.datasetData.datasetId).subscribe(
+      (result) => {
+        this.allWorkflowExecutions = result;
+      },
+      (err: HttpErrorResponse) => {
+        this.errors.handleError(err);
+      },
+    );
+  }
+
+  // populate a filter with plugins based on selected execution
+  addPluginsFilter(execution: WorkflowExecution): void {
     this.filterDate = false;
     this.allPlugins = [];
     this.execution = execution;
-    this.selectedDate = execution['startedDate'];    
-    this.nextPageDate = 0;
-    this.saveTempFilterSelection('date', execution);
-    for (let i = 0; i < execution['metisPlugins'].length; i++) {  
-      if (execution['metisPlugins'][i]['pluginStatus'] === 'FINISHED') {
-        this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
+    this.selectedDate = execution.startedDate;
+    this.previewFilters.execution = execution;
+    this.setPreviewFilters.emit(this.previewFilters);
+    for (let i = 0; i < execution.metisPlugins.length; i++) {
+      if (execution.metisPlugins[i].pluginStatus === 'FINISHED') {
+        this.allPlugins.push({
+          type: execution.metisPlugins[i].pluginType,
+          error: false,
+        });
       } else {
-        if (execution['metisPlugins'][i]['executionProgress']['processedRecords'] > execution['metisPlugins'][i]['executionProgress']['errors']) {
-          this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': false});
+        if (
+          execution.metisPlugins[i].executionProgress.processedRecords >
+          execution.metisPlugins[i].executionProgress.errors
+        ) {
+          this.allPlugins.push({
+            type: execution.metisPlugins[i].pluginType,
+            error: false,
+          });
         } else {
-          this.allPlugins.push({'type': execution['metisPlugins'][i].pluginType, 'error': true});
+          this.allPlugins.push({
+            type: execution.metisPlugins[i].pluginType,
+            error: true,
+          });
         }
       }
     }
   }
 
-  /** getXMLSamples
-  /* get and show samples based on plugin
-  /* show loader while fetching the samples
-  /* @param {string} plugin - selected plugin
-  */
-  getXMLSamples(plugin) {
+  // get and show samples based on plugin
+  getXMLSamples(plugin: PluginType): void {
     this.loadingSamples = true;
     this.onClickedOutside();
-    this.selectedPlugin = plugin; 
-    this.saveTempFilterSelection('plugin', plugin);
-    this.workflows.getWorkflowSamples(this.execution['id'], plugin).subscribe(result => {
-      this.allSamples = this.undoNewLines(result);  
-      if (this.allSamples.length === 1) {
-       this.expandedSample = 0;
-      }
-      this.loadingSamples = false;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
-    });
+    this.selectedPlugin = plugin;
+    this.previewFilters.plugin = plugin;
+    this.setPreviewFilters.emit(this.previewFilters);
+    this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe(
+      (result) => {
+        this.allSamples = this.undoNewLines(result);
+        if (this.allSamples.length === 1) {
+          this.expandedSample = 0;
+        }
+        this.loadingSamples = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.loadingSamples = false;
+      },
+    );
   }
 
-  /** transformSamples
-  /* transform samples on the fly
-  /* based on temp saved XSLT
-  /* @param {string} type - either default or custom
-  */
-  transformSamples(type) {
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {
-      if (!result['results'][0]) { return false; }
-      this.workflows.getWorkflowSamples(result['results'][0]['id'], result['results'][0]['metisPlugins'][0]['pluginType']).subscribe(samples => {
-        this.allSamples = this.undoNewLines(samples); 
-        this.datasets.getTransform(this.datasetData.datasetId, samples, type).subscribe(transformed => {
-          this.allTransformedSamples = this.undoNewLines(transformed);
-        }, (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err); 
-          this.errorMessage = `${StringifyHttpError(error)}`;   
-        });
-      }, (err: HttpErrorResponse) => {
-        this.errors.handleError(err);         
-      });
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
-    });
+  // transform samples on the fly based on temp saved XSLT
+  transformSamples(type: string): void {
+    const handleError = (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.notification = httpErrorNotification(error);
+      this.loadingTransformSamples = false;
+    };
+
+    this.loadingTransformSamples = true;
+    this.workflows
+      .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
+      .subscribe((result) => {
+        if (!result.results[0]) {
+          this.loadingTransformSamples = false;
+          return;
+        }
+        this.workflows
+          .getWorkflowSamples(result.results[0].id, result.results[0].metisPlugins[0].pluginType)
+          .pipe(
+            switchMap((samples) => {
+              this.allSamples = this.undoNewLines(samples);
+              return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
+            }),
+          )
+          .subscribe((transformed) => {
+            this.allTransformedSamples = this.undoNewLines(transformed);
+            this.loadingTransformSamples = false;
+          }, handleError);
+      }, handleError);
   }
 
-  /** saveTempFilterSelection
-  /* save selected options from filters
-  /* so they can be prefilled after switching tabs
-  /* @param {filter} array - name of filter
-  /* @param {toSave} any - string or object to save temporarily
-  */
-  saveTempFilterSelection(filter, toSave) {
-    this.tempFilterSelection[filter] = toSave;
-    this.datasets.setPreviewFilters(this.tempFilterSelection);
-  }
+  // prefill filters, when temporarily saved options are available
+  prefillFilters(): void {
+    const execution = this.previewFilters.execution;
+    if (execution) {
+      this.selectedDate = execution.startedDate;
+      this.addPluginsFilter(execution);
+    }
 
-  /** prefillFilters
-  /* prefill filters, when temporarily saved options are available
-  */
-  prefillFilters() {
-    if (this.prefill) {      
-      if (this.prefill['date']) {
-        this.selectedDate = this.prefill['date'];
-        this.addPluginFilter(this.prefill['date']);
-      }
-
-      if (this.prefill['plugin']) {
-        this.selectedPlugin = this.prefill['plugin'];
-        this.getXMLSamples(this.prefill['plugin']);
-      }
+    const plugin = this.previewFilters.plugin;
+    if (plugin) {
+      this.selectedPlugin = plugin;
+      this.getXMLSamples(plugin);
     }
   }
 
-  /** expandSample
-  /* expand the editor, so you can view more lines of code
-  /* only one sample can be expanded
-  /* @param {number} index - index of sample to expand
-  */
-  expandSample(index: number) {
-    let sample = this.allSamples[index]['xmlRecord'];
-    let samples = this.undoNewLines(this.allSamples);
-    this.allSamples[index]['xmlRecord'] = '';
+  // expand the editor, so you can view more lines of code
+  // only one sample can be expanded
+  expandSample(index: number): void {
+    const sample = this.allSamples[index].xmlRecord;
+    const samples = this.undoNewLines(this.allSamples);
+    this.allSamples[index].xmlRecord = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
-    setTimeout(function() {
-      samples[index]['xmlRecord'] = sample;
+    this.timeout = window.setTimeout(() => {
+      samples[index].xmlRecord = sample;
     }, 500);
   }
 
-  undoNewLines(samples) {
-    let clearSamples = samples;    
-    for (let i = 0; i < samples.length; i++) {  
-      clearSamples[i]['xmlRecord'] = samples[i]['xmlRecord'].replace(/[\r\n]/g, '').trim();
+  undoNewLines(samples: XmlSample[]): XmlSample[] {
+    const clearSamples = samples;
+    for (let i = 0; i < samples.length; i++) {
+      clearSamples[i].xmlRecord = samples[i].xmlRecord.replace(/[\r\n]/g, '').trim();
     }
-    return clearSamples
+    return clearSamples;
   }
 
-  /** gotoMapping
-  /* go to mapping tab, after transformation on the fly
-  */
-  gotoMapping() {
-    this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]); 
+  gotoMapping(): void {
+    this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]);
   }
 
-  /** toggleFilterDate
-  /* show or hide date filter
-  */
-  toggleFilterDate() {
+  toggleFilterDate(): void {
     this.onClickedOutside();
-    this.nextPageDate = 0;
     this.allPlugins = [];
     this.selectedPlugin = undefined;
-    if (this.filterDate === false) {
-      this.filterDate = true;
-    } else {
-      this.filterDate = false;
-    }
+    this.filterDate = !this.filterDate;
   }
 
-  /** toggleFilterPlugin
-  /* show or hide plugin filter
-  */
-  toggleFilterPlugin() {
+  toggleFilterPlugin(): void {
     this.onClickedOutside();
-    if (this.filterPlugin === false) {
-      this.filterPlugin = true;
-    } else {
-      this.filterPlugin = false;
+    this.filterPlugin = !this.filterPlugin;
+  }
+
+  // close all open filters when click outside the filters
+  onClickedOutside(): void {
+    this.filterDate = false;
+    this.filterPlugin = false;
+  }
+
+  private extractLinkFromElement(element: Element): string | undefined {
+    if (element && element.classList.contains('cm-string')) {
+      const text = element.textContent || '';
+      const match = /^"(https?:\/\/\S+)"$/.exec(text);
+      if (match) {
+        return match[1];
+      }
+    }
+    return undefined;
+  }
+
+  // if the click is on a http(s) link, open the link in a new tab
+  handleCodeClick(event: MouseEvent): void {
+    const target = event.target as Element;
+    const link = this.extractLinkFromElement(target);
+    if (link) {
+      window.open(link, '_blank');
     }
   }
 
-  /** onClickedOutside
-  /* close all open filters when click outside the filters
-  */
-  onClickedOutside(e?) {
-    this.filterDate = false;   
-    this.filterPlugin = false;   
+  private clearLinkActive(element: Element): void {
+    Array.from(element.querySelectorAll('.link-active')).forEach((link) => {
+      link.classList.remove('link-active');
+    });
+  }
+
+  handleMouseOver(event: MouseEvent): void {
+    const target = event.target as Element;
+    const link = this.extractLinkFromElement(target);
+    if (link) {
+      this.clearLinkActive(event.currentTarget as Element);
+      target.classList.add('link-active');
+    }
+  }
+
+  handleMouseOut(event: MouseEvent): void {
+    const target = event.target as Element;
+    const link = this.extractLinkFromElement(target);
+    if (link) {
+      this.clearLinkActive(event.currentTarget as Element);
+    }
+  }
+
+  byId(_: number, item: WorkflowExecution): string {
+    return item.id;
+  }
+
+  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group: string = ''): SafeUrl {
+    const key = `${group}:${ecloudId}`;
+    let url = this.downloadUrlCache[key];
+    if (!url) {
+      const parts = [beautify.xml(xmlRecord)];
+      const blob = new Blob(parts, { type: 'text/xml' });
+      url = URL.createObjectURL(blob);
+      this.downloadUrlCache[key] = url;
+    }
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 }

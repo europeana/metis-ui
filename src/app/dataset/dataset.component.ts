@@ -1,206 +1,226 @@
-import { Component, OnInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { StringifyHttpError } from '../_helpers';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription, timer } from 'rxjs';
+
 import { environment } from '../../environments/environment';
-import { timer as observableTimer, Observable } from 'rxjs';
+import {
+  Dataset,
+  HarvestData,
+  httpErrorNotification,
+  isWorkflowCompleted,
+  Notification,
+  PluginExecution,
+  PluginType,
+  ReportRequest,
+  successNotification,
+  Workflow,
+  WorkflowExecution,
+} from '../_models';
+import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
 
-import { AuthenticationService, DatasetsService, RedirectPreviousUrl, WorkflowService, ErrorService, TranslateService } from '../_services';
-
-import { DatasetDirective } from './dataset.directive';
-import { DatasetformComponent } from './datasetform/datasetform.component';
-import { HistoryComponent } from './history/history.component';
-import { MappingComponent } from './mapping/mapping.component';
-import { PreviewComponent } from './preview/preview.component';
-import { WorkflowComponent } from './workflow/workflow.component';
-
-import { datasetTab } from './datasettab';
-
-import { User } from '../_models';
+export interface PreviewFilters {
+  execution?: WorkflowExecution;
+  plugin?: PluginType;
+}
 
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss']  
+  styleUrls: ['./dataset.component.scss'],
 })
-
-export class DatasetComponent implements OnInit {
-
-  constructor(private http: HttpClient,
-    private authentication: AuthenticationService,
+export class DatasetComponent implements OnInit, OnDestroy {
+  constructor(
     private datasets: DatasetsService,
     private workflows: WorkflowService,
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private RedirectPreviousUrl: RedirectPreviousUrl,
-    private errors: ErrorService, 
-    private translate: TranslateService,
-    private route: ActivatedRoute) { }
+    private errors: ErrorService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private documentTitleService: DocumentTitleService,
+  ) {}
 
-  @ViewChild(DatasetDirective) datasetHost: DatasetDirective;
+  activeTab = 'edit';
+  datasetId: string;
+  prevTab?: string;
+  notification?: Notification;
+  datasetIsLoading = true;
+  harvestIsLoading = true;
+  harvestSubscription: Subscription;
+  workflowIsLoading = true;
+  workflowSubscription: Subscription;
+  lastExecutionIsLoading = true;
+  lastExecutionSubscription: Subscription;
+  isStarting = false;
 
-  activeTab: string = 'new';
-  prevTab: string;
-  showLog: boolean = false;
-  user: User;
-  errorMessage: string;
-  successMessage: string;
-  subscription;
-  subscriptionWorkflow;
-  intervalTimer: number = environment.intervalStatus;
-  tabsLoaded: boolean = false;
+  datasetData: Dataset;
+  isFavorite = false;
+  workflowData?: Workflow;
+  harvestPublicationData?: HarvestData;
+  lastExecutionData?: WorkflowExecution;
 
-  public isShowingLog;
-  public datasetData; 
-  public activeSet: string;
-  public workflowData;
-  public harvestPublicationData;
-  public lastExecutionData;
+  showPluginLog?: PluginExecution;
+  tempXSLT?: string;
+  previewFilters: PreviewFilters = {};
+  reportRequest?: ReportRequest;
 
-  /** ngOnInit
-  /* set current user
-  /* if id is known, go to update dataset form, else new
-  /* subscribe to workflow changes
-  /* set translation language
-  */ 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.documentTitleService.setTitle('Dataset');
 
-    this.user = this.authentication.currentUser;
+    this.route.params.subscribe((params) => {
+      const { tab, id } = params;
+      if (tab === 'new') {
+        this.notification = successNotification('New dataset created! Id: ' + id);
+        this.router.navigate([`/dataset/edit/${id}`]);
+        return;
+      }
 
-    this.route.params.subscribe(params => {
+      this.activeTab = tab;
+      this.datasetId = id;
+      if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+        this.tempXSLT = undefined;
+      }
       this.prevTab = this.activeTab;
-      this.activeTab = params['tab']; //if no tab defined, default tab is 'new'
-      this.activeSet = params['id']; // if no id defined, let's create a new dataset
-      this.returnDataset(this.activeSet);
 
-      if (this.tabsLoaded) {
-        this.loadTabComponent(); 
-      }
-    });    
-
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-    }
-  }
-
-  ngOnDestroy() {
-    if (this.subscription) { this.subscription.unsubscribe(); }
-    if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
-  }
-
-  /** returnDataset
-  /*  returns all dataset information based on identifier
-  /* @param {string} id - dataset identifier
-  */
-  returnDataset(id?: string) {
-    if (!id) { 
-      this.loadTabComponent(); 
-      return false;
-    }
-    
-    this.datasets.getDataset(id).subscribe(result => {
-      this.datasetData = result;
-      // check for harvest data
-      this.workflows.getPublishedHarvestedData(this.datasetData.datasetId).subscribe(result => {
-        this.harvestPublicationData = result;
-      });
-
-      // check for last execution every x seconds
-      if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-      let timer = observableTimer(0, this.intervalTimer);
-      this.subscription = timer.subscribe(t => {
-        this.workflows.getLastExecution(this.datasetData.datasetId).subscribe(execution => {
-          this.lastExecutionData = execution;
-        }, (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.errorMessage = `${StringifyHttpError(error)}`;
-          this.subscription.unsubscribe();
-        });
-      });
-
-
-      // check workflow for every x seconds
-      if (this.subscriptionWorkflow) { this.subscriptionWorkflow.unsubscribe(); }
-      this.subscriptionWorkflow = timer.subscribe(t => {
-        this.workflows.getWorkflowForDataset(this.datasetData.datasetId).subscribe(workflow => {  
-          this.workflowData = workflow;
-          if (this.workflowData && !this.tabsLoaded) {
-            this.loadTabComponent();
-            this.tabsLoaded = true;
-          }
-        }, (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.errorMessage = `${StringifyHttpError(error)}`;
-          this.subscriptionWorkflow.unsubscribe();
-        });
-      });
-
-      // no execution yet?
-      if (!this.lastExecutionData && !this.workflowData) {
-        this.loadTabComponent();
-      }
-
-    }, (err: HttpErrorResponse) => {
-        if (this.subscription) { this.subscription.unsubscribe(); }
-        const error = this.errors.handleError(err);
-        this.errorMessage = `${StringifyHttpError(error)}`;
+      this.loadData();
     });
   }
 
-  /** onNotifyShowLogStatus
-  /*  opens/closes the log messages 
-  /* @param {boolean} message - show log yes/no
-  */
-  onNotifyShowLogStatus(message):void {
-    this.isShowingLog = message;
-  }
-
-  /** loadTabComponent
-  /*  loads the content within the placeholder
-  */
-  loadTabComponent() {
-
-    if (!this.getCurrentTab()) {return false; }
-
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getCurrentTab().component);
-    let viewContainerRef = this.datasetHost.viewContainerRef;
-    viewContainerRef.clear();
-    let componentRef = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.datasetData = this.getCurrentTab().data;
-    componentRef.instance.workflowData = this.getCurrentTab().data2;
-    
-    this.successMessage = this.datasets.getDatasetMessage();
-
-    if (this.activeTab === 'preview' && this.prevTab === 'mapping') {
-      this.datasets.setTempXSLT(this.datasets.getTempXSLT());
-    } else {
-      this.datasets.setTempXSLT(null);
+  ngOnDestroy(): void {
+    if (this.harvestSubscription) {
+      this.harvestSubscription.unsubscribe();
+    }
+    if (this.workflowSubscription) {
+      this.workflowSubscription.unsubscribe();
+    }
+    if (this.lastExecutionSubscription) {
+      this.lastExecutionSubscription.unsubscribe();
     }
   }
 
-  /** getCurrentTab
-  /*  returns the components that will be used in the component placeholder within a tab
-  /*  based on currently active tab
-  */
-  getCurrentTab() {
-    if (this.activeTab === 'new' || this.activeTab === 'edit') {
-      return new datasetTab(DatasetformComponent, this.datasetData, this.workflowData);
-    } else if (this.activeTab === 'log') {
-      return new datasetTab(HistoryComponent, this.datasetData, this.workflowData);
-    } else  if (this.activeTab === 'mapping') {
-      return new datasetTab(MappingComponent, this.datasetData, this.workflowData);
-    } else  if (this.activeTab === 'preview') {
-      return new datasetTab(PreviewComponent, this.datasetData, this.workflowData);
-    } else  if (this.activeTab === 'workflow') {
-      return new datasetTab(WorkflowComponent, this.datasetData, this.workflowData);
-    } 
+  loadData(): void {
+    this.datasets.getDataset(this.datasetId, true).subscribe(
+      (result) => {
+        this.datasetData = result;
+        this.isFavorite = this.datasets.isFavorite(this.datasetData);
+        this.datasetIsLoading = false;
+
+        this.documentTitleService.setTitle(this.datasetData.datasetName || 'Dataset');
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.datasetIsLoading = false;
+      },
+    );
+
+    // check for harvest data every x seconds
+    if (this.harvestSubscription) {
+      this.harvestSubscription.unsubscribe();
+    }
+    const harvestTimer = timer(0, environment.intervalStatusMedium);
+    this.harvestSubscription = harvestTimer.subscribe(() => {
+      this.loadHarvestData();
+    });
+
+    // check workflow for every x seconds
+    if (this.workflowSubscription) {
+      this.workflowSubscription.unsubscribe();
+    }
+    const workflowTimer = timer(0, environment.intervalStatusMedium);
+    this.workflowSubscription = workflowTimer.subscribe(() => {
+      this.loadWorkflow();
+    });
+
+    // check for last execution every x seconds
+    if (this.lastExecutionSubscription) {
+      this.lastExecutionSubscription.unsubscribe();
+    }
+    const executionsTimer = timer(0, environment.intervalStatus);
+    this.lastExecutionSubscription = executionsTimer.subscribe(() => {
+      this.loadLastExecution();
+    });
   }
 
-  /** clickOutsideMessage
-  /*  click outside message to close it
-  /* @param {any} e - event, optional
-  */
-  clickOutsideMessage(e?) {
-    this.errorMessage = undefined;
-    this.successMessage = undefined;
+  datasetUpdated(): void {
+    this.loadData();
+  }
+
+  loadHarvestData(): void {
+    this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(
+      (resultHarvest) => {
+        this.harvestPublicationData = resultHarvest;
+        this.harvestIsLoading = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.harvestSubscription.unsubscribe();
+        this.harvestIsLoading = false;
+      },
+    );
+  }
+
+  loadWorkflow(): void {
+    this.workflows.getWorkflowForDataset(this.datasetId).subscribe(
+      (workflow) => {
+        this.workflowData = workflow;
+        this.workflowIsLoading = false;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.workflowSubscription.unsubscribe();
+        this.workflowIsLoading = false;
+      },
+    );
+  }
+
+  loadLastExecution(): void {
+    this.workflows.getLastDatasetExecution(this.datasetId).subscribe(
+      (execution) => {
+        if (execution) {
+          this.workflows.getReportsForExecution(execution);
+        }
+
+        this.lastExecutionData = execution;
+        this.lastExecutionIsLoading = false;
+
+        if (execution && !isWorkflowCompleted(execution)) {
+          this.isStarting = false;
+        }
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.lastExecutionSubscription.unsubscribe();
+        this.lastExecutionIsLoading = false;
+      },
+    );
+  }
+
+  startWorkflow(): void {
+    this.isStarting = true;
+    this.workflows.startWorkflow(this.datasetId).subscribe(
+      () => {
+        this.loadHarvestData();
+        this.loadLastExecution();
+        window.scrollTo(0, 0);
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.isStarting = false;
+        window.scrollTo(0, 0);
+      },
+    );
+  }
+
+  toggleFavorite(): void {
+    this.isFavorite = !this.isFavorite;
+    if (this.isFavorite) {
+      this.datasets.addFavorite(this.datasetData);
+    } else {
+      this.datasets.removeFavorite(this.datasetData);
+    }
   }
 }

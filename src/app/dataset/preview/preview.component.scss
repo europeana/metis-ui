@@ -1,5 +1,12 @@
-@import '../../assets/sass/scss/generic/variables';
-@import '../../assets/sass/pandora/settings/metis-variables';
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
+
+.success-message .svg-icon-spin-inbutton {
+  padding-left: 0;
+  &::after {
+    top: -0.1rem;
+  }
+}
 
 .filter-wrapper {
   position: relative;
@@ -12,7 +19,7 @@
   .notavailable {
     color: $gray-lighter;
     display: inline-block;
-    padding-left: .5rem;
+    padding-left: 0.5rem;
   }
 }
 
@@ -43,12 +50,9 @@
   .view-sample-editor {
     background: $white;
     display: inline-block;
+    position: relative;
     text-align: right;
     width: 70%;
-
-    a {
-      margin-right: 1rem;
-    }
   }
 
   .view-sample-editor-codemirror {
@@ -106,7 +110,7 @@
     background: $eu-jade;
     border: 1px solid $eu-jade;
     font-size: $font-size-slightly-smaller;
-    margin: .5rem 1rem 1rem 0;
+    margin: 0.5rem 1rem 0.5rem 0.5rem;
 
     &:hover,
     &.active {
@@ -119,6 +123,28 @@
       background: $eu-jade;
       color: $white;
     }
+  }
+}
 
+.load-more-btn {
+  margin-right: 1rem;
+}
+
+.preview-controls {
+  display: flex;
+
+  .preview-controls-left,
+  .preview-controls-right {
+    align-items: center;
+    display: flex;
+    width: 50%;
+  }
+
+  .preview-controls-left {
+    justify-content: flex-start;
+  }
+
+  .preview-controls-right {
+    justify-content: flex-end;
   }
 }

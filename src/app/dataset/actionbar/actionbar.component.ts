@@ -1,246 +1,116 @@
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import {timer as observableTimer} from 'rxjs';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
-import { Observable } from 'rxjs';
-import { StringifyHttpError, copyExecutionAndTaskId } from '../../_helpers';
-
-import { WorkflowService, AuthenticationService, ErrorService, TranslateService, DatasetsService } from '../../_services';
-import { environment } from '../../../environments/environment';
+import { copyExecutionAndTaskId } from '../../_helpers';
+import {
+  getCurrentPlugin,
+  isWorkflowCompleted,
+  PluginExecution,
+  Report,
+  ReportRequest,
+  TopologyName,
+  Workflow,
+  WorkflowExecution,
+  WorkflowStatus,
+} from '../../_models';
+import { WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
-  styleUrls: ['./actionbar.component.scss']
+  styleUrls: ['./actionbar.component.scss'],
 })
-
 export class ActionbarComponent {
+  constructor(private workflows: WorkflowService) {}
 
-  constructor(public workflows: WorkflowService,
-      public datasets: DatasetsService,
-      private http: HttpClient,
-      private authentication: AuthenticationService,
-      private errors: ErrorService, 
-      private translate: TranslateService) { }
+  private _lastExecutionData?: WorkflowExecution;
 
-  @Input('isShowingLog') isShowingLog: boolean;
-  @Input('datasetData') datasetData;
-  @Input('lastExecutionData') lastExecutionData;
-  @Input('workflowData') workflowData;
-  errorMessage;
-  workflowPercentage: number = 0;
-  subscription;
-  intervalTimer = environment.intervalStatusShort;
-  now;
-  totalInDataset: number;
-  totalProcessed: number = 0;
-  totalErrors: number = 0;
-  cancelling: string;
-  currentStatus: any;
-  currentWorkflow;
-  currentPluginName;
-  currentExternalTaskId;
-  currentTopology;
-  currentPlugin = 0; // pick the first one for now
-  logMessages;
-  isShowingWorkflowSelector: boolean = false;
-  workflowInfoAvailable: boolean = false;
-  logIsOpen: boolean = false;
-  contentCopied: boolean = false;
-  workflowIsDone: boolean = false;
-  report;
+  @Input() datasetId: string;
+  @Input() showPluginLog?: PluginExecution;
+  @Input() workflowData?: Workflow;
+  @Input() isStarting = false;
 
-  @Output() notifyShowLogStatus: EventEmitter<any> = new EventEmitter<any>();
+  @Output() startWorkflow = new EventEmitter<void>();
+  @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
+  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
 
-  /** ngOnInit
-  /* init for this component: 
-  /* get most recently started execution
-  /* act when workflow changed
-  /* set language to use for translations
-  */
-  ngOnInit() {
-    this.returnWorkflowInfo();
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-      this.cancelling = this.translate.instant('cancelling');
-    }    
-  }
+  currentPlugin?: PluginExecution;
+  now?: string;
+  workflowPercentage = 0;
+  totalErrors = 0;
+  hasReport = false;
+  totalInDataset = 0;
+  totalProcessed = 0;
+  currentStatus?: string;
+  currentPluginName?: string;
+  currentExternalTaskId?: string;
+  currentTopology?: TopologyName;
 
-  /** ngOnChanges
-  /*  look for changes, and more specific the lastExecutionData
-  */
-  ngOnChanges() { 
-    if (this.workflowData && !this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
+  isCancelling?: boolean;
+  isCompleted?: boolean;
 
-    if (!this.lastExecutionData) { return false; }
-    if (!this.subscription || this.subscription.closed) {
-      this.currentWorkflow = this.lastExecutionData;
-      this.currentPlugin = this.workflows.getCurrentPlugin(this.currentWorkflow);
+  contentCopied = false;
+  report?: Report;
 
-      let thisPlugin = this.currentWorkflow['metisPlugins'][this.currentPlugin];
-      this.setCurrentPluginInfo(thisPlugin);
-      this.startPollingWorkflow();      
-    }
-  }
+  @Input()
+  set lastExecutionData(value: WorkflowExecution | undefined) {
+    this._lastExecutionData = value;
 
-  /** returnWorkflowInfo
-  /*  check if workflow info is already available
-  */
-  returnWorkflowInfo () {
-    let workflowinfo = this.workflowData;
-    if (workflowinfo) {
-      this.workflowInfoAvailable = true;
-    }
-  }
+    if (value) {
+      this.currentPlugin = getCurrentPlugin(value);
+      this.currentStatus = this.currentPlugin.pluginStatus;
 
-  /** startPollingWorkflow
-  /*  start a timer and start checking the status of a workflow
-  */
-  startPollingWorkflow() {
-    if (this.subscription || !this.authentication.validatedUser()) { this.subscription.unsubscribe(); }
-    let timer = observableTimer(0, this.intervalTimer);
-    this.subscription = timer.subscribe(t => {
-      if (!this.workflowInfoAvailable) { this.returnWorkflowInfo(); }
-      this.pollingWorkflow();
-    });
-  }
+      this.isCancelling = value.cancelling;
+      this.isCompleted = isWorkflowCompleted(value);
+      this.currentPluginName = this.currentPlugin.pluginType || '-';
+      this.currentExternalTaskId = this.currentPlugin.externalTaskId;
+      this.currentTopology = this.currentPlugin.topologyName;
+      const { executionProgress } = this.currentPlugin;
+      this.totalErrors = executionProgress.errors;
+      this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
+      this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
+      this.totalInDataset = executionProgress.expectedRecords;
 
-  /** pollingWorkflow
-  /*  check the current status of a workflow
-  */
-  pollingWorkflow() {
-    if (!this.datasetData || !this.authentication.validatedUser()) { return false }
-    
-    let execution = this.lastExecutionData;  
-    this.currentWorkflow = this.lastExecutionData;
-    if (execution === 0 || !execution) {
-      this.currentPlugin = 0;
-      this.subscription.unsubscribe();
-      this.workflows.setActiveWorkflow();
-    } else {
-      
-      let e = execution;        
-      
-      if (e['workflowStatus'] === 'FINISHED' || e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {  
+      this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
+      this.workflowPercentage = 0;
 
-        this.currentPlugin = 0;
-        this.now = e['finishedDate'];
-        this.workflowPercentage = 0;
-
-        if (e['workflowStatus'] === 'CANCELLED' || e['workflowStatus'] === 'FAILED') {
-          this.now = e['updatedDate'];
+      if (isWorkflowCompleted(value)) {
+        if (value.workflowStatus === WorkflowStatus.FINISHED) {
+          this.now = value.finishedDate;
+        } else {
+          this.now = value.updatedDate;
         }
-
-        this.currentStatus = e['workflowStatus'];
-        if (!this.workflowIsDone) {
-          this.workflows.workflowDone(true); 
-          this.workflowIsDone = true;
-        }
-
+        this.currentStatus = value.workflowStatus;
       } else {
-
-        if (!this.currentWorkflow['metisPlugins'][this.currentPlugin]) { return false; }
-        
-        if (this.currentPlugin !== this.workflows.getCurrentPlugin(e)) {
-          this.workflows.updateHistory(e);
-          let t = this.workflows.getCurrentPlugin(e);
-          if (this.isShowingLog) {
-            this.showLog(e['metisPlugins'][t].externalTaskId, e['metisPlugins'][t].topologyName, e['metisPlugins'][t].pluginType, e['metisPlugins'][t]['executionProgress'].processedRecords, e['metisPlugins'][t].pluginStatus);
-          }
-        }
-
-        this.workflowPercentage = 0;
-        this.currentPlugin = this.workflows.getCurrentPlugin(e);
-        
-        let thisPlugin = e['metisPlugins'][this.currentPlugin];
-        this.setCurrentPluginInfo(thisPlugin, e['cancelling']); 
-        this.workflows.setCurrentProcessed(this.totalProcessed, this.currentPluginName);
-
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
-          this.workflowPercentage = thisPlugin['executionProgress'].progressPercentage;
+          this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
         }
-
-        this.now = e['updatedDate'] === null ? thisPlugin['startedDate'] : thisPlugin['updatedDate'];
-        
-        this.workflows.workflowDone(false); 
-        this.workflowIsDone = false;
-        
       }
-    } 
-  }
 
-  /** cancelWorkflow
-  /*  cancel a running execution
-  /* using id of current workflow
-  */
-  cancelWorkflow () {   
-    this.workflows.promptCancelThisWorkflow(this.currentWorkflow.id);
-  }
-
-  /** showLog
-  /*  show the log for the current/last execution
-  */
-  showLog(taskid, topology, plugin, processed, status) {
-    let message = {'externaltaskId' : taskid, 'topology' : topology, 'plugin': plugin, 'processed': processed, 'status': status };
-    this.notifyShowLogStatus.emit(message);
-  }
-
-  /** setCurrentPluginInfo
-  /*  set correct value to different variables, used in the template
-  /* @param {object} thisPlugin - current plugin
-  /* @param {boolean} cancelling - has workflow been cancelled, optional
-  */
-  setCurrentPluginInfo(thisPlugin, cancelling?) {
-    if (thisPlugin) {
-      if (cancelling === false) {
-        this.currentStatus = thisPlugin.pluginStatus ? thisPlugin.pluginStatus : '-';
-      } else {
-        this.currentStatus = this.cancelling;
+      if (this.showPluginLog) {
+        this.showLog();
       }
-      this.currentPluginName = thisPlugin.pluginType ? thisPlugin.pluginType : '-';
-      this.currentExternalTaskId = thisPlugin.externalTaskId;
-      this.currentTopology = thisPlugin.topologyName;
-      this.totalErrors = thisPlugin['executionProgress'].errors;
-      this.totalProcessed = thisPlugin['executionProgress'].processedRecords - this.totalErrors;
-      this.totalInDataset = thisPlugin['executionProgress'].expectedRecords;
     }
   }
 
-  /** selectWorkflow
-  /*  select the workflow, so it would be triggered
-  */
-  selectWorkflow() {
-    this.workflows.selectWorkflow();
+  get lastExecutionData(): WorkflowExecution | undefined {
+    return this._lastExecutionData;
   }
 
-  /** getReport
-  /*  get the report for a specific workflow step
-  */
-  openReport(taskid, topology) {
-    this.report = undefined;
-    this.workflows.getReport(taskid, topology).subscribe(result => {
-      this.workflows.setCurrentReport(result);
-      this.report = result;
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      if (error === 'retry') {
-        this.openReport(taskid, topology);
-      } else {
-        this.errorMessage = `${StringifyHttpError(error)}`;  
-      } 
-    });
+  cancelWorkflow(): void {
+    this.workflows.promptCancelThisWorkflow(this.lastExecutionData!.id);
   }
 
-  /** copyInformation
-  /* after double clicking, copy the execution and task id to the clipboard
-  /* @param {string} type - execution or plugin
-  /* @param {string} id1 - an id, depending on type
-  /* @param {string} id2 - an id, depending on type
-  */
-  copyInformation (type, id1, id2) {
+  showLog(): void {
+    this.setShowPluginLog.emit(this.currentPlugin);
+  }
+
+  openReport(taskId: string, topology: TopologyName): void {
+    this.setReportRequest.emit({ taskId, topology });
+  }
+
+  // after double clicking, copy the execution and task id to the clipboard
+  copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
-
 }

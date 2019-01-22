@@ -1,14 +1,11 @@
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-import { AuthenticationService } from './authentication.service';
-
 import { Observable } from 'rxjs';
 
+import { AuthenticationService } from './authentication.service';
+
 @Injectable()
-
 export class TokenInterceptor implements HttpInterceptor {
-
-  private auth;
   constructor(private inj: Injector) {}
 
   /** intercept
@@ -19,21 +16,25 @@ export class TokenInterceptor implements HttpInterceptor {
   /* insert authorization header into all outgoing calls
   /*
   /* @param {httprequest} request - identify the http request, url
-  /* @param {httphandler} next 
+  /* @param {httphandler} next
   */
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    // tslint:disable-next-line: no-any
+    request: HttpRequest<any>,
+    next: HttpHandler,
+    // tslint:disable-next-line: no-any
+  ): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
-      const auth = this.inj.get(AuthenticationService);
+      const auth = this.inj.get<AuthenticationService>(AuthenticationService);
       const token = auth.getToken();
 
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };
         request = request.clone({
-          setHeaders: headers
+          setHeaders: headers,
         });
-      } 
-    } 
-
+      }
+    }
     return next.handle(request);
   }
 }

@@ -13,13 +13,13 @@
 
   li {
     display: inline-block;
-    flex: 1 1 0;
+    flex: 1 1 0%;
 
     a {
       color: $gray-light;
       display: block;
       height: 100%;
-      padding: .4em 1.2em;
+      padding: 0.4em 1.2em;
     }
 
     span {
@@ -28,7 +28,7 @@
 
     .tab-subtitle {
       color: $gray-light;
-      font-size: .75rem;
+      font-size: 0.75rem;
     }
   }
 

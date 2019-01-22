@@ -1,30 +1,30 @@
+import { Observable, of as observableOf } from 'rxjs';
 
-import {of as observableOf,  Observable } from 'rxjs';
-import { DatasetsService } from '../_services';
+import { Dataset, XmlSample } from '../_models';
 
-export const currentDataset = { 
-    country: {enum: 'CHINA', name: 'China', isoCode: 'CN'},
-    createdByUserId: '1',
-    createdDate: '2018-03-30T13:49:55.607Z',
-    dataProvider: 'mockedDataProvider',
-    datasetId: '1',
-    datasetName: 'mockedName',
-    description: 'mockedDescription',
-    ecloudDatasetId: 1,
-    id: 1,
-    intermediateProvider: 'mockedIntermediateProvider',
-    language: {enum: 'FR', name: 'French'},
-    notes: 'mockedNotes',
-    organizationId: 1,
-    organizationName: 'mockedOrganization',
-    provider: 'mockedProvider',
-    replacedBy: 'mocked',
-    replaces: 'mocked',
-    updatedDate: '2018-04-03T07:49:42.275Z',
-    xsltId: null
-  };
+export const mockDataset: Dataset = {
+  country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },
+  createdByUserId: '1',
+  createdDate: '2018-03-30T13:49:55.607Z',
+  dataProvider: 'mockedDataProvider',
+  datasetId: '1',
+  datasetName: 'mockedName',
+  description: 'mockedDescription',
+  ecloudDatasetId: '1',
+  id: '1',
+  intermediateProvider: 'mockedIntermediateProvider',
+  language: { enum: 'FR', name: 'French' },
+  notes: 'mockedNotes',
+  organizationId: '1',
+  organizationName: 'mockedOrganization',
+  provider: 'mockedProvider',
+  replacedBy: 'mocked',
+  replaces: 'mocked',
+  updatedDate: '2018-04-03T07:49:42.275Z',
+  xsltId: null,
+};
 
-export const xslt = `<?xml version="1.0" encoding="UTF-8"?>
+export const mockXslt = `<?xml version="1.0" encoding="UTF-8"?>
   <xsl:stylesheet version="2.0">
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <xsl:template match="/">
@@ -36,31 +36,40 @@ export const xslt = `<?xml version="1.0" encoding="UTF-8"?>
     </xsl:template>
   </xsl:stylesheet>`;
 
-export const XMLTransformSamples = [{ 
- 'ecloudId': 1,
- 'xmlRecord': '<?xml version="1.0" encoding="UTF-8"?>'
-}];
+const mockXmlSamples: XmlSample[] = [
+  {
+    ecloudId: '1',
+    xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>',
+  },
+];
 
-export class MockDatasetService extends DatasetsService {
-
-	getXSLT() {
-		return observableOf(xslt);
-	}
-
-  getDataset() {
-    return observableOf(currentDataset);
+export class MockDatasetsService {
+  getXSLT(): Observable<string> {
+    return observableOf(mockXslt);
   }
 
-  updateDataset() {
-    return observableOf(true);
+  getDataset(): Observable<Dataset> {
+    return observableOf(mockDataset);
   }
 
-  createDataset(datasetFormValues: Array<any>) {    
-    return observableOf(currentDataset);
+  updateDataset(): Observable<void> {
+    return observableOf(undefined);
   }
 
-  getTransform() {
-    return observableOf(XMLTransformSamples);
+  // tslint:disable-next-line: no-any
+  createDataset(_: { dataset: any }): Observable<Dataset> {
+    return observableOf(mockDataset);
   }
 
+  getTransform(): Observable<XmlSample[]> {
+    return observableOf(mockXmlSamples);
+  }
+
+  isFavorite(): boolean {
+    return false;
+  }
+
+  getFavorites(): Observable<Dataset[]> {
+    return observableOf([mockDataset]);
+  }
 }

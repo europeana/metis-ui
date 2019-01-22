@@ -1,0 +1,9 @@
+<div class="messages messages-{{ variant }}" (click)="close()" *ngIf="notification">
+  <div
+    class="notification {{ notification.type.toString().toLowerCase() }}-notification {{
+      notification.sticky ? 'notification-sticky' : ''
+    }} {{ hidden ? 'notification-hidden' : '' }}"
+  >
+    {{ notification.content }}
+  </div>
+</div>

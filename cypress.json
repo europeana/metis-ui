@@ -1,0 +1,10 @@
+{
+  "baseUrl": "http://localhost:4280",
+  "blacklistHosts": ["*fonts.googleapis.com", "*fonts.gstatic.com"],
+  "ignoreTestFiles": ["tsconfig.json"],
+  "screenshotsFolder": "tmp/cypress-screenshots/",
+  "video": false,
+  "videosFolder": "tmp/cypress-videos/",
+  "viewportHeight": 768,
+  "viewportWidth": 1024
+}

@@ -1,134 +1,115 @@
-import { RouterTestingModule } from '@angular/router/testing';
-import { DatasetsService, WorkflowService, AuthenticationService, ErrorService, RedirectPreviousUrl, TranslateService } from '../../_services';
-import { MockAuthenticationService, MockWorkflowService, MockDatasetService, currentWorkflow, currentDataset, currentUser } from '../../_mocked';
-
-import { TRANSLATION_PROVIDERS, TranslatePipe, RenameWorkflowPipe }   from '../../_translate';
-import { By } from '@angular/platform-browser';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-
-import { Observable } from 'rxjs';
-import { async, fakeAsync, tick, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActionbarComponent } from './actionbar.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
+import {
+  createMockPipe,
+  mockWorkflow,
+  mockWorkflowExecution,
+  mockWorkflowExecutionResults,
+  MockWorkflowService,
+} from '../../_mocked';
+import { WorkflowStatus } from '../../_models';
+import { WorkflowService } from '../../_services';
+
+import { ActionbarComponent } from '.';
 
 describe('ActionbarComponent', () => {
   let component: ActionbarComponent;
   let fixture: ComponentFixture<ActionbarComponent>;
-  let service;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, HttpClientTestingModule],
-      declarations: [ ActionbarComponent, TranslatePipe, RenameWorkflowPipe ],
-      providers:    [ {provide: WorkflowService, useClass: MockWorkflowService}, 
-        {provide: DatasetsService, useClass: MockDatasetService}, 
-        { provide: AuthenticationService, useClass: MockAuthenticationService}, 
-        ErrorService, 
-        RedirectPreviousUrl,
-        { provide: TranslateService,
-            useValue: {
-              translate: () => {
-                return {};
-              }
-            }
-        }],
-        schemas: [ NO_ERRORS_SCHEMA ]       
+      declarations: [
+        ActionbarComponent,
+        createMockPipe('translate'),
+        createMockPipe('renameWorkflow'),
+      ],
+      providers: [{ provide: WorkflowService, useClass: MockWorkflowService }],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ActionbarComponent);
-    component = fixture.componentInstance;  
+    component = fixture.componentInstance;
+    component.workflowData = mockWorkflow;
+    fixture.detectChanges();
+    workflows = TestBed.get(WorkflowService);
   });
 
-  it('should create', () => {    
-    component.datasetData = currentDataset;
-    fixture.detectChanges();
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should start polling, finished workflow', () => {    
-    fixture.detectChanges();
-    component.datasetData = currentDataset;
-    component.lastExecutionData = currentWorkflow['results'][4];
-    component.ngOnChanges();
-
-    fixture.detectChanges();
-    expect(component.currentWorkflow.workflowStatus).toBe('FINISHED');
+  it('should update fields based on the last execution', () => {
+    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
+    expect(component.currentPlugin!.id).toBe('432552345');
+    expect(component.currentStatus).toBe('FINISHED');
+    expect(component.currentExternalTaskId).toBe('123');
+    expect(component.currentTopology).toBe('normalization');
+    expect(component.totalErrors).toBe(0);
+    expect(component.totalProcessed).toBe(1000);
+    expect(component.totalInDataset).toBe(1000);
   });
 
-  it('should start polling', () => {    
+  it('should do click to show logging', (): void => {
+    component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
-    component.datasetData = currentDataset;
-    component.lastExecutionData = currentWorkflow['results'][0];
-    component.ngOnChanges();
+    expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
+    spyOn(component.setShowPluginLog, 'emit');
+    const button = fixture.debugElement.query(By.css('.log-btn'));
+    button.nativeElement.click();
     fixture.detectChanges();
-    expect(component.currentWorkflow.workflowStatus).toBe('INQUEUE');
+    expect(component.setShowPluginLog.emit).toHaveBeenCalled();
   });
-
-  it('should do click to show logging', fakeAsync((): void => {
-    component.currentWorkflow = currentWorkflow['results'][0];
-    component.currentExternalTaskId = '1';
-    component.currentTopology = 'mocked';
-    fixture.detectChanges();
-
-    let button = fixture.debugElement.query(By.css('.log-btn'));
-    if (button) {
-      spyOn(component.notifyShowLogStatus, 'emit');
-      button.nativeElement.click();
-
-      fixture.detectChanges();
-      tick();
-
-      expect(component.notifyShowLogStatus.emit).toHaveBeenCalled();   
-    } 
-  }));
 
   it('should cancel', (): void => {
-    component.currentWorkflow = currentWorkflow;
-    component.currentStatus = 'RUNNING';
+    component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
+    expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
+    spyOn(workflows, 'promptCancelThisWorkflow');
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
-    if (cancel) {
-      cancel.triggerEventHandler('click', null);
-      component.currentStatus = 'CANCELLED';
-      fixture.detectChanges();
-      expect(component.currentStatus).toBe('CANCELLED');
-    }
+    cancel.triggerEventHandler('click', null);
+    fixture.detectChanges();
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('253453453');
   });
 
   it('should run a workflow', (): void => {
-    component.currentWorkflow = currentWorkflow;
-    component.currentStatus = 'FINISHED';
+    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
     fixture.detectChanges();
+    expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.FINISHED);
+
+    spyOn(component.startWorkflow, 'emit');
     const run = fixture.debugElement.query(By.css('.newaction-btn'));
-    if (run) {
-      run.triggerEventHandler('click', null);
-      component.currentStatus = 'INQUEUE';
-      fixture.detectChanges();
-      expect(component.currentStatus).toBe('INQUEUE');
-    }
+    run.triggerEventHandler('click', null);
+    fixture.detectChanges();
+    expect(component.startWorkflow.emit).toHaveBeenCalledWith();
   });
 
   it('should have a running workflow', (): void => {
-    component.currentWorkflow = currentWorkflow;
-    component.currentStatus = 'RUNNING';
+    component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress') === null).toBe(false);
+    expect(fixture.nativeElement.querySelector('.dataset-actionbar .progress')).toBeTruthy();
   });
 
   it('should show a report button and open report', (): void => {
-    component.currentWorkflow = currentWorkflow;
+    component.lastExecutionData = mockWorkflowExecution;
     component.totalErrors = 10;
+    component.hasReport = true;
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.svg-icon-report') === null).toBe(false);
+    expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();
 
+    spyOn(component.setReportRequest, 'emit');
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
     reportBtn.triggerEventHandler('click', null);
-    expect(component.report).not.toBe(undefined);
+    expect(component.setReportRequest.emit).toHaveBeenCalledWith({
+      taskId: '123',
+      topology: 'normalization',
+    });
   });
 
   it('should copy information', (): void => {
@@ -136,5 +117,4 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
   });
-
 });

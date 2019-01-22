@@ -1,54 +1,60 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { WorkflowService, DatasetsService, TranslateService, ErrorService } from '../../_services';
-
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { StringifyHttpError } from '../../_helpers';
-import { environment } from '../../../environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { EditorConfiguration } from 'codemirror';
+import { switchMap } from 'rxjs/operators';
 
-import 'codemirror/mode/xml/xml';
+import 'codemirror/addon/fold/brace-fold';
+import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
-import 'codemirror/addon/fold/comment-fold';
+import 'codemirror/addon/fold/xml-fold';
+import 'codemirror/mode/xml/xml';
 
-import * as beautify from 'vkbeautify';
+import {
+  Dataset,
+  httpErrorNotification,
+  NodeStatistics,
+  Notification,
+  successNotification,
+} from '../../_models';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { TranslateService } from '../../_translate';
+
+type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
-  styleUrls: ['./mapping.component.scss']
+  styleUrls: ['./mapping.component.scss'],
 })
 export class MappingComponent implements OnInit {
-
-  constructor(private workflows: WorkflowService, 
+  constructor(
+    private workflows: WorkflowService,
     private errors: ErrorService,
     private datasets: DatasetsService,
-    private translate: TranslateService, 
-    private router: Router) { }
+    private translate: TranslateService,
+    private router: Router,
+  ) {}
 
-  @Input() datasetData: any;
-  editorConfigEdit;
-  statistics;
-  statisticsMap = new Map();
-  fullXSLT;
-  xsltType: string = 'default';
-  xslt: Array<any> = [];
-  xsltToSave: Array<any> = [];
-  xsltHeading: string;
-  errorMessage: string;
-  successMessage: string;
-  fullView: boolean = true; 
-  splitter: string = environment.xsltSplitter;
-  expandedSample: number;
-  expandedStatistics: boolean;
+  @Input() datasetData: Dataset;
+
+  @Output() setTempXSLT = new EventEmitter<string | undefined>();
+
+  editorConfigEdit: EditorConfiguration;
+  statistics: NodeStatistics[];
+  xsltStatus: XSLTStatus = 'loading';
+  xslt?: string;
+  xsltToSave?: string;
+  notification?: Notification;
+  isLoadingStatistics = false;
+  expandedStatistics = false;
   msgXSLTSuccess: string;
 
-  ngOnInit() {
-  	 this.editorConfigEdit = { 
+  ngOnInit(): void {
+    this.editorConfigEdit = {
       mode: 'application/xml',
       lineNumbers: true,
       indentUnit: 2,
@@ -57,191 +63,141 @@ export class MappingComponent implements OnInit {
       readOnly: false,
       viewportMargin: Infinity,
       lineWrapping: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     };
 
-    if (typeof this.translate.use === 'function') { 
-      this.translate.use('en'); 
-      this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
-    }
+    this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
 
     this.loadStatistics();
-    this.loadEditor();
+    this.loadCustomXSLT();
   }
 
-  /** loadStatistics
-  /* load the data on statistics and display this in a card (=readonly editor)
-  /* mocked data for now
-  */
-  loadStatistics() {  
-    this.workflows.getAllFinishedExecutions(this.datasetData.datasetId, 0).subscribe(result => {      
-      let taskId: string;
-      if (result['results'].length > 0) {
-        // find validation in the latest run, and if available, find taskid
-        for (var i = 0; i < result['results'][0]['metisPlugins'].length; i++) {
-          if (result['results'][0]['metisPlugins'][i]['pluginType'] === 'VALIDATION_EXTERNAL') {
-            taskId = result['results'][0]['metisPlugins'][i]['externalTaskId'];
+  // load the data on statistics and display this in a card (=readonly editor)
+  loadStatistics(): void {
+    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
+      (result) => {
+        let taskId: string | undefined;
+        if (result.results.length > 0) {
+          // find validation in the latest run, and if available, find taskid
+          for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
+            if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
+              taskId = result.results[0].metisPlugins[i].externalTaskId;
+            }
           }
         }
-      }
 
-      if (!taskId) { return false; }
-      this.successMessage = 'Loading statistics';
-      this.workflows.getStatistics('validation', taskId).subscribe(result => {
-        this.statistics = result['nodeStatistics'];
-        this.successMessage = undefined;
-      }, (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err); 
-        this.errorMessage = `${StringifyHttpError(error)}`;   
-      });      
-    }, (err: HttpErrorResponse) => {
-      this.errors.handleError(err); 
-    });   
-  }
-
-  /** loadEditor
-  /* load the xslt in an editor/card
-  /* fullview (whole file in one card) or not (display in different cards, based on comments in file)
-  */
-  loadEditor() {
-    let type = this.datasets.getTempXSLT();
-    if (!type) {
-      type = 'default';
-    }
-    this.datasets.setTempXSLT(null);
-    this.loadXSLT(type);
-  }
-
-  /** loadXSLT
-  /* either default or custom
-  /* display XSLT
-  /* show message if no custom XSLT
-  */
-  loadXSLT(type) {
-    this.xsltType = type;
-    this.datasets.getXSLT(this.xsltType, this.datasetData.datasetId).subscribe(result => {
-      this.fullXSLT = result;
-      this.displayXSLT();
-    }, (err: HttpErrorResponse) => {      
-      this.errors.handleError(err); 
-      if (this.xsltType === 'custom') {
-        this.xslt[0] = undefined;
-        this.xsltHeading = 'No custom XSLT yet';
-      }
-    });
-  }
-
-  /** displayXSLT
-  /* display xslt, either as one file or in individual cards
-  /* expand the sample when in full view, else start with all cards "closed" 
-  /* empty xsltToSave to avoid misalignments
-  */
-  displayXSLT() {
-    this.xslt = [];
-    this.xsltToSave = [];
-    this.xsltHeading = this.xsltType;
-    
-    if (this.fullView) {
-      this.xslt.push(this.fullXSLT);
-      this.expandedSample = 0;       
-    } else {
-      this.xslt = this.splitXSLT();
-      this.expandedSample = undefined;      
-    }
-  }
-
-  /** splitXSLT
-  /* split xslt on comments to show file in individual cards
-  */
-  splitXSLT() {
-    return this.fullXSLT.split(this.splitter);
-  }
-
-  /** tryOutXSLT
-  /* transformation on the fly, so having a look before saving the xslt
-  /* switch to preview tab to have a look of the outcome
-  /* @param {string} type - either custom or default
-  */
-  tryOutXSLT(type) {
-    this.datasets.setTempXSLT(type);
-    if (type === 'default') { // no need to save, but move to preview directly
-      this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
-    } else {
-      this.saveXSLT(true);
-    }
-  }
-
-  /** getFullXSLT
-  /* get the full xslt
-  */
-  getFullXSLT() {
-    let xsltValue = '';  
-
-    if (this.fullView) {
-      xsltValue = this.xsltToSave[0] ? this.xsltToSave[0] : this.xslt[0];
-    } else {
-      for (let i = 0; i < this.xslt.length; i++) {
-        if (this.xsltToSave[i]) {
-          xsltValue += this.xsltToSave[i];
-        } else {
-          xsltValue += (i === 0 ? '' : this.splitter) + this.xslt[i];
+        if (!taskId) {
+          return;
         }
-      }        
+        this.isLoadingStatistics = true;
+        this.workflows.getStatistics('validation', taskId).subscribe(
+          (resultStatistics) => {
+            let statistics = resultStatistics.nodeStatistics;
+
+            if (statistics.length > 100) {
+              statistics = statistics.slice(0, 100);
+            }
+            statistics.forEach((statistic) => {
+              const attrs = statistic.attributesStatistics;
+              if (attrs.length > 100) {
+                statistic.attributesStatistics = attrs.slice(0, 100);
+              }
+            });
+
+            this.statistics = statistics;
+            this.isLoadingStatistics = false;
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
+            this.isLoadingStatistics = false;
+          },
+        );
+        return;
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+      },
+    );
+  }
+
+  private handleXSLTError(err: HttpErrorResponse): void {
+    this.xsltStatus = 'no-custom';
+    const error = this.errors.handleError(err);
+    this.notification = httpErrorNotification(error);
+    this.xsltToSave = this.xslt = '';
+  }
+
+  loadCustomXSLT(): void {
+    if (!this.datasetData.xsltId) {
+      this.xsltStatus = 'no-custom';
+      return;
     }
-    return xsltValue;
+
+    this.xsltStatus = 'loading';
+    this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
+      (result) => {
+        this.xsltToSave = this.xslt = result;
+        this.xsltStatus = 'has-custom';
+      },
+      (err: HttpErrorResponse) => {
+        this.handleXSLTError(err);
+      },
+    );
   }
 
-  /** saveXSLT
-  /* save the xslt as the custom - that is dataset specific - one
-  /* combine individual "cards" when not in full view
-  /* switch to custom view after saving
-  /* @param {boolean} tryout - "tryout" xslt in preview tab or just save it, optional
-  */
-  saveXSLT(tryout?) {
-    let xsltValue = this.getFullXSLT();  
-    let datasetValues = { 'dataset': this.datasetData, 'xslt': xsltValue };   
-    this.datasets.updateDataset(datasetValues).subscribe(result => {
-      this.loadXSLT('custom');
-      this.successMessage = this.msgXSLTSuccess;
-      if (tryout === true) {
-        this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]); 
-      }
-    }, (err: HttpErrorResponse) => {
-      const error = this.errors.handleError(err); 
-      this.errorMessage = `${StringifyHttpError(error)}`;   
-    });
+  loadDefaultXSLT(): void {
+    const hasCustom = this.xsltStatus === 'has-custom';
+    this.xsltStatus = 'loading';
+    this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
+      (result) => {
+        this.xsltToSave = this.xslt = result;
+        this.xsltStatus = hasCustom ? 'has-custom' : 'new-custom';
+      },
+      (err: HttpErrorResponse) => {
+        this.handleXSLTError(err);
+      },
+    );
   }
 
-  /** toggleStatistics
-  /* expand statistics panel
-  */
-  toggleStatistics() {
-    this.expandedStatistics = this.expandedStatistics === true ? false : true;
+  tryOutXSLT(type: string): void {
+    this.setTempXSLT.emit(type);
+    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 
-  /** expandSample
-  /* expand the editor, so you can view more lines of code
-  /* only one sample can be expanded
-  /* @param {number} index - index of sample to expand
-  */
-  expandSample(index: number) {
-    this.expandedSample = this.expandedSample === index ? undefined : index;
+  saveCustomXSLT(tryout: boolean): void {
+    const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
+    this.datasets
+      .updateDataset(datasetValues)
+      .pipe(
+        switchMap(() => {
+          return this.datasets.getDataset(this.datasetData.datasetId, true);
+        }),
+      )
+      .subscribe(
+        (newDataset) => {
+          this.datasetData.xsltId = newDataset.xsltId;
+          this.loadCustomXSLT();
+          this.notification = successNotification(this.msgXSLTSuccess);
+          if (tryout) {
+            this.tryOutXSLT('custom');
+          }
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+        },
+      );
   }
 
-  /** scroll
-  /*  scroll to specific point in page after click
-  /* @param {any} el - scroll to defined element
-  */
-  scroll(el) {
-    el.scrollIntoView({behavior:'smooth'});
+  cancel(): void {
+    if (this.xsltStatus === 'new-custom') {
+      this.xsltStatus = 'no-custom';
+    }
   }
 
-  /** closeMessages
-  /*  close messagebox
-  */  
-  closeMessages() {
-    this.errorMessage = undefined;
-    this.successMessage = undefined;
+  toggleStatistics(): void {
+    this.expandedStatistics = !this.expandedStatistics;
   }
-
 }

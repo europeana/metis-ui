@@ -1,19 +1,21 @@
-<app-header [loggedIn]="loggedIn" class="page-{{bodyClass}}"></app-header>
-<div class="pusher pusher-{{bodyClass}}">
-  <div class="metis-main-content" [ngClass]="{'metis-main-content-lessmargin': isLessMargin }">
-    <router-outlet></router-outlet>
-  </div>
+<app-header [loggedIn]="loggedIn" class="page-{{ bodyClass }}"></app-header>
+<div class="pusher pusher-{{ bodyClass }}">
+  <div class="metis-main-content"><router-outlet></router-outlet></div>
 </div>
 
 <div class="modal-wrapper" *ngIf="showWrapper">
   <div class="modal modal-small">
-    <div class="head">{{ 'cancel' | translate }} <a class="btn-close" (click)="closePrompt();"></a></div>
+    <div class="head">
+      {{ 'cancel' | translate }} <a class="btn-close" (click)="closePrompt()"></a>
+    </div>
     <div class="content content-autoscroll">
       <p>{{ 'cancelareyousure' | translate }}</p>
       <p>
         <button class="button" type="button" (click)="closePrompt()">{{ 'no' | translate }}</button>
-        <button class="button" type="button" (click)="cancelWorkflow()">{{ 'yes' | translate }}</button>
+        <button class="button" type="button" (click)="cancelWorkflow()">
+          {{ 'yes' | translate }}
+        </button>
       </p>
     </div>
   </div>
-</div>	
+</div>
