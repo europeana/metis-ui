@@ -221,7 +221,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.expandedSample = this.expandedSample === index ? undefined : index;
     this.timeout = window.setTimeout(() => {
       samples[index].xmlRecord = sample;
-    }, 500);
+    }, 1);
   }
 
   undoNewLines(samples: XmlSample[]): XmlSample[] {

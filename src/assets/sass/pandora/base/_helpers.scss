@@ -11,12 +11,19 @@ body {
   font-size: $font-size-slightly-smaller;
   margin-bottom: 2rem;
   margin-right: 0;
-  padding-left: 1.125rem;
-  padding-right: 1.125rem;
+  padding-bottom: 1em;
+  padding-top: 1em;
   width: 100%;
 
+  &.btns-set-right {
+    justify-content: flex-end;
+  }
+
   .btn-padding {
+    align-items: flex-start;
     display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     width: 100%;
 
     .btn {
@@ -28,6 +35,14 @@ body {
       background: $offwhite;
       color: $gray-lighter;
       cursor: default;
+    }
+  }
+
+  @media (min-width: $bp-small) {
+    padding-left: 1.125rem;
+    padding-right: 1.125rem;
+    .btn-padding {
+      flex-direction: row;
     }
   }
 }

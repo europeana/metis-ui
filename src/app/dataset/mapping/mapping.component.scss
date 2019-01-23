@@ -49,34 +49,6 @@
   width: 100%;
 }
 
-.btns-set {
-  justify-content: flex-end;
-
-  &.btns-set-save {
-    margin-top: -2.5rem;
-  }
-}
-
 .filter {
   margin: 0;
-}
-
-.btns-set button {
-  background: $eu-jade;
-  border: 1px solid $eu-jade;
-  margin-left: 1rem;
-  transition: background-color 0.5s ease;
-
-  &:hover,
-  &.active {
-    background: $white;
-    color: $eu-jade;
-  }
-
-  &:active,
-  &:focus {
-    background: $eu-jade;
-    box-shadow: none;
-    color: $white;
-  }
 }

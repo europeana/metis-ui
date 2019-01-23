@@ -56,8 +56,8 @@
     >
       <div class="view-sample-title">
         <h3>
-          {{ sample.ecloudId }}
-          <span *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+          <span>{{ sample.ecloudId }}</span>
+          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
         </h3>
         <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
           <a (click)="expandSample(i)">-</a>
@@ -76,6 +76,8 @@
             [config]="editorConfig"
           ></codemirror>
         </div>
+      </div>
+      <div class="btns-set btns-set-right">
         <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
       </div>
     </div>
@@ -115,8 +117,8 @@
     >
       <div class="view-sample-title">
         <h3>
-          {{ sample.ecloudId }}
-          <span *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+          <span>{{ sample.ecloudId }}</span>
+          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
         </h3>
       </div>
       <div class="view-sample-editor">

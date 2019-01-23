@@ -4,7 +4,7 @@
   border-right: 0;
   border-top: 5px solid $white;
   display: flex;
-  height: $tab-header-height;
+  min-height: $tab-header-min-height;
   line-height: 1.3em;
   margin-bottom: 0;
   position: relative;

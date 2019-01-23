@@ -1,3 +1,5 @@
+@import '../../pandora/settings/metis-variables';
+
 .btn {
   @include font-size(1);
   background: $eu-jade;
@@ -45,9 +47,8 @@
 .btn.btn-right {
   border: solid 1px $white;
   color: $gray-light;
-  float: left;
   font-weight: 500;
-  padding: 1em 2.4em;
+  padding: 0.5em;
   text-transform: none;
 
   &:hover {
@@ -62,17 +63,23 @@
       transition: opacity 0.4s linear;
     }
   }
+
+  @media (min-width: $bp-small) {
+    padding: 1em 2.4em;
+  }
 }
 
-.btn.btn-left::after {
-  background-color: #ccc;
-  content: '';
-  display: block;
-  height: 2.6rem;
-  left: 101%;
-  position: absolute;
-  top: 3px;
-  width: 1px;
+@media (min-width: $bp-small) {
+  .btn.btn-left::after {
+    background-color: #ccc;
+    content: '';
+    display: block;
+    height: 2.6rem;
+    left: 101%;
+    position: absolute;
+    top: 3px;
+    width: 1px;
+  }
 }
 
 .btn.cta,
@@ -200,9 +207,28 @@
   align-items: center;
   border: 1px solid $offwhite;
   display: flex;
-  height: 5rem;
   justify-content: center;
   width: 30rem;
+
+  button {
+    background: $eu-jade;
+    border: 1px solid $eu-jade;
+    margin-left: 1rem;
+    transition: background-color 0.5s ease;
+
+    &:hover,
+    &.active {
+      background: $white;
+      color: $eu-jade;
+    }
+
+    &:active,
+    &:focus {
+      background: $eu-jade;
+      box-shadow: none;
+      color: $white;
+    }
+  }
 
   .btn-padding {
     .btn {
@@ -220,12 +246,8 @@
       padding-right: 10px;
     }
     .right-btn-under-text {
-      bottom: 0;
+      display: block;
       font-size: 0.7em;
-      left: 0;
-      margin: auto;
-      position: absolute;
-      right: 0;
     }
   }
 }

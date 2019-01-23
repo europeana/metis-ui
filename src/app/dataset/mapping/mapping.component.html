@@ -26,7 +26,8 @@
         </li>
       </ul>
     </div>
-
+  </div>
+  <div class="btns-set btns-set-right">
     <a class="load-more-btn" (click)="toggleStatistics()">expand</a>
   </div>
 </div>
@@ -42,7 +43,7 @@
   (closed)="notification = undefined"
 ></app-notification>
 
-<div class="btns-set">
+<div class="btns-set btns-set-right">
   <button (click)="tryOutXSLT('default')">{{ 'xslttryoutdefault' | translate }}</button>
 </div>
 
@@ -52,9 +53,8 @@
   </div>
 </div>
 
-<div class="btns-set" *ngIf="xsltStatus === 'no-custom'">
+<div class="btns-set btns-set-right" *ngIf="xsltStatus === 'no-custom'">
   <span>{{ 'xsltaskloaddefault' | translate }}</span>
-  <button (click)="loadDefaultXSLT()">{{ 'xsltinitdefault' | translate }}</button>
 </div>
 
 <div *ngIf="xsltStatus === 'has-custom' || xsltStatus === 'new-custom'">
@@ -73,7 +73,7 @@
     </div>
   </div>
 
-  <div class="btns-set btns-set-save">
+  <div class="btns-set btns-set-right">
     <button (click)="cancel()" *ngIf="xsltStatus === 'new-custom'">
       {{ 'cancel' | translate }}
     </button>
