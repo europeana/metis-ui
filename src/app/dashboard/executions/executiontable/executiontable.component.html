@@ -1,6 +1,4 @@
-<td class="errorindicator">
-  <span class="error" *ngIf="plugin && plugin.executionProgress.errors !== 0"></span>
-</td>
+<td class="errorindicator"><span class="status {{ getPluginStatusClass(plugin) }}"></span></td>
 <td class="nowrap">{{ execution.datasetId }}</td>
 <td>
   <a class="datasetName" [routerLink]="['/dataset', 'edit', execution.datasetId]">{{

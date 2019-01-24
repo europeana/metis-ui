@@ -27,13 +27,17 @@ context('metis-ui', () => {
       cy.wait(['@getRunningExecutions', '@getFinishedExecutions', '@getDataset']);
     });
 
-    it('should show the dashboard screen and the executions', () => {
+    it('should show the welcome message', () => {
       cy.get('.metis-welcome-message').contains('Welcome');
+    });
 
+    it('should show the curretly running executions', () => {
       allRunning().should('have.length', 2);
       runningByIndex(0, '.progress').contains('64');
       runningByIndex(1, '.progress').contains('194');
+    });
 
+    it('should show the last executions to have run', () => {
       cy.get('.executions-table tbody tr').should('have.length', 7);
       executionByIndex(0, 'td.nowrap').contains('64');
       executionByIndex(1, 'td.nowrap').contains('194');

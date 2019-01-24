@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { calcProgress, copyExecutionAndTaskId } from '../../../_helpers';
+import { statusClassFromPlugin } from '../../../_helpers/statusclassfromplugin';
 import { isPluginCompleted, PluginExecution, WorkflowExecution } from '../../../_models';
 import { WorkflowService } from '../../../_services';
 import { TranslateService } from '../../../_translate';
@@ -37,6 +38,10 @@ export class ExecutiontableComponent implements OnInit {
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
+  }
+
+  getPluginStatusClass(plugin: PluginExecution): string {
+    return statusClassFromPlugin(plugin, this.plugin);
   }
 
   isCompleted(): boolean {

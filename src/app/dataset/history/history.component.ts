@@ -101,4 +101,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
   byId(_: number, item: WorkflowExecution | PluginExecution): string {
     return item.id;
   }
+
+  getPluginStatusClass(status: string): string {
+    const s = status.toLowerCase();
+    return s === 'failed' ? 'status-' + s : '';
+  }
 }

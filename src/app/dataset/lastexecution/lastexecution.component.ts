@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
+import { statusClassFromPlugin } from '../../_helpers/statusclassfromplugin';
+
 import {
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
-  PluginStatus,
   Report,
   ReportRequest,
   TopologyName,
@@ -55,17 +56,7 @@ export class LastExecutionComponent {
   }
 
   getPluginStatusClass(plugin: PluginExecution): string {
-    const { executionProgress, pluginStatus } = plugin;
-    if (
-      executionProgress.errors > 0 &&
-      (pluginStatus === PluginStatus.FINISHED || pluginStatus === PluginStatus.CANCELLED)
-    ) {
-      return 'status-warning';
-    } else if (plugin !== this.currentPlugin && pluginStatus === PluginStatus.INQUEUE) {
-      return 'status-scheduled';
-    } else {
-      return `status-${pluginStatus.toString().toLowerCase()}`;
-    }
+    return statusClassFromPlugin(plugin, this.currentPlugin);
   }
 
   byId(_: number, item: PluginExecution): string {

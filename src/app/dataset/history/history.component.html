@@ -31,7 +31,7 @@
         <span class="svg-icon-{{ ex.pluginType }}"></span>
       </td>
       <td *ngIf="!ex.createdDate && ex.executionProgress" class="errorindicator">
-        <span class="error" *ngIf="ex.executionProgress.errors !== 0"></span>
+        <span class="status {{ getPluginStatusClass(ex.pluginStatus) }}"></span>
       </td>
       <td
         *ngIf="!ex.createdDate && ex.executionProgress"
