@@ -43,6 +43,18 @@ context('metis-ui', () => {
       executionByIndex(1, 'td.nowrap').contains('194');
       executionByIndex(2, 'td.nowrap').contains('58');
       executionByIndex(6, 'td.nowrap').contains('80');
+      const expectedClasses = [
+        'status-running',
+        'status-running',
+        'status-finished',
+        'status-finished',
+        'status-finished',
+        'status-finished',
+        'status-failed',
+      ];
+      for (const i of Array.from(Array(7).keys())) {
+        executionByIndex(i, '.errorindicator .status').should('have.class', expectedClasses[i]);
+      }
     });
 
     it('should have action buttons', () => {
