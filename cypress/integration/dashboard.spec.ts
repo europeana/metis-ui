@@ -52,9 +52,10 @@ context('metis-ui', () => {
         'status-finished',
         'status-failed',
       ];
-      for (const i of Array.from(Array(7).keys())) {
-        executionByIndex(i, '.errorindicator .status').should('have.class', expectedClasses[i]);
-      }
+
+      expectedClasses.forEach((expectedClass, i) => {
+        executionByIndex(i, '.errorindicator .status').should('have.class', expectedClass);
+      });
     });
 
     it('should have action buttons', () => {
