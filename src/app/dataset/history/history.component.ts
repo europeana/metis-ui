@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
@@ -15,6 +16,12 @@ import {
   WorkflowExecution,
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+import { PreviewFilters } from '../dataset.component';
+
+interface IWorkflowOrPluginExecution {
+  execution: WorkflowExecution;
+  pluginExecution?: PluginExecution;
+}
 
 @Component({
   selector: 'app-history',
@@ -22,15 +29,20 @@ import { ErrorService, WorkflowService } from '../../_services';
   styleUrls: ['./history.component.scss'],
 })
 export class HistoryComponent implements OnInit, OnDestroy {
-  constructor(private workflows: WorkflowService, private errors: ErrorService) {}
+  constructor(
+    private workflows: WorkflowService,
+    private errors: ErrorService,
+    private router: Router,
+  ) {}
 
   @Input() datasetData: Dataset;
 
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
+  @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
 
   notification?: Notification;
   currentPage = 0;
-  allExecutions: Array<WorkflowExecution | PluginExecution> = [];
+  allExecutions: Array<IWorkflowOrPluginExecution> = [];
   hasMore = false;
   subscription: Subscription;
   report?: Report;
@@ -68,9 +80,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
             this.workflows.getReportsForExecution(execution);
             execution.metisPlugins.reverse();
 
-            this.allExecutions.push(execution);
+            this.allExecutions.push({ execution });
             execution.metisPlugins.forEach((pluginExecution) => {
-              this.allExecutions.push(pluginExecution);
+              this.allExecutions.push({ execution, pluginExecution });
             });
           });
 
@@ -98,7 +110,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.contentCopied = true;
   }
 
-  byId(_: number, item: WorkflowExecution | PluginExecution): string {
-    return item.id;
+  byId(_: number, item: IWorkflowOrPluginExecution): string {
+    return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
+  }
+
+  hasPreview(plugin: PluginExecution): boolean {
+    return plugin.executionProgress.processedRecords > plugin.executionProgress.errors;
+  }
+
+  goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
+    this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
+    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 }
