@@ -99,7 +99,7 @@ The test and acceptance jobs should be run off the `develop` branch.
 
 ## Release
 
-TODO: this information will be filled in when we do the first release of 2019.
+The release documentation is in the "Release Metis UI/Metis Framework/ECloud manual" document on Google Docs.
 
 ## License
 
