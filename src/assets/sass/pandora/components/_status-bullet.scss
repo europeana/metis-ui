@@ -12,8 +12,7 @@
     background: $eu-red;
   }
   .status-warning {
-    // background: lighten($eu-orange, 30%);
-    background: $eu-orange;
+    background: lighten($eu-orange, 30%);
   }
   .status-running {
     background: $eu-blue;
