@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { copyExecutionAndTaskId } from '../../_helpers';
-import { statusClassFromPlugin } from '../../_helpers/statusclassfromplugin';
-
+import { copyExecutionAndTaskId, statusClassFromPlugin } from '../../_helpers';
 import {
   getCurrentPlugin,
   isWorkflowCompleted,

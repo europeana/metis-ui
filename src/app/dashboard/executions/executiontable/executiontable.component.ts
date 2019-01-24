@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { calcProgress, copyExecutionAndTaskId } from '../../../_helpers';
-import { statusClassFromPlugin } from '../../../_helpers/statusclassfromplugin';
+import { calcProgress, copyExecutionAndTaskId, statusClassFromPlugin } from '../../../_helpers';
 import { isPluginCompleted, PluginExecution, WorkflowExecution } from '../../../_models';
 import { WorkflowService } from '../../../_services';
 import { TranslateService } from '../../../_translate';
