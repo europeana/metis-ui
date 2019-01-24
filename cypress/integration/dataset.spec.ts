@@ -125,6 +125,13 @@ context('metis-ui', () => {
       setupDatasetPage('log');
     });
 
+    it('should show the error bullets', () => {
+      cy.get('.history-table tr')
+        .eq(6)
+        .find('.errorindicator .status')
+        .should('have.class', 'status-failed');
+    });
+
     it('should show the log', () => {
       cy.get('.workflow-head')
         .contains('Workflow created on 19/11/2018 10:10')
@@ -137,9 +144,11 @@ context('metis-ui', () => {
       cy.get('@row')
         .find('td')
         .contains('Validate (EDM external)');
+
       cy.get('@row')
         .find('td')
         .contains('0 (760)');
+
       cy.get('@row')
         .find('td')
         .contains('FINISHED');

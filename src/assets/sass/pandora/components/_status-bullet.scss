@@ -1,0 +1,40 @@
+@import '../../scss/generic/variables';
+@import '../settings/metis-variables';
+
+.errorindicator {
+  .status {
+    border-radius: 0.3rem;
+    display: inline-block;
+    height: 0.7rem;
+    width: 0.7rem;
+  }
+  .status-failed {
+    background: $eu-red;
+  }
+  .status-warning {
+    background: lighten($eu-orange, 30%);
+  }
+  .status-running {
+    background: $eu-blue;
+  }
+  .status-inqueue {
+    background: lighten($eu-blue, 40%);
+  }
+  .status-finished {
+    background: $eu-jade;
+  }
+  .status-cancelled {
+    background: $gray-lighter;
+  }
+}
+
+.running td:first-child::before {
+  background: $eu-jade;
+  content: '';
+  display: inline-block;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 3px;
+}

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { StringifyHttpError } from '../_helpers';
+import { StringifyHttpError } from '../_helpers/stringify-http-error';
 
 export enum NotificationType {
   SUCCESS = 'SUCCESS',

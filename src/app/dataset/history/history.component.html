@@ -37,7 +37,7 @@
       <ng-template [ngIf]="wpe.pluginExecution" let-pe>
         <td class="centered"><span class="svg-icon-{{ pe.pluginType }}"></span></td>
         <td class="errorindicator">
-          <span class="error" *ngIf="pe.executionProgress.errors !== 0"></span>
+          <span class="status {{ getPluginStatusClass(pe.pluginStatus) }}"></span>
         </td>
         <td
           class="nowrap uppercase"
