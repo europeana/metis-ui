@@ -2,13 +2,12 @@ import { WorkflowExecution } from '../_models';
 
 import { calcProgress } from './calcprogress';
 
-function makeWorkflowExecution(currIndex: number, progressStatuses: (number)[]): WorkflowExecution {
-  // tslint:disable:no-any
-  const fakePlugins: (any)[] = [];
+function makeWorkflowExecution(currIndex: number, progressStatuses: number[]): WorkflowExecution {
 
-  progressStatuses.forEach((status) => {
-    fakePlugins.push({ executionProgress: { progressPercentage: status } });
-  });
+  // tslint:disable:no-any
+  const fakePlugins = progressStatuses.map((status) => (
+    { executionProgress: { progressPercentage: status } } as any
+  ));
 
   return ({
     currentPluginIndex: currIndex,

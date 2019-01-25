@@ -10,23 +10,18 @@ function makePluginExecution(status: string): PluginExecution {
   } as any) as PluginExecution;
 }
 
-function addErrorsToPlugin(pe: PluginExecution, errors: number): PluginExecution {
-  pe.executionProgress.errors = errors;
-  return pe;
-}
-
 describe('status class from plugin', () => {
   it('should return "status-warning" for plugins that finished with errors', () => {
     let peFinished = makePluginExecution(PluginStatus.CANCELLED);
     expect(statusClassFromPlugin(peFinished)).not.toEqual('status-warning');
-    peFinished = addErrorsToPlugin(peFinished, 1);
+    peFinished.executionProgress.errors = 1;
     expect(statusClassFromPlugin(peFinished)).toEqual('status-warning');
   });
 
   it('should return "status-warning" for plugins that were cancelled with errors', () => {
     let peCancelled = makePluginExecution(PluginStatus.CANCELLED);
     expect(statusClassFromPlugin(peCancelled)).not.toEqual('status-warning');
-    peCancelled = addErrorsToPlugin(peCancelled, 1);
+    peCancelled.executionProgress.errors = 1;
     expect(statusClassFromPlugin(peCancelled)).toEqual('status-warning');
   });
 
