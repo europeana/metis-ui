@@ -80,5 +80,6 @@ describe('DatasetComponent', () => {
 
   it('should start a workflow', () => {
     component.startWorkflow();
+    expect(component.isStarting).toBe(true);
   });
 });
