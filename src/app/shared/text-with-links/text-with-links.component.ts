@@ -32,6 +32,6 @@ export class TextWithLinksComponent {
   }
 
   public normaliseHref(href: string): string {
-    return href.replace(/[\.]$/, '');
+    return href.replace(/[\.,]$/, '');
   }
 }

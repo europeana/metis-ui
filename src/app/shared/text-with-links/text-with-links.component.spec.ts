@@ -26,10 +26,13 @@ describe('TextWithLinksComponent', () => {
     expect(component.parts).toEqual(parts);
   }
 
-  it('removes trailing dots from link urls', () => {
-    const href = 'http://abc.com'
-    const hrefWithDot = href + '.'
+  it('removes trailing dots and commas from link urls', () => {
+    const href = 'http://abc.com';
+    const hrefWithComma = href + ',';
+    const hrefWithDot = href + '.';
+    expect(component.normaliseHref(hrefWithComma)).toEqual(href);
     expect(component.normaliseHref(hrefWithDot)).toEqual(href);
+    expect(component.normaliseHref(href)).toEqual(href);
   });
 
   it('should split strings', () => {
