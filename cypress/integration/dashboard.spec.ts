@@ -31,7 +31,7 @@ context('metis-ui', () => {
       cy.get('.metis-welcome-message').contains('Welcome');
     });
 
-    it('should show the curretly running executions', () => {
+    it('should show the currently running executions', () => {
       allRunning().should('have.length', 2);
       runningByIndex(0, '.progress').contains('64');
       runningByIndex(1, '.progress').contains('194');
