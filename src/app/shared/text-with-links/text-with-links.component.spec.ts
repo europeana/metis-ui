@@ -26,6 +26,12 @@ describe('TextWithLinksComponent', () => {
     expect(component.parts).toEqual(parts);
   }
 
+  it('removes trailing dots from link urls', () => {
+    const href = 'http://abc.com'
+    const hrefWithDot = href + '.'
+    expect(component.normaliseHref(hrefWithDot)).toEqual(href);
+  });
+
   it('should split strings', () => {
     checkParts('', []);
     checkParts('fvvfdvd', [{ content: 'fvvfdvd' }]);
