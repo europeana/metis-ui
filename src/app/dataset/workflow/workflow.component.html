@@ -126,6 +126,13 @@
             id="pluginImport"
             (change)="workflowStepAllowed('pluginHARVEST')"
         /></label>
+        <span
+          class="show-on-hover"
+          *ngIf="
+            workflowForm.get('pluginHARVEST')!.disabled || !workflowForm.get('pluginHARVEST')!.value
+          "
+          >{{ workflowForm.get('harvestUrl').value }} {{ workflowForm.value.setSpec }}</span
+        >
         <div
           class="form-group"
           *ngIf="
