@@ -5,7 +5,6 @@ module.exports = function(config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
-    listenAddress: '0.0.0.0',
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
