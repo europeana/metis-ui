@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
-
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 
 @Component({

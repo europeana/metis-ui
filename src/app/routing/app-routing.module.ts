@@ -1,15 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AuthUserGuard, AuthVisitorGuard } from '../_guards';
 import { DashboardComponent } from '../dashboard';
 import { DatasetComponent, NewDatasetComponent } from '../dataset';
 import { HomeComponent } from '../home';
 import { LoginComponent } from '../login';
+import { PageNotFoundComponent } from '../page-not-found';
 import { ProfileComponent } from '../profile';
 import { RegisterComponent } from '../register';
-
-import { AuthUserGuard, AuthVisitorGuard } from '../_guards';
-import { PageNotFoundComponent } from '../page-not-found';
 
 // if you add a route, make sure to use the DocumentTitleService in the component to set the title
 // see NewDatasetComponent for an example
