@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-export function createMockPipe(name: string): { new (): PipeTransform } {
+export function createMockPipe(name: string): new () => PipeTransform {
   class MockPipe implements PipeTransform {
     // tslint:disable-next-line: no-any
     transform(...args: any[]): string {
