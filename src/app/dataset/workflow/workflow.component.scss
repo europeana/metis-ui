@@ -186,7 +186,6 @@
   position: relative;
 }
 
-.show-on-hover:hover,
-.plugin:hover ~ .show-on-hover {
+#import:hover .show-on-hover {
   display: inline-block;
 }
