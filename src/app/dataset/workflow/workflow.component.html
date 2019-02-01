@@ -131,7 +131,7 @@
           *ngIf="
             workflowForm.get('pluginHARVEST')!.disabled || !workflowForm.get('pluginHARVEST')!.value
           "
-          >{{ workflowForm.get('harvestUrl').value }} {{ workflowForm.value.setSpec }}</span
+          >{{ workflowForm.get('harvestUrl')!.value }} {{ workflowForm.value!.setSpec }}</span
         >
         <div
           class="form-group"
