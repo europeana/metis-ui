@@ -184,8 +184,13 @@
   display: none;
   left: 1em;
   position: relative;
+  [type='checkbox'] {
+    position: relative;
+    top: 0.2em;
+  }
 }
 
-#import:hover .show-on-hover {
+#import:hover .show-on-hover,
+#transform:hover .show-on-hover {
   display: inline-block;
 }
