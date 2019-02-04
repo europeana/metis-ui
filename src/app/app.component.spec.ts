@@ -10,6 +10,7 @@ import {
   MockErrorService,
   MockWorkflowService,
 } from './_mocked';
+import { CancellationRequest } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 describe('AppComponent', () => {
@@ -62,8 +63,12 @@ describe('AppComponent', () => {
   it('should show a prompt', () => {
     fixture.detectChanges();
     expect(app.showWrapper).toBe(false);
-    workflows.promptCancelWorkflow.emit('15');
-    expect(app.currentWorkflowId).toBe('15');
+    workflows.promptCancelWorkflow.emit({
+      id: '15',
+      datasetId: '11',
+      datasetName: 'The Name',
+    } as CancellationRequest);
+    expect(app.cancellationRequest!.id).toBe('15');
     expect(app.showWrapper).toBe(true);
   });
 
@@ -75,7 +80,7 @@ describe('AppComponent', () => {
 
   it('should cancel a workflow', () => {
     app.showWrapper = true;
-    app.currentWorkflowId = '16';
+    app.cancellationRequest = { id: '16', datasetId: '11', datasetName: 'The Name' };
     spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
     app.cancelWorkflow();
     expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');

@@ -95,8 +95,9 @@ export interface WorkflowExecution {
   currentPluginIndex?: number;
 }
 
-export interface WorkflowDesc {
+export interface CancellationRequest {
   id: string;
+  datasetId: string;
   datasetName: string;
 }
 

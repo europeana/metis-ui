@@ -6,6 +6,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
 import {
+  CancellationRequest,
   getCurrentPlugin,
   getCurrentPluginIndex,
   HarvestData,
@@ -18,7 +19,6 @@ import {
   SubTaskInfo,
   TopologyName,
   Workflow,
-  WorkflowDesc,
   WorkflowExecution,
   XmlSample,
 } from '../_models';
@@ -34,7 +34,7 @@ export class WorkflowService {
     private errors: ErrorService,
   ) {}
 
-  public promptCancelWorkflow: EventEmitter<WorkflowDesc> = new EventEmitter();
+  public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
 
@@ -294,9 +294,8 @@ export class WorkflowService {
   }
 
   // show a prompt to cancel workflow
-  promptCancelThisWorkflow(datasetId: string, datasetName: string): void {
-    const workflowDesc: WorkflowDesc = { id: datasetId, datasetName } as WorkflowDesc;
-    this.promptCancelWorkflow.emit(workflowDesc);
+  promptCancelThisWorkflow(id: string, datasetId: string, datasetName: string): void {
+    this.promptCancelWorkflow.emit({ id, datasetId, datasetName });
   }
 
   // return samples based on executionid and plugintype

@@ -97,7 +97,11 @@ export class ActionbarComponent {
   }
 
   cancelWorkflow(): void {
-    this.workflows.promptCancelThisWorkflow(this.lastExecutionData!.id, this.datasetName);
+    this.workflows.promptCancelThisWorkflow(
+      this.lastExecutionData!.id,
+      this.datasetId,
+      this.datasetName,
+    );
   }
 
   showLog(): void {
