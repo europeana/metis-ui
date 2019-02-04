@@ -401,7 +401,7 @@ describe('workflow service', () => {
     spyOn(service.promptCancelWorkflow, 'emit');
     service.promptCancelThisWorkflow('15', '11', 'The Name');
     expect(service.promptCancelWorkflow.emit).toHaveBeenCalledWith({
-      id: '15',
+      workflowExecutionId: '15',
       datasetId: '11',
       datasetName: 'The Name',
     });

@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
 
     this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
       this.cancellationRequest = cancellationRequest;
-      if (cancellationRequest.id) {
+      if (cancellationRequest.workflowExecutionId) {
         this.showWrapper = true;
       }
     });
@@ -70,7 +70,7 @@ export class AppComponent implements OnInit {
   /*  cancels the workflow using the currentWorkflow id
   */
   cancelWorkflow(): void {
-    this.workflows.cancelThisWorkflow(this.cancellationRequest!.id!).subscribe(
+    this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId!).subscribe(
       () => {
         this.closePrompt();
       },

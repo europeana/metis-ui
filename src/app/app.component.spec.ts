@@ -64,11 +64,11 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     expect(app.showWrapper).toBe(false);
     workflows.promptCancelWorkflow.emit({
-      id: '15',
+      workflowExecutionId: '15',
       datasetId: '11',
       datasetName: 'The Name',
     } as CancellationRequest);
-    expect(app.cancellationRequest!.id).toBe('15');
+    expect(app.cancellationRequest!.workflowExecutionId).toBe('15');
     expect(app.showWrapper).toBe(true);
   });
 
@@ -80,7 +80,11 @@ describe('AppComponent', () => {
 
   it('should cancel a workflow', () => {
     app.showWrapper = true;
-    app.cancellationRequest = { id: '16', datasetId: '11', datasetName: 'The Name' };
+    app.cancellationRequest = {
+      workflowExecutionId: '16',
+      datasetId: '11',
+      datasetName: 'The Name',
+    };
     spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
     app.cancelWorkflow();
     expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');

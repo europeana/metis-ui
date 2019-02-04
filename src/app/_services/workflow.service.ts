@@ -294,8 +294,12 @@ export class WorkflowService {
   }
 
   // show a prompt to cancel workflow
-  promptCancelThisWorkflow(id: string, datasetId: string, datasetName: string): void {
-    this.promptCancelWorkflow.emit({ id, datasetId, datasetName });
+  promptCancelThisWorkflow(
+    workflowExecutionId: string,
+    datasetId: string,
+    datasetName: string,
+  ): void {
+    this.promptCancelWorkflow.emit({ workflowExecutionId, datasetId, datasetName });
   }
 
   // return samples based on executionid and plugintype

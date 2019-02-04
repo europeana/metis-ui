@@ -96,7 +96,7 @@ export interface WorkflowExecution {
 }
 
 export interface CancellationRequest {
-  id: string;
+  workflowExecutionId: string;
   datasetId: string;
   datasetName: string;
 }
