@@ -17,6 +17,7 @@ import { DatasetComponent } from '.';
 describe('DatasetComponent', () => {
   let component: DatasetComponent;
   let fixture: ComponentFixture<DatasetComponent>;
+  let workflows: WorkflowService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -34,6 +35,7 @@ describe('DatasetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DatasetComponent);
     component = fixture.componentInstance;
+    workflows = TestBed.get(WorkflowService);
   });
 
   it('should create', () => {
@@ -79,6 +81,9 @@ describe('DatasetComponent', () => {
   });
 
   it('should start a workflow', () => {
+    spyOn(workflows, 'startWorkflow').and.callThrough();
+    component.datasetId = '65';
     component.startWorkflow();
+    expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
   });
 });
