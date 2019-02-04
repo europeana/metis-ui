@@ -232,6 +232,18 @@ export class WorkflowComponent implements OnInit {
     this.harvestprotocol = protocol;
   }
 
+  getImportSummary(): string {
+    let res: string;
+
+    if (this.harvestprotocol === 'HTTP_HARVEST') {
+      res = this.workflowForm.value!.url.trim();
+    } else {
+      res = this.workflowForm.value!.harvestUrl.trim();
+    }
+    res += ' ' + this.workflowForm.value!.setSpec;
+    return res;
+  }
+
   getWorkflow(): void {
     const workflow = this.workflowData;
     if (!workflow) {
