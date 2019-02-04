@@ -18,6 +18,7 @@ import {
   SubTaskInfo,
   TopologyName,
   Workflow,
+  WorkflowDesc,
   WorkflowExecution,
   XmlSample,
 } from '../_models';
@@ -33,7 +34,7 @@ export class WorkflowService {
     private errors: ErrorService,
   ) {}
 
-  public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
+  public promptCancelWorkflow: EventEmitter<WorkflowDesc> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
 
@@ -293,8 +294,9 @@ export class WorkflowService {
   }
 
   // show a prompt to cancel workflow
-  promptCancelThisWorkflow(id: string): void {
-    this.promptCancelWorkflow.emit(id);
+  promptCancelThisWorkflow(datasetId: string, datasetName: string): void {
+    const workflowDesc: WorkflowDesc = { id: datasetId, datasetName } as WorkflowDesc;
+    this.promptCancelWorkflow.emit(workflowDesc);
   }
 
   // return samples based on executionid and plugintype

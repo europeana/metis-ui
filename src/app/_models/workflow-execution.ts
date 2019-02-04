@@ -95,6 +95,11 @@ export interface WorkflowExecution {
   currentPluginIndex?: number;
 }
 
+export interface WorkflowDesc {
+  id: string;
+  datasetName: string;
+}
+
 export function isPluginCompleted(plugin: PluginExecution): boolean {
   const { pluginStatus } = plugin;
   return (

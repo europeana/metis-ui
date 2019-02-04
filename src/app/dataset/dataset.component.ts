@@ -53,6 +53,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
   isStarting = false;
 
   datasetData: Dataset;
+  datasetName: string;
+
   isFavorite = false;
   workflowData?: Workflow;
   harvestPublicationData?: HarvestData;
@@ -101,10 +103,11 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.datasets.getDataset(this.datasetId, true).subscribe(
       (result) => {
         this.datasetData = result;
+        this.datasetName = result.datasetName;
         this.isFavorite = this.datasets.isFavorite(this.datasetData);
         this.datasetIsLoading = false;
 
-        this.documentTitleService.setTitle(this.datasetData.datasetName || 'Dataset');
+        this.documentTitleService.setTitle(this.datasetName || 'Dataset');
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);

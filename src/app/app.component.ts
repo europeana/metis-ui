@@ -4,6 +4,7 @@ import { Event, Router, RouterEvent } from '@angular/router';
 
 import { environment } from '../environments/environment';
 
+import { WorkflowDesc } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 @Component({
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
   bodyClass: string;
   showWrapper = false;
   currentWorkflowId?: string;
+  currentDatasetName?: string;
   public loggedIn = false;
 
   constructor(
@@ -50,9 +52,12 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.workflows.promptCancelWorkflow.subscribe((workflowId: string) => {
-      if (workflowId) {
-        this.currentWorkflowId = workflowId;
+    this.workflows.promptCancelWorkflow.subscribe((workflowDesc: WorkflowDesc) => {
+      if (workflowDesc.datasetName) {
+        this.currentDatasetName = workflowDesc.datasetName;
+      }
+      if (workflowDesc.id) {
+        this.currentWorkflowId = workflowDesc.id;
         this.showWrapper = true;
       }
     });
