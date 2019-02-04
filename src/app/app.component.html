@@ -10,8 +10,8 @@
     </div>
     <div class="content content-autoscroll">
       <p>
-        Are you sure you want to cancel "{{ cancellationRequest.datasetId }}
-        {{ cancellationRequest.datasetName }}"?
+        Are you sure you want to cancel "{{ cancellationRequest!.datasetId! }}
+        {{ cancellationRequest!.datasetName! }}"?
       </p>
       <p>
         <button class="button" type="button" (click)="closePrompt()">{{ 'no' | translate }}</button>

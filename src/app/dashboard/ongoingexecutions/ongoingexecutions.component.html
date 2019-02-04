@@ -46,7 +46,7 @@
             <a
               class="cancel-btn svg-icon-cancel tooltip"
               attr.data-tooltip="{{ 'cancel' | translate }}"
-              (click)="cancelWorkflow(ongoing.id, ongoing.datasetId, ongoing.datasetName)"
+              (click)="cancelWorkflow(ongoing.id, ongoing.datasetId, ongoing.datasetName!)"
             ></a>
           </li>
           <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'">
