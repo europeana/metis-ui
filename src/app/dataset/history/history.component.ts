@@ -122,9 +122,4 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
-
-  getPluginStatusClass(status: string): string {
-    const s = status.toLowerCase();
-    return s === 'failed' ? 'status-' + s : '';
-  }
 }
