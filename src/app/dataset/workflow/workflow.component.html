@@ -126,6 +126,14 @@
             id="pluginImport"
             (change)="workflowStepAllowed('pluginHARVEST')"
         /></label>
+        <span
+          class="show-on-hover"
+          *ngIf="
+            workflowForm.get('pluginHARVEST')!.disabled || !workflowForm.get('pluginHARVEST')!.value
+          "
+        >
+          {{ getImportSummary() }}</span
+        >
         <div
           class="form-group"
           *ngIf="
@@ -263,6 +271,19 @@
             (change)="workflowStepAllowed('pluginTRANSFORMATION')"
           />
         </label>
+        <span
+          class="show-on-hover"
+          *ngIf="
+            workflowForm.get('pluginTRANSFORMATION')!.disabled ||
+            !workflowForm.get('pluginTRANSFORMATION')!.value
+          "
+          ><input
+            type="checkbox"
+            [checked]="workflowForm.value.customXslt"
+            readonly="true"
+            disabled=""
+          />{{ 'customxslt' | translate }}</span
+        >
         <div
           class="form-group form-group-checkbox"
           *ngIf="
