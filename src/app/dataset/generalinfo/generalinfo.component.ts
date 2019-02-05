@@ -6,6 +6,7 @@ import { Dataset, HarvestData } from '../../_models';
 @Component({
   selector: 'app-generalinfo',
   templateUrl: './generalinfo.component.html',
+  styleUrls: ['./generalinfo.component.scss'],
 })
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;

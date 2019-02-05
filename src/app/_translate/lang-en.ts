@@ -46,7 +46,6 @@ export const LANG_EN_TRANS = {
   ftppassword: 'FTP/HTTP password',
   ftpuser: 'FTP/HTTP user',
   fullhistory: 'See full processing history',
-  generalinfo: 'General info',
   gotomapping: 'Go back to Mapping',
   harvestprotocol: 'Harvest protocol',
   harvesturl: 'Harvest URL',

@@ -9,30 +9,12 @@ app-notification {
   width: 100%;
 }
 
-.dataset-name {
-  display: flex;
-  align-items: center;
-}
-
 hr {
   background: $gray-lighter;
   border: 0;
   clear: both;
   height: 1px;
   margin: 0 1rem 1rem 1rem;
-}
-
-.svg-icon-dataset {
-  display: inline-block;
-  margin-right: 0.5rem;
-  border-radius: 32px;
-  width: 32px;
-  height: 32px;
-  background: white;
-
-  &::before {
-    top: 8px;
-  }
 }
 
 .star {
