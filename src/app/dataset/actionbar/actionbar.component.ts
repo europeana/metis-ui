@@ -25,6 +25,7 @@ export class ActionbarComponent {
   private _lastExecutionData?: WorkflowExecution;
 
   @Input() datasetId: string;
+  @Input() datasetName: string;
   @Input() showPluginLog?: PluginExecution;
   @Input() workflowData?: Workflow;
   @Input() isStarting = false;
@@ -58,7 +59,6 @@ export class ActionbarComponent {
     if (value) {
       this.currentPlugin = getCurrentPlugin(value);
       this.currentStatus = this.currentPlugin.pluginStatus;
-
       this.isCancelling = value.cancelling;
       this.isCompleted = isWorkflowCompleted(value);
       this.currentPluginName = this.currentPlugin.pluginType || '-';
@@ -97,7 +97,11 @@ export class ActionbarComponent {
   }
 
   cancelWorkflow(): void {
-    this.workflows.promptCancelThisWorkflow(this.lastExecutionData!.id);
+    this.workflows.promptCancelThisWorkflow(
+      this.lastExecutionData!.id,
+      this.datasetId,
+      this.datasetName,
+    );
   }
 
   showLog(): void {

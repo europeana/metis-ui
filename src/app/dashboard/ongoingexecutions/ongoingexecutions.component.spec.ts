@@ -54,10 +54,10 @@ describe('OngoingexecutionsComponent', () => {
 
   it('should cancel a workflow', () => {
     spyOn(workflows, 'promptCancelThisWorkflow');
-    component.cancelWorkflow('');
+    component.cancelWorkflow('', '', '');
     expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
-    component.cancelWorkflow('10');
-    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('10');
+    component.cancelWorkflow('10', '11', 'The Name');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('10', '11', 'The Name');
   });
 
   it('should have a tracking function', () => {

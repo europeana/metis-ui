@@ -4,6 +4,7 @@ import { Event, Router, RouterEvent } from '@angular/router';
 
 import { environment } from '../environments/environment';
 
+import { CancellationRequest } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 @Component({
@@ -13,7 +14,7 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
 export class AppComponent implements OnInit {
   bodyClass: string;
   showWrapper = false;
-  currentWorkflowId?: string;
+  cancellationRequest?: CancellationRequest;
   public loggedIn = false;
 
   constructor(
@@ -50,9 +51,9 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.workflows.promptCancelWorkflow.subscribe((workflowId: string) => {
-      if (workflowId) {
-        this.currentWorkflowId = workflowId;
+    this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
+      this.cancellationRequest = cancellationRequest;
+      if (cancellationRequest.workflowExecutionId) {
         this.showWrapper = true;
       }
     });
@@ -69,7 +70,7 @@ export class AppComponent implements OnInit {
   /*  cancels the workflow using the currentWorkflow id
   */
   cancelWorkflow(): void {
-    this.workflows.cancelThisWorkflow(this.currentWorkflowId!).subscribe(
+    this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId!).subscribe(
       () => {
         this.closePrompt();
       },

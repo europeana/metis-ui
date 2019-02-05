@@ -24,11 +24,11 @@ export class OngoingexecutionsComponent implements OnInit {
     this.cancelling = this.translate.instant('cancelling');
   }
 
-  cancelWorkflow(id: string): void {
+  cancelWorkflow(id: string, datasetId: string, datasetName: string): void {
     if (!id) {
       return;
     }
-    this.workflows.promptCancelThisWorkflow(id);
+    this.workflows.promptCancelThisWorkflow(id, datasetId, datasetName);
   }
 
   showLog(workflow: WorkflowExecution): void {

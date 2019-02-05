@@ -6,6 +6,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
 import {
+  CancellationRequest,
   getCurrentPlugin,
   getCurrentPluginIndex,
   HarvestData,
@@ -33,7 +34,7 @@ export class WorkflowService {
     private errors: ErrorService,
   ) {}
 
-  public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
+  public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
 
@@ -293,8 +294,12 @@ export class WorkflowService {
   }
 
   // show a prompt to cancel workflow
-  promptCancelThisWorkflow(id: string): void {
-    this.promptCancelWorkflow.emit(id);
+  promptCancelThisWorkflow(
+    workflowExecutionId: string,
+    datasetId: string,
+    datasetName: string,
+  ): void {
+    this.promptCancelWorkflow.emit({ workflowExecutionId, datasetId, datasetName });
   }
 
   // return samples based on executionid and plugintype

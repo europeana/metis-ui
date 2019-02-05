@@ -23,11 +23,11 @@ export class ExecutiontableComponent implements OnInit {
     this.msgCancelling = this.translate.instant('cancelling');
   }
 
-  cancelWorkflow(id: string): void {
+  cancelWorkflow(id: string, datasetId: string, datasetName: string): void {
     if (!id) {
       return;
     }
-    this.workflows.promptCancelThisWorkflow(id);
+    this.workflows.promptCancelThisWorkflow(id, datasetId, datasetName);
   }
 
   calcProgress(ongoing: WorkflowExecution): number {

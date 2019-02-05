@@ -75,7 +75,11 @@ describe('ActionbarComponent', () => {
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
     cancel.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('253453453');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(
+      '253453453',
+      undefined,
+      undefined,
+    );
   });
 
   it('should run a workflow', (): void => {

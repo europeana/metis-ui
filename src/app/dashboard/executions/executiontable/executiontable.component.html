@@ -53,7 +53,7 @@
         <a
           class="cancel-btn svg-icon-cancel tooltip"
           attr.data-tooltip="{{ 'cancel' | translate }}"
-          (click)="cancelWorkflow(execution.id)"
+          (click)="cancelWorkflow(execution.id, execution.datasetId, execution.datasetName!)"
         ></a>
       </li>
       <li>

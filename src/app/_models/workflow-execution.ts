@@ -95,6 +95,12 @@ export interface WorkflowExecution {
   currentPluginIndex?: number;
 }
 
+export interface CancellationRequest {
+  workflowExecutionId: string;
+  datasetId: string;
+  datasetName: string;
+}
+
 export function isPluginCompleted(plugin: PluginExecution): boolean {
   const { pluginStatus } = plugin;
   return (
