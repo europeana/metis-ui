@@ -112,7 +112,7 @@
       <!-- IMPORT / HARVEST -->
       <div
         id="import"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginHARVEST')!.value,
           disabled: workflowForm.get('pluginHARVEST')!.disabled
@@ -236,7 +236,7 @@
       <!-- VALIDATION -->
       <div
         id="validate-external"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginVALIDATION_EXTERNAL')!.value,
           disabled: workflowForm.get('pluginVALIDATION_EXTERNAL')!.disabled
@@ -256,7 +256,7 @@
       <!-- TRANSFORMATION -->
       <div
         id="transform"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginTRANSFORMATION')!.value,
           disabled: workflowForm.get('pluginTRANSFORMATION')!.disabled
@@ -299,7 +299,7 @@
       <!-- VALIDATION -->
       <div
         id="validate-internal"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginVALIDATION_INTERNAL')!.value,
           disabled: workflowForm.get('pluginVALIDATION_INTERNAL')!.disabled
@@ -319,7 +319,7 @@
       <!-- NORMALIZATION -->
       <div
         id="normalise"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginNORMALIZATION')!.value,
           disabled: workflowForm.get('pluginNORMALIZATION')!.disabled
@@ -339,7 +339,7 @@
       <!-- ENRICHMENT -->
       <div
         id="enrich"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginENRICHMENT')!.value,
           disabled: workflowForm.get('pluginENRICHMENT')!.disabled
@@ -359,7 +359,7 @@
       <!-- MEDIA SERVICE -->
       <div
         id="media"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginMEDIA_PROCESS')!.value,
           disabled: workflowForm.get('pluginMEDIA_PROCESS')!.disabled
@@ -379,7 +379,7 @@
       <!-- PUBLISH TO PREVIEW -->
       <div
         id="preview"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginPREVIEW')!.value,
           disabled: workflowForm.get('pluginPREVIEW')!.disabled
@@ -399,7 +399,7 @@
       <!-- PUBLISH TO PUBLISH -->
       <div
         id="publish"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginPUBLISH')!.value,
           disabled: workflowForm.get('pluginPUBLISH')!.disabled
@@ -419,7 +419,7 @@
       <!-- LINK CHECKING -->
       <div
         id="linkchecking"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive:
             workflowForm.get('pluginLINK_CHECKING')!.value === false ||
