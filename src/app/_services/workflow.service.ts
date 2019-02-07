@@ -148,7 +148,13 @@ export class WorkflowService {
     if (pluginIsCompleted) {
       return this.hasErrorsCache.get(key);
     } else {
-      return this.hasErrorsCache.getStaleAndRefresh(key);
+      return this.hasErrorsCache.peek(key).pipe(switchMap(value => {
+        if (value) {
+          return of(value);
+        } else {
+          return this.hasErrorsCache.get(key, true);
+        }
+      }));
     }
   }
 
