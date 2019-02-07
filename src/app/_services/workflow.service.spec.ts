@@ -1,5 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
+import { Observable } from 'rxjs';
+import { last, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import { gatherValuesAsync, MockHttp } from '../_helpers/test-helpers';
@@ -19,8 +21,6 @@ import {
 import { Report, WorkflowExecution } from '../_models';
 
 import { DatasetsService, ErrorService, WorkflowService } from '.';
-import { Observable } from 'rxjs';
-import { last, tap } from 'rxjs/operators';
 
 describe('workflow service', () => {
   let mockHttp: MockHttp;
@@ -132,13 +132,16 @@ describe('workflow service', () => {
   });
 
   it('should get (stale) task errors for unfinished tasks', () => {
-    function getReport(report: Report, expectedHasError: boolean, expectRequest: boolean, done: () => void): void {
-      service.getCachedHasErrors('7866', 'normalization', false).subscribe(
-        (res) => {
-          expect(res).toEqual(expectedHasError);
-          done();
-        },
-      );
+    function getReport(
+      report: Report,
+      expectedHasError: boolean,
+      expectRequest: boolean,
+      done: () => void,
+    ): void {
+      service.getCachedHasErrors('7866', 'normalization', false).subscribe((res) => {
+        expect(res).toEqual(expectedHasError);
+        done();
+      });
       if (expectRequest) {
         mockHttp
           .expect('GET', '/orchestrator/proxies/normalization/task/7866/report?idsPerError=100')
