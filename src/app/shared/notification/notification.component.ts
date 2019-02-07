@@ -27,7 +27,7 @@ export class NotificationComponent implements OnDestroy {
         this.timeout = window.setTimeout(() => {
           this.closed.emit();
           this.reset();
-        }, 400);
+        }, 400); // this is the transition time from the component scss
       }, value.fadeTime);
     }
   }
