@@ -58,12 +58,10 @@ export class AuthenticationService {
   /* update password for this user
   /* @param {string} password - password
   */
-  updatePassword(password: string, oldpassword: string): Observable<boolean> {
-    const url = `${
-      apiSettings.apiHostAuth
-    }/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
+  updatePassword(newPassword: string, oldPassword: string): Observable<boolean> {
+    const url = `${apiSettings.apiHostAuth}/authentication/update/password`;
     return this.http
-      .put(url, {})
+      .put(url, { newPassword, oldPassword })
       .pipe(
         map(() => {
           return true;
@@ -148,9 +146,9 @@ export class AuthenticationService {
   /* @param {string} email - email
   */
   reloadCurrentUser(email: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;
+    const url = `${apiSettings.apiHostAuth}/authentication/update`;
     return this.http
-      .put<User>(url, {})
+      .put<User>(url, { email })
       .pipe(
         map((user) => {
           if (user) {
