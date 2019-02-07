@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
@@ -37,6 +37,8 @@ export class MappingComponent implements OnInit {
     private translate: TranslateService,
     private router: Router,
   ) {}
+
+  @ViewChild('xslt_editor') editor: any;
 
   @Input() datasetData: Dataset;
 
@@ -158,6 +160,23 @@ export class MappingComponent implements OnInit {
         this.handleXSLTError(err);
       },
     );
+  }
+
+
+  swapTheme():void{
+
+    const currTheme: string = this.editor.instance.getOption('theme');
+
+    console.log('swapTheme from ' + currTheme);
+
+    if(!currTheme || currTheme === 'default'){
+      this.editor.instance.setOption('theme', 'isotope');
+      console.log(' - sets to isotope');
+    }
+    else{
+      this.editor.instance.setOption('theme', 'default');
+      console.log(' - sets to default');
+    }
   }
 
   tryOutXSLT(type: string): void {

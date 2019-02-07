@@ -58,6 +58,9 @@
         <h3>
           <span>{{ sample.ecloudId }}</span>
           <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+
+          <a (click)="swapTheme(i)" style="float:right">TOGGLE-THEME E1</a>
+
         </h3>
         <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
           <a (click)="expandSample(i)">-</a>
@@ -70,7 +73,7 @@
           (mouseover)="handleMouseOver($event)"
           (mouseout)="handleMouseOut($event)"
         >
-          <codemirror
+          <codemirror #editor_1
             [ngModel]="sample.xmlRecord | beautifyXML"
             (ngModelChange)="sample.xmlRecord = $event"
             [config]="editorConfig"
@@ -85,7 +88,9 @@
 
   <div class="view-sample" *ngIf="!loadingSamples && allSamples.length === 0">
     <div class="view-sample-title">
-      <h3>{{ nosample }}</h3>
+      <h3>{{ nosample }}
+        <a (click)="swapTheme(0)" style="float:right">TOGGLE-THEME E2</a>
+      </h3>
     </div>
     <div
       class="view-sample-editor"
@@ -94,7 +99,7 @@
       (mouseover)="handleMouseOver($event)"
       (mouseout)="handleMouseOut($event)"
     >
-      <codemirror
+      <codemirror #editor_2
         [ngModel]="nosample | beautifyXML"
         (ngModelChange)="(nosample)"
         [config]="editorConfig"
@@ -119,6 +124,7 @@
         <h3>
           <span>{{ sample.ecloudId }}</span>
           <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+          <a (click)="swapThemePair(i)" style="float:right">TOGGLE-TRANSFORMED-AND-SAMPLES</a>
         </h3>
       </div>
       <div class="view-sample-editor">
@@ -129,6 +135,7 @@
           (mouseout)="handleMouseOut($event)"
         >
           <codemirror
+            #editor_pair_before
             [ngModel]="sample.xmlRecord | beautifyXML"
             (ngModelChange)="sample.xmlRecord = $event"
             [config]="editorConfig"
@@ -142,6 +149,7 @@
           (mouseout)="handleMouseOut($event)"
         >
           <codemirror
+            #editor_pair_after
             *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
             [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
             (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"

@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChildren, QueryList } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+
 import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/comment-fold';
@@ -46,6 +47,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
   @Input() tempXSLT?: string;
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
+
+  @ViewChildren('editor_1, editor_2') editors: QueryList<any>
+  @ViewChildren('editor_pair_before') editors_before: QueryList<any>
+  @ViewChildren('editor_pair_after') editors_after: QueryList<any>
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecution> = [];
@@ -222,6 +227,29 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.timeout = window.setTimeout(() => {
       samples[index].xmlRecord = sample;
     }, 1);
+  }
+
+  swapTheme(index: number):void{
+    const editor = this.editors.toArray()[index]
+    const currTheme: string = editor.instance.getOption('theme');
+
+    if(!currTheme || currTheme === 'default'){
+      editor.instance.setOption('theme', 'isotope')
+    }
+    else{
+      editor.instance.setOption('theme', 'default')
+    }
+  }
+
+  swapThemePair(index: number):void{
+
+    const swapEditors = [ this.editors_before.toArray()[index], this.editors_after.toArray()[index]];
+    const currTheme: string = swapEditors[0].instance.getOption('theme');
+    const newTheme: string = !currTheme || currTheme === 'default' ? 'isotope' : 'default';
+
+    swapEditors.forEach((editor) => {
+      editor.instance.setOption('theme', newTheme);
+    });
   }
 
   undoNewLines(samples: XmlSample[]): XmlSample[] {

@@ -77,4 +77,7 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/pandora/components/viewxmlsamples';
 
 @import '~codemirror/lib/codemirror.css';
+@import '~codemirror/theme/3024-night.css';
+@import '~codemirror/theme/isotope.css';
+
 @import '~codemirror/addon/fold/foldgutter.css';
