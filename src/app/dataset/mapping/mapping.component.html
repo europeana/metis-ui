@@ -62,8 +62,7 @@
     <div class="view-sample-title">
       <h3>{{ 'xsltcustom' | translate }}</h3>
 
-      <a (click)="swapTheme()" style="float:right">TOGGLE-THEME</a>
-
+      <a (click)="toggleTheme()" style="float:right">TOGGLE-THEME</a>
     </div>
     <div class="view-sample-editor">
       <div class="view-sample-editor-codemirror">
@@ -71,7 +70,6 @@
           [ngModel]="xslt! | beautifyXML"
           (ngModelChange)="xsltToSave = $event"
           [config]="editorConfigEdit"
-          #xslt_editor
         ></codemirror>
       </div>
     </div>

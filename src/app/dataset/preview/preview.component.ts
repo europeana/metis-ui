@@ -1,8 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChildren, QueryList } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-
 import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/comment-fold';
@@ -12,6 +20,7 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
+import { CodemirrorComponent } from 'ng2-codemirror';
 import { switchMap } from 'rxjs/operators';
 import * as beautify from 'vkbeautify';
 
@@ -23,7 +32,7 @@ import {
   WorkflowExecution,
   XmlSample,
 } from '../../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewFilters } from '../dataset.component';
 
@@ -36,6 +45,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
     private translate: TranslateService,
+    private editorPrefs: EditorPrefService,
     private errors: ErrorService,
     private datasets: DatasetsService,
     private router: Router,
@@ -47,10 +57,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   @Input() tempXSLT?: string;
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
-
-  @ViewChildren('editor_1, editor_2') editors: QueryList<any>
-  @ViewChildren('editor_pair_before') editors_before: QueryList<any>
-  @ViewChildren('editor_pair_after') editors_after: QueryList<any>
+  @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecution> = [];
@@ -71,22 +78,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
   downloadUrlCache: { [key: string]: string } = {};
 
   ngOnInit(): void {
-    this.editorConfig = {
-      mode: 'application/xml',
-      lineNumbers: true,
-      indentUnit: 2,
-      readOnly: true,
-      foldGutter: true,
-      indentWithTabs: true,
-      viewportMargin: Infinity,
-      lineWrapping: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-    };
+    this.editorConfig = this.editorPrefs.getEditorConfig(true);
+
+    console.error('this.editorConfig = ' + JSON.stringify(this.editorConfig));
 
     this.nosample = this.translate.instant('nosample');
 
     this.addExecutionsFilter();
-
     this.prefillFilters();
 
     if (this.tempXSLT) {
@@ -229,27 +227,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }, 1);
   }
 
-  swapTheme(index: number):void{
-    const editor = this.editors.toArray()[index]
-    const currTheme: string = editor.instance.getOption('theme');
-
-    if(!currTheme || currTheme === 'default'){
-      editor.instance.setOption('theme', 'isotope')
-    }
-    else{
-      editor.instance.setOption('theme', 'default')
-    }
-  }
-
-  swapThemePair(index: number):void{
-
-    const swapEditors = [ this.editors_before.toArray()[index], this.editors_after.toArray()[index]];
-    const currTheme: string = swapEditors[0].instance.getOption('theme');
-    const newTheme: string = !currTheme || currTheme === 'default' ? 'isotope' : 'default';
-
-    swapEditors.forEach((editor) => {
-      editor.instance.setOption('theme', newTheme);
-    });
+  toggleTheme(): void {
+    this.editorPrefs.toggleTheme(this.allEditors);
   }
 
   undoNewLines(samples: XmlSample[]): XmlSample[] {
