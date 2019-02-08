@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
-  Dataset,
+  Dataset, getCancelledBy,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
@@ -121,5 +121,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
     this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
+  }
+
+  getCancelledBy(workflow: WorkflowExecution): string | undefined {
+    return getCancelledBy(workflow);
   }
 }
