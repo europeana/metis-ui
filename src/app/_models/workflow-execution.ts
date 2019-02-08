@@ -141,7 +141,7 @@ export function getCancelledBy(workflow: WorkflowExecution): string | undefined 
     if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
       return 'Cancelled by system after timeout';
     } else {
-      return 'Cancelled by user: ' + cancelledBy;
+      return 'Cancelled by user';
     }
   }
   return undefined;
