@@ -4,10 +4,14 @@ import { CodemirrorComponent } from 'ng2-codemirror';
 
 @Injectable({ providedIn: 'root' })
 export class EditorPrefService {
+  altTheme: string;
+
+  constructor() {
+    this.altTheme = 'isotope';
+  }
+
   getEditorPref(): string {
-    let res = localStorage.getItem('editor-pref');
-    res = res ? res : 'default';
-    return res;
+    return localStorage.getItem('editor-pref') || 'default';
   }
 
   setEditorPref(theme: string): void {
@@ -19,8 +23,8 @@ export class EditorPrefService {
   }
 
   toggleTheme(editors: QueryList<CodemirrorComponent>): boolean {
-    const currTheme: string = this.getEditorPref();
-    const newTheme: string = currTheme === 'default' ? 'isotope' : 'default';
+    const currTheme = this.getEditorPref();
+    const newTheme = currTheme === 'default' ? this.altTheme : 'default';
 
     editors.forEach((cc) => {
       cc.instance.setOption('theme', newTheme);

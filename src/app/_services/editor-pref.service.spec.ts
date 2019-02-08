@@ -5,20 +5,19 @@ import { CodemirrorComponent } from 'ng2-codemirror';
 import { EditorPrefService } from '.';
 
 function makeQueryList(): QueryList<CodemirrorComponent> {
-  // tslint:disable: no-any
   return ([
     {
       instance: {
-        setOption(name: string, value: string): void {
-          console.log('set ' + name + ' to ' + value);
-        },
+        setOption: jasmine.createSpy('setEditorOption'),
       },
     },
+    // tslint:disable-next-line
   ] as any) as QueryList<CodemirrorComponent>;
 }
 
 describe('editor pref service', () => {
   let service: EditorPrefService;
+  let altTheme = '';
 
   beforeEach(async(() => {
     localStorage.removeItem('editor-pref');
@@ -26,6 +25,7 @@ describe('editor pref service', () => {
       providers: [EditorPrefService],
     }).compileComponents();
     service = TestBed.get(EditorPrefService);
+    altTheme = service.altTheme;
   }));
 
   afterEach(() => {
@@ -45,8 +45,11 @@ describe('editor pref service', () => {
 
   it('can toggle the current theme', () => {
     expect(service.getEditorPref()).toEqual('default');
-    service.toggleTheme(makeQueryList());
+    // tslint:disable-next-line
+    const editors: any = makeQueryList();
+    service.toggleTheme(editors);
     expect(service.getEditorPref()).not.toEqual('default');
+    expect(editors[0].instance.setOption).toHaveBeenCalledWith('theme', altTheme);
   });
 
   it('indicates if the toggled theme is the default theme', () => {
