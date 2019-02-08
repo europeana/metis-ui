@@ -19,10 +19,11 @@ import {
   SubTaskInfo,
   TopologyName,
   Workflow,
-  WorkflowExecution,
+  WorkflowExecution, WorkflowStatus,
   XmlSample,
 } from '../_models';
 
+import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';
 
@@ -32,6 +33,7 @@ export class WorkflowService {
     private http: HttpClient,
     private datasetsService: DatasetsService,
     private errors: ErrorService,
+    private authenticationServer: AuthenticationService,
   ) {}
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
@@ -331,5 +333,19 @@ export class WorkflowService {
       apiSettings.apiHostCore
     }/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
     return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
+  }
+
+  getWorkflowCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
+    const cancelledBy = workflow.cancelledBy;
+    if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
+      if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
+        return of('Cancelled by system after timeout');
+      } else {
+        return this.authenticationServer.getUserByUserId(cancelledBy).pipe(map((user) => {
+          return `Cancelled by user: ${user.firstName} ${user.lastName}`;
+        }));
+      }
+    }
+    return of (undefined);
   }
 }

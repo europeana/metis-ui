@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
-  getCancelledBy,
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
@@ -49,6 +48,7 @@ export class ActionbarComponent {
 
   isCancelling?: boolean;
   isCompleted?: boolean;
+  cancelledBy?: string;
 
   contentCopied = false;
   report?: Report;
@@ -80,7 +80,11 @@ export class ActionbarComponent {
         } else {
           this.now = value.updatedDate;
         }
-        this.currentStatus = getCancelledBy(value) || value.workflowStatus;
+        this.currentStatus = value.workflowStatus;
+
+        this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
+          this.cancelledBy = cancelledBy;
+        });
       } else {
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;

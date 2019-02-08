@@ -4,6 +4,7 @@ import { async, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
 import { gatherValuesAsync, MockHttp } from '../_helpers/test-helpers';
 import {
+  MockAuthenticationService,
   MockDatasetsService,
   MockErrorService,
   mockFirstPageResults,
@@ -18,7 +19,7 @@ import {
 } from '../_mocked';
 import { Report, WorkflowExecution } from '../_models';
 
-import { DatasetsService, ErrorService, WorkflowService } from '.';
+import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
 describe('workflow service', () => {
   let mockHttp: MockHttp;
@@ -30,6 +31,7 @@ describe('workflow service', () => {
         WorkflowService,
         { provide: ErrorService, useClass: MockErrorService },
         { provide: DatasetsService, useClass: MockDatasetsService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
       ],
       imports: [HttpClientTestingModule],
     }).compileComponents();

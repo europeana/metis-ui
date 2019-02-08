@@ -34,7 +34,7 @@
           >
         </div>
         <div class="head-right">
-          {{ getCancelledBy(execution) }}
+          {{ getCancelledBy(execution) | async }}
         </div>
       </td>
       <ng-template [ngIf]="wpe.pluginExecution" let-pe>

@@ -9,7 +9,7 @@
       (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
       >{{ currentPluginName! | renameWorkflow }}</strong
     >
-    {{ currentStatus! | uppercase }}
+    {{ (cancelledBy || currentStatus || '') | uppercase }}
   </div>
   <div class="progress">
     <div class="progress-status" *ngIf="!isCompleted">

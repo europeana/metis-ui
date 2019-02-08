@@ -1,12 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   Dataset,
-  getCancelledBy,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
@@ -124,7 +123,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 
-  getCancelledBy(workflow: WorkflowExecution): string | undefined {
-    return getCancelledBy(workflow);
+  getCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
+    return this.workflows.getWorkflowCancelledBy(workflow);
   }
 }

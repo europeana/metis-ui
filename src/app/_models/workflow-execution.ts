@@ -134,15 +134,3 @@ export function getCurrentPluginIndex(workflow: WorkflowExecution): number {
 export function getCurrentPlugin(workflow: WorkflowExecution): PluginExecution {
   return workflow.metisPlugins[getCurrentPluginIndex(workflow)];
 }
-
-export function getCancelledBy(workflow: WorkflowExecution): string | undefined {
-  const cancelledBy = workflow.cancelledBy;
-  if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
-    if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
-      return 'Cancelled by system after timeout';
-    } else {
-      return 'Cancelled by user';
-    }
-  }
-  return undefined;
-}
