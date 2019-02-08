@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
+  getCancelledBy,
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
@@ -79,16 +80,7 @@ export class ActionbarComponent {
         } else {
           this.now = value.updatedDate;
         }
-        this.currentStatus = value.workflowStatus;
-
-        const cancelledBy = value.cancelledBy;
-        if (this.currentStatus === WorkflowStatus.CANCELLED && cancelledBy) {
-          if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
-            this.currentStatus = 'Cancelled by system after timeout';
-          } else {
-            this.currentStatus = 'Cancelled by user: ' + cancelledBy;
-          }
-        }
+        this.currentStatus = getCancelledBy(value) || value.workflowStatus;
       } else {
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
