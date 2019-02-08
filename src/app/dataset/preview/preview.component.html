@@ -58,9 +58,13 @@
         <h3>
           <span>{{ sample.ecloudId }}</span>
           <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
-
-          <a (click)="toggleTheme()" style="float:right">TOGGLE-THEME E1</a>
         </h3>
+        <a
+          (click)="toggleTheme()"
+          [class.default-theme]="editorIsDefaultTheme"
+          class="toggle-editor-ctrl"
+          >theme</a
+        >
         <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
           <a (click)="expandSample(i)">-</a>
         </div>
@@ -89,8 +93,13 @@
     <div class="view-sample-title">
       <h3>
         {{ nosample }}
-        <a (click)="toggleTheme()" style="float:right">TOGGLE-THEME E2</a>
       </h3>
+      <a
+        (click)="toggleTheme()"
+        [class.default-theme]="editorIsDefaultTheme"
+        class="toggle-editor-ctrl"
+        >theme</a
+      >
     </div>
     <div
       class="view-sample-editor"
@@ -124,8 +133,13 @@
         <h3>
           <span>{{ sample.ecloudId }}</span>
           <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
-          <a (click)="toggleTheme()" style="float:right">TOGGLE-TRANSFORMED-AND-SAMPLES</a>
         </h3>
+        <a
+          (click)="toggleTheme()"
+          [class.default-theme]="editorIsDefaultTheme"
+          class="toggle-editor-ctrl"
+          >theme</a
+        >
       </div>
       <div class="view-sample-editor">
         <div

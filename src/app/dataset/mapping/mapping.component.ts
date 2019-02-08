@@ -63,12 +63,11 @@ export class MappingComponent implements OnInit {
   isLoadingStatistics = false;
   expandedStatistics = false;
   msgXSLTSuccess: string;
+  editorIsDefaultTheme = true;
 
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
-
-    console.error('this.editorConfig = ' + JSON.stringify(this.editorConfig));
-
+    this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     this.loadStatistics();
     this.loadCustomXSLT();
@@ -164,7 +163,7 @@ export class MappingComponent implements OnInit {
   }
 
   toggleTheme(): void {
-    this.editorPrefs.toggleTheme(this.allEditors);
+    this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
   }
 
   tryOutXSLT(type: string): void {

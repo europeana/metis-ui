@@ -76,14 +76,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
   loadingTransformSamples = false;
   timeout?: number;
   downloadUrlCache: { [key: string]: string } = {};
+  editorIsDefaultTheme = true;
 
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
-
-    console.error('this.editorConfig = ' + JSON.stringify(this.editorConfig));
-
+    this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.nosample = this.translate.instant('nosample');
-
     this.addExecutionsFilter();
     this.prefillFilters();
 
@@ -228,7 +226,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   toggleTheme(): void {
-    this.editorPrefs.toggleTheme(this.allEditors);
+    this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
   }
 
   undoNewLines(samples: XmlSample[]): XmlSample[] {

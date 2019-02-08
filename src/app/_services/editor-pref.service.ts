@@ -1,4 +1,5 @@
 import { Injectable, QueryList } from '@angular/core';
+import { EditorConfiguration } from 'codemirror';
 import { CodemirrorComponent } from 'ng2-codemirror';
 
 @Injectable({ providedIn: 'root' })
@@ -6,8 +7,6 @@ export class EditorPrefService {
   getEditorPref(): string {
     let res = localStorage.getItem('editor-pref');
     res = res ? res : 'default';
-
-    console.error('getEditorPref returns ' + res);
     return res;
   }
 
@@ -15,7 +14,11 @@ export class EditorPrefService {
     localStorage.setItem('editor-pref', theme);
   }
 
-  toggleTheme(editors: QueryList<CodemirrorComponent>): void {
+  currentThemeIsDefault(): boolean {
+    return this.getEditorPref() === 'default';
+  }
+
+  toggleTheme(editors: QueryList<CodemirrorComponent>): boolean {
     const currTheme: string = this.getEditorPref();
     const newTheme: string = currTheme === 'default' ? 'isotope' : 'default';
 
@@ -24,9 +27,10 @@ export class EditorPrefService {
     });
 
     this.setEditorPref(newTheme);
+    return this.currentThemeIsDefault();
   }
 
-  getEditorConfig(readOnly: boolean) {
+  getEditorConfig(readOnly: boolean): EditorConfiguration {
     return {
       mode: 'application/xml',
       lineNumbers: true,
