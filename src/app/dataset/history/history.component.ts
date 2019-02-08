@@ -5,7 +5,8 @@ import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
-  Dataset, getCancelledBy,
+  Dataset,
+  getCancelledBy,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
