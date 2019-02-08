@@ -19,7 +19,8 @@ import {
   SubTaskInfo,
   TopologyName,
   Workflow,
-  WorkflowExecution, WorkflowStatus,
+  WorkflowExecution,
+  WorkflowStatus,
   XmlSample,
 } from '../_models';
 
@@ -341,11 +342,13 @@ export class WorkflowService {
       if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
         return of('Cancelled by system after timeout');
       } else {
-        return this.authenticationServer.getUserByUserId(cancelledBy).pipe(map((user) => {
-          return `Cancelled by user: ${user.firstName} ${user.lastName}`;
-        }));
+        return this.authenticationServer.getUserByUserId(cancelledBy).pipe(
+          map((user) => {
+            return `Cancelled by user: ${user.firstName} ${user.lastName}`;
+          }),
+        );
       }
     }
-    return of (undefined);
+    return of(undefined);
   }
 }

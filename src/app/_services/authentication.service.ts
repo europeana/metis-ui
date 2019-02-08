@@ -187,9 +187,7 @@ export class AuthenticationService {
 
   requestUserByUserId(userId: string): Observable<User> {
     const url = `${apiSettings.apiHostAuth}/authentication/user_by_user_id`;
-    return this.http
-      .post<User>(url, { userId })
-      .pipe(this.errors.handleRetry());
+    return this.http.post<User>(url, { userId }).pipe(this.errors.handleRetry());
   }
 
   getUserByUserId(userId: string): Observable<User> {
