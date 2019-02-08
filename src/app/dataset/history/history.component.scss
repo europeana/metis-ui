@@ -14,14 +14,26 @@
   padding: 0;
 }
 
-.workflow-head .head-whitespace {
-  height: 1.5rem;
-}
+.workflow-head {
+  position: relative;
 
-.workflow-head .head-text {
-  background-color: $eu-jade;
-  color: $white;
-  padding: 0.5rem;
+  .head-whitespace {
+    height: 1.5rem;
+  }
+
+  .head-text {
+    background-color: $eu-jade;
+    color: $white;
+    padding: 0.5rem;
+  }
+
+  .head-right {
+    position: absolute;
+    right: 0;
+    top: 1.5rem;
+    color: $white;
+    padding: 0.5rem;
+  }
 }
 
 .tooltip {

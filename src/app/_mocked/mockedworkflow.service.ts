@@ -341,4 +341,8 @@ export class MockWorkflowService {
   getLogs(): Observable<SubTaskInfo[]> {
     return observableOf(mockLogs);
   }
+
+  getWorkflowCancelledBy(): Observable<string | undefined> {
+    return observableOf(undefined);
+  }
 }

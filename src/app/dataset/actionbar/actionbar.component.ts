@@ -48,6 +48,7 @@ export class ActionbarComponent {
 
   isCancelling?: boolean;
   isCompleted?: boolean;
+  cancelledBy?: string;
 
   contentCopied = false;
   report?: Report;
@@ -80,6 +81,10 @@ export class ActionbarComponent {
           this.now = value.updatedDate;
         }
         this.currentStatus = value.workflowStatus;
+
+        this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
+          this.cancelledBy = cancelledBy;
+        });
       } else {
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;

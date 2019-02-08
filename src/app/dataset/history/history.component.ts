@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
@@ -121,5 +121,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
     this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
+  }
+
+  getCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
+    return this.workflows.getWorkflowCancelledBy(workflow);
   }
 }
