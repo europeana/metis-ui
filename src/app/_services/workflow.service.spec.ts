@@ -4,6 +4,7 @@ import { async, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
 import { gatherValuesAsync, MockHttp } from '../_helpers/test-helpers';
 import {
+  MockAuthenticationService,
   MockDatasetsService,
   MockErrorService,
   mockFirstPageResults,
@@ -16,9 +17,9 @@ import {
   mockWorkflowExecutionResults,
   mockXmlSamples,
 } from '../_mocked';
-import { WorkflowExecution } from '../_models';
+import { Report, WorkflowExecution } from '../_models';
 
-import { DatasetsService, ErrorService, WorkflowService } from '.';
+import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
 describe('workflow service', () => {
   let mockHttp: MockHttp;
@@ -30,6 +31,7 @@ describe('workflow service', () => {
         WorkflowService,
         { provide: ErrorService, useClass: MockErrorService },
         { provide: DatasetsService, useClass: MockDatasetsService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
       ],
       imports: [HttpClientTestingModule],
     }).compileComponents();
@@ -130,26 +132,37 @@ describe('workflow service', () => {
   });
 
   it('should get (stale) task errors for unfinished tasks', () => {
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', false)).subscribe(
-      (res) => {
-        expect(res).toEqual([false]);
-      },
-    );
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', false)).subscribe(
-      (res) => {
-        expect(res).toEqual([false, true]);
-      },
-    );
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', false)).subscribe(
-      (res) => {
-        expect(res).toEqual([true, false]);
-      },
-    );
-    mockHttp
-      .expectMulti('GET', '/orchestrator/proxies/normalization/task/7866/report?idsPerError=100', 3)
-      .forEach((request, i) => {
-        request.send(i % 2 === 0 ? {} : mockReport);
+    function getReport(
+      report: Report,
+      expectedHasError: boolean,
+      expectRequest: boolean,
+      done: () => void,
+    ): void {
+      service.getCachedHasErrors('7866', 'normalization', false).subscribe((res) => {
+        expect(res).toEqual(expectedHasError);
+        done();
       });
+      if (expectRequest) {
+        mockHttp
+          .expect('GET', '/orchestrator/proxies/normalization/task/7866/report?idsPerError=100')
+          .send(report);
+      }
+    }
+
+    const noErrors = { id: 123, errors: [] };
+    const withErrors = mockReport;
+
+    getReport(noErrors, false, true, () => {
+      getReport(noErrors, false, true, () => {
+        getReport(withErrors, true, true, () => {
+          getReport(withErrors, true, false, () => {
+            getReport(withErrors, true, false, () => {
+              expect(1).toBe(1); // dummy check for coverage
+            });
+          });
+        });
+      });
+    });
   });
 
   it('should get completed executions for a dataset per page', () => {

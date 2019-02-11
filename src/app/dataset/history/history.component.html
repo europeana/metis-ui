@@ -33,6 +33,9 @@
             {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}</span
           >
         </div>
+        <div class="head-right">
+          {{ getCancelledBy(execution) | async }}
+        </div>
       </td>
       <ng-template [ngIf]="wpe.pluginExecution" let-pe>
         <td class="centered"><span class="svg-icon-{{ pe.pluginType }}"></span></td>

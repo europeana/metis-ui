@@ -84,6 +84,7 @@ export interface WorkflowExecution {
   workflowPriority?: number;
   workflowStatus: WorkflowStatus;
   cancelling?: boolean;
+  cancelledBy?: string;
   createdDate: string;
   startedDate: string;
   updatedDate: string;

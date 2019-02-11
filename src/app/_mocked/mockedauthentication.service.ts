@@ -50,4 +50,8 @@ export class MockAuthenticationService {
   getToken(): string | null {
     return this.currentUser.metisUserAccessToken.accessToken;
   }
+
+  getUserByUserId(): Observable<User> {
+    return observableOf(mockUser);
+  }
 }
