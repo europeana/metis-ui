@@ -1,11 +1,14 @@
 export const LANG_EN_NAME = 'en';
 
+
 export const LANG_EN_TRANS = {
   accountrole: 'Account role',
   addworkflow: 'Add workflow info',
   all: 'All',
   allexecutions: 'All executions',
   allworkflows: 'All workflows',
+  background: 'background',
+  black: 'black',
   cancel: 'Cancel',
   cancelareyousure: 'Are you sure you want to cancel?',
   cancelling: 'Cancelling',
@@ -31,6 +34,7 @@ export const LANG_EN_TRANS = {
   description: 'Description',
   doubleclicktocopy: 'Double click to copy ids',
   edit: 'Edit',
+  editorBackgroundTheme: 'Editor background theme',
   email: 'Email',
   emailerror: 'Please enter a valid email address',
   enddate: 'End date',
@@ -141,6 +145,7 @@ export const LANG_EN_TRANS = {
   viewpreview: 'View in Preview',
   viewall: 'View all',
   viewcollections: 'View in Collections',
+  white: 'white',
   workflow: 'Workflow',
   workflowcreated: 'Workflow created on',
   workflowrunning: 'The workflow is already running.',
