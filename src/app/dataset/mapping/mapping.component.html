@@ -62,12 +62,10 @@
   <div class="view-sample view-sample-expanded">
     <div class="view-sample-title">
       <h3>{{ 'xsltcustom' | translate }}</h3>
-      <a
-        (click)="toggleTheme()"
-        [class.default-theme]="editorIsDefaultTheme"
-        class="toggle-editor-ctrl"
-        >theme</a
-      >
+      <app-theme-selector
+        (themeSet)="onThemeSet($event)"
+        [editorIsDefaultTheme]="editorIsDefaultTheme"
+      ></app-theme-selector>
     </div>
     <div class="view-sample-editor">
       <div class="view-sample-editor-codemirror">

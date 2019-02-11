@@ -206,6 +206,20 @@ li.dropdown a {
   padding-right: 2rem;
 }
 
+.flex-pair {
+  align-items: center;
+  display: flex;
+  :last-child {
+    margin-left: 1em;
+  }
+}
+
+.theme-title {
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
 .tooltip {
   cursor: pointer;
   position: relative;
@@ -230,7 +244,7 @@ li.dropdown a {
   &:hover::after {
     left: 50%;
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translate(-5em, 65%);
   }
 }
 

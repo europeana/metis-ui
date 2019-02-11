@@ -7,7 +7,7 @@ export class EditorPrefService {
   altTheme: string;
 
   constructor() {
-    this.altTheme = 'isotope';
+    this.altTheme = 'midnight';
   }
 
   getEditorPref(): string {

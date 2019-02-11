@@ -225,8 +225,16 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }, 1);
   }
 
-  toggleTheme(): void {
-    this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+  onThemeSet(toDefault: boolean): void {
+    if (toDefault) {
+      if (!this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    } else {
+      if (this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    }
   }
 
   undoNewLines(samples: XmlSample[]): XmlSample[] {

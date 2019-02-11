@@ -162,8 +162,16 @@ export class MappingComponent implements OnInit {
     );
   }
 
-  toggleTheme(): void {
-    this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+  onThemeSet(toDefault: boolean): void {
+    if (toDefault) {
+      if (!this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    } else {
+      if (this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    }
   }
 
   tryOutXSLT(type: string): void {

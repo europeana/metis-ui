@@ -30,6 +30,7 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/scss/base/media';
 @import 'assets/sass/scss/base/forms';
 @import 'assets/sass/scss/base/tables';
+@import 'assets/sass/scss/base/text';
 
 //------------------------------------
 // $PAGE STRUCTURE
@@ -77,7 +78,6 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/pandora/components/viewxmlsamples';
 
 @import '~codemirror/lib/codemirror.css';
-@import '~codemirror/theme/3024-night.css';
-@import '~codemirror/theme/isotope.css';
+@import '~codemirror/theme/midnight.css';
 
 @import '~codemirror/addon/fold/foldgutter.css';

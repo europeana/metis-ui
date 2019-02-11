@@ -1,0 +1,26 @@
+<ul class="filter" (clickOutside)="hide()">
+  <li class="dropdown arrow-right">
+    <span class="flex-pair" (click)="show()"
+      ><span>Background</span><span [class.black]="!editorIsDefaultTheme" class="theme-ctrl"></span
+    ></span>
+    <div class="dropdown-wrapper" *ngIf="showing">
+      <ul>
+        <li>
+          <span class="theme-title">Editor background theme</span>
+        </li>
+        <li>
+          <a class="flex-pair" (click)="setTheme(false)"
+            ><span [class.active]="!editorIsDefaultTheme" class="theme-ctrl black"></span
+            ><span>black</span></a
+          >
+        </li>
+        <li>
+          <a class="flex-pair" (click)="setTheme(true)"
+            ><span [class.active]="editorIsDefaultTheme" class="theme-ctrl"></span
+            ><span>white</span></a
+          >
+        </li>
+      </ul>
+    </div>
+  </li>
+</ul>
