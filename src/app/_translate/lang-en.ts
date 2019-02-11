@@ -1,6 +1,5 @@
 export const LANG_EN_NAME = 'en';
 
-
 export const LANG_EN_TRANS = {
   accountrole: 'Account role',
   addworkflow: 'Add workflow info',
@@ -34,7 +33,7 @@ export const LANG_EN_TRANS = {
   description: 'Description',
   doubleclicktocopy: 'Double click to copy ids',
   edit: 'Edit',
-  editorBackgroundTheme: 'Editor background theme',
+  editorbackgroundtheme: 'Editor background theme',
   email: 'Email',
   emailerror: 'Please enter a valid email address',
   enddate: 'End date',
