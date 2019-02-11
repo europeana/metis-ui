@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
@@ -10,6 +18,7 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
+import { CodemirrorComponent } from 'ng2-codemirror';
 import { switchMap } from 'rxjs/operators';
 
 import {
@@ -19,7 +28,7 @@ import {
   Notification,
   successNotification,
 } from '../../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
@@ -32,17 +41,20 @@ type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 export class MappingComponent implements OnInit {
   constructor(
     private workflows: WorkflowService,
+    private editorPrefs: EditorPrefService,
     private errors: ErrorService,
     private datasets: DatasetsService,
     private translate: TranslateService,
     private router: Router,
   ) {}
 
+  @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
+
   @Input() datasetData: Dataset;
 
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
-  editorConfigEdit: EditorConfiguration;
+  editorConfig: EditorConfiguration;
   statistics: NodeStatistics[];
   xsltStatus: XSLTStatus = 'loading';
   xslt?: string;
@@ -51,22 +63,12 @@ export class MappingComponent implements OnInit {
   isLoadingStatistics = false;
   expandedStatistics = false;
   msgXSLTSuccess: string;
+  editorIsDefaultTheme = true;
 
   ngOnInit(): void {
-    this.editorConfigEdit = {
-      mode: 'application/xml',
-      lineNumbers: true,
-      indentUnit: 2,
-      foldGutter: true,
-      indentWithTabs: true,
-      readOnly: false,
-      viewportMargin: Infinity,
-      lineWrapping: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-    };
-
+    this.editorConfig = this.editorPrefs.getEditorConfig(false);
+    this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
-
     this.loadStatistics();
     this.loadCustomXSLT();
   }
@@ -158,6 +160,18 @@ export class MappingComponent implements OnInit {
         this.handleXSLTError(err);
       },
     );
+  }
+
+  onThemeSet(toDefault: boolean): void {
+    if (toDefault) {
+      if (!this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    } else {
+      if (this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    }
   }
 
   tryOutXSLT(type: string): void {

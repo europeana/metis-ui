@@ -1,5 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
@@ -11,6 +20,7 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
+import { CodemirrorComponent } from 'ng2-codemirror';
 import { switchMap } from 'rxjs/operators';
 import * as beautify from 'vkbeautify';
 
@@ -22,7 +32,7 @@ import {
   WorkflowExecution,
   XmlSample,
 } from '../../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewFilters } from '../dataset.component';
 
@@ -35,6 +45,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
     private translate: TranslateService,
+    private editorPrefs: EditorPrefService,
     private errors: ErrorService,
     private datasets: DatasetsService,
     private router: Router,
@@ -46,6 +57,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   @Input() tempXSLT?: string;
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
+  @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecution> = [];
@@ -64,24 +76,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
   loadingTransformSamples = false;
   timeout?: number;
   downloadUrlCache: { [key: string]: string } = {};
+  editorIsDefaultTheme = true;
 
   ngOnInit(): void {
-    this.editorConfig = {
-      mode: 'application/xml',
-      lineNumbers: true,
-      indentUnit: 2,
-      readOnly: true,
-      foldGutter: true,
-      indentWithTabs: true,
-      viewportMargin: Infinity,
-      lineWrapping: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-    };
-
+    this.editorConfig = this.editorPrefs.getEditorConfig(true);
+    this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.nosample = this.translate.instant('nosample');
-
     this.addExecutionsFilter();
-
     this.prefillFilters();
 
     if (this.tempXSLT) {
@@ -222,6 +223,18 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.timeout = window.setTimeout(() => {
       samples[index].xmlRecord = sample;
     }, 1);
+  }
+
+  onThemeSet(toDefault: boolean): void {
+    if (toDefault) {
+      if (!this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    } else {
+      if (this.editorIsDefaultTheme) {
+        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      }
+    }
   }
 
   undoNewLines(samples: XmlSample[]): XmlSample[] {

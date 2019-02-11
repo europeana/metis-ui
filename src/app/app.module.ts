@@ -45,6 +45,7 @@ import {
   PasswordCheckComponent,
   TextWithLinksComponent,
 } from './shared';
+import { ThemeSelectorComponent } from './theme-selector';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import {
     ExecutionsComponent,
     OngoingexecutionsComponent,
     ReportComponent,
+    ThemeSelectorComponent,
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe,
