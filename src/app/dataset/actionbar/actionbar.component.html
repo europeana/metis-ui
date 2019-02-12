@@ -65,7 +65,7 @@
         >
       </li>
       <li *ngIf="isCompleted">
-        <a class="newaction-btn" (click)="startWorkflow.emit()">
+        <a class="newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
       </li>
@@ -82,7 +82,7 @@
   <nav>
     <ul>
       <li>
-        <a *ngIf="workflowData" class="newaction-btn" (click)="startWorkflow.emit()">
+        <a *ngIf="workflowData" class="newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
         <a
