@@ -11,6 +11,7 @@ export class ThemeSelectorComponent {
   @Input() editorIsDefaultTheme: boolean;
   setTheme(defaultTheme: boolean): void {
     this.themeSet.emit(defaultTheme);
+    this.showing = false;
   }
   hide(): void {
     this.showing = false;
