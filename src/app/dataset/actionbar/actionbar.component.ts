@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
@@ -23,6 +24,7 @@ export class ActionbarComponent {
   constructor(private workflows: WorkflowService) {}
 
   private _lastExecutionData?: WorkflowExecution;
+  private subscription?: Subscription;
 
   @Input() datasetId: string;
   @Input() datasetName: string;
@@ -82,9 +84,11 @@ export class ActionbarComponent {
         }
         this.currentStatus = value.workflowStatus;
 
-        this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
-          this.cancelledBy = cancelledBy;
-        });
+        this.subscription = this.workflows
+          .getWorkflowCancelledBy(value)
+          .subscribe((cancelledBy) => {
+            this.cancelledBy = cancelledBy;
+          });
       } else {
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
@@ -99,6 +103,14 @@ export class ActionbarComponent {
 
   get lastExecutionData(): WorkflowExecution | undefined {
     return this._lastExecutionData;
+  }
+
+  beginWorkflow(): void {
+    this.cancelledBy = '';
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    this.startWorkflow.emit();
   }
 
   cancelWorkflow(): void {
