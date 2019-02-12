@@ -67,6 +67,7 @@
 
 .form-fields.disabled {
   background-color: $gray-almost-lightest;
+  display: flex;
 
   &:hover {
     background-color: $gray-almost-lightest;
@@ -180,16 +181,25 @@
 }
 
 .show-on-hover {
-  bottom: 0.2em;
   display: none;
   left: 1em;
   position: relative;
+  width: 100%;
+
   [type='checkbox'] {
     position: relative;
-    top: 0.2em;
   }
+
+  .content{
+    line-height: 1.3em;
+    position: absolute;
+  }
+}
+.disabled > .show-on-hover {
+  color: $gray-med;
 }
 
 .plugin-form-fields:hover .show-on-hover {
-  display: inline-block;
+  align-items: center;
+  display: flex;
 }
