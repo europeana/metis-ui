@@ -30,17 +30,17 @@
   }
   &.active {
     &::after {
-    	border: solid $eu-jade;
-    	border-width: 0 3px 3px 0;
-    	content: '';
-    	height: 10px;
-    	left: 7.5px;
-    	position: absolute;
-    	top: 4px;
-    	-ms-transform: rotate(45deg);
-    	-webkit-transform: rotate(45deg);
-    	transform: rotate(45deg);
-    	width: 5px;
+      border: solid $eu-jade;
+      border-width: 0 3px 3px 0;
+      content: '';
+      height: 10px;
+      left: 7.5px;
+      position: absolute;
+      top: 4px;
+      -ms-transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      width: 5px;
     }
   }
 }
