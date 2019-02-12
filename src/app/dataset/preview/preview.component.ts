@@ -148,6 +148,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   getXMLSamples(plugin: PluginType): void {
     this.loadingSamples = true;
     this.onClickedOutside();
+    this.editorConfig = this.editorPrefs.getEditorConfig(true);
     this.selectedPlugin = plugin;
     this.previewFilters.plugin = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
