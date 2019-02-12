@@ -131,7 +131,9 @@
           *ngIf="
             workflowForm.get('pluginHARVEST')!.disabled || !workflowForm.get('pluginHARVEST')!.value
           "
-        ><span class="content" [innerHTML]="getImportSummary()"></span></div>
+        >
+          <span class="content" [innerHTML]="getImportSummary()"></span>
+        </div>
         <div
           class="form-group"
           *ngIf="
