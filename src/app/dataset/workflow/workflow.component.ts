@@ -233,11 +233,17 @@ export class WorkflowComponent implements OnInit {
   }
 
   getImportSummary(): string {
-    let res: string;
+    let res = 'Harvest URL: ';
     if (this.harvestprotocol === 'HTTP_HARVEST') {
-      res = this.workflowForm.value.url.trim();
+      res += this.workflowForm.value.url.trim();
     } else {
-      res = this.workflowForm.value.harvestUrl.trim() + ' ' + this.workflowForm.value.setSpec;
+      res +=
+        this.workflowForm.value.harvestUrl.trim() +
+        '<br/>Setspec: ' +
+        this.workflowForm.value.setSpec;
+    }
+    if (this.workflowForm.value.metadataFormat) {
+      res += '<br/>Metadata format: ' + this.workflowForm.value.metadataFormat;
     }
     return res;
   }
