@@ -65,9 +65,13 @@
   }
 }
 
+.form-fields.disabled,
+.form-fields.inactive {
+  display: flex;
+}
+
 .form-fields.disabled {
   background-color: $gray-almost-lightest;
-  display: flex;
 
   &:hover {
     background-color: $gray-almost-lightest;
