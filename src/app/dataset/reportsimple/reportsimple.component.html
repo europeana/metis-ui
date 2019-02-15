@@ -5,13 +5,10 @@
       <a class="btn-right" (click)="copyReport()" *ngIf="message">Copy</a>
     </div>
     <div class="content">
-      <app-load-animation [resources]="{ message: true }" *ngIf="isLoading"></app-load-animation>
-
       <app-notification
         [notification]="notification"
         (closed)="notification = undefined"
       ></app-notification>
-
       <div *ngIf="message" #contentRef>
         {{ message }}
       </div>
