@@ -54,6 +54,13 @@
       </td>
       <td class="buttonplaceholder nowrap">
         <a
+          *ngIf="plugin.failMessage"
+          class="table-btn svg-icon-report"
+          (click)="openFailReport(plugin.failMessage)"
+        >
+          {{ 'report' | translate }}
+        </a>
+        <a
           *ngIf="plugin.hasReport"
           class="table-btn svg-icon-report"
           (click)="openReport(plugin.externalTaskId, plugin.topologyName)"

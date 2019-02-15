@@ -55,6 +55,14 @@ describe('HistoryComponent', () => {
     });
   });
 
+  it('should open a simple report', () => {
+    spyOn(component.setReportMsg, 'emit');
+    const msg = 'fail message report';
+    component.openFailReport(msg);
+    fixture.detectChanges();
+    expect(component.setReportMsg.emit).toHaveBeenCalledWith(msg);
+  });
+
   it('should display history in tabs', () => {
     component.datasetData = mockDataset;
     component.returnAllExecutions();

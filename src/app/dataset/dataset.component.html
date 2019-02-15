@@ -8,6 +8,9 @@
   }"
 ></app-load-animation>
 
+<app-reportsimple [openReportSimple]="reportMsg" (closeReportSimple)="clearReportMsg()">
+</app-reportsimple>
+
 <div
   class="dashboard-wrapper"
   *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading"
@@ -42,6 +45,7 @@
           [datasetId]="datasetId"
           [lastExecutionData]="lastExecutionData"
           (setReportRequest)="reportRequest = $event"
+          (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
         <app-datasetlog
           *ngIf="showPluginLog"
@@ -125,6 +129,7 @@
         [datasetData]="datasetData"
         [lastExecutionData]="lastExecutionData"
         (setReportRequest)="reportRequest = $event"
+        (setReportMsg)="setReportMsg($event)"
         (setPreviewFilters)="previewFilters = $event"
       ></app-history>
     </div>
