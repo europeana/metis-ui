@@ -20,6 +20,7 @@ export class LastExecutionComponent {
   @Input() datasetId: string;
 
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<string | undefined>();
 
   report?: Report;
   pluginExecutions: PluginExecution[] = [];
@@ -46,6 +47,10 @@ export class LastExecutionComponent {
 
   openReport(taskId: string, topology: TopologyName): void {
     this.setReportRequest.emit({ taskId, topology });
+  }
+
+  openFailReport(errorMsg: string): void {
+    this.setReportMsg.emit(errorMsg);
   }
 
   // after double clicking, copy the execution and task id to the clipboard

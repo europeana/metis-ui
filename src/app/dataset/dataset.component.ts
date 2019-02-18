@@ -64,6 +64,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
   reportRequest?: ReportRequest;
+  reportMsg?: string;
 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
@@ -85,6 +86,14 @@ export class DatasetComponent implements OnInit, OnDestroy {
 
       this.loadData();
     });
+  }
+
+  setReportMsg(m: string): void {
+    this.reportMsg = m;
+  }
+
+  clearReportMsg(): void {
+    this.reportMsg = '';
   }
 
   ngOnDestroy(): void {

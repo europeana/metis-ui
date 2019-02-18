@@ -1,0 +1,17 @@
+<div class="modal-wrapper" *ngIf="isVisible">
+  <div class="modal modal-big">
+    <div class="head">
+      Report <a class="btn-close" (click)="closeReport()"></a>
+      <a class="btn-right" (click)="copyReport()" *ngIf="message">Copy</a>
+    </div>
+    <div class="content">
+      <app-notification
+        [notification]="notification"
+        (closed)="notification = undefined"
+      ></app-notification>
+      <div *ngIf="message" #contentRef>
+        {{ message }}
+      </div>
+    </div>
+  </div>
+</div>
