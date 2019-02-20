@@ -15,13 +15,13 @@
     {{ plugin.pluginType }}
   </span>
 </td>
-<td class="nowrap">
+<td class="nowrap centered">
   {{ plugin ? plugin.executionProgress.processedRecords - plugin.executionProgress.errors : '-' }}
   <span class="errors" *ngIf="plugin.executionProgress.errors > 0">
     ({{ plugin.executionProgress.errors }})
   </span>
 </td>
-<td class="nowrap uppercase">
+<td class="nowrap uppercase centered">
   {{
     plugin && plugin.executionProgress.expectedRecords >= 0
       ? plugin.executionProgress.expectedRecords
