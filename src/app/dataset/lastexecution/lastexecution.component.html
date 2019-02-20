@@ -28,8 +28,7 @@
           >{{ plugin.pluginType | renameWorkflow }} {{ plugin.workflowCreated }}</span
         >
       </td>
-      <td class="nowrap centered"
-       >
+      <td class="nowrap centered">
         {{ plugin.executionProgress.processedRecords - plugin.executionProgress.errors }}
         <span class="errors" *ngIf="plugin.executionProgress.errors > 0"
           >({{ plugin.executionProgress.errors }})</span
