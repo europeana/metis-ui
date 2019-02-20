@@ -25,3 +25,9 @@ export interface ReportRequest {
   taskId: string;
   topology: TopologyName;
 }
+
+export interface SimpleReportRequest {
+  topology?: TopologyName;
+  taskId?: string;
+  message?: string;
+}

@@ -8,7 +8,11 @@
   }"
 ></app-load-animation>
 
-<app-reportsimple [openReportSimple]="reportMsg" (closeReportSimple)="clearReportMsg()">
+<app-reportsimple
+  [reportErrors]="reportErrors"
+  [reportMsg]="reportMsg"
+  (closeReportSimple)="clearReport()"
+>
 </app-reportsimple>
 
 <div

@@ -12,6 +12,7 @@ import {
   PluginExecution,
   Report,
   ReportRequest,
+  SimpleReportRequest,
   TopologyName,
   WorkflowExecution,
 } from '../../_models';
@@ -39,7 +40,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
-  @Output() setReportMsg = new EventEmitter<string | undefined>();
+  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   notification?: Notification;
   currentPage = 0;
@@ -102,12 +103,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.returnAllExecutions();
   }
 
-  openReport(taskId: string, topology: TopologyName): void {
-    this.setReportRequest.emit({ taskId, topology });
-  }
-
-  openFailReport(errorMsg: string): void {
-    this.setReportMsg.emit(errorMsg);
+  openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
+    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
 
   copyInformation(type: string, id1: string, id2: string): void {

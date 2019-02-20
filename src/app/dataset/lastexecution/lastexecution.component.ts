@@ -7,6 +7,7 @@ import {
   PluginExecution,
   Report,
   ReportRequest,
+  SimpleReportRequest,
   TopologyName,
   WorkflowExecution,
 } from '../../_models';
@@ -20,7 +21,7 @@ export class LastExecutionComponent {
   @Input() datasetId: string;
 
   @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
-  @Output() setReportMsg = new EventEmitter<string | undefined>();
+  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   report?: Report;
   pluginExecutions: PluginExecution[] = [];
@@ -49,8 +50,8 @@ export class LastExecutionComponent {
     this.setReportRequest.emit({ taskId, topology });
   }
 
-  openFailReport(errorMsg: string): void {
-    this.setReportMsg.emit(errorMsg);
+  openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
+    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
 
   // after double clicking, copy the execution and task id to the clipboard

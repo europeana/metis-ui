@@ -56,14 +56,14 @@
         <a
           *ngIf="plugin.failMessage"
           class="table-btn svg-icon-report"
-          (click)="openFailReport(plugin.failMessage)"
+          (click)="openFailReport(null, null, pe.failMessage)"
         >
           {{ 'report' | translate }}
         </a>
         <a
           *ngIf="plugin.hasReport"
           class="table-btn svg-icon-report"
-          (click)="openReport(plugin.externalTaskId, plugin.topologyName)"
+          (click)="openFailReport(plugin.topologyName, plugin.externalTaskId)"
         >
           {{ 'report' | translate }}
         </a>
