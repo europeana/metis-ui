@@ -8,8 +8,8 @@
     <tr>
       <th colspan="2"></th>
       <th>{{ 'workflow step' | translate }}</th>
-      <th>{{ 'totalprocessed' | translate }}</th>
-      <th>{{ 'totaldataset' | translate }}</th>
+      <th class="centered">{{ 'totalprocessed' | translate }}</th>
+      <th class="centered">{{ 'totaldataset' | translate }}</th>
       <th>{{ 'status' | translate }}</th>
       <th class="centered">{{ 'startdate' | translate }}</th>
       <th class="centered">{{ 'enddate' | translate }}</th>
@@ -50,13 +50,13 @@
             >{{ pe.pluginType | renameWorkflow }} {{ pe.workflowCreated }}</span
           >
         </td>
-        <td class="nowrap">
+        <td class="nowrap centered">
           {{ pe.executionProgress.processedRecords - pe.executionProgress.errors }}
           <span class="errors" *ngIf="pe.executionProgress.errors > 0"
             >({{ pe.executionProgress.errors }})</span
           >
         </td>
-        <td class="nowrap uppercase">
+        <td class="nowrap uppercase centered">
           {{
             pe.executionProgress.expectedRecords >= 0
               ? pe.executionProgress.expectedRecords
