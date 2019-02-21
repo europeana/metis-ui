@@ -132,7 +132,6 @@
         *ngIf="activeTab === 'log'"
         [datasetData]="datasetData"
         [lastExecutionData]="lastExecutionData"
-        (setReportRequest)="reportRequest = $event"
         (setReportMsg)="setReportMsg($event)"
         (setPreviewFilters)="previewFilters = $event"
       ></app-history>
