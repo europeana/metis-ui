@@ -43,12 +43,10 @@
           [showPluginLog]="showPluginLog"
           (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"
-          (setReportRequest)="reportRequest = $event"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
           [lastExecutionData]="lastExecutionData"
-          (setReportRequest)="reportRequest = $event"
           (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
         <app-datasetlog
@@ -56,10 +54,6 @@
           [showPluginLog]="showPluginLog"
           (closed)="showPluginLog = undefined"
         ></app-datasetlog>
-        <app-report
-          [reportRequest]="reportRequest"
-          (closed)="reportRequest = undefined"
-        ></app-report>
       </div>
     </div>
 

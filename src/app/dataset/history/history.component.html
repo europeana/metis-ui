@@ -78,7 +78,7 @@
           <a
             *ngIf="pe.failMessage"
             class="table-btn svg-icon-report"
-            (click)="openFailReport(null, null, pe.failMessage)"
+            (click)="openFailReport(undefined, undefined, pe.failMessage)"
           >
             {{ 'report' | translate }}
           </a>
