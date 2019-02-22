@@ -107,12 +107,13 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();
 
-    spyOn(component.setReportRequest, 'emit');
+    spyOn(component.setReportMsg, 'emit');
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
     reportBtn.triggerEventHandler('click', null);
-    expect(component.setReportRequest.emit).toHaveBeenCalledWith({
-      taskId: '123',
+    expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'normalization',
+      taskId: '123',
+      message: undefined,
     });
   });
 

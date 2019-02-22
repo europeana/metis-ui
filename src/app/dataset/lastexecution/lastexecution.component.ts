@@ -46,10 +46,6 @@ export class LastExecutionComponent {
     el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  openReport(taskId: string, topology: TopologyName): void {
-    this.setReportRequest.emit({ taskId, topology });
-  }
-
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }

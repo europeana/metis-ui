@@ -43,6 +43,7 @@
           [showPluginLog]="showPluginLog"
           (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"
+          (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
