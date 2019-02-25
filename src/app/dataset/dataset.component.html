@@ -8,7 +8,12 @@
   }"
 ></app-load-animation>
 
-<app-reportsimple [openReportSimple]="reportMsg" (closeReportSimple)="clearReportMsg()">
+<app-reportsimple
+  [reportErrors]="reportErrors"
+  [reportMsg]="reportMsg"
+  [reportLoading]="reportLoading"
+  (closeReportSimple)="clearReport()"
+>
 </app-reportsimple>
 
 <div
@@ -39,12 +44,11 @@
           [showPluginLog]="showPluginLog"
           (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"
-          (setReportRequest)="reportRequest = $event"
+          (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
           [lastExecutionData]="lastExecutionData"
-          (setReportRequest)="reportRequest = $event"
           (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
         <app-datasetlog
@@ -52,10 +56,6 @@
           [showPluginLog]="showPluginLog"
           (closed)="showPluginLog = undefined"
         ></app-datasetlog>
-        <app-report
-          [reportRequest]="reportRequest"
-          (closed)="reportRequest = undefined"
-        ></app-report>
       </div>
     </div>
 
@@ -128,7 +128,6 @@
         *ngIf="activeTab === 'log'"
         [datasetData]="datasetData"
         [lastExecutionData]="lastExecutionData"
-        (setReportRequest)="reportRequest = $event"
         (setReportMsg)="setReportMsg($event)"
         (setPreviewFilters)="previewFilters = $event"
       ></app-history>

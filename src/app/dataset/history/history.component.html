@@ -78,7 +78,7 @@
           <a
             *ngIf="pe.failMessage"
             class="table-btn svg-icon-report"
-            (click)="openFailReport(pe.failMessage)"
+            (click)="openFailReport(undefined, undefined, pe.failMessage)"
           >
             {{ 'report' | translate }}
           </a>
@@ -86,7 +86,7 @@
           <a
             *ngIf="pe.hasReport"
             class="table-btn svg-icon-report"
-            (click)="openReport(pe.externalTaskId, pe.topologyName)"
+            (click)="openFailReport(pe.topologyName, pe.externalTaskId)"
           >
             {{ 'report' | translate }}
           </a>

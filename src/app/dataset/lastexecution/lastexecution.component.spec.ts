@@ -32,21 +32,26 @@ describe('LastExecutionComponent', () => {
   });
 
   it('should open a report', () => {
-    spyOn(component.setReportRequest, 'emit');
-    component.openReport('123', 'validation');
+    spyOn(component.setReportMsg, 'emit');
+    component.openFailReport('validation', '123');
     fixture.detectChanges();
-    expect(component.setReportRequest.emit).toHaveBeenCalledWith({
-      taskId: '123',
+    expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'validation',
+      taskId: '123',
+      message: undefined,
     });
   });
 
   it('should open a simple report', () => {
     spyOn(component.setReportMsg, 'emit');
     const msg = 'fail message report';
-    component.openFailReport(msg);
+    component.openFailReport(undefined, undefined, msg);
     fixture.detectChanges();
-    expect(component.setReportMsg.emit).toHaveBeenCalledWith(msg);
+    expect(component.setReportMsg.emit).toHaveBeenCalledWith({
+      topology: undefined,
+      taskId: undefined,
+      message: 'fail message report',
+    });
   });
 
   it('should display history in panel', () => {

@@ -6,8 +6,7 @@ import {
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
-  Report,
-  ReportRequest,
+  SimpleReportRequest,
   TopologyName,
   Workflow,
   WorkflowExecution,
@@ -34,7 +33,7 @@ export class ActionbarComponent {
 
   @Output() startWorkflow = new EventEmitter<void>();
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
-  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   currentPlugin?: PluginExecution;
   now?: string;
@@ -51,9 +50,7 @@ export class ActionbarComponent {
   isCancelling?: boolean;
   isCompleted?: boolean;
   cancelledBy?: string;
-
   contentCopied = false;
-  report?: Report;
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
@@ -125,8 +122,8 @@ export class ActionbarComponent {
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
-  openReport(taskId: string, topology: TopologyName): void {
-    this.setReportRequest.emit({ taskId, topology });
+  openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
+    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
 
   // after double clicking, copy the execution and task id to the clipboard

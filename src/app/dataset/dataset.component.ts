@@ -12,7 +12,7 @@ import {
   Notification,
   PluginExecution,
   PluginType,
-  ReportRequest,
+  SimpleReportRequest,
   successNotification,
   Workflow,
   WorkflowExecution,
@@ -63,8 +63,11 @@ export class DatasetComponent implements OnInit, OnDestroy {
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
-  reportRequest?: ReportRequest;
+
+  // tslint:disable-next-line: no-any
+  reportErrors: any;
   reportMsg?: string;
+  reportLoading: boolean;
 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
@@ -88,12 +91,31 @@ export class DatasetComponent implements OnInit, OnDestroy {
     });
   }
 
-  setReportMsg(m: string): void {
-    this.reportMsg = m;
+  setReportMsg(req: SimpleReportRequest): void {
+    if (req.message) {
+      this.reportMsg = req.message;
+    } else if (req.taskId && req.topology) {
+      this.reportLoading = true;
+
+      this.workflows.getReport(req.taskId, req.topology).subscribe(
+        (report) => {
+          if (report && report.errors && report.errors.length) {
+            this.reportErrors = report.errors;
+          } else {
+            this.reportMsg = 'Report is empty.';
+          }
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+        },
+      );
+    }
   }
 
-  clearReportMsg(): void {
+  clearReport(): void {
     this.reportMsg = '';
+    this.reportErrors = undefined;
   }
 
   ngOnDestroy(): void {
