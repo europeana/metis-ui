@@ -12,6 +12,8 @@ export const LANG_EN_TRANS = {
   cancelareyousure: 'Are you sure you want to cancel?',
   cancelling: 'Cancelling',
   changepassword: 'Change password',
+  checkall: 'Check all',
+  checksample: 'Check sample',
   chooseworkflow: 'Choose workflow to preview',
   country: 'Country',
   create: 'Create',

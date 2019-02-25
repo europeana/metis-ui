@@ -90,6 +90,7 @@
   padding-right: 2rem;
   position: relative;
   cursor: pointer;
+  white-space: nowrap;
 
   input {
     display: none;
@@ -197,6 +198,11 @@
   .content {
     line-height: 1.3em;
     position: absolute;
+  }
+  
+  .form-group-radios label{
+    display: inline-block;
+    padding: 0 1em;
   }
 }
 .disabled > .show-on-hover {

@@ -53,6 +53,7 @@ export class WorkflowComponent implements OnInit {
 
   notification?: Notification;
   harvestprotocol: string;
+  performSampling: boolean;
   newWorkflow = true;
   workflowForm: FormGroup;
   currentUrl: string;
@@ -120,6 +121,7 @@ export class WorkflowComponent implements OnInit {
       harvestUrl: [''],
       setSpec: [''],
       metadataFormat: [''],
+      performSampling: [''],
       recordXPath: [''],
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
@@ -230,6 +232,10 @@ export class WorkflowComponent implements OnInit {
   */
   changeHarvestProtocol(protocol: string): void {
     this.harvestprotocol = protocol;
+  }
+
+  changeLinkCheckSampling(sample: boolean): void {
+    this.performSampling = sample;
   }
 
   getImportSummary(): string {
