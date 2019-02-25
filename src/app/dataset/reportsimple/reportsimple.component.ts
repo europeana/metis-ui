@@ -14,6 +14,7 @@ export class ReportSimpleComponent {
   errors: any;
   message: string;
   notification?: Notification;
+  loading: boolean;
 
   @ViewChild('contentRef') contentRef: ElementRef;
 
@@ -30,7 +31,15 @@ export class ReportSimpleComponent {
   @Input() set reportErrors(errors: any) {
     if (errors) {
       this.isVisible = true;
+      this.loading = false;
       this.errors = errors;
+    }
+  }
+
+  @Input() set reportLoading(loading: boolean) {
+    if (loading) {
+      this.loading = loading;
+      this.isVisible = true;
     }
   }
 
@@ -40,6 +49,7 @@ export class ReportSimpleComponent {
     this.notification = undefined;
     this.isVisible = false;
     this.closeReportSimple.emit();
+    this.loading = false;
   }
 
   copyReport(): void {

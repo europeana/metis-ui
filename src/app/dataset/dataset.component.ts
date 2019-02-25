@@ -67,6 +67,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   // tslint:disable-next-line: no-any
   reportErrors: any;
   reportMsg?: string;
+  reportLoading: boolean;
 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
@@ -94,6 +95,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
     if (req.message) {
       this.reportMsg = req.message;
     } else if (req.taskId && req.topology) {
+      this.reportLoading = true;
+
       this.workflows.getReport(req.taskId, req.topology).subscribe(
         (report) => {
           if (report && report.errors && report.errors.length) {

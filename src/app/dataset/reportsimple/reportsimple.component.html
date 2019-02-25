@@ -5,6 +5,8 @@
       <a class="btn-right" (click)="copyReport()" *ngIf="errors || message">Copy</a>
     </div>
     <div class="content">
+      <app-load-animation [resources]="{ errors: false }" *ngIf="loading"></app-load-animation>
+
       <app-notification [notification]="notification"></app-notification>
       <div *ngIf="message" #contentRef>
         {{ message }}
