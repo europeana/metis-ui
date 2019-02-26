@@ -1,7 +1,7 @@
 <td class="errorindicator"><span class="status {{ getPluginStatusClass(plugin) }}"></span></td>
 <td class="nowrap">{{ execution.datasetId }}</td>
 <td>
-  <a class="datasetName" [routerLink]="['/dataset', 'edit', execution.datasetId]">{{
+  <a class="datasetName" [routerLink]="['/dataset', 'edit', execution.datasetId]" target="_blank">{{
     execution.datasetName
   }}</a>
 </td>
