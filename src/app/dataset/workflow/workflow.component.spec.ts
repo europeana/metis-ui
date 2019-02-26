@@ -49,7 +49,7 @@ describe('WorkflowComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should check for changes and update required fields', () => {
+  it('should check for changes and update required fields (harvest protocol)', () => {
     component.workflowForm.get('pluginHARVEST')!.setValue(true);
     component.workflowForm.get('pluginType')!.setValue('OAIPMH_HARVEST');
     component.changeHarvestProtocol('OAIPMH_HARVEST');
@@ -62,6 +62,15 @@ describe('WorkflowComponent', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('#harvest-url'))).toBeFalsy();
     expect(fixture.debugElement.query(By.css('#setspec'))).toBeFalsy();
+  });
+
+  it('should check for changes and update required fields (link checking)', () => {
+    expect(fixture.debugElement.query(By.css('#check-sample'))).toBeFalsy();
+    expect(fixture.debugElement.query(By.css('#check-all'))).toBeFalsy();
+    component.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('#check-sample'))).toBeTruthy();
+    expect(fixture.debugElement.query(By.css('#check-all'))).toBeTruthy();
   });
 
   it('should get the workflow for this dataset', () => {
