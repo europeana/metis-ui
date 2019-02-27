@@ -142,31 +142,27 @@
         >
           <label>{{ 'harvestprotocol' | translate }} *</label>
           <div class="form-group-radios">
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  formControlName="pluginType"
-                  value="OAIPMH_HARVEST"
-                  (change)="changeHarvestProtocol('OAIPMH_HARVEST')"
-                  [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false"
-                  (click)="workflowStepAllowed('pluginHARVEST')"
-                />
-                {{ 'oai' | translate }}
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  formControlName="pluginType"
-                  value="HTTP_HARVEST"
-                  (change)="changeHarvestProtocol('HTTP_HARVEST')"
-                  [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false"
-                />
-                {{ 'http' | translate }}
-              </label>
-            </div>
+            <label>
+              <input
+                type="radio"
+                formControlName="pluginType"
+                value="OAIPMH_HARVEST"
+                (change)="changeHarvestProtocol('OAIPMH_HARVEST')"
+                [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false"
+                (click)="workflowStepAllowed('pluginHARVEST')"
+              />
+              {{ 'oai' | translate }}
+            </label>
+            <label>
+              <input
+                type="radio"
+                formControlName="pluginType"
+                value="HTTP_HARVEST"
+                (change)="changeHarvestProtocol('HTTP_HARVEST')"
+                [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false"
+              />
+              {{ 'http' | translate }}
+            </label>
           </div>
         </div>
         <div
@@ -437,32 +433,28 @@
           "
         >
           <div class="form-group-radios">
-            <div>
-              <label>
-                <input
-                  id="check-sample"
-                  type="radio"
-                  formControlName="performSampling"
-                  value="true"
-                  [checked]="performSampling === true"
-                  (change)="changeLinkCheckSampling(true)"
-                />
-                {{ 'checksample' | translate }}
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  id="check-all"
-                  type="radio"
-                  formControlName="performSampling"
-                  value="false"
-                  [checked]="performSampling !== true"
-                  (change)="changeLinkCheckSampling(false)"
-                />
-                {{ 'checkall' | translate }}
-              </label>
-            </div>
+            <label>
+              <input
+                id="check-sample"
+                type="radio"
+                formControlName="performSampling"
+                value="true"
+                [checked]="performSampling === true"
+                (change)="changeLinkCheckSampling(true)"
+              />
+              {{ 'checksample' | translate }}
+            </label>
+            <label>
+              <input
+                id="check-all"
+                type="radio"
+                formControlName="performSampling"
+                value="false"
+                [checked]="performSampling !== true"
+                (change)="changeLinkCheckSampling(false)"
+              />
+              {{ 'checkall' | translate }}
+            </label>
           </div>
         </div>
         <div
