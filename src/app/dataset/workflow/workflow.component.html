@@ -142,31 +142,27 @@
         >
           <label>{{ 'harvestprotocol' | translate }} *</label>
           <div class="form-group-radios">
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  formControlName="pluginType"
-                  value="OAIPMH_HARVEST"
-                  (change)="changeHarvestProtocol('OAIPMH_HARVEST')"
-                  [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false"
-                  (click)="workflowStepAllowed('pluginHARVEST')"
-                />
-                {{ 'oai' | translate }}
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  formControlName="pluginType"
-                  value="HTTP_HARVEST"
-                  (change)="changeHarvestProtocol('HTTP_HARVEST')"
-                  [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false"
-                />
-                {{ 'http' | translate }}
-              </label>
-            </div>
+            <label>
+              <input
+                type="radio"
+                formControlName="pluginType"
+                value="OAIPMH_HARVEST"
+                (change)="changeHarvestProtocol('OAIPMH_HARVEST')"
+                [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false"
+                (click)="workflowStepAllowed('pluginHARVEST')"
+              />
+              {{ 'oai' | translate }}
+            </label>
+            <label>
+              <input
+                type="radio"
+                formControlName="pluginType"
+                value="HTTP_HARVEST"
+                (change)="changeHarvestProtocol('HTTP_HARVEST')"
+                [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false"
+              />
+              {{ 'http' | translate }}
+            </label>
           </div>
         </div>
         <div
@@ -415,7 +411,6 @@
           />
         </label>
       </div>
-
       <!-- LINK CHECKING -->
       <div
         id="linkchecking"
@@ -430,6 +425,56 @@
           >{{ 'LINK_CHECKING' | renameWorkflow }}
           <input type="checkbox" formControlName="pluginLINK_CHECKING" id="pluginLINK_CHECKING"
         /></label>
+        <div
+          class="form-group"
+          *ngIf="
+            !workflowForm.get('pluginLINK_CHECKING')!.disabled &&
+            workflowForm.get('pluginLINK_CHECKING')!.value
+          "
+        >
+          <div class="form-group-radios">
+            <label>
+              <input
+                id="check-sample"
+                type="radio"
+                formControlName="performSampling"
+                value="true"
+                [checked]="performSampling === true"
+                (change)="changeLinkCheckSampling(true)"
+              />
+              {{ 'checksample' | translate }}
+            </label>
+            <label>
+              <input
+                id="check-all"
+                type="radio"
+                formControlName="performSampling"
+                value="false"
+                [checked]="performSampling !== true"
+                (change)="changeLinkCheckSampling(false)"
+              />
+              {{ 'checkall' | translate }}
+            </label>
+          </div>
+        </div>
+        <div
+          class="show-on-hover"
+          *ngIf="
+            workflowForm.get('pluginLINK_CHECKING')!.disabled ||
+            !workflowForm.get('pluginLINK_CHECKING')!.value
+          "
+        >
+          <div class="form-group-radios">
+            <label>
+              <input type="radio" [checked]="performSampling === true" disabled="" />
+              {{ 'checksample' | translate }}
+            </label>
+            <label>
+              <input type="radio" [checked]="performSampling !== true" disabled="" />
+              {{ 'checkall' | translate }}
+            </label>
+          </div>
+        </div>
       </div>
 
       <div class="form-fields form-fields-buttons">
