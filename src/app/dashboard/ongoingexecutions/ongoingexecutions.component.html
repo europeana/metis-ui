@@ -21,9 +21,12 @@
       </div>
       <div class="progress">
         <span>{{ ongoing.datasetId }}</span>
-        <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]" class="workflowname">{{
-          ongoing.datasetName
-        }}</a>
+        <a
+          [routerLink]="['/dataset', 'edit', ongoing.datasetId]"
+          class="workflowname"
+          target="_blank"
+          >{{ ongoing.datasetName }}</a
+        >
         <div class="progress-status">
           <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
           <span class="progress-percentage"
