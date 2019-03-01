@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
-import { Notification, successNotification } from '../../_models';
+import { errorNotification, Notification, successNotification } from '../../_models';
 
 @Component({
   selector: 'app-reportsimple',
@@ -21,7 +21,7 @@ export class ReportSimpleComponent {
   @Output() closeReportSimple = new EventEmitter<void>();
 
   @Input() set reportMsg(msg: string) {
-    if (msg) {
+    if (msg && msg.length > 0) {
       this.isVisible = true;
       this.message = msg;
     }
@@ -33,6 +33,10 @@ export class ReportSimpleComponent {
       this.isVisible = true;
       this.loading = false;
       this.errors = errors;
+
+      if (this.errors.length === 0) {
+        this.notification = errorNotification('Report is empty.');
+      }
     }
   }
 
