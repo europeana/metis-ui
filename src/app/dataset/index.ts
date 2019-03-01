@@ -8,6 +8,5 @@ export * from './lastexecution/';
 export * from './mapping/';
 export * from './newdataset/';
 export * from './preview/';
-export * from './report/';
 export * from './reportsimple/';
 export * from './workflow/';

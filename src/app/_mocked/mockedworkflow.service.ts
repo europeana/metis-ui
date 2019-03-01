@@ -7,6 +7,7 @@ import {
   PluginExecution,
   PluginStatus,
   Report,
+  ReportAvailability,
   Results,
   Statistics,
   SubTaskInfo,
@@ -251,6 +252,10 @@ export const mockReport: Report = {
       errorDetails: [],
     },
   ],
+};
+
+export const mockReportAvailability: ReportAvailability = {
+  existsExternalTaskReport: true,
 };
 
 export const mockHarvestData: HarvestData = {

@@ -14,6 +14,7 @@ import {
   MoreResults,
   PluginType,
   Report,
+  ReportAvailability,
   Results,
   Statistics,
   SubTaskInfo,
@@ -128,6 +129,13 @@ export class WorkflowService {
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
+  getReportAvailable(taskId: string, topologyName: TopologyName): Observable<ReportAvailability> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/proxies/${topologyName}/task/${taskId}/report/exists`;
+    return this.http.get<ReportAvailability>(url).pipe(this.errors.handleRetry());
+  }
+
   getReport(taskId: string, topologyName: TopologyName): Observable<Report> {
     const url = `${
       apiSettings.apiHostCore
@@ -137,8 +145,10 @@ export class WorkflowService {
 
   requestHasError(key: string): Observable<boolean> {
     const [taskId, topologyName] = key.split('/');
-    return this.getReport(taskId, topologyName as TopologyName).pipe(
-      map((report) => !!report.errors && report.errors.length > 0),
+    return this.getReportAvailable(taskId, topologyName as TopologyName).pipe(
+      map((res) => {
+        return res.existsExternalTaskReport;
+      }),
     );
   }
 

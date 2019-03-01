@@ -6,7 +6,6 @@ import {
   isWorkflowCompleted,
   PluginExecution,
   Report,
-  ReportRequest,
   SimpleReportRequest,
   TopologyName,
   WorkflowExecution,
@@ -19,8 +18,6 @@ import {
 })
 export class LastExecutionComponent {
   @Input() datasetId: string;
-
-  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   report?: Report;

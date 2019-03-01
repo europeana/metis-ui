@@ -11,13 +11,14 @@ import {
   mockHarvestData,
   mockLogs,
   mockReport,
+  mockReportAvailability,
   mockStatistics,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
   mockXmlSamples,
 } from '../_mocked';
-import { Report, WorkflowExecution } from '../_models';
+import { ReportAvailability, WorkflowExecution } from '../_models';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
@@ -113,8 +114,8 @@ describe('workflow service', () => {
       },
     );
     mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/54353534/report?idsPerError=100')
-      .send({});
+      .expect('GET', '/orchestrator/proxies/normalization/task/54353534/report/exists')
+      .send({ existsExternalTaskReport: false });
 
     gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', true)).subscribe(
       (res) => {
@@ -127,39 +128,35 @@ describe('workflow service', () => {
       },
     );
     mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/7866/report?idsPerError=100')
-      .send(mockReport);
+      .expect('GET', '/orchestrator/proxies/normalization/task/7866/report/exists')
+      .send(mockReportAvailability);
   });
 
-  it('should get (stale) task errors for unfinished tasks', () => {
-    function getReport(
-      report: Report,
-      expectedHasError: boolean,
+  it('should get (stale) task report availabilities for unfinished tasks', () => {
+    function getReportAvailability(
+      reportAvailability: ReportAvailability,
       expectRequest: boolean,
       done: () => void,
     ): void {
       service.getCachedHasErrors('7866', 'normalization', false).subscribe((res) => {
-        expect(res).toEqual(expectedHasError);
-        done();
+        expect(res).toEqual(true);
       });
+
       if (expectRequest) {
         mockHttp
-          .expect('GET', '/orchestrator/proxies/normalization/task/7866/report?idsPerError=100')
-          .send(report);
+          .expect('GET', '/orchestrator/proxies/normalization/task/7866/report/exists')
+          .send(reportAvailability);
       }
+      done();
     }
 
-    const noErrors = { id: 123, errors: [] };
-    const withErrors = mockReport;
+    const noReport = { existsExternalTaskReport: false } as ReportAvailability;
+    const withReport = mockReportAvailability;
 
-    getReport(noErrors, false, true, () => {
-      getReport(noErrors, false, true, () => {
-        getReport(withErrors, true, true, () => {
-          getReport(withErrors, true, false, () => {
-            getReport(withErrors, true, false, () => {
-              expect(1).toBe(1); // dummy check for coverage
-            });
-          });
+    getReportAvailability(withReport, true, () => {
+      getReportAvailability(noReport, false, () => {
+        getReportAvailability(withReport, false, () => {
+          expect(1).toBe(1); // dummy check for coverage
         });
       });
     });
@@ -366,19 +363,19 @@ describe('workflow service', () => {
       .send(mockFirstPageResults);
   });
 
-  it('should get the reports for an execution', () => {
+  it('should get the report availabilities for an execution', () => {
     const execution: WorkflowExecution = JSON.parse(
       JSON.stringify(mockWorkflowExecutionResults.results[4]),
     );
     expect(execution.metisPlugins[0].hasReport).toBe(undefined);
     service.getReportsForExecution(execution);
     mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/123/report?idsPerError=100')
-      .send(mockReport);
+      .expect('GET', '/orchestrator/proxies/normalization/task/123/report/exists')
+      .send(mockReportAvailability);
     expect(execution.metisPlugins[0].hasReport).toBe(true);
   });
 
-  it('should cancel a workflow', () => {
+  it('should cancel a workflow (DELETE)', () => {
     service.cancelThisWorkflow('565645').subscribe(() => {});
     mockHttp.expect('DELETE', '/orchestrator/workflows/executions/565645').send({});
   });
