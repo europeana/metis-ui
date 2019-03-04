@@ -28,7 +28,6 @@ import {
   MappingComponent,
   NewDatasetComponent,
   PreviewComponent,
-  ReportComponent,
   ReportSimpleComponent,
   WorkflowComponent,
 } from './dataset';
@@ -76,7 +75,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     DatasetlogComponent,
     ExecutionsComponent,
     OngoingexecutionsComponent,
-    ReportComponent,
     ReportSimpleComponent,
     ThemeSelectorComponent,
     TranslatePipe,

@@ -11,7 +11,6 @@ import {
   Notification,
   PluginExecution,
   Report,
-  ReportRequest,
   SimpleReportRequest,
   TopologyName,
   WorkflowExecution,
@@ -38,7 +37,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   @Input() datasetData: Dataset;
 
-  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
