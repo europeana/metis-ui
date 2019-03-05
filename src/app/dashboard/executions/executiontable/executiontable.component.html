@@ -9,7 +9,7 @@
 <td>
   <span
     class="tooltip"
-    attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+    title="{{ 'doubleclicktocopy' | translate }}"
     (dblclick)="copyInformation('plugin', plugin.externalTaskId || '', plugin.id)"
   >
     {{ plugin.pluginType }}
@@ -52,7 +52,7 @@
       <li *ngIf="!execution.cancelling && plugin.pluginType !== 'PUBLISH'">
         <a
           class="cancel-btn svg-icon-cancel tooltip"
-          attr.data-tooltip="{{ 'cancel' | translate }}"
+          title="{{ 'cancel' | translate }}"
           (click)="cancelWorkflow(execution.id, execution.datasetId, execution.datasetName!)"
         ></a>
       </li>
@@ -60,7 +60,7 @@
         <a
           [routerLink]="['/dataset', 'log', execution.datasetId]"
           class="log-btn svg-icon-history tooltip"
-          attr.data-tooltip="{{ 'history' | translate }}"
+          title="{{ 'history' | translate }}"
         ></a>
       </li>
     </ul>

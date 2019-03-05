@@ -222,30 +222,6 @@ li.dropdown a {
 
 .tooltip {
   cursor: pointer;
-  position: relative;
-  z-index: 2;
-
-  &::after {
-    background: $gray-light;
-    border-radius: $border-radius;
-    bottom: 2rem;
-    color: $white;
-    content: attr(data-tooltip);
-    font-size: 0.75rem;
-    font-weight: normal;
-    left: -9999rem;
-    opacity: 0;
-    padding: 0.25rem 1rem;
-    position: absolute;
-    text-transform: none;
-    white-space: nowrap;
-  }
-
-  &:hover::after {
-    left: 50%;
-    opacity: 1;
-    transform: translate(-5em, 65%);
-  }
 }
 
 .progress {

@@ -28,7 +28,7 @@
           class="head-text"
           (dblclick)="copyInformation('execution', execution.id, execution.ecloudDatasetId)"
         >
-          <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+          <span class="tooltip" title="{{ 'doubleclicktocopy' | translate }}"
             >{{ 'workflowcreated' | translate }}
             {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}</span
           >
@@ -46,7 +46,7 @@
           class="nowrap uppercase"
           (dblclick)="copyInformation('plugin', pe.externalTaskId, pe.id)"
         >
-          <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+          <span class="tooltip" title="{{ 'doubleclicktocopy' | translate }}"
             >{{ pe.pluginType | renameWorkflow }} {{ pe.workflowCreated }}</span
           >
         </td>
