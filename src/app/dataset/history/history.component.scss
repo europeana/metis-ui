@@ -38,13 +38,6 @@
 
 .tooltip {
   display: inline-block;
-  position: relative;
-
-  &::after {
-    bottom: 1.2rem;
-    text-transform: none;
-    white-space: nowrap;
-  }
 }
 
 .xml-icon {

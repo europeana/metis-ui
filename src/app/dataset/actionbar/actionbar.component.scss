@@ -69,12 +69,6 @@ nav {
     }
 
     @media (max-width: $bp-xxl) {
-      a:not(.newaction-btn)[data-tooltip] {
-        cursor: pointer;
-        position: relative;
-        z-index: 2;
-      }
-
       span {
         display: none;
       }

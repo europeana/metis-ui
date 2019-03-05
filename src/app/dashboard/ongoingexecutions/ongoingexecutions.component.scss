@@ -5,10 +5,6 @@
   font-size: 0.75rem;
   width: 100%;
 
-  .tooltip {
-    cursor: pointer;
-  }
-
   @media (max-width: $bp-xxl) {
     margin-bottom: 2rem;
   }
@@ -43,11 +39,6 @@
       text-transform: none;
       white-space: nowrap;
       width: auto;
-    }
-
-    .tooltip::after {
-      bottom: 2.5rem;
-      transform: translate(0, 0);
     }
   }
 
