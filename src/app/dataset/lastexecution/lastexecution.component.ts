@@ -14,7 +14,6 @@ import {
 @Component({
   selector: 'app-lastexecution',
   templateUrl: './lastexecution.component.html',
-  styleUrls: ['./lastexecution.component.scss'],
 })
 export class LastExecutionComponent {
   @Input() datasetId: string;
