@@ -403,7 +403,7 @@ describe('workflow service', () => {
         'POST',
         '/orchestrator/proxies/recordsbyids?workflowExecutionId=5653454353&pluginType=ENRICHMENT',
       )
-      .body( {'ids': ids} )
+      .body({ ids: ids })
       .send({ records: mockXmlSamples });
   });
 
