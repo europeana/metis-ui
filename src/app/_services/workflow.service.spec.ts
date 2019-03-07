@@ -392,6 +392,21 @@ describe('workflow service', () => {
       .send({ records: mockXmlSamples });
   });
 
+  it('should get sample comparisons', () => {
+    const ids = ['1', '2'];
+
+    service.getWorkflowComparisons('5653454353', 'ENRICHMENT', ids).subscribe((samples) => {
+      expect(samples).toEqual(mockXmlSamples);
+    });
+    mockHttp
+      .expect(
+        'POST',
+        '/orchestrator/proxies/recordsbyids?workflowExecutionId=5653454353&pluginType=ENRICHMENT',
+      )
+      .body( {'ids': ids} )
+      .send({ records: mockXmlSamples });
+  });
+
   it('should get statistics', () => {
     service.getStatistics('normalization', '-4354').subscribe((statistics) => {
       expect(statistics).toEqual(mockStatistics);

@@ -10,22 +10,17 @@
 
 .filter-wrapper {
   position: relative;
+  margin: -0.5em 0 1em -10%;
+  width: 120%;
 
   .svg-icon-spin {
     position: absolute;
-    top: 0;
   }
 
   .notavailable {
     color: $gray-lighter;
     display: inline-block;
     padding-left: 0.5rem;
-  }
-}
-
-.view-sample-expanded {
-  .view-sample-editor-codemirror {
-    height: 60vh;
   }
 }
 
@@ -57,6 +52,7 @@
 
 .preview-controls {
   display: flex;
+  width: 100%;
 
   .preview-controls-left,
   .preview-controls-right {

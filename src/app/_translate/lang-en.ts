@@ -15,6 +15,7 @@ export const LANG_EN_TRANS = {
   checkall: 'Check all',
   checksample: 'Check sample',
   chooseworkflow: 'Choose workflow to preview',
+  compare: 'Compare',
   country: 'Country',
   create: 'Create',
   'create dataset': 'Create a dataset first',

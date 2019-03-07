@@ -3,6 +3,7 @@ import { Observable, of as observableOf } from 'rxjs';
 
 import {
   HarvestData,
+  HistoryVersion,
   MoreResults,
   PluginExecution,
   PluginStatus,
@@ -17,6 +18,21 @@ import {
   WorkflowStatus,
   XmlSample,
 } from '../_models';
+
+export const mockHistoryVersions: Array<HistoryVersion> = [
+  {
+    workflowId: 1,
+    pluginType: 'OAIPMH_HARVEST',
+  },
+  {
+    workflowId: 1,
+    pluginType: 'VALIDATION_EXTERNAL',
+  },
+  {
+    workflowId: 1,
+    pluginType: 'TRANSFORMATION',
+  },
+];
 
 export const mockWorkflow: Workflow = {
   datasetId: '1',
@@ -325,6 +341,10 @@ export class MockWorkflowService {
 
   getReport(_: string, __: string): Observable<Report> {
     return observableOf(mockReport);
+  }
+
+  getVersionHistory(): Observable<HistoryVersion[]> {
+    return observableOf(mockHistoryVersions);
   }
 
   getStatistics(): Observable<Statistics> {

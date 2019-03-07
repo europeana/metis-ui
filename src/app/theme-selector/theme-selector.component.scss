@@ -17,6 +17,7 @@
   border: 1px solid #f1f1f1;
   border-radius: 1em;
   color: $eu-jade;
+  cursor: pointer;
   display: block;
   height: 2em;
   position: relative;
@@ -41,25 +42,6 @@
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg);
       width: 5px;
-    }
-  }
-}
-
-.dropdown {
-  &.arrow-right {
-    ul {
-      left: auto;
-      right: 0;
-    }
-    .dropdown-wrapper {
-      &::after {
-        left: unset;
-        right: calc(0.85rem + 2px);
-      }
-      &::before {
-        left: unset;
-        right: 0.85rem;
-      }
     }
   }
 }
