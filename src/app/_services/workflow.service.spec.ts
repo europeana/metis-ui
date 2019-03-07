@@ -393,9 +393,9 @@ describe('workflow service', () => {
   });
 
   it('should get sample comparisons', () => {
-    const ids = ['1', '2'];
+    const ids = { ids: ['1', '2'] };
 
-    service.getWorkflowComparisons('5653454353', 'ENRICHMENT', ids).subscribe((samples) => {
+    service.getWorkflowComparisons('5653454353', 'ENRICHMENT', ids.ids).subscribe((samples) => {
       expect(samples).toEqual(mockXmlSamples);
     });
     mockHttp
@@ -403,7 +403,7 @@ describe('workflow service', () => {
         'POST',
         '/orchestrator/proxies/recordsbyids?workflowExecutionId=5653454353&pluginType=ENRICHMENT',
       )
-      .body({ ids: ids })
+      .body(ids)
       .send({ records: mockXmlSamples });
   });
 
