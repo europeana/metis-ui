@@ -53,7 +53,8 @@
       </li>
       <li class="dropdown dropdown-compare arrow-right" *ngIf="historyVersions">
         <a (click)="toggleFilterCompare()"
-          >{{ 'compare' | translate }}<span>: {{ selectedComparison | renameWorkflow }}</span></a
+          >{{ 'compare' | translate
+          }}<span *ngIf="selectedComparison">: {{ selectedComparison | renameWorkflow }}</span></a
         >
         <div *ngIf="filterCompare" class="dropdown-wrapper">
           <ul>
@@ -150,7 +151,7 @@
 </div>
 
 <div *ngIf="tempXSLT">
-  <div class="messages" *ngIf="loadingSamples || loadingTransformSamples">
+  <div class="messages" *ngIf="isLoading || loadingTransformSamples">
     <div class="success-message">
       <span class="svg-icon-spin-inbutton"></span> Loading samples...
     </div>
