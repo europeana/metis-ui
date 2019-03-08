@@ -347,6 +347,10 @@ export class MockWorkflowService {
     return observableOf(mockHistoryVersions);
   }
 
+  getWorkflowComparisons(): Observable<XmlSample[]> {
+    return observableOf(mockXmlSamples);
+  }
+
   getStatistics(): Observable<Statistics> {
     return observableOf(mockStatistics);
   }

@@ -18,7 +18,7 @@
           >{{ 'datestarted' | translate
           }}<span *ngIf="selectedDate">: {{ selectedDate | date: 'dd/MM/yyyy - HH:mm' }}</span></a
         >
-        <div *ngIf="filterDate" class="dropdown-wrapper">
+        <div *ngIf="filterDateOpen" class="dropdown-wrapper">
           <ul>
             <li *ngFor="let w of allWorkflowExecutions; trackBy: byId">
               <a (click)="addPluginsFilter(w)">{{ w.startedDate | date: 'dd/MM/yyyy - HH:mm' }}</a>
@@ -39,7 +39,7 @@
           >{{ 'plugin' | translate
           }}<span *ngIf="selectedPlugin">: {{ selectedPlugin | renameWorkflow }}</span></a
         >
-        <div *ngIf="filterPlugin" class="dropdown-wrapper">
+        <div *ngIf="filterPluginOpen" class="dropdown-wrapper">
           <ul>
             <li *ngFor="let w of allPlugins">
               <a (click)="getXMLSamples(w.type)" *ngIf="!w.error">{{ w.type | renameWorkflow }}</a>
@@ -51,12 +51,15 @@
       <li>
         <span *ngIf="isLoading" class="svg-icon-spin showing"></span>
       </li>
-      <li class="dropdown dropdown-compare arrow-right" *ngIf="historyVersions">
+      <li
+        class="dropdown dropdown-compare arrow-right"
+        *ngIf="historyVersions && historyVersions.length > 0"
+      >
         <a (click)="toggleFilterCompare()"
           >{{ 'compare' | translate
           }}<span *ngIf="selectedComparison">: {{ selectedComparison | renameWorkflow }}</span></a
         >
-        <div *ngIf="filterCompare" class="dropdown-wrapper">
+        <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
           <ul>
             <li *ngFor="let h of historyVersions">
               <a (click)="getXMLSamplesCompare(h.pluginType)">{{
@@ -105,7 +108,11 @@
           ></codemirror>
         </div>
         <div
-          *ngIf="allSampleComparisons.length && allSampleComparisons.length >= i"
+          *ngIf="
+            allSampleComparisons.length &&
+            allSampleComparisons.length >= i &&
+            allSampleComparisons[i].xmlRecord
+          "
           class="view-sample-editor-codemirror"
           (click)="handleCodeClick($event)"
           (mouseover)="handleMouseOver($event)"

@@ -67,9 +67,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
   allSampleComparisons: Array<XmlSample> = [];
   sampleRecordIds: Array<string> = [];
   allTransformedSamples: XmlSample[];
-  filterCompare = false;
-  filterDate = false;
-  filterPlugin = false;
+  filterCompareOpen = false;
+  filterDateOpen = false;
+  filterPluginOpen = false;
   historyVersions: Array<HistoryVersion>;
   selectedDate: string;
   selectedPlugin?: string;
@@ -121,8 +121,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   // populate a filter with plugins based on selected execution
   addPluginsFilter(execution: WorkflowExecution): void {
-    this.filterDate = false;
+    this.filterDateOpen = false;
     this.allPlugins = [];
+    this.historyVersions = [];
     this.allSampleComparisons = [];
     this.execution = execution;
     this.selectedDate = execution.startedDate;
@@ -158,7 +159,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   getXMLSamplesCompare(plugin: PluginType): void {
-    this.filterCompare = false;
+    this.filterCompareOpen = false;
     this.isLoading = true;
 
     this.workflows
@@ -315,24 +316,24 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.onClickedOutside();
     this.allPlugins = [];
     this.selectedPlugin = undefined;
-    this.filterDate = !this.filterDate;
+    this.filterDateOpen = !this.filterDateOpen;
   }
 
   toggleFilterPlugin(): void {
     this.onClickedOutside();
-    this.filterPlugin = !this.filterPlugin;
+    this.filterPluginOpen = !this.filterPluginOpen;
   }
 
   toggleFilterCompare(): void {
     this.onClickedOutside();
-    this.filterCompare = !this.filterCompare;
+    this.filterCompareOpen = !this.filterCompareOpen;
   }
 
   // close all open filters when click outside the filters
   onClickedOutside(): void {
-    this.filterDate = false;
-    this.filterPlugin = false;
-    this.filterCompare = false;
+    this.filterDateOpen = false;
+    this.filterPluginOpen = false;
+    this.filterCompareOpen = false;
   }
 
   private extractLinkFromElement(element: Element): string | undefined {

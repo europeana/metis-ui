@@ -8,18 +8,31 @@ import {
   mockDataset,
   MockDatasetsService,
   MockErrorService,
+  mockHistoryVersions,
   MockTranslateService,
   mockWorkflowExecution,
   MockWorkflowService,
 } from '../../_mocked';
+import { XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { PreviewFilters } from '../dataset.component';
 
 import { PreviewComponent } from '.';
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
+
+  const previewFilterData = {
+    execution: mockWorkflowExecution,
+    plugin: 'NORMALIZATION',
+    startedDate: '111111',
+  } as PreviewFilters;
+
+  const previewFilterDataBasic = {
+    execution: mockWorkflowExecution,
+  } as PreviewFilters;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -50,30 +63,80 @@ describe('PreviewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should prefill filters', (): void => {
+  it('should show a sample', (): void => {
+    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeFalsy();
     component.datasetData = mockDataset;
-    component.previewFilters = {
-      execution: mockWorkflowExecution,
-      plugin: 'NORMALIZATION',
-    };
+    component.previewFilters = previewFilterData;
     component.prefillFilters();
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
   });
 
+  it('should show interdependent filters', (): void => {
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeFalsy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeFalsy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
+
+    component.datasetData = mockDataset;
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeFalsy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
+
+    component.previewFilters = previewFilterDataBasic;
+    component.prefillFilters();
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
+
+    component.historyVersions = mockHistoryVersions;
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeTruthy();
+  });
+
   it('should expand sample', (): void => {
     component.datasetData = mockDataset;
-    component.previewFilters = {
-      execution: mockWorkflowExecution,
-      plugin: 'NORMALIZATION',
-    };
+    component.previewFilters = previewFilterData;
     component.prefillFilters();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
     component.expandSample(0);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
   });
 
+  it('should collapse an expanded sample', (): void => {
+    component.datasetData = mockDataset;
+    component.previewFilters = previewFilterData;
+    component.prefillFilters();
+    component.expandSample(0);
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
+    component.expandSample(0);
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
+  });
+
+  it('should show sample comparison', (): void => {
+    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(0);
+    component.datasetData = mockDataset;
+    component.previewFilters = previewFilterData;
+    component.historyVersions = mockHistoryVersions;
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
+
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
+    component.getXMLSamplesCompare('NORMALIZATION');
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
+  });
+
   it('should toggle filters', () => {
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
+    ).toBeFalsy();
     component.datasetData = mockDataset;
     component.toggleFilterDate();
     fixture.detectChanges();
@@ -81,11 +144,24 @@ describe('PreviewComponent', () => {
       fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
     ).toBeTruthy();
 
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+    ).toBeFalsy();
     component.allPlugins = [{ type: 'NORMALIZATION', error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
     expect(
       fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+    ).toBeTruthy();
+
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length,
+    ).toBeFalsy();
+    component.historyVersions = mockHistoryVersions;
+    component.toggleFilterCompare();
+    fixture.detectChanges();
+    expect(
+      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length,
     ).toBeTruthy();
   });
 
@@ -94,5 +170,33 @@ describe('PreviewComponent', () => {
     component.transformSamples('default');
     fixture.detectChanges();
     expect(component.allSamples.length).not.toBe(0);
+  });
+
+  it('provides links to transformed samples', () => {
+    component.datasetData = mockDataset;
+    expect(fixture.debugElement.query(By.css('.preview-controls button'))).toBeFalsy();
+    component.tempXSLT = 'hello';
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('.preview-controls button'))).toBeTruthy();
+  });
+
+  it('toggles the editor theme', () => {
+    component.datasetData = mockDataset;
+    expect(component.editorIsDefaultTheme).toEqual(true);
+    component.transformSamples('default');
+    fixture.detectChanges();
+    component.onThemeSet(false);
+    expect(component.editorIsDefaultTheme).toEqual(false);
+  });
+
+  it('has utility to strip blank lines', () => {
+    const samples = [
+      {
+        xmlRecord: '\n\r',
+      },
+    ] as XmlSample[];
+
+    const res: XmlSample[] = component.undoNewLines(samples);
+    expect(res[0].xmlRecord).toEqual('');
   });
 });
