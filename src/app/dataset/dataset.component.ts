@@ -94,9 +94,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
   setReportMsg(req: SimpleReportRequest): void {
     if (req.message) {
       this.reportMsg = req.message;
-    } else if (req.taskId && req.topology) {
+    }
+    if (req.taskId && req.topology) {
       this.reportLoading = true;
-
       this.workflows.getReport(req.taskId, req.topology).subscribe(
         (report) => {
           if (report && report.errors && report.errors.length) {
@@ -104,10 +104,12 @@ export class DatasetComponent implements OnInit, OnDestroy {
           } else {
             this.reportMsg = 'Report is empty.';
           }
+          this.reportLoading = false;
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
+          this.reportLoading = false;
         },
       );
     }

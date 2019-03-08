@@ -31,9 +31,7 @@ export class ReportSimpleComponent {
   @Input() set reportErrors(errors: any) {
     if (errors) {
       this.isVisible = true;
-      this.loading = false;
       this.errors = errors;
-
       if (this.errors.length === 0) {
         this.notification = errorNotification('Report is empty.');
       }
@@ -41,8 +39,8 @@ export class ReportSimpleComponent {
   }
 
   @Input() set reportLoading(loading: boolean) {
+    this.loading = loading;
     if (loading) {
-      this.loading = loading;
       this.isVisible = true;
     }
   }
@@ -53,7 +51,6 @@ export class ReportSimpleComponent {
     this.notification = undefined;
     this.isVisible = false;
     this.closeReportSimple.emit();
-    this.loading = false;
   }
 
   copyReport(): void {

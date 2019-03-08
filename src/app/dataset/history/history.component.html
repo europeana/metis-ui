@@ -76,17 +76,15 @@
         </td>
         <td class="buttonplaceholder nowrap">
           <a
-            *ngIf="pe.failMessage"
+            *ngIf="pe.failMessage || pe.hasReport"
             class="table-btn svg-icon-report"
-            (click)="openFailReport(undefined, undefined, pe.failMessage)"
-          >
-            {{ 'report' | translate }}
-          </a>
-
-          <a
-            *ngIf="pe.hasReport"
-            class="table-btn svg-icon-report"
-            (click)="openFailReport(pe.topologyName, pe.externalTaskId)"
+            (click)="
+              openFailReport(
+                pe.hasReport ? pe.topologyName : undefined,
+                pe.hasReport ? pe.externalTaskId : undefined,
+                pe.failMessage
+              )
+            "
           >
             {{ 'report' | translate }}
           </a>
