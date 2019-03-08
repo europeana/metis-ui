@@ -21,15 +21,15 @@ import {
 
 export const mockHistoryVersions: Array<HistoryVersion> = [
   {
-    workflowId: 1,
+    workflowExecutionId: 1,
     pluginType: 'OAIPMH_HARVEST',
   },
   {
-    workflowId: 1,
+    workflowExecutionId: 1,
     pluginType: 'VALIDATION_EXTERNAL',
   },
   {
-    workflowId: 1,
+    workflowExecutionId: 1,
     pluginType: 'TRANSFORMATION',
   },
 ];

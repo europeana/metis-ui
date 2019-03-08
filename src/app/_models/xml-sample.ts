@@ -6,7 +6,7 @@ export interface XmlSample {
 }
 
 export interface HistoryVersion {
-  workflowId: number;
+  workflowExecutionId: number;
   pluginType: string;
   finishedTime?: number;
 }

@@ -128,7 +128,7 @@ describe('PreviewComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
 
     expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
-    component.getXMLSamplesCompare('NORMALIZATION');
+    component.getXMLSamplesCompare('NORMALIZATION', '123');
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
   });

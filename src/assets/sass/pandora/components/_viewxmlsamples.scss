@@ -1,6 +1,10 @@
 $heightExpanded: 60vh;
 $heightNormal: 40vh;
 
+codemirror {
+  width: 100%;
+}
+
 .CodeMirror {
   height: auto;
   text-align: left;
@@ -27,7 +31,6 @@ $heightNormal: 40vh;
         display: inline-block;
         margin-right: 1em;
         word-break: break-all;
-
         &.smaller {
           font-size: $font-size-slightly-smaller;
         }
@@ -113,6 +116,7 @@ $heightNormal: 40vh;
     box-sizing: border-box;
     height: 20vh;
     overflow: auto;
+    width: 100%;
   }
 }
 

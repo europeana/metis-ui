@@ -62,7 +62,7 @@
         <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
           <ul>
             <li *ngFor="let h of historyVersions">
-              <a (click)="getXMLSamplesCompare(h.pluginType)">{{
+              <a (click)="getXMLSamplesCompare(h.pluginType, h.workflowExecutionId)">{{
                 h.pluginType | renameWorkflow
               }}</a>
             </li>
@@ -84,7 +84,12 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+          <span class="smaller" *ngIf="selectedPlugin"
+            >{{ selectedPlugin | renameWorkflow }}
+            <span *ngIf="selectedComparison">
+              / {{ selectedComparison | renameWorkflow }}</span
+            ></span
+          >
         </h3>
         <app-theme-selector
           (themeSet)="onThemeSet($event)"

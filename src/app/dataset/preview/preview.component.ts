@@ -127,6 +127,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.allSampleComparisons = [];
     this.execution = execution;
     this.selectedDate = execution.startedDate;
+    this.selectedComparison = undefined;
     this.previewFilters.execution = execution;
     this.setPreviewFilters.emit(this.previewFilters);
     for (let i = 0; i < execution.metisPlugins.length; i++) {
@@ -158,16 +159,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
     return this.allPlugins;
   }
 
-  getXMLSamplesCompare(plugin: PluginType): void {
+  getXMLSamplesCompare(plugin: PluginType, workflowExecutionId: string): void {
     this.filterCompareOpen = false;
     this.isLoading = true;
 
     this.workflows
-      .getWorkflowComparisons(this.execution.id, plugin, this.sampleRecordIds)
+      .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
       .subscribe(
         (result) => {
           this.allSampleComparisons = this.undoNewLines(result);
           this.isLoading = false;
+          this.selectedComparison = plugin;
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
@@ -184,6 +186,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     this.allSampleComparisons = [];
+    this.selectedComparison = undefined;
 
     this.onClickedOutside();
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
@@ -201,7 +204,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
         if (!loadingHistories) {
           this.isLoading = false;
         }
-
         this.sampleRecordIds = [];
         this.allSamples.forEach((sample) => {
           this.sampleRecordIds.push(sample.ecloudId);
