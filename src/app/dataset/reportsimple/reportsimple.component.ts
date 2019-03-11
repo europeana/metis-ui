@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
 import { errorNotification, Notification, successNotification } from '../../_models';
+import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-reportsimple',
@@ -8,7 +9,7 @@ import { errorNotification, Notification, successNotification } from '../../_mod
   styleUrls: ['./reportsimple.component.scss'],
 })
 export class ReportSimpleComponent {
-  constructor() {}
+  constructor(private translate: TranslateService) {}
   isVisible: boolean;
   // tslint:disable-next-line: no-any
   errors: any;
@@ -31,18 +32,16 @@ export class ReportSimpleComponent {
   @Input() set reportErrors(errors: any) {
     if (errors) {
       this.isVisible = true;
-      this.loading = false;
       this.errors = errors;
-
       if (this.errors.length === 0) {
-        this.notification = errorNotification('Report is empty.');
+        this.notification = errorNotification(this.translate.instant('reportempty'));
       }
     }
   }
 
   @Input() set reportLoading(loading: boolean) {
+    this.loading = loading;
     if (loading) {
-      this.loading = loading;
       this.isVisible = true;
     }
   }
@@ -53,7 +52,6 @@ export class ReportSimpleComponent {
     this.notification = undefined;
     this.isVisible = false;
     this.closeReportSimple.emit();
-    this.loading = false;
   }
 
   copyReport(): void {

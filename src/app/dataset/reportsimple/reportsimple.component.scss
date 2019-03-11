@@ -8,3 +8,9 @@
   text-transform: uppercase;
   margin: 0.2rem 1rem;
 }
+
+.fail-message-separator {
+  border-bottom: 1px solid $gray-almost-lightest;
+  margin-bottom: 1.5em;
+  padding-bottom: 0.5em;
+}
