@@ -88,12 +88,14 @@ body {
 .filter {
   border-bottom: 1px solid $gray-almost-lightest;
   border-top: 1px solid $gray-almost-lightest;
-  display: inline-block;
+  display: flex;
   font-size: $font-size-slightly-smaller;
-  margin-bottom: 3rem;
-  margin-left: calc(-10% - 1rem);
-  margin-top: -2rem;
   padding: 0.25rem 0;
+  transition: border-color 1.5s;
+
+  &.unbordered {
+    border-color: $offwhite;
+  }
 
   li {
     border-left: 1px solid $gray-almost-lightest;
@@ -175,8 +177,6 @@ body {
     background: $white;
     box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
     left: 1rem;
-    max-height: 10rem;
-    max-width: 20rem;
     min-width: 10rem;
     overflow: auto;
     padding: 0.5rem 0;
@@ -200,6 +200,27 @@ body {
       text-decoration: underline;
     }
   }
+
+  &.arrow-right {
+    ul {
+      left: auto;
+      right: 0;
+    }
+    .dropdown-wrapper {
+      &::after {
+        left: unset;
+        right: calc(0.85rem + 2px);
+      }
+      &::before {
+        left: unset;
+        right: 0.85rem;
+      }
+    }
+  }
+}
+
+.dropdown-compare {
+  margin-left: auto;
 }
 
 li.dropdown a {

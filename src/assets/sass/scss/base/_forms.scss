@@ -70,17 +70,3 @@ input[type='radio'] {
   margin-right: 0.3em;
   width: auto;
 }
-
-.CodeMirror {
-  height: auto;
-  text-align: left;
-  width: auto;
-}
-
-.view-sample-transformed {
-  .view-sample-editor-codemirror {
-    display: inline-block;
-    position: relative;
-    width: 49.7%;
-  }
-}

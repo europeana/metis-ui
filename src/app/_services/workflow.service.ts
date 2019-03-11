@@ -10,6 +10,8 @@ import {
   getCurrentPlugin,
   getCurrentPluginIndex,
   HarvestData,
+  HistoryVersion,
+  HistoryVersions,
   isPluginCompleted,
   MoreResults,
   PluginType,
@@ -333,6 +335,40 @@ export class WorkflowService {
       .pipe(
         map((samples) => {
           return samples.records;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
+  }
+
+  // return samples based on executionid, plugintype and ecloudIds
+  getWorkflowComparisons(
+    executionId: string,
+    pluginType: PluginType,
+    ids: Array<string>,
+  ): Observable<XmlSample[]> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/proxies/recordsbyids?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
+    return this.http
+      .post<{ records: XmlSample[] }>(url, { ids })
+      .pipe(
+        map((samples) => {
+          return samples.records;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
+  }
+
+  // return available transformation histories
+  getVersionHistory(executionId: string, pluginType: PluginType): Observable<HistoryVersion[]> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/workflows/evolution/${executionId}/${pluginType}`;
+    return this.http
+      .get<HistoryVersions>(url)
+      .pipe(
+        map((res) => {
+          return res.evolutionSteps;
         }),
       )
       .pipe(this.errors.handleRetry());

@@ -5,7 +5,11 @@
 
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">
-    <ul class="filter" (clickOutside)="onClickedOutside()">
+    <ul
+      class="filter"
+      (clickOutside)="onClickedOutside()"
+      [ngClass]="{ unbordered: allWorkflowExecutions.length === 0 }"
+    >
       <li
         class="dropdown dropdown-date"
         *ngIf="allWorkflowExecutions && allWorkflowExecutions.length > 0"
@@ -14,7 +18,7 @@
           >{{ 'datestarted' | translate
           }}<span *ngIf="selectedDate">: {{ selectedDate | date: 'dd/MM/yyyy - HH:mm' }}</span></a
         >
-        <div *ngIf="filterDate" class="dropdown-wrapper">
+        <div *ngIf="filterDateOpen" class="dropdown-wrapper">
           <ul>
             <li *ngFor="let w of allWorkflowExecutions; trackBy: byId">
               <a (click)="addPluginsFilter(w)">{{ w.startedDate | date: 'dd/MM/yyyy - HH:mm' }}</a>
@@ -35,7 +39,7 @@
           >{{ 'plugin' | translate
           }}<span *ngIf="selectedPlugin">: {{ selectedPlugin | renameWorkflow }}</span></a
         >
-        <div *ngIf="filterPlugin" class="dropdown-wrapper">
+        <div *ngIf="filterPluginOpen" class="dropdown-wrapper">
           <ul>
             <li *ngFor="let w of allPlugins">
               <a (click)="getXMLSamples(w.type)" *ngIf="!w.error">{{ w.type | renameWorkflow }}</a>
@@ -44,20 +48,48 @@
           </ul>
         </div>
       </li>
+      <li>
+        <span *ngIf="isLoading" class="svg-icon-spin showing"></span>
+      </li>
+      <li
+        class="dropdown dropdown-compare arrow-right"
+        *ngIf="historyVersions && historyVersions.length > 0"
+      >
+        <a (click)="toggleFilterCompare()"
+          >{{ 'compare' | translate
+          }}<span *ngIf="selectedComparison">: {{ selectedComparison | renameWorkflow }}</span></a
+        >
+        <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
+          <ul>
+            <li *ngFor="let h of historyVersions">
+              <a (click)="getXMLSamplesCompare(h.pluginType, h.workflowExecutionId)">{{
+                h.pluginType | renameWorkflow
+              }}</a>
+            </li>
+          </ul>
+        </div>
+      </li>
     </ul>
-    <span *ngIf="loadingSamples" class="svg-icon-spin showing"></span>
   </div>
 
   <div *ngIf="allSamples">
     <div
       class="view-sample"
       *ngFor="let sample of allSamples; let i = index"
-      [ngClass]="{ 'view-sample-expanded': expandedSample === i }"
+      [ngClass]="{
+        'view-sample-expanded': expandedSample === i,
+        'view-sample-compared': allSampleComparisons.length
+      }"
     >
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+          <span class="smaller" *ngIf="selectedPlugin"
+            >{{ selectedPlugin | renameWorkflow }}
+            <span *ngIf="selectedComparison">
+              / {{ selectedComparison | renameWorkflow }}</span
+            ></span
+          >
         </h3>
         <app-theme-selector
           (themeSet)="onThemeSet($event)"
@@ -80,6 +112,23 @@
             [config]="editorConfig"
           ></codemirror>
         </div>
+        <div
+          *ngIf="
+            allSampleComparisons.length &&
+            allSampleComparisons.length >= i &&
+            allSampleComparisons[i].xmlRecord
+          "
+          class="view-sample-editor-codemirror"
+          (click)="handleCodeClick($event)"
+          (mouseover)="handleMouseOver($event)"
+          (mouseout)="handleMouseOut($event)"
+        >
+          <codemirror
+            [ngModel]="allSampleComparisons[i].xmlRecord | beautifyXML"
+            (ngModelChange)="allSampleComparisons[i].xmlRecord = $event"
+            [config]="editorConfig"
+          ></codemirror>
+        </div>
       </div>
       <div class="btns-set btns-set-right">
         <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
@@ -87,7 +136,7 @@
     </div>
   </div>
 
-  <div class="view-sample" *ngIf="!loadingSamples && allSamples.length === 0">
+  <div class="view-sample" *ngIf="!isLoading && allSamples.length === 0">
     <div class="view-sample-title">
       <h3>
         {{ nosample }}
@@ -114,7 +163,7 @@
 </div>
 
 <div *ngIf="tempXSLT">
-  <div class="messages" *ngIf="loadingSamples || loadingTransformSamples">
+  <div class="messages" *ngIf="isLoading || loadingTransformSamples">
     <div class="success-message">
       <span class="svg-icon-spin-inbutton"></span> Loading samples...
     </div>
