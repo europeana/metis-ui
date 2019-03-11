@@ -54,7 +54,7 @@
       </td>
       <td class="buttonplaceholder nowrap">
         <a
-          *ngIf="plugin.failMessage"
+          *ngIf="plugin.failMessage || plugin.hasReport"
           class="table-btn svg-icon-report"
           (click)="
             openFailReport(
