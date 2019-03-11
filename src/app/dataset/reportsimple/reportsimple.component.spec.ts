@@ -1,6 +1,9 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { MockTranslateService } from '../../_mocked';
+import { TranslateService } from '../../_translate';
+
 import { ReportSimpleComponent } from '.';
 
 describe('ReportSimpleComponent', () => {
@@ -10,6 +13,7 @@ describe('ReportSimpleComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ReportSimpleComponent],
+      providers: [{ provide: TranslateService, useClass: MockTranslateService }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   }));
@@ -54,7 +58,7 @@ describe('ReportSimpleComponent', () => {
     expect(component.notification).toBeFalsy();
     component.reportErrors = [];
     expect(component.isVisible).toBeTruthy();
-    expect(component.notification!.content).toEqual('Report is empty.');
+    expect(component.notification!.content).toEqual('en:reportempty');
   });
 
   it('should get the keys from an object', () => {
