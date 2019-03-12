@@ -96,11 +96,23 @@
         </div>
 
         <span class="compound" *ngIf="selectedPlugin" style="width:100%;"
-          ><span *ngIf="selectedComparison"> {{ selectedComparison | renameWorkflow }}</span
-          ><span>{{ selectedPlugin | renameWorkflow }}</span></span
+          ><span>{{ selectedPlugin | renameWorkflow }}</span>
+          <span *ngIf="selectedComparison"> {{ selectedComparison | renameWorkflow }}</span></span
         >
       </div>
       <div class="view-sample-editor">
+        <div
+          class="view-sample-editor-codemirror"
+          (click)="handleCodeClick($event)"
+          (mouseover)="handleMouseOver($event)"
+          (mouseout)="handleMouseOut($event)"
+        >
+          <codemirror
+            [ngModel]="sample.xmlRecord | beautifyXML"
+            (ngModelChange)="sample.xmlRecord = $event"
+            [config]="editorConfig"
+          ></codemirror>
+        </div>
         <div
           *ngIf="
             allSampleComparisons.length &&
@@ -115,18 +127,6 @@
           <codemirror
             [ngModel]="allSampleComparisons[i].xmlRecord | beautifyXML"
             (ngModelChange)="allSampleComparisons[i].xmlRecord = $event"
-            [config]="editorConfig"
-          ></codemirror>
-        </div>
-        <div
-          class="view-sample-editor-codemirror"
-          (click)="handleCodeClick($event)"
-          (mouseover)="handleMouseOver($event)"
-          (mouseout)="handleMouseOut($event)"
-        >
-          <codemirror
-            [ngModel]="sample.xmlRecord | beautifyXML"
-            (ngModelChange)="sample.xmlRecord = $event"
             [config]="editorConfig"
           ></codemirror>
         </div>
