@@ -84,13 +84,9 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="selectedPlugin"
-            >{{ selectedPlugin | renameWorkflow }}
-            <span *ngIf="selectedComparison">
-              / {{ selectedComparison | renameWorkflow }}</span
-            ></span
-          >
+          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }} </span>
         </h3>
+
         <app-theme-selector
           (themeSet)="onThemeSet($event)"
           [editorIsDefaultTheme]="editorIsDefaultTheme"
@@ -98,6 +94,11 @@
         <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
           <a (click)="expandSample(i)">-</a>
         </div>
+
+        <span class="compound" *ngIf="selectedPlugin" style="width:100%;"
+          ><span>{{ selectedPlugin | renameWorkflow }}</span>
+          <span *ngIf="selectedComparison"> {{ selectedComparison | renameWorkflow }}</span></span
+        >
       </div>
       <div class="view-sample-editor">
         <div

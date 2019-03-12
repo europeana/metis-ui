@@ -122,8 +122,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
   // populate a filter with plugins based on selected execution
   addPluginsFilter(execution: WorkflowExecution): void {
     this.filterDateOpen = false;
+    this.selectedPlugin = undefined;
     this.allPlugins = [];
     this.historyVersions = [];
+    this.allSamples = [];
     this.allSampleComparisons = [];
     this.execution = execution;
     this.selectedDate = execution.startedDate;
@@ -162,7 +164,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   getXMLSamplesCompare(plugin: PluginType, workflowExecutionId: string): void {
     this.filterCompareOpen = false;
     this.isLoading = true;
-
+    this.allSampleComparisons = [];
     this.workflows
       .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
       .subscribe(
@@ -316,8 +318,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   toggleFilterDate(): void {
     this.onClickedOutside();
-    this.allPlugins = [];
-    this.selectedPlugin = undefined;
     this.filterDateOpen = !this.filterDateOpen;
   }
 
