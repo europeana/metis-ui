@@ -29,6 +29,7 @@ import {
   NewDatasetComponent,
   PreviewComponent,
   ReportSimpleComponent,
+  StatisticsComponent,
   WorkflowComponent,
 } from './dataset';
 import { HomeComponent } from './home';
@@ -76,6 +77,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     ExecutionsComponent,
     OngoingexecutionsComponent,
     ReportSimpleComponent,
+    StatisticsComponent,
     ThemeSelectorComponent,
     TranslatePipe,
     XmlPipe,

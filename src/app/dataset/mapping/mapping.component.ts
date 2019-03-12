@@ -28,7 +28,7 @@ import {
   Notification,
   successNotification,
 } from '../../_models';
-import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
@@ -40,7 +40,6 @@ type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 })
 export class MappingComponent implements OnInit {
   constructor(
-    private workflows: WorkflowService,
     private editorPrefs: EditorPrefService,
     private errors: ErrorService,
     private datasets: DatasetsService,
@@ -61,7 +60,6 @@ export class MappingComponent implements OnInit {
   xsltToSave?: string;
   notification?: Notification;
   isLoadingStatistics = false;
-  expandedStatistics = false;
   msgXSLTSuccess: string;
   editorIsDefaultTheme = true;
 
@@ -69,58 +67,7 @@ export class MappingComponent implements OnInit {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
     this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
-    this.loadStatistics();
     this.loadCustomXSLT();
-  }
-
-  // load the data on statistics and display this in a card (=readonly editor)
-  loadStatistics(): void {
-    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
-      (result) => {
-        let taskId: string | undefined;
-        if (result.results.length > 0) {
-          // find validation in the latest run, and if available, find taskid
-          for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
-            if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
-              taskId = result.results[0].metisPlugins[i].externalTaskId;
-            }
-          }
-        }
-
-        if (!taskId) {
-          return;
-        }
-        this.isLoadingStatistics = true;
-        this.workflows.getStatistics('validation', taskId).subscribe(
-          (resultStatistics) => {
-            let statistics = resultStatistics.nodeStatistics;
-
-            if (statistics.length > 100) {
-              statistics = statistics.slice(0, 100);
-            }
-            statistics.forEach((statistic) => {
-              const attrs = statistic.attributesStatistics;
-              if (attrs.length > 100) {
-                statistic.attributesStatistics = attrs.slice(0, 100);
-              }
-            });
-
-            this.statistics = statistics;
-            this.isLoadingStatistics = false;
-          },
-          (err: HttpErrorResponse) => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
-            this.isLoadingStatistics = false;
-          },
-        );
-        return;
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-      },
-    );
   }
 
   private handleXSLTError(err: HttpErrorResponse): void {
@@ -208,9 +155,5 @@ export class MappingComponent implements OnInit {
     if (this.xsltStatus === 'new-custom') {
       this.xsltStatus = 'no-custom';
     }
-  }
-
-  toggleStatistics(): void {
-    this.expandedStatistics = !this.expandedStatistics;
   }
 }
