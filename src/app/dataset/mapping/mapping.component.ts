@@ -61,7 +61,6 @@ export class MappingComponent implements OnInit {
   xsltToSave?: string;
   notification?: Notification;
   isLoadingStatistics = false;
-  expandedStatistics = false;
   msgXSLTSuccess: string;
   editorIsDefaultTheme = true;
 
@@ -208,9 +207,5 @@ export class MappingComponent implements OnInit {
     if (this.xsltStatus === 'new-custom') {
       this.xsltStatus = 'no-custom';
     }
-  }
-
-  toggleStatistics(): void {
-    this.expandedStatistics = !this.expandedStatistics;
   }
 }

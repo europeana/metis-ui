@@ -9,4 +9,5 @@ export * from './mapping/';
 export * from './newdataset/';
 export * from './preview/';
 export * from './reportsimple/';
+export * from './statistics/';
 export * from './workflow/';

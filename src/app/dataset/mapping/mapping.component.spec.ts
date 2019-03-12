@@ -9,7 +9,6 @@ import {
   mockDataset,
   MockDatasetsService,
   MockErrorService,
-  mockStatistics,
   MockTranslateService,
   MockWorkflowService,
 } from '../../_mocked';
@@ -47,17 +46,6 @@ describe('MappingComponent', () => {
   it('should create', () => {
     fixture.detectChanges();
     expect(component).toBeTruthy();
-  });
-
-  it('should expand statistics', () => {
-    component.statistics = mockStatistics.nodeStatistics;
-    fixture.detectChanges();
-
-    component.toggleStatistics();
-    fixture.detectChanges();
-    expect(
-      fixture.debugElement.queryAll(By.css('.view-statistics.view-sample-expanded')).length,
-    ).toBeTruthy();
   });
 
   it('should display xslt', () => {
