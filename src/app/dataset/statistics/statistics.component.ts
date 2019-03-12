@@ -1,4 +1,3 @@
-// import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 
@@ -10,11 +9,7 @@ import { ErrorService, WorkflowService } from '../../_services';
   templateUrl: './statistics.component.html',
 })
 export class StatisticsComponent implements OnInit {
-  constructor(
-    // private http: HttpClient,
-    private errors: ErrorService,
-    private workflows: WorkflowService,
-  ) {}
+  constructor(private errors: ErrorService, private workflows: WorkflowService) {}
 
   @Input() datasetData: Dataset;
 
@@ -24,15 +19,8 @@ export class StatisticsComponent implements OnInit {
   statistics: NodeStatistics[];
 
   ngOnInit(): void {
-    // this.editorConfig = this.editorPrefs.getEditorConfig(false);
-    // this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
-    // this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     this.loadStatistics();
-    // this.loadCustomXSLT();
   }
-
-  //  loadStatistics(): void {
-  //  }
 
   // load the data on statistics and display this in a card (=readonly editor)
   loadStatistics(): void {
