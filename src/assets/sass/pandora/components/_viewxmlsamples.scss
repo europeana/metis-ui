@@ -18,10 +18,10 @@ codemirror {
   .view-sample-title {
     align-items: center;
     background-color: $eu-jade;
+    color: $white;
     display: flex;
 
     h3 {
-      color: $white;
       flex-grow: 1;
       font-weight: normal;
       margin-bottom: 0;
@@ -31,17 +31,19 @@ codemirror {
         display: inline-block;
         margin-right: 1em;
         word-break: break-all;
-        &.smaller {
-          font-size: $font-size-slightly-smaller;
-        }
       }
+    }
+
+    h3 + * {
+      margin-left: auto;
+    }
+
+    .smaller {
+      font-size: $font-size-slightly-smaller;
     }
 
     .toggle-editor-ctrl {
       margin-right: 1rem;
-      &.default-theme {
-        color: red;
-      }
     }
   }
 
@@ -131,6 +133,33 @@ codemirror {
   .view-sample-editor-codemirror {
     position: relative;
     width: 49.7%;
+  }
+}
+
+.view-sample {
+  .compound {
+    display: none;
+  }
+}
+
+.view-sample-compared {
+  .view-sample-title {
+    flex-wrap: wrap;
+
+    h3 .smaller {
+      display: none;
+    }
+  }
+
+  .compound {
+    display: flex;
+    margin: -0.5rem 1rem 1rem 1rem;
+    span {
+      width: 50%;
+      & + span {
+        margin-left: 2.4rem;
+      }
+    }
   }
 }
 
