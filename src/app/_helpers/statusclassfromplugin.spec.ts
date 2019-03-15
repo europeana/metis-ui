@@ -54,5 +54,4 @@ describe('status class from plugin', () => {
       'status-pending',
     );
   });
-
 });
