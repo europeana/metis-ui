@@ -8,24 +8,38 @@
     <div class="toggle-expand"><a (click)="toggleStatistics()">-</a></div>
   </div>
   <div class="view-sample-editor">
-    <div>
-      <ul>
-        <li *ngFor="let s of statistics">
-          <strong>attributesStatistics:</strong> <br />
-          <ul>
-            <li *ngFor="let sa of s.attributesStatistics">
-              <strong>name:</strong> {{ sa.name }}<br />
-              <strong>occurrence:</strong> {{ sa.occurrence }}<br />
-              <strong>value:</strong> {{ sa.value }}<br />
-            </li>
-          </ul>
-          <strong>occurrence:</strong> {{ s.occurrence }} <br />
-          <strong>parentXpath:</strong> {{ s.parentXpath }} <br />
-          <strong>value:</strong> {{ s.value }} <br />
-          <strong>xpath:</strong> {{ s.xpath }}
-        </li>
-      </ul>
-    </div>
+    <ul class="stats-listing">
+      <li *ngFor="let nps of statistics.nodePathStatistics">
+        <ul class="nps-listing" appCollapsible>
+          <span class="stats-header collapsible-trigger">{{ nps.xPath }}</span>
+          <li *ngFor="let nvs of nps.nodeValueStatistics" appCollapsible>
+            <span class="stats-header"
+              >({{ nvs.occurrences }}) <span class="fw-normal">{{ nvs.value }}</span></span
+            >
+
+            <span
+              class="stats-header collapsible-trigger"
+              *ngIf="nvs.attributeStatistics && nvs.attributeStatistics.length > 0"
+              >attributeStatistics:</span
+            >
+            <ul>
+              <li *ngFor="let sa of nvs.attributeStatistics">
+                <strong>({{ sa.occurrences }})</strong> {{ sa.xPath }}<br />
+                <span class="stats-header"
+                  >value: <span class="fw-normal">{{ sa.value }}</span></span
+                >
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <a
+          *ngIf="!nps.moreLoaded"
+          class="load-more-btn vertical"
+          (click)="loadMoreAttrs(nps.xPath)"
+        ></a>
+      </li>
+    </ul>
   </div>
   <div class="btns-set btns-set-right">
     <a class="load-more-btn" *ngIf="!expandedStatistics" (click)="toggleStatistics()">expand</a>

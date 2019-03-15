@@ -14,6 +14,7 @@ import {
   HistoryVersions,
   isPluginCompleted,
   MoreResults,
+  NodePathStatistics,
   PluginType,
   Report,
   ReportAvailability,
@@ -380,6 +381,17 @@ export class WorkflowService {
       apiSettings.apiHostCore
     }/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
     return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
+  }
+
+  getStatisticsDetail(
+    topologyName: TopologyName,
+    taskId: string,
+    xPath: string,
+  ): Observable<NodePathStatistics> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/proxies/${topologyName}/task/${taskId}/nodestatistics?nodePath=${xPath}`;
+    return this.http.get<NodePathStatistics>(url).pipe(this.errors.handleRetry());
   }
 
   getWorkflowCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {

@@ -1,12 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 
-import { Dataset, httpErrorNotification, NodeStatistics, Notification } from '../../_models';
+import { Dataset, httpErrorNotification, Notification, Statistics } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
+  styleUrls: ['./statistics.component.scss'],
 })
 export class StatisticsComponent implements OnInit {
   constructor(private errors: ErrorService, private workflows: WorkflowService) {}
@@ -16,7 +17,8 @@ export class StatisticsComponent implements OnInit {
   expandedStatistics = false;
   isLoading = false;
   notification?: Notification;
-  statistics: NodeStatistics[];
+  statistics: Statistics;
+  taskId?: string;
 
   ngOnInit(): void {
     this.loadStatistics();
@@ -26,34 +28,22 @@ export class StatisticsComponent implements OnInit {
   loadStatistics(): void {
     this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
       (result) => {
-        let taskId: string | undefined;
         if (result.results.length > 0) {
           // find validation in the latest run, and if available, find taskid
           for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
             if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
-              taskId = result.results[0].metisPlugins[i].externalTaskId;
+              this.taskId = result.results[0].metisPlugins[i].externalTaskId;
             }
           }
         }
 
-        if (!taskId) {
+        if (!this.taskId) {
           return;
         }
         this.isLoading = true;
-        this.workflows.getStatistics('validation', taskId).subscribe(
+        this.workflows.getStatistics('validation', this.taskId).subscribe(
           (resultStatistics) => {
-            let statistics = resultStatistics.nodeStatistics;
-
-            if (statistics.length > 100) {
-              statistics = statistics.slice(0, 100);
-            }
-            statistics.forEach((statistic) => {
-              const attrs = statistic.attributesStatistics;
-              if (attrs.length > 100) {
-                statistic.attributesStatistics = attrs.slice(0, 100);
-              }
-            });
-
+            const statistics = resultStatistics;
             this.statistics = statistics;
             this.isLoading = false;
           },
@@ -68,6 +58,33 @@ export class StatisticsComponent implements OnInit {
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
+      },
+    );
+  }
+
+  loadMoreAttrs(xPath: string): void {
+    if (!this.taskId) {
+      return;
+    }
+
+    this.isLoading = true;
+    xPath = encodeURIComponent(xPath);
+
+    this.workflows.getStatisticsDetail('validation', this.taskId, xPath).subscribe(
+      (result) => {
+        this.statistics.nodePathStatistics.map((stat) => {
+          if (stat.xPath === result.xPath) {
+            stat.moreLoaded = true;
+            stat.nodeValueStatistics = result.nodeValueStatistics;
+            return result;
+          }
+          return stat;
+        });
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.isLoading = false;
       },
     );
   }

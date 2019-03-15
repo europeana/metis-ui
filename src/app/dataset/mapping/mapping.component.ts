@@ -24,7 +24,7 @@ import { switchMap } from 'rxjs/operators';
 import {
   Dataset,
   httpErrorNotification,
-  NodeStatistics,
+  NodeValueStatistics,
   Notification,
   successNotification,
 } from '../../_models';
@@ -54,7 +54,7 @@ export class MappingComponent implements OnInit {
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
   editorConfig: EditorConfiguration;
-  statistics: NodeStatistics[];
+  statistics: NodeValueStatistics[];
   xsltStatus: XSLTStatus = 'loading';
   xslt?: string;
   xsltToSave?: string;

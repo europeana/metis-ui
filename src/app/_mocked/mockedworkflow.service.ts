@@ -5,6 +5,7 @@ import {
   HarvestData,
   HistoryVersion,
   MoreResults,
+  NodePathStatistics,
   PluginExecution,
   PluginStatus,
   Report,
@@ -229,7 +230,6 @@ export const mockFirstPageResults: Results<WorkflowExecution> = {
 };
 
 export const mockWorkflowExecution: WorkflowExecution = mockWorkflowExecutionResults.results[0];
-
 export const mockPluginExecution: PluginExecution = mockWorkflowExecution.metisPlugins[0];
 
 export const mockXmlSamples: XmlSample[] = [
@@ -241,19 +241,56 @@ export const mockXmlSamples: XmlSample[] = [
 
 export const mockStatistics: Statistics = {
   taskId: 5,
-  nodeStatistics: [
+  nodePathStatistics: [
     {
-      attributesStatistics: [
+      xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator',
+
+      nodeValueStatistics: [
         {
-          name: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
-          occurrence: 2,
-          value: 'ca',
+          occurrences: 2,
+          value: 'desconegut',
+
+          attributeStatistics: [
+            {
+              xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
+              occurrences: 2,
+              value: 'ca',
+            },
+          ],
         },
       ],
-      occurrence: 2,
-      parentXpath: '//rdf:RDF/edm:ProvidedCHO',
-      value: 'desconegut',
-      xpath: '//rdf:RDF/edm:ProvidedCHO/dc:creator',
+    },
+  ],
+};
+
+export const mockStatisticsDetail: NodePathStatistics = {
+  xPath: '//rdf:RDF/edm:ProvidedCHO',
+  nodeValueStatistics: [
+    {
+      value: 'value 1',
+      occurrences: 876,
+      attributeStatistics: [
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 1',
+          occurrences: 9,
+        },
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 2',
+          occurrences: 8,
+        },
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 3',
+          occurrences: 7,
+        },
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 4',
+          occurrences: 6,
+        },
+      ],
     },
   ],
 };
