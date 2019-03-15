@@ -20,6 +20,9 @@
   .status-inqueue {
     background: lighten($eu-blue, 40%);
   }
+  .status-pending {
+    background: $eu-blue;
+  }
   .status-finished {
     background: $eu-jade;
   }
