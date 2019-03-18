@@ -32,7 +32,7 @@ describe('StatisticsComponent', () => {
   let component: StatisticsComponent;
   let fixture: ComponentFixture<StatisticsComponent>;
   let cmpWorkflowService: WorkflowService;
-  let xPath = '//rdf:RDF/edm:ProvidedCHO/dc:creator';
+  const xPath = '//rdf:RDF/edm:ProvidedCHO/dc:creator';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
