@@ -23,7 +23,7 @@ import { ReportAvailability, WorkflowExecution } from '../_models';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
-fdescribe('workflow service', () => {
+describe('workflow service', () => {
   let mockHttp: MockHttp;
   let service: WorkflowService;
 

@@ -1,4 +1,6 @@
 import { HttpTestingController, TestRequest } from '@angular/common/http/testing';
+import { QueryList } from '@angular/core';
+import { CodemirrorComponent } from 'ng2-codemirror';
 import { Observable } from 'rxjs';
 import { reduce } from 'rxjs/operators';
 
@@ -23,6 +25,17 @@ export function gatherError<Value>(observable: Observable<Value>): any {
     },
   });
   return error;
+}
+
+export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
+  return ([
+    {
+      instance: {
+        setOption: jasmine.createSpy('setEditorOption'),
+      },
+    },
+    // tslint:disable-next-line
+  ] as any) as QueryList<CodemirrorComponent>;
 }
 
 export class MockHttpRequest {

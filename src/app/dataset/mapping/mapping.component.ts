@@ -21,13 +21,7 @@ import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from 'ng2-codemirror';
 import { switchMap } from 'rxjs/operators';
 
-import {
-  Dataset,
-  httpErrorNotification,
-  NodeValueStatistics,
-  Notification,
-  successNotification,
-} from '../../_models';
+import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -54,7 +48,6 @@ export class MappingComponent implements OnInit {
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
   editorConfig: EditorConfiguration;
-  statistics: NodeValueStatistics[];
   xsltStatus: XSLTStatus = 'loading';
   xslt?: string;
   xsltToSave?: string;

@@ -24,8 +24,13 @@ export class StatisticsComponent implements OnInit {
     this.loadStatistics();
   }
 
+  setLoading(loading: boolean): void {
+    this.isLoading = loading;
+  }
+
   // load the data on statistics and display this in a card (=readonly editor)
   loadStatistics(): void {
+    this.setLoading(true);
     this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
       (result) => {
         if (result.results.length > 0) {
@@ -36,28 +41,26 @@ export class StatisticsComponent implements OnInit {
             }
           }
         }
-
         if (!this.taskId) {
           return;
         }
-        this.isLoading = true;
         this.workflows.getStatistics('validation', this.taskId).subscribe(
           (resultStatistics) => {
             const statistics = resultStatistics;
             this.statistics = statistics;
-            this.isLoading = false;
+            this.setLoading(false);
           },
           (err: HttpErrorResponse) => {
             const error = this.errors.handleError(err);
             this.notification = httpErrorNotification(error);
-            this.isLoading = false;
+            this.setLoading(false);
           },
         );
-        return;
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
+        this.setLoading(false);
       },
     );
   }
@@ -66,27 +69,28 @@ export class StatisticsComponent implements OnInit {
     if (!this.taskId) {
       return;
     }
+    this.setLoading(true);
 
-    this.isLoading = true;
-    xPath = encodeURIComponent(xPath);
-
-    this.workflows.getStatisticsDetail('validation', this.taskId, xPath).subscribe(
-      (result) => {
-        this.statistics.nodePathStatistics.map((stat) => {
-          if (stat.xPath === result.xPath) {
-            stat.moreLoaded = true;
-            stat.nodeValueStatistics = result.nodeValueStatistics;
-            return result;
-          }
-          return stat;
-        });
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.isLoading = false;
-      },
-    );
+    this.workflows
+      .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
+      .subscribe(
+        (result) => {
+          this.statistics.nodePathStatistics.map((stat) => {
+            if (stat.xPath === result.xPath) {
+              stat.moreLoaded = true;
+              stat.nodeValueStatistics = result.nodeValueStatistics;
+              return result;
+            }
+            return stat;
+          });
+          this.setLoading(false);
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.setLoading(false);
+        },
+      );
   }
 
   toggleStatistics(): void {

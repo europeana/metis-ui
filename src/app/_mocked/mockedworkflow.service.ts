@@ -73,12 +73,12 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: 'VALIDATION_EXTERNAL',
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: 'VALIDATION_EXTERNAL',
             mocked: true,
             enabled: false,
           },
@@ -264,7 +264,7 @@ export const mockStatistics: Statistics = {
 };
 
 export const mockStatisticsDetail: NodePathStatistics = {
-  xPath: '//rdf:RDF/edm:ProvidedCHO',
+  xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator',
   nodeValueStatistics: [
     {
       value: 'value 1',
@@ -390,6 +390,10 @@ export class MockWorkflowService {
 
   getStatistics(): Observable<Statistics> {
     return observableOf(mockStatistics);
+  }
+
+  getStatisticsDetail(): Observable<NodePathStatistics> {
+    return observableOf(mockStatisticsDetail);
   }
 
   getWorkflowForDataset(): Observable<Workflow> {

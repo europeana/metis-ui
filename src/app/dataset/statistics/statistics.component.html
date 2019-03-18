@@ -16,7 +16,6 @@
             <span class="stats-header"
               >({{ nvs.occurrences }}) <span class="fw-normal">{{ nvs.value }}</span></span
             >
-
             <span
               class="stats-header collapsible-trigger"
               *ngIf="nvs.attributeStatistics && nvs.attributeStatistics.length > 0"
@@ -32,7 +31,6 @@
             </ul>
           </li>
         </ul>
-
         <a
           *ngIf="!nps.moreLoaded"
           class="load-more-btn vertical"
