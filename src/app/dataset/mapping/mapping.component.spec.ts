@@ -103,5 +103,7 @@ describe('MappingComponent', () => {
     component.onThemeSet(false);
     fixture.detectChanges();
     expect(component.editorIsDefaultTheme).toEqual(false);
+    component.onThemeSet(true);
+    expect(component.editorIsDefaultTheme).toEqual(true);
   });
 });

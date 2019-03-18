@@ -187,6 +187,8 @@ describe('PreviewComponent', () => {
     fixture.detectChanges();
     component.onThemeSet(false);
     expect(component.editorIsDefaultTheme).toEqual(false);
+    component.onThemeSet(true);
+    expect(component.editorIsDefaultTheme).toEqual(true);
   });
 
   it('has utility to strip blank lines', () => {
