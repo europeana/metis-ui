@@ -87,6 +87,7 @@ describe('StatisticsComponent', () => {
       calls.push(param);
     });
 
+    component.taskId = 'abc';
     component.loadMoreAttrs(xPath);
     stat = component.statistics.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeTruthy();
