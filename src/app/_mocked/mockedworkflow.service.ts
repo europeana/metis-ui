@@ -5,6 +5,7 @@ import {
   HarvestData,
   HistoryVersion,
   MoreResults,
+  NodePathStatistics,
   PluginExecution,
   PluginStatus,
   Report,
@@ -72,12 +73,12 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: 'VALIDATION_EXTERNAL',
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: 'VALIDATION_EXTERNAL',
             mocked: true,
             enabled: false,
           },
@@ -229,7 +230,6 @@ export const mockFirstPageResults: Results<WorkflowExecution> = {
 };
 
 export const mockWorkflowExecution: WorkflowExecution = mockWorkflowExecutionResults.results[0];
-
 export const mockPluginExecution: PluginExecution = mockWorkflowExecution.metisPlugins[0];
 
 export const mockXmlSamples: XmlSample[] = [
@@ -241,19 +241,56 @@ export const mockXmlSamples: XmlSample[] = [
 
 export const mockStatistics: Statistics = {
   taskId: 5,
-  nodeStatistics: [
+  nodePathStatistics: [
     {
-      attributesStatistics: [
+      xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator',
+
+      nodeValueStatistics: [
         {
-          name: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
-          occurrence: 2,
-          value: 'ca',
+          occurrences: 2,
+          value: 'desconegut',
+
+          attributeStatistics: [
+            {
+              xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
+              occurrences: 2,
+              value: 'ca',
+            },
+          ],
         },
       ],
-      occurrence: 2,
-      parentXpath: '//rdf:RDF/edm:ProvidedCHO',
-      value: 'desconegut',
-      xpath: '//rdf:RDF/edm:ProvidedCHO/dc:creator',
+    },
+  ],
+};
+
+export const mockStatisticsDetail: NodePathStatistics = {
+  xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator',
+  nodeValueStatistics: [
+    {
+      value: 'value 1',
+      occurrences: 876,
+      attributeStatistics: [
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 1',
+          occurrences: 9,
+        },
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 2',
+          occurrences: 8,
+        },
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 3',
+          occurrences: 7,
+        },
+        {
+          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          value: 'new value 4',
+          occurrences: 6,
+        },
+      ],
     },
   ],
 };
@@ -353,6 +390,10 @@ export class MockWorkflowService {
 
   getStatistics(): Observable<Statistics> {
     return observableOf(mockStatistics);
+  }
+
+  getStatisticsDetail(): Observable<NodePathStatistics> {
+    return observableOf(mockStatisticsDetail);
   }
 
   getWorkflowForDataset(): Observable<Workflow> {

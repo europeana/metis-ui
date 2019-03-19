@@ -46,6 +46,9 @@
 
 .tab-content {
   margin: 0 auto;
-  max-width: 80%;
   padding: 1rem;
+
+  @media all and (min-width: $bp-med) {
+    max-width: 80%;
+  }
 }

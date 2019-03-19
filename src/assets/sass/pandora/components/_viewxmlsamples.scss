@@ -85,7 +85,8 @@ codemirror {
       display: none;
     }
 
-    .view-sample-editor > div {
+    .view-sample-editor > div,
+    .view-sample-editor > .stats-listing {
       border-bottom: 1px solid $offwhite;
       box-sizing: border-box;
       height: $heightNormal;
@@ -93,14 +94,6 @@ codemirror {
       padding: 1rem;
       text-align: left;
       width: 100%;
-
-      > ul > li {
-        margin-bottom: 1rem;
-      }
-
-      ul ul {
-        margin-left: 2rem;
-      }
     }
   }
 
@@ -109,7 +102,8 @@ codemirror {
       display: inline-block;
     }
 
-    .view-sample-editor > div {
+    .view-sample-editor > div,
+    .view-sample-editor > .stats-listing {
       height: $heightExpanded;
     }
   }

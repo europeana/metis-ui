@@ -13,6 +13,7 @@ import {
   mockReport,
   mockReportAvailability,
   mockStatistics,
+  mockStatisticsDetail,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
@@ -414,6 +415,15 @@ describe('workflow service', () => {
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/-4354/statistics')
       .send(mockStatistics);
+  });
+
+  it('should get statistics detail', () => {
+    service.getStatisticsDetail('normalization', '-4354', 'abc').subscribe((statistics) => {
+      expect(statistics).toEqual(mockStatisticsDetail);
+    });
+    mockHttp
+      .expect('GET', '/orchestrator/proxies/normalization/task/-4354/nodestatistics?nodePath=abc')
+      .send(mockStatisticsDetail);
   });
 
   it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {

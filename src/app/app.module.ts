@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
+import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
@@ -51,6 +52,7 @@ import { ThemeSelectorComponent } from './theme-selector';
 @NgModule({
   declarations: [
     AppComponent,
+    CollapsibleDirective,
     RegisterComponent,
     LoginComponent,
     ProfileComponent,

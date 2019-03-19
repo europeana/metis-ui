@@ -10,8 +10,9 @@
 
 .filter-wrapper {
   position: relative;
-  margin: -0.5em 0 1em -10%;
-  width: 120%;
+
+  margin: -0.5em 0 1em 0;
+  width: 100%;
 
   .svg-icon-spin {
     position: absolute;
@@ -21,6 +22,11 @@
     color: $gray-lighter;
     display: inline-block;
     padding-left: 0.5rem;
+  }
+
+  @media all and (min-width: $bp-med) {
+    margin: -0.5em 0 1em -10%;
+    width: 120%;
   }
 }
 
