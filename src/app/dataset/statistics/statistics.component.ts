@@ -66,11 +66,7 @@ export class StatisticsComponent implements OnInit {
   }
 
   loadMoreAttrs(xPath: string): void {
-    if (!this.taskId) {
-      return;
-    }
     this.setLoading(true);
-
     this.workflows
       .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
       .subscribe(
