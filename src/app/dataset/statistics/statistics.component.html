@@ -32,7 +32,7 @@
           </li>
         </ul>
         <a
-          *ngIf="!nps.moreLoaded && nps.taskId"
+          *ngIf="!nps.moreLoaded && this.taskId"
           class="load-more-btn vertical"
           (click)="loadMoreAttrs(nps.xPath)"
         ></a>
