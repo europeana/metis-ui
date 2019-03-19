@@ -20,6 +20,7 @@ export interface ExecutionProgress {
 export enum PluginStatus {
   INQUEUE = 'INQUEUE',
   CLEANING = 'CLEANING',
+  PENDING = 'PENDING',
   RUNNING = 'RUNNING',
   FINISHED = 'FINISHED',
   CANCELLED = 'CANCELLED',

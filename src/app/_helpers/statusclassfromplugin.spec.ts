@@ -48,4 +48,10 @@ describe('status class from plugin', () => {
       'status-failed',
     );
   });
+
+  it('should return "status-pending" for plugins with status PENDING', () => {
+    expect(statusClassFromPlugin(makePluginExecution(PluginStatus.PENDING))).toEqual(
+      'status-pending',
+    );
+  });
 });
