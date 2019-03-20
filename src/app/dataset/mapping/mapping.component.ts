@@ -52,7 +52,6 @@ export class MappingComponent implements OnInit {
   xslt?: string;
   xsltToSave?: string;
   notification?: Notification;
-  isLoadingStatistics = false;
   msgXSLTSuccess: string;
   editorIsDefaultTheme = true;
 

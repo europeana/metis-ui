@@ -1,11 +1,5 @@
 <app-statistics [datasetData]="datasetData"></app-statistics>
 
-<div class="messages" *ngIf="isLoadingStatistics">
-  <div class="success-message">
-    <span class="svg-icon-spin-inbutton"></span> Loading statistics...
-  </div>
-</div>
-
 <app-notification
   [notification]="notification"
   (closed)="notification = undefined"
