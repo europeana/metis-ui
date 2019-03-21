@@ -405,6 +405,7 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         pluginType: 'LINK_CHECKING',
         mocked: false,
+        performSampling: this.performSampling,
       });
     }
 
