@@ -1,0 +1,183 @@
+@import '../../../../assets/sass/scss/generic/variables';
+@import '../../../../assets/sass/pandora/settings/metis-variables';
+
+$orb-size: 1.5em;
+$row-border-height: 0.5em;
+$row-border-height-half: 3px;
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 -2px blue;
+  }
+  50% {
+    box-shadow: 0 0 2px blue;
+  }
+  100% {
+    box-shadow: 0 0 -2px blue;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 192, 203, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 192, 203, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 192, 203, 0);
+  }
+}
+
+.orbs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.orb-status {
+  border-radius: 0.75em;
+  border-style: solid;
+  border-width: 1px;
+  display: inline-block;
+  height: $orb-size;
+  margin: 0.2em 0.2em 0.2em 0;
+  position: relative;
+  width: $orb-size;
+
+  &:after {
+    font-size: 0.7em;
+    font-weight: bold;
+    position: absolute;
+    line-height: $orb-size;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+  }
+
+  &.INQUEUE {
+    border-color: magenta;
+  }
+  &.CANCELLED {
+    border-color: orange;
+  }
+  &.CLEANING {
+    border-color: cyan;
+  }
+  &.FAILED {
+    border-color: red;
+  }
+  &.FINISHED {
+    border-color: green;
+  }
+  &.PENDING {
+    border-color: pink;
+  }
+  &.RUNNING {
+    border-color: blue;
+  }
+  &.RUNNING {
+    animation: glowing 3000ms infinite;
+  }
+  &.PENDING {
+    animation: pulse 2000ms infinite;
+  }
+
+  &.HTTP_HARVEST:after,
+  &.OAIPMH_HARVEST:after {
+    content: 'H';
+  }
+  &.TRANSFORMATION:after {
+    content: 'T';
+  }
+  &.LINK_CHECKING:after {
+    content: 'L';
+  }
+  &.ENRICHMENT:after {
+    content: 'E';
+  }
+  &.MEDIA_PROCESS:after {
+    content: 'M';
+  }
+  &.VALIDATION_EXTERNAL:after {
+    content: 'Ve';
+  }
+  &.VALIDATION_INTERNAL:after {
+    content: 'Vi';
+  }
+  &.NORMALIZATION:after {
+    content: 'N';
+  }
+  &.PENDING:after {
+    content: 'Pe';
+  }
+  &.PREVIEW:after {
+    content: 'Pr';
+  }
+  &.PUBLISH:after {
+    content: 'Pu';
+  }
+}
+
+.grid-cell,
+.grid-sub {
+  display: block;
+  line-height: 2.25em;
+
+  .time {
+    color: #ccc;
+  }
+}
+
+.grid-cell {
+  cursor: pointer;
+}
+
+.grid-sub {
+  @media (max-width: $bp-med) {
+    margin-left: 2em;
+  }
+  &.start {
+    grid-column-start: sub-start;
+    position: relative;
+
+    &::after {
+      background: $offwhite;
+      bottom: -$row-border-height-half;
+      content: ' ';
+      left: -1000px;
+      position: absolute;
+      width: 10000px;
+      height: $row-border-height-half;
+      display: block;
+    }
+  }
+  &.labelled-orb {
+    align-items: center;
+    display: flex;
+
+    :first-child {
+      margin-right: 0.5em;
+    }
+  }
+  &.dates {
+    grid-column-start: sub-date-start;
+    grid-column-end: sub-date-end;
+  }
+}
+
+.row-start {
+  grid-column-start: start;
+  position: relative;
+
+  &::after {
+    background: $offwhite;
+    bottom: -$row-border-height;
+    content: ' ';
+    left: -1000px;
+    position: absolute;
+    width: 10000px;
+    height: $row-border-height;
+    display: block;
+  }
+}

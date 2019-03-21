@@ -24,6 +24,7 @@ import {
   TopologyName,
   Workflow,
   WorkflowExecution,
+  WorkflowExecutionSummary,
   WorkflowStatus,
   XmlSample,
 } from '../_models';
@@ -247,11 +248,17 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
+  getWorkflowExecutionSummary(page?: number): Observable<WorkflowExecutionSummary[]> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/workflows/executions/summary?nextPage=${page}`;
+    return this.http.get<WorkflowExecutionSummary[]>(url).pipe(this.errors.handleRetry());
+  }
+
   addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[]): Observable<WorkflowExecution[]> {
     if (executions.length === 0) {
       return of(executions);
     }
-
     executions.forEach((execution) => {
       execution.currentPlugin = getCurrentPlugin(execution);
       execution.currentPluginIndex = getCurrentPluginIndex(execution);

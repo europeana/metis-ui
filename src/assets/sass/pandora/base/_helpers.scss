@@ -5,6 +5,19 @@ body {
   background-image: none;
 }
 
+.br {
+  @media (min-width: $bp-med) {
+    &::before {
+      content: '\a';
+      display: block;
+    }
+  }
+}
+
+.inline-block {
+  display: inline-block;
+}
+
 .btns-set {
   background-color: $white;
   border: 0;

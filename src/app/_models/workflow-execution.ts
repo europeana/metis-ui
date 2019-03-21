@@ -17,6 +17,14 @@ export interface ExecutionProgress {
   status?: TaskState;
 }
 
+export interface StepProgress {
+  expectedRecords: number;
+  processedRecords: number;
+  stepsDone: number;
+  stepsTotal: number;
+  errors: number;
+}
+
 export enum PluginStatus {
   INQUEUE = 'INQUEUE',
   CLEANING = 'CLEANING',
@@ -96,6 +104,23 @@ export interface WorkflowExecution {
   datasetName?: string;
   currentPlugin?: PluginExecution;
   currentPluginIndex?: number;
+}
+
+export interface WorkflowExecSummaryExec {
+  progress: StepProgress;
+  finishedDate: string;
+  startedDate: string;
+  metisPlugins: PluginExecution[];
+}
+
+export interface DatasetSummary {
+  id: string;
+  datasetName: string;
+}
+
+export interface WorkflowExecutionSummary {
+  dataset: DatasetSummary;
+  execution: WorkflowExecSummaryExec;
 }
 
 export interface CancellationRequest {

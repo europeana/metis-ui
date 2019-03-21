@@ -1,0 +1,95 @@
+<ng-template #childComponentTemplate>
+  <ng-template #empty_date><span class="time">--</span></ng-template>
+
+  <span class="grid-cell row-start" (click)="toggleExpand($event)">
+    {{ dsExecution.dataset.datasetName }}
+    <span class="br">
+      <a [routerLink]="['/dataset', 'edit', dsExecution.dataset.id]" target="_blank">{{
+        dsExecution.dataset.id
+      }}</a>
+    </span>
+  </span>
+
+  <span class="grid-cell" (click)="toggleExpand($event)">
+    {{ dsExecution.execution.progress.stepsDone }} /
+    {{ dsExecution.execution.progress.stepsTotal }} Steps
+
+    <ul
+      *ngIf="dsExecution.execution.metisPlugins && dsExecution.execution.metisPlugins.length > 0"
+      class="orbs"
+    >
+      <li
+        *ngFor="let pi of dsExecution.execution.metisPlugins"
+        class="{{ pi.pluginType }} orb-status {{ pi.pluginStatus }}"
+        title="{{ pi.pluginType }}"
+      ></li>
+    </ul>
+  </span>
+
+  <span class="grid-cell" (click)="toggleExpand($event)">
+    {{ dsExecution.execution.progress.processedRecords }} /
+    {{ dsExecution.execution.progress.expectedRecords }}
+    <span class="br" style="color:red;">
+      {{ dsExecution.execution.progress.errors }}
+    </span>
+  </span>
+
+  <span class="grid-cell" (click)="toggleExpand($event)">
+    <span *ngIf="dsExecution.execution.startedDate; else empty_date">
+      {{ dsExecution.execution.startedDate | date: 'dd/MM/yyyy' }}
+      <span class="br time">
+        {{ dsExecution.execution.startedDate | date: 'HH:mm' }}
+      </span>
+    </span>
+  </span>
+
+  <span class="grid-cell" (click)="toggleExpand($event)">
+    <span *ngIf="dsExecution.execution.finishedDate; else empty_date">
+      {{ dsExecution.execution.finishedDate | date: 'dd/MM/yyyy' }}
+      <span class="br time">{{ dsExecution.execution.finishedDate | date: 'HH:mm' }}</span>
+    </span>
+  </span>
+  <!--
+  <span class="grid-cell">
+    REPORT
+  </span>
+-->
+  <ng-container *ngIf="expanded">
+    <ng-container *ngFor="let pi of dsExecution.execution.metisPlugins">
+      <span class="grid-sub start labelled-orb">
+        <span class="{{ pi.pluginType }} orb-status {{ pi.pluginStatus }}"></span>
+        <span
+          class="tooltip"
+          title="{{ 'doubleclicktocopy' | translate }}"
+          (dblclick)="copyInformation('plugin', pi.externalTaskId || '', pi.id)"
+        >
+          {{ pi.pluginType | renameWorkflow }}
+        </span>
+      </span>
+
+      <span class="grid-sub">
+        <span class="inline-block">
+          {{ pi.executionProgress.processedRecords }} / {{ pi.executionProgress.expectedRecords }}
+        </span>
+        <span style="color:red;">
+          {{ pi.executionProgress.error }}
+        </span>
+      </span>
+
+      <span class="grid-sub dates">
+        <span *ngIf="pi.startedDate; else empty_date" class="inline-block">
+          {{ pi.startedDate | date: 'dd/MM/yyyy' }}
+          <span class="time">
+            {{ pi.startedDate | date: 'HH:mm' }}
+          </span>
+          <span *ngIf="pi.finishedDate; else empty_date" class="inline-block">
+            {{ pi.finishedDate | date: 'dd/MM/yyyy' }}
+            <span class="time">
+              {{ pi.finishedDate | date: 'HH:mm' }}
+            </span>
+          </span>
+        </span>
+      </span>
+    </ng-container>
+  </ng-container>
+</ng-template>
