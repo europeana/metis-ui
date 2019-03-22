@@ -293,7 +293,9 @@ export class WorkflowComponent implements OnInit {
 
       // link checking
       if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-        this.workflowForm.controls.performSampling.setValue(thisWorkflow.performSampling ? 'true' : 'false');
+        this.workflowForm.controls.performSampling.setValue(
+          thisWorkflow.performSampling ? 'true' : 'false',
+        );
       }
     }
   }
@@ -399,7 +401,9 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         pluginType: 'LINK_CHECKING',
         mocked: false,
-        performSampling: this.workflowForm.value.performSampling ? this.workflowForm.value.performSampling : false,
+        performSampling: this.workflowForm.value.performSampling
+          ? this.workflowForm.value.performSampling
+          : false,
       });
     }
 

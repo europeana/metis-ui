@@ -466,11 +466,19 @@
         >
           <div class="form-group-radios">
             <label>
-              <input type="radio" [checked]="workflowForm.value.performSampling === 'true'" disabled="" />
+              <input
+                type="radio"
+                [checked]="workflowForm.value.performSampling === 'true'"
+                disabled=""
+              />
               {{ 'checksample' | translate }}
             </label>
             <label>
-              <input type="radio" [checked]="workflowForm.value.performSampling !== 'true'" disabled="" />
+              <input
+                type="radio"
+                [checked]="workflowForm.value.performSampling !== 'true'"
+                disabled=""
+              />
               {{ 'checkall' | translate }}
             </label>
           </div>
