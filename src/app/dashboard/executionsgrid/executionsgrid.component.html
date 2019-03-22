@@ -1,27 +1,40 @@
 <h3 class="grid-top-header">
   {{ 'allexecutions' | translate }}<span *ngIf="isLoading" class="svg-icon-spin showing"></span>
 </h3>
-<div *ngIf="executionSummary" class="executions-grid" [ngClass]="{ filled : filled }">
+<div *ngIf="dsOverview" class="executions-grid" [ngClass]="{ filled: orbsFilled }">
   <span class="grid-header">
-    Dataset Name
+    {{ 'datasetname' | translate }}
   </span>
-  <span class="grid-header" (click)="toggleFilled()" style="cursor:pointer;" title="Click to toggle the orb fill">
-    Workflows
+  <span
+    class="grid-header"
+    (click)="toggleFilled()"
+    style="cursor:pointer;"
+    title="Click to toggle the orb fill"
+  >
+    {{ 'workflows' | translate }}
   </span>
   <span class="grid-header">
-    Processed / Records
+    {{ 'processed-records' | translate }}
   </span>
   <span class="grid-header">
-    Start Time
+    {{ 'starttime' | translate }}
   </span>
   <span class="grid-header">
-    End Time
+    {{ 'endtime' | translate }}
   </span>
-  <ng-container *ngFor="let execution of executionSummary">
-    <app-gridrow #wrapper
+  <ng-container *ngFor="let execution of dsOverview; let i = index">
+    <app-gridrow
+      #wrapper
+      [expanded]="i === selectedIndex"
+      [index]="i"
       [dsExecution]="execution"
-      (closeExpanded)="closeExpanded()"
+      (closeExpanded)="setSelectedIndex($event)"
     ></app-gridrow>
     <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
   </ng-container>
+</div>
+
+<div class="grid-footer">
+  <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{ 'loadmore' | translate }}</a
+  ><span class="svg-icon-spin" [class.showing]="isLoadingMore"></span>
 </div>

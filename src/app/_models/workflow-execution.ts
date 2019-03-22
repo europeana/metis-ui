@@ -9,20 +9,21 @@ export enum TaskState {
   REMOVING_FROM_SOLR_AND_MONGO = 'REMOVING_FROM_SOLR_AND_MONGO',
 }
 
-export interface ExecutionProgress {
+export interface ExecutionProgressBasic {
   expectedRecords: number;
   processedRecords: number;
-  progressPercentage: number;
   errors: number;
+}
+
+export interface ExecutionProgress extends ExecutionProgressBasic {
+  progressPercentage: number;
   status?: TaskState;
 }
 
-export interface StepProgress {
-  expectedRecords: number;
-  processedRecords: number;
+export interface DatasetExecutionProgress {
   stepsDone: number;
   stepsTotal: number;
-  errors: number;
+  currentPluginProgress: ExecutionProgressBasic;
 }
 
 export enum PluginStatus {
@@ -106,21 +107,21 @@ export interface WorkflowExecution {
   currentPluginIndex?: number;
 }
 
-export interface WorkflowExecSummaryExec {
-  progress: StepProgress;
+export interface DatasetOverviewExecution {
+  executionProgress: DatasetExecutionProgress;
   finishedDate: string;
   startedDate: string;
   metisPlugins: PluginExecution[];
 }
 
 export interface DatasetSummary {
-  id: string;
+  datasetId: string;
   datasetName: string;
 }
 
-export interface WorkflowExecutionSummary {
+export interface DatasetOverview {
   dataset: DatasetSummary;
-  execution: WorkflowExecSummaryExec;
+  execution: DatasetOverviewExecution;
 }
 
 export interface CancellationRequest {

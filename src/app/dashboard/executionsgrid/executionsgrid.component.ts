@@ -1,8 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 
-import { WorkflowExecutionSummary } from '../../_models';
+import { environment } from '../../../environments/environment';
+import { DatasetOverview } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+
 import { GridrowComponent } from './gridrow';
 
 @Component({
@@ -10,40 +12,58 @@ import { GridrowComponent } from './gridrow';
   templateUrl: './executionsgrid.component.html',
   styleUrls: ['./executionsgrid.component.scss'],
 })
-
-export class ExecutionsgridComponent implements OnInit {
-
-  executionSummary: WorkflowExecutionSummary[];
+export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
+  dsOverview: DatasetOverview[];
+  finishedTimer: number;
+  selectedIndex = -1;
   isLoading = true;
-  filled = true;
+  isLoadingMore = false;
+  hasMore = false;
+  orbsFilled = false;
+  currentPage = 0;
 
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
 
   constructor(private workflows: WorkflowService, private errors: ErrorService) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.load();
   }
 
+  ngOnDestroy(): void {
+    clearTimeout(this.finishedTimer);
+  }
+  loadNextPage(): void {
+    this.currentPage++;
+    this.isLoadingMore = true;
+    clearTimeout(this.finishedTimer);
+    this.load();
+  }
   load(): void {
-    this.workflows.getWorkflowExecutionSummary().subscribe(
-      (result) => {
-        this.executionSummary = result;
+    this.workflows.getCompletedDatasetOverviewsUptoPage(this.currentPage).subscribe(
+      ({ results, more }) => {
+        this.hasMore = more;
+        this.dsOverview = results;
         this.isLoading = false;
+        this.isLoadingMore = false;
+        this.finishedTimer = window.setTimeout(() => {
+          this.isLoadingMore = true;
+          this.load();
+        }, environment.intervalStatusMedium);
       },
       (err: HttpErrorResponse) => {
         this.isLoading = false;
+        this.isLoadingMore = false;
         this.errors.handleError(err);
       },
     );
   }
-
   toggleFilled(): void {
-    this.filled = !this.filled;
+    this.orbsFilled = !this.orbsFilled;
   }
 
-  //closeAllExpanded
-  closeExpanded(): void{
+  setSelectedIndex(selectedIndex: number): void {
+    this.selectedIndex = selectedIndex;
     this.rows.forEach((r) => {
       r.expanded = false;
     });

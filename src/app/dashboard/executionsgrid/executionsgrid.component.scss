@@ -1,11 +1,27 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+.svg-icon-spin {
+  height: 23px;
+  margin-left: 0.5em;
+}
+
+.grid-footer,
 .grid-top-header {
   display: flex;
+  align-items: center;
+}
+
+.grid-footer {
+  justify-content: center;
   .svg-icon-spin {
-    margin-left: 0.5em;
+    margin-left: 0.25em;
+    transform: scale(0.7);
   }
+}
+
+.load-more-btn::after {
+  top: -0.25em;
 }
 
 .executions-grid {
@@ -31,5 +47,6 @@
     display: block;
     font-weight: bold;
     margin: 1em 0;
+    text-transform: capitalize;
   }
 }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { PluginExecution, WorkflowExecutionSummary } from '../../../_models';
+
 import { copyExecutionAndTaskId, statusClassFromPlugin } from '../../../_helpers';
+import { DatasetOverview, PluginExecution } from '../../../_models';
 
 @Component({
   selector: 'app-gridrow',
@@ -9,10 +10,12 @@ import { copyExecutionAndTaskId, statusClassFromPlugin } from '../../../_helpers
 })
 export class GridrowComponent {
   @ViewChild('childComponentTemplate') childComponentTemplate: TemplateRef<HTMLElement>;
-  @Input() dsExecution: WorkflowExecutionSummary;
-  @Output() closeExpanded: EventEmitter<void> = new EventEmitter();
+  @Input() dsExecution: DatasetOverview;
+  @Input() expanded: boolean;
+  @Input() index: number;
 
-  expanded: boolean;
+  @Output() closeExpanded: EventEmitter<number> = new EventEmitter();
+
   contentCopied = false;
   constructor() {}
 
@@ -29,8 +32,6 @@ export class GridrowComponent {
     if (e.target.nodeName === 'A') {
       return;
     }
-    let expanded = this.expanded;
-    this.closeExpanded.emit();
-    this.expanded = !expanded;
+    this.closeExpanded.emit(this.expanded ? -1 : this.index);
   }
 }

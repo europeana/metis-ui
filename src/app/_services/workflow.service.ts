@@ -7,6 +7,7 @@ import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
 import {
   CancellationRequest,
+  DatasetOverview,
   getCurrentPlugin,
   getCurrentPluginIndex,
   HarvestData,
@@ -24,7 +25,6 @@ import {
   TopologyName,
   Workflow,
   WorkflowExecution,
-  WorkflowExecutionSummary,
   WorkflowStatus,
   XmlSample,
 } from '../_models';
@@ -248,11 +248,16 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
-  getWorkflowExecutionSummary(page?: number): Observable<WorkflowExecutionSummary[]> {
+  getCompletedDatasetSummaries(page?: number): Observable<Results<DatasetOverview>> {
     const url = `${
       apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/summary?nextPage=${page}`;
-    return this.http.get<WorkflowExecutionSummary[]>(url).pipe(this.errors.handleRetry());
+    }/orchestrator/workflows/executions/overview?nextPage=${page}`;
+    return this.http.get<Results<DatasetOverview>>(url).pipe(this.errors.handleRetry());
+  }
+
+  getCompletedDatasetOverviewsUptoPage(endPage: number): Observable<MoreResults<DatasetOverview>> {
+    const getResults = (page: number) => this.getCompletedDatasetSummaries(page);
+    return this.collectResultsUptoPage(getResults, endPage);
   }
 
   addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[]): Observable<WorkflowExecution[]> {

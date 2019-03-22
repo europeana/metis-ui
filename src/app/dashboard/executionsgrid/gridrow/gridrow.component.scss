@@ -42,6 +42,10 @@ $row-border-height-half: 3px;
   }
 }
 
+.error-count {
+  color: $eu-red;
+}
+
 .orbs {
   display: flex;
   flex-direction: row;
@@ -96,7 +100,7 @@ $row-border-height-half: 3px;
     width: 100%;
   }
 
-  &.HTTP_HARVEST:after{
+  &.HTTP_HARVEST:after {
     content: 'Hh';
   }
   &.OAIPMH_HARVEST:after {
@@ -152,17 +156,17 @@ $row-border-height-half: 3px;
   color: #ccc;
 }
 
-.time{
+.time {
   margin-right: 1em;
 }
 
-.row-start{
+.row-start {
   grid-column-start: start;
   position: relative;
 
   // hover / active indicator
 
-  &::after{
+  &::after {
     background: $offwhite;
     content: ' ';
     display: block;
@@ -176,8 +180,8 @@ $row-border-height-half: 3px;
   }
 
   &.active,
-  &:hover{
-    &::after{
+  &:hover {
+    &::after {
       background: $eu-jade;
     }
   }
@@ -211,11 +215,10 @@ $row-border-height-half: 3px;
   }
 
   // avoid trapping link click events
-  a{
+  a {
     position: relative;
     z-index: 1;
   }
-
 }
 
 .grid-sub {
@@ -251,7 +254,7 @@ $row-border-height-half: 3px;
     grid-column-start: sub-date-start;
     grid-column-end: sub-date-end;
   }
-  .orb-status{
+  .orb-status {
     &.status-inqueue {
       animation: pulseInqueue 4000ms infinite;
     }

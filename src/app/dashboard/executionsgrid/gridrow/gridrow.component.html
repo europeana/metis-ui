@@ -4,16 +4,15 @@
   <span [ngClass]="{ active: expanded }" class="grid-cell row-start" (click)="toggleExpand($event)">
     {{ dsExecution.dataset.datasetName }}
     <span class="br">
-      <a [routerLink]="['/dataset', 'edit', dsExecution.dataset.id]" target="_blank">{{
-        dsExecution.dataset.id
+      <a [routerLink]="['/dataset', 'edit', dsExecution.dataset.datasetId]" target="_blank">{{
+        dsExecution.dataset.datasetId
       }}</a>
     </span>
   </span>
 
   <span class="grid-cell">
-    {{ dsExecution.execution.progress.stepsDone }} /
-    {{ dsExecution.execution.progress.stepsTotal }} Steps
-
+    {{ dsExecution.execution.executionProgress.stepsDone }} /
+    {{ dsExecution.execution.executionProgress.stepsTotal }} {{ 'overviewsteps' | translate }}
     <ul
       *ngIf="dsExecution.execution.metisPlugins && dsExecution.execution.metisPlugins.length > 0"
       class="orbs"
@@ -26,10 +25,16 @@
   </span>
 
   <span class="grid-cell">
-    {{ dsExecution.execution.progress.processedRecords }} /
-    {{ dsExecution.execution.progress.expectedRecords }}
-    <span class="br" style="color:red;">
-      {{ dsExecution.execution.progress.errors }}
+    {{ dsExecution.execution.executionProgress.currentPluginProgress.processedRecords }} /
+    {{ dsExecution.execution.executionProgress.currentPluginProgress.expectedRecords }}
+    <span
+      *ngIf="
+        dsExecution.execution.executionProgress.currentPluginProgress.errors &&
+        dsExecution.execution.executionProgress.currentPluginProgress.errors > 0
+      "
+      class="br error-count"
+    >
+      {{ dsExecution.execution.executionProgress.currentPluginProgress.errors }}
     </span>
   </span>
 
@@ -58,7 +63,8 @@
           title="{{ 'doubleclicktocopy' | translate }}"
           (dblclick)="copyInformation('plugin', pi.externalTaskId || '', pi.id)"
         >
-          {{ pi.pluginType | renameWorkflow }} <span class="status-label">{{ pi.pluginStatus }}</span>
+          {{ pi.pluginType | renameWorkflow }}
+          <span class="status-label">{{ pi.pluginStatus }}</span>
         </span>
       </span>
 
@@ -66,7 +72,10 @@
         <span class="inline-block">
           {{ pi.executionProgress.processedRecords }} / {{ pi.executionProgress.expectedRecords }}
         </span>
-        <span style="color:red;">
+        <span
+          *ngIf="pi.executionProgress.errors && pi.executionProgress.errors > 0"
+          class="error-count"
+        >
           {{ pi.executionProgress.errors }}
         </span>
       </span>
