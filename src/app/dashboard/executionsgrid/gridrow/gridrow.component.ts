@@ -1,6 +1,6 @@
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
-import { copyExecutionAndTaskId } from '../../../_helpers';
-import { WorkflowExecutionSummary } from '../../../_models';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { PluginExecution, WorkflowExecutionSummary } from '../../../_models';
+import { copyExecutionAndTaskId, statusClassFromPlugin } from '../../../_helpers';
 
 @Component({
   selector: 'app-gridrow',
@@ -10,8 +10,9 @@ import { WorkflowExecutionSummary } from '../../../_models';
 export class GridrowComponent {
   @ViewChild('childComponentTemplate') childComponentTemplate: TemplateRef<HTMLElement>;
   @Input() dsExecution: WorkflowExecutionSummary;
+  @Output() closeExpanded: EventEmitter<void> = new EventEmitter();
 
-  expanded = true;
+  expanded: boolean;
   contentCopied = false;
   constructor() {}
 
@@ -20,10 +21,16 @@ export class GridrowComponent {
     this.contentCopied = true;
   }
 
+  getPluginStatusClass(plugin: PluginExecution): string {
+    return statusClassFromPlugin(plugin, plugin);
+  }
+
   toggleExpand(e: { target: HTMLInputElement }): void {
     if (e.target.nodeName === 'A') {
       return;
     }
-    this.expanded = !this.expanded;
+    let expanded = this.expanded;
+    this.closeExpanded.emit();
+    this.expanded = !expanded;
   }
 }

@@ -1,2 +1,13 @@
+@import '../../scss/generic/variables';
+
 $border-radius: 2px;
 $tab-header-min-height: 4.9em;
+
+$color-status-warning: lighten($eu-orange, 30%);
+$color-status-inqueue: lighten($eu-blue, 40%);
+$color-status-cleaning: lighten($eu-blue, 40%);
+$color-status-pending: $eu-blue;
+$color-status-running: $eu-blue;
+$color-status-finished: $eu-jade;
+$color-status-cancelled: $gray-lighter;
+$color-status-failed: $eu-red;

@@ -1,7 +1,7 @@
 <ng-template #childComponentTemplate>
   <ng-template #empty_date><span class="time">--</span></ng-template>
 
-  <span class="grid-cell row-start" (click)="toggleExpand($event)">
+  <span [ngClass]="{ active: expanded }" class="grid-cell row-start" (click)="toggleExpand($event)">
     {{ dsExecution.dataset.datasetName }}
     <span class="br">
       <a [routerLink]="['/dataset', 'edit', dsExecution.dataset.id]" target="_blank">{{
@@ -10,7 +10,7 @@
     </span>
   </span>
 
-  <span class="grid-cell" (click)="toggleExpand($event)">
+  <span class="grid-cell">
     {{ dsExecution.execution.progress.stepsDone }} /
     {{ dsExecution.execution.progress.stepsTotal }} Steps
 
@@ -20,13 +20,12 @@
     >
       <li
         *ngFor="let pi of dsExecution.execution.metisPlugins"
-        class="{{ pi.pluginType }} orb-status {{ pi.pluginStatus }}"
-        title="{{ pi.pluginType }}"
+        class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"
       ></li>
     </ul>
   </span>
 
-  <span class="grid-cell" (click)="toggleExpand($event)">
+  <span class="grid-cell">
     {{ dsExecution.execution.progress.processedRecords }} /
     {{ dsExecution.execution.progress.expectedRecords }}
     <span class="br" style="color:red;">
@@ -34,7 +33,7 @@
     </span>
   </span>
 
-  <span class="grid-cell" (click)="toggleExpand($event)">
+  <span class="grid-cell">
     <span *ngIf="dsExecution.execution.startedDate; else empty_date">
       {{ dsExecution.execution.startedDate | date: 'dd/MM/yyyy' }}
       <span class="br time">
@@ -43,27 +42,23 @@
     </span>
   </span>
 
-  <span class="grid-cell" (click)="toggleExpand($event)">
+  <span class="grid-cell">
     <span *ngIf="dsExecution.execution.finishedDate; else empty_date">
       {{ dsExecution.execution.finishedDate | date: 'dd/MM/yyyy' }}
       <span class="br time">{{ dsExecution.execution.finishedDate | date: 'HH:mm' }}</span>
     </span>
   </span>
-  <!--
-  <span class="grid-cell">
-    REPORT
-  </span>
--->
+
   <ng-container *ngIf="expanded">
     <ng-container *ngFor="let pi of dsExecution.execution.metisPlugins">
       <span class="grid-sub start labelled-orb">
-        <span class="{{ pi.pluginType }} orb-status {{ pi.pluginStatus }}"></span>
+        <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
         <span
           class="tooltip"
           title="{{ 'doubleclicktocopy' | translate }}"
           (dblclick)="copyInformation('plugin', pi.externalTaskId || '', pi.id)"
         >
-          {{ pi.pluginType | renameWorkflow }}
+          {{ pi.pluginType | renameWorkflow }} <span class="status-label">{{ pi.pluginStatus }}</span>
         </span>
       </span>
 
@@ -72,7 +67,7 @@
           {{ pi.executionProgress.processedRecords }} / {{ pi.executionProgress.expectedRecords }}
         </span>
         <span style="color:red;">
-          {{ pi.executionProgress.error }}
+          {{ pi.executionProgress.errors }}
         </span>
       </span>
 

@@ -1,11 +1,11 @@
-<h3>
+<h3 class="grid-top-header">
   {{ 'allexecutions' | translate }}<span *ngIf="isLoading" class="svg-icon-spin showing"></span>
 </h3>
-<div *ngIf="executionSummary" class="executions-grid">
+<div *ngIf="executionSummary" class="executions-grid" [ngClass]="{ filled : filled }">
   <span class="grid-header">
     Dataset Name
   </span>
-  <span class="grid-header">
+  <span class="grid-header" (click)="toggleFilled()" style="cursor:pointer;" title="Click to toggle the orb fill">
     Workflows
   </span>
   <span class="grid-header">
@@ -17,13 +17,11 @@
   <span class="grid-header">
     End Time
   </span>
-  <!--
-  <span class="grid-header">
-    Next Actions
-  </span>
--->
   <ng-container *ngFor="let execution of executionSummary">
-    <app-gridrow #wrapper [dsExecution]="execution"></app-gridrow>
+    <app-gridrow #wrapper
+      [dsExecution]="execution"
+      (closeExpanded)="closeExpanded()"
+    ></app-gridrow>
     <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
   </ng-container>
 </div>

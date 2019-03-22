@@ -1,6 +1,8 @@
 @import '../../scss/generic/variables';
 @import '../settings/metis-variables';
 
+$color-status-cleaning: lighten($eu-blue, 40%);
+
 .errorindicator {
   .status {
     border-radius: 0.3rem;
@@ -9,25 +11,25 @@
     width: 0.7rem;
   }
   .status-failed {
-    background: $eu-red;
+    background: $color-status-failed;
   }
   .status-warning {
-    background: lighten($eu-orange, 30%);
+    background: $color-status-warning;
   }
   .status-running {
-    background: $eu-blue;
+    background: $color-status-running;
   }
   .status-inqueue {
-    background: lighten($eu-blue, 40%);
+    background: $color-status-inqueue;
   }
   .status-pending {
-    background: $eu-blue;
+    background: $color-status-pending;
   }
   .status-finished {
-    background: $eu-jade;
+    background: $color-status-finished;
   }
   .status-cancelled {
-    background: $gray-lighter;
+    background: $color-status-cancelled;
   }
 }
 
@@ -40,4 +42,34 @@
   position: absolute;
   top: 0;
   width: 3px;
+}
+
+.filled .orb-status {
+
+  color: $white;
+
+  &.status-inqueue {
+    background: $color-status-inqueue;
+  }
+  &.status-cancelled {
+    background: $color-status-cancelled;
+  }
+  &.status-cleaning {
+    background: $color-status-cleaning;
+  }
+  &.status-failed {
+    background: $color-status-failed;
+  }
+  &.status-finished {
+    background: $color-status-finished;
+  }
+  &.status-pending {
+    background: $color-status-pending;
+  }
+  &.status-running {
+    background: $color-status-running;
+  }
+  &.status-warning {
+    background: $color-status-warning;
+  }
 }
