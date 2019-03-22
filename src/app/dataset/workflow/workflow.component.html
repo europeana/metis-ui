@@ -439,7 +439,7 @@
                 type="radio"
                 formControlName="performSampling"
                 value="true"
-                [checked]="performSampling === true"
+                [checked]="workflowForm.value.performSampling === 'true'"
                 (change)="changeLinkCheckSampling(true)"
               />
               {{ 'checksample' | translate }}
@@ -450,7 +450,7 @@
                 type="radio"
                 formControlName="performSampling"
                 value="false"
-                [checked]="performSampling !== true"
+                [checked]="workflowForm.value.performSampling !== 'true'"
                 (change)="changeLinkCheckSampling(false)"
               />
               {{ 'checkall' | translate }}
@@ -466,11 +466,11 @@
         >
           <div class="form-group-radios">
             <label>
-              <input type="radio" [checked]="performSampling === true" disabled="" />
+              <input type="radio" [checked]="workflowForm.value.performSampling === 'true'" disabled="" />
               {{ 'checksample' | translate }}
             </label>
             <label>
-              <input type="radio" [checked]="performSampling !== true" disabled="" />
+              <input type="radio" [checked]="workflowForm.value.performSampling !== 'true'" disabled="" />
               {{ 'checkall' | translate }}
             </label>
           </div>

@@ -53,11 +53,9 @@ export class WorkflowComponent implements OnInit {
 
   notification?: Notification;
   harvestprotocol: string;
-  performSampling: boolean;
   newWorkflow = true;
   workflowForm: FormGroup;
   currentUrl: string;
-  selectedSteps = true;
   pluginsOrdered: Array<string> = [
     'pluginHARVEST',
     'pluginVALIDATION_EXTERNAL',
@@ -183,15 +181,6 @@ export class WorkflowComponent implements OnInit {
           .get('harvestUrl')!
           .updateValueAndValidity({ onlySelf: false, emitEvent: false });
       }
-
-      this.selectedSteps = false;
-      Object.keys(this.workflowForm.controls).forEach((key) => {
-        if (key.includes('plugin') && key !== 'pluginType') {
-          if (this.workflowForm.get(key)!.value) {
-            this.selectedSteps = true;
-          }
-        }
-      });
     });
   }
 
@@ -235,7 +224,7 @@ export class WorkflowComponent implements OnInit {
   }
 
   changeLinkCheckSampling(sample: boolean): void {
-    this.performSampling = sample;
+    this.workflowForm.value.performSampling = sample;
   }
 
   getImportSummary(): string {
@@ -300,6 +289,11 @@ export class WorkflowComponent implements OnInit {
       // transformation
       if (thisWorkflow.pluginType === 'TRANSFORMATION') {
         this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+      }
+
+      // link checking
+      if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+        this.workflowForm.controls.performSampling.setValue(thisWorkflow.performSampling ? 'true' : 'false');
       }
     }
   }
@@ -405,7 +399,7 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         pluginType: 'LINK_CHECKING',
         mocked: false,
-        performSampling: this.performSampling,
+        performSampling: this.workflowForm.value.performSampling ? this.workflowForm.value.performSampling : false,
       });
     }
 
