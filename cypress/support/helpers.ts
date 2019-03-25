@@ -1,6 +1,7 @@
 import {
   countries,
   dataset,
+  datasetOverview,
   finishedExecutions,
   harvestData,
   languages,
@@ -40,6 +41,9 @@ export function setupWorkflowRoutes(): void {
   );
   cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutions).as(
     'getRunningExecutions',
+  );
+  cy.route('GET', '/orchestrator/workflows/executions/overview*', datasetOverview).as(
+    'getOverview',
   );
   cy.route('DELETE', '/orchestrator/workflows/executions/*', {}).as('deleteExecution');
   cy.route(

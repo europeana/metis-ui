@@ -5,6 +5,7 @@ import { apiSettings } from '../../environments/apisettings';
 import { gatherValuesAsync, MockHttp } from '../_helpers/test-helpers';
 import {
   MockAuthenticationService,
+  mockDatasetOverviewResults,
   MockDatasetsService,
   MockErrorService,
   mockFirstPageResults,
@@ -161,6 +162,18 @@ describe('workflow service', () => {
         });
       });
     });
+  });
+
+  it('should get dataset execution summaries per page', () => {
+    service.getCompletedDatasetOverviewsUptoPage(0).subscribe((results) => {
+      expect(results).toEqual({
+        results: mockDatasetOverviewResults.results,
+        more: false,
+      });
+    });
+    mockHttp
+      .expect('GET', '/orchestrator/workflows/executions/overview' + '?nextPage=0')
+      .send(mockDatasetOverviewResults);
   });
 
   it('should get completed executions for a dataset per page', () => {

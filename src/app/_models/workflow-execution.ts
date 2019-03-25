@@ -12,11 +12,11 @@ export enum TaskState {
 export interface ExecutionProgressBasic {
   expectedRecords: number;
   processedRecords: number;
+  progressPercentage: number;
   errors: number;
 }
 
 export interface ExecutionProgress extends ExecutionProgressBasic {
-  progressPercentage: number;
   status?: TaskState;
 }
 
@@ -64,19 +64,27 @@ export type TopologyName =
   | 'link_checker'
   | 'indexer';
 
-export interface PluginExecution {
+export interface PluginExecutionBasic {
   pluginType: PluginType;
-  id: string;
   pluginStatus: PluginStatus;
   startedDate?: string;
   updatedDate?: string;
   finishedDate?: string;
   externalTaskId?: string;
+  failMessage?: string;
+}
+
+export interface PluginExecution extends PluginExecutionBasic {
+  id: string;
   executionProgress: ExecutionProgress;
   pluginMetadata: PluginMetadata;
   topologyName: TopologyName;
 
   hasReport?: boolean;
+}
+
+export interface PluginExecutionOverview extends PluginExecutionBasic {
+  progress: ExecutionProgressBasic;
   failMessage?: string;
 }
 
@@ -108,10 +116,9 @@ export interface WorkflowExecution {
 }
 
 export interface DatasetOverviewExecution {
-  executionProgress: DatasetExecutionProgress;
-  finishedDate: string;
-  startedDate: string;
-  metisPlugins: PluginExecution[];
+  finishedDate?: string;
+  startedDate?: string;
+  plugins: PluginExecutionOverview[];
 }
 
 export interface DatasetSummary {
@@ -122,6 +129,7 @@ export interface DatasetSummary {
 export interface DatasetOverview {
   dataset: DatasetSummary;
   execution: DatasetOverviewExecution;
+  executionProgress: DatasetExecutionProgress;
 }
 
 export interface CancellationRequest {

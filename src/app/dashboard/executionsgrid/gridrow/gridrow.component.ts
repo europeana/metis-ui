@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
-import { copyExecutionAndTaskId, statusClassFromPlugin } from '../../../_helpers';
-import { DatasetOverview, PluginExecution } from '../../../_models';
+import { DatasetOverview, PluginExecutionOverview, PluginStatus } from '../../../_models';
 
 @Component({
   selector: 'app-gridrow',
@@ -16,16 +15,17 @@ export class GridrowComponent {
 
   @Output() closeExpanded: EventEmitter<number> = new EventEmitter();
 
-  contentCopied = false;
   constructor() {}
 
-  copyInformation(type: string, id1: string, id2: string): void {
-    copyExecutionAndTaskId(type, id1, id2);
-    this.contentCopied = true;
-  }
-
-  getPluginStatusClass(plugin: PluginExecution): string {
-    return statusClassFromPlugin(plugin, plugin);
+  getPluginStatusClass(plugin: PluginExecutionOverview): string {
+    if (
+      plugin.progress.errors > 0 &&
+      [PluginStatus.FINISHED, PluginStatus.CANCELLED].indexOf(plugin.pluginStatus) > -1
+    ) {
+      return 'status-warning';
+    } else {
+      return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
+    }
   }
 
   toggleExpand(e: { target: HTMLInputElement }): void {
