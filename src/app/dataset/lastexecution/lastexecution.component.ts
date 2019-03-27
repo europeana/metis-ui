@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { copyExecutionAndTaskId } from '../../_helpers';
+import { copyExecutionAndTaskId, statusClassFromPlugin } from '../../_helpers';
 import {
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
-  PluginStatus,
   Report,
-  ReportRequest,
+  SimpleReportRequest,
   TopologyName,
   WorkflowExecution,
 } from '../../_models';
@@ -15,12 +14,10 @@ import {
 @Component({
   selector: 'app-lastexecution',
   templateUrl: './lastexecution.component.html',
-  styleUrls: ['./lastexecution.component.scss'],
 })
 export class LastExecutionComponent {
   @Input() datasetId: string;
-
-  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   report?: Report;
   pluginExecutions: PluginExecution[] = [];
@@ -45,8 +42,8 @@ export class LastExecutionComponent {
     el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  openReport(taskId: string, topology: TopologyName): void {
-    this.setReportRequest.emit({ taskId, topology });
+  openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
+    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
 
   // after double clicking, copy the execution and task id to the clipboard
@@ -55,17 +52,7 @@ export class LastExecutionComponent {
   }
 
   getPluginStatusClass(plugin: PluginExecution): string {
-    const { executionProgress, pluginStatus } = plugin;
-    if (
-      executionProgress.errors > 0 &&
-      (pluginStatus === PluginStatus.FINISHED || pluginStatus === PluginStatus.CANCELLED)
-    ) {
-      return 'status-warning';
-    } else if (plugin !== this.currentPlugin && pluginStatus === PluginStatus.INQUEUE) {
-      return 'status-scheduled';
-    } else {
-      return `status-${pluginStatus.toString().toLowerCase()}`;
-    }
+    return statusClassFromPlugin(plugin, this.currentPlugin);
   }
 
   byId(_: number, item: PluginExecution): string {

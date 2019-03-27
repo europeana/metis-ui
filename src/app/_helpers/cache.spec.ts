@@ -46,13 +46,15 @@ describe('single cache', () => {
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
-  it('should get stale and refresh', () => {
+  it('should peek', () => {
     const fn = createCacheFn();
     const cache = new SingleCache<number>(fn);
-    expect(gatherValues(cache.getStaleAndRefresh())).toEqual([1]);
-    expect(gatherValues(cache.getStaleAndRefresh())).toEqual([1, 2]);
-    expect(gatherValues(cache.getStaleAndRefresh())).toEqual([2, 3]);
-    expect(fn).toHaveBeenCalledTimes(3);
+    expect(gatherValues(cache.peek())).toEqual([undefined]);
+    expect(gatherValues(cache.get())).toEqual([1]);
+    expect(gatherValues(cache.peek())).toEqual([1]);
+    expect(gatherValues(cache.get(true))).toEqual([2]);
+    expect(gatherValues(cache.peek())).toEqual([2]);
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -108,15 +110,17 @@ describe('keyed cache', () => {
     expect(fn).toHaveBeenCalledTimes(5);
   });
 
-  it('should get stale and refresh', () => {
+  it('should peek', () => {
     const fn = createKeyedCacheFn();
     const cache = new KeyedCache<string>(fn);
-    expect(gatherValues(cache.getStaleAndRefresh('1'))).toEqual(['key:1 #1']);
-    expect(gatherValues(cache.getStaleAndRefresh('1'))).toEqual(['key:1 #1', 'key:1 #2']);
-    expect(gatherValues(cache.getStaleAndRefresh('2'))).toEqual(['key:2 #3']);
-    expect(gatherValues(cache.getStaleAndRefresh('2'))).toEqual(['key:2 #3', 'key:2 #4']);
-    expect(gatherValues(cache.getStaleAndRefresh('2'))).toEqual(['key:2 #4', 'key:2 #5']);
-    expect(gatherValues(cache.getStaleAndRefresh('3'))).toEqual(['key:3 #6']);
-    expect(fn).toHaveBeenCalledTimes(6);
+    expect(gatherValues(cache.peek('1'))).toEqual([undefined]);
+    expect(gatherValues(cache.get('1'))).toEqual(['key:1 #1']);
+    expect(gatherValues(cache.peek('1'))).toEqual(['key:1 #1']);
+    expect(gatherValues(cache.peek('2'))).toEqual([undefined]);
+    expect(gatherValues(cache.get('2'))).toEqual(['key:2 #2']);
+    expect(gatherValues(cache.peek('2'))).toEqual(['key:2 #2']);
+    expect(gatherValues(cache.get('2', true))).toEqual(['key:2 #3']);
+    expect(gatherValues(cache.peek('2'))).toEqual(['key:2 #3']);
+    expect(fn).toHaveBeenCalledTimes(3);
   });
 });

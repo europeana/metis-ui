@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import { environment } from '../../environments/environment';
+import { KeyedCache } from '../_helpers';
 import { User } from '../_models';
 
 import { ErrorService } from './error.service';
@@ -16,6 +17,8 @@ export class AuthenticationService {
   private readonly key = 'currentUser';
   private token: string | null;
   public currentUser: User | null = null;
+
+  userCache = new KeyedCache((key) => this.requestUserByUserId(key));
 
   constructor(
     private http: HttpClient,
@@ -58,12 +61,10 @@ export class AuthenticationService {
   /* update password for this user
   /* @param {string} password - password
   */
-  updatePassword(password: string, oldpassword: string): Observable<boolean> {
-    const url = `${
-      apiSettings.apiHostAuth
-    }/authentication/update/password?newPassword=${password}&oldPassword=${oldpassword}`;
+  updatePassword(newPassword: string, oldPassword: string): Observable<boolean> {
+    const url = `${apiSettings.apiHostAuth}/authentication/update/password`;
     return this.http
-      .put(url, {})
+      .put(url, { newPassword, oldPassword })
       .pipe(
         map(() => {
           return true;
@@ -148,9 +149,9 @@ export class AuthenticationService {
   /* @param {string} email - email
   */
   reloadCurrentUser(email: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostAuth}/authentication/update/?userEmailToUpdate=${email}`;
+    const url = `${apiSettings.apiHostAuth}/authentication/update`;
     return this.http
-      .put<User>(url, {})
+      .put<User>(url, { email })
       .pipe(
         map((user) => {
           if (user) {
@@ -182,5 +183,14 @@ export class AuthenticationService {
   */
   getCurrentUser(): User | null {
     return this.currentUser;
+  }
+
+  requestUserByUserId(userId: string): Observable<User> {
+    const url = `${apiSettings.apiHostAuth}/authentication/user_by_user_id`;
+    return this.http.post<User>(url, { userId }).pipe(this.errors.handleRetry());
+  }
+
+  getUserByUserId(userId: string): Observable<User> {
+    return this.userCache.get(userId);
   }
 }

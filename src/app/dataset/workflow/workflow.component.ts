@@ -56,7 +56,6 @@ export class WorkflowComponent implements OnInit {
   newWorkflow = true;
   workflowForm: FormGroup;
   currentUrl: string;
-  selectedSteps = true;
   pluginsOrdered: Array<string> = [
     'pluginHARVEST',
     'pluginVALIDATION_EXTERNAL',
@@ -120,6 +119,7 @@ export class WorkflowComponent implements OnInit {
       harvestUrl: [''],
       setSpec: [''],
       metadataFormat: [''],
+      performSampling: [''],
       recordXPath: [''],
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
@@ -181,15 +181,6 @@ export class WorkflowComponent implements OnInit {
           .get('harvestUrl')!
           .updateValueAndValidity({ onlySelf: false, emitEvent: false });
       }
-
-      this.selectedSteps = false;
-      Object.keys(this.workflowForm.controls).forEach((key) => {
-        if (key.includes('plugin') && key !== 'pluginType') {
-          if (this.workflowForm.get(key)!.value) {
-            this.selectedSteps = true;
-          }
-        }
-      });
     });
   }
 
@@ -230,6 +221,26 @@ export class WorkflowComponent implements OnInit {
   */
   changeHarvestProtocol(protocol: string): void {
     this.harvestprotocol = protocol;
+  }
+
+  changeLinkCheckSampling(sample: boolean): void {
+    this.workflowForm.value.performSampling = sample;
+  }
+
+  getImportSummary(): string {
+    let res = 'Harvest URL: ';
+    if (this.harvestprotocol === 'HTTP_HARVEST') {
+      res += this.workflowForm.value.url.trim();
+    } else {
+      res +=
+        this.workflowForm.value.harvestUrl.trim() +
+        '<br/>Setspec: ' +
+        this.workflowForm.value.setSpec;
+    }
+    if (this.workflowForm.value.metadataFormat) {
+      res += '<br/>Metadata format: ' + this.workflowForm.value.metadataFormat;
+    }
+    return res;
   }
 
   getWorkflow(): void {
@@ -278,6 +289,13 @@ export class WorkflowComponent implements OnInit {
       // transformation
       if (thisWorkflow.pluginType === 'TRANSFORMATION') {
         this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+      }
+
+      // link checking
+      if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+        this.workflowForm.controls.performSampling.setValue(
+          thisWorkflow.performSampling ? 'true' : 'false',
+        );
       }
     }
   }
@@ -383,6 +401,9 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         pluginType: 'LINK_CHECKING',
         mocked: false,
+        performSampling: this.workflowForm.value.performSampling
+          ? this.workflowForm.value.performSampling
+          : false,
       });
     }
 

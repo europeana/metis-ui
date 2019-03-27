@@ -8,6 +8,14 @@
   }"
 ></app-load-animation>
 
+<app-reportsimple
+  [reportErrors]="reportErrors"
+  [reportMsg]="reportMsg"
+  [reportLoading]="reportLoading"
+  (closeReportSimple)="clearReport()"
+>
+</app-reportsimple>
+
 <div
   class="dashboard-wrapper"
   *ngIf="!datasetIsLoading && !harvestIsLoading && !workflowIsLoading && !lastExecutionIsLoading"
@@ -19,14 +27,6 @@
   ></app-notification>
 
   <div *ngIf="datasetData">
-    <div class="metis-dashboard">
-      <div class="metis-dashboard-left">
-        <div class="dataset-name">
-          <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
-        </div>
-      </div>
-    </div>
-    <hr />
     <div class="dataset-collapse-blocks metis-dashboard">
       <div class="metis-dashboard-left">
         <app-generalinfo
@@ -37,28 +37,25 @@
       <div class="metis-dashboard-right">
         <app-actionbar
           [datasetId]="datasetId"
+          [datasetName]="datasetName"
           [workflowData]="workflowData"
           [lastExecutionData]="lastExecutionData"
           [isStarting]="isStarting"
           [showPluginLog]="showPluginLog"
           (setShowPluginLog)="showPluginLog = $event"
           (startWorkflow)="startWorkflow()"
-          (setReportRequest)="reportRequest = $event"
+          (setReportMsg)="setReportMsg($event)"
         ></app-actionbar>
         <app-lastexecution
           [datasetId]="datasetId"
           [lastExecutionData]="lastExecutionData"
-          (setReportRequest)="reportRequest = $event"
+          (setReportMsg)="setReportMsg($event)"
         ></app-lastexecution>
         <app-datasetlog
           *ngIf="showPluginLog"
           [showPluginLog]="showPluginLog"
           (closed)="showPluginLog = undefined"
         ></app-datasetlog>
-        <app-report
-          [reportRequest]="reportRequest"
-          (closed)="reportRequest = undefined"
-        ></app-report>
       </div>
     </div>
 
@@ -131,7 +128,8 @@
         *ngIf="activeTab === 'log'"
         [datasetData]="datasetData"
         [lastExecutionData]="lastExecutionData"
-        (setReportRequest)="reportRequest = $event"
+        (setReportMsg)="setReportMsg($event)"
+        (setPreviewFilters)="previewFilters = $event"
       ></app-history>
     </div>
   </div>

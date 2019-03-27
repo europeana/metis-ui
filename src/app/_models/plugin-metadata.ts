@@ -12,6 +12,7 @@ export interface BasicPluginMetadata {
     | 'LINK_CHECKING';
   mocked?: boolean;
   enabled?: boolean;
+  performSampling?: boolean;
 }
 
 export interface OAIHarvestPluginMetadata {

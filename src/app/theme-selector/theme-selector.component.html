@@ -1,0 +1,27 @@
+<ul class="filter" (clickOutside)="hide()">
+  <li class="dropdown arrow-right">
+    <span class="flex-pair" (click)="show()"
+      ><span class="capitalise">{{ 'background' | translate }}</span
+      ><span [class.black]="!editorIsDefaultTheme" class="theme-ctrl"></span
+    ></span>
+    <div class="dropdown-wrapper" *ngIf="showing">
+      <ul>
+        <li>
+          <span class="theme-title">{{ 'editorbackgroundtheme' | translate }}</span>
+        </li>
+        <li>
+          <a class="flex-pair" (click)="setTheme(false)"
+            ><span [class.active]="!editorIsDefaultTheme" class="theme-ctrl black"></span
+            ><span class="capitalise">{{ 'black' | translate }}</span></a
+          >
+        </li>
+        <li>
+          <a class="flex-pair" (click)="setTheme(true)"
+            ><span [class.active]="editorIsDefaultTheme" class="theme-ctrl"></span
+            ><span class="capitalise">{{ 'white' | translate }}</span></a
+          >
+        </li>
+      </ul>
+    </div>
+  </li>
+</ul>

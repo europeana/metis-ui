@@ -1,0 +1,38 @@
+<div class="modal-wrapper" *ngIf="isVisible">
+  <div class="modal modal-big">
+    <div class="head">
+      Report <a class="btn-close" (click)="closeReport()"></a>
+      <a class="btn-right" (click)="copyReport()" *ngIf="errors || message">Copy</a>
+    </div>
+    <div class="content">
+      <app-load-animation [resources]="{ errors: false }" *ngIf="loading"></app-load-animation>
+      <app-notification
+        [notification]="notification"
+        (closed)="notification = undefined"
+      ></app-notification>
+      <div #contentRef>
+        <div *ngIf="message" [ngClass]="{ 'fail-message-separator': message && errors }">
+          {{ message }}
+        </div>
+        <div *ngIf="errors">
+          <ul *ngFor="let r of reportKeys(errors)">
+            <li *ngFor="let rk of reportKeys(errors[r])">
+              <strong>{{ rk }}:&nbsp;</strong>
+              <span *ngIf="!isObject(errors[r][rk])">
+                <app-text-with-links [text]="errors[r][rk]"></app-text-with-links>
+              </span>
+              <div *ngIf="isObject(errors[r][rk])">
+                <ul *ngFor="let subrk of reportKeys(errors[r][rk])">
+                  <li *ngFor="let sub of reportKeys(errors[r][rk][subrk])">
+                    <strong>{{ sub }}:&nbsp;</strong>
+                    <app-text-with-links [text]="errors[r][rk][subrk][sub]"></app-text-with-links>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

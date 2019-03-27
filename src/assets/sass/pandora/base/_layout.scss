@@ -17,17 +17,21 @@
   width: 100%;
 
   .metis-dashboard {
-    display: flex;
     padding: 1rem;
 
-    .metis-dashboard-left {
-      margin-right: 1rem;
-      width: 35%;
-    }
+    @media (min-width: $bp-xl) {
+      display: flex;
 
-    .metis-dashboard-right {
-      margin-left: 1rem;
-      width: 65%;
+      .metis-dashboard-left {
+        flex-grow: 1;
+        margin-right: 1rem;
+        max-width: 40%;
+      }
+
+      .metis-dashboard-right {
+        flex-grow: 2;
+        margin-left: 1rem;
+      }
     }
   }
 }

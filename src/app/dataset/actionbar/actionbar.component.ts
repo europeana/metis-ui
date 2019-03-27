@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
-  Report,
-  ReportRequest,
+  SimpleReportRequest,
   TopologyName,
   Workflow,
   WorkflowExecution,
@@ -23,15 +23,17 @@ export class ActionbarComponent {
   constructor(private workflows: WorkflowService) {}
 
   private _lastExecutionData?: WorkflowExecution;
+  private subscription?: Subscription;
 
   @Input() datasetId: string;
+  @Input() datasetName: string;
   @Input() showPluginLog?: PluginExecution;
   @Input() workflowData?: Workflow;
   @Input() isStarting = false;
 
   @Output() startWorkflow = new EventEmitter<void>();
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
-  @Output() setReportRequest = new EventEmitter<ReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   currentPlugin?: PluginExecution;
   now?: string;
@@ -47,9 +49,8 @@ export class ActionbarComponent {
 
   isCancelling?: boolean;
   isCompleted?: boolean;
-
+  cancelledBy?: string;
   contentCopied = false;
-  report?: Report;
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
@@ -58,7 +59,6 @@ export class ActionbarComponent {
     if (value) {
       this.currentPlugin = getCurrentPlugin(value);
       this.currentStatus = this.currentPlugin.pluginStatus;
-
       this.isCancelling = value.cancelling;
       this.isCompleted = isWorkflowCompleted(value);
       this.currentPluginName = this.currentPlugin.pluginType || '-';
@@ -80,6 +80,12 @@ export class ActionbarComponent {
           this.now = value.updatedDate;
         }
         this.currentStatus = value.workflowStatus;
+
+        this.subscription = this.workflows
+          .getWorkflowCancelledBy(value)
+          .subscribe((cancelledBy) => {
+            this.cancelledBy = cancelledBy;
+          });
       } else {
         if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
@@ -96,16 +102,28 @@ export class ActionbarComponent {
     return this._lastExecutionData;
   }
 
+  beginWorkflow(): void {
+    this.cancelledBy = '';
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    this.startWorkflow.emit();
+  }
+
   cancelWorkflow(): void {
-    this.workflows.promptCancelThisWorkflow(this.lastExecutionData!.id);
+    this.workflows.promptCancelThisWorkflow(
+      this.lastExecutionData!.id,
+      this.datasetId,
+      this.datasetName,
+    );
   }
 
   showLog(): void {
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
-  openReport(taskId: string, topology: TopologyName): void {
-    this.setReportRequest.emit({ taskId, topology });
+  openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
+    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
 
   // after double clicking, copy the execution and task id to the clipboard

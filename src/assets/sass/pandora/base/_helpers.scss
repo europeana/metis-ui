@@ -11,12 +11,19 @@ body {
   font-size: $font-size-slightly-smaller;
   margin-bottom: 2rem;
   margin-right: 0;
-  padding-left: 1.125rem;
-  padding-right: 1.125rem;
+  padding-bottom: 1em;
+  padding-top: 1em;
   width: 100%;
 
+  &.btns-set-right {
+    justify-content: flex-end;
+  }
+
   .btn-padding {
+    align-items: flex-start;
     display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     width: 100%;
 
     .btn {
@@ -28,6 +35,14 @@ body {
       background: $offwhite;
       color: $gray-lighter;
       cursor: default;
+    }
+  }
+
+  @media (min-width: $bp-small) {
+    padding-left: 1.125rem;
+    padding-right: 1.125rem;
+    .btn-padding {
+      flex-direction: row;
     }
   }
 }
@@ -73,12 +88,14 @@ body {
 .filter {
   border-bottom: 1px solid $gray-almost-lightest;
   border-top: 1px solid $gray-almost-lightest;
-  display: inline-block;
+  display: flex;
   font-size: $font-size-slightly-smaller;
-  margin-bottom: 3rem;
-  margin-left: calc(-10% - 1rem);
-  margin-top: -2rem;
   padding: 0.25rem 0;
+  transition: border-color 1.5s;
+
+  &.unbordered {
+    border-color: $offwhite;
+  }
 
   li {
     border-left: 1px solid $gray-almost-lightest;
@@ -160,8 +177,6 @@ body {
     background: $white;
     box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
     left: 1rem;
-    max-height: 10rem;
-    max-width: 20rem;
     min-width: 10rem;
     overflow: auto;
     padding: 0.5rem 0;
@@ -185,38 +200,49 @@ body {
       text-decoration: underline;
     }
   }
+
+  &.arrow-right {
+    ul {
+      left: auto;
+      right: 0;
+    }
+    .dropdown-wrapper {
+      &::after {
+        left: unset;
+        right: calc(0.85rem + 2px);
+      }
+      &::before {
+        left: unset;
+        right: 0.85rem;
+      }
+    }
+  }
+}
+
+.dropdown-compare {
+  margin-left: auto;
 }
 
 li.dropdown a {
   padding-right: 2rem;
 }
 
+.flex-pair {
+  align-items: center;
+  display: flex;
+  :last-child {
+    margin-left: 1em;
+  }
+}
+
+.theme-title {
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
 .tooltip {
   cursor: pointer;
-  position: relative;
-  z-index: 2;
-
-  &::after {
-    background: $gray-light;
-    border-radius: $border-radius;
-    bottom: 2rem;
-    color: $white;
-    content: attr(data-tooltip);
-    font-size: 0.75rem;
-    font-weight: normal;
-    left: -9999rem;
-    opacity: 0;
-    padding: 0.25rem 1rem;
-    position: absolute;
-    text-transform: none;
-    white-space: nowrap;
-  }
-
-  &:hover::after {
-    left: 50%;
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
 }
 
 .progress {

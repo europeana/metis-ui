@@ -12,7 +12,7 @@ import {
   Notification,
   PluginExecution,
   PluginType,
-  ReportRequest,
+  SimpleReportRequest,
   successNotification,
   Workflow,
   WorkflowExecution,
@@ -53,6 +53,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
   isStarting = false;
 
   datasetData: Dataset;
+  datasetName: string;
+
   isFavorite = false;
   workflowData?: Workflow;
   harvestPublicationData?: HarvestData;
@@ -61,7 +63,11 @@ export class DatasetComponent implements OnInit, OnDestroy {
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
-  reportRequest?: ReportRequest;
+
+  // tslint:disable-next-line: no-any
+  reportErrors: any;
+  reportMsg?: string;
+  reportLoading: boolean;
 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
@@ -85,6 +91,35 @@ export class DatasetComponent implements OnInit, OnDestroy {
     });
   }
 
+  setReportMsg(req: SimpleReportRequest): void {
+    if (req.message) {
+      this.reportMsg = req.message;
+    }
+    if (req.taskId && req.topology) {
+      this.reportLoading = true;
+      this.workflows.getReport(req.taskId, req.topology).subscribe(
+        (report) => {
+          if (report && report.errors && report.errors.length) {
+            this.reportErrors = report.errors;
+          } else {
+            this.reportMsg = 'Report is empty.';
+          }
+          this.reportLoading = false;
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.reportLoading = false;
+        },
+      );
+    }
+  }
+
+  clearReport(): void {
+    this.reportMsg = '';
+    this.reportErrors = undefined;
+  }
+
   ngOnDestroy(): void {
     if (this.harvestSubscription) {
       this.harvestSubscription.unsubscribe();
@@ -101,10 +136,11 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.datasets.getDataset(this.datasetId, true).subscribe(
       (result) => {
         this.datasetData = result;
+        this.datasetName = result.datasetName;
         this.isFavorite = this.datasets.isFavorite(this.datasetData);
         this.datasetIsLoading = false;
 
-        this.documentTitleService.setTitle(this.datasetData.datasetName || 'Dataset');
+        this.documentTitleService.setTitle(this.datasetName || 'Dataset');
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);

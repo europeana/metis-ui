@@ -1,20 +1,22 @@
-export interface AttributesStatistics {
-  name: string;
+export interface AttributeStatistics {
+  xPath: string;
   value: string;
-  occurrence: number;
+  occurrences: number;
 }
 
-export interface NodeStatistics {
-  parentXpath: string;
-  xpath: string;
+export interface NodeValueStatistics {
   value: string;
-  occurrence: number;
-  attributesStatistics: AttributesStatistics[];
+  occurrences: number;
+  attributeStatistics: AttributeStatistics[];
 }
 
-// Java name: StatisticsReport
+export interface NodePathStatistics {
+  xPath: string;
+  moreLoaded?: boolean;
+  nodeValueStatistics: NodeValueStatistics[];
+}
 
 export interface Statistics {
   taskId: number;
-  nodeStatistics: NodeStatistics[];
+  nodePathStatistics: NodePathStatistics[];
 }

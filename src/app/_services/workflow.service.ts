@@ -6,22 +6,29 @@ import { map, switchMap } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
 import {
+  CancellationRequest,
   getCurrentPlugin,
   getCurrentPluginIndex,
   HarvestData,
+  HistoryVersion,
+  HistoryVersions,
   isPluginCompleted,
   MoreResults,
+  NodePathStatistics,
   PluginType,
   Report,
+  ReportAvailability,
   Results,
   Statistics,
   SubTaskInfo,
   TopologyName,
   Workflow,
   WorkflowExecution,
+  WorkflowStatus,
   XmlSample,
 } from '../_models';
 
+import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';
 
@@ -31,9 +38,10 @@ export class WorkflowService {
     private http: HttpClient,
     private datasetsService: DatasetsService,
     private errors: ErrorService,
+    private authenticationServer: AuthenticationService,
   ) {}
 
-  public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
+  public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
 
@@ -124,6 +132,13 @@ export class WorkflowService {
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
+  getReportAvailable(taskId: string, topologyName: TopologyName): Observable<ReportAvailability> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/proxies/${topologyName}/task/${taskId}/report/exists`;
+    return this.http.get<ReportAvailability>(url).pipe(this.errors.handleRetry());
+  }
+
   getReport(taskId: string, topologyName: TopologyName): Observable<Report> {
     const url = `${
       apiSettings.apiHostCore
@@ -133,8 +148,10 @@ export class WorkflowService {
 
   requestHasError(key: string): Observable<boolean> {
     const [taskId, topologyName] = key.split('/');
-    return this.getReport(taskId, topologyName as TopologyName).pipe(
-      map((report) => !!report.errors && report.errors.length > 0),
+    return this.getReportAvailable(taskId, topologyName as TopologyName).pipe(
+      map((res) => {
+        return res.existsExternalTaskReport;
+      }),
     );
   }
 
@@ -147,7 +164,15 @@ export class WorkflowService {
     if (pluginIsCompleted) {
       return this.hasErrorsCache.get(key);
     } else {
-      return this.hasErrorsCache.getStaleAndRefresh(key);
+      return this.hasErrorsCache.peek(key).pipe(
+        switchMap((value) => {
+          if (value) {
+            return of(value);
+          } else {
+            return this.hasErrorsCache.get(key, true);
+          }
+        }),
+      );
     }
   }
 
@@ -293,8 +318,12 @@ export class WorkflowService {
   }
 
   // show a prompt to cancel workflow
-  promptCancelThisWorkflow(id: string): void {
-    this.promptCancelWorkflow.emit(id);
+  promptCancelThisWorkflow(
+    workflowExecutionId: string,
+    datasetId: string,
+    datasetName: string,
+  ): void {
+    this.promptCancelWorkflow.emit({ workflowExecutionId, datasetId, datasetName });
   }
 
   // return samples based on executionid and plugintype
@@ -312,11 +341,72 @@ export class WorkflowService {
       .pipe(this.errors.handleRetry());
   }
 
+  // return samples based on executionid, plugintype and ecloudIds
+  getWorkflowComparisons(
+    executionId: string,
+    pluginType: PluginType,
+    ids: Array<string>,
+  ): Observable<XmlSample[]> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/proxies/recordsbyids?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
+    return this.http
+      .post<{ records: XmlSample[] }>(url, { ids })
+      .pipe(
+        map((samples) => {
+          return samples.records;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
+  }
+
+  // return available transformation histories
+  getVersionHistory(executionId: string, pluginType: PluginType): Observable<HistoryVersion[]> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/workflows/evolution/${executionId}/${pluginType}`;
+    return this.http
+      .get<HistoryVersions>(url)
+      .pipe(
+        map((res) => {
+          return res.evolutionSteps;
+        }),
+      )
+      .pipe(this.errors.handleRetry());
+  }
+
   //  get statistics for a certain dataset
   getStatistics(topologyName: TopologyName, taskId: string): Observable<Statistics> {
     const url = `${
       apiSettings.apiHostCore
     }/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
     return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
+  }
+
+  getStatisticsDetail(
+    topologyName: TopologyName,
+    taskId: string,
+    xPath: string,
+  ): Observable<NodePathStatistics> {
+    const url = `${
+      apiSettings.apiHostCore
+    }/orchestrator/proxies/${topologyName}/task/${taskId}/nodestatistics?nodePath=${xPath}`;
+    return this.http.get<NodePathStatistics>(url).pipe(this.errors.handleRetry());
+  }
+
+  getWorkflowCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
+    const cancelledBy = workflow.cancelledBy;
+    if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
+      if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
+        return of('Cancelled by system after timeout');
+      } else {
+        return this.authenticationServer.getUserByUserId(cancelledBy).pipe(
+          map((user) => {
+            return `Cancelled by user: ${user.firstName} ${user.lastName}`;
+          }),
+        );
+      }
+    }
+    return of(undefined);
   }
 }

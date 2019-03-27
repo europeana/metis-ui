@@ -30,6 +30,7 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/scss/base/media';
 @import 'assets/sass/scss/base/forms';
 @import 'assets/sass/scss/base/tables';
+@import 'assets/sass/scss/base/text';
 
 //------------------------------------
 // $PAGE STRUCTURE
@@ -73,7 +74,10 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/pandora/components/dataset-info-block';
 @import 'assets/sass/pandora/components/modal';
 @import 'assets/sass/pandora/components/sitehero';
+@import 'assets/sass/pandora/components/status-bullet';
 @import 'assets/sass/pandora/components/viewxmlsamples';
 
 @import '~codemirror/lib/codemirror.css';
+@import '~codemirror/theme/midnight.css';
+
 @import '~codemirror/addon/fold/foldgutter.css';

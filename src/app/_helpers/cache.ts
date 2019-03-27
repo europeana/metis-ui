@@ -1,4 +1,4 @@
-import { concat, ConnectableObservable, Observable } from 'rxjs';
+import { ConnectableObservable, Observable, of } from 'rxjs';
 import { publishLast, tap } from 'rxjs/operators';
 
 export class SingleCache<Value> {
@@ -20,14 +20,8 @@ export class SingleCache<Value> {
     return observable;
   }
 
-  public getStaleAndRefresh(): Observable<Value> {
-    const oldObservable = this.observable;
-    const newObservable = this.get(true);
-    if (oldObservable) {
-      return concat(oldObservable, newObservable);
-    } else {
-      return newObservable;
-    }
+  public peek(): Observable<Value | undefined> {
+    return this.observable || of(undefined);
   }
 
   public clear(): void {
@@ -55,14 +49,8 @@ export class KeyedCache<Value> {
     return observable;
   }
 
-  public getStaleAndRefresh(key: string): Observable<Value> {
-    const oldObservable = this.observableByKey[key];
-    const newObservable = this.get(key, true);
-    if (oldObservable) {
-      return concat(oldObservable, newObservable);
-    } else {
-      return newObservable;
-    }
+  public peek(key: string): Observable<Value | undefined> {
+    return this.observableByKey[key] || of(undefined);
   }
 
   public clear(key: string): void {

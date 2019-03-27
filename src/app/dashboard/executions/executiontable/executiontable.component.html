@@ -1,9 +1,7 @@
-<td class="errorindicator">
-  <span class="error" *ngIf="plugin && plugin.executionProgress.errors !== 0"></span>
-</td>
+<td class="errorindicator"><span class="status {{ getPluginStatusClass(plugin) }}"></span></td>
 <td class="nowrap">{{ execution.datasetId }}</td>
 <td>
-  <a class="datasetName" [routerLink]="['/dataset', 'edit', execution.datasetId]">{{
+  <a class="datasetName" [routerLink]="['/dataset', 'edit', execution.datasetId]" target="_blank">{{
     execution.datasetName
   }}</a>
 </td>
@@ -11,19 +9,19 @@
 <td>
   <span
     class="tooltip"
-    attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+    title="{{ 'doubleclicktocopy' | translate }}"
     (dblclick)="copyInformation('plugin', plugin.externalTaskId || '', plugin.id)"
   >
     {{ plugin.pluginType }}
   </span>
 </td>
-<td class="nowrap">
+<td class="nowrap centered">
   {{ plugin ? plugin.executionProgress.processedRecords - plugin.executionProgress.errors : '-' }}
   <span class="errors" *ngIf="plugin.executionProgress.errors > 0">
     ({{ plugin.executionProgress.errors }})
   </span>
 </td>
-<td class="nowrap uppercase">
+<td class="nowrap uppercase centered">
   {{
     plugin && plugin.executionProgress.expectedRecords >= 0
       ? plugin.executionProgress.expectedRecords
@@ -54,15 +52,15 @@
       <li *ngIf="!execution.cancelling && plugin.pluginType !== 'PUBLISH'">
         <a
           class="cancel-btn svg-icon-cancel tooltip"
-          attr.data-tooltip="{{ 'cancel' | translate }}"
-          (click)="cancelWorkflow(execution.id)"
+          title="{{ 'cancel' | translate }}"
+          (click)="cancelWorkflow(execution.id, execution.datasetId, execution.datasetName!)"
         ></a>
       </li>
       <li>
         <a
           [routerLink]="['/dataset', 'log', execution.datasetId]"
           class="log-btn svg-icon-history tooltip"
-          attr.data-tooltip="{{ 'history' | translate }}"
+          title="{{ 'history' | translate }}"
         ></a>
       </li>
     </ul>

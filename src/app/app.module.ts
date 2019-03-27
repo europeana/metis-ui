@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
 
+import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
@@ -28,7 +29,8 @@ import {
   MappingComponent,
   NewDatasetComponent,
   PreviewComponent,
-  ReportComponent,
+  ReportSimpleComponent,
+  StatisticsComponent,
   WorkflowComponent,
 } from './dataset';
 import { HomeComponent } from './home';
@@ -45,10 +47,12 @@ import {
   PasswordCheckComponent,
   TextWithLinksComponent,
 } from './shared';
+import { ThemeSelectorComponent } from './theme-selector';
 
 @NgModule({
   declarations: [
     AppComponent,
+    CollapsibleDirective,
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
@@ -74,7 +78,9 @@ import {
     DatasetlogComponent,
     ExecutionsComponent,
     OngoingexecutionsComponent,
-    ReportComponent,
+    ReportSimpleComponent,
+    StatisticsComponent,
+    ThemeSelectorComponent,
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe,

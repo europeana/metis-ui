@@ -6,7 +6,7 @@
       <div class="status">
         <strong
           class="tooltip"
-          attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+          title="{{ 'doubleclicktocopy' | translate }}"
           (dblclick)="
             copyInformation(
               'plugin',
@@ -21,9 +21,12 @@
       </div>
       <div class="progress">
         <span>{{ ongoing.datasetId }}</span>
-        <a [routerLink]="['/dataset', 'edit', ongoing.datasetId]" class="workflowname">{{
-          ongoing.datasetName
-        }}</a>
+        <a
+          [routerLink]="['/dataset', 'edit', ongoing.datasetId]"
+          class="workflowname"
+          target="_blank"
+          >{{ ongoing.datasetName }}</a
+        >
         <div class="progress-status">
           <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
           <span class="progress-percentage"
@@ -45,14 +48,14 @@
           <li *ngIf="!ongoing.cancelling && ongoing.currentPlugin.pluginType !== 'PUBLISH'">
             <a
               class="cancel-btn svg-icon-cancel tooltip"
-              attr.data-tooltip="{{ 'cancel' | translate }}"
-              (click)="cancelWorkflow(ongoing.id)"
+              title="{{ 'cancel' | translate }}"
+              (click)="cancelWorkflow(ongoing.id, ongoing.datasetId, ongoing.datasetName!)"
             ></a>
           </li>
           <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'">
             <a
               class="log-btn svg-icon-log tooltip"
-              attr.data-tooltip="{{ 'log' | translate }}"
+              title="{{ 'log' | translate }}"
               (click)="showLog(ongoing)"
             ></a>
           </li>
@@ -60,7 +63,7 @@
             <a
               [routerLink]="['/dataset', 'log', ongoing.datasetId]"
               class="log-btn svg-icon-history tooltip"
-              attr.data-tooltip="{{ 'history' | translate }}"
+              title="{{ 'history' | translate }}"
             ></a>
           </li>
         </ul>

@@ -65,6 +65,11 @@
   }
 }
 
+.form-fields.disabled,
+.form-fields.inactive {
+  display: flex;
+}
+
 .form-fields.disabled {
   background-color: $gray-almost-lightest;
 
@@ -85,6 +90,7 @@
   padding-right: 2rem;
   position: relative;
   cursor: pointer;
+  white-space: nowrap;
 
   input {
     display: none;
@@ -177,4 +183,33 @@
       color: $gray-lighter;
     }
   }
+}
+
+.show-on-hover {
+  display: none;
+  left: 1em;
+  position: relative;
+  width: 100%;
+
+  [type='checkbox'] {
+    position: relative;
+  }
+
+  .content {
+    line-height: 1.3em;
+    position: absolute;
+  }
+
+  .form-group-radios label {
+    display: inline-block;
+    padding: 0 1em;
+  }
+}
+.disabled > .show-on-hover {
+  color: $gray-med;
+}
+
+.plugin-form-fields:hover .show-on-hover {
+  align-items: center;
+  display: flex;
 }

@@ -1,11 +1,10 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
-@media (max-width: $bp-xxl) {
-  .btns-set {
-    display: block;
-    float: left;
-    width: 35%;
+.svg-icon-plus {
+  display: inline;
+  @media (min-width: $bp-small) {
+    display: inline-block;
   }
 }
 

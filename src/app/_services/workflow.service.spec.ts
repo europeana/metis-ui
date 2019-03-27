@@ -4,21 +4,24 @@ import { async, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
 import { gatherValuesAsync, MockHttp } from '../_helpers/test-helpers';
 import {
+  MockAuthenticationService,
   MockDatasetsService,
   MockErrorService,
   mockFirstPageResults,
   mockHarvestData,
   mockLogs,
   mockReport,
+  mockReportAvailability,
   mockStatistics,
+  mockStatisticsDetail,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
   mockXmlSamples,
 } from '../_mocked';
-import { WorkflowExecution } from '../_models';
+import { ReportAvailability, WorkflowExecution } from '../_models';
 
-import { DatasetsService, ErrorService, WorkflowService } from '.';
+import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
 describe('workflow service', () => {
   let mockHttp: MockHttp;
@@ -30,6 +33,7 @@ describe('workflow service', () => {
         WorkflowService,
         { provide: ErrorService, useClass: MockErrorService },
         { provide: DatasetsService, useClass: MockDatasetsService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
       ],
       imports: [HttpClientTestingModule],
     }).compileComponents();
@@ -111,8 +115,8 @@ describe('workflow service', () => {
       },
     );
     mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/54353534/report?idsPerError=100')
-      .send({});
+      .expect('GET', '/orchestrator/proxies/normalization/task/54353534/report/exists')
+      .send({ existsExternalTaskReport: false });
 
     gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', true)).subscribe(
       (res) => {
@@ -125,31 +129,38 @@ describe('workflow service', () => {
       },
     );
     mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/7866/report?idsPerError=100')
-      .send(mockReport);
+      .expect('GET', '/orchestrator/proxies/normalization/task/7866/report/exists')
+      .send(mockReportAvailability);
   });
 
-  it('should get (stale) task errors for unfinished tasks', () => {
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', false)).subscribe(
-      (res) => {
-        expect(res).toEqual([false]);
-      },
-    );
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', false)).subscribe(
-      (res) => {
-        expect(res).toEqual([false, true]);
-      },
-    );
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', false)).subscribe(
-      (res) => {
-        expect(res).toEqual([true, false]);
-      },
-    );
-    mockHttp
-      .expectMulti('GET', '/orchestrator/proxies/normalization/task/7866/report?idsPerError=100', 3)
-      .forEach((request, i) => {
-        request.send(i % 2 === 0 ? {} : mockReport);
+  it('should get (stale) task report availabilities for unfinished tasks', () => {
+    function getReportAvailability(
+      reportAvailability: ReportAvailability,
+      expectRequest: boolean,
+      done: () => void,
+    ): void {
+      service.getCachedHasErrors('7866', 'normalization', false).subscribe((res) => {
+        expect(res).toEqual(true);
       });
+
+      if (expectRequest) {
+        mockHttp
+          .expect('GET', '/orchestrator/proxies/normalization/task/7866/report/exists')
+          .send(reportAvailability);
+      }
+      done();
+    }
+
+    const noReport = { existsExternalTaskReport: false } as ReportAvailability;
+    const withReport = mockReportAvailability;
+
+    getReportAvailability(withReport, true, () => {
+      getReportAvailability(noReport, false, () => {
+        getReportAvailability(withReport, false, () => {
+          expect(1).toBe(1); // dummy check for coverage
+        });
+      });
+    });
   });
 
   it('should get completed executions for a dataset per page', () => {
@@ -353,19 +364,19 @@ describe('workflow service', () => {
       .send(mockFirstPageResults);
   });
 
-  it('should get the reports for an execution', () => {
+  it('should get the report availabilities for an execution', () => {
     const execution: WorkflowExecution = JSON.parse(
       JSON.stringify(mockWorkflowExecutionResults.results[4]),
     );
     expect(execution.metisPlugins[0].hasReport).toBe(undefined);
     service.getReportsForExecution(execution);
     mockHttp
-      .expect('GET', '/orchestrator/proxies/normalization/task/123/report?idsPerError=100')
-      .send(mockReport);
+      .expect('GET', '/orchestrator/proxies/normalization/task/123/report/exists')
+      .send(mockReportAvailability);
     expect(execution.metisPlugins[0].hasReport).toBe(true);
   });
 
-  it('should cancel a workflow', () => {
+  it('should cancel a workflow (DELETE)', () => {
     service.cancelThisWorkflow('565645').subscribe(() => {});
     mockHttp.expect('DELETE', '/orchestrator/workflows/executions/565645').send({});
   });
@@ -382,6 +393,21 @@ describe('workflow service', () => {
       .send({ records: mockXmlSamples });
   });
 
+  it('should get sample comparisons', () => {
+    const ids = { ids: ['1', '2'] };
+
+    service.getWorkflowComparisons('5653454353', 'ENRICHMENT', ids.ids).subscribe((samples) => {
+      expect(samples).toEqual(mockXmlSamples);
+    });
+    mockHttp
+      .expect(
+        'POST',
+        '/orchestrator/proxies/recordsbyids?workflowExecutionId=5653454353&pluginType=ENRICHMENT',
+      )
+      .body(ids)
+      .send({ records: mockXmlSamples });
+  });
+
   it('should get statistics', () => {
     service.getStatistics('normalization', '-4354').subscribe((statistics) => {
       expect(statistics).toEqual(mockStatistics);
@@ -389,6 +415,15 @@ describe('workflow service', () => {
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/-4354/statistics')
       .send(mockStatistics);
+  });
+
+  it('should get statistics detail', () => {
+    service.getStatisticsDetail('normalization', '-4354', 'abc').subscribe((statistics) => {
+      expect(statistics).toEqual(mockStatisticsDetail);
+    });
+    mockHttp
+      .expect('GET', '/orchestrator/proxies/normalization/task/-4354/nodestatistics?nodePath=abc')
+      .send(mockStatisticsDetail);
   });
 
   it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {
@@ -399,7 +434,11 @@ describe('workflow service', () => {
 
   it('should cancel a workflow', () => {
     spyOn(service.promptCancelWorkflow, 'emit');
-    service.promptCancelThisWorkflow('15');
-    expect(service.promptCancelWorkflow.emit).toHaveBeenCalledWith('15');
+    service.promptCancelThisWorkflow('15', '11', 'The Name');
+    expect(service.promptCancelWorkflow.emit).toHaveBeenCalledWith({
+      workflowExecutionId: '15',
+      datasetId: '11',
+      datasetName: 'The Name',
+    });
   });
 });

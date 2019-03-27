@@ -20,6 +20,7 @@ export interface ExecutionProgress {
 export enum PluginStatus {
   INQUEUE = 'INQUEUE',
   CLEANING = 'CLEANING',
+  PENDING = 'PENDING',
   RUNNING = 'RUNNING',
   FINISHED = 'FINISHED',
   CANCELLED = 'CANCELLED',
@@ -67,6 +68,7 @@ export interface PluginExecution {
   topologyName: TopologyName;
 
   hasReport?: boolean;
+  failMessage?: string;
 }
 
 export enum WorkflowStatus {
@@ -84,6 +86,7 @@ export interface WorkflowExecution {
   workflowPriority?: number;
   workflowStatus: WorkflowStatus;
   cancelling?: boolean;
+  cancelledBy?: string;
   createdDate: string;
   startedDate: string;
   updatedDate: string;
@@ -93,6 +96,12 @@ export interface WorkflowExecution {
   datasetName?: string;
   currentPlugin?: PluginExecution;
   currentPluginIndex?: number;
+}
+
+export interface CancellationRequest {
+  workflowExecutionId: string;
+  datasetId: string;
+  datasetName: string;
 }
 
 export function isPluginCompleted(plugin: PluginExecution): boolean {

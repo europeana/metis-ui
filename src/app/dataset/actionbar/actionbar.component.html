@@ -5,11 +5,11 @@
   <div class="status">
     <strong
       class="uppercase tooltip"
-      attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+      title="{{ 'doubleclicktocopy' | translate }}"
       (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
       >{{ currentPluginName! | renameWorkflow }}</strong
     >
-    {{ currentStatus! | uppercase }}
+    {{ (currentStatus == 'CANCELLED' ? cancelledBy : '') || currentStatus || '' | uppercase }}
   </div>
   <div class="progress">
     <div class="progress-status" *ngIf="!isCompleted">
@@ -42,7 +42,7 @@
       <li *ngIf="!isCompleted && currentPluginName !== 'PUBLISH'">
         <a
           class="cancel-btn svg-icon-cancel tooltip"
-          attr.data-tooltip="{{ 'cancel' | translate }}"
+          title="{{ 'cancel' | translate }}"
           (click)="cancelWorkflow()"
           ><span>{{ 'cancel' | translate }}</span></a
         >
@@ -50,7 +50,7 @@
       <li>
         <a
           class="log-btn svg-icon-log tooltip"
-          attr.data-tooltip="{{ 'log' | translate }}"
+          title="{{ 'log' | translate }}"
           (click)="showLog()"
           *ngIf="currentStatus !== 'INQUEUE' && currentExternalTaskId && currentTopology"
           ><span>{{ 'log' | translate }}</span></a
@@ -59,13 +59,13 @@
       <li *ngIf="hasReport && currentExternalTaskId && currentTopology">
         <a
           class="report-btn svg-icon-report tooltip"
-          attr.data-tooltip="{{ 'report' | translate }}"
-          (click)="openReport(currentExternalTaskId, currentTopology)"
+          title="{{ 'report' | translate }}"
+          (click)="openFailReport(currentTopology, currentExternalTaskId)"
           ><span>{{ 'report' | translate }}</span></a
         >
       </li>
       <li *ngIf="isCompleted">
-        <a class="newaction-btn" (click)="startWorkflow.emit()">
+        <a class="newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
       </li>
@@ -82,7 +82,7 @@
   <nav>
     <ul>
       <li>
-        <a *ngIf="workflowData" class="newaction-btn" (click)="startWorkflow.emit()">
+        <a *ngIf="workflowData" class="newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
         <a

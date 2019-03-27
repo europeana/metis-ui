@@ -75,7 +75,11 @@ describe('ActionbarComponent', () => {
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
     cancel.triggerEventHandler('click', null);
     fixture.detectChanges();
-    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith('253453453');
+    expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(
+      '253453453',
+      undefined,
+      undefined,
+    );
   });
 
   it('should run a workflow', (): void => {
@@ -103,12 +107,13 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.svg-icon-report')).toBeTruthy();
 
-    spyOn(component.setReportRequest, 'emit');
+    spyOn(component.setReportMsg, 'emit');
     const reportBtn = fixture.debugElement.query(By.css('.report-btn'));
     reportBtn.triggerEventHandler('click', null);
-    expect(component.setReportRequest.emit).toHaveBeenCalledWith({
-      taskId: '123',
+    expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'normalization',
+      taskId: '123',
+      message: undefined,
     });
   });
 

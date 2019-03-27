@@ -21,7 +21,12 @@ export interface Report {
   errors: ReportError[];
 }
 
-export interface ReportRequest {
-  taskId: string;
-  topology: TopologyName;
+export interface SimpleReportRequest {
+  topology?: TopologyName;
+  taskId?: string;
+  message?: string;
+}
+
+export interface ReportAvailability {
+  existsExternalTaskReport: boolean;
 }

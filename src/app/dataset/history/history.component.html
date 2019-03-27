@@ -8,8 +8,8 @@
     <tr>
       <th colspan="2"></th>
       <th>{{ 'workflow step' | translate }}</th>
-      <th>{{ 'totalprocessed' | translate }}</th>
-      <th>{{ 'totaldataset' | translate }}</th>
+      <th class="centered">{{ 'totalprocessed' | translate }}</th>
+      <th class="centered">{{ 'totaldataset' | translate }}</th>
       <th>{{ 'status' | translate }}</th>
       <th class="centered">{{ 'startdate' | translate }}</th>
       <th class="centered">{{ 'enddate' | translate }}</th>
@@ -17,64 +17,82 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let ex of allExecutions; trackBy: byId">
-      <td *ngIf="ex.createdDate" colspan="9" class="workflow-head">
+    <tr *ngFor="let wpe of allExecutions; trackBy: byId">
+      <td
+        *ngIf="!wpe.pluginExecution && wpe.execution; let execution"
+        colspan="9"
+        class="workflow-head"
+      >
         <div class="head-whitespace"></div>
-        <div class="head-text" (dblclick)="copyInformation('execution', ex.id, ex.ecloudDatasetId)">
-          <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
+        <div
+          class="head-text"
+          (dblclick)="copyInformation('execution', execution.id, execution.ecloudDatasetId)"
+        >
+          <span class="tooltip" title="{{ 'doubleclicktocopy' | translate }}"
             >{{ 'workflowcreated' | translate }}
-            {{ ex.createdDate | date: 'dd/MM/yyyy HH:mm' }}</span
+            {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}</span
           >
         </div>
+        <div class="head-right">
+          {{ getCancelledBy(execution) | async }}
+        </div>
       </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="centered">
-        <span class="svg-icon-{{ ex.pluginType }}"></span>
-      </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="errorindicator">
-        <span class="error" *ngIf="ex.executionProgress.errors !== 0"></span>
-      </td>
-      <td
-        *ngIf="!ex.createdDate && ex.executionProgress"
-        class="nowrap uppercase"
-        (dblclick)="copyInformation('plugin', ex.externalTaskId, ex.id)"
-      >
-        <span class="tooltip" attr.data-tooltip="{{ 'doubleclicktocopy' | translate }}"
-          >{{ ex.pluginType | renameWorkflow }} {{ ex.workflowCreated }}</span
+      <ng-template [ngIf]="wpe.pluginExecution" let-pe>
+        <td class="centered"><span class="svg-icon-{{ pe.pluginType }}"></span></td>
+        <td class="errorindicator">
+          <span *ngIf="pe.hasReport" class="status status-warning"></span>
+        </td>
+        <td
+          class="nowrap uppercase"
+          (dblclick)="copyInformation('plugin', pe.externalTaskId, pe.id)"
         >
-      </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap">
-        {{ ex.executionProgress.processedRecords - ex.executionProgress.errors }}
-        <span class="errors" *ngIf="ex.executionProgress.errors > 0"
-          >({{ ex.executionProgress.errors }})</span
-        >
-      </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap uppercase">
-        {{
-          ex.executionProgress.expectedRecords >= 0
-            ? ex.executionProgress.expectedRecords
-            : ('unknown' | translate)
-        }}
-      </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="nowrap">{{ ex.pluginStatus }}</td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="centered">
-        <span class="date">{{ ex.startedDate | date: 'dd/MM/yyyy' }}</span>
-        <span class="datedivider">-</span>
-        <span class="time">{{ ex.startedDate | date: 'HH:mm' }}</span>
-      </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="centered">
-        <span class="date">{{ ex.finishedDate | date: 'dd/MM/yyyy' }}</span>
-        <span class="datedivider">-</span>
-        <span class="time">{{ ex.finishedDate | date: 'HH:mm' }}</span>
-      </td>
-      <td *ngIf="!ex.createdDate && ex.executionProgress" class="buttonplaceholder nowrap">
-        <a
-          *ngIf="ex.hasReport"
-          class="table-btn svg-icon-report"
-          (click)="openReport(ex.externalTaskId, ex.topologyName)"
-        >
-          {{ 'report' | translate }}
-        </a>
-      </td>
+          <span class="tooltip" title="{{ 'doubleclicktocopy' | translate }}"
+            >{{ pe.pluginType | renameWorkflow }} {{ pe.workflowCreated }}</span
+          >
+        </td>
+        <td class="nowrap centered">
+          {{ pe.executionProgress.processedRecords - pe.executionProgress.errors }}
+          <span class="errors" *ngIf="pe.executionProgress.errors > 0"
+            >({{ pe.executionProgress.errors }})</span
+          >
+        </td>
+        <td class="nowrap uppercase centered">
+          {{
+            pe.executionProgress.expectedRecords >= 0
+              ? pe.executionProgress.expectedRecords
+              : ('unknown' | translate)
+          }}
+        </td>
+        <td class="nowrap">{{ pe.pluginStatus }}</td>
+        <td class="centered">
+          <span class="date">{{ pe.startedDate | date: 'dd/MM/yyyy' }}</span>
+          <span class="datedivider">-</span>
+          <span class="time">{{ pe.startedDate | date: 'HH:mm' }}</span>
+        </td>
+        <td class="centered">
+          <span class="date">{{ pe.finishedDate | date: 'dd/MM/yyyy' }}</span>
+          <span class="datedivider">-</span>
+          <span class="time">{{ pe.finishedDate | date: 'HH:mm' }}</span>
+        </td>
+        <td class="buttonplaceholder nowrap">
+          <a
+            *ngIf="pe.failMessage || pe.hasReport"
+            class="table-btn svg-icon-report"
+            (click)="
+              openFailReport(
+                pe.hasReport ? pe.topologyName : undefined,
+                pe.hasReport ? pe.externalTaskId : undefined,
+                pe.failMessage
+              )
+            "
+          >
+            {{ 'report' | translate }}
+          </a>
+          <a *ngIf="hasPreview(pe)" class="table-btn" (click)="goToPreview(wpe.execution, pe)"
+            ><span class="xml-icon">&#8249;&#8250;</span> XML</a
+          >
+        </td>
+      </ng-template>
     </tr>
   </tbody>
   <tfoot>

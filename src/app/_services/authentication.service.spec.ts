@@ -62,7 +62,8 @@ describe('AuthenticationService', () => {
       expect(result).toBe(true);
     });
     mockHttp
-      .expect('PUT', '/authentication/update/password?newPassword=123&oldPassword=456')
+      .expect('PUT', '/authentication/update/password')
+      .body({ newPassword: '123', oldPassword: '456' })
       .send({});
   });
 
@@ -130,7 +131,8 @@ describe('AuthenticationService', () => {
       expect(service.getCurrentUser()).toBe(mockUser);
     });
     mockHttp
-      .expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com')
+      .expect('PUT', '/authentication/update')
+      .body({ email: 'jan@example.com' })
       .send(mockUser);
 
     service.currentUser = null;
@@ -138,7 +140,10 @@ describe('AuthenticationService', () => {
       expect(result).toBe(false);
       expect(service.getCurrentUser()).toBe(null);
     });
-    mockHttp.expect('PUT', '/authentication/update/?userEmailToUpdate=jan@example.com').send(null);
+    mockHttp
+      .expect('PUT', '/authentication/update')
+      .body({ email: 'jan@example.com' })
+      .send(null);
   });
 });
 

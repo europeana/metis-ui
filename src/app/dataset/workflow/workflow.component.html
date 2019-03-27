@@ -112,7 +112,7 @@
       <!-- IMPORT / HARVEST -->
       <div
         id="import"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginHARVEST')!.value,
           disabled: workflowForm.get('pluginHARVEST')!.disabled
@@ -127,6 +127,14 @@
             (change)="workflowStepAllowed('pluginHARVEST')"
         /></label>
         <div
+          class="show-on-hover"
+          *ngIf="
+            workflowForm.get('pluginHARVEST')!.disabled || !workflowForm.get('pluginHARVEST')!.value
+          "
+        >
+          <span class="content" [innerHTML]="getImportSummary()"></span>
+        </div>
+        <div
           class="form-group"
           *ngIf="
             !workflowForm.get('pluginHARVEST')!.disabled && workflowForm.get('pluginHARVEST')!.value
@@ -134,31 +142,27 @@
         >
           <label>{{ 'harvestprotocol' | translate }} *</label>
           <div class="form-group-radios">
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  formControlName="pluginType"
-                  value="OAIPMH_HARVEST"
-                  (change)="changeHarvestProtocol('OAIPMH_HARVEST')"
-                  [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false"
-                  (click)="workflowStepAllowed('pluginHARVEST')"
-                />
-                {{ 'oai' | translate }}
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  formControlName="pluginType"
-                  value="HTTP_HARVEST"
-                  (change)="changeHarvestProtocol('HTTP_HARVEST')"
-                  [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false"
-                />
-                {{ 'http' | translate }}
-              </label>
-            </div>
+            <label>
+              <input
+                type="radio"
+                formControlName="pluginType"
+                value="OAIPMH_HARVEST"
+                (change)="changeHarvestProtocol('OAIPMH_HARVEST')"
+                [checked]="harvestprotocol === 'OAIPMH_HARVEST' ? true : false"
+                (click)="workflowStepAllowed('pluginHARVEST')"
+              />
+              {{ 'oai' | translate }}
+            </label>
+            <label>
+              <input
+                type="radio"
+                formControlName="pluginType"
+                value="HTTP_HARVEST"
+                (change)="changeHarvestProtocol('HTTP_HARVEST')"
+                [checked]="harvestprotocol === 'HTTP_HARVEST' ? true : false"
+              />
+              {{ 'http' | translate }}
+            </label>
           </div>
         </div>
         <div
@@ -228,7 +232,7 @@
       <!-- VALIDATION -->
       <div
         id="validate-external"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginVALIDATION_EXTERNAL')!.value,
           disabled: workflowForm.get('pluginVALIDATION_EXTERNAL')!.disabled
@@ -248,7 +252,7 @@
       <!-- TRANSFORMATION -->
       <div
         id="transform"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginTRANSFORMATION')!.value,
           disabled: workflowForm.get('pluginTRANSFORMATION')!.disabled
@@ -263,6 +267,19 @@
             (change)="workflowStepAllowed('pluginTRANSFORMATION')"
           />
         </label>
+        <span
+          class="show-on-hover"
+          *ngIf="
+            workflowForm.get('pluginTRANSFORMATION')!.disabled ||
+            !workflowForm.get('pluginTRANSFORMATION')!.value
+          "
+          ><input
+            type="checkbox"
+            [checked]="workflowForm.value.customXslt"
+            readonly="true"
+            disabled=""
+          />{{ 'customxslt' | translate }}</span
+        >
         <div
           class="form-group form-group-checkbox"
           *ngIf="
@@ -278,7 +295,7 @@
       <!-- VALIDATION -->
       <div
         id="validate-internal"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginVALIDATION_INTERNAL')!.value,
           disabled: workflowForm.get('pluginVALIDATION_INTERNAL')!.disabled
@@ -298,7 +315,7 @@
       <!-- NORMALIZATION -->
       <div
         id="normalise"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginNORMALIZATION')!.value,
           disabled: workflowForm.get('pluginNORMALIZATION')!.disabled
@@ -318,7 +335,7 @@
       <!-- ENRICHMENT -->
       <div
         id="enrich"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginENRICHMENT')!.value,
           disabled: workflowForm.get('pluginENRICHMENT')!.disabled
@@ -338,7 +355,7 @@
       <!-- MEDIA SERVICE -->
       <div
         id="media"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginMEDIA_PROCESS')!.value,
           disabled: workflowForm.get('pluginMEDIA_PROCESS')!.disabled
@@ -358,7 +375,7 @@
       <!-- PUBLISH TO PREVIEW -->
       <div
         id="preview"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginPREVIEW')!.value,
           disabled: workflowForm.get('pluginPREVIEW')!.disabled
@@ -378,7 +395,7 @@
       <!-- PUBLISH TO PUBLISH -->
       <div
         id="publish"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive: !workflowForm.get('pluginPUBLISH')!.value,
           disabled: workflowForm.get('pluginPUBLISH')!.disabled
@@ -394,11 +411,10 @@
           />
         </label>
       </div>
-
       <!-- LINK CHECKING -->
       <div
         id="linkchecking"
-        class="form-fields"
+        class="form-fields plugin-form-fields"
         [ngClass]="{
           inactive:
             workflowForm.get('pluginLINK_CHECKING')!.value === false ||
@@ -409,6 +425,64 @@
           >{{ 'LINK_CHECKING' | renameWorkflow }}
           <input type="checkbox" formControlName="pluginLINK_CHECKING" id="pluginLINK_CHECKING"
         /></label>
+        <div
+          class="form-group"
+          *ngIf="
+            !workflowForm.get('pluginLINK_CHECKING')!.disabled &&
+            workflowForm.get('pluginLINK_CHECKING')!.value
+          "
+        >
+          <div class="form-group-radios">
+            <label>
+              <input
+                id="check-sample"
+                type="radio"
+                formControlName="performSampling"
+                value="true"
+                [checked]="workflowForm.value.performSampling === 'true'"
+                (change)="changeLinkCheckSampling(true)"
+              />
+              {{ 'checksample' | translate }}
+            </label>
+            <label>
+              <input
+                id="check-all"
+                type="radio"
+                formControlName="performSampling"
+                value="false"
+                [checked]="workflowForm.value.performSampling !== 'true'"
+                (change)="changeLinkCheckSampling(false)"
+              />
+              {{ 'checkall' | translate }}
+            </label>
+          </div>
+        </div>
+        <div
+          class="show-on-hover"
+          *ngIf="
+            workflowForm.get('pluginLINK_CHECKING')!.disabled ||
+            !workflowForm.get('pluginLINK_CHECKING')!.value
+          "
+        >
+          <div class="form-group-radios">
+            <label>
+              <input
+                type="radio"
+                [checked]="workflowForm.value.performSampling === 'true'"
+                disabled=""
+              />
+              {{ 'checksample' | translate }}
+            </label>
+            <label>
+              <input
+                type="radio"
+                [checked]="workflowForm.value.performSampling !== 'true'"
+                disabled=""
+              />
+              {{ 'checkall' | translate }}
+            </label>
+          </div>
+        </div>
       </div>
 
       <div class="form-fields form-fields-buttons">
