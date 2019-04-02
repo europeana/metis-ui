@@ -42,6 +42,7 @@ export class StatisticsComponent implements OnInit {
           }
         }
         if (!this.taskId) {
+          this.setLoading(false);
           return;
         }
         this.workflows.getStatistics('validation', this.taskId).subscribe(

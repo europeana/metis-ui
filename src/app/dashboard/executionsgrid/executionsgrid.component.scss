@@ -1,0 +1,86 @@
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
+
+.svg-icon-spin {
+  height: 23px;
+  margin-left: 0.5em;
+}
+
+.grid-footer,
+.grid-top-header {
+  display: flex;
+  align-items: center;
+}
+
+.grid-footer {
+  justify-content: center;
+  .svg-icon-spin {
+    margin-left: 0.25em;
+    transform: scale(0.7);
+  }
+}
+
+.load-more-btn::after {
+  top: -0.25em;
+}
+
+.executions-grid {
+  background: $white;
+  color: $gray-light;
+  font-size: 0.8125rem;
+  margin-bottom: 2em;
+  margin-right: -0.5em;
+  overflow: hidden;
+  padding: 1em 0 0 1em;
+
+  @media (min-width: $bp-med) {
+    display: grid;
+    grid-column: main;
+    grid-column-gap: 1.75em;
+    grid-template-columns: [start] minmax(8em, 2fr) [sub-start] minmax(8em, 2fr) 1fr [sub-date-start] auto auto [sub-date-end] auto;
+    grid-template-rows: auto;
+  }
+}
+
+$space-overflow-selected: 0.25em;
+
+.grid-header {
+  &:first-of-type,
+  &.last-header {
+    position: relative;
+    &::after {
+      bottom: -1em;
+      content: ' ';
+      display: block;
+      height: 3px;
+      position: absolute;
+      width: 100000em;
+    }
+  }
+
+  &:first-of-type {
+    &::after {
+      background: $eu-jade;
+      left: -2em;
+    }
+  }
+
+  &.last-header {
+    &::after {
+      // create 'space' for selection line to occupy
+      background: $offwhite;
+      height: 10em;
+      right: -1.75em;
+      top: -1em;
+      width: $space-overflow-selected;
+    }
+  }
+
+  display: none;
+  @media (min-width: $bp-med) {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 1em;
+    text-transform: capitalize;
+  }
+}

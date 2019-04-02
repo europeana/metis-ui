@@ -1,0 +1,99 @@
+<ng-template #childComponentTemplate>
+  <ng-template #empty_date><span class="time">--</span></ng-template>
+
+  <span
+    [ngClass]="{ active: expanded }"
+    class="grid-cell row-start"
+    (click)="toggleExpand($event)"
+    title="{{ dsExecution.dataset.datasetName }}"
+  >
+    {{ dsExecution.dataset.datasetName }}
+    <span class="br">
+      <a [routerLink]="['/dataset', 'edit', dsExecution.dataset.datasetId]" target="_blank">{{
+        dsExecution.dataset.datasetId
+      }}</a>
+    </span>
+  </span>
+
+  <span class="grid-cell row-steps" *ngIf="dsExecution.executionProgress">
+    {{ dsExecution.executionProgress.stepsDone }} / {{ dsExecution.executionProgress.stepsTotal }}
+    {{ 'overviewsteps' | translate }}
+    <ul
+      *ngIf="dsExecution.execution.plugins && dsExecution.execution.plugins.length > 0"
+      class="orbs"
+    >
+      <li
+        *ngFor="let pi of dsExecution.execution.plugins"
+        class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"
+      ></li>
+    </ul>
+  </span>
+
+  <span class="grid-cell" *ngIf="dsExecution.executionProgress">
+    <span *ngIf="dsExecution.executionProgress.currentPluginProgress">
+      {{ dsExecution.executionProgress.currentPluginProgress.processedRecords }} /
+      {{ dsExecution.executionProgress.currentPluginProgress.expectedRecords }}
+      <span
+        *ngIf="
+          dsExecution.executionProgress.currentPluginProgress.errors &&
+          dsExecution.executionProgress.currentPluginProgress.errors > 0
+        "
+        class="br error-count"
+      >
+        {{ dsExecution.executionProgress.currentPluginProgress.errors }}
+      </span>
+    </span>
+  </span>
+
+  <span class="grid-cell">
+    <span *ngIf="dsExecution.execution.startedDate; else empty_date">
+      {{ dsExecution.execution.startedDate | date: 'dd/MM/yyyy' }}
+      <span class="br time">
+        {{ dsExecution.execution.startedDate | date: 'HH:mm' }}
+      </span>
+    </span>
+  </span>
+
+  <span class="grid-cell row-end" [ngClass]="{ active: expanded }">
+    <span *ngIf="dsExecution.execution.finishedDate; else empty_date">
+      {{ dsExecution.execution.finishedDate | date: 'dd/MM/yyyy' }}
+      <span class="br time">{{ dsExecution.execution.finishedDate | date: 'HH:mm' }}</span>
+    </span>
+  </span>
+
+  <ng-container *ngIf="expanded">
+    <ng-container *ngFor="let pi of dsExecution.execution.plugins; last as isLastsub">
+      <span class="grid-sub start labelled-orb">
+        <span class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"></span>
+        <span>
+          {{ pi.pluginType | renameWorkflow }}
+          <span class="status-label">{{ pi.pluginStatus }}</span>
+        </span>
+      </span>
+
+      <span class="grid-sub">
+        <span class="inline-block">
+          {{ pi.progress.processedRecords }} / {{ pi.progress.expectedRecords }}
+        </span>
+        <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="error-count">
+          {{ pi.progress.errors }}
+        </span>
+      </span>
+
+      <span [ngClass]="{ 'group-end': isLastsub }" class="grid-sub dates">
+        <span *ngIf="pi.startedDate; else empty_date" class="inline-block">
+          {{ pi.startedDate | date: 'dd/MM/yyyy' }}
+          <span class="time">
+            {{ pi.startedDate | date: 'HH:mm' }}
+          </span>
+          <span *ngIf="pi.finishedDate; else empty_date" class="inline-block">
+            {{ pi.finishedDate | date: 'dd/MM/yyyy' }}
+            <span class="time">
+              {{ pi.finishedDate | date: 'HH:mm' }}
+            </span>
+          </span>
+        </span>
+      </span>
+    </ng-container>
+  </ng-container>
+</ng-template>

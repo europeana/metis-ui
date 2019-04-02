@@ -9,12 +9,21 @@ export enum TaskState {
   REMOVING_FROM_SOLR_AND_MONGO = 'REMOVING_FROM_SOLR_AND_MONGO',
 }
 
-export interface ExecutionProgress {
+export interface ExecutionProgressBasic {
   expectedRecords: number;
   processedRecords: number;
   progressPercentage: number;
   errors: number;
+}
+
+export interface ExecutionProgress extends ExecutionProgressBasic {
   status?: TaskState;
+}
+
+export interface DatasetExecutionProgress {
+  stepsDone: number;
+  stepsTotal: number;
+  currentPluginProgress: ExecutionProgressBasic;
 }
 
 export enum PluginStatus {
@@ -55,19 +64,27 @@ export type TopologyName =
   | 'link_checker'
   | 'indexer';
 
-export interface PluginExecution {
+export interface PluginExecutionBasic {
   pluginType: PluginType;
-  id: string;
   pluginStatus: PluginStatus;
   startedDate?: string;
   updatedDate?: string;
   finishedDate?: string;
   externalTaskId?: string;
+  failMessage?: string;
+}
+
+export interface PluginExecution extends PluginExecutionBasic {
+  id: string;
   executionProgress: ExecutionProgress;
   pluginMetadata: PluginMetadata;
   topologyName: TopologyName;
 
   hasReport?: boolean;
+}
+
+export interface PluginExecutionOverview extends PluginExecutionBasic {
+  progress: ExecutionProgressBasic;
   failMessage?: string;
 }
 
@@ -96,6 +113,23 @@ export interface WorkflowExecution {
   datasetName?: string;
   currentPlugin?: PluginExecution;
   currentPluginIndex?: number;
+}
+
+export interface DatasetOverviewExecution {
+  finishedDate?: string;
+  startedDate?: string;
+  plugins: PluginExecutionOverview[];
+}
+
+export interface DatasetSummary {
+  datasetId: string;
+  datasetName: string;
+}
+
+export interface DatasetOverview {
+  dataset: DatasetSummary;
+  execution: DatasetOverviewExecution;
+  executionProgress: DatasetExecutionProgress;
 }
 
 export interface CancellationRequest {

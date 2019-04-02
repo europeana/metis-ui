@@ -1,0 +1,264 @@
+@import '../../../../assets/sass/scss/generic/variables';
+@import '../../../../assets/sass/pandora/settings/metis-variables';
+
+$color-bottom-edge: #ccc;
+$color-right-edge: $color-bottom-edge;
+$h-line-item-color: $offwhite;
+
+$v-line-left-width: 0.25em;
+
+$size-massive: 10000px;
+
+$row-border-height: 0.5em;
+$row-border-height-min: 3px;
+$row-border-height-half: 0.25em;
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 -3px $color-status-running;
+  }
+  50% {
+    box-shadow: 0 0 3px $color-status-running;
+  }
+  100% {
+    box-shadow: 0 0 -3px $color-status-running;
+  }
+}
+
+@keyframes pulseInqueue {
+  0% {
+    box-shadow: 0 0 0 0 rgba($color-status-inqueue, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba($color-status-inqueue, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($color-status-inqueue, 0);
+  }
+}
+
+@keyframes pulsePending {
+  0% {
+    box-shadow: 0 0 0 0 rgba($color-status-pending, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba($color-status-pending, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($color-status-pending, 0);
+  }
+}
+
+.error-count {
+  color: $eu-red;
+}
+
+.orbs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.grid-cell {
+  @media (max-width: $bp-med) {
+    margin: 0.5em 1em 0.5em 0;
+  }
+}
+.grid-cell,
+.grid-sub {
+  @media (max-width: $bp-med) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  @media (min-width: $bp-med) {
+    line-height: 2.25em;
+    padding: 1em 0;
+  }
+}
+
+.status-label,
+.time {
+  color: #ccc;
+}
+
+.time {
+  margin-right: 1em;
+}
+
+// all edges
+.row-end,
+.row-start,
+.row-start.active + .row-steps,
+.group-end,
+.grid-sub.start {
+  position: relative;
+  &::after {
+    content: ' ';
+    display: block;
+    position: absolute;
+  }
+}
+
+// side edges
+.row-end,
+.row-start {
+  &::after {
+    height: $size-massive;
+    top: 0;
+    z-index: 3;
+  }
+}
+
+// right edge
+.row-end {
+  &::after {
+    right: -1.75em;
+    width: 0.25em;
+    background: $offwhite;
+  }
+  &.active {
+    &::after {
+      background: $color-right-edge;
+    }
+  }
+}
+
+// bottom edge
+.group-end {
+  &::after {
+    background: $color-bottom-edge;
+    bottom: 0;
+    height: $row-border-height;
+    right: -3em;
+    transform: translateY(5px);
+    width: $size-massive;
+    z-index: 2;
+  }
+}
+
+// hover edges
+.row-start,
+.row-steps {
+  position: relative;
+
+  &::before {
+    content: ' ';
+    display: block;
+    position: absolute;
+  }
+}
+
+.row-start {
+  grid-column-start: start;
+
+  // hover / active indicator
+  &::after {
+    background: $white;
+    left: -1em;
+    width: $v-line-left-width;
+  }
+
+  &.active,
+  &:hover {
+    &::after {
+      background: $eu-jade;
+    }
+  }
+
+  // hover / click target
+  &::before {
+    cursor: pointer;
+    height: 500%;
+    top: 0;
+    width: $size-massive;
+    @media (min-width: $bp-med) {
+      height: 100%;
+    }
+  }
+
+  // avoid trapping link click events
+  a {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.row-steps,
+.row-end {
+  // maintain hover events
+  pointer-events: none;
+}
+
+.row-steps {
+  // horizontal line (top) for active sits over hover / active indicator
+  &::before {
+    z-index: 4;
+  }
+
+  //  horizontal line (top)
+  &::before {
+    background: $h-line-item-color;
+    height: $row-border-height;
+    top: 0;
+    transform: translateX(-20%);
+    width: $size-massive;
+    z-index: 1;
+  }
+}
+
+.row-steps {
+  &::before {
+    z-index: 4;
+  }
+}
+
+.row-start.active + .row-steps {
+  // underline the open item
+  &::after {
+    background: $h-line-item-color;
+    height: 2px;
+    bottom: 0;
+    transform: translateX(-20%);
+    width: $size-massive;
+    z-index: 1;
+  }
+}
+
+.grid-sub {
+  @media (max-width: $bp-med) {
+    margin-left: 2em;
+    margin-right: 1em;
+  }
+  &.start {
+    grid-column-start: sub-start;
+  }
+
+  &.labelled-orb {
+    align-items: center;
+    display: flex;
+
+    :first-child {
+      @media (min-width: $bp-med) {
+        margin-right: 0.5em;
+      }
+    }
+  }
+  &.dates {
+    grid-column-start: sub-date-start;
+    grid-column-end: sub-date-end;
+  }
+
+  // set animations
+  .orb-status {
+    &.status-inqueue {
+      animation: pulseInqueue 4000ms infinite;
+    }
+    &.status-pending {
+      animation: pulsePending 3000ms infinite;
+    }
+    &.status-running {
+      animation: glowing 2000ms infinite;
+    }
+  }
+}
