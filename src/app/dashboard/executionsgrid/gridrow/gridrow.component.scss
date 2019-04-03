@@ -82,7 +82,7 @@ $row-border-height-half: 0.25em;
   color: #ccc;
 }
 
-.time {
+.time:not(.br){
   margin-right: 1em;
 }
 
