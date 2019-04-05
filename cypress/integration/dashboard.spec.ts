@@ -49,11 +49,7 @@ context('metis-ui', () => {
     it('should have a "load more" button', () => {
       cy.get('.executions-grid .row-start').should('have.length', 2);
       cy.get('.executions-grid .grid-cell').should('have.length', 10);
-      cy.get('.load-more-btn')
-        .contains('Load more')
-        .click();
-      cy.get('.executions-grid .row-start').should('have.length', 4);
-      cy.get('.executions-grid .grid-cell').should('have.length', 20);
+      cy.get('.load-more-btn').contains('Load more');
     });
   });
 });
