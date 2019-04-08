@@ -86,6 +86,14 @@ $row-border-height-half: 0.25em;
   margin-right: 1em;
 }
 
+.time.empty {
+  &::after {
+    content: ' ';
+    display: block;
+    width: 12em;
+  }
+}
+
 // all edges
 .row-end,
 .row-start,

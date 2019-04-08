@@ -81,6 +81,23 @@ export class WorkflowService {
     );
   }
 
+  private collectAllResultsUptoPage<T>(
+    getResults: (page: number) => Observable<Results<T>>,
+    endPage: number,
+  ): Observable<MoreResults<T>> {
+    const observables: Observable<Results<T>>[] = [];
+    observables.push(getResults(endPage));
+
+    return forkJoin(observables).pipe(
+      map((resultList) => {
+        const results = ([] as T[]).concat(...resultList.map((r) => r.results));
+        const lastResult = resultList[resultList.length - 1];
+        const more = lastResult.nextPage >= 0;
+        return { results, more };
+      }),
+    );
+  }
+
   getWorkflowForDataset(id: string): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
     return this.http.get<Workflow>(url).pipe(this.errors.handleRetry());
@@ -249,15 +266,19 @@ export class WorkflowService {
   }
 
   getCompletedDatasetSummaries(page?: number): Observable<Results<DatasetOverview>> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/overview?nextPage=${page}`;
+    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/overview?`;
+
+    if (page && page > 0) {
+      url += `pageCount=${page + 1}&nextPage=0`;
+    } else {
+      url += `nextPage=${page}`;
+    }
     return this.http.get<Results<DatasetOverview>>(url).pipe(this.errors.handleRetry());
   }
 
   getCompletedDatasetOverviewsUptoPage(endPage: number): Observable<MoreResults<DatasetOverview>> {
     const getResults = (page: number) => this.getCompletedDatasetSummaries(page);
-    return this.collectResultsUptoPage(getResults, endPage);
+    return this.collectAllResultsUptoPage(getResults, endPage);
   }
 
   addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[]): Observable<WorkflowExecution[]> {

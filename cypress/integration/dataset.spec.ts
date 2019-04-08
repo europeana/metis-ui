@@ -6,7 +6,7 @@ function setupDatasetPage(name: string): void {
   setupWorkflowRoutes();
 
   cy.visit(`/dataset/${name}/64`);
-  cy.wait(['@getDataset', '@getWorkflow', '@getWorkflowExecutions', '@getHarvestData']);
+  cy.wait(['@getDataset', '@getWorkflow', '@getHarvestData']);
 }
 
 function getHistoryRow(index: number, sel: string): Cypress.Chainable {
