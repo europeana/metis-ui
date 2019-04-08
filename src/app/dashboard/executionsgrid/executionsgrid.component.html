@@ -1,16 +1,11 @@
 <h3 class="grid-top-header">
   {{ 'allexecutions' | translate }}<span *ngIf="isLoading" class="svg-icon-spin showing"></span>
 </h3>
-<div *ngIf="dsOverview" class="executions-grid" [ngClass]="{ filled: orbsFilled }">
+<div *ngIf="dsOverview" class="executions-grid">
   <span class="grid-header">
     {{ 'datasetname' | translate }}
   </span>
-  <span
-    class="grid-header"
-    (click)="toggleFilled()"
-    style="cursor:pointer;"
-    title="Click to toggle the orb fill"
-  >
+  <span class="grid-header">
     {{ 'workflows' | translate }}
   </span>
   <span class="grid-header">

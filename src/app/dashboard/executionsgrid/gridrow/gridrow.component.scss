@@ -5,13 +5,13 @@ $color-bottom-edge: #ccc;
 $color-right-edge: $color-bottom-edge;
 $h-line-item-color: $offwhite;
 
-$v-line-left-width: 0.25em;
-
 $size-massive: 10000px;
 
 $row-border-height: 0.5em;
 $row-border-height-min: 3px;
 $row-border-height-half: 0.25em;
+$v-line-left-width: $row-border-height-half;
+
 
 @keyframes glowing {
   0% {
@@ -138,6 +138,7 @@ $row-border-height-half: 0.25em;
 }
 
 // hover edges
+.row-end,
 .row-start,
 .row-steps {
   position: relative;
@@ -184,6 +185,19 @@ $row-border-height-half: 0.25em;
   }
 }
 
+.row-start:not(.active):hover {
+  & + .grid-cell + .grid-cell + .grid-cell + .row-end {
+    &::before {
+      background: $color-bottom-edge;
+      bottom: 0;
+      right: -2em;
+      height: $row-border-height-half;
+      width: $size-massive;
+    }
+  }
+}
+
+.row-end,
 .row-steps,
 .row-end {
   // maintain hover events
