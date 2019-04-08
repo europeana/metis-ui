@@ -19,7 +19,6 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   isLoading = true;
   isLoadingMore = false;
   hasMore = false;
-  orbsFilled = false;
   currentPage = 0;
 
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
@@ -57,9 +56,6 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
         this.errors.handleError(err);
       },
     );
-  }
-  toggleFilled(): void {
-    this.orbsFilled = !this.orbsFilled;
   }
 
   setSelectedIndex(selectedIndex: number): void {
