@@ -18,14 +18,7 @@ export class GridrowComponent {
   constructor() {}
 
   getPluginStatusClass(plugin: PluginExecutionOverview): string {
-    if (
-      plugin.progress.errors > 0 &&
-      [PluginStatus.FINISHED, PluginStatus.CANCELLED].indexOf(plugin.pluginStatus) > -1
-    ) {
-      return 'status-warning';
-    } else {
-      return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
-    }
+    return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
   }
 
   toggleExpand(e: { target: HTMLInputElement }): void {

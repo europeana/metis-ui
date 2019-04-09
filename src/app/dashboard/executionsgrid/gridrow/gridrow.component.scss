@@ -59,6 +59,9 @@ $v-line-left-width: $row-border-height-half;
 }
 
 .grid-cell {
+  a {
+    text-decoration: underline;
+  }
   @media (max-width: $bp-med) {
     margin: 0.5em 1em 0.5em 0;
   }
@@ -167,8 +170,7 @@ $v-line-left-width: $row-border-height-half;
     width: $v-line-left-width;
   }
 
-  &.active,
-  &:hover {
+  &.active {
     &::after {
       background: $eu-jade;
     }
@@ -200,36 +202,25 @@ $v-line-left-width: $row-border-height-half;
       right: -2em;
       height: $row-border-height-half;
       width: $size-massive;
+      z-index: 3;
     }
   }
 }
 
 .row-end,
-.row-steps,
-.row-end {
+.row-steps {
   // maintain hover events
   pointer-events: none;
 }
 
 .row-steps {
-  // horizontal line (top) for active sits over hover / active indicator
-  &::before {
-    z-index: 4;
-  }
-
-  //  horizontal line (top)
+  // horizontal line (top)
   &::before {
     background: $h-line-item-color;
     height: $row-border-height;
     top: 0;
     transform: translateX(-20%);
     width: $size-massive;
-    z-index: 1;
-  }
-}
-
-.row-steps {
-  &::before {
     z-index: 4;
   }
 }

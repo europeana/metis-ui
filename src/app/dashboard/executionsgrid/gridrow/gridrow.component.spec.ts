@@ -38,11 +38,12 @@ describe('GridrowComponent', () => {
   });
 
   it('should normalise the plugin status class', () => {
-    const peFinished = makePluginExecutionOverview(PluginStatus.CANCELLED);
-
-    expect(component.getPluginStatusClass(peFinished)).not.toEqual('status-warning');
-    peFinished.progress.errors = 1;
-    expect(component.getPluginStatusClass(peFinished)).toEqual('status-warning');
+    const peCancelled = makePluginExecutionOverview(PluginStatus.CANCELLED);
+    expect(component.getPluginStatusClass(peCancelled)).toEqual('status-cancelled');
+    const peFinished = makePluginExecutionOverview(PluginStatus.FINISHED);
+    expect(component.getPluginStatusClass(peFinished)).toEqual('status-finished');
+    const peRunning = makePluginExecutionOverview(PluginStatus.RUNNING);
+    expect(component.getPluginStatusClass(peRunning)).toEqual('status-running');
   });
 
   it('should expand when clicked', () => {
