@@ -36,7 +36,7 @@
           *ngIf="!nps.moreLoaded && this.taskId"
           class="load-more-btn vertical"
           (click)="loadMoreAttrs(nps.xPath)"
-          title="{{'loadmore' | translate}}"
+          title="{{ 'loadmore' | translate }}"
         ></a>
       </li>
     </ul>
