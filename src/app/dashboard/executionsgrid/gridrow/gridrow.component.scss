@@ -60,6 +60,7 @@ $v-line-left-width: $row-border-height-half;
 
 .grid-cell {
   a {
+    color: $eu-blue-link;
     text-decoration: underline;
   }
   @media (max-width: $bp-med) {
