@@ -1,5 +1,10 @@
 <ng-template #childComponentTemplate>
   <ng-template #empty_date><span class="time empty">--</span></ng-template>
+  <ng-template #dataset_link let-text="text"
+    ><a [routerLink]="['/dataset', 'edit', dsExecution.dataset.datasetId]" target="_blank">{{
+      text
+    }}</a></ng-template
+  >
 
   <span
     [ngClass]="{ active: expanded }"
@@ -7,11 +12,18 @@
     (click)="toggleExpand($event)"
     title="{{ dsExecution.dataset.datasetName }}"
   >
-    {{ dsExecution.dataset.datasetName }}
+    <ng-container
+      [ngTemplateOutlet]="dataset_link"
+      [ngTemplateOutletContext]="{ text: dsExecution.dataset.datasetName }"
+    >
+    </ng-container>
+
     <span class="br">
-      <a [routerLink]="['/dataset', 'edit', dsExecution.dataset.datasetId]" target="_blank">{{
-        dsExecution.dataset.datasetId
-      }}</a>
+      <ng-container
+        [ngTemplateOutlet]="dataset_link"
+        [ngTemplateOutletContext]="{ text: dsExecution.dataset.datasetId }"
+      >
+      </ng-container>
     </span>
   </span>
 

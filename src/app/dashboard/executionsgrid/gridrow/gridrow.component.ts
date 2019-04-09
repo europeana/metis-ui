@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
-import { DatasetOverview, PluginExecutionOverview, PluginStatus } from '../../../_models';
+import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
 
 @Component({
   selector: 'app-gridrow',
@@ -18,14 +18,7 @@ export class GridrowComponent {
   constructor() {}
 
   getPluginStatusClass(plugin: PluginExecutionOverview): string {
-    if (
-      plugin.progress.errors > 0 &&
-      [PluginStatus.FINISHED, PluginStatus.CANCELLED].indexOf(plugin.pluginStatus) > -1
-    ) {
-      return 'status-warning';
-    } else {
-      return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
-    }
+    return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
   }
 
   toggleExpand(e: { target: HTMLInputElement }): void {
