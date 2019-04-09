@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
-import { DatasetOverview, PluginExecutionOverview, PluginStatus } from '../../../_models';
+import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
 
 @Component({
   selector: 'app-gridrow',
