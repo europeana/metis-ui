@@ -14,9 +14,14 @@
     }"
   ></app-load-animation>
 
-  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
+  <div class="metis-dashboard">
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>
+    </div>
+  </div>
+
+  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
+    <div class="metis-dashboard-left">
       <app-ongoingexecutions
         [showPluginLog]="showPluginLog"
         [runningExecutions]="runningExecutions"
