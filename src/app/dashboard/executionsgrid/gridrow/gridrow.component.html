@@ -1,5 +1,5 @@
 <ng-template #childComponentTemplate>
-  <ng-template #empty_date><span class="time empty">--</span></ng-template>
+  <ng-template #empty_date><span class="time empty"></span></ng-template>
   <ng-template #dataset_link let-text="text"
     ><a [routerLink]="['/dataset', 'edit', dsExecution.dataset.datasetId]" target="_blank">{{
       text
@@ -43,8 +43,15 @@
 
   <span class="grid-cell" *ngIf="dsExecution.executionProgress">
     <span *ngIf="dsExecution.executionProgress.currentPluginProgress">
-      {{ dsExecution.executionProgress.currentPluginProgress.processedRecords }} /
-      {{ dsExecution.executionProgress.currentPluginProgress.expectedRecords }}
+      <span *ngIf="dsExecution.executionProgress.currentPluginProgress.expectedRecords < 0">
+        {{ 'unknown' | translate }}
+      </span>
+
+      <span *ngIf="dsExecution.executionProgress.currentPluginProgress.expectedRecords > 0">
+        {{ dsExecution.executionProgress.currentPluginProgress.processedRecords }} /
+        {{ dsExecution.executionProgress.currentPluginProgress.expectedRecords }}
+      </span>
+
       <span
         *ngIf="
           dsExecution.executionProgress.currentPluginProgress.errors &&
@@ -85,10 +92,15 @@
 
       <span class="grid-sub">
         <span class="inline-block">
-          {{ pi.progress.processedRecords }} / {{ pi.progress.expectedRecords }}
-        </span>
-        <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="error-count">
-          {{ pi.progress.errors }}
+          <span *ngIf="pi.progress.expectedRecords < 0">
+            {{ 'unknown' | translate }}
+          </span>
+          <span *ngIf="pi.progress.expectedRecords > 0">
+            {{ pi.progress.processedRecords }} / {{ pi.progress.expectedRecords }}
+          </span>
+          <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="error-count">
+            {{ pi.progress.errors }}
+          </span>
         </span>
       </span>
 
