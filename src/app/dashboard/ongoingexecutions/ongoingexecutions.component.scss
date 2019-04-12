@@ -2,8 +2,6 @@
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
 .ongoing-executions {
-  font-size: 0.75rem;
-  width: 100%;
 
   @media (max-width: $bp-xxl) {
     margin-bottom: 2rem;
@@ -13,38 +11,24 @@
     font-size: 1.125rem;
   }
 
-  .latest-ongoing {
-    align-items: center;
-    background: $white;
-    border-bottom: 1px solid $offwhite;
-    box-sizing: border-box;
-    padding: 0.75rem;
-    display: block;
-    width: 100%;
-
-    @media (min-width: $bp-med) {
-      display: inline-flex;
-    }
-  }
-
+  .ctrls,
+  .progress,
   .status {
-    padding-right: 1rem;
-    text-transform: uppercase;
-    white-space: nowrap;
-
-    strong span {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-transform: none;
-      white-space: nowrap;
-      width: auto;
-    }
+    display: flex;
   }
 
   .progress {
-    padding-right: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 
+  .ctrls,
+  .status {
+    align-items: center;
+  }
+
+  .progress {
     .progress-percentage {
       text-align: right;
     }

@@ -27,7 +27,7 @@
     </span>
   </span>
 
-  <span class="grid-cell row-steps" *ngIf="dsExecution.executionProgress">
+  <span class="grid-cell row-steps row-divider" *ngIf="dsExecution.executionProgress">
     {{ dsExecution.executionProgress.stepsDone }} / {{ dsExecution.executionProgress.stepsTotal }}
     {{ 'overviewsteps' | translate }}
     <ul
@@ -36,7 +36,7 @@
     >
       <li
         *ngFor="let pi of dsExecution.execution.plugins"
-        class="{{ pi.pluginType }} orb-status {{ getPluginStatusClass(pi) }}"
+        class="{{ pi.pluginType }} orb-status labelled {{ getPluginStatusClass(pi) }}"
       ></li>
     </ul>
   </span>

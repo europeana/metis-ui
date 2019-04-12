@@ -1,8 +1,10 @@
 @import '../../scss/generic/variables';
 @import '../settings/metis-variables';
 
-$color-status-cleaning: lighten($eu-blue, 40%);
 $orb-size: 1.5em;
+$orb-size-half: 0.75em;
+$orb-size-small: 1em;
+$orb-size-small-half: 0.75em;
 
 .errorindicator {
   .status {
@@ -76,16 +78,15 @@ $orb-size: 1.5em;
 }
 
 .orb-status {
-  border-radius: 0.75em;
-  display: inline-block;
-  height: $orb-size;
-  margin: 0.2em 0.3em 0.2em 0;
-  min-width: $orb-size;
-  position: relative;
-  width: $orb-size;
-
+  border-radius: $orb-size-small-half;
   border-style: solid;
   border-width: 1px;
+  display: inline-block;
+  height: $orb-size-small;
+  margin: 0.2em 0.3em 0.2em 0;
+  min-width: $orb-size-small;
+  position: relative;
+  width: $orb-size-small;
 
   &.status-inqueue {
     border-color: $color-status-inqueue;
@@ -112,50 +113,63 @@ $orb-size: 1.5em;
     border-color: $color-status-warning;
   }
 
-  &:after {
-    font-size: 0.7em;
-    font-weight: bold;
-    position: absolute;
-    text-align: center;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-  }
+  &.labelled {
+    border-radius: $orb-size-half;
+    height: $orb-size;
+    min-width: $orb-size;
+    width: $orb-size;
 
-  &.HTTP_HARVEST:after {
-    content: 'Hh';
+    &:after {
+      font-size: 0.7em;
+      font-weight: bold;
+      position: absolute;
+      text-align: center;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+    }
+
+    &.HTTP_HARVEST:after {
+      content: 'Hh';
+    }
+    &.OAIPMH_HARVEST:after {
+      content: 'Ho';
+    }
+    &.TRANSFORMATION:after {
+      content: 'T';
+    }
+    &.LINK_CHECKING:after {
+      content: 'L';
+    }
+    &.ENRICHMENT:after {
+      content: 'E';
+    }
+    &.MEDIA_PROCESS:after {
+      content: 'M';
+    }
+    &.VALIDATION_EXTERNAL:after {
+      content: 'Ve';
+    }
+    &.VALIDATION_INTERNAL:after {
+      content: 'Vi';
+    }
+    &.NORMALIZATION:after {
+      content: 'N';
+    }
+    &.PENDING:after {
+      content: 'Pe';
+    }
+    &.PREVIEW:after {
+      content: 'Pr';
+    }
+    &.PUBLISH:after {
+      content: 'Pu';
+    }
   }
-  &.OAIPMH_HARVEST:after {
-    content: 'Ho';
-  }
-  &.TRANSFORMATION:after {
-    content: 'T';
-  }
-  &.LINK_CHECKING:after {
-    content: 'L';
-  }
-  &.ENRICHMENT:after {
-    content: 'E';
-  }
-  &.MEDIA_PROCESS:after {
-    content: 'M';
-  }
-  &.VALIDATION_EXTERNAL:after {
-    content: 'Ve';
-  }
-  &.VALIDATION_INTERNAL:after {
-    content: 'Vi';
-  }
-  &.NORMALIZATION:after {
-    content: 'N';
-  }
-  &.PENDING:after {
-    content: 'Pe';
-  }
-  &.PREVIEW:after {
-    content: 'Pr';
-  }
-  &.PUBLISH:after {
-    content: 'Pu';
+}
+
+.labelled-orb .orb-status {
+  @media (min-width: $bp-med) {
+    margin-right: 0.5em;
   }
 }

@@ -20,10 +20,10 @@
   <ng-container *ngFor="let execution of dsOverview; let i = index">
     <app-gridrow
       #wrapper
-      [expanded]="i === selectedIndex"
+      [expanded]="execution.dataset.datasetId === selectedDsId"
       [index]="i"
       [dsExecution]="execution"
-      (closeExpanded)="setSelectedIndex($event)"
+      (closeExpanded)="setSelectedDsId($event)"
     ></app-gridrow>
     <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
   </ng-container>

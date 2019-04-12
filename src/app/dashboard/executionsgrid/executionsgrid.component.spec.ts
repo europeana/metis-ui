@@ -53,8 +53,8 @@ describe('ExecutionsgridComponent', () => {
     component.rows = ([{ expanded: true }, { expanded: true }] as any) as QueryList<
       GridrowComponent
     >;
-    expect(component.selectedIndex).toEqual(-1);
-    component.setSelectedIndex(3);
-    expect(component.selectedIndex).toEqual(3);
+    expect(component.selectedDsId).toEqual('');
+    component.setSelectedDsId('3');
+    expect(component.selectedDsId).toEqual('3');
   });
 });

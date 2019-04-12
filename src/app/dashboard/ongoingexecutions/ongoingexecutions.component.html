@@ -1,10 +1,21 @@
+<h3>{{ 'ongoingexecutions' | translate }}</h3>
 <div class="ongoing-executions" *ngIf="runningExecutions && runningExecutions.length > 0">
-  <h3>{{ 'ongoingexecutions' | translate }}</h3>
+  <span class="grid-header">
+    {{ 'workflow' | translate }}
+  </span>
+  <span class="grid-header">
+    {{ 'overallprogress' | translate }}
+  </span>
 
-  <div class="ongoing-list">
-    <div class="latest-ongoing" *ngFor="let ongoing of runningExecutions; trackBy: byId">
-      <div class="status">
-        <strong
+  <ng-container *ngFor="let ongoing of runningExecutions; trackBy: byId">
+    <div class="status grid-cell labelled-orb row-start" [ngClass]="{ active : selectedExecutionDsId === ongoing.datasetId }">
+      <span
+        class="{{ ongoing.currentPlugin.pluginType }} orb-status {{
+          getPluginStatusClass(ongoing.currentPlugin)
+        }}"
+      ></span>
+      <span>
+        <span
           class="tooltip"
           title="{{ 'doubleclicktocopy' | translate }}"
           (dblclick)="
@@ -14,60 +25,52 @@
               ongoing.currentPlugin.id
             )
           "
+          >{{ ongoing.currentPlugin.pluginType | renameWorkflow }}</span
         >
-          <span>{{ ongoing.currentPlugin.pluginType }}</span>
-        </strong>
-        {{ ongoing.cancelling ? cancelling : ongoing.currentPlugin.pluginStatus }}
-      </div>
-      <div class="progress">
-        <span>{{ ongoing.datasetId }}</span>
         <a
           [routerLink]="['/dataset', 'edit', ongoing.datasetId]"
           class="workflowname"
           target="_blank"
-          >{{ ongoing.datasetName }}</a
+          >{{ ongoing.datasetId }}</a
         >
-        <div class="progress-status">
-          <span class="progress-statusnumbers">{{ 'overallprogress' | translate }}</span>
-          <span class="progress-percentage"
-            >{{ 'step' | translate }} {{ ongoing.currentPluginIndex + 1 }}/{{
-              ongoing.metisPlugins.length
-            }}</span
-          >
-        </div>
-        <div class="progressbar">
-          <div class="progressbar-done" [style.width.%]="calcProgress(ongoing)"></div>
-        </div>
-      </div>
-      <div class="datetime">
-        <span class="date">{{ ongoing.startedDate | date: 'dd/MM/yyyy' }}</span>
-        <span class="time">{{ ongoing.startedDate | date: 'HH:mm' }}</span>
-      </div>
-      <nav>
-        <ul>
-          <li *ngIf="!ongoing.cancelling && ongoing.currentPlugin.pluginType !== 'PUBLISH'">
-            <a
-              class="cancel-btn svg-icon-cancel tooltip"
-              title="{{ 'cancel' | translate }}"
-              (click)="cancelWorkflow(ongoing.id, ongoing.datasetId, ongoing.datasetName!)"
-            ></a>
-          </li>
-          <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'">
-            <a
-              class="log-btn svg-icon-log tooltip"
-              title="{{ 'log' | translate }}"
-              (click)="showLog(ongoing)"
-            ></a>
-          </li>
-          <li>
-            <a
-              [routerLink]="['/dataset', 'log', ongoing.datasetId]"
-              class="log-btn svg-icon-history tooltip"
-              title="{{ 'history' | translate }}"
-            ></a>
-          </li>
-        </ul>
-      </nav>
+      </span>
     </div>
-  </div>
+    <div class="progress grid-cell">
+      <div class="progress-status">
+        <span class="progress-percentage capitalise"
+          >{{ 'step' | translate }} {{ ongoing.currentPluginIndex + 1 }}/{{
+            ongoing.metisPlugins.length
+          }}</span
+        >
+      </div>
+      <div class="progressbar">
+        <div class="progressbar-done" [style.width.%]="calcProgress(ongoing)"></div>
+      </div>
+    </div>
+    <nav class="grid-cell ctrls row-divider">
+      <ul>
+        <li *ngIf="!ongoing.cancelling && ongoing.currentPlugin.pluginType !== 'PUBLISH'">
+          <a
+            class="cancel-btn svg-icon-cancel tooltip"
+            title="{{ 'cancel' | translate }}"
+            (click)="cancelWorkflow(ongoing.id, ongoing.datasetId, ongoing.datasetName!)"
+          ></a>
+        </li>
+        <li *ngIf="ongoing.workflowStatus !== 'INQUEUE'">
+          <a
+            class="log-btn svg-icon-log tooltip"
+            title="{{ 'log' | translate }}"
+            (click)="showLog(ongoing)"
+          ></a>
+        </li>
+        <li>
+          <a
+            [routerLink]="['/dataset', 'log', ongoing.datasetId]"
+            class="log-btn svg-icon-history tooltip"
+            title="{{ 'history' | translate }}"
+          ></a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
 </div>

@@ -1,11 +1,11 @@
 import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
-  return cy.get('.latest-ongoing');
+  return cy.get('.ongoing-executions .status');
 }
 
-function runningByIndex(index: number, sel: string): Cypress.Chainable {
-  return cy.get(`.latest-ongoing:nth-child(${index + 1}) ${sel}`);
+function runningByIndex(index: number): Cypress.Chainable {
+  return cy.get(`.ongoing-executions :nth-child(${index})`);
 }
 
 context('metis-ui', () => {
@@ -25,8 +25,8 @@ context('metis-ui', () => {
 
     it('should show the currently running executions', () => {
       allRunning().should('have.length', 2);
-      runningByIndex(0, '.progress').contains('64');
-      runningByIndex(1, '.progress').contains('194');
+      runningByIndex(3).contains('64');
+      runningByIndex(6).contains('194');
     });
 
     it('should show the last executions to have run', () => {

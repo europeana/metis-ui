@@ -277,8 +277,11 @@ li.dropdown a {
 
   .progress-percentage {
     text-align: right;
-    text-transform: uppercase;
     white-space: nowrap;
+  }
+
+  .progress-percentage:not(.capitalise) {
+    text-transform: uppercase;
   }
 
   .progressbar {

@@ -12,8 +12,7 @@ export class GridrowComponent {
   @Input() dsExecution: DatasetOverview;
   @Input() expanded: boolean;
   @Input() index: number;
-
-  @Output() closeExpanded: EventEmitter<number> = new EventEmitter();
+  @Output() closeExpanded: EventEmitter<string> = new EventEmitter();
 
   constructor() {}
 
@@ -25,6 +24,6 @@ export class GridrowComponent {
     if (e.target.nodeName === 'A') {
       return;
     }
-    this.closeExpanded.emit(this.expanded ? -1 : this.index);
+    this.closeExpanded.emit(this.expanded ? '' : this.dsExecution.dataset.datasetId);
   }
 }

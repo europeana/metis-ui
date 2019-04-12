@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import { Dataset, getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
@@ -15,6 +15,7 @@ import {
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
@@ -28,6 +29,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   finishedIsFirstLoading = true;
   finishedCurrentPage = 0;
   finishedHasMore = false;
+  selectedExecutionDsId: string;
   showPluginLog?: PluginExecution;
   favoriteDatasets?: Dataset[];
 
@@ -124,5 +126,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.finishedIsFirstLoading = false;
       },
     );
+  }
+
+  setSelectedExecutionDsId(id: string): void{
+    this.selectedExecutionDsId = id;
   }
 }
