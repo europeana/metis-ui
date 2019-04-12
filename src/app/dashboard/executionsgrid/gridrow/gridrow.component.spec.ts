@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { createMockPipe, MockTranslateService, mockDatasetOverviewResults } from '../../../_mocked';
+
+import { createMockPipe, mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
 import { PluginExecutionOverview, PluginStatus } from '../../../_models';
 import { TranslateService } from '../../../_translate';
 

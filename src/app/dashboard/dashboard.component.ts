@@ -15,6 +15,7 @@ import {
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  // tslint:disable-next-line use-view-encapsulation
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardComponent implements OnInit, OnDestroy {
