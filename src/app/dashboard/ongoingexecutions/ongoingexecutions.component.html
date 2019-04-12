@@ -8,7 +8,10 @@
   </span>
 
   <ng-container *ngFor="let ongoing of runningExecutions; trackBy: byId">
-    <div class="status grid-cell labelled-orb row-start" [ngClass]="{ active : selectedExecutionDsId === ongoing.datasetId }">
+    <div
+      class="status grid-cell labelled-orb row-start"
+      [ngClass]="{ active: selectedExecutionDsId === ongoing.datasetId }"
+    >
       <span
         class="{{ ongoing.currentPlugin.pluginType }} orb-status {{
           getPluginStatusClass(ongoing.currentPlugin)

@@ -3,10 +3,6 @@
 
 $space-overflow-selected: 0.25em;
 
-.ongoing-grid {
-  display: grid;
-}
-
 .grid-cell {
   a {
     color: $eu-blue-link;
@@ -63,13 +59,9 @@ $space-overflow-selected: 0.25em;
     }
   }
 
-  display: none;
-  @media (min-width: $bp-med) {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 1em;
-    text-transform: capitalize;
-  }
+  font-weight: bold;
+  margin-bottom: 1em;
+  text-transform: capitalize;
 }
 
 .ongoing-executions,
@@ -80,32 +72,38 @@ $space-overflow-selected: 0.25em;
   margin-bottom: 2em;
   margin-right: -0.5em;
   overflow: hidden;
-
-  @media (min-width: $bp-med) {
-    display: grid;
-    grid-column-gap: 1.75em;
-    grid-template-rows: auto;
-  }
 }
 
 .ongoing-executions {
+  display: grid;
+  grid-column-gap: 1.75em;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 48fr 1fr;
+
   .grid-header {
     &:nth-of-type(2) {
       grid-column: 2/4;
     }
   }
 
-  @media (min-width: $bp-med) {
-    padding: 1em 1em 0 1em;
-    grid-template-columns: 1fr 48fr 1fr;
-  }
+  padding: 1em 1em 0 1em;
 }
 
 .executions-grid {
   padding: 1em 0 0 1em;
 
   @media (min-width: $bp-med) {
+    display: grid;
+    grid-column-gap: 1.75em;
+    grid-template-rows: auto;
     grid-template-columns: [start] minmax(8em, 2fr) [sub-start] minmax(8em, 2fr) 1fr [sub-date-start] auto auto [sub-date-end] auto;
+  }
+
+  .grid-header {
+    display: none;
+    @media (min-width: $bp-med) {
+      display: block;
+    }
   }
 }
 
@@ -126,9 +124,7 @@ $space-overflow-selected: 0.25em;
   }
 }
 
-
 .row-start {
-
   position: relative;
 
   // hover / active indicator

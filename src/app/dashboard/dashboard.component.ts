@@ -128,7 +128,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
   }
 
-  setSelectedExecutionDsId(id: string): void{
+  setSelectedExecutionDsId(id: string): void {
     this.selectedExecutionDsId = id;
   }
 }

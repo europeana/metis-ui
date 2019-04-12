@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, EventEmitter, OnDestroy, Output, QueryList, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  Output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 
 import { environment } from '../../../environments/environment';
 import { DatasetOverview } from '../../_models';
