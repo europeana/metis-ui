@@ -80,4 +80,18 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
     expect(component.finishedCurrentPage).toBe(1);
   });
+
+  it('provides a setter for the selectedExecutionDsId', () => {
+    expect(component.selectedExecutionDsId).toBe(undefined);
+    component.setSelectedExecutionDsId('xxx');
+    expect(component.selectedExecutionDsId).toBe('xxx');
+  });
+
+  it('should clean up', () => {
+    expect(component.finishedTimer).not.toBe(undefined);
+    expect(component.runningTimer).not.toBe(undefined);
+    component.ngOnDestroy();
+    expect(component.finishedTimer).toBe(undefined);
+    expect(component.runningTimer).toBe(undefined);
+  });
 });

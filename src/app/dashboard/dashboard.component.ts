@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import { Dataset, getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
@@ -14,23 +14,20 @@ import {
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  // tslint:disable-next-line use-view-encapsulation
-  encapsulation: ViewEncapsulation.None,
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer: number;
+  runningTimer: number | undefined;
   runningIsLoading = true;
   runningIsFirstLoading = true;
   finishedExecutions: WorkflowExecution[];
-  finishedTimer: number;
+  finishedTimer: number | undefined;
   finishedIsLoading = true;
   finishedIsFirstLoading = true;
   finishedCurrentPage = 0;
   finishedHasMore = false;
-  selectedExecutionDsId: string;
+  selectedExecutionDsId: string | undefined;
   showPluginLog?: PluginExecution;
   favoriteDatasets?: Dataset[];
 
@@ -61,11 +58,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
     clearTimeout(this.finishedTimer);
+    this.runningTimer = undefined;
+    this.finishedTimer = undefined;
   }
 
   getNextPage(): void {
     this.finishedCurrentPage++;
-
     clearTimeout(this.finishedTimer);
     this.getFinishedExecutions();
   }

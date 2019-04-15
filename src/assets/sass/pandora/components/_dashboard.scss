@@ -1,5 +1,5 @@
-@import '../../assets/sass/scss/generic/variables';
-@import '../../assets/sass/pandora/settings/metis-variables';
+@import '../../scss/generic/variables';
+@import '../settings/metis-variables';
 
 $space-overflow-selected: 0.25em;
 
@@ -8,17 +8,14 @@ $space-overflow-selected: 0.25em;
     color: $eu-blue-link;
     text-decoration: underline;
   }
-  @media (max-width: $bp-med) {
-    margin: 0.5em 1em 0.5em 0;
-  }
 }
+
 .grid-cell,
 .grid-sub {
   padding: 1em 0;
   @media (max-width: $bp-med) {
     display: flex;
     align-items: center;
-    justify-content: space-between;
   }
   @media (min-width: $bp-med) {
     line-height: 2.25em;
@@ -72,39 +69,6 @@ $space-overflow-selected: 0.25em;
   margin-bottom: 2em;
   margin-right: -0.5em;
   overflow: hidden;
-}
-
-.ongoing-executions {
-  display: grid;
-  grid-column-gap: 1.75em;
-  grid-template-rows: auto;
-  grid-template-columns: 1fr 48fr 1fr;
-
-  .grid-header {
-    &:nth-of-type(2) {
-      grid-column: 2/4;
-    }
-  }
-
-  padding: 1em 1em 0 1em;
-}
-
-.executions-grid {
-  padding: 1em 0 0 1em;
-
-  @media (min-width: $bp-med) {
-    display: grid;
-    grid-column-gap: 1.75em;
-    grid-template-rows: auto;
-    grid-template-columns: [start] minmax(8em, 2fr) [sub-start] minmax(8em, 2fr) 1fr [sub-date-start] auto auto [sub-date-end] auto;
-  }
-
-  .grid-header {
-    display: none;
-    @media (min-width: $bp-med) {
-      display: block;
-    }
-  }
 }
 
 .row-divider {

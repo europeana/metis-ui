@@ -48,8 +48,17 @@ $orb-size-small-half: 0.75em;
 }
 
 .orb-status {
+  border-radius: $orb-size-small-half;
+  border-style: solid;
+  border-width: 1px;
   color: $white;
+  display: inline-block;
+  height: $orb-size-small;
+  margin: 0.2em 0.3em 0.2em 0;
+  min-width: $orb-size-small;
+  position: relative;
   text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
+  width: $orb-size-small;
 
   &.status-inqueue {
     background: $color-status-inqueue;
@@ -74,43 +83,6 @@ $orb-size-small-half: 0.75em;
   }
   &.status-warning {
     background: $color-status-warning;
-  }
-}
-
-.orb-status {
-  border-radius: $orb-size-small-half;
-  border-style: solid;
-  border-width: 1px;
-  display: inline-block;
-  height: $orb-size-small;
-  margin: 0.2em 0.3em 0.2em 0;
-  min-width: $orb-size-small;
-  position: relative;
-  width: $orb-size-small;
-
-  &.status-inqueue {
-    border-color: $color-status-inqueue;
-  }
-  &.status-cancelled {
-    border-color: $color-status-cancelled;
-  }
-  &.status-cleaning {
-    border-color: $color-status-cleaning;
-  }
-  &.status-failed {
-    border-color: $color-status-failed;
-  }
-  &.status-finished {
-    border-color: $color-status-finished;
-  }
-  &.status-pending {
-    border-color: $color-status-pending;
-  }
-  &.status-running {
-    border-color: $color-status-running;
-  }
-  &.status-warning {
-    border-color: $color-status-warning;
   }
 
   &.labelled {
@@ -169,7 +141,5 @@ $orb-size-small-half: 0.75em;
 }
 
 .labelled-orb .orb-status {
-  @media (min-width: $bp-med) {
-    margin-right: 0.5em;
-  }
+  margin-right: 0.75em;
 }

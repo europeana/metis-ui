@@ -56,10 +56,6 @@ $row-border-height-min: 3px;
   color: #ccc;
 }
 
-.time:not(.br) {
-  margin-right: 1em;
-}
-
 .time.empty::after {
   content: '--';
 }
@@ -127,10 +123,14 @@ $row-border-height-min: 3px;
     &::before {
       background: $color-bottom-edge;
       bottom: 0;
-      right: -2em;
+      right: $grid-size-massive-offset;
       height: $row-border-height-half;
       width: $grid-size-massive;
       z-index: 3;
+
+      @media (max-width: $bp-med) {
+        bottom: -0.5em;
+      }
     }
   }
 }
@@ -153,14 +153,61 @@ $row-border-height-min: 3px;
   }
 }
 
+@media (max-width: $bp-med) {
+  .grid-cell {
+    margin-bottom: 0.5em;
+    padding: 0.5em 1em 0.5em 1em;
+    justify-content: space-between;
+
+    // pull process stats over to right
+    &:nth-of-type(5n + 3) {
+      position: absolute;
+      right: 2em;
+    }
+
+    // put dates side by side
+    &:nth-of-type(5n + 4),
+    &:nth-of-type(5n + 5) {
+      display: inline-block;
+    }
+
+    .orb-status:last-of-type {
+      margin-right: 0;
+    }
+  }
+
+  .grid-sub {
+    flex-direction: row-reverse;
+    margin-left: 2em;
+    margin-right: 1em;
+    justify-content: end;
+
+    .orb-status {
+      margin-left: 0.75em;
+      margin-right: 0;
+    }
+  }
+
+  .row-start:not(:nth-child(7)) {
+    border-top: 1px solid $offwhite;
+  }
+
+  .row-divider::before,
+  .row-end::after {
+    display: none;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .time:not(.br) {
+    margin-right: 1em;
+  }
+}
+
 .grid-sub {
   align-items: center;
   display: flex;
 
-  @media (max-width: $bp-med) {
-    margin-left: 2em;
-    margin-right: 1em;
-  }
   &.start {
     grid-column-start: sub-start;
   }

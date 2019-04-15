@@ -1,6 +1,23 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+.executions-grid {
+  @media (min-width: $bp-med) {
+    display: grid;
+    grid-column-gap: 1.75em;
+    grid-template-rows: auto;
+    grid-template-columns: [start] minmax(8em, 2fr) [sub-start] minmax(8em, 2fr) 1fr [sub-date-start] auto auto [sub-date-end] auto;
+    padding: 1em 0 0 1em;
+  }
+
+  .grid-header {
+    display: none;
+    @media (min-width: $bp-med) {
+      display: block;
+    }
+  }
+}
+
 .svg-icon-spin {
   height: 23px;
   margin-left: 0.5em;
