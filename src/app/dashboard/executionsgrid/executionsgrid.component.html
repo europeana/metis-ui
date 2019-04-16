@@ -17,13 +17,12 @@
   <span class="grid-header last-header">
     {{ 'endtime' | translate }}
   </span>
-  <ng-container *ngFor="let execution of dsOverview; let i = index">
+  <ng-container *ngFor="let dsExecution of dsOverview">
     <app-gridrow
       #wrapper
-      [expanded]="i === selectedIndex"
-      [index]="i"
-      [dsExecution]="execution"
-      (closeExpanded)="setSelectedIndex($event)"
+      [expanded]="dsExecution.execution.id === selectedDsId"
+      [dsExecution]="dsExecution"
+      (closeExpanded)="setSelectedDsId($event)"
     ></app-gridrow>
     <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
   </ng-container>

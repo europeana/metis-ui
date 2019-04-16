@@ -118,6 +118,7 @@ export interface WorkflowExecution {
 export interface DatasetOverviewExecution {
   finishedDate?: string;
   startedDate?: string;
+  id: string;
   plugins: PluginExecutionOverview[];
 }
 

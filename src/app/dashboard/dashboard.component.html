@@ -26,6 +26,7 @@
         [showPluginLog]="showPluginLog"
         [runningExecutions]="runningExecutions"
         (setShowPluginLog)="showPluginLog = $event"
+        [selectedExecutionDsId]="selectedExecutionDsId"
       ></app-ongoingexecutions>
       <app-datasetlog
         *ngIf="showPluginLog"
@@ -35,15 +36,7 @@
     </div>
 
     <div class="metis-dashboard-right">
-      <app-executionsgrid></app-executionsgrid>
-      <!--
-      <app-executions
-        [runningExecutions]="runningExecutions"
-        [finishedExecutions]="finishedExecutions"
-        [isLoading]="finishedIsLoading"
-        [hasMore]="finishedHasMore"
-        (nextPage)="getNextPage()"
-      ></app-executions>
-    --></div>
+      <app-executionsgrid (selectedSet)="setSelectedExecutionDsId($event)"></app-executionsgrid>
+    </div>
   </div>
 </div>

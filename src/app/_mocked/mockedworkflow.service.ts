@@ -81,6 +81,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
         },
       },
       execution: {
+        id: 'execution-id-1',
         finishedDate: '2018-10-19T09:23:70.844Z',
         startedDate: '2018-10-19T09:05:40.844Z',
         plugins: [
@@ -145,6 +146,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
         },
       },
       execution: {
+        id: 'execution-id-1',
         startedDate: '2011-11-19T09:05:40.844Z',
         plugins: [
           {

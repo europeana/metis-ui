@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  Output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 
 import { environment } from '../../../environments/environment';
 import { DatasetOverview } from '../../_models';
@@ -15,12 +23,13 @@ import { GridrowComponent } from './gridrow';
 export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   dsOverview: DatasetOverview[];
   finishedTimer: number;
-  selectedIndex = -1;
+  selectedDsId = '';
   isLoading = true;
   isLoadingMore = false;
   hasMore = false;
   currentPage = 0;
 
+  @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
 
   constructor(private workflows: WorkflowService, private errors: ErrorService) {}
@@ -58,10 +67,11 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
     );
   }
 
-  setSelectedIndex(selectedIndex: number): void {
-    this.selectedIndex = selectedIndex;
+  setSelectedDsId(selectedDsId: string): void {
+    this.selectedDsId = selectedDsId;
     this.rows.forEach((r) => {
       r.expanded = false;
     });
+    this.selectedSet.emit(selectedDsId);
   }
 }

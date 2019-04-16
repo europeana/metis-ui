@@ -3,14 +3,7 @@
 
 $color-bottom-edge: #ccc;
 $color-right-edge: $color-bottom-edge;
-$h-line-item-color: $offwhite;
-
-$size-massive: 10000px;
-
-$row-border-height: 0.5em;
 $row-border-height-min: 3px;
-$row-border-height-half: 0.25em;
-$v-line-left-width: $row-border-height-half;
 
 @keyframes glowing {
   0% {
@@ -58,41 +51,9 @@ $v-line-left-width: $row-border-height-half;
   flex-wrap: wrap;
 }
 
-.grid-cell {
-  a {
-    color: $eu-blue-link;
-    text-decoration: underline;
-  }
-
-  .grid-cell .time.empty::after {
-    display: block;
-    width: 12em;
-  }
-
-  @media (max-width: $bp-med) {
-    margin: 0.5em 1em 0.5em 0;
-  }
-}
-.grid-cell,
-.grid-sub {
-  @media (max-width: $bp-med) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  @media (min-width: $bp-med) {
-    line-height: 2.25em;
-    padding: 1em 0;
-  }
-}
-
 .status-label,
 .time {
   color: #ccc;
-}
-
-.time:not(.br) {
-  margin-right: 1em;
 }
 
 .time.empty::after {
@@ -110,16 +71,6 @@ $v-line-left-width: $row-border-height-half;
     content: ' ';
     display: block;
     position: absolute;
-  }
-}
-
-// side edges
-.row-end,
-.row-start {
-  &::after {
-    height: $size-massive;
-    top: 0;
-    z-index: 3;
   }
 }
 
@@ -142,10 +93,10 @@ $v-line-left-width: $row-border-height-half;
   &::after {
     background: $color-bottom-edge;
     bottom: 0;
-    height: $row-border-height;
+    height: $grid-row-border-height;
     right: -3em;
     transform: translateY(5px);
-    width: $size-massive;
+    width: $grid-size-massive;
     z-index: 2;
   }
 }
@@ -165,36 +116,6 @@ $v-line-left-width: $row-border-height-half;
 
 .row-start {
   grid-column-start: start;
-
-  // hover / active indicator
-  &::after {
-    background: $white;
-    left: -1em;
-    width: $v-line-left-width;
-  }
-
-  &.active {
-    &::after {
-      background: $eu-jade;
-    }
-  }
-
-  // hover / click target
-  &::before {
-    cursor: pointer;
-    height: 500%;
-    top: 0;
-    width: $size-massive;
-    @media (min-width: $bp-med) {
-      height: 100%;
-    }
-  }
-
-  // avoid trapping link click events
-  a {
-    position: relative;
-    z-index: 1;
-  }
 }
 
 .row-start:not(.active):hover {
@@ -202,10 +123,14 @@ $v-line-left-width: $row-border-height-half;
     &::before {
       background: $color-bottom-edge;
       bottom: 0;
-      right: -2em;
+      right: $grid-size-massive-offset;
       height: $row-border-height-half;
-      width: $size-massive;
+      width: $grid-size-massive;
       z-index: 3;
+
+      @media (max-width: $bp-med) {
+        bottom: -0.5em;
+      }
     }
   }
 }
@@ -216,27 +141,66 @@ $v-line-left-width: $row-border-height-half;
   pointer-events: none;
 }
 
-.row-steps {
-  // horizontal line (top)
-  &::before {
-    background: $h-line-item-color;
-    height: $row-border-height;
-    top: 0;
-    transform: translateX(-20%);
-    width: $size-massive;
-    z-index: 4;
-  }
-}
-
 .row-start.active + .row-steps {
   // underline the open item
   &::after {
-    background: $h-line-item-color;
+    background: $grid-h-line-item-color;
     height: 2px;
     bottom: 0;
     transform: translateX(-20%);
-    width: $size-massive;
+    width: $grid-size-massive;
     z-index: 1;
+  }
+}
+
+@media (max-width: $bp-med) {
+  .grid-cell {
+    margin-bottom: 0.5em;
+    padding: 0.5em 1em 0.5em 1em;
+    justify-content: space-between;
+
+    // pull process stats over to right
+    &:nth-of-type(5n + 3) {
+      position: absolute;
+      right: 2em;
+    }
+
+    // put dates side by side
+    &:nth-of-type(5n + 4),
+    &:nth-of-type(5n + 5) {
+      display: inline-block;
+    }
+
+    .orb-status:last-of-type {
+      margin-right: 0;
+    }
+  }
+
+  .grid-sub {
+    flex-direction: row-reverse;
+    margin-left: 2em;
+    margin-right: 1em;
+    justify-content: end;
+
+    .orb-status {
+      margin-left: 0.75em;
+      margin-right: 0;
+    }
+  }
+
+  .row-start:not(:nth-child(7)) {
+    border-top: 1px solid $offwhite;
+  }
+
+  .row-divider::before,
+  .row-end::after {
+    display: none;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .time:not(.br) {
+    margin-right: 1em;
   }
 }
 
@@ -244,19 +208,10 @@ $v-line-left-width: $row-border-height-half;
   align-items: center;
   display: flex;
 
-  @media (max-width: $bp-med) {
-    margin-left: 2em;
-    margin-right: 1em;
-  }
   &.start {
     grid-column-start: sub-start;
   }
 
-  &.labelled-orb:first-child {
-    @media (min-width: $bp-med) {
-      margin-right: 0.5em;
-    }
-  }
   &.dates {
     grid-column-start: sub-date-start;
     grid-column-end: sub-date-end;

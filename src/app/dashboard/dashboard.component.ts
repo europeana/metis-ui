@@ -14,20 +14,20 @@ import {
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer: number;
+  runningTimer: number | undefined;
   runningIsLoading = true;
   runningIsFirstLoading = true;
   finishedExecutions: WorkflowExecution[];
-  finishedTimer: number;
+  finishedTimer: number | undefined;
   finishedIsLoading = true;
   finishedIsFirstLoading = true;
   finishedCurrentPage = 0;
   finishedHasMore = false;
+  selectedExecutionDsId: string | undefined;
   showPluginLog?: PluginExecution;
   favoriteDatasets?: Dataset[];
 
@@ -58,11 +58,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
     clearTimeout(this.finishedTimer);
+    this.runningTimer = undefined;
+    this.finishedTimer = undefined;
   }
 
   getNextPage(): void {
     this.finishedCurrentPage++;
-
     clearTimeout(this.finishedTimer);
     this.getFinishedExecutions();
   }
@@ -124,5 +125,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.finishedIsFirstLoading = false;
       },
     );
+  }
+
+  setSelectedExecutionDsId(id: string): void {
+    this.selectedExecutionDsId = id;
   }
 }

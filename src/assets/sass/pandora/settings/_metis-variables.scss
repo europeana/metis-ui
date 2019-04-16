@@ -3,11 +3,20 @@
 $border-radius: 2px;
 $tab-header-min-height: 4.9em;
 
-$color-status-warning: lighten($eu-orange, 30%);
+$color-status-warning: $eu-light-orange;
 $color-status-inqueue: $eu-purple;
-$color-status-cleaning: lighten($eu-blue, 40%);
+
+$color-status-cleaning: $eu-light-blue-orb;
 $color-status-pending: $eu-blue;
 $color-status-running: $eu-blue;
 $color-status-finished: $eu-jade;
 $color-status-cancelled: $eu-yellow;
 $color-status-failed: $eu-raspberry;
+
+$grid-size-massive: 10000em;
+$grid-size-massive-offset: -5000em;
+$grid-row-border-height: 0.5em;
+$grid-h-line-item-color: $offwhite;
+
+$row-border-height-half: 0.25em;
+$v-line-left-width: $row-border-height-half;

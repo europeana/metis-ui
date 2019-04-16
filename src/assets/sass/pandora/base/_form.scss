@@ -137,7 +137,7 @@
       text-transform: uppercase;
 
       &:disabled {
-        background: lighten($eu-jade, 30%);
+        background: $eu-light-jade;
         cursor: not-allowed;
       }
     }
@@ -147,7 +147,7 @@
       color: $eu-jade;
 
       &:disabled {
-        color: lighten($eu-jade, 30%);
+        color: $eu-light-jade;
       }
     }
 
