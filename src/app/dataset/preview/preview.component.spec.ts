@@ -182,13 +182,14 @@ describe('PreviewComponent', () => {
 
   it('toggles the editor theme', () => {
     component.datasetData = mockDataset;
-    expect(component.editorIsDefaultTheme).toEqual(true);
+    fixture.detectChanges();
+    expect(component.editorConfig.theme).toEqual('default');
     component.transformSamples('default');
     fixture.detectChanges();
     component.onThemeSet(false);
-    expect(component.editorIsDefaultTheme).toEqual(false);
+    expect(component.editorConfig.theme).not.toEqual('default');
     component.onThemeSet(true);
-    expect(component.editorIsDefaultTheme).toEqual(true);
+    expect(component.editorConfig.theme).toEqual('default');
   });
 
   it('has utility to strip blank lines', () => {

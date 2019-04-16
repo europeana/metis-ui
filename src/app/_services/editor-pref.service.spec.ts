@@ -43,8 +43,8 @@ describe('editor pref service', () => {
 
   it('indicates if the toggled theme is the default theme', () => {
     expect(service.getEditorPref()).toEqual('default');
-    expect(service.toggleTheme(getCodeMirrorEditors())).toEqual(false);
-    expect(service.toggleTheme(getCodeMirrorEditors())).toEqual(true);
+    expect(service.toggleTheme(getCodeMirrorEditors())).not.toEqual('default');
+    expect(service.toggleTheme(getCodeMirrorEditors())).toEqual('default');
   });
 
   it('provides an editor configuration object (read only)', () => {

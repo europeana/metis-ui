@@ -53,11 +53,9 @@ export class MappingComponent implements OnInit {
   xsltToSave?: string;
   notification?: Notification;
   msgXSLTSuccess: string;
-  editorIsDefaultTheme = true;
 
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
-    this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     this.loadCustomXSLT();
   }
@@ -102,13 +100,14 @@ export class MappingComponent implements OnInit {
   }
 
   onThemeSet(toDefault: boolean): void {
+    const isDef = this.editorPrefs.currentThemeIsDefault();
     if (toDefault) {
-      if (!this.editorIsDefaultTheme) {
-        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      if (!isDef) {
+        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
       }
     } else {
-      if (this.editorIsDefaultTheme) {
-        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      if (isDef) {
+        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
       }
     }
   }

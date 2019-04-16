@@ -26,7 +26,7 @@
       <h3>{{ 'xsltcustom' | translate }}</h3>
       <app-theme-selector
         (themeSet)="onThemeSet($event)"
-        [editorIsDefaultTheme]="editorIsDefaultTheme"
+        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
       ></app-theme-selector>
     </div>
     <div class="view-sample-editor">
