@@ -89,7 +89,7 @@
 
         <app-theme-selector
           (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorIsDefaultTheme"
+          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
         ></app-theme-selector>
         <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
           <a (click)="expandSample(i)">-</a>
@@ -144,7 +144,7 @@
       </h3>
       <app-theme-selector
         (themeSet)="onThemeSet($event)"
-        [editorIsDefaultTheme]="editorIsDefaultTheme"
+        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
       ></app-theme-selector>
     </div>
     <div
@@ -182,7 +182,7 @@
         </h3>
         <app-theme-selector
           (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorIsDefaultTheme"
+          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
         ></app-theme-selector>
       </div>
       <div class="view-sample-editor">

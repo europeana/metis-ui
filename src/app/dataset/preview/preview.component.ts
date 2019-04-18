@@ -82,11 +82,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
   loadingTransformSamples = false;
   timeout?: number;
   downloadUrlCache: { [key: string]: string } = {};
-  editorIsDefaultTheme = true;
 
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
-    this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.nosample = this.translate.instant('nosample');
     this.addExecutionsFilter();
     this.prefillFilters();
@@ -293,13 +291,14 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   onThemeSet(toDefault: boolean): void {
+    const isDef = this.editorPrefs.currentThemeIsDefault();
     if (toDefault) {
-      if (!this.editorIsDefaultTheme) {
-        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      if (!isDef) {
+        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
       }
     } else {
-      if (this.editorIsDefaultTheme) {
-        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      if (isDef) {
+        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
       }
     }
   }

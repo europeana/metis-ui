@@ -98,12 +98,13 @@ describe('MappingComponent', () => {
   }));
 
   it('toggles the editor theme', () => {
+    fixture.detectChanges();
     component.allEditors = getCodeMirrorEditors();
-    expect(component.editorIsDefaultTheme).toEqual(true);
+    expect(component.editorConfig.theme).toEqual('default');
     component.onThemeSet(false);
     fixture.detectChanges();
-    expect(component.editorIsDefaultTheme).toEqual(false);
+    expect(component.editorConfig.theme).not.toEqual('default');
     component.onThemeSet(true);
-    expect(component.editorIsDefaultTheme).toEqual(true);
+    expect(component.editorConfig.theme).toEqual('default');
   });
 });
