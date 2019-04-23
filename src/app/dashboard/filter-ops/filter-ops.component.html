@@ -16,8 +16,11 @@
               </span>
               <span
                 *ngFor="let op of filter.options; index as i"
-                [ngClass]="{ 'continue-row-med': (i + 1) % 5 === 1, 'end-row' : i+1 === filter.options.length }"
-              ><a
+                [ngClass]="{
+                  'continue-row-med': (i + 1) % 5 === 1,
+                  'end-row': i + 1 === filter.options.length
+                }"
+                ><a
                   (click)="toggleParamValue(filter.name, op, filter.multi, i)"
                   *ngIf="!op.input"
                   [ngClass]="{ active: valueIsSet(filter.name, op.value, i) }"
@@ -48,8 +51,7 @@
                     (focus)="
                       restoreParamFromInput(filter.name, $event.target, op.group, filter.multi, i)
                     "
-                  />
-                </label
+                  /> </label
               ></span>
             </ng-container>
           </div>

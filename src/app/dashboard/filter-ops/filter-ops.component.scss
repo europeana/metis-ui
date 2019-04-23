@@ -1,8 +1,8 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
-$active-colour:        #e0f1e5;
-$border-colour:         #eaeaea;
+$active-colour: #e0f1e5;
+$border-colour: #eaeaea;
 $speech-bubble-offset: 6.7em;
 
 .dropdown.arrow-right .dropdown-wrapper::before {
@@ -57,15 +57,15 @@ span {
   text-transform: capitalize;
   white-space: nowrap;
 
-  a{
+  a {
     text-align: center;
     height: 100%;
     width: 100%;
   }
 }
 
-span:not(.start-row){
-  border:        1px solid $border-colour;
+span:not(.start-row) {
+  border: 1px solid $border-colour;
   border-radius: 3px;
 }
 
@@ -73,7 +73,7 @@ span:not(.start-row){
   font-weight: bold;
 }
 
-.end-row::after{
+.end-row::after {
   background: $border-colour;
   content: ' ';
   height: 2px;
@@ -85,7 +85,7 @@ span:not(.start-row){
 .filter-grid {
   display: grid;
   grid-column-gap: 1.25em;
-  grid-row-gap:    0.75em;
+  grid-row-gap: 0.75em;
   grid-template-rows: auto;
   padding: 1em 0 1em 1em;
 
