@@ -18,18 +18,9 @@
   }
 }
 
-.svg-icon-spin {
-  height: 23px;
-  margin-left: 0.5em;
-}
-
-.grid-footer,
-.grid-top-header {
-  display: flex;
-  align-items: center;
-}
-
 .grid-footer {
+  align-items: center;
+  display: flex;
   justify-content: center;
   .svg-icon-spin {
     margin-left: 0.25em;

@@ -75,7 +75,7 @@ export class StatisticsComponent implements OnInit {
       .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
       .subscribe(
         (result) => {
-          this.statistics.nodePathStatistics.map((stat) => {
+          this.statistics.nodePathStatistics.forEach((stat) => {
             if (stat.xPath === result.xPath) {
               stat.moreLoaded = true;
               stat.nodeValueStatistics = result.nodeValueStatistics;

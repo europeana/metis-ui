@@ -1,0 +1,63 @@
+<div class="filter-ops">
+  <app-load-title title="{{ title }}" [isLoading]="isLoading"></app-load-title>
+
+  <ul class="filter" (clickOutside)="hide()">
+    <li class="dropdown arrow-right">
+      <a (click)="toggle()">{{ 'filter' | translate }}</a>
+
+      <a>{{ 'reset' | translate }}</a>
+
+      <div class="dropdown-wrapper" [ngClass]="{ hidden: !showing }">
+        <div class="dropdown-content">
+          <div class="filter-grid">
+            <ng-container *ngFor="let filter of conf">
+              <span class="start-row" (click)="showParams()">
+                {{ filter.label }}
+              </span>
+              <span
+                *ngFor="let op of filter.options; index as i"
+                [ngClass]="{ 'continue-row-med': (i + 1) % 5 === 1, 'end-row' : i+1 === filter.options.length }"
+              ><a
+                  (click)="toggleParamValue(filter.name, op, filter.multi, i)"
+                  *ngIf="!op.input"
+                  [ngClass]="{ active: valueIsSet(filter.name, op.value, i) }"
+                  class="toggle"
+                >
+                  {{ op.value }}
+                </a>
+                <label
+                  *ngIf="op.input"
+                  [ngClass]="{ active: valueIsSet(filter.name, inputRef.value, i) }"
+                  class="input-label"
+                >
+                  {{ op.value }}
+                  <input
+                    #inputRef
+                    id="{{ op.input.id }}"
+                    type="{{ op.input.type }}"
+                    class="{{ op.group }}"
+                    (change)="
+                      toggleParamValue(
+                        filter.name,
+                        { value: $event.target.value, group: op.group },
+                        filter.multi,
+                        i
+                      );
+                      op.input.fnOnSet ? op.input.fnOnSet(inputRef.value) : 0
+                    "
+                    (focus)="
+                      restoreParamFromInput(filter.name, $event.target, op.group, filter.multi, i)
+                    "
+                  />
+                </label
+              ></span>
+            </ng-container>
+          </div>
+          <div class="footer">
+            <a>Reset?</a>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

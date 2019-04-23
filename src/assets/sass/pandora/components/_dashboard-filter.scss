@@ -1,0 +1,15 @@
+//@import '../../scss/generic/variables';
+//@import '../settings/metis-variables';
+
+.filter-ops {
+  h3 {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .filter li {
+    position: static; // remove relative default allowing absolute child to widen to next relative
+  }
+}
