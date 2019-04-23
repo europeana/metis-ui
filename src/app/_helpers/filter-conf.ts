@@ -4,7 +4,7 @@ export const filterConf: filterExecution[] = [
   {
     label: 'workflow',
     name: 'workflow',
-    multi: 1,
+    multi: true,
     options: [
       { value: 'enrich' },
       { value: 'import a' },
@@ -18,7 +18,6 @@ export const filterConf: filterExecution[] = [
   {
     label: 'date',
     name: 'date',
-    multi: 0,
     options: [
       { value: 'last 24' },
       { value: 'last week' },
@@ -56,7 +55,7 @@ export const filterConf: filterExecution[] = [
   {
     label: 'status',
     name: 'status',
-    multi: 1,
+    multi: true,
     options: [
       { value: 'cancelled' },
       { value: 'error' },
@@ -69,7 +68,6 @@ export const filterConf: filterExecution[] = [
   {
     label: 'user',
     name: 'user',
-    multi: 0,
     options: [{ value: 'Andy' }, { value: 'Jimmy' }, { value: 'Xena' }],
   },
 ];

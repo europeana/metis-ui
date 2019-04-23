@@ -1,6 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { filterConf } from '../../_helpers/filter-conf';
-import { filterExecution, filterExecutionOption } from '../../_models/filterExecution';
+import {
+  filterExecution,
+  filterExecutionOption,
+  filterParamValue,
+} from '../../_models/filterExecution';
 
 @Component({
   selector: 'app-filter-ops',
@@ -10,7 +14,9 @@ import { filterExecution, filterExecutionOption } from '../../_models/filterExec
 export class FilterOpsComponent {
   showing: boolean = true;
   conf: filterExecution[];
+
   params: any = {};
+
   settingFocus = false;
   @Input() isLoading: boolean;
   @Input() title: string;
@@ -34,18 +40,20 @@ export class FilterOpsComponent {
     return this.valueIndex(name, value, inputRef) > -1;
   }
 
-  addParam(name: string, op: filterExecutionOption, multi: number, inputRef?: number): void {
-    if (multi === 0) {
+  addParam(name: string, op: filterExecutionOption, multi?: boolean, inputRef?: number): void {
+    if (multi === undefined || multi === false) {
       this.clearParam(name, op.group);
     }
+
     this.params[name].push({ value: op.value, group: op.group, inputRef: inputRef });
+    this.showParams();
   }
 
   restoreParamFromInput(
     name: string,
     el: HTMLInputElement,
     group: string,
-    multi: number,
+    multi?: boolean,
     inputRef?: number,
   ): void {
     if (group) {
@@ -70,7 +78,7 @@ export class FilterOpsComponent {
   toggleParamValue(
     name: string,
     op: filterExecutionOption,
-    multi: number,
+    multi?: boolean,
     inputRef?: number,
   ): void {
     if (op.value.length > 0) {
@@ -91,13 +99,12 @@ export class FilterOpsComponent {
 
   clearParam(name: string, group?: string): void {
     if (group) {
-      this.params[name] = this.params[name].filter((param: any) => {
+      this.params[name] = this.params[name].filter((param: filterParamValue) => {
         return param.group === group;
       });
     } else {
       this.params[name] = [];
     }
-    this.showParams();
   }
 
   clearParams(): void {

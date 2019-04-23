@@ -54,6 +54,7 @@ input[type='date'] {
 span {
   align-items: center;
   display: flex;
+  height: 2em;
   text-transform: capitalize;
   white-space: nowrap;
 
@@ -73,13 +74,17 @@ span:not(.start-row) {
   font-weight: bold;
 }
 
-.end-row::after {
-  background: $border-colour;
-  content: ' ';
-  height: 2px;
-  left: -500px;
-  position: absolute;
-  width: 1000px;
+.end-row {
+  margin-bottom: 2em;
+  &::after {
+    background: $border-colour;
+    content: ' ';
+    height: 1px;
+    left: 1em;
+    position: absolute;
+    right: 1em;
+    transform: translateY(2em);
+  }
 }
 
 .filter-grid {
@@ -87,7 +92,7 @@ span:not(.start-row) {
   grid-column-gap: 1.25em;
   grid-row-gap: 0.75em;
   grid-template-rows: auto;
-  padding: 1em 0 1em 1em;
+  padding: 1em;
 
   @media (min-width: $bp-small-3) {
     grid-auto-flow: row;
