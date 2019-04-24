@@ -1,9 +1,9 @@
-import { filterExecution } from '../_models/filterExecution';
+import { FilterExecution } from '../_models/filterExecution';
 
-export const filterConf: filterExecution[] = [
+export const filterConf: FilterExecution[] = [
   {
     label: 'workflow',
-    name: 'workflow',
+    name: 'WORKFLOW',
     multi: true,
     options: [
       { value: 'enrich' },
@@ -17,7 +17,7 @@ export const filterConf: filterExecution[] = [
   },
   {
     label: 'date',
-    name: 'date',
+    name: 'DATE',
     options: [
       { value: 'last 24' },
       { value: 'last week' },
@@ -28,7 +28,7 @@ export const filterConf: filterExecution[] = [
           id: 'date-from',
           type: 'date',
           fnOnSet: (val: string): void => {
-            let dateTo = document.querySelector('#date-to');
+            const dateTo = document.querySelector('#date-to');
             if (dateTo) {
               val ? dateTo.setAttribute('min', val) : dateTo.removeAttribute('min');
             }
@@ -42,7 +42,7 @@ export const filterConf: filterExecution[] = [
           id: 'date-to',
           type: 'date',
           fnOnSet: (val: string): void => {
-            let dateFrom = document.querySelector('#date-from');
+            const dateFrom = document.querySelector('#date-from');
             if (dateFrom) {
               val ? dateFrom.setAttribute('max', val) : dateFrom.removeAttribute('max');
             }
@@ -54,7 +54,7 @@ export const filterConf: filterExecution[] = [
   },
   {
     label: 'status',
-    name: 'status',
+    name: 'STATUS',
     multi: true,
     options: [
       { value: 'cancelled' },
@@ -64,10 +64,5 @@ export const filterConf: filterExecution[] = [
       { value: 'running' },
       { value: 'success' },
     ],
-  },
-  {
-    label: 'user',
-    name: 'user',
-    options: [{ value: 'Andy' }, { value: 'Jimmy' }, { value: 'Xena' }],
   },
 ];

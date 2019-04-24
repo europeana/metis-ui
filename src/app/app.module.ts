@@ -20,6 +20,7 @@ import {
   GridrowComponent,
   OngoingexecutionsComponent,
 } from './dashboard';
+import { FilterOpsComponent } from './dashboard/filter-ops';
 import {
   ActionbarComponent,
   DatasetComponent,
@@ -35,7 +36,6 @@ import {
   StatisticsComponent,
   WorkflowComponent,
 } from './dataset';
-import { FilterOpsComponent } from './dashboard/filter-ops';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
 import { LoadTitleComponent } from './load-title';

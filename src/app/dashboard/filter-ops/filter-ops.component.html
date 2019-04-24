@@ -3,15 +3,13 @@
 
   <ul class="filter" (clickOutside)="hide()">
     <li class="dropdown arrow-right">
-      <a (click)="toggle()">{{ 'filter' | translate }}</a>
-
-      <a>{{ 'reset' | translate }}</a>
-
+      <a (click)="toggle()" [ngClass]="{ active: anyValueSet() }">{{ 'filter' | translate }}</a>
+      <a (click)="clearParams()">{{ 'reset' | translate }}</a>
       <div class="dropdown-wrapper" [ngClass]="{ hidden: !showing }">
         <div class="dropdown-content">
           <div class="filter-grid">
             <ng-container *ngFor="let filter of conf">
-              <span class="start-row" (click)="showParams()">
+              <span class="start-row filter-cell" (click)="showParams()">
                 {{ filter.label }}
               </span>
               <span
@@ -20,6 +18,7 @@
                   'continue-row-med': (i + 1) % 5 === 1,
                   'end-row': i + 1 === filter.options.length
                 }"
+                class="filter-cell"
                 ><a
                   (click)="toggleParamValue(filter.name, op, filter.multi, i)"
                   *ngIf="!op.input"
@@ -51,12 +50,12 @@
                     (focus)="
                       restoreParamFromInput(filter.name, $event.target, op.group, filter.multi, i)
                     "
+                    (restore)="
+                      restoreParamFromInput(filter.name, $event.target, op.group, filter.multi, i)
+                    "
                   /> </label
               ></span>
             </ng-container>
-          </div>
-          <div class="footer">
-            <a>Reset?</a>
           </div>
         </div>
       </div>

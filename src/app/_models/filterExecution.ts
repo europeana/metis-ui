@@ -1,32 +1,28 @@
-export type filterParamType = 'workflow' | 'date' | 'status' | 'user';
+export type FilterParamType = 'WORKFLOW' | 'DATE' | 'STATUS' | 'USER';
 
-export interface filterParamValue {
+export type FilterParamHash = { [key in FilterParamType]: FilterParamValue[] };
+
+export interface FilterParamValue {
   group?: string;
   inputRef?: number;
   value: string;
 }
 
-export interface filterExecutionParamData {
-  fnOnSet?(val: string): void;
+export interface FilterExecutionOptionInput {
   id?: string;
   type: string;
-}
-
-export interface filterExecutionOptionInput {
   fnOnSet?(val: string): void;
-  id?: string;
-  type: string;
 }
 
-export interface filterExecutionOption {
+export interface FilterExecutionOption {
   group?: string;
-  input?: filterExecutionOptionInput;
+  input?: FilterExecutionOptionInput;
   value: string;
 }
 
-export interface filterExecution {
+export interface FilterExecution {
   label: string;
   multi?: boolean;
-  name: filterParamType;
-  options?: filterExecutionOption[];
+  name: FilterParamType;
+  options?: FilterExecutionOption[];
 }
