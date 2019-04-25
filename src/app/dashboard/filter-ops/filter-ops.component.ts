@@ -96,7 +96,10 @@ export class FilterOpsComponent {
     inputRef?: number,
   ): void {
     if (op.value.length > 0) {
-      if (this.valueIsSet(name, op.value, inputRef)) {
+      if (inputRef) {
+        this.clearParamValuesByInputRef(name, inputRef);
+        this.addParam(name, op, multi, inputRef);
+      } else if (this.valueIsSet(name, op.value, inputRef)) {
         this.clearParamValue(name, op.value, inputRef);
       } else {
         this.addParam(name, op, multi, inputRef);
@@ -109,6 +112,12 @@ export class FilterOpsComponent {
     if (index > -1) {
       this.params[name].splice(index, 1);
     }
+  }
+
+  clearParamValuesByInputRef(name: FilterParamType, inputRef?: number): void {
+    this.params[name] = this.params[name].filter((param: FilterParamValue) => {
+      return param.inputRef !== inputRef;
+    });
   }
 
   clearParam(name: FilterParamType, group?: string): void {
@@ -126,7 +135,7 @@ export class FilterOpsComponent {
   }
 
   showParams(): void {
-    console.error('Params: ' + JSON.stringify(this.params));
+    console.log('Params: ' + JSON.stringify(this.params));
   }
 
   hide(): void {

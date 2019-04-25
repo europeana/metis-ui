@@ -20,9 +20,9 @@
                 }"
                 class="filter-cell"
                 ><a
-                  (click)="toggleParamValue(filter.name, op, filter.multi, i)"
+                  (click)="toggleParamValue(filter.name, op, filter.multi)"
                   *ngIf="!op.input"
-                  [ngClass]="{ active: valueIsSet(filter.name, op.value, i) }"
+                  [ngClass]="{ active: valueIsSet(filter.name, op.value) }"
                   class="toggle"
                 >
                   {{ op.value }}

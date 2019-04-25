@@ -152,6 +152,18 @@ describe('FilterOpsComponent', () => {
     expect(component.params.WORKFLOW.length).toEqual(0);
   });
 
+  it('can clear values by input ref', () => {
+    expect(component.params.WORKFLOW.length).toEqual(0);
+    component.addParam('WORKFLOW', { value: 'VALUE 1', group: 'GROUP' }, true, 1);
+    component.addParam('WORKFLOW', { value: 'VALUE 2', group: 'GROUP' }, true, 2);
+    expect(component.params.WORKFLOW.length).toEqual(2);
+
+    component.clearParamValuesByInputRef('WORKFLOW', 1);
+    expect(component.params.WORKFLOW.length).toEqual(1);
+    component.clearParamValuesByInputRef('WORKFLOW', 2);
+    expect(component.params.WORKFLOW.length).toEqual(0);
+  });
+
   it('toggles values when same value re-set', () => {
     expect(component.valueIsSet('WORKFLOW', testVal1)).toBeFalsy();
     component.toggleParamValue('WORKFLOW', { value: testVal1 });
