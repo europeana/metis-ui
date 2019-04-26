@@ -1,6 +1,6 @@
-import { FilterExecution } from '../_models/filterExecution';
+import { FilterExecutionConf } from '../_models/filterExecution';
 
-export const filterConf: FilterExecution[] = [
+export const filterConf: FilterExecutionConf[] = [
   {
     label: 'workflow',
     name: 'WORKFLOW',

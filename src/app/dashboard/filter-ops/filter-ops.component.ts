@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 
 import { filterConf } from '../../_helpers/filter-conf';
 import {
-  FilterExecution,
-  FilterExecutionOption,
+  FilterExecutionConf,
+  FilterExecutionConfOption,
   FilterParamHash,
   FilterParamType,
   FilterParamValue,
@@ -16,7 +16,7 @@ import {
 })
 export class FilterOpsComponent {
   showing = false;
-  conf: FilterExecution[];
+  conf: FilterExecutionConf[];
   params: FilterParamHash;
   settingFocus = false;
   @Input() isLoading: boolean;
@@ -53,7 +53,7 @@ export class FilterOpsComponent {
 
   addParam(
     name: FilterParamType,
-    op: FilterExecutionOption,
+    op: FilterExecutionConfOption,
     multi?: boolean,
     inputRef?: number,
   ): void {
@@ -91,7 +91,7 @@ export class FilterOpsComponent {
 
   toggleParamValue(
     name: FilterParamType,
-    op: FilterExecutionOption,
+    op: FilterExecutionConfOption,
     multi?: boolean,
     inputRef?: number,
   ): void {

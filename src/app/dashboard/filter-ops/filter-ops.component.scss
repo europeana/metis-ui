@@ -15,6 +15,10 @@ $speech-bubble-offset: 6.7em;
   right: $speech-bubble-offset;
 }
 
+.dropdown > a:last-of-type::after {
+  display: none;
+}
+
 .dropdown-wrapper.hidden {
   display: none;
 }

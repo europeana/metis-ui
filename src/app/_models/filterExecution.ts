@@ -8,21 +8,21 @@ export interface FilterParamValue {
   value: string;
 }
 
-export interface FilterExecutionOptionInput {
+export interface FilterExecutionConfOptionInput {
   id?: string;
   type: string;
   fnOnSet?(val: string): void;
 }
 
-export interface FilterExecutionOption {
+export interface FilterExecutionConfOption {
   group?: string;
-  input?: FilterExecutionOptionInput;
+  input?: FilterExecutionConfOptionInput;
   value: string;
 }
 
-export interface FilterExecution {
+export interface FilterExecutionConf {
   label: string;
   multi?: boolean;
   name: FilterParamType;
-  options?: FilterExecutionOption[];
+  options?: FilterExecutionConfOption[];
 }
