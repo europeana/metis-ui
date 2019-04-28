@@ -1,20 +1,20 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 
-import { filterConf } from '../../_helpers/filter-conf';
 import {
   FilterExecutionConf,
-  FilterExecutionConfOption,
+  FilterExecutionProvider,
   FilterParamHash,
-  FilterParamType,
-  FilterParamValue,
 } from '../../_models/filterExecution';
+
+import { filterConf } from './filter-ops-conf';
+import { FilterOptionComponent } from './filter-option';
 
 @Component({
   selector: 'app-filter-ops',
   templateUrl: './filter-ops.component.html',
   styleUrls: ['./filter-ops.component.scss'],
 })
-export class FilterOpsComponent {
+export class FilterOpsComponent implements FilterExecutionProvider {
   showing = false;
   conf: FilterExecutionConf[];
   params: FilterParamHash;
@@ -22,19 +22,11 @@ export class FilterOpsComponent {
   @Input() isLoading: boolean;
   @Input() title: string;
 
+  @ViewChildren(FilterOptionComponent) optionComponents: QueryList<FilterOptionComponent>;
+
   constructor() {
     this.conf = filterConf;
     this.params = Object.assign({}, ...this.conf.map((s) => ({ [s.name]: [] })));
-  }
-
-  valueIndex(name: FilterParamType, value: string, inputRef?: number): number {
-    let res = -1;
-    this.params[name].forEach((item: FilterParamValue, i: number) => {
-      if (item.value === value && item.inputRef === inputRef) {
-        res = i;
-      }
-    });
-    return res;
   }
 
   anyValueSet(): boolean {
@@ -47,91 +39,52 @@ export class FilterOpsComponent {
     return res;
   }
 
-  valueIsSet(name: FilterParamType, value: string, inputRef?: number): boolean {
-    return this.valueIndex(name, value, inputRef) > -1;
-  }
-
-  addParam(
-    name: FilterParamType,
-    op: FilterExecutionConfOption,
-    multi?: boolean,
-    inputRef?: number,
-  ): void {
-    if (multi === undefined || !multi) {
-      this.clearParam(name, op.group);
+  getSetSummary(): string {
+    if (this.showing) {
+      return '';
     }
-    this.params[name].push({ value: op.value, group: op.group, inputRef });
-    this.showParams();
-  }
-
-  restoreParamFromInput(
-    name: FilterParamType,
-    el: HTMLInputElement,
-    group?: string,
-    multi?: boolean,
-    inputRef?: number,
-  ): void {
-    if (group) {
-      const clss = el.getAttribute('class');
-
-      if (clss && clss.length > 0 && !this.settingFocus) {
-        this.settingFocus = true;
-        document.querySelectorAll('.' + clss).forEach((item) => {
-          if (el !== item) {
-            item.dispatchEvent(new Event('restore'));
-          }
-        });
-        this.settingFocus = false;
+    const res: string[] = [];
+    Object.entries(this.params).forEach(([name, val]) => {
+      if (val.length > 0) {
+        res.push(name.charAt(0).toUpperCase() + name.slice(1).toLowerCase());
       }
-    }
-    if (el.value.length > 0 && !this.valueIsSet(name, el.value, inputRef)) {
-      this.addParam(name, { value: el.value, group }, multi, inputRef);
-    }
+    });
+    return res.join(', ');
   }
 
-  toggleParamValue(
-    name: FilterParamType,
-    op: FilterExecutionConfOption,
-    multi?: boolean,
-    inputRef?: number,
-  ): void {
-    if (op.value.length > 0) {
-      if (inputRef) {
-        this.clearParamValuesByInputRef(name, inputRef);
-        this.addParam(name, op, multi, inputRef);
-      } else if (this.valueIsSet(name, op.value, inputRef)) {
-        this.clearParamValue(name, op.value, inputRef);
-      } else {
-        this.addParam(name, op, multi, inputRef);
+  getInputGroup(group: string): FilterOptionComponent[] {
+    const res: FilterOptionComponent[] = [];
+    this.optionComponents.toArray().forEach((item) => {
+      if (item.config.group === group) {
+        res.push(item);
       }
-    }
+    });
+    return res;
   }
 
-  clearParamValue(name: FilterParamType, value: string, inputRef?: number): void {
-    const index = this.valueIndex(name, value, inputRef);
-    if (index > -1) {
-      this.params[name].splice(index, 1);
-    }
-  }
-
-  clearParamValuesByInputRef(name: FilterParamType, inputRef?: number): void {
-    this.params[name] = this.params[name].filter((param: FilterParamValue) => {
-      return param.inputRef !== inputRef;
+  getInputGroupElements(group: string): HTMLElement[] {
+    return this.getInputGroup(group).map((item) => {
+      return item.input.nativeElement;
     });
   }
 
-  clearParam(name: FilterParamType, group?: string): void {
-    if (group) {
-      this.params[name] = this.params[name].filter((param: FilterParamValue) => {
-        return param.group === group;
-      });
-    } else {
-      this.params[name] = [];
-    }
+  restoreGroup(group: string, callerIndex: number): void {
+    this.getInputGroup(group).forEach((item) => {
+      if (item.index !== callerIndex) {
+        if (!item.valueIsSet()) {
+          if (item.getVal().length > 0) {
+            item.addParam();
+          }
+        }
+      }
+    });
   }
 
-  clearParams(): void {
-    this.conf.forEach((item) => this.clearParam(item.name));
+  reset(): void {
+    this.optionComponents.forEach((item) => {
+      item.clearParam();
+    });
+    this.optionComponents.forEach((item) => item.clear());
   }
 
   showParams(): void {

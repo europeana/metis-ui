@@ -1,184 +1,150 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { createMockPipe } from '../../_mocked';
 
-import { FilterOpsComponent } from '.';
+import { FilterOpsComponent, FilterOptionComponent } from '.';
 
 describe('FilterOpsComponent', () => {
   let component: FilterOpsComponent;
   let fixture: ComponentFixture<FilterOpsComponent>;
-  const testVal1 = 'VALUE 1';
-  const testVal2 = 'VALUE 2';
   const testDate1 = '2019-04-01';
   const testDate2 = '2019-04-30';
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [FilterOpsComponent, createMockPipe('translate')],
+      declarations: [FilterOpsComponent, FilterOptionComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
     });
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(FilterOpsComponent);
     component = fixture.componentInstance;
-    component.clearParams();
+    component.title = 'Test Filter';
     fixture.detectChanges();
   });
 
   it('detects the setting of any value', () => {
     expect(component.anyValueSet()).toBeFalsy();
-    component.addParam('WORKFLOW', { value: testVal1 });
+    const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
+    testEl.nativeElement.click();
     expect(component.anyValueSet()).toBeTruthy();
   });
 
   it('manages parameters', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
-    component.addParam('WORKFLOW', { value: testVal1, group: 'GROUP' }, false);
-    expect(component.params.WORKFLOW.length).toEqual(1);
+    expect(component.params.STATUS.length).toEqual(0);
+    const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
+    testEl.nativeElement.click();
+    expect(component.params.STATUS.length).toEqual(1);
   });
 
   it('manages single parameters', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
-    component.addParam('WORKFLOW', { value: testVal1 }, false);
-    expect(component.params.WORKFLOW.length).toEqual(1);
-    expect(component.params.WORKFLOW[0].value).toEqual(testVal1);
+    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(14) a'));
+    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(15) a'));
 
-    component.addParam('WORKFLOW', { value: testVal2 }, false);
-    expect(component.params.WORKFLOW.length).toEqual(1);
-    expect(component.params.WORKFLOW[0].value).toEqual(testVal2);
+    testEl1.nativeElement.click();
+    component.showParams();
+
+    expect(component.params.DATE[0].value).toEqual('1');
+
+    testEl2.nativeElement.click();
+    component.showParams();
+
+    expect(component.params.DATE[0].value).toEqual('7');
+    expect(component.params.DATE.length).toEqual(1);
   });
 
   it('manages multiple parameters', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
-    component.addParam('WORKFLOW', { value: testVal1, group: 'GROUP' }, true, 1);
-    component.addParam('WORKFLOW', { value: testVal2, group: 'GROUP' }, true, 2);
-    expect(component.params.WORKFLOW.length).toEqual(2);
+    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
+    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
+
+    expect(testEl1.nativeElement.textContent).toEqual('Check Links');
+    expect(testEl2.nativeElement.textContent).toEqual('Enrich');
+
+    testEl1.nativeElement.click();
+    fixture.detectChanges();
+    component.showParams();
+
+    expect(component.params.WORKFLOW[0].value).toEqual('LINK_CHECKING');
+
+    testEl2.nativeElement.click();
+    fixture.detectChanges();
+    component.showParams();
+
+    expect(component.params.WORKFLOW[1].value).toEqual('ENRICHMENT');
   });
 
-  it('tracks what values have been set', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
-    expect(component.valueIsSet('WORKFLOW', testVal1)).toBeFalsy();
-    expect(component.valueIsSet('WORKFLOW', testVal2)).toBeFalsy();
-
-    component.addParam('WORKFLOW', { value: testVal1, group: 'GROUP' }, true, 1);
-    component.addParam('WORKFLOW', { value: testVal2, group: 'GROUP' }, true, 2);
-
-    expect(component.valueIsSet('WORKFLOW', testVal1, 1)).toBeTruthy();
-    expect(component.valueIsSet('WORKFLOW', testVal2, 2)).toBeTruthy();
-  });
-
-  it('tracks the index of set values', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
-    expect(component.valueIsSet('WORKFLOW', testVal1)).toBeFalsy();
-    expect(component.valueIsSet('WORKFLOW', testVal2)).toBeFalsy();
-
-    component.addParam('WORKFLOW', { value: testVal1, group: 'GROUP' }, true, 1);
-    component.addParam('WORKFLOW', { value: testVal2, group: 'GROUP' }, true, 2);
-
-    expect(component.valueIndex('WORKFLOW', testVal1, 1)).toEqual(0);
-    expect(component.valueIndex('WORKFLOW', testVal2, 2)).toEqual(1);
-  });
-
-  it('can set values from inputs', () => {
-    expect(component.valueIsSet('WORKFLOW', testVal1, 0)).toBeFalsy();
-    const el = Object.assign(document.createElement('input'), {
-      value: testVal1,
-    }) as HTMLInputElement;
-
-    component.restoreParamFromInput('WORKFLOW', el);
-    expect(component.valueIsSet('WORKFLOW', testVal1)).toBeTruthy();
+  it('can restore a value from an input', () => {
+    expect(component.params.DATE.map((p) => p.value)).toEqual([]);
+    const dateFrom = fixture.debugElement.query(By.css('#date-from'));
+    dateFrom.nativeElement.value = testDate1;
+    dateFrom.nativeElement.dispatchEvent(new Event('focus'));
+    expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1]);
   });
 
   it('can restore multiple values from inputs in the same group', () => {
-    component.showing = true;
-    fixture.detectChanges();
-
     expect(component.params.DATE.map((p) => p.value)).toEqual([]);
 
-    fixture.nativeElement.querySelector('#date-from').value = testDate1;
-    fixture.nativeElement.querySelector('#date-to').value = testDate2;
+    const dateFrom = fixture.debugElement.query(By.css('#date-from'));
+    const dateTo = fixture.debugElement.query(By.css('#date-to'));
 
-    const elFrom = document.querySelector('#date-from');
-    const elTo = document.querySelector('#date-to');
+    expect(dateFrom).toBeTruthy();
+    expect(dateTo).toBeTruthy();
 
-    if (elFrom && elTo) {
-      (elFrom as HTMLInputElement).dispatchEvent(new Event('change'));
-      (elTo as HTMLInputElement).dispatchEvent(new Event('change'));
-    }
+    dateFrom.nativeElement.value = testDate1;
+    dateTo.nativeElement.value = testDate2;
 
+    component.restoreGroup('date-pair', component.optionComponents.toArray()[0].index);
     expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
-
-    component.clearParams();
-    expect(component.params.DATE.map((p) => p.value)).toEqual([]);
-
-    if (elFrom) {
-      (elFrom as HTMLInputElement).dispatchEvent(new Event('focus'));
-    }
-
-    expect(component.params.DATE.map((p) => p.value).indexOf(testDate1)).toBeGreaterThan(-1);
-    expect(component.params.DATE.map((p) => p.value).indexOf(testDate2)).toBeGreaterThan(-1);
-
-    component.clearParams();
-    expect(component.params.DATE.map((p) => p.value)).toEqual([]);
-
-    if (elTo) {
-      (elTo as HTMLInputElement).dispatchEvent(new Event('focus'));
-    }
-
-    expect(component.params.DATE.map((p) => p.value).indexOf(testDate1)).toBeGreaterThan(-1);
-    expect(component.params.DATE.map((p) => p.value).indexOf(testDate2)).toBeGreaterThan(-1);
   });
 
-  it('can clear single values', () => {
+  it('can reset', () => {
     expect(component.params.WORKFLOW.length).toEqual(0);
-    component.addParam('WORKFLOW', { value: 'VALUE 1', group: 'GROUP' }, true);
-    component.addParam('WORKFLOW', { value: 'VALUE 2', group: 'GROUP' }, true);
+
+    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
+    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
+
+    testEl1.nativeElement.click();
+    testEl2.nativeElement.click();
+
     expect(component.params.WORKFLOW.length).toEqual(2);
-    expect(component.params.WORKFLOW.map((p) => p.value)).toEqual(['VALUE 1', 'VALUE 2']);
-
-    component.clearParamValue('WORKFLOW', 'VALUE 1');
-    expect(component.params.WORKFLOW.length).toEqual(1);
-    expect(component.params.WORKFLOW[0].value).toEqual('VALUE 2');
-    expect(component.params.WORKFLOW.map((p) => p.value)).toEqual(['VALUE 2']);
-  });
-
-  it('can clear multiple values', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
-    component.addParam('WORKFLOW', { value: 'VALUE 1', group: 'GROUP' }, true);
-    component.addParam('WORKFLOW', { value: 'VALUE 2', group: 'GROUP' }, true);
-    expect(component.params.WORKFLOW.length).toEqual(2);
-
-    component.clearParam('WORKFLOW');
-    expect(component.params.WORKFLOW.length).toEqual(0);
-  });
-
-  it('can clear values by input ref', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
-    component.addParam('WORKFLOW', { value: 'VALUE 1', group: 'GROUP' }, true, 1);
-    component.addParam('WORKFLOW', { value: 'VALUE 2', group: 'GROUP' }, true, 2);
-    expect(component.params.WORKFLOW.length).toEqual(2);
-
-    component.clearParamValuesByInputRef('WORKFLOW', 1);
-    expect(component.params.WORKFLOW.length).toEqual(1);
-    component.clearParamValuesByInputRef('WORKFLOW', 2);
+    component.reset();
     expect(component.params.WORKFLOW.length).toEqual(0);
   });
 
   it('toggles values when same value re-set', () => {
-    expect(component.valueIsSet('WORKFLOW', testVal1)).toBeFalsy();
-    component.toggleParamValue('WORKFLOW', { value: testVal1 });
-    expect(component.valueIsSet('WORKFLOW', testVal1)).toBeTruthy();
-    component.toggleParamValue('WORKFLOW', { value: testVal1 });
-    expect(component.valueIsSet('WORKFLOW', testVal1)).toBeFalsy();
+    expect(component.params.WORKFLOW.length).toEqual(0);
+    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
+
+    testEl1.nativeElement.click();
+    expect(component.params.WORKFLOW.length).toEqual(1);
+
+    testEl1.nativeElement.click();
+    expect(component.params.WORKFLOW.length).toEqual(0);
   });
 
-  // (will return the params once integrated with back end)
-  it('should show the params', () => {
-    expect(component.showParams()).toBeFalsy();
+  it('can invoke callbacks after changes to inputs', () => {
+    const dateFrom = fixture.debugElement.query(By.css('#date-from'));
+    spyOn(dateFrom.componentInstance.config.input, 'cbFnOnSet');
+    dateFrom.nativeElement.value = testDate1;
+    dateFrom.nativeElement.dispatchEvent(new Event('change'));
+    expect(dateFrom.componentInstance.config.input.cbFnOnSet).toHaveBeenCalled();
+  });
+
+  it('uses callbacks to link the dates', () => {
+    const dateFrom = fixture.debugElement.query(By.css('#date-from'));
+    const dateTo = fixture.debugElement.query(By.css('#date-to'));
+    dateFrom.nativeElement.value = testDate1;
+    dateFrom.nativeElement.dispatchEvent(new Event('change'));
+    dateTo.nativeElement.value = testDate2;
+    dateTo.nativeElement.dispatchEvent(new Event('change'));
+    expect(dateTo.nativeElement.getAttribute('min')).toBeTruthy();
+    expect(dateFrom.nativeElement.getAttribute('max')).toBeTruthy();
   });
 
   it('should hide', () => {
-    // fixture.detectChanges();
     component.showing = true;
     component.hide();
     expect(component.showing).toBeFalsy();
@@ -191,5 +157,19 @@ describe('FilterOpsComponent', () => {
     expect(component.showing).toBeTruthy();
     component.toggle();
     expect(component.showing).toBeFalsy();
+  });
+
+  it('should set a summary (menu tooltip)', () => {
+    expect(component.getSetSummary()).toBeFalsy();
+
+    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
+    testEl1.nativeElement.click();
+
+    expect(component.getSetSummary()).toEqual('Workflow');
+
+    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
+    testEl2.nativeElement.click();
+
+    expect(component.getSetSummary()).toEqual('Workflow, Status');
   });
 });

@@ -20,7 +20,7 @@ import {
   GridrowComponent,
   OngoingexecutionsComponent,
 } from './dashboard';
-import { FilterOpsComponent } from './dashboard/filter-ops';
+import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
 import {
   ActionbarComponent,
   DatasetComponent,
@@ -70,6 +70,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     DashboardComponent,
     DatasetformComponent,
     FilterOpsComponent,
+    FilterOptionComponent,
     PasswordCheckComponent,
     TextWithLinksComponent,
     GeneralinfoComponent,

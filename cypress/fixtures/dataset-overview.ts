@@ -1,5 +1,9 @@
 import { Results } from '../../src/app/_models/results';
-import { DatasetOverview, PluginStatus } from '../../src/app/_models/workflow-execution';
+import {
+  DatasetOverview,
+  PluginStatus,
+  PluginType,
+} from '../../src/app/_models/workflow-execution';
 
 export const datasetOverview: Results<DatasetOverview> = {
   results: [
@@ -24,7 +28,7 @@ export const datasetOverview: Results<DatasetOverview> = {
         startedDate: '2018-10-19T09:05:40.844Z',
         plugins: [
           {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -38,7 +42,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'HTTP_HARVEST',
+            pluginType: PluginType.HTTP_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -52,7 +56,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'TRANSFORMATION',
+            pluginType: PluginType.TRANSFORMATION,
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
@@ -88,7 +92,7 @@ export const datasetOverview: Results<DatasetOverview> = {
         id: 'exec-id-2',
         plugins: [
           {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -102,7 +106,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'HTTP_HARVEST',
+            pluginType: PluginType.HTTP_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -116,7 +120,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'TRANSFORMATION',
+            pluginType: PluginType.TRANSFORMATION,
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
@@ -130,7 +134,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'LINK_CHECKING',
+            pluginType: PluginType.LINK_CHECKING,
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
@@ -144,7 +148,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'ENRICHMENT',
+            pluginType: PluginType.ENRICHMENT,
             pluginStatus: PluginStatus.RUNNING,
 
             progress: {
@@ -158,7 +162,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             finishedDate: '2019-11-19T13:07:70.844Z',
           },
           {
-            pluginType: 'MEDIA_PROCESS',
+            pluginType: PluginType.MEDIA_PROCESS,
             pluginStatus: PluginStatus.RUNNING,
 
             progress: {
@@ -172,7 +176,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             finishedDate: '2019-11-19T13:07:70.844Z',
           },
           {
-            pluginType: 'VALIDATION_EXTERNAL',
+            pluginType: PluginType.VALIDATION_EXTERNAL,
             pluginStatus: PluginStatus.INQUEUE,
 
             progress: {
@@ -186,7 +190,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             finishedDate: '2019-11-19T13:07:70.844Z',
           },
           {
-            pluginType: 'VALIDATION_INTERNAL',
+            pluginType: PluginType.VALIDATION_INTERNAL,
             pluginStatus: PluginStatus.CLEANING,
 
             progress: {
@@ -200,7 +204,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             finishedDate: '2019-11-19T13:07:70.844Z',
           },
           {
-            pluginType: 'NORMALIZATION',
+            pluginType: PluginType.NORMALIZATION,
             pluginStatus: PluginStatus.PENDING,
 
             progress: {
@@ -211,7 +215,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             },
           },
           {
-            pluginType: 'PREVIEW',
+            pluginType: PluginType.PREVIEW,
             pluginStatus: PluginStatus.PENDING,
 
             progress: {
@@ -222,7 +226,7 @@ export const datasetOverview: Results<DatasetOverview> = {
             },
           },
           {
-            pluginType: 'PUBLISH',
+            pluginType: PluginType.PUBLISH,
             pluginStatus: PluginStatus.PENDING,
 
             progress: {

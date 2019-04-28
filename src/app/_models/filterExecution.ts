@@ -1,4 +1,4 @@
-export type FilterParamType = 'WORKFLOW' | 'DATE' | 'STATUS' | 'USER';
+export type FilterParamType = 'WORKFLOW' | 'DATE' | 'STATUS';
 
 export type FilterParamHash = { [key in FilterParamType]: FilterParamValue[] };
 
@@ -11,13 +11,24 @@ export interface FilterParamValue {
 export interface FilterExecutionConfOptionInput {
   id?: string;
   type: string;
-  fnOnSet?(val: string): void;
+  cbFnOnClear?(el: HTMLElement): void;
+  cbFnOnSet?(val: string, opElements?: HTMLElement[]): void;
 }
 
 export interface FilterExecutionConfOption {
   group?: string;
   input?: FilterExecutionConfOptionInput;
   value: string;
+  label: string;
+}
+
+export interface FilterExecutionValueProvider {
+  getVal(): string;
+}
+
+export interface FilterExecutionProvider {
+  getInputGroupElements(group: string): HTMLElement[];
+  restoreGroup(group: string, callerIndex: number): void;
 }
 
 export interface FilterExecutionConf {

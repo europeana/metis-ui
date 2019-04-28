@@ -1,6 +1,7 @@
 import { Results } from '../../src/app/_models/results';
 import {
   PluginStatus,
+  PluginType,
   TaskState,
   WorkflowExecution,
   WorkflowStatus,
@@ -19,7 +20,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
       finishedDate: '2018-11-13T08:47:32.008Z',
       metisPlugins: [
         {
-          pluginType: 'OAIPMH_HARVEST',
+          pluginType: PluginType.OAIPMH_HARVEST,
           id: '5bea8f7e729e6f000d3a8764-OAIPMH_HARVEST',
           pluginStatus: PluginStatus.FINISHED,
           startedDate: '2018-11-13T08:46:54.476Z',
@@ -34,7 +35,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             status: TaskState.PROCESSED,
           },
           pluginMetadata: {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             mocked: false,
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
@@ -56,7 +57,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
       finishedDate: '2018-11-06T09:27:49.748Z',
       metisPlugins: [
         {
-          pluginType: 'PUBLISH',
+          pluginType: PluginType.PUBLISH,
           id: '5be15e85bbcf53000795bd9b-PUBLISH',
           pluginStatus: PluginStatus.FINISHED,
           startedDate: '2018-11-06T09:27:33.240Z',
@@ -90,7 +91,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
       finishedDate: '2018-11-05T15:39:41.404Z',
       metisPlugins: [
         {
-          pluginType: 'PUBLISH',
+          pluginType: PluginType.PUBLISH,
           id: '5be0642d32251400094e50fd-PUBLISH',
           pluginStatus: PluginStatus.FINISHED,
           startedDate: '2018-11-05T15:39:25.652Z',
@@ -105,7 +106,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             status: TaskState.PROCESSED,
           },
           pluginMetadata: {
-            pluginType: 'PUBLISH',
+            pluginType: PluginType.PUBLISH,
             mocked: false,
             enabled: true,
           },
@@ -124,7 +125,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
       finishedDate: '2018-11-05T15:38:40.105Z',
       metisPlugins: [
         {
-          pluginType: 'PUBLISH',
+          pluginType: PluginType.PUBLISH,
           id: '5be063ea32251400094e50fb-PUBLISH',
           pluginStatus: PluginStatus.FINISHED,
           startedDate: '2018-11-05T15:38:18.450Z',
@@ -139,7 +140,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             status: TaskState.PROCESSED,
           },
           pluginMetadata: {
-            pluginType: 'PUBLISH',
+            pluginType: PluginType.PUBLISH,
             mocked: false,
             enabled: true,
           },
@@ -158,7 +159,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
       finishedDate: undefined,
       metisPlugins: [
         {
-          pluginType: 'OAIPMH_HARVEST',
+          pluginType: PluginType.OAIPMH_HARVEST,
           id: '5be05f9832251400094e50f9-OAIPMH_HARVEST',
           pluginStatus: PluginStatus.FAILED,
           startedDate: '2018-11-05T15:19:52.863Z',
@@ -173,7 +174,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             status: TaskState.DROPPED,
           },
           pluginMetadata: {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             mocked: false,
             enabled: true,
             url: 'http://panic.image.ntua.gr:9000/photography/oai',

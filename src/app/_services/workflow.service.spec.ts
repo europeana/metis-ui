@@ -20,7 +20,7 @@ import {
   mockWorkflowExecutionResults,
   mockXmlSamples,
 } from '../_mocked';
-import { ReportAvailability, WorkflowExecution } from '../_models';
+import { PluginType, ReportAvailability, WorkflowExecution } from '../_models';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
@@ -395,7 +395,7 @@ describe('workflow service', () => {
   });
 
   it('should get samples', () => {
-    service.getWorkflowSamples('5653454353', 'ENRICHMENT').subscribe((samples) => {
+    service.getWorkflowSamples('5653454353', PluginType.ENRICHMENT).subscribe((samples) => {
       expect(samples).toEqual(mockXmlSamples);
     });
     mockHttp
@@ -408,10 +408,11 @@ describe('workflow service', () => {
 
   it('should get sample comparisons', () => {
     const ids = { ids: ['1', '2'] };
-
-    service.getWorkflowComparisons('5653454353', 'ENRICHMENT', ids.ids).subscribe((samples) => {
-      expect(samples).toEqual(mockXmlSamples);
-    });
+    service
+      .getWorkflowComparisons('5653454353', PluginType.ENRICHMENT, ids.ids)
+      .subscribe((samples) => {
+        expect(samples).toEqual(mockXmlSamples);
+      });
     mockHttp
       .expect(
         'POST',

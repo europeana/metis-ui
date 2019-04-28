@@ -1,11 +1,11 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
-$active-colour: #e0f1e5;
-$border-colour: #eaeaea;
-$cell-height: 2.5em;
-
 $speech-bubble-offset: 6.7em;
+
+app-filter-option {
+  display: none;
+}
 
 .dropdown.arrow-right .dropdown-wrapper::before {
   right: $speech-bubble-offset;
@@ -28,6 +28,10 @@ $speech-bubble-offset: 6.7em;
   display: flex;
   justify-content: flex-end;
   position: relative;
+
+  .filter li {
+    position: static;
+  }
 }
 
 .filter {
@@ -43,85 +47,40 @@ $speech-bubble-offset: 6.7em;
   }
 }
 
-.input-label {
-  align-items: center;
-  display: flex;
-  height: $cell-height;
-  padding: 0 0.25em;
-}
-
-input[type='date'] {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  padding: 0 0 0 0.5em;
-  width: 9.75em;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-}
-
-.filter-cell {
-  align-items: center;
-  color: $black;
-  display: flex;
-  height: $cell-height;
-  text-transform: capitalize;
-  white-space: nowrap;
-
-  a {
-    color: $black;
-    line-height: $cell-height;
-    text-align: center;
-    text-decoration: none;
-    width: 100%;
-  }
-
-  .active {
-    background: $active-colour;
-    font-weight: bold;
-  }
-}
-
-span:not(.start-row) {
-  border: 1px solid $border-colour;
-  border-radius: 3px;
-}
-
-.start-row {
-  font-weight: bold;
-}
-
 .filter-grid {
   display: grid;
   grid-column-gap: 1.25em;
   grid-row-gap: 0.75em;
   grid-template-rows: auto;
   padding: 1em;
+}
 
-  @media (min-width: $bp-med) {
+.start-row {
+  grid-column: 1;
+  font-weight: bold;
+}
+
+@media (min-width: $bp-small-2) {
+  .filter-grid {
     grid-auto-flow: row;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .filter-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .filter-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: $bp-xl) {
+  .filter-grid {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-
-    .start-row {
-      grid-column: 1;
-    }
-    .continue-row-med {
-      grid-column: 2;
-    }
-
-    .end-row {
-      &:not(:last-of-type) {
-        margin-bottom: 2em;
-        &::after {
-          background: $border-colour;
-          content: ' ';
-          height: 1px;
-          left: 1em;
-          position: absolute;
-          right: 1em;
-          transform: translateY(2.5em);
-        }
-      }
-    }
   }
 }

@@ -1,0 +1,84 @@
+@import '../../../../assets/sass/scss/generic/variables';
+
+$active-colour: #e0f1e5;
+$border-colour: #eaeaea;
+$cell-height: 2.5em;
+
+input[type='date'] {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0 0 0 0.5em;
+  width: 9.75em;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+
+.input-label {
+  align-items: center;
+  display: flex;
+  height: $cell-height;
+  padding: 0 0.25em;
+}
+
+a {
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+}
+
+.filter-cell {
+  border: 1px solid $border-colour;
+  border-radius: 3px;
+
+  & > a,
+  .label {
+    display: block;
+    line-height: $cell-height;
+    padding: 0.5em;
+  }
+
+  &.active {
+    background: $active-colour;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .continue-row-3 {
+    grid-column: 2;
+  }
+}
+@media (min-width: $bp-large) {
+  .continue-row-3 {
+    grid-column: unset;
+  }
+  .continue-row-4 {
+    grid-column: 2;
+  }
+}
+
+@media (min-width: $bp-xl) {
+  .continue-row-4 {
+    grid-column: unset;
+  }
+  .continue-row-6 {
+    grid-column: 2;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .end-row {
+    &:not(:last-of-type) {
+      margin-bottom: 2em;
+      &::after {
+        background: $border-colour;
+        content: ' ';
+        height: 1px;
+        left: 1em;
+        position: absolute;
+        right: 1em;
+        transform: translateY(2.5em);
+      }
+    }
+  }
+}
