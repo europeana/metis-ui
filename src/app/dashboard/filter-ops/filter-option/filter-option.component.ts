@@ -3,7 +3,6 @@ import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/c
 import {
   FilterExecutionConfOption,
   FilterExecutionProvider,
-  FilterExecutionValueProvider,
   FilterParamHash,
   FilterParamType,
   FilterParamValue,
@@ -14,7 +13,7 @@ import {
   templateUrl: './filter-option.component.html',
   styleUrls: ['./filter-option.component.scss'],
 })
-export class FilterOptionComponent implements FilterExecutionValueProvider {
+export class FilterOptionComponent {
   @Input() config: FilterExecutionConfOption;
   @Input() filterName: FilterParamType;
   @Input() index: number;

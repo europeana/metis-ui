@@ -22,10 +22,6 @@ export interface FilterExecutionConfOption {
   label: string;
 }
 
-export interface FilterExecutionValueProvider {
-  getVal(): string;
-}
-
 export interface FilterExecutionProvider {
   getInputGroupElements(group: string): HTMLElement[];
   restoreGroup(group: string, callerIndex: number): void;
