@@ -180,7 +180,7 @@ $row-border-height-min: 3px;
     flex-direction: row-reverse;
     margin-left: 2em;
     margin-right: 1em;
-    justify-content: end;
+    justify-content: flex-end;
 
     .orb-status {
       margin-left: 0.75em;

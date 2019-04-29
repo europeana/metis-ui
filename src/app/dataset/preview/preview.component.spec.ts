@@ -13,7 +13,7 @@ import {
   mockWorkflowExecution,
   MockWorkflowService,
 } from '../../_mocked';
-import { XmlSample } from '../../_models';
+import { PluginType, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewFilters } from '../dataset.component';
@@ -128,7 +128,7 @@ describe('PreviewComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
 
     expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
-    component.getXMLSamplesCompare('NORMALIZATION', '123');
+    component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123');
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
   });
@@ -147,7 +147,7 @@ describe('PreviewComponent', () => {
     expect(
       fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
     ).toBeFalsy();
-    component.allPlugins = [{ type: 'NORMALIZATION', error: false }];
+    component.allPlugins = [{ type: PluginType.NORMALIZATION, error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
     expect(

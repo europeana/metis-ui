@@ -1,6 +1,10 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+h3 {
+  margin: 0.75rem 0 0.48rem 0;
+}
+
 .ongoing-executions {
   display: grid;
   grid-column-gap: 1.75em;
@@ -10,10 +14,6 @@
 
   @media (max-width: $bp-xxl) {
     margin-bottom: 2rem;
-  }
-
-  h3 {
-    font-size: 1.125rem;
   }
 
   .grid-header {

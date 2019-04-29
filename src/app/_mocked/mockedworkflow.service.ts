@@ -9,6 +9,7 @@ import {
   NodePathStatistics,
   PluginExecution,
   PluginStatus,
+  PluginType,
   Report,
   ReportAvailability,
   Results,
@@ -24,15 +25,15 @@ import {
 export const mockHistoryVersions: Array<HistoryVersion> = [
   {
     workflowExecutionId: 1,
-    pluginType: 'OAIPMH_HARVEST',
+    pluginType: PluginType.OAIPMH_HARVEST,
   },
   {
     workflowExecutionId: 1,
-    pluginType: 'VALIDATION_EXTERNAL',
+    pluginType: PluginType.VALIDATION_EXTERNAL,
   },
   {
     workflowExecutionId: 1,
-    pluginType: 'TRANSFORMATION',
+    pluginType: PluginType.TRANSFORMATION,
   },
 ];
 
@@ -43,22 +44,22 @@ export const mockWorkflow: Workflow = {
     {
       enabled: true,
       metadataFormat: 'edm',
-      pluginType: 'OAIPMH_HARVEST',
+      pluginType: PluginType.OAIPMH_HARVEST,
       setSpec: 'oai_test',
       url: 'http://www.mocked.com',
     },
     {
       enabled: true,
-      pluginType: 'TRANSFORMATION',
+      pluginType: PluginType.TRANSFORMATION,
       customXslt: false,
     },
     {
       enabled: true,
-      pluginType: 'MEDIA_PROCESS',
+      pluginType: PluginType.MEDIA_PROCESS,
     },
     {
       enabled: true,
-      pluginType: 'LINK_CHECKING',
+      pluginType: PluginType.LINK_CHECKING,
     },
   ],
 };
@@ -86,7 +87,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
         startedDate: '2018-10-19T09:05:40.844Z',
         plugins: [
           {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -100,7 +101,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'HTTP_HARVEST',
+            pluginType: PluginType.HTTP_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -114,7 +115,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'TRANSFORMATION',
+            pluginType: PluginType.TRANSFORMATION,
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
@@ -150,7 +151,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
         startedDate: '2011-11-19T09:05:40.844Z',
         plugins: [
           {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -164,7 +165,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'HTTP_HARVEST',
+            pluginType: PluginType.HTTP_HARVEST,
             pluginStatus: PluginStatus.CANCELLED,
 
             progress: {
@@ -178,7 +179,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'TRANSFORMATION',
+            pluginType: PluginType.TRANSFORMATION,
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
@@ -192,7 +193,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'LINK_CHECKING',
+            pluginType: PluginType.LINK_CHECKING,
             pluginStatus: PluginStatus.FINISHED,
 
             progress: {
@@ -206,7 +207,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             startedDate: '2019-11-19T12:47:10.844Z',
           },
           {
-            pluginType: 'ENRICHMENT',
+            pluginType: PluginType.ENRICHMENT,
             pluginStatus: PluginStatus.RUNNING,
 
             progress: {
@@ -220,7 +221,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             finishedDate: '2019-11-19T13:07:70.844Z',
           },
           {
-            pluginType: 'MEDIA_PROCESS',
+            pluginType: PluginType.MEDIA_PROCESS,
             pluginStatus: PluginStatus.RUNNING,
 
             progress: {
@@ -234,7 +235,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             finishedDate: '2019-11-19T13:07:70.844Z',
           },
           {
-            pluginType: 'VALIDATION_EXTERNAL',
+            pluginType: PluginType.VALIDATION_EXTERNAL,
             pluginStatus: PluginStatus.INQUEUE,
 
             progress: {
@@ -248,7 +249,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
             finishedDate: '2019-11-19T13:07:70.844Z',
           },
           {
-            pluginType: 'VALIDATION_INTERNAL',
+            pluginType: PluginType.VALIDATION_INTERNAL,
             pluginStatus: PluginStatus.CLEANING,
 
             progress: {
@@ -280,12 +281,12 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'VALIDATION_EXTERNAL',
+          pluginType: PluginType.VALIDATION_EXTERNAL,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'VALIDATION_EXTERNAL',
+            pluginType: PluginType.VALIDATION_EXTERNAL,
             mocked: true,
             enabled: false,
           },
@@ -311,12 +312,12 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: PluginType.NORMALIZATION,
             mocked: true,
             enabled: false,
           },
@@ -342,12 +343,12 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: PluginType.NORMALIZATION,
             mocked: true,
             enabled: false,
           },
@@ -373,7 +374,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
@@ -404,12 +405,12 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: PluginType.NORMALIZATION,
             mocked: true,
             enabled: false,
           },

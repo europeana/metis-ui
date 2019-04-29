@@ -20,6 +20,7 @@ import {
   GridrowComponent,
   OngoingexecutionsComponent,
 } from './dashboard';
+import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
 import {
   ActionbarComponent,
   DatasetComponent,
@@ -37,6 +38,7 @@ import {
 } from './dataset';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
+import { LoadTitleComponent } from './load-title';
 import { LoginComponent } from './login';
 import { PageNotFoundComponent } from './page-not-found';
 import { ProfileComponent } from './profile';
@@ -59,6 +61,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     LoginComponent,
     ProfileComponent,
     LoadAnimationComponent,
+    LoadTitleComponent,
     PageNotFoundComponent,
     HeaderComponent,
     HomeComponent,
@@ -66,6 +69,8 @@ import { ThemeSelectorComponent } from './theme-selector';
     NewDatasetComponent,
     DashboardComponent,
     DatasetformComponent,
+    FilterOpsComponent,
+    FilterOptionComponent,
     PasswordCheckComponent,
     TextWithLinksComponent,
     GeneralinfoComponent,

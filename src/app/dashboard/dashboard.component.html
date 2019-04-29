@@ -6,14 +6,6 @@
     </p>
   </div>
 
-  <app-load-animation
-    *ngIf="runningIsFirstLoading || finishedIsFirstLoading"
-    [resources]="{
-      'running workflows': runningIsFirstLoading,
-      'finished workflows': finishedIsFirstLoading
-    }"
-  ></app-load-animation>
-
   <div class="metis-dashboard">
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>

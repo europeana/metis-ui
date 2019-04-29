@@ -8,7 +8,7 @@ import {
   MockErrorService,
   MockWorkflowService,
 } from '../_mocked';
-import { PluginStatus } from '../_models';
+import { PluginStatus, PluginType } from '../_models';
 import {
   AuthenticationService,
   DatasetsService,
@@ -48,7 +48,7 @@ describe('DashboardComponent', () => {
   it('should open log messages', () => {
     component.showPluginLog = {
       id: 'xx5',
-      pluginType: 'OAIPMH_HARVEST',
+      pluginType: PluginType.OAIPMH_HARVEST,
       pluginStatus: PluginStatus.RUNNING,
       executionProgress: {
         expectedRecords: 1000,
@@ -57,7 +57,7 @@ describe('DashboardComponent', () => {
         errors: 5,
       },
       pluginMetadata: {
-        pluginType: 'OAIPMH_HARVEST',
+        pluginType: PluginType.OAIPMH_HARVEST,
         url: 'example.com',
         setSpec: 'test',
         metadataFormat: 'edm',
