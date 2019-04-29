@@ -11,7 +11,7 @@ import {
   mockHistoryVersions,
   MockTranslateService,
   mockWorkflowExecution,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
 import { PluginType, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
@@ -27,11 +27,11 @@ describe('PreviewComponent', () => {
   const previewFilterData = {
     execution: mockWorkflowExecution,
     plugin: 'NORMALIZATION',
-    startedDate: '111111',
+    startedDate: '111111'
   } as PreviewFilters;
 
   const previewFilterDataBasic = {
-    execution: mockWorkflowExecution,
+    execution: mockWorkflowExecution
   } as PreviewFilters;
 
   beforeEach(async(() => {
@@ -41,15 +41,15 @@ describe('PreviewComponent', () => {
         PreviewComponent,
         createMockPipe('translate'),
         createMockPipe('beautifyXML'),
-        createMockPipe('renameWorkflow'),
+        createMockPipe('renameWorkflow')
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: ErrorService, useClass: MockErrorService },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -135,33 +135,33 @@ describe('PreviewComponent', () => {
 
   it('should toggle filters', () => {
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length
     ).toBeFalsy();
     component.datasetData = mockDataset;
     component.toggleFilterDate();
     fixture.detectChanges();
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length
     ).toBeTruthy();
 
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length
     ).toBeFalsy();
     component.allPlugins = [{ type: PluginType.NORMALIZATION, error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length
     ).toBeTruthy();
 
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length
     ).toBeFalsy();
     component.historyVersions = mockHistoryVersions;
     component.toggleFilterCompare();
     fixture.detectChanges();
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length
     ).toBeTruthy();
   });
 
@@ -195,8 +195,8 @@ describe('PreviewComponent', () => {
   it('has utility to strip blank lines', () => {
     const samples = [
       {
-        xmlRecord: '\n\r',
-      },
+        xmlRecord: '\n\r'
+      }
     ] as XmlSample[];
 
     const res: XmlSample[] = component.undoNewLines(samples);

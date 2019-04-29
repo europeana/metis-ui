@@ -15,11 +15,11 @@ export const statistics: Statistics = {
             {
               xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
               occurrences: 2,
-              value: 'ca',
-            },
-          ],
-        },
-      ],
-    },
-  ],
+              value: 'ca'
+            }
+          ]
+        }
+      ]
+    }
+  ]
 };

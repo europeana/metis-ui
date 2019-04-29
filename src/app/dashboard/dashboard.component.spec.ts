@@ -6,14 +6,14 @@ import {
   MockAuthenticationService,
   MockDatasetsService,
   MockErrorService,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../_mocked';
 import { PluginStatus, PluginType } from '../_models';
 import {
   AuthenticationService,
   DatasetsService,
   ErrorService,
-  WorkflowService,
+  WorkflowService
 } from '../_services';
 
 import { DashboardComponent } from '.';
@@ -29,9 +29,9 @@ describe('DashboardComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: ErrorService, useClass: MockErrorService },
+        { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -54,15 +54,15 @@ describe('DashboardComponent', () => {
         expectedRecords: 1000,
         processedRecords: 500,
         progressPercentage: 50,
-        errors: 5,
+        errors: 5
       },
       pluginMetadata: {
         pluginType: PluginType.OAIPMH_HARVEST,
         url: 'example.com',
         setSpec: 'test',
-        metadataFormat: 'edm',
+        metadataFormat: 'edm'
       },
-      topologyName: 'oai_harvest',
+      topologyName: 'oai_harvest'
     };
     fixture.detectChanges();
     expect(component.showPluginLog).toBeTruthy();

@@ -8,12 +8,12 @@ import {
   DatasetsService,
   DocumentTitleService,
   ErrorService,
-  WorkflowService,
+  WorkflowService
 } from '../_services';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
+  templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
-    private documentTitleService: DocumentTitleService,
+    private documentTitleService: DocumentTitleService
   ) {}
 
   ngOnInit(): void {
@@ -99,7 +99,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.errors.handleError(err);
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
-      },
+      }
     );
   }
 
@@ -123,7 +123,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.errors.handleError(err);
         this.finishedIsLoading = false;
         this.finishedIsFirstLoading = false;
-      },
+      }
     );
   }
 

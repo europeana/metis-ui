@@ -1,7 +1,7 @@
 import { Directive, HostBinding, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[appCollapsible]',
+  selector: '[appCollapsible]'
 })
 export class CollapsibleDirective {
   constructor() {}

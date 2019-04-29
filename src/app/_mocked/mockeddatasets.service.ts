@@ -21,7 +21,7 @@ export const mockDataset: Dataset = {
   replacedBy: 'mocked',
   replaces: 'mocked',
   updatedDate: '2018-04-03T07:49:42.275Z',
-  xsltId: null,
+  xsltId: null
 };
 
 export const mockXslt = `<?xml version="1.0" encoding="UTF-8"?>
@@ -39,8 +39,8 @@ export const mockXslt = `<?xml version="1.0" encoding="UTF-8"?>
 const mockXmlSamples: XmlSample[] = [
   {
     ecloudId: '1',
-    xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>',
-  },
+    xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>'
+  }
 ];
 
 export class MockDatasetsService {

@@ -5,7 +5,7 @@ import {
   getCurrentPlugin,
   PluginExecution,
   PluginExecutionOverview,
-  WorkflowExecution,
+  WorkflowExecution
 } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -13,7 +13,7 @@ import { TranslateService } from '../../_translate';
 @Component({
   selector: 'app-ongoingexecutions',
   templateUrl: './ongoingexecutions.component.html',
-  styleUrls: ['./ongoingexecutions.component.scss'],
+  styleUrls: ['./ongoingexecutions.component.scss']
 })
 export class OngoingexecutionsComponent implements OnInit {
   constructor(private workflows: WorkflowService, private translate: TranslateService) {}

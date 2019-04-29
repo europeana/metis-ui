@@ -22,9 +22,9 @@ describe('LoginComponent', () => {
       providers: [
         RedirectPreviousUrl,
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     router = TestBed.get(Router);

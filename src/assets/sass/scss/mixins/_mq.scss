@@ -6,7 +6,7 @@ $mq-breakpoints: (
   mobile: 320px,
   tablet: 740px,
   desktop: 980px,
-  wide: 1300px,
+  wide: 1300px
 ) !default;
 
 $mq-static-breakpoint: desktop !default;
@@ -101,7 +101,7 @@ $mq-media-type: all !default;
 
 @mixin mq-add-breakpoint($name, $width) {
   $new-breakpoint: (
-    $name: $width,
+    $name: $width
   );
   $mq-breakpoints: map-merge($mq-breakpoints, $new-breakpoint) !global;
 }

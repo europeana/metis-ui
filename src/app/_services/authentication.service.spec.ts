@@ -22,8 +22,8 @@ describe('AuthenticationService', () => {
       providers: [
         AuthenticationService,
         RedirectPreviousUrl,
-        { provide: ErrorService, useClass: MockErrorService },
-      ],
+        { provide: ErrorService, useClass: MockErrorService }
+      ]
     }).compileComponents();
 
     mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostAuth);
@@ -150,15 +150,15 @@ describe('AuthenticationService', () => {
 it('should use the user from localstorage', () => {
   localStorage.setItem(
     'currentUser',
-    JSON.stringify({ user: mockUser, email: 'jan@example.com', token: 'tggij534$' }),
+    JSON.stringify({ user: mockUser, email: 'jan@example.com', token: 'tggij534$' })
   );
   TestBed.configureTestingModule({
     imports: [RouterTestingModule, HttpClientTestingModule],
     providers: [
       AuthenticationService,
       RedirectPreviousUrl,
-      { provide: ErrorService, useClass: MockErrorService },
-    ],
+      { provide: ErrorService, useClass: MockErrorService }
+    ]
   }).compileComponents();
 
   const service: AuthenticationService = TestBed.get(AuthenticationService);

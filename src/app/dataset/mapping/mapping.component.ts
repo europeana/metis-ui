@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
   QueryList,
-  ViewChildren,
+  ViewChildren
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
@@ -30,7 +30,7 @@ type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
-  styleUrls: ['./mapping.component.scss'],
+  styleUrls: ['./mapping.component.scss']
 })
 export class MappingComponent implements OnInit {
   constructor(
@@ -38,7 +38,7 @@ export class MappingComponent implements OnInit {
     private errors: ErrorService,
     private datasets: DatasetsService,
     private translate: TranslateService,
-    private router: Router,
+    private router: Router
   ) {}
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
@@ -81,7 +81,7 @@ export class MappingComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
-      },
+      }
     );
   }
 
@@ -95,7 +95,7 @@ export class MappingComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
-      },
+      }
     );
   }
 
@@ -124,7 +124,7 @@ export class MappingComponent implements OnInit {
       .pipe(
         switchMap(() => {
           return this.datasets.getDataset(this.datasetData.datasetId, true);
-        }),
+        })
       )
       .subscribe(
         (newDataset) => {
@@ -138,7 +138,7 @@ export class MappingComponent implements OnInit {
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
-        },
+        }
       );
   }
 

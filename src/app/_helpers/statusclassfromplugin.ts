@@ -2,7 +2,7 @@ import { PluginExecution, PluginStatus } from '../_models';
 
 export function statusClassFromPlugin(
   plugin: PluginExecution,
-  currentPlugin?: PluginExecution,
+  currentPlugin?: PluginExecution
 ): string {
   const { executionProgress, pluginStatus } = plugin;
   if (

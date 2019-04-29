@@ -10,14 +10,14 @@ import {
   TopologyName,
   Workflow,
   WorkflowExecution,
-  WorkflowStatus,
+  WorkflowStatus
 } from '../../_models';
 import { WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
-  styleUrls: ['./actionbar.component.scss'],
+  styleUrls: ['./actionbar.component.scss']
 })
 export class ActionbarComponent {
   constructor(private workflows: WorkflowService) {}
@@ -114,7 +114,7 @@ export class ActionbarComponent {
     this.workflows.promptCancelThisWorkflow(
       this.lastExecutionData!.id,
       this.datasetId,
-      this.datasetName,
+      this.datasetName
     );
   }
 

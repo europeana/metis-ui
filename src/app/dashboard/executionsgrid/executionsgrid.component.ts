@@ -6,7 +6,7 @@ import {
   OnDestroy,
   Output,
   QueryList,
-  ViewChildren,
+  ViewChildren
 } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
@@ -18,7 +18,7 @@ import { GridrowComponent } from './gridrow';
 @Component({
   selector: 'app-executionsgrid',
   templateUrl: './executionsgrid.component.html',
-  styleUrls: ['./executionsgrid.component.scss'],
+  styleUrls: ['./executionsgrid.component.scss']
 })
 export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   dsOverview: DatasetOverview[];
@@ -63,7 +63,7 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
         this.isLoading = false;
         this.isLoadingMore = false;
         this.errors.handleError(err);
-      },
+      }
     );
   }
 

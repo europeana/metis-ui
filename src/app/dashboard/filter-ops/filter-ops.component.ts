@@ -3,7 +3,7 @@ import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import {
   FilterExecutionConf,
   FilterExecutionProvider,
-  FilterParamHash,
+  FilterParamHash
 } from '../../_models/filterExecution';
 
 import { filterConf } from './filter-ops-conf';
@@ -12,7 +12,7 @@ import { FilterOptionComponent } from './filter-option';
 @Component({
   selector: 'app-filter-ops',
   templateUrl: './filter-ops.component.html',
-  styleUrls: ['./filter-ops.component.scss'],
+  styleUrls: ['./filter-ops.component.scss']
 })
 export class FilterOpsComponent implements FilterExecutionProvider {
   showing = false;

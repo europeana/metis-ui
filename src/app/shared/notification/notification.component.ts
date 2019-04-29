@@ -5,7 +5,7 @@ import { Notification } from '../../_models';
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.scss'],
+  styleUrls: ['./notification.component.scss']
 })
 export class NotificationComponent implements OnDestroy {
   @Input() variant = 'medium';

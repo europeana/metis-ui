@@ -13,7 +13,7 @@ import { CollapsibleDirective } from '.';
       </div>
     </div>
   `,
-  styles: ['.collapsed{ background-color: red; }'],
+  styles: ['.collapsed{ background-color: red; }']
 })
 class TestCollapsibleDirectiveComponent {}
 
@@ -23,7 +23,7 @@ describe('CollapsibleDirective', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CollapsibleDirective, TestCollapsibleDirectiveComponent],
+      declarations: [CollapsibleDirective, TestCollapsibleDirectiveComponent]
     }).compileComponents();
   }));
 

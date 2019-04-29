@@ -7,7 +7,7 @@ import {
   OnInit,
   Output,
   QueryList,
-  ViewChildren,
+  ViewChildren
 } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -31,7 +31,7 @@ import {
   Notification,
   PluginType,
   WorkflowExecution,
-  XmlSample,
+  XmlSample
 } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -40,7 +40,7 @@ import { PreviewFilters } from '../dataset.component';
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
-  styleUrls: ['./preview.component.scss'],
+  styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent implements OnInit, OnDestroy {
   constructor(
@@ -50,7 +50,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private datasets: DatasetsService,
     private router: Router,
-    private sanitizer: DomSanitizer,
+    private sanitizer: DomSanitizer
   ) {}
 
   @Input() datasetData: Dataset;
@@ -113,7 +113,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       (err: HttpErrorResponse) => {
         this.isLoading = false;
         this.errors.handleError(err);
-      },
+      }
     );
   }
 
@@ -134,7 +134,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       if (execution.metisPlugins[i].pluginStatus === 'FINISHED') {
         this.allPlugins.push({
           type: execution.metisPlugins[i].pluginType,
-          error: false,
+          error: false
         });
       } else {
         if (
@@ -143,12 +143,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
         ) {
           this.allPlugins.push({
             type: execution.metisPlugins[i].pluginType,
-            error: false,
+            error: false
           });
         } else {
           this.allPlugins.push({
             type: execution.metisPlugins[i].pluginType,
-            error: true,
+            error: true
           });
         }
       }
@@ -175,7 +175,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
           this.isLoading = false;
-        },
+        }
       );
   }
 
@@ -213,7 +213,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.isLoading = false;
-      },
+      }
     );
 
     this.workflows.getVersionHistory(this.execution.id, plugin).subscribe(
@@ -228,7 +228,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.isLoading = false;
-      },
+      }
     );
   }
 
@@ -254,7 +254,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
             switchMap((samples) => {
               this.allSamples = this.undoNewLines(samples);
               return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
-            }),
+            })
           )
           .subscribe((transformed) => {
             this.allTransformedSamples = this.undoNewLines(transformed);

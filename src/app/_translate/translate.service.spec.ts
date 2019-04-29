@@ -4,12 +4,12 @@ describe('translate service', () => {
   const mockTranslations: Translations = {
     nl: {
       hello: 'Hallo',
-      world: 'Wereld',
+      world: 'Wereld'
     },
     en: {
       hello: 'Hello',
-      world: 'World',
-    },
+      world: 'World'
+    }
   };
 
   afterEach(() => {

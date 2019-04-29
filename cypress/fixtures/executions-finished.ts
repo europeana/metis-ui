@@ -4,7 +4,7 @@ import {
   PluginType,
   TaskState,
   WorkflowExecution,
-  WorkflowStatus,
+  WorkflowStatus
 } from '../../src/app/_models/workflow-execution';
 
 export const finishedExecutions: Results<WorkflowExecution> = {
@@ -32,7 +32,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.OAIPMH_HARVEST,
@@ -40,11 +40,11 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
-        },
-      ],
+          topologyName: 'oai_harvest'
+        }
+      ]
     },
     {
       id: '5be15e85bbcf53000795bd9c',
@@ -69,16 +69,16 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: 'PUBLISH',
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'indexer',
-        },
-      ],
+          topologyName: 'indexer'
+        }
+      ]
     },
     {
       id: '5be0642d32251400094e50fe',
@@ -103,16 +103,16 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.PUBLISH,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'indexer',
-        },
-      ],
+          topologyName: 'indexer'
+        }
+      ]
     },
     {
       id: '5be063ea32251400094e50fc',
@@ -137,16 +137,16 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.PUBLISH,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'indexer',
-        },
-      ],
+          topologyName: 'indexer'
+        }
+      ]
     },
     {
       id: '5be05f9832251400094e50fa',
@@ -171,7 +171,7 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: TaskState.DROPPED,
+            status: TaskState.DROPPED
           },
           pluginMetadata: {
             pluginType: PluginType.OAIPMH_HARVEST,
@@ -179,13 +179,13 @@ export const finishedExecutions: Results<WorkflowExecution> = {
             enabled: true,
             url: 'http://panic.image.ntua.gr:9000/photography/oai',
             metadataFormat: 'rdf',
-            setSpec: '1021',
+            setSpec: '1021'
           },
-          topologyName: 'oai_harvest',
-        },
-      ],
-    },
+          topologyName: 'oai_harvest'
+        }
+      ]
+    }
   ],
   listSize: 5,
-  nextPage: 1,
+  nextPage: 1
 };

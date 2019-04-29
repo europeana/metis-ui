@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-theme-selector',
   templateUrl: './theme-selector.component.html',
-  styleUrls: ['./theme-selector.component.scss'],
+  styleUrls: ['./theme-selector.component.scss']
 })
 export class ThemeSelectorComponent {
   showing: boolean;

@@ -6,7 +6,7 @@ import { TranslateService } from '../../_translate';
 @Component({
   selector: 'app-reportsimple',
   templateUrl: './reportsimple.component.html',
-  styleUrls: ['./reportsimple.component.scss'],
+  styleUrls: ['./reportsimple.component.scss']
 })
 export class ReportSimpleComponent {
   constructor(private translate: TranslateService) {}

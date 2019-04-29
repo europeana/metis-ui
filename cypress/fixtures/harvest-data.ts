@@ -9,5 +9,5 @@ export const harvestData: HarvestData = {
   lastPublishedRecords: 760,
   lastPublishedRecordsReadyForViewing: true,
   lastHarvestedDate: '2018-11-19T09:10:50.864Z',
-  lastHarvestedRecords: 760,
+  lastHarvestedRecords: 760
 };

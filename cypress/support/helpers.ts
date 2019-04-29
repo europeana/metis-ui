@@ -12,7 +12,7 @@ import {
   user,
   workflow,
   workflowExecutions,
-  xslt,
+  xslt
 } from '../fixtures';
 
 export function setupUser(): void {
@@ -22,8 +22,8 @@ export function setupUser(): void {
       JSON.stringify({
         user,
         email: user.email,
-        token: user.metisUserAccessToken.accessToken,
-      }),
+        token: user.metisUserAccessToken.accessToken
+      })
     );
   });
 }
@@ -37,22 +37,22 @@ export function setupWorkflowRoutes(): void {
 
   cy.route('GET', /\/orchestrator\/workflows\/\d+/, workflow).as('getWorkflow');
   cy.route('GET', '/orchestrator/workflows/executions/*FINISHED*', finishedExecutions).as(
-    'getFinishedExecutions',
+    'getFinishedExecutions'
   );
   cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutions).as(
-    'getRunningExecutions',
+    'getRunningExecutions'
   );
   cy.route('GET', '/orchestrator/workflows/executions/overview*', datasetOverview).as(
-    'getOverview',
+    'getOverview'
   );
   cy.route('DELETE', '/orchestrator/workflows/executions/*', {}).as('deleteExecution');
   cy.route(
     'GET',
     '/orchestrator/workflows/executions/dataset/*?*orderField*',
-    workflowExecutions,
+    workflowExecutions
   ).as('getWorkflowExecutions');
   cy.route('GET', '/orchestrator/workflows/executions/dataset/*/information', harvestData).as(
-    'getHarvestData',
+    'getHarvestData'
   );
 
   cy.route('GET', '/orchestrator/proxies/*/task/*/report?*', report).as('getReport');

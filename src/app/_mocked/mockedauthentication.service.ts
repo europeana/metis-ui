@@ -15,7 +15,7 @@ export const mockUser: User = {
   organizationId: '1',
   organizationName: 'organization',
   updatedDate: 546466545364,
-  userId: '1',
+  userId: '1'
 };
 
 export class MockAuthenticationService {

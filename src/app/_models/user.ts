@@ -5,7 +5,7 @@ import { UserToken } from './user-token';
 export enum AccountRole {
   METIS_ADMIN = 'METIS_ADMIN',
   EUROPEANA_DATA_OFFICER = 'EUROPEANA_DATA_OFFICER',
-  PROVIDER_VIEWER = 'PROVIDER_VIEWER',
+  PROVIDER_VIEWER = 'PROVIDER_VIEWER'
 }
 
 export interface User {

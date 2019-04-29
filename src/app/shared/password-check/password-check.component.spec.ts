@@ -8,7 +8,7 @@ describe('PasswordCheckComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [PasswordCheckComponent],
+      declarations: [PasswordCheckComponent]
     }).compileComponents();
   }));
 

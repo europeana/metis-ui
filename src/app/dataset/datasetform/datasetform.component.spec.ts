@@ -10,7 +10,7 @@ import {
   mockDataset,
   MockDatasetsService,
   MockErrorService,
-  MockTranslateService,
+  MockTranslateService
 } from '../../_mocked';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -30,9 +30,9 @@ describe('DatasetformComponent', () => {
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: CountriesService, useClass: MockCountriesService },
         { provide: ErrorService, useClass: MockErrorService },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(DatasetformComponent);

@@ -24,13 +24,13 @@ describe('ExecutionsgridComponent', () => {
       declarations: [
         ExecutionsgridComponent,
         createMockPipe('renameWorkflow'),
-        createMockPipe('translate'),
+        createMockPipe('translate')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
-        { provide: WorkflowService, useClass: MockWorkflowService },
-      ],
+        { provide: WorkflowService, useClass: MockWorkflowService }
+      ]
     }).compileComponents();
   }));
 

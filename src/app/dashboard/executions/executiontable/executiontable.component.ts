@@ -8,7 +8,7 @@ import { TranslateService } from '../../../_translate';
 @Component({
   selector: '[app-executiontable]',
   templateUrl: './executiontable.component.html',
-  styleUrls: ['./executiontable.component.scss'],
+  styleUrls: ['./executiontable.component.scss']
 })
 export class ExecutiontableComponent implements OnInit {
   @Input() execution: WorkflowExecution;

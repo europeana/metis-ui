@@ -5,7 +5,7 @@ import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
 @Component({
   selector: 'app-gridrow',
   templateUrl: './gridrow.component.html',
-  styleUrls: ['./gridrow.component.scss'],
+  styleUrls: ['./gridrow.component.scss']
 })
 export class GridrowComponent {
   @ViewChild('childComponentTemplate') childComponentTemplate: TemplateRef<HTMLElement>;

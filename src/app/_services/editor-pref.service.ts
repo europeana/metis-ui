@@ -45,7 +45,7 @@ export class EditorPrefService {
       viewportMargin: Infinity,
       lineWrapping: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-      theme: this.getEditorPref(),
+      theme: this.getEditorPref()
     };
   }
 }

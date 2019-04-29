@@ -42,7 +42,7 @@ export class DatasetsService {
       tap(() => {
         this.datasetCache.clear(datasetFormValues.dataset.datasetId);
       }),
-      this.errors.handleRetry(),
+      this.errors.handleRetry()
     );
   }
 
@@ -63,7 +63,7 @@ export class DatasetsService {
           map((data) => {
             // TODO: fix any
             return type === 'default' ? data : data.xslt;
-          }),
+          })
         )
         .pipe(this.errors.handleRetry())
     );
@@ -77,7 +77,7 @@ export class DatasetsService {
     }
     return this.http
       .post<XmlSample[]>(url, samples, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       })
       .pipe(this.errors.handleRetry());
   }

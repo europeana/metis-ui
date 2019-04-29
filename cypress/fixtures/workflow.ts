@@ -9,20 +9,20 @@ export const workflow: Workflow = {
       metadataFormat: 'edm',
       pluginType: 'OAIPMH_HARVEST',
       setSpec: 'oai_test',
-      url: 'http://www.mocked.com',
+      url: 'http://www.mocked.com'
     },
     {
       enabled: true,
       pluginType: 'TRANSFORMATION',
-      customXslt: false,
+      customXslt: false
     },
     {
       enabled: true,
-      pluginType: 'MEDIA_PROCESS',
+      pluginType: 'MEDIA_PROCESS'
     },
     {
       enabled: true,
-      pluginType: 'LINK_CHECKING',
-    },
-  ],
+      pluginType: 'LINK_CHECKING'
+    }
+  ]
 };

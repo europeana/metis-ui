@@ -21,7 +21,7 @@ export class TokenInterceptor implements HttpInterceptor {
   intercept(
     // tslint:disable-next-line: no-any
     request: HttpRequest<any>,
-    next: HttpHandler,
+    next: HttpHandler
     // tslint:disable-next-line: no-any
   ): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
@@ -31,7 +31,7 @@ export class TokenInterceptor implements HttpInterceptor {
       if (token) {
         const headers = { Authorization: `Bearer ${token}` };
         request = request.clone({
-          setHeaders: headers,
+          setHeaders: headers
         });
       }
     }

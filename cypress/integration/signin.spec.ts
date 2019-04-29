@@ -62,7 +62,7 @@ context('metis-ui', () => {
         method: 'POST',
         url: '/authentication/login',
         status: 401,
-        response: { errorMessage: 'Oops!' },
+        response: { errorMessage: 'Oops!' }
       });
 
       cy.get('#email')

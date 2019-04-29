@@ -9,7 +9,7 @@ function checkError(
     status?: number;
     statusText?: string;
   },
-  result: string,
+  result: string
 ): void {
   expect(StringifyHttpError(new HttpErrorResponse(init))).toBe(result);
 }

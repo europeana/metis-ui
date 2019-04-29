@@ -7,7 +7,7 @@ import { ErrorService, WorkflowService } from '../../_services';
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss'],
+  styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
   constructor(private errors: ErrorService, private workflows: WorkflowService) {}
@@ -55,14 +55,14 @@ export class StatisticsComponent implements OnInit {
             const error = this.errors.handleError(err);
             this.notification = httpErrorNotification(error);
             this.setLoading(false);
-          },
+          }
         );
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.setLoading(false);
-      },
+      }
     );
   }
 
@@ -89,7 +89,7 @@ export class StatisticsComponent implements OnInit {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
           this.setLoading(false);
-        },
+        }
       );
   }
 

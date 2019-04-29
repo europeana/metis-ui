@@ -22,8 +22,8 @@ describe('HeaderComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         RedirectPreviousUrl,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
-      ],
+        { provide: AuthenticationService, useClass: MockAuthenticationService }
+      ]
     }).compileComponents();
   }));
 

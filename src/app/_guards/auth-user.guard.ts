@@ -10,7 +10,7 @@ export class AuthUserGuard implements CanActivate {
     private authentication: AuthenticationService,
     private router: Router,
     @Inject(DOCUMENT) private document: Document,
-    private redirectPreviousUrl: RedirectPreviousUrl,
+    private redirectPreviousUrl: RedirectPreviousUrl
   ) {}
 
   canActivate(): boolean {

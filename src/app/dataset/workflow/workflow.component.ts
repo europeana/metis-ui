@@ -13,7 +13,7 @@ import {
   PluginMetadata,
   successNotification,
   Workflow,
-  WorkflowExecution,
+  WorkflowExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -21,7 +21,7 @@ import { TranslateService } from '../../_translate';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.component.html',
-  styleUrls: ['./workflow.component.scss'],
+  styleUrls: ['./workflow.component.scss']
 })
 export class WorkflowComponent implements OnInit {
   constructor(
@@ -29,7 +29,7 @@ export class WorkflowComponent implements OnInit {
     private fb: FormBuilder,
     private errors: ErrorService,
     private router: Router,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {
     router.events.subscribe((s) => {
       if (s instanceof NavigationEnd) {
@@ -66,7 +66,7 @@ export class WorkflowComponent implements OnInit {
     'pluginMEDIA_PROCESS',
     'pluginPREVIEW',
     'pluginPUBLISH',
-    'pluginLINK_CHECKING',
+    'pluginLINK_CHECKING'
   ];
   isSaving = false;
 
@@ -87,16 +87,16 @@ export class WorkflowComponent implements OnInit {
     this.currentUrl = this.router.url.split('#')[0];
 
     this.newNotification = successNotification(this.translate.instant('workflowsavenew'), {
-      sticky: true,
+      sticky: true
     });
     this.saveNotification = successNotification(this.translate.instant('workflowsave'), {
-      sticky: true,
+      sticky: true
     });
     this.runningNotification = successNotification(this.translate.instant('workflowrunning'), {
-      sticky: true,
+      sticky: true
     });
     this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
-      sticky: true,
+      sticky: true
     });
   }
 
@@ -124,7 +124,7 @@ export class WorkflowComponent implements OnInit {
       ftpHttpUser: [''],
       ftpHttpPassword: [''],
       url: [''],
-      customXslt: [''],
+      customXslt: ['']
     });
 
     this.updateRequired();
@@ -294,7 +294,7 @@ export class WorkflowComponent implements OnInit {
       // link checking
       if (thisWorkflow.pluginType === 'LINK_CHECKING') {
         this.workflowForm.controls.performSampling.setValue(
-          thisWorkflow.performSampling ? 'true' : 'false',
+          thisWorkflow.performSampling ? 'true' : 'false'
         );
       }
     }
@@ -320,13 +320,13 @@ export class WorkflowComponent implements OnInit {
           setSpec: this.workflowForm.value.setSpec,
           url: this.workflowForm.value.harvestUrl.trim(),
           metadataFormat: this.workflowForm.value.metadataFormat,
-          mocked: false,
+          mocked: false
         });
       } else if (this.workflowForm.value.pluginType === 'HTTP_HARVEST') {
         plugins.push({
           pluginType: 'HTTP_HARVEST',
           url: this.workflowForm.value.url.trim(),
-          mocked: false,
+          mocked: false
         });
       }
     }
@@ -335,7 +335,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginVALIDATION_EXTERNAL === true) {
       plugins.push({
         pluginType: 'VALIDATION_EXTERNAL',
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -344,7 +344,7 @@ export class WorkflowComponent implements OnInit {
       plugins.push({
         pluginType: 'TRANSFORMATION',
         customXslt: this.workflowForm.value.customXslt ? this.workflowForm.value.customXslt : false,
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -352,7 +352,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginVALIDATION_INTERNAL === true) {
       plugins.push({
         pluginType: 'VALIDATION_INTERNAL',
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -360,7 +360,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginNORMALIZATION === true) {
       plugins.push({
         pluginType: 'NORMALIZATION',
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -368,7 +368,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginENRICHMENT === true) {
       plugins.push({
         pluginType: 'ENRICHMENT',
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -376,7 +376,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginMEDIA_PROCESS === true) {
       plugins.push({
         pluginType: 'MEDIA_PROCESS',
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -384,7 +384,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginPREVIEW === true) {
       plugins.push({
         pluginType: 'PREVIEW',
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -392,7 +392,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.value.pluginPUBLISH === true) {
       plugins.push({
         pluginType: 'PUBLISH',
-        mocked: false,
+        mocked: false
       });
     }
 
@@ -403,12 +403,12 @@ export class WorkflowComponent implements OnInit {
         mocked: false,
         performSampling: this.workflowForm.value.performSampling
           ? this.workflowForm.value.performSampling
-          : false,
+          : false
       });
     }
 
     return {
-      metisPluginsMetadata: plugins,
+      metisPluginsMetadata: plugins
     };
   }
 
@@ -427,7 +427,7 @@ export class WorkflowComponent implements OnInit {
       .createWorkflowForDataset(
         this.datasetData.datasetId,
         this.formatFormValues(),
-        this.newWorkflow,
+        this.newWorkflow
       )
       .subscribe(
         () => {
@@ -441,7 +441,7 @@ export class WorkflowComponent implements OnInit {
               this.isSaving = false;
               this.notification = successNotification(this.translate.instant('workflowsaved'), {
                 fadeTime: 1500,
-                sticky: true,
+                sticky: true
               });
             });
         },
@@ -449,7 +449,7 @@ export class WorkflowComponent implements OnInit {
           const errorSubmit = this.errors.handleError(err);
           this.notification = httpErrorNotification(errorSubmit);
           this.isSaving = false;
-        },
+        }
       );
   }
 
