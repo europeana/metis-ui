@@ -18,7 +18,7 @@
     "test:ci": "ng test --progress=false --watch=false --code-coverage --source-map=false",
     "cypress:ci": "run-p --race start:ci cypress:run",
     "start:ci": "ng serve --progress=false --port 4280 --live-reload=false",
-    "cypress:run": "sleep 10 && cypress run",
+    "cypress:run": "sleep 100 && cypress run",
     "dist": "ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
   },
   "private": true,
