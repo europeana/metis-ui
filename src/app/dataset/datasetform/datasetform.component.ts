@@ -11,7 +11,7 @@ import {
   httpErrorNotification,
   Language,
   Notification,
-  successNotification,
+  successNotification
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -21,7 +21,7 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
 @Component({
   selector: 'app-datasetform',
   templateUrl: './datasetform.component.html',
-  styleUrls: ['./datasetform.component.scss'],
+  styleUrls: ['./datasetform.component.scss']
 })
 export class DatasetformComponent implements OnInit {
   @Input() datasetData: Partial<Dataset>;
@@ -56,7 +56,7 @@ export class DatasetformComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {}
 
   private updateFormEnabled(): void {
@@ -75,7 +75,7 @@ export class DatasetformComponent implements OnInit {
     this.returnLanguages();
 
     this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
-      sticky: true,
+      sticky: true
     });
   }
 
@@ -109,7 +109,7 @@ export class DatasetformComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);
-      },
+      }
     );
   }
 
@@ -130,7 +130,7 @@ export class DatasetformComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);
-      },
+      }
     );
   }
 
@@ -145,7 +145,7 @@ export class DatasetformComponent implements OnInit {
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
       description: [''],
-      notes: [''],
+      notes: ['']
     });
 
     this.updateForm();
@@ -193,13 +193,13 @@ export class DatasetformComponent implements OnInit {
     } else {
       const dataset = {
         datasetId: this.datasetData.datasetId,
-        ...this.datasetForm.value,
+        ...this.datasetForm.value
       };
       this.datasets.updateDataset({ dataset }).subscribe(() => {
         localStorage.removeItem(DATASET_TEMP_LSKEY);
         this.notification = successNotification(this.translate.instant('datasetsaved'), {
           fadeTime: 1500,
-          sticky: true,
+          sticky: true
         });
         this.datasetUpdated.emit();
 

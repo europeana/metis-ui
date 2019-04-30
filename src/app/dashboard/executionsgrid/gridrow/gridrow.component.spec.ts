@@ -11,7 +11,7 @@ function makePluginExecutionOverview(status: string): PluginExecutionOverview {
   // tslint:disable: no-any
   return ({
     pluginStatus: status,
-    progress: { errors: 0 },
+    progress: { errors: 0 }
   } as any) as PluginExecutionOverview;
 }
 
@@ -25,9 +25,9 @@ describe('GridrowComponent', () => {
       declarations: [
         GridrowComponent,
         createMockPipe('renameWorkflow'),
-        createMockPipe('translate'),
+        createMockPipe('translate')
       ],
-      providers: [{ provide: TranslateService, useClass: MockTranslateService }],
+      providers: [{ provide: TranslateService, useClass: MockTranslateService }]
     }).compileComponents();
   }));
 

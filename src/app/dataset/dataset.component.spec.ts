@@ -8,7 +8,7 @@ import {
   MockDatasetsService,
   MockErrorService,
   mockPluginExecution,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
@@ -26,9 +26,9 @@ describe('DatasetComponent', () => {
       providers: [
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: ErrorService, useClass: MockErrorService },
+        { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 

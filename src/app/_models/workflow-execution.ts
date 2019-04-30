@@ -6,7 +6,7 @@ export enum TaskState {
   CURRENTLY_PROCESSING = 'CURRENTLY_PROCESSING',
   DROPPED = 'DROPPED',
   PROCESSED = 'PROCESSED',
-  REMOVING_FROM_SOLR_AND_MONGO = 'REMOVING_FROM_SOLR_AND_MONGO',
+  REMOVING_FROM_SOLR_AND_MONGO = 'REMOVING_FROM_SOLR_AND_MONGO'
 }
 
 export interface ExecutionProgressBasic {
@@ -33,7 +33,7 @@ export enum PluginStatus {
   RUNNING = 'RUNNING',
   FINISHED = 'FINISHED',
   CANCELLED = 'CANCELLED',
-  FAILED = 'FAILED',
+  FAILED = 'FAILED'
 }
 
 // Java name: AbstractMetisPlugin
@@ -49,7 +49,7 @@ export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
   TRANSFORMATION = 'TRANSFORMATION',
   MEDIA_PROCESS = 'MEDIA_PROCESS',
-  LINK_CHECKING = 'LINK_CHECKING',
+  LINK_CHECKING = 'LINK_CHECKING'
 }
 
 // See Topology.java
@@ -94,7 +94,7 @@ export enum WorkflowStatus {
   RUNNING = 'RUNNING',
   FINISHED = 'FINISHED',
   FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
+  CANCELLED = 'CANCELLED'
 }
 
 export interface WorkflowExecution {

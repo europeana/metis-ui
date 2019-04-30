@@ -4,14 +4,14 @@ let config = {
       {
         test: /\.jsx?$|\.tsx?$/,
         use: {
-          loader: 'ts-loader',
-        },
-      },
-    ],
+          loader: 'ts-loader'
+        }
+      }
+    ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
-  },
+    extensions: ['.tsx', '.ts', '.js']
+  }
 };
 
 module.exports = config;

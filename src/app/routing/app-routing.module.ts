@@ -17,41 +17,41 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [AuthUserGuard],
+    canActivate: [AuthUserGuard]
   },
   {
     path: 'dataset/new',
     component: NewDatasetComponent,
-    canActivate: [AuthUserGuard],
+    canActivate: [AuthUserGuard]
   },
   {
     path: 'dataset/:tab/:id',
     component: DatasetComponent,
-    canActivate: [AuthUserGuard],
+    canActivate: [AuthUserGuard]
   },
   { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   {
     path: 'signin',
     component: LoginComponent,
-    canActivate: [AuthVisitorGuard],
+    canActivate: [AuthVisitorGuard]
   },
   {
     path: 'profile',
     component: ProfileComponent,
-    canActivate: [AuthUserGuard],
+    canActivate: [AuthUserGuard]
   },
   {
     path: 'register',
     component: RegisterComponent,
-    canActivate: [AuthVisitorGuard],
+    canActivate: [AuthVisitorGuard]
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: '**', component: PageNotFoundComponent },
+  { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class AppRoutingModule {}

@@ -20,9 +20,9 @@ describe('RegisterComponent', () => {
       declarations: [RegisterComponent, createMockPipe('translate')],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -49,10 +49,10 @@ describe('RegisterComponent', () => {
     submitBtn = fixture.nativeElement.querySelector('app-loading-button');
     component.registerForm.controls.email.setValue('test@mocked.com');
     (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
-      '!Passw0rd123',
+      '!Passw0rd123'
     );
     (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue(
-      '!Passw0rd123',
+      '!Passw0rd123'
     );
     component.onSubmit();
     fixture.detectChanges();

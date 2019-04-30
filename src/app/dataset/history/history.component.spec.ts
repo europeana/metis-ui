@@ -8,7 +8,7 @@ import {
   mockDataset,
   MockErrorService,
   mockWorkflowExecutionResults,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -24,13 +24,13 @@ describe('HistoryComponent', () => {
       declarations: [
         HistoryComponent,
         createMockPipe('translate'),
-        createMockPipe('renameWorkflow'),
+        createMockPipe('renameWorkflow')
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: ErrorService, useClass: MockErrorService },
+        { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -52,7 +52,7 @@ describe('HistoryComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'validation',
       taskId: '123',
-      message: undefined,
+      message: undefined
     });
   });
 
@@ -64,7 +64,7 @@ describe('HistoryComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: undefined,
       taskId: undefined,
-      message: 'fail message report',
+      message: 'fail message report'
     });
   });
 

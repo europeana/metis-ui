@@ -2,7 +2,7 @@ import {
   FilterExecutionConf,
   FilterExecutionConfOption,
   PluginType,
-  WorkflowStatus,
+  WorkflowStatus
 } from '../../_models';
 import { RenameWorkflowPipe } from '../../_translate';
 
@@ -15,12 +15,12 @@ export const filterConf: FilterExecutionConf[] = [
       .map((type) => {
         return {
           value: type,
-          label: RenameWorkflowPipe.prototype.transform(type) || type,
+          label: RenameWorkflowPipe.prototype.transform(type) || type
         } as FilterExecutionConfOption;
       })
       .sort((a: FilterExecutionConfOption, b: FilterExecutionConfOption) => {
         return a.label.localeCompare(b.label);
-      }),
+      })
   },
   {
     label: 'date',
@@ -46,9 +46,9 @@ export const filterConf: FilterExecutionConf[] = [
           },
           cbFnOnClear: (el: HTMLElement): void => {
             el.removeAttribute('max');
-          },
+          }
         },
-        group: 'date-pair',
+        group: 'date-pair'
       },
       {
         label: 'to',
@@ -67,11 +67,11 @@ export const filterConf: FilterExecutionConf[] = [
           },
           cbFnOnClear: (el: HTMLElement): void => {
             el.removeAttribute('min');
-          },
+          }
         },
-        group: 'date-pair',
-      },
-    ],
+        group: 'date-pair'
+      }
+    ]
   },
   {
     label: 'status',
@@ -81,6 +81,6 @@ export const filterConf: FilterExecutionConf[] = [
       .sort()
       .map((status) => {
         return { label: status.toLowerCase(), value: status };
-      }),
-  },
+      })
+  }
 ];

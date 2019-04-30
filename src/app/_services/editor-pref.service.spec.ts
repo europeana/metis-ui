@@ -11,7 +11,7 @@ describe('editor pref service', () => {
   beforeEach(async(() => {
     localStorage.removeItem('editor-pref');
     TestBed.configureTestingModule({
-      providers: [EditorPrefService],
+      providers: [EditorPrefService]
     }).compileComponents();
     service = TestBed.get(EditorPrefService);
     altTheme = service.altTheme;

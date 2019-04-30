@@ -16,7 +16,7 @@ describe('dataset service', () => {
 
     TestBed.configureTestingModule({
       providers: [CountriesService, { provide: ErrorService, useClass: MockErrorService }],
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.get(CountriesService);

@@ -6,13 +6,13 @@ import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html',
+  templateUrl: './header.component.html'
 })
 export class HeaderComponent {
   constructor(
     private authentication: AuthenticationService,
     private router: Router,
-    private redirectPreviousUrl: RedirectPreviousUrl,
+    private redirectPreviousUrl: RedirectPreviousUrl
   ) {}
 
   openSignIn = false;

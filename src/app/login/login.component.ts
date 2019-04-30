@@ -11,7 +11,7 @@ import { TranslateService } from '../_translate';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
+  templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
   loading = false;
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
     private redirectPreviousUrl: RedirectPreviousUrl,
     private fb: FormBuilder,
     private translate: TranslateService,
-    private documentTitleService: DocumentTitleService,
+    private documentTitleService: DocumentTitleService
   ) {}
 
   /** ngOnInit
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
 
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', Validators.required]
     });
 
     this.msgBadCredentials = this.translate.instant('msgbadcredentials');
@@ -91,10 +91,10 @@ export class LoginComponent implements OnInit {
           this.notification = errorNotification(
             err.status === 406
               ? this.msgBadCredentials
-              : `Signin failed: ${StringifyHttpError(err)}`,
+              : `Signin failed: ${StringifyHttpError(err)}`
           );
           this.loading = false;
-        },
+        }
       );
   }
 

@@ -18,7 +18,7 @@ import {
   ExecutionsgridComponent,
   ExecutiontableComponent,
   GridrowComponent,
-  OngoingexecutionsComponent,
+  OngoingexecutionsComponent
 } from './dashboard';
 import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
 import {
@@ -34,7 +34,7 @@ import {
   PreviewComponent,
   ReportSimpleComponent,
   StatisticsComponent,
-  WorkflowComponent,
+  WorkflowComponent
 } from './dataset';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
@@ -49,7 +49,7 @@ import {
   LoadingButtonComponent,
   NotificationComponent,
   PasswordCheckComponent,
-  TextWithLinksComponent,
+  TextWithLinksComponent
 } from './shared';
 import { ThemeSelectorComponent } from './theme-selector';
 
@@ -96,7 +96,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     ExecutiontableComponent,
     NotificationComponent,
     LoadingButtonComponent,
-    DatasetsComponent,
+    DatasetsComponent
   ],
   imports: [
     BrowserModule,
@@ -105,23 +105,23 @@ import { ThemeSelectorComponent } from './theme-selector';
     HttpClientModule,
     AppRoutingModule,
     CodemirrorModule,
-    ClickOutsideModule,
+    ClickOutsideModule
   ],
   entryComponents: [
     DatasetformComponent,
     HistoryComponent,
     MappingComponent,
     PreviewComponent,
-    WorkflowComponent,
+    WorkflowComponent
   ],
   providers: [
     TRANSLATION_PROVIDERS,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
-      multi: true,
-    },
+      multi: true
+    }
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

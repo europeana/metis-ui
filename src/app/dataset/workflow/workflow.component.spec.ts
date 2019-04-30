@@ -10,7 +10,7 @@ import {
   MockErrorService,
   MockTranslateService,
   mockWorkflow,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
 import { successNotification } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -28,14 +28,14 @@ describe('WorkflowComponent', () => {
       declarations: [
         WorkflowComponent,
         createMockPipe('translate'),
-        createMockPipe('renameWorkflow'),
+        createMockPipe('renameWorkflow')
       ],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: ErrorService, useClass: MockErrorService },
-        { provide: TranslateService, useClass: MockTranslateService },
-      ],
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     }).compileComponents();
   }));
 

@@ -4,7 +4,7 @@ import {
   PluginType,
   TaskState,
   WorkflowExecution,
-  WorkflowStatus,
+  WorkflowStatus
 } from '../../src/app/_models/workflow-execution';
 
 export const workflowExecutions: Results<WorkflowExecution> = {
@@ -34,7 +34,7 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.OAIPMH_HARVEST,
@@ -42,9 +42,9 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
+          topologyName: 'oai_harvest'
         },
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -59,14 +59,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 760,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: 'VALIDATION_EXTERNAL',
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'validation',
+          topologyName: 'validation'
         },
         {
           pluginType: PluginType.TRANSFORMATION,
@@ -81,15 +81,15 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: TaskState.DROPPED,
+            status: TaskState.DROPPED
           },
           pluginMetadata: {
             pluginType: PluginType.TRANSFORMATION,
             mocked: false,
             enabled: true,
-            customXslt: false,
+            customXslt: false
           },
-          topologyName: 'xslt_transform',
+          topologyName: 'xslt_transform'
         },
         {
           pluginType: PluginType.VALIDATION_INTERNAL,
@@ -104,14 +104,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.VALIDATION_INTERNAL,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'validation',
+          topologyName: 'validation'
         },
         {
           pluginType: PluginType.NORMALIZATION,
@@ -126,14 +126,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: 'NORMALIZATION',
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'normalization',
+          topologyName: 'normalization'
         },
         {
           pluginType: PluginType.ENRICHMENT,
@@ -148,14 +148,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.ENRICHMENT,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'enrichment',
+          topologyName: 'enrichment'
         },
         {
           pluginType: PluginType.MEDIA_PROCESS,
@@ -170,14 +170,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.MEDIA_PROCESS,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'media_process',
+          topologyName: 'media_process'
         },
         {
           pluginType: PluginType.PREVIEW,
@@ -192,16 +192,16 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.PREVIEW,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'indexer',
-        },
-      ],
+          topologyName: 'indexer'
+        }
+      ]
     },
     {
       id: '5bf2d6ac9f7dd000084d4cbb',
@@ -228,7 +228,7 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 300,
             progressPercentage: 39,
             errors: 0,
-            status: TaskState.DROPPED,
+            status: TaskState.DROPPED
           },
           pluginMetadata: {
             pluginType: PluginType.OAIPMH_HARVEST,
@@ -236,9 +236,9 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
+          topologyName: 'oai_harvest'
         },
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -253,16 +253,16 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.VALIDATION_EXTERNAL,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'validation',
-        },
-      ],
+          topologyName: 'validation'
+        }
+      ]
     },
     {
       id: '5bf27dfc4bbc6c0008c0f269',
@@ -289,7 +289,7 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.OAIPMH_HARVEST,
@@ -297,9 +297,9 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
+          topologyName: 'oai_harvest'
         },
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -314,16 +314,16 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 760,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.VALIDATION_EXTERNAL,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'validation',
-        },
-      ],
+          topologyName: 'validation'
+        }
+      ]
     },
     {
       id: '5bf27ce44bbc6c0008c0f25f',
@@ -350,7 +350,7 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: TaskState.DROPPED,
+            status: TaskState.DROPPED
           },
           pluginMetadata: {
             pluginType: PluginType.OAIPMH_HARVEST,
@@ -358,9 +358,9 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
+          topologyName: 'oai_harvest'
         },
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -375,16 +375,16 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.VALIDATION_EXTERNAL,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'validation',
-        },
-      ],
+          topologyName: 'validation'
+        }
+      ]
     },
     {
       id: '5bebea4a4bbc6c0008c0cce1',
@@ -411,7 +411,7 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.OAIPMH_HARVEST,
@@ -419,9 +419,9 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
+          topologyName: 'oai_harvest'
         },
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -436,14 +436,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 760,
             progressPercentage: 100,
             errors: 760,
-            status: TaskState.PROCESSED,
+            status: TaskState.PROCESSED
           },
           pluginMetadata: {
             pluginType: PluginType.VALIDATION_EXTERNAL,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'validation',
+          topologyName: 'validation'
         },
         {
           pluginType: PluginType.TRANSFORMATION,
@@ -458,15 +458,15 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: TaskState.DROPPED,
+            status: TaskState.DROPPED
           },
           pluginMetadata: {
             pluginType: PluginType.TRANSFORMATION,
             mocked: false,
             enabled: true,
-            customXslt: false,
+            customXslt: false
           },
-          topologyName: 'xslt_transform',
+          topologyName: 'xslt_transform'
         },
         {
           pluginType: PluginType.VALIDATION_INTERNAL,
@@ -481,14 +481,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.VALIDATION_INTERNAL,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'validation',
+          topologyName: 'validation'
         },
         {
           pluginType: PluginType.NORMALIZATION,
@@ -503,14 +503,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.NORMALIZATION,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'normalization',
+          topologyName: 'normalization'
         },
         {
           pluginType: PluginType.ENRICHMENT,
@@ -525,14 +525,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.ENRICHMENT,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'enrichment',
+          topologyName: 'enrichment'
         },
         {
           pluginType: PluginType.MEDIA_PROCESS,
@@ -547,14 +547,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.MEDIA_PROCESS,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'media_process',
+          topologyName: 'media_process'
         },
         {
           pluginType: PluginType.PREVIEW,
@@ -569,14 +569,14 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.PREVIEW,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'indexer',
+          topologyName: 'indexer'
         },
         {
           pluginType: PluginType.PUBLISH,
@@ -591,18 +591,18 @@ export const workflowExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: undefined,
+            status: undefined
           },
           pluginMetadata: {
             pluginType: PluginType.PUBLISH,
             mocked: false,
-            enabled: true,
+            enabled: true
           },
-          topologyName: 'indexer',
-        },
-      ],
-    },
+          topologyName: 'indexer'
+        }
+      ]
+    }
   ],
   listSize: 5,
-  nextPage: -1,
+  nextPage: -1
 };

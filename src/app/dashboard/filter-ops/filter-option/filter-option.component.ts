@@ -5,13 +5,13 @@ import {
   FilterExecutionProvider,
   FilterParamHash,
   FilterParamType,
-  FilterParamValue,
+  FilterParamValue
 } from '../../../_models/filterExecution';
 
 @Component({
   selector: 'app-filter-option',
   templateUrl: './filter-option.component.html',
-  styleUrls: ['./filter-option.component.scss'],
+  styleUrls: ['./filter-option.component.scss']
 })
 export class FilterOptionComponent {
   @Input() config: FilterExecutionConfOption;
@@ -59,7 +59,7 @@ export class FilterOptionComponent {
     this.params[this.filterName] = this.params[this.filterName].filter(
       (param: FilterParamValue) => {
         return param.inputRef !== this.index;
-      },
+      }
     );
   }
 
@@ -75,7 +75,7 @@ export class FilterOptionComponent {
       this.params[this.filterName] = this.params[this.filterName].filter(
         (param: FilterParamValue) => {
           return param.group === this.config.group;
-        },
+        }
       );
     } else {
       this.params[this.filterName] = [];
@@ -89,7 +89,7 @@ export class FilterOptionComponent {
     this.params[this.filterName].push({
       value: this.getVal(),
       group: this.config.group,
-      inputRef: this.index,
+      inputRef: this.index
     });
     this.showParams();
   }
@@ -117,7 +117,7 @@ export class FilterOptionComponent {
       if (this.config.input.cbFnOnSet) {
         this.config.input.cbFnOnSet(
           val,
-          this.config.group ? this.parentCmp.getInputGroupElements(this.config.group) : undefined,
+          this.config.group ? this.parentCmp.getInputGroupElements(this.config.group) : undefined
         );
       }
     }

@@ -17,7 +17,7 @@ describe('dataset service', () => {
 
     TestBed.configureTestingModule({
       providers: [DatasetsService, { provide: ErrorService, useClass: MockErrorService }],
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.get(DatasetsService);
@@ -143,7 +143,7 @@ it('should not have favorites when the localStorage is empty', () => {
 
   TestBed.configureTestingModule({
     providers: [DatasetsService, { provide: ErrorService, useClass: MockErrorService }],
-    imports: [HttpClientTestingModule],
+    imports: [HttpClientTestingModule]
   }).compileComponents();
   const service = TestBed.get(DatasetsService);
   service.getFavorites().subscribe((res: Dataset[]) => {

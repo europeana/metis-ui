@@ -14,7 +14,7 @@ describe('ReportSimpleComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ReportSimpleComponent],
       providers: [{ provide: TranslateService, useClass: MockTranslateService }],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 

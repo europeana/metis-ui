@@ -182,5 +182,5 @@ export const LANG_EN_TRANS = {
   xslttryoutdefault: 'Try out with default XSLT',
   xslttryout: 'Save XSLT & Try it out',
   yes: 'Yes',
-  zoho: 'Go to Zoho',
+  zoho: 'Go to Zoho'
 };

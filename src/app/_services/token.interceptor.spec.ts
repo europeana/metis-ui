@@ -22,9 +22,9 @@ describe('TokenInterceptor', () => {
     TestBed.configureTestingModule({
       providers: [
         TokenInterceptor,
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService }
       ],
-      imports: [HttpClientTestingModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule]
     });
     service = TestBed.get(TokenInterceptor);
     auth = TestBed.get(AuthenticationService);

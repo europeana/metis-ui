@@ -16,7 +16,7 @@ describe('AuthUserGuard', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }],
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule]
     }).compileComponents();
     guard = TestBed.get(AuthUserGuard);
     authenticationService = TestBed.get(AuthenticationService);

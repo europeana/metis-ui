@@ -15,7 +15,7 @@ describe('ErrorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [ErrorService, RedirectPreviousUrl],
+      providers: [ErrorService, RedirectPreviousUrl]
     });
     service = TestBed.get(ErrorService);
     router = TestBed.get(Router);
@@ -46,7 +46,7 @@ describe('ErrorService', () => {
     spyOn(router, 'navigate');
 
     expect(
-      service.handleError(new HttpErrorResponse({ error: { errorMessage: 'Wrong access token' } })),
+      service.handleError(new HttpErrorResponse({ error: { errorMessage: 'Wrong access token' } }))
     ).toBe(false);
 
     expect(redirect.get()).toBe('/');
@@ -62,13 +62,13 @@ describe('ErrorService', () => {
     const err1 = new HttpErrorResponse({
       status: 404,
       statusText: 'not found',
-      error: new Error('not found'),
+      error: new Error('not found')
     });
     expect(service.handleError(err1)).toBe(err1);
     const err2 = new HttpErrorResponse({
       status: 500,
       statusText: 'server err',
-      error: new Error('server err'),
+      error: new Error('server err')
     });
     expect(service.handleError(err2)).toBe(err2);
 
@@ -102,9 +102,9 @@ describe('ErrorService', () => {
       rawResponses.map((x) =>
         fromValues(x).pipe(
           service.handleRetry<string>(),
-          catchError((err) => of(`error:${err.status}`)),
-        ),
-      ),
+          catchError((err) => of(`error:${err.status}`))
+        )
+      )
     ).subscribe((actualResponses) => {
       expect(actualResponses).toEqual(expectedResponses);
     });

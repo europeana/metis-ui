@@ -9,7 +9,7 @@ import {
   errorNotification,
   httpErrorNotification,
   Notification,
-  successNotification,
+  successNotification
 } from '../_models';
 import { AuthenticationService, DocumentTitleService } from '../_services';
 import { TranslateService } from '../_translate';
@@ -17,7 +17,7 @@ import { TranslateService } from '../_translate';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   loading = false;
@@ -36,7 +36,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private router: Router,
     private authentication: AuthenticationService,
     private translate: TranslateService,
-    private documentTitleService: DocumentTitleService,
+    private documentTitleService: DocumentTitleService
   ) {}
 
   /** ngOnInit
@@ -52,12 +52,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
       passwords: this.fb.group(
         {
           password: ['', Validators.required],
-          confirm: ['', Validators.required],
+          confirm: ['', Validators.required]
         },
         {
-          validator: MatchPasswordValidator,
-        },
-      ),
+          validator: MatchPasswordValidator
+        }
+      )
     });
 
     this.msgSuccess = this.translate.instant('registrationsuccessful');
@@ -106,7 +106,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         (err: HttpErrorResponse) => {
           this.loading = false;
           this.notification = httpErrorNotification(err);
-        },
+        }
       );
     }
   }

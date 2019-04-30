@@ -9,7 +9,7 @@ import { AuthenticationService, DocumentTitleService, ErrorService } from '../_s
 
 @Component({
   selector: 'app-profile',
-  templateUrl: './profile.component.html',
+  templateUrl: './profile.component.html'
 })
 export class ProfileComponent implements OnInit {
   editMode = false;
@@ -24,7 +24,7 @@ export class ProfileComponent implements OnInit {
     private authentication: AuthenticationService,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private documentTitleService: DocumentTitleService,
+    private documentTitleService: DocumentTitleService
   ) {}
 
   /** ngOnInit
@@ -57,8 +57,8 @@ export class ProfileComponent implements OnInit {
               user.organizationName && user.organizationName.length > 0
                 ? user.organizationName
                 : 'Unknown',
-            disabled: true,
-          },
+            disabled: true
+          }
         ],
         country: [{ value: user.country ? user.country : 'Unknown', disabled: true }],
         'network-member': [{ value: user.networkMember ? 'Yes' : 'No', disabled: true }],
@@ -66,8 +66,8 @@ export class ProfileComponent implements OnInit {
         'account-role': [
           {
             value: user.accountRole && user.accountRole.length > 0 ? user.accountRole : 'Unknown',
-            disabled: true,
-          },
+            disabled: true
+          }
         ],
         'created-date': [{ value: new Date(user.createdDate), disabled: true }],
         'updated-date': [{ value: new Date(user.updatedDate), disabled: true }],
@@ -75,12 +75,12 @@ export class ProfileComponent implements OnInit {
           {
             oldpassword: ['', Validators.required],
             password: ['', Validators.required],
-            confirm: ['', Validators.required],
+            confirm: ['', Validators.required]
           },
           {
-            validator: MatchPasswordValidator,
-          },
-        ),
+            validator: MatchPasswordValidator
+          }
+        )
       });
     }
   }
@@ -137,10 +137,10 @@ export class ProfileComponent implements OnInit {
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = errorNotification(
-          `Update password failed: ${StringifyHttpError(error)}`,
+          `Update password failed: ${StringifyHttpError(error)}`
         );
         this.loading = false;
-      },
+      }
     );
   }
 
@@ -167,7 +167,7 @@ export class ProfileComponent implements OnInit {
         this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
         this.loading = false;
         window.scrollTo(0, 0);
-      },
+      }
     );
   }
 }

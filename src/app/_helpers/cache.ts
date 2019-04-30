@@ -14,7 +14,7 @@ export class SingleCache<Value> {
       tap(undefined, () => {
         this.clear();
       }),
-      publishLast(),
+      publishLast()
     ));
     (observable as ConnectableObservable<Value>).connect();
     return observable;
@@ -43,7 +43,7 @@ export class KeyedCache<Value> {
       tap(undefined, () => {
         this.clear(key);
       }),
-      publishLast(),
+      publishLast()
     ));
     (observable as ConnectableObservable<Value>).connect();
     return observable;

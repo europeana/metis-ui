@@ -10,7 +10,7 @@ describe('DashboardactionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DashboardactionsComponent, createMockPipe('translate')],
+      declarations: [DashboardactionsComponent, createMockPipe('translate')]
     }).compileComponents();
   }));
 

@@ -12,11 +12,11 @@ const workflowNames: { [key: string]: string } = {
   PUBLISH: 'Publish',
   TRANSFORMATION: 'Transform',
   VALIDATION_EXTERNAL: 'Validate (EDM external)',
-  VALIDATION_INTERNAL: 'Validate (EDM internal)',
+  VALIDATION_INTERNAL: 'Validate (EDM internal)'
 };
 
 @Pipe({
-  name: 'renameWorkflow',
+  name: 'renameWorkflow'
 })
 export class RenameWorkflowPipe implements PipeTransform {
   transform(value: string): string {

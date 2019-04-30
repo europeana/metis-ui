@@ -13,7 +13,7 @@ import {
   MockDatasetsService,
   MockErrorService,
   MockTranslateService,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -33,9 +33,9 @@ describe('MappingComponent', () => {
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: TranslateService, useClass: MockTranslateService },
-        { provide: ErrorService, useClass: MockErrorService },
+        { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -69,7 +69,7 @@ describe('MappingComponent', () => {
     const cmpDatasetsService = fixture.debugElement.injector.get<DatasetsService>(DatasetsService);
 
     spyOn(cmpDatasetsService, 'getXSLT').and.returnValue(
-      throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })),
+      throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
     );
     component.loadDefaultXSLT();
     fixture.detectChanges();

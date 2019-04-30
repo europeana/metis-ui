@@ -24,7 +24,7 @@ a.icon {
 
 @function url-encode-color($string) {
   $map: (
-    '#': '%23',
+    '#': '%23'
   );
   $new: $string;
   @each $search, $replace in $map {

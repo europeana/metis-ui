@@ -2,7 +2,7 @@ import { Results } from '../../src/app/_models/results';
 import {
   DatasetOverview,
   PluginStatus,
-  PluginType,
+  PluginType
 } from '../../src/app/_models/workflow-execution';
 
 export const datasetOverview: Results<DatasetOverview> = {
@@ -10,7 +10,7 @@ export const datasetOverview: Results<DatasetOverview> = {
     {
       dataset: {
         datasetName: 'Dataset 2',
-        datasetId: '129',
+        datasetId: '129'
       },
       executionProgress: {
         stepsDone: 3,
@@ -19,8 +19,8 @@ export const datasetOverview: Results<DatasetOverview> = {
           errors: 49,
           processedRecords: 232,
           expectedRecords: 233,
-          progressPercentage: 99,
-        },
+          progressPercentage: 99
+        }
       },
       execution: {
         id: 'exec-id-1',
@@ -35,11 +35,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 114092,
               processedRecords: 114092,
               progressPercentage: 100,
-              errors: 0,
+              errors: 0
             },
 
             finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
           },
           {
             pluginType: PluginType.HTTP_HARVEST,
@@ -49,11 +49,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 900,
               progressPercentage: 100,
-              errors: 20,
+              errors: 20
             },
 
             finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
           },
           {
             pluginType: PluginType.TRANSFORMATION,
@@ -63,19 +63,19 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 90,
               progressPercentage: 10,
-              errors: 12,
+              errors: 12
             },
 
             finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z',
-          },
-        ],
-      },
+            startedDate: '2019-11-19T12:47:10.844Z'
+          }
+        ]
+      }
     },
     {
       dataset: {
         datasetName: 'Dataset 1',
-        datasetId: '123',
+        datasetId: '123'
       },
       executionProgress: {
         stepsDone: 2,
@@ -84,8 +84,8 @@ export const datasetOverview: Results<DatasetOverview> = {
           errors: 92,
           processedRecords: 444,
           expectedRecords: 3000,
-          progressPercentage: 22,
-        },
+          progressPercentage: 22
+        }
       },
       execution: {
         startedDate: '2011-11-19T09:05:40.844Z',
@@ -99,11 +99,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 90,
               progressPercentage: 10,
-              errors: 12,
+              errors: 12
             },
 
             finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
           },
           {
             pluginType: PluginType.HTTP_HARVEST,
@@ -113,11 +113,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 10,
               progressPercentage: 0,
-              errors: 10,
+              errors: 10
             },
 
             finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
           },
           {
             pluginType: PluginType.TRANSFORMATION,
@@ -127,11 +127,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 10,
               progressPercentage: 0,
-              errors: 10,
+              errors: 10
             },
 
             finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
           },
           {
             pluginType: PluginType.LINK_CHECKING,
@@ -141,11 +141,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 10,
               progressPercentage: 0,
-              errors: 10,
+              errors: 10
             },
 
             finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
           },
           {
             pluginType: PluginType.ENRICHMENT,
@@ -155,11 +155,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 10,
               progressPercentage: 0,
-              errors: 10,
+              errors: 10
             },
 
             startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
           },
           {
             pluginType: PluginType.MEDIA_PROCESS,
@@ -169,11 +169,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 10,
               progressPercentage: 0,
-              errors: 10,
+              errors: 10
             },
 
             startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
           },
           {
             pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -183,11 +183,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 10,
               progressPercentage: 0,
-              errors: 10,
+              errors: 10
             },
 
             startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
           },
           {
             pluginType: PluginType.VALIDATION_INTERNAL,
@@ -197,11 +197,11 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 900,
               processedRecords: 10,
               progressPercentage: 0,
-              errors: 10,
+              errors: 10
             },
 
             startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
           },
           {
             pluginType: PluginType.NORMALIZATION,
@@ -211,8 +211,8 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 1000,
               processedRecords: 430,
               progressPercentage: 0,
-              errors: 80,
-            },
+              errors: 80
+            }
           },
           {
             pluginType: PluginType.PREVIEW,
@@ -222,8 +222,8 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 1000,
               processedRecords: 430,
               progressPercentage: 0,
-              errors: 80,
-            },
+              errors: 80
+            }
           },
           {
             pluginType: PluginType.PUBLISH,
@@ -233,13 +233,13 @@ export const datasetOverview: Results<DatasetOverview> = {
               expectedRecords: 1000,
               processedRecords: 430,
               progressPercentage: 0,
-              errors: 80,
-            },
-          },
-        ],
-      },
-    },
+              errors: 80
+            }
+          }
+        ]
+      }
+    }
   ],
   listSize: 4,
-  nextPage: 1,
+  nextPage: 1
 };

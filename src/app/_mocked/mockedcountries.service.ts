@@ -4,12 +4,12 @@ import { Country, Language } from '../_models';
 
 export const mockedCountries: Country[] = [
   { enum: 'CHINA', name: 'China', isoCode: 'CN' },
-  { enum: 'FRANCE', name: 'France', isoCode: 'FR' },
+  { enum: 'FRANCE', name: 'France', isoCode: 'FR' }
 ];
 
 export const mockedLanguages: Language[] = [
   { enum: 'EN', name: 'English' },
-  { enum: 'FR', name: 'French' },
+  { enum: 'FR', name: 'French' }
 ];
 
 export class MockCountriesService {

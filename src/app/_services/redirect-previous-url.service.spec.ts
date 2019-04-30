@@ -7,7 +7,7 @@ describe('RedirectPreviousUrl', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RedirectPreviousUrl],
+      providers: [RedirectPreviousUrl]
     });
     service = TestBed.get(RedirectPreviousUrl);
   });

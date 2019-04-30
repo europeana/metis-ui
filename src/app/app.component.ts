@@ -9,7 +9,7 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
   bodyClass: string;
@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     private workflows: WorkflowService,
     private authentication: AuthenticationService,
     private errors: ErrorService,
-    private router: Router,
+    private router: Router
   ) {}
 
   /** ngOnInit
@@ -76,7 +76,7 @@ export class AppComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);
-      },
+      }
     );
   }
 }

@@ -6,7 +6,7 @@ function makePluginExecution(status: string): PluginExecution {
   // tslint:disable: no-any
   return ({
     pluginStatus: status,
-    executionProgress: { errors: 0 },
+    executionProgress: { errors: 0 }
   } as any) as PluginExecution;
 }
 
@@ -27,31 +27,31 @@ describe('status class from plugin', () => {
 
   it('should return "status-scheduled" for plugins that were cancelled with errors', () => {
     expect(statusClassFromPlugin(makePluginExecution(PluginStatus.INQUEUE))).toEqual(
-      'status-scheduled',
+      'status-scheduled'
     );
   });
 
   it('should return "status-cleaning" for plugins with status CLEANING', () => {
     expect(statusClassFromPlugin(makePluginExecution(PluginStatus.CLEANING))).toEqual(
-      'status-cleaning',
+      'status-cleaning'
     );
   });
 
   it('should return "status-running" for plugins with status RUNNING', () => {
     expect(statusClassFromPlugin(makePluginExecution(PluginStatus.RUNNING))).toEqual(
-      'status-running',
+      'status-running'
     );
   });
 
   it('should return "status-failed" for plugins with status FAILED', () => {
     expect(statusClassFromPlugin(makePluginExecution(PluginStatus.FAILED))).toEqual(
-      'status-failed',
+      'status-failed'
     );
   });
 
   it('should return "status-pending" for plugins with status PENDING', () => {
     expect(statusClassFromPlugin(makePluginExecution(PluginStatus.PENDING))).toEqual(
-      'status-pending',
+      'status-pending'
     );
   });
 });

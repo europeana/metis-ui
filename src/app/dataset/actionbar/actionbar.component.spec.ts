@@ -7,7 +7,7 @@ import {
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
 import { WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -24,10 +24,10 @@ describe('ActionbarComponent', () => {
       declarations: [
         ActionbarComponent,
         createMockPipe('translate'),
-        createMockPipe('renameWorkflow'),
+        createMockPipe('renameWorkflow')
       ],
       providers: [{ provide: WorkflowService, useClass: MockWorkflowService }],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -78,7 +78,7 @@ describe('ActionbarComponent', () => {
     expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(
       '253453453',
       undefined,
-      undefined,
+      undefined
     );
   });
 
@@ -113,7 +113,7 @@ describe('ActionbarComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'normalization',
       taskId: '123',
-      message: undefined,
+      message: undefined
     });
   });
 

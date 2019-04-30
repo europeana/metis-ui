@@ -9,13 +9,13 @@ import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-datasetlog',
-  templateUrl: './datasetlog.component.html',
+  templateUrl: './datasetlog.component.html'
 })
 export class DatasetlogComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
     private errors: ErrorService,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {}
 
   @Output() closed = new EventEmitter<void>();
@@ -102,7 +102,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
         this.showPluginLog.externalTaskId,
         this.showPluginLog.topologyName,
         this.getLogFrom(),
-        this.logTo,
+        this.logTo
       )
       .subscribe(
         (result) => {
@@ -112,7 +112,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
         (err: HttpErrorResponse) => {
           this.isFirstLoading = false;
           this.errors.handleError(err);
-        },
+        }
       );
   }
 

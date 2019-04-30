@@ -8,7 +8,7 @@ import {
   createMockPipe,
   MockAuthenticationService,
   MockErrorService,
-  MockWorkflowService,
+  MockWorkflowService
 } from './_mocked';
 import { CancellationRequest } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
@@ -27,8 +27,8 @@ describe('AppComponent', () => {
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: ErrorService, useClass: MockErrorService },
-      ],
+        { provide: ErrorService, useClass: MockErrorService }
+      ]
     }).compileComponents();
   }));
 
@@ -66,7 +66,7 @@ describe('AppComponent', () => {
     workflows.promptCancelWorkflow.emit({
       workflowExecutionId: '15',
       datasetId: '11',
-      datasetName: 'The Name',
+      datasetName: 'The Name'
     } as CancellationRequest);
     expect(app.cancellationRequest!.workflowExecutionId).toBe('15');
     expect(app.showWrapper).toBe(true);
@@ -83,7 +83,7 @@ describe('AppComponent', () => {
     app.cancellationRequest = {
       workflowExecutionId: '16',
       datasetId: '11',
-      datasetName: 'The Name',
+      datasetName: 'The Name'
     };
     spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
     app.cancelWorkflow();

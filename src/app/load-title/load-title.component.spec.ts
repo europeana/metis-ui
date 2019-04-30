@@ -9,7 +9,7 @@ describe('LoadTitleComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LoadTitleComponent],
+      declarations: [LoadTitleComponent]
     });
     fixture = TestBed.createComponent(LoadTitleComponent);
     component = fixture.componentInstance;

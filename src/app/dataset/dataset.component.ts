@@ -15,7 +15,7 @@ import {
   SimpleReportRequest,
   successNotification,
   Workflow,
-  WorkflowExecution,
+  WorkflowExecution
 } from '../_models';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
 
@@ -27,7 +27,7 @@ export interface PreviewFilters {
 @Component({
   selector: 'app-dataset',
   templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss'],
+  styleUrls: ['./dataset.component.scss']
 })
 export class DatasetComponent implements OnInit, OnDestroy {
   constructor(
@@ -36,7 +36,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private errors: ErrorService,
     private route: ActivatedRoute,
     private router: Router,
-    private documentTitleService: DocumentTitleService,
+    private documentTitleService: DocumentTitleService
   ) {}
 
   activeTab = 'edit';
@@ -110,7 +110,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
           this.reportLoading = false;
-        },
+        }
       );
     }
   }
@@ -146,7 +146,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.datasetIsLoading = false;
-      },
+      }
     );
 
     // check for harvest data every x seconds
@@ -192,7 +192,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.notification = httpErrorNotification(error);
         this.harvestSubscription.unsubscribe();
         this.harvestIsLoading = false;
-      },
+      }
     );
   }
 
@@ -207,7 +207,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.notification = httpErrorNotification(error);
         this.workflowSubscription.unsubscribe();
         this.workflowIsLoading = false;
-      },
+      }
     );
   }
 
@@ -230,7 +230,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.notification = httpErrorNotification(error);
         this.lastExecutionSubscription.unsubscribe();
         this.lastExecutionIsLoading = false;
-      },
+      }
     );
   }
 
@@ -247,7 +247,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.notification = httpErrorNotification(error);
         this.isStarting = false;
         window.scrollTo(0, 0);
-      },
+      }
     );
   }
 
