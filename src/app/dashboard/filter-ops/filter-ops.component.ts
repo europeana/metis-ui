@@ -1,4 +1,4 @@
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 
 import {
   FilterExecutionConf,
@@ -21,7 +21,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   settingFocus = false;
   @Input() isLoading: boolean;
   @Input() title: string;
-
+  @Output() overviewParams = new EventEmitter<string>();
   @ViewChildren(FilterOptionComponent) optionComponents: QueryList<FilterOptionComponent>;
 
   constructor() {
@@ -93,6 +93,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   hide(): void {
     this.showing = false;
+    // let paramString = '&pluginStatus=FAILED&pluginStatus=CANCELLED';
+    const paramString = '&pluginStatus=FAILED&pluginStatus=CANCELLED';
+    this.overviewParams.emit(paramString);
   }
 
   toggle(): void {
