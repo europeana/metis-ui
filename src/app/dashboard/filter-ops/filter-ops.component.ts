@@ -3,7 +3,8 @@ import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from 
 import {
   FilterExecutionConf,
   FilterExecutionProvider,
-  FilterParamHash
+  FilterParamHash,
+  FilterParamValue
 } from '../../_models/filterExecution';
 
 import { filterConf } from './filter-ops-conf';
@@ -46,7 +47,13 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     const res: string[] = [];
     Object.entries(this.params).forEach(([name, val]) => {
       if (val.length > 0) {
-        res.push(name.charAt(0).toUpperCase() + name.slice(1).toLowerCase());
+        let label = name;
+        this.conf.map((s) => {
+          if (s.name === name) {
+            label = s.label;
+          }
+        });
+        res.push(label.charAt(0).toUpperCase() + label.slice(1).toLowerCase());
       }
     });
     return res.join(', ');
@@ -87,14 +94,37 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     this.optionComponents.forEach((item) => item.clear());
   }
 
-  showParams(): void {
-    console.log('Params: ' + JSON.stringify(this.params));
+  getFromToParam(val: number): string {
+    const now = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    const then = new Date(now.getTime());
+    then.setDate(now.getDate() - val);
+    now.setDate(now.getDate() + 1);
+    return '&dateFrom=' + then.toISOString() + '&dateTo=' + now.toISOString();
   }
 
   hide(): void {
     this.showing = false;
-    // let paramString = '&pluginStatus=FAILED&pluginStatus=CANCELLED';
-    const paramString = '&pluginStatus=FAILED&pluginStatus=CANCELLED';
+
+    let paramString = '';
+    Object.entries(this.params).map((entry: [string, FilterParamValue[]]) => {
+      if (entry[1].length > 0) {
+        entry[1].map((fpv: FilterParamValue) => {
+          if (entry[0] === 'DATE') {
+            if (['1', '7', '30'].indexOf(fpv.value) > -1) {
+              paramString += this.getFromToParam(Number(fpv.value));
+            } else {
+              const date = new Date(fpv.value);
+              if (fpv.name === 'dateTo') {
+                date.setDate(date.getDate() + 1);
+              }
+              paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + date.toISOString();
+            }
+          } else {
+            paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + fpv.value;
+          }
+        });
+      }
+    });
     this.overviewParams.emit(paramString);
   }
 

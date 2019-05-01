@@ -34,24 +34,18 @@ describe('FilterOpsComponent', () => {
   });
 
   it('manages parameters', () => {
-    expect(component.params.STATUS.length).toEqual(0);
+    expect(component.params.pluginStatus.length).toEqual(0);
     const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl.nativeElement.click();
-    expect(component.params.STATUS.length).toEqual(1);
+    expect(component.params.pluginStatus.length).toEqual(1);
   });
 
   it('manages single parameters', () => {
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(14) a'));
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(15) a'));
-
     testEl1.nativeElement.click();
-    component.showParams();
-
     expect(component.params.DATE[0].value).toEqual('1');
-
     testEl2.nativeElement.click();
-    component.showParams();
-
     expect(component.params.DATE[0].value).toEqual('7');
     expect(component.params.DATE.length).toEqual(1);
   });
@@ -60,20 +54,16 @@ describe('FilterOpsComponent', () => {
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
 
-    expect(testEl1.nativeElement.textContent).toEqual('Check Links');
-    expect(testEl2.nativeElement.textContent).toEqual('Enrich');
+    expect(testEl1.nativeElement.textContent).toEqual('translate(Import HTTP)');
+    expect(testEl2.nativeElement.textContent).toEqual('translate(Import OAI-PMH)');
 
     testEl1.nativeElement.click();
     fixture.detectChanges();
-    component.showParams();
-
-    expect(component.params.WORKFLOW[0].value).toEqual('LINK_CHECKING');
+    expect(component.params.pluginType[0].value).toEqual('HTTP_HARVEST');
 
     testEl2.nativeElement.click();
     fixture.detectChanges();
-    component.showParams();
-
-    expect(component.params.WORKFLOW[1].value).toEqual('ENRICHMENT');
+    expect(component.params.pluginType[1].value).toEqual('OAIPMH_HARVEST');
   });
 
   it('can restore a value from an input', () => {
@@ -101,7 +91,7 @@ describe('FilterOpsComponent', () => {
   });
 
   it('can reset', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
+    expect(component.params.pluginType.length).toEqual(0);
 
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(3) a'));
@@ -109,20 +99,20 @@ describe('FilterOpsComponent', () => {
     testEl1.nativeElement.click();
     testEl2.nativeElement.click();
 
-    expect(component.params.WORKFLOW.length).toEqual(2);
+    expect(component.params.pluginType.length).toEqual(2);
     component.reset();
-    expect(component.params.WORKFLOW.length).toEqual(0);
+    expect(component.params.pluginType.length).toEqual(0);
   });
 
   it('toggles values when same value re-set', () => {
-    expect(component.params.WORKFLOW.length).toEqual(0);
+    expect(component.params.pluginType.length).toEqual(0);
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
 
     testEl1.nativeElement.click();
-    expect(component.params.WORKFLOW.length).toEqual(1);
+    expect(component.params.pluginType.length).toEqual(1);
 
     testEl1.nativeElement.click();
-    expect(component.params.WORKFLOW.length).toEqual(0);
+    expect(component.params.pluginType.length).toEqual(0);
   });
 
   it('can invoke callbacks after changes to inputs', () => {

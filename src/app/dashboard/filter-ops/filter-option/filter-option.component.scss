@@ -23,13 +23,16 @@ input[type='date'] {
 
 a {
   text-align: center;
-  text-decoration: none;
   width: 100%;
 }
 
 .filter-cell {
   border: 1px solid $border-colour;
   border-radius: 3px;
+
+  & > a:hover {
+    text-decoration: none;
+  }
 
   & > a,
   .label {

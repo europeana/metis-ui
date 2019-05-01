@@ -13,7 +13,7 @@
         <div class="dropdown-content">
           <div class="filter-grid">
             <ng-container *ngFor="let filter of conf">
-              <span class="start-row filter-cell" (click)="showParams()">
+              <span class="start-row filter-cell">
                 {{ filter.label | translate }}
               </span>
               <ng-container *ngFor="let op of filter.options; index as i">

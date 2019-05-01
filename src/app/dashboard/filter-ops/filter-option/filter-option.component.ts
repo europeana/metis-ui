@@ -89,13 +89,9 @@ export class FilterOptionComponent {
     this.params[this.filterName].push({
       value: this.getVal(),
       group: this.config.group,
+      name: this.config.name,
       inputRef: this.index
     });
-    this.showParams();
-  }
-
-  showParams(): void {
-    console.log('Params: ' + JSON.stringify(this.params));
   }
 
   getVal(): string {
@@ -111,12 +107,10 @@ export class FilterOptionComponent {
 
   handleChange(): void {
     if (this.config.input) {
-      const val = this.getVal();
-
       this.toggleParamValue();
       if (this.config.input.cbFnOnSet) {
         this.config.input.cbFnOnSet(
-          val,
+          this.input.nativeElement,
           this.config.group ? this.parentCmp.getInputGroupElements(this.config.group) : undefined
         );
       }

@@ -9,33 +9,41 @@ import { RenameWorkflowPipe } from '../../_translate';
 export const filterConf: FilterExecutionConf[] = [
   {
     label: 'workflow',
-    name: 'WORKFLOW',
+    name: 'pluginType',
     multi: true,
-    options: Object.values(PluginType)
-      .map((type) => {
-        return {
-          value: type,
-          label: RenameWorkflowPipe.prototype.transform(type) || type
-        } as FilterExecutionConfOption;
-      })
-      .sort((a: FilterExecutionConfOption, b: FilterExecutionConfOption) => {
-        return a.label.localeCompare(b.label);
-      })
+    options: Object.values(PluginType).map((type) => {
+      return {
+        value: type,
+        label: RenameWorkflowPipe.prototype.transform(type) || type
+      } as FilterExecutionConfOption;
+    })
   },
   {
     label: 'date',
     name: 'DATE',
     options: [
-      { label: 'last 24', value: '1' },
-      { label: 'last week', value: '7' },
-      { label: 'last month', value: '30' },
+      { label: 'last-24-hours', value: '1' },
+      { label: 'last-week', value: '7' },
+      { label: 'last-month', value: '30' },
       {
         label: 'from',
         value: '',
+        name: 'dateFrom',
         input: {
           id: 'date-from',
           type: 'date',
-          cbFnOnSet: (val: string, opElements?: HTMLElement[]): void => {
+          cbFnOnSet: (el: HTMLInputElement, opElements?: HTMLElement[]): void => {
+            const val = el.value;
+            const max = el.getAttribute('max');
+
+            if (val && max) {
+              if (val > max) {
+                el.value = max;
+                el.dispatchEvent(new Event('change'));
+                return;
+              }
+            }
+
             if (opElements) {
               opElements.forEach((item) => {
                 if (item.id === 'date-to') {
@@ -53,10 +61,22 @@ export const filterConf: FilterExecutionConf[] = [
       {
         label: 'to',
         value: '',
+        name: 'dateTo',
         input: {
           id: 'date-to',
           type: 'date',
-          cbFnOnSet: (val: string, opElements?: HTMLElement[]): void => {
+          cbFnOnSet: (el: HTMLInputElement, opElements?: HTMLElement[]): void => {
+            const val = el.value;
+            const min = el.getAttribute('min');
+
+            if (val && min) {
+              if (val < min) {
+                el.value = min;
+                el.dispatchEvent(new Event('change'));
+                return;
+              }
+            }
+
             if (opElements) {
               opElements.forEach((item) => {
                 if (item.id === 'date-from') {
@@ -75,12 +95,10 @@ export const filterConf: FilterExecutionConf[] = [
   },
   {
     label: 'status',
-    name: 'STATUS',
+    name: 'pluginStatus',
     multi: true,
-    options: Object.values(WorkflowStatus)
-      .sort()
-      .map((status) => {
-        return { label: status.toLowerCase(), value: status };
-      })
+    options: Object.values(WorkflowStatus).map((status) => {
+      return { label: status, value: status };
+    })
   }
 ];

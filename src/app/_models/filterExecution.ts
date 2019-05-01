@@ -1,10 +1,11 @@
-export type FilterParamType = 'WORKFLOW' | 'DATE' | 'STATUS';
+export type FilterParamType = 'pluginType' | 'DATE' | 'pluginStatus';
 
 export type FilterParamHash = { [key in FilterParamType]: FilterParamValue[] };
 
 export interface FilterParamValue {
   group?: string;
   inputRef?: number;
+  name?: string;
   value: string;
 }
 
@@ -12,14 +13,15 @@ export interface FilterExecutionConfOptionInput {
   id?: string;
   type: string;
   cbFnOnClear?(el: HTMLElement): void;
-  cbFnOnSet?(val: string, opElements?: HTMLElement[]): void;
+  cbFnOnSet?(el: HTMLInputElement, opElements?: HTMLElement[]): void;
 }
 
 export interface FilterExecutionConfOption {
   group?: string;
   input?: FilterExecutionConfOptionInput;
-  value: string;
   label: string;
+  name?: string;
+  value: string;
 }
 
 export interface FilterExecutionProvider {

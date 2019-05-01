@@ -44,8 +44,9 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   }
 
   setOverviewParams(overviewParams: string): void {
-    console.log('in setter ' + overviewParams + '\n\t(force the reload here....)');
+    clearTimeout(this.finishedTimer);
     this.overviewParams = overviewParams;
+    this.load();
   }
 
   loadNextPage(): void {
