@@ -67,7 +67,7 @@ export const LANG_EN_TRANS = {
   http: 'HTTP',
   identifier: 'Identifier',
   import: 'Import',
-  INQUEUE: 'Queue',
+  INQUEUE: 'In queue',
   intermediateprovider: 'Intermediate Provider',
   language: 'Language',
   'last-24-hours': 'Last 24 hours',
