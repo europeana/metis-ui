@@ -52,7 +52,7 @@ export const LANG_EN_TRANS = {
   filter: 'Filter',
   'filter-label-date': 'date',
   'filter-label-status': 'status',
-  'filter-label-workflow': 'workflow',
+  'filter-label-workflow': 'workflow steps',
   FINISHED: 'Finished',
   firstname: 'First name',
   firstpublished: 'First published',
