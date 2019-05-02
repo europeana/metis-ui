@@ -235,7 +235,7 @@ describe('FilterOpsComponent', () => {
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     testEl1.nativeElement.click();
 
-    expect(component.getSetSummary()).toEqual('Workflow');
+    expect(component.getSetSummary()).toEqual('Workflow step');
 
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl2.nativeElement.click();
