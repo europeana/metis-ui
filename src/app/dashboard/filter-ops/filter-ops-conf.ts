@@ -28,7 +28,7 @@ export const filterConf: FilterExecutionConf[] = [
       {
         label: 'from',
         value: '',
-        name: 'dateFrom',
+        name: 'fromDate',
         input: {
           id: 'date-from',
           type: 'date',
@@ -61,7 +61,7 @@ export const filterConf: FilterExecutionConf[] = [
       {
         label: 'to',
         value: '',
-        name: 'dateTo',
+        name: 'toDate',
         input: {
           id: 'date-to',
           type: 'date',

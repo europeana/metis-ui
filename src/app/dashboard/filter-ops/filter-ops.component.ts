@@ -97,9 +97,11 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   getFromToParam(val: number): string {
     const now = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
     const then = new Date(now.getTime());
+
     then.setDate(now.getDate() - val);
     now.setDate(now.getDate() + 1);
-    return '&dateFrom=' + then.toISOString() + '&dateTo=' + now.toISOString();
+
+    return '&fromDate=' + then.toISOString() + '&toDate=' + now.toISOString();
   }
 
   hide(): void {
@@ -114,7 +116,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
               paramString += this.getFromToParam(Number(fpv.value));
             } else {
               const date = new Date(fpv.value);
-              if (fpv.name === 'dateTo') {
+              if (fpv.name === 'toDate') {
                 date.setDate(date.getDate() + 1);
               }
               paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + date.toISOString();
