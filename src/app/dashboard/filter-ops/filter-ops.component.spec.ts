@@ -6,7 +6,7 @@ import { createMockPipe } from '../../_mocked';
 
 import { FilterOpsComponent, FilterOptionComponent } from '.';
 
-describe('FilterOpsComponent', () => {
+fdescribe('FilterOpsComponent', () => {
   let component: FilterOpsComponent;
   let fixture: ComponentFixture<FilterOpsComponent>;
   const testDate1 = '2019-04-01';
@@ -235,7 +235,7 @@ describe('FilterOpsComponent', () => {
     const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(2) a'));
     testEl1.nativeElement.click();
 
-    expect(component.getSetSummary()).toEqual('Workflow step');
+    expect(component.getSetSummary()).toEqual('Workflow');
 
     const testEl2 = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl2.nativeElement.click();
