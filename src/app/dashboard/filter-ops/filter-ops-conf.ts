@@ -8,7 +8,7 @@ import { RenameWorkflowPipe } from '../../_translate';
 
 export const filterConf: FilterExecutionConf[] = [
   {
-    label: 'workflow',
+    label: 'workflow step',
     name: 'pluginType',
     multi: true,
     options: Object.values(PluginType).map((type) => {
