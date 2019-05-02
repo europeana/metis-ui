@@ -114,7 +114,7 @@ describe('FilterOpsComponent', () => {
 
     const paramEvtSpy = spyOn(component.overviewParams, 'emit');
 
-    component.hide();
+    component.updateParameters();
 
     expect((paramEvtSpy.calls.argsFor(0) + '').indexOf(testDate1)).toEqual(-1);
     expect((paramEvtSpy.calls.argsFor(0) + '').indexOf(testDate1_plus1)).toBeGreaterThan(-1);
@@ -122,19 +122,19 @@ describe('FilterOpsComponent', () => {
     toDate.nativeElement.value = toDate.nativeElement.defaultValue;
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
-    component.hide();
+    component.updateParameters();
 
     expect((paramEvtSpy.calls.argsFor(1) + '').indexOf(testDate1)).toEqual(-1);
     expect((paramEvtSpy.calls.argsFor(1) + '').indexOf(testDate1_plus1)).toEqual(-1);
   });
 
-  it('emits calculated date ranges when hidden', () => {
+  it('calculates date ranges for parameters', () => {
     fixture.debugElement.query(By.css('.filter-cell:nth-of-type(14) a')).nativeElement.click();
 
     const paramEvtSpy = spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();
 
-    component.hide();
+    component.updateParameters();
 
     expect(component.overviewParams.emit).toHaveBeenCalled();
     expect((paramEvtSpy.calls.argsFor(0) + '').split('&').length).toEqual(3);

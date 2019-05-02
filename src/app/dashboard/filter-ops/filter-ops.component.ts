@@ -92,6 +92,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
       item.clearParam();
     });
     this.optionComponents.forEach((item) => item.clear());
+    this.updateParameters();
   }
 
   getFromToParam(val: number): string {
@@ -106,7 +107,10 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   hide(): void {
     this.showing = false;
+    this.updateParameters();
+  }
 
+  updateParameters(): void {
     let paramString = '';
     Object.entries(this.params).map((entry: [string, FilterParamValue[]]) => {
       if (entry[1].length > 0) {
