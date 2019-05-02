@@ -1,4 +1,8 @@
-<app-filter-ops title="{{ 'allexecutions' | translate }}" [isLoading]="isLoading"></app-filter-ops>
+<app-filter-ops
+  title="{{ 'allexecutions' | translate }}"
+  [isLoading]="isLoading"
+  (overviewParams)="setOverviewParams($event)"
+></app-filter-ops>
 
 <div *ngIf="dsOverview" class="executions-grid">
   <span class="grid-header">

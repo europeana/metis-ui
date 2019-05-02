@@ -265,7 +265,10 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
-  getCompletedDatasetSummaries(page?: number): Observable<Results<DatasetOverview>> {
+  getCompletedDatasetSummaries(
+    page?: number,
+    params?: string
+  ): Observable<Results<DatasetOverview>> {
     let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/overview?`;
 
     if (page && page > 0) {
@@ -273,11 +276,15 @@ export class WorkflowService {
     } else {
       url += `nextPage=${page}`;
     }
+    url += params ? params : '';
     return this.http.get<Results<DatasetOverview>>(url).pipe(this.errors.handleRetry());
   }
 
-  getCompletedDatasetOverviewsUptoPage(endPage: number): Observable<MoreResults<DatasetOverview>> {
-    const getResults = (page: number) => this.getCompletedDatasetSummaries(page);
+  getCompletedDatasetOverviewsUptoPage(
+    endPage: number,
+    params?: string
+  ): Observable<MoreResults<DatasetOverview>> {
+    const getResults = (page: number) => this.getCompletedDatasetSummaries(page, params);
     return this.collectAllResultsUptoPage(getResults, endPage);
   }
 

@@ -28,6 +28,7 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   isLoadingMore = false;
   hasMore = false;
   currentPage = 0;
+  overviewParams: string;
 
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
@@ -41,6 +42,13 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     clearTimeout(this.finishedTimer);
   }
+
+  setOverviewParams(overviewParams: string): void {
+    clearTimeout(this.finishedTimer);
+    this.overviewParams = overviewParams;
+    this.load();
+  }
+
   loadNextPage(): void {
     this.currentPage++;
     this.isLoadingMore = true;
@@ -48,23 +56,25 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
     this.load();
   }
   load(): void {
-    this.workflows.getCompletedDatasetOverviewsUptoPage(this.currentPage).subscribe(
-      ({ results, more }) => {
-        this.hasMore = more;
-        this.dsOverview = results;
-        this.isLoading = false;
-        this.isLoadingMore = false;
-        this.finishedTimer = window.setTimeout(() => {
-          this.isLoadingMore = true;
-          this.load();
-        }, environment.intervalStatusMedium);
-      },
-      (err: HttpErrorResponse) => {
-        this.isLoading = false;
-        this.isLoadingMore = false;
-        this.errors.handleError(err);
-      }
-    );
+    this.workflows
+      .getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams)
+      .subscribe(
+        ({ results, more }) => {
+          this.hasMore = more;
+          this.dsOverview = results;
+          this.isLoading = false;
+          this.isLoadingMore = false;
+          this.finishedTimer = window.setTimeout(() => {
+            this.isLoadingMore = true;
+            this.load();
+          }, environment.intervalStatusMedium);
+        },
+        (err: HttpErrorResponse) => {
+          this.isLoading = false;
+          this.isLoadingMore = false;
+          this.errors.handleError(err);
+        }
+      );
   }
 
   setSelectedDsId(selectedDsId: string): void {

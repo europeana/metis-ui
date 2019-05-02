@@ -8,9 +8,9 @@
       'continue-row-6': (rowIndex + 1) % 5 === 1
     }"
     class="filter-cell"
-    ><a (click)="handleClick()" *ngIf="config && !config.input">{{ config.label }}</a>
+    ><a (click)="handleClick()" *ngIf="config && !config.input">{{ config.label | translate }}</a>
     <label *ngIf="config && config.input" class="input-label">
-      <span class="label">{{ config.label }}:</span>
+      <span class="label">{{ config.label | translate }}:</span>
       <input
         #input
         *ngIf="config"
