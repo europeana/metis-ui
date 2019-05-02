@@ -6,7 +6,7 @@ import { createMockPipe } from '../../_mocked';
 
 import { FilterOpsComponent, FilterOptionComponent } from '.';
 
-fdescribe('FilterOpsComponent', () => {
+describe('FilterOpsComponent', () => {
   let component: FilterOpsComponent;
   let fixture: ComponentFixture<FilterOpsComponent>;
   const testDate1 = '2019-04-01';
