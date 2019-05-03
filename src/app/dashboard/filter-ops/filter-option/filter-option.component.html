@@ -14,8 +14,9 @@
       <input
         #input
         *ngIf="config"
-        id="{{ config.input.id }}"
-        type="{{ config.input.type }}"
+        [attr.id]="config.input.id"
+        [attr.type]="config.input.type"
+        [attr.max]="config.input.max"
         (change)="handleChange()"
         (focus)="handleFocus()"/></label
   ></span>

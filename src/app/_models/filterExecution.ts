@@ -12,6 +12,8 @@ export interface FilterParamValue {
 export interface FilterExecutionConfOptionInput {
   id?: string;
   type: string;
+  max?: string;
+  min?: string;
   cbFnOnClear?(el: HTMLElement): void;
   cbFnOnSet?(el: HTMLInputElement, opElements?: HTMLElement[]): void;
 }

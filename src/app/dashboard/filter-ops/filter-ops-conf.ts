@@ -6,6 +6,8 @@ import {
 } from '../../_models';
 import { RenameWorkflowPipe } from '../../_translate';
 
+const today = new Date().toISOString().split('T')[0];
+
 export const filterConf: FilterExecutionConf[] = [
   {
     label: 'workflow',
@@ -32,6 +34,7 @@ export const filterConf: FilterExecutionConf[] = [
         input: {
           id: 'date-from',
           type: 'date',
+          max: today,
           cbFnOnSet: (el: HTMLInputElement, opElements?: HTMLElement[]): void => {
             const val = el.value;
             const max = el.getAttribute('max');
@@ -53,7 +56,7 @@ export const filterConf: FilterExecutionConf[] = [
             }
           },
           cbFnOnClear: (el: HTMLElement): void => {
-            el.removeAttribute('max');
+            el.setAttribute('max', today);
           }
         },
         group: 'date-pair'
@@ -65,13 +68,20 @@ export const filterConf: FilterExecutionConf[] = [
         input: {
           id: 'date-to',
           type: 'date',
+          max: today,
           cbFnOnSet: (el: HTMLInputElement, opElements?: HTMLElement[]): void => {
             const val = el.value;
+            const max = el.getAttribute('max');
             const min = el.getAttribute('min');
 
-            if (val && min) {
-              if (val < min) {
+            if (val) {
+              if (min && val < min) {
                 el.value = min;
+                el.dispatchEvent(new Event('change'));
+                return;
+              }
+              if (max && val > max) {
+                el.value = max;
                 el.dispatchEvent(new Event('change'));
                 return;
               }
@@ -80,7 +90,7 @@ export const filterConf: FilterExecutionConf[] = [
             if (opElements) {
               opElements.forEach((item) => {
                 if (item.id === 'date-from') {
-                  val ? item.setAttribute('max', val) : item.removeAttribute('max');
+                  item.setAttribute('max', val ? val : today);
                 }
               });
             }
