@@ -50,6 +50,11 @@
   }
 }
 
+label + input[type='checkbox'] {
+  flex: initial;
+}
+
+label + input[type='checkbox'],
 .readonly-field {
   margin-left: 0.82rem;
 }

@@ -35,6 +35,9 @@
         ></app-generalinfo>
       </div>
       <div class="metis-dashboard-right">
+        <div *ngIf="datasetData.unfitForPublication" class="unfit-to-publish">
+          {{ 'datasetunpublishable-banner' | translate }}
+        </div>
         <app-actionbar
           [datasetId]="datasetId"
           [datasetName]="datasetName"

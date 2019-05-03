@@ -145,7 +145,8 @@ export class DatasetformComponent implements OnInit {
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
       description: [''],
-      notes: ['']
+      notes: [''],
+      unfitForPublication: ['']
     });
 
     this.updateForm();
