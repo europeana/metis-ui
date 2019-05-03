@@ -136,5 +136,8 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   toggle(): void {
     this.showing = !this.showing;
+    if (!this.showing) {
+      this.updateParameters();
+    }
   }
 }
