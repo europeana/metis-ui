@@ -21,12 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   runningTimer: number | undefined;
   runningIsLoading = true;
   runningIsFirstLoading = true;
-  finishedExecutions: WorkflowExecution[];
-  finishedTimer: number | undefined;
-  finishedIsLoading = true;
-  finishedIsFirstLoading = true;
-  finishedCurrentPage = 0;
-  finishedHasMore = false;
+
   selectedExecutionDsId: string | undefined;
   showPluginLog?: PluginExecution;
   favoriteDatasets?: Dataset[];
@@ -43,7 +38,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.documentTitleService.setTitle('Dashboard');
 
     this.getRunningExecutions();
-    this.getFinishedExecutions();
     this.datasets.getFavorites().subscribe((datasets) => {
       datasets.reverse();
       this.favoriteDatasets = datasets;
@@ -57,15 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
-    clearTimeout(this.finishedTimer);
     this.runningTimer = undefined;
-    this.finishedTimer = undefined;
-  }
-
-  getNextPage(): void {
-    this.finishedCurrentPage++;
-    clearTimeout(this.finishedTimer);
-    this.getFinishedExecutions();
   }
 
   checkUpdateLog(executions: WorkflowExecution[]): void {
@@ -99,30 +85,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.errors.handleError(err);
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
-      }
-    );
-  }
-
-  //  get history of all executions (finished, cancelled, failed) and start polling again
-  getFinishedExecutions(): void {
-    this.finishedIsLoading = true;
-    this.workflows.getAllExecutionsUptoPage(this.finishedCurrentPage, false).subscribe(
-      ({ results, more }) => {
-        this.finishedExecutions = results;
-        this.finishedHasMore = more;
-        this.finishedIsLoading = false;
-        this.finishedIsFirstLoading = false;
-
-        this.checkUpdateLog(results);
-
-        this.finishedTimer = window.setTimeout(() => {
-          this.getFinishedExecutions();
-        }, environment.intervalStatusMedium);
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-        this.finishedIsLoading = false;
-        this.finishedIsFirstLoading = false;
       }
     );
   }

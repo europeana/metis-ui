@@ -68,19 +68,6 @@ describe('DashboardComponent', () => {
     expect(component.showPluginLog).toBeTruthy();
   });
 
-  it('should open more than 1 page', () => {
-    component.getNextPage();
-    fixture.detectChanges();
-    expect(component.finishedCurrentPage).toBe(1);
-  });
-
-  it('should get a list of executions', () => {
-    component.finishedCurrentPage = 1;
-    component.getFinishedExecutions();
-    fixture.detectChanges();
-    expect(component.finishedCurrentPage).toBe(1);
-  });
-
   it('provides a setter for the selectedExecutionDsId', () => {
     expect(component.selectedExecutionDsId).toBe(undefined);
     component.setSelectedExecutionDsId('xxx');
@@ -88,10 +75,8 @@ describe('DashboardComponent', () => {
   });
 
   it('should clean up', () => {
-    expect(component.finishedTimer).not.toBe(undefined);
     expect(component.runningTimer).not.toBe(undefined);
     component.ngOnDestroy();
-    expect(component.finishedTimer).toBe(undefined);
     expect(component.runningTimer).toBe(undefined);
   });
 });
