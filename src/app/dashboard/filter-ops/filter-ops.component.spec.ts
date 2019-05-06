@@ -106,6 +106,21 @@ describe('FilterOpsComponent', () => {
     expect(component.overviewParams.emit).toHaveBeenCalled();
   });
 
+  it('emits parameter string toggled closed', () => {
+    spyOn(component.overviewParams, 'emit');
+    expect(component.overviewParams.emit).not.toHaveBeenCalled();
+
+    component.toggle();
+
+    expect(component.showing).toBe(true);
+    expect(component.overviewParams.emit).not.toHaveBeenCalled();
+
+    component.toggle();
+
+    expect(component.showing).toBe(false);
+    expect(component.overviewParams.emit).toHaveBeenCalled();
+  });
+
   it('adjusts the toDate paramater by a day', () => {
     const toDate = fixture.debugElement.query(By.css('#date-to'));
 

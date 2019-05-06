@@ -96,7 +96,10 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   }
 
   getFromToParam(val: number): string {
-    const now = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    const now =
+      val === 1
+        ? new Date()
+        : new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
     const then = new Date(now.getTime());
 
     then.setDate(now.getDate() - val);
@@ -136,5 +139,8 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   toggle(): void {
     this.showing = !this.showing;
+    if (!this.showing) {
+      this.updateParameters();
+    }
   }
 }
