@@ -25,12 +25,19 @@ app-filter-option {
 
 .filter-ops {
   align-items: center;
-  display: flex;
   justify-content: flex-end;
   position: relative;
 
-  .filter li {
-    position: static;
+  .filter {
+    position: relative;
+    li {
+      margin-left: auto;
+      position: static;
+    }
+  }
+
+  @media (min-width: $bp-small-2) {
+    display: flex;
   }
 }
 
