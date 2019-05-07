@@ -17,3 +17,11 @@ h3 {
   height: 23px;
   margin-left: 0.5em;
 }
+
+.svg-icon-spin-inbutton {
+  padding-left: 0.5rem;
+  &::after {
+    top: auto;
+    transform: none;
+  }
+}

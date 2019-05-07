@@ -7,5 +7,6 @@ import { Component, Input } from '@angular/core';
 })
 export class LoadTitleComponent {
   @Input() isLoading: boolean;
+  @Input() inButton: boolean;
   @Input() title: string;
 }
