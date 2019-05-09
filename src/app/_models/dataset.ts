@@ -11,7 +11,6 @@ export interface Dataset {
   provider?: string;
   intermediateProvider?: string;
   dataProvider?: string;
-
   createdByUserId: string;
   createdDate: string;
   updatedDate?: string;
@@ -23,6 +22,7 @@ export interface Dataset {
 
   description?: string;
   notes?: string;
+  unfitForPublication?: boolean;
 
   xsltId?: string | null;
 }

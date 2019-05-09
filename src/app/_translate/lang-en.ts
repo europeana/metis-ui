@@ -33,6 +33,8 @@ export const LANG_EN_TRANS = {
   datasetname: 'Dataset Name',
   datasetnamevalidator: 'Only a to z (lower and uppercase), numbers and underscores are allowed.',
   datasetsaved: 'The dataset has been saved.',
+  'datasetunpublishable-banner': 'This dataset is not fit for publication',
+  'datasetunpublishable-label': 'Not fit for publication',
   dateupdated: 'Date Updated',
   description: 'Description',
   doubleclicktocopy: 'Double click to copy ids',
