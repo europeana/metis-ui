@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 
+import { isValidDate } from '../../_helpers/date-helpers';
 import {
   FilterExecutionConf,
   FilterExecutionProvider,
@@ -37,6 +38,18 @@ export class FilterOpsComponent implements FilterExecutionProvider {
         res = true;
       }
     });
+    return res;
+  }
+
+  anyErrors(): boolean {
+    let res = false;
+    if (this.optionComponents) {
+      this.optionComponents.toArray().forEach((item) => {
+        if (item.hasError) {
+          res = true;
+        }
+      });
+    }
     return res;
   }
 
@@ -122,11 +135,13 @@ export class FilterOpsComponent implements FilterExecutionProvider {
             if (['1', '7', '30'].indexOf(fpv.value) > -1) {
               paramString += this.getFromToParam(Number(fpv.value));
             } else {
-              const date = new Date(fpv.value);
-              if (fpv.name === 'toDate') {
-                date.setDate(date.getDate() + 1);
+              if (isValidDate(fpv.value)) {
+                const date = new Date(fpv.value);
+                if (fpv.name === 'toDate') {
+                  date.setDate(date.getDate() + 1);
+                }
+                paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + date.toISOString();
               }
-              paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + date.toISOString();
             }
           } else {
             paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + fpv.value;

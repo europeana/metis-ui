@@ -4,6 +4,7 @@ $active-colour: #e0f1e5;
 $border-colour: #eaeaea;
 $cell-height: 1.6rem;
 
+input,
 input[type='date'] {
   background: transparent;
   border: 0;
@@ -43,6 +44,9 @@ a {
 
   &.active {
     background: $active-colour;
+  }
+  &.error {
+    border: 1px solid $eu-red;
   }
 }
 

@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 
 import {
+  CanHaveError,
   FilterExecutionConfOption,
   FilterExecutionProvider,
   FilterParamHash,
@@ -13,7 +14,7 @@ import {
   templateUrl: './filter-option.component.html',
   styleUrls: ['./filter-option.component.scss']
 })
-export class FilterOptionComponent {
+export class FilterOptionComponent implements CanHaveError {
   @Input() config: FilterExecutionConfOption;
   @Input() filterName: FilterParamType;
   @Input() index: number;
@@ -26,6 +27,7 @@ export class FilterOptionComponent {
   @ViewChild('filterOptionTemplate') filterOptionTemplate: TemplateRef<HTMLElement>;
   @ViewChild('input') input: ElementRef;
 
+  hasError = false;
   constructor() {}
 
   valueIndex(name: FilterParamType, value: string, inputRef?: number): number {
@@ -110,6 +112,7 @@ export class FilterOptionComponent {
       this.toggleParamValue();
       if (this.config.input.cbFnOnSet) {
         this.config.input.cbFnOnSet(
+          this,
           this.input.nativeElement,
           this.config.group ? this.parentCmp.getInputGroupElements(this.config.group) : undefined
         );
@@ -128,5 +131,9 @@ export class FilterOptionComponent {
         this.config.input.cbFnOnClear(this.input.nativeElement);
       }
     }
+  }
+
+  setHasError(val: boolean): void {
+    this.hasError = val;
   }
 }

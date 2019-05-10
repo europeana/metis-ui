@@ -1,4 +1,6 @@
+import { isDateSupported, isValidDate } from '../../_helpers/date-helpers';
 import {
+  CanHaveError,
   FilterExecutionConf,
   FilterExecutionConfOption,
   PluginType,
@@ -35,16 +37,36 @@ export const filterConf: FilterExecutionConf[] = [
           id: 'date-from',
           type: 'date',
           max: today,
-          cbFnOnSet: (el: HTMLInputElement, opElements?: HTMLElement[]): void => {
+          cbFnOnSet: (
+            cmp: CanHaveError,
+            el: HTMLInputElement,
+            opElements?: HTMLElement[]
+          ): void => {
+            const dates = isDateSupported() && el.getAttribute('type') === 'date';
             const val = el.value;
             const max = el.getAttribute('max');
 
             if (val && max) {
-              if (val > max) {
+              if (dates && val > max) {
                 el.value = max;
                 el.dispatchEvent(new Event('change'));
                 return;
+              } else if (!dates) {
+                const valid = isValidDate(val);
+                if (!valid) {
+                  cmp.setHasError(true);
+                  return;
+                } else {
+                  cmp.setHasError(false);
+                  if (new Date(val) > new Date(max)) {
+                    el.value = max;
+                    el.dispatchEvent(new Event('change'));
+                    return;
+                  }
+                }
               }
+            } else {
+              cmp.setHasError(false);
             }
 
             if (opElements) {
@@ -69,21 +91,46 @@ export const filterConf: FilterExecutionConf[] = [
           id: 'date-to',
           type: 'date',
           max: today,
-          cbFnOnSet: (el: HTMLInputElement, opElements?: HTMLElement[]): void => {
+          cbFnOnSet: (
+            cmp: CanHaveError,
+            el: HTMLInputElement,
+            opElements?: HTMLElement[]
+          ): void => {
             const val = el.value;
             const max = el.getAttribute('max');
             const min = el.getAttribute('min');
+            const dates = isDateSupported() && el.getAttribute('type') === 'date';
 
             if (val) {
-              if (min && val < min) {
-                el.value = min;
-                el.dispatchEvent(new Event('change'));
-                return;
-              }
-              if (max && val > max) {
-                el.value = max;
-                el.dispatchEvent(new Event('change'));
-                return;
+              if (dates) {
+                if (min && val < min) {
+                  el.value = min;
+                  el.dispatchEvent(new Event('change'));
+                  return;
+                }
+                if (max && val > max) {
+                  el.value = max;
+                  el.dispatchEvent(new Event('change'));
+                  return;
+                }
+              } else {
+                const valid = isValidDate(val);
+                if (!valid) {
+                  cmp.setHasError(true);
+                  return;
+                } else {
+                  if (max && new Date(val) > new Date(max)) {
+                    el.value = max;
+                    el.dispatchEvent(new Event('change'));
+                    return;
+                  } else if (min && new Date(val) < new Date(min)) {
+                    el.value = min;
+                    el.dispatchEvent(new Event('change'));
+                    return;
+                  } else {
+                    cmp.setHasError(false);
+                  }
+                }
               }
             }
 
