@@ -14,9 +14,8 @@ context('metis-ui', () => {
       cy.server({ force404: true });
       setupUser();
       setupWorkflowRoutes();
-
       cy.visit('/dashboard');
-      cy.wait(['@getFinishedExecutions', '@getDataset', '@getOverview']);
+      cy.wait(['@getDataset', '@getOverview']);
     });
 
     it('should show the welcome message', () => {

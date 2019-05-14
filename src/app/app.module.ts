@@ -14,9 +14,7 @@ import {
   DashboardactionsComponent,
   DashboardComponent,
   DatasetsComponent,
-  ExecutionsComponent,
   ExecutionsgridComponent,
-  ExecutiontableComponent,
   GridrowComponent,
   OngoingexecutionsComponent
 } from './dashboard';
@@ -83,7 +81,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     MappingComponent,
     PreviewComponent,
     DatasetlogComponent,
-    ExecutionsComponent,
     OngoingexecutionsComponent,
     ReportSimpleComponent,
     StatisticsComponent,
@@ -93,7 +90,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     RenameWorkflowPipe,
     GridrowComponent,
     ExecutionsgridComponent,
-    ExecutiontableComponent,
     NotificationComponent,
     LoadingButtonComponent,
     DatasetsComponent

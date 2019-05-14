@@ -2,7 +2,6 @@ import {
   countries,
   dataset,
   datasetOverview,
-  finishedExecutions,
   harvestData,
   languages,
   records,
@@ -36,9 +35,6 @@ export function setupWorkflowRoutes(): void {
   cy.route('GET', '/datasets/xslt/*', xslt).as('getXslt');
 
   cy.route('GET', /\/orchestrator\/workflows\/\d+/, workflow).as('getWorkflow');
-  cy.route('GET', '/orchestrator/workflows/executions/*FINISHED*', finishedExecutions).as(
-    'getFinishedExecutions'
-  );
   cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutions).as(
     'getRunningExecutions'
   );
