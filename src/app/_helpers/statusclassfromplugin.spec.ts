@@ -14,14 +14,14 @@ describe('status class from plugin', () => {
   it('should return "status-warning" for plugins that finished with errors', () => {
     const peFinished = makePluginExecution(PluginStatus.CANCELLED);
     expect(statusClassFromPlugin(peFinished)).not.toEqual('status-warning');
-    peFinished.executionProgress.errors = 1;
+    peFinished.executionProgress = { errors: 1 } as any;
     expect(statusClassFromPlugin(peFinished)).toEqual('status-warning');
   });
 
   it('should return "status-warning" for plugins that were cancelled with errors', () => {
     const peCancelled = makePluginExecution(PluginStatus.CANCELLED);
     expect(statusClassFromPlugin(peCancelled)).not.toEqual('status-warning');
-    peCancelled.executionProgress.errors = 1;
+    peCancelled.executionProgress = { errors: 1 } as any;
     expect(statusClassFromPlugin(peCancelled)).toEqual('status-warning');
   });
 

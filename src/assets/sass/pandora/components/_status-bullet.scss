@@ -137,6 +137,12 @@ $orb-size-small-half: 0.75em;
     &.PUBLISH:after {
       content: 'Pu';
     }
+    &.REINDEX_TO_PREVIEW:after {
+      content: 'Xr';
+    }
+    &.REINDEX_TO_PUBLISH:after {
+      content: 'Xu';
+    }
   }
 }
 

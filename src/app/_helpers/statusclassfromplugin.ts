@@ -5,7 +5,9 @@ export function statusClassFromPlugin(
   currentPlugin?: PluginExecution
 ): string {
   const { executionProgress, pluginStatus } = plugin;
-  if (
+  if (executionProgress === undefined) {
+    return `status-${pluginStatus.toString().toLowerCase()}`;
+  } else if (
     executionProgress.errors > 0 &&
     (pluginStatus === PluginStatus.FINISHED || pluginStatus === PluginStatus.CANCELLED)
   ) {
