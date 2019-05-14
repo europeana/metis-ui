@@ -11,6 +11,7 @@ describe('FilterOpsComponent', () => {
   let fixture: ComponentFixture<FilterOpsComponent>;
   const testDate1 = '2019-04-01';
   const testDate2 = '2019-04-30';
+  const testDateF = '2100-01-01';
   const testDate1_plus1 = '2019-04-02';
 
   beforeEach(async(() => {
@@ -27,11 +28,39 @@ describe('FilterOpsComponent', () => {
     fixture.detectChanges();
   });
 
+  it('has an error if an invalid value is set (no date support)', () => {
+    const fromDate = fixture.debugElement.query(By.css('#date-from'));
+    const toDate = fixture.debugElement.query(By.css('#date-to'));
+    fromDate.nativeElement.removeAttribute('type');
+    toDate.nativeElement.removeAttribute('type');
+    fixture.detectChanges();
+    expect(fromDate.nativeElement.closest('.filter-cell').classList.contains('error')).toBeFalsy();
+    expect(toDate.nativeElement.closest('.filter-cell').classList.contains('error')).toBeFalsy();
+
+    fromDate.nativeElement.value = 'invalid';
+    fromDate.nativeElement.dispatchEvent(new Event('change'));
+    toDate.nativeElement.value = 'invalid';
+    toDate.nativeElement.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    expect(fromDate.nativeElement.closest('.filter-cell').classList.contains('error')).toBeTruthy();
+    expect(toDate.nativeElement.closest('.filter-cell').classList.contains('error')).toBeTruthy();
+  });
+
   it('detects the setting of any value', () => {
     expect(component.anyValueSet()).toBeFalsy();
     const testEl = fixture.debugElement.query(By.css('.filter-cell:last-of-type a'));
     testEl.nativeElement.click();
     expect(component.anyValueSet()).toBeTruthy();
+  });
+
+  it('detects errors in any value', () => {
+    expect(component.anyErrors()).toBeFalsy();
+    const fromDate = fixture.debugElement.query(By.css('#date-from'));
+    fromDate.nativeElement.removeAttribute('type');
+    fromDate.nativeElement.value = 'invalid';
+    fromDate.nativeElement.dispatchEvent(new Event('change'));
+    expect(component.anyErrors()).toBeTruthy();
   });
 
   it('manages parameters', () => {
@@ -86,6 +115,9 @@ describe('FilterOpsComponent', () => {
 
     fromDate.nativeElement.value = testDate1;
     toDate.nativeElement.value = testDate2;
+
+    fromDate.nativeElement.dispatchEvent(new Event('change'));
+    toDate.nativeElement.dispatchEvent(new Event('change'));
 
     component.restoreGroup('date-pair', component.optionComponents.toArray()[0].index);
     expect(component.params.DATE.map((p) => p.value)).toEqual([testDate1, testDate2]);
@@ -214,6 +246,44 @@ describe('FilterOpsComponent', () => {
     expect(fromDate.nativeElement.value).toEqual(testDate1_plus1);
   });
 
+  it('enforces the min restriction (no date support)', () => {
+    const fromDate = fixture.debugElement.query(By.css('#date-from'));
+    const toDate = fixture.debugElement.query(By.css('#date-to'));
+
+    fromDate.nativeElement.removeAttribute('type');
+    toDate.nativeElement.removeAttribute('type');
+
+    fromDate.nativeElement.value = testDate1_plus1;
+    fromDate.nativeElement.dispatchEvent(new Event('change'));
+
+    // set the to to be less than the min
+    toDate.nativeElement.value = testDate1;
+    toDate.nativeElement.dispatchEvent(new Event('change'));
+
+    expect(toDate.nativeElement.value).toEqual(testDate1_plus1);
+    expect(fromDate.nativeElement.value).toEqual(testDate1_plus1);
+  });
+
+  it('enforces the max restriction (no date support)', () => {
+    const fromDate = fixture.debugElement.query(By.css('#date-from'));
+    const toDate = fixture.debugElement.query(By.css('#date-to'));
+
+    toDate.nativeElement.setAttribute('max', testDate1);
+    fromDate.nativeElement.setAttribute('max', testDate1);
+
+    fromDate.nativeElement.removeAttribute('type');
+    toDate.nativeElement.removeAttribute('type');
+
+    // set the dates to exceed the max
+    toDate.nativeElement.value = testDate1_plus1;
+    toDate.nativeElement.dispatchEvent(new Event('change'));
+    fromDate.nativeElement.value = testDate1_plus1;
+    fromDate.nativeElement.dispatchEvent(new Event('change'));
+
+    expect(fromDate.nativeElement.value).toEqual(testDate1);
+    expect(toDate.nativeElement.value).toEqual(testDate1);
+  });
+
   it('enforces the max restriction', () => {
     const fromDate = fixture.debugElement.query(By.css('#date-from'));
     const toDate = fixture.debugElement.query(By.css('#date-to'));
@@ -227,6 +297,11 @@ describe('FilterOpsComponent', () => {
 
     expect(toDate.nativeElement.value).toEqual(testDate1);
     expect(fromDate.nativeElement.value).toEqual(testDate1);
+
+    toDate.nativeElement.setAttribute('max', testDate1);
+    toDate.nativeElement.value = testDateF;
+    toDate.nativeElement.dispatchEvent(new Event('change'));
+    expect(toDate.nativeElement.value).toEqual(testDate1);
   });
 
   it('should hide', () => {

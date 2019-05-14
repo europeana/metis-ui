@@ -2,6 +2,11 @@ export type FilterParamType = 'pluginType' | 'DATE' | 'pluginStatus';
 
 export type FilterParamHash = { [key in FilterParamType]: FilterParamValue[] };
 
+export interface CanHaveError {
+  hasError: boolean;
+  setHasError(val: boolean): void;
+}
+
 export interface FilterParamValue {
   group?: string;
   inputRef?: number;
@@ -15,7 +20,7 @@ export interface FilterExecutionConfOptionInput {
   max?: string;
   min?: string;
   cbFnOnClear?(el: HTMLElement): void;
-  cbFnOnSet?(el: HTMLInputElement, opElements?: HTMLElement[]): void;
+  cbFnOnSet?(cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLElement[]): void;
 }
 
 export interface FilterExecutionConfOption {

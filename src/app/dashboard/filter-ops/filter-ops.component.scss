@@ -48,6 +48,9 @@ app-filter-option {
   li > a.active {
     font-weight: bold;
   }
+  li > a.error {
+    color: $eu-red;
+  }
   li .filter-grid a {
     display: block;
     padding: 0;

@@ -192,5 +192,6 @@ export const LANG_EN_TRANS = {
   xslttryoutdefault: 'Try out with default XSLT',
   xslttryout: 'Save XSLT & Try it out',
   yes: 'Yes',
+  'YYYY-MM-DD': 'YYYY-MM-DD',
   zoho: 'Go to Zoho'
 };

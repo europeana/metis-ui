@@ -4,7 +4,7 @@
     <li class="dropdown arrow-right">
       <a
         (click)="toggle()"
-        [ngClass]="{ active: anyValueSet() }"
+        [ngClass]="{ active: anyValueSet(), error: anyErrors() }"
         [attr.title]="showing ? '' : getSetSummary()"
         >{{ 'filter' | translate }}</a
       >
