@@ -28,6 +28,11 @@ h3 {
     }
   }
 
+  .no-content-message {
+    grid-column: 1/6;
+    margin: 1em 0;
+  }
+
   .progress {
     display: flex;
     flex-direction: column;

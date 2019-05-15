@@ -94,6 +94,7 @@ export const LANG_EN_TRANS = {
   no: 'No',
   normalize: 'Normalise',
   nologs: 'No logs found (yet)',
+  noongoing: 'There is currently no ongoing execution',
   nosample: 'No sample available yet, try using the filter',
   notes: 'Notes',
   notpublished: 'Not published yet',

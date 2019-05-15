@@ -7,6 +7,12 @@
     {{ 'overallprogress' | translate }}
   </span>
 
+  <ng-container *ngIf="!runningExecutions || runningExecutions.length === 0">
+    <span class="no-content-message">
+      {{ 'noongoing' | translate }}
+    </span>
+  </ng-container>
+
   <ng-container *ngIf="runningExecutions && runningExecutions.length > 0">
     <ng-container *ngFor="let ongoing of runningExecutions; trackBy: byId">
       <div

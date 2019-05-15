@@ -1,3 +1,4 @@
+import { runningExecutionsEmpty } from '../fixtures';
 import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
@@ -9,6 +10,22 @@ function runningByIndex(index: number): Cypress.Chainable {
 }
 
 context('metis-ui', () => {
+  describe('dashboard no ongoing', () => {
+    beforeEach(() => {
+      cy.server({ force404: true });
+      setupUser();
+      setupWorkflowRoutes();
+      cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutionsEmpty).as(
+        'runningExecutionsEmpty'
+      );
+      cy.visit('/dashboard');
+      cy.wait(['@getOverview']);
+    });
+
+    it('should show a message when there are no running executions', () => {
+      cy.get('.ongoing-executions .no-content-message').should('have.length', 1);
+    });
+  });
   describe('dashboard', () => {
     beforeEach(() => {
       cy.server({ force404: true });
