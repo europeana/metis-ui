@@ -30,6 +30,8 @@ export enum PluginStatus {
   INQUEUE = 'INQUEUE',
   CLEANING = 'CLEANING',
   PENDING = 'PENDING',
+  REINDEX_TO_PREVIEW = 'REINDEX_TO_PREVIEW',
+  REINDEX_TO_PUBLISH = 'REINDEX_TO_PUBLISH',
   RUNNING = 'RUNNING',
   FINISHED = 'FINISHED',
   CANCELLED = 'CANCELLED',
@@ -77,7 +79,7 @@ export interface PluginExecutionBasic {
 
 export interface PluginExecution extends PluginExecutionBasic {
   id: string;
-  executionProgress: ExecutionProgress;
+  executionProgress?: ExecutionProgress;
   pluginMetadata: PluginMetadata;
   topologyName: TopologyName;
 
@@ -85,7 +87,7 @@ export interface PluginExecution extends PluginExecutionBasic {
 }
 
 export interface PluginExecutionOverview extends PluginExecutionBasic {
-  progress: ExecutionProgressBasic;
+  progress?: ExecutionProgressBasic;
   failMessage?: string;
 }
 
@@ -107,7 +109,7 @@ export interface WorkflowExecution {
   cancelledBy?: string;
   createdDate: string;
   startedDate: string;
-  updatedDate: string;
+  updatedDate?: string;
   finishedDate?: string;
   metisPlugins: PluginExecution[];
 
@@ -131,7 +133,7 @@ export interface DatasetSummary {
 export interface DatasetOverview {
   dataset: DatasetSummary;
   execution: DatasetOverviewExecution;
-  executionProgress: DatasetExecutionProgress;
+  executionProgress?: DatasetExecutionProgress;
 }
 
 export interface CancellationRequest {

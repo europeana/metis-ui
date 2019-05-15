@@ -115,7 +115,10 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   hasPreview(plugin: PluginExecution): boolean {
-    return plugin.executionProgress.processedRecords > plugin.executionProgress.errors;
+    return (
+      plugin.executionProgress !== undefined &&
+      plugin.executionProgress.processedRecords > plugin.executionProgress.errors
+    );
   }
 
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
