@@ -7,6 +7,12 @@ import {
   WorkflowStatus
 } from '../../src/app/_models/workflow-execution';
 
+export const runningExecutionsEmpty: Results<WorkflowExecution> = {
+  results: [],
+  listSize: 0,
+  nextPage: -1
+};
+
 export const runningExecutions: Results<WorkflowExecution> = {
   results: [
     {
