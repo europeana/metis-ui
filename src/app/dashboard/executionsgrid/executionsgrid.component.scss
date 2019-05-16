@@ -31,3 +31,8 @@
 .load-more-btn::after {
   top: -0.25em;
 }
+
+.no-content-message {
+  grid-column: 1/6;
+  margin: 1em 0;
+}

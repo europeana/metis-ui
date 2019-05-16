@@ -5,6 +5,12 @@ import {
   PluginType
 } from '../../src/app/_models/workflow-execution';
 
+export const datasetOverviewEmpty: Results<DatasetOverview> = {
+  results: [],
+  listSize: 0,
+  nextPage: -1
+};
+
 export const datasetOverview: Results<DatasetOverview> = {
   results: [
     {
