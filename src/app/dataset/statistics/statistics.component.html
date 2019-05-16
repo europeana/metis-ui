@@ -1,11 +1,15 @@
-<span *ngIf="isLoading" class="svg-icon-spin showing"></span>
+<span *ngIf="isLoading && !statistics" class="svg-icon-spin showing"></span>
 <div
   class="view-sample view-statistics"
   *ngIf="statistics"
   [ngClass]="{ 'view-sample-expanded': expandedStatistics }"
 >
   <div class="view-sample-title">
-    <h3>{{ 'statistics' | translate }}</h3>
+    <app-load-title
+      title="{{ 'statistics' | translate }}"
+      inButton="true"
+      [isLoading]="isLoading"
+    ></app-load-title>
     <div class="toggle-expand"><a (click)="toggleStatistics()">-</a></div>
   </div>
   <div class="view-sample-editor">

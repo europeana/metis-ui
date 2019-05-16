@@ -1,1 +1,10 @@
-<h3>{{ title }}<span [ngClass]="{ showing: isLoading }" class="svg-icon-spin"></span></h3>
+<h3>
+  {{ title
+  }}<span
+    [ngClass]="{
+      showing: isLoading,
+      'svg-icon-spin-inbutton': inButton && isLoading,
+      'svg-icon-spin': !inButton
+    }"
+  ></span>
+</h3>
