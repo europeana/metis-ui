@@ -29,14 +29,16 @@
         >
       </td>
       <td class="nowrap centered">
-        {{ plugin.executionProgress.processedRecords - plugin.executionProgress.errors }}
-        <span class="errors" *ngIf="plugin.executionProgress.errors > 0"
-          >({{ plugin.executionProgress.errors }})</span
-        >
+        <span *ngIf="plugin.executionProgress">
+          {{ plugin.executionProgress.processedRecords - plugin.executionProgress.errors }}
+          <span class="errors" *ngIf="plugin.executionProgress.errors > 0"
+            >({{ plugin.executionProgress.errors }})</span
+          >
+        </span>
       </td>
       <td class="nowrap uppercase centered">
         {{
-          plugin.executionProgress.expectedRecords >= 0
+          plugin.executionProgress && plugin.executionProgress.expectedRecords >= 0
             ? plugin.executionProgress.expectedRecords
             : ('unknown' | translate)
         }}
