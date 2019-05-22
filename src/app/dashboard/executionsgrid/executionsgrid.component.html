@@ -29,10 +29,7 @@
     ></app-gridrow>
     <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
   </ng-container>
-  <span
-    class="no-content-message"
-    *ngIf="overviewParams && (dsOverview.length === 0)"
-  >
+  <span class="no-content-message" *ngIf="overviewParams && dsOverview.length === 0">
     {{ 'nofiltermatch' | translate }}
   </span>
 </div>
