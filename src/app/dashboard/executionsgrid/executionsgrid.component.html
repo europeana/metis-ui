@@ -31,7 +31,7 @@
   </ng-container>
   <span
     class="no-content-message"
-    *ngIf="overviewParams && (!dsOverview || dsOverview.length === 0)"
+    *ngIf="overviewParams && (dsOverview.length === 0)"
   >
     {{ 'nofiltermatch' | translate }}
   </span>
