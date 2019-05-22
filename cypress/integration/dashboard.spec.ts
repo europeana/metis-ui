@@ -1,4 +1,4 @@
-import { runningExecutionsEmpty } from '../fixtures';
+import { datasetOverviewEmpty, runningExecutionsEmpty } from '../fixtures';
 import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
@@ -24,6 +24,31 @@ context('metis-ui', () => {
 
     it('should show a message when there are no running executions', () => {
       cy.get('.ongoing-executions .no-content-message').should('have.length', 1);
+    });
+  });
+  describe('dashboard no filter results', () => {
+    beforeEach(() => {
+      cy.server({ force404: true });
+      setupUser();
+      setupWorkflowRoutes();
+      cy.route('GET', '/orchestrator/workflows/executions/overview*', datasetOverviewEmpty).as(
+        'getOverviewEmpty'
+      );
+      cy.visit('/dashboard');
+      cy.wait(['@getOverviewEmpty']);
+    });
+
+    it('should show a message when there are no filtered results', () => {
+      cy.get('.filter a')
+        .first()
+        .click();
+      cy.get('.filter-cell a')
+        .last()
+        .click();
+      cy.get('.filter a')
+        .first()
+        .click();
+      cy.get('.executions-grid .no-content-message').should('have.length', 1);
     });
   });
   describe('dashboard', () => {
