@@ -140,7 +140,16 @@
         <label for="notes">{{ 'notes' | translate }}</label>
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
-
+      <div class="form-group">
+        <label for="unfitForPublication">{{ 'datasetunpublishable-label' | translate }}</label>
+        <input
+          id="unfitForPublication"
+          type="checkbox"
+          [checked]="datasetData.unfitForPublication"
+          formControlName="unfitForPublication"
+          (blur)="saveTempData()"
+        />
+      </div>
       <div class="form-group" *ngIf="!isNew">
         <label>{{ 'createdby' | translate }}</label>
         <span class="readonly-field">{{ datasetData.createdByUserId }}</span>

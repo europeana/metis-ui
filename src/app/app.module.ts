@@ -14,10 +14,11 @@ import {
   DashboardactionsComponent,
   DashboardComponent,
   DatasetsComponent,
-  ExecutionsComponent,
-  ExecutiontableComponent,
-  OngoingexecutionsComponent,
+  ExecutionsgridComponent,
+  GridrowComponent,
+  OngoingexecutionsComponent
 } from './dashboard';
+import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
 import {
   ActionbarComponent,
   DatasetComponent,
@@ -31,10 +32,11 @@ import {
   PreviewComponent,
   ReportSimpleComponent,
   StatisticsComponent,
-  WorkflowComponent,
+  WorkflowComponent
 } from './dataset';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
+import { LoadTitleComponent } from './load-title';
 import { LoginComponent } from './login';
 import { PageNotFoundComponent } from './page-not-found';
 import { ProfileComponent } from './profile';
@@ -45,7 +47,7 @@ import {
   LoadingButtonComponent,
   NotificationComponent,
   PasswordCheckComponent,
-  TextWithLinksComponent,
+  TextWithLinksComponent
 } from './shared';
 import { ThemeSelectorComponent } from './theme-selector';
 
@@ -57,6 +59,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     LoginComponent,
     ProfileComponent,
     LoadAnimationComponent,
+    LoadTitleComponent,
     PageNotFoundComponent,
     HeaderComponent,
     HomeComponent,
@@ -64,6 +67,8 @@ import { ThemeSelectorComponent } from './theme-selector';
     NewDatasetComponent,
     DashboardComponent,
     DatasetformComponent,
+    FilterOpsComponent,
+    FilterOptionComponent,
     PasswordCheckComponent,
     TextWithLinksComponent,
     GeneralinfoComponent,
@@ -76,7 +81,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     MappingComponent,
     PreviewComponent,
     DatasetlogComponent,
-    ExecutionsComponent,
     OngoingexecutionsComponent,
     ReportSimpleComponent,
     StatisticsComponent,
@@ -84,10 +88,11 @@ import { ThemeSelectorComponent } from './theme-selector';
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe,
-    ExecutiontableComponent,
+    GridrowComponent,
+    ExecutionsgridComponent,
     NotificationComponent,
     LoadingButtonComponent,
-    DatasetsComponent,
+    DatasetsComponent
   ],
   imports: [
     BrowserModule,
@@ -96,23 +101,23 @@ import { ThemeSelectorComponent } from './theme-selector';
     HttpClientModule,
     AppRoutingModule,
     CodemirrorModule,
-    ClickOutsideModule,
+    ClickOutsideModule
   ],
   entryComponents: [
     DatasetformComponent,
     HistoryComponent,
     MappingComponent,
     PreviewComponent,
-    WorkflowComponent,
+    WorkflowComponent
   ],
   providers: [
     TRANSLATION_PROVIDERS,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
-      multi: true,
-    },
+      multi: true
+    }
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -1,6 +1,11 @@
 @import '../../scss/generic/variables';
 @import '../settings/metis-variables';
 
+$orb-size: 1.5em;
+$orb-size-half: 0.75em;
+$orb-size-small: 1em;
+$orb-size-small-half: 0.75em;
+
 .errorindicator {
   .status {
     border-radius: 0.3rem;
@@ -9,25 +14,25 @@
     width: 0.7rem;
   }
   .status-failed {
-    background: $eu-red;
+    background: $color-status-failed;
   }
   .status-warning {
-    background: lighten($eu-orange, 30%);
+    background: $color-status-warning;
   }
   .status-running {
-    background: $eu-blue;
+    background: $color-status-running;
   }
   .status-inqueue {
-    background: lighten($eu-blue, 40%);
+    background: $color-status-inqueue;
   }
   .status-pending {
-    background: $eu-blue;
+    background: $color-status-pending;
   }
   .status-finished {
-    background: $eu-jade;
+    background: $color-status-finished;
   }
   .status-cancelled {
-    background: $gray-lighter;
+    background: $color-status-cancelled;
   }
 }
 
@@ -40,4 +45,107 @@
   position: absolute;
   top: 0;
   width: 3px;
+}
+
+.orb-status {
+  border-radius: $orb-size-small-half;
+  border-style: solid;
+  border-width: 1px;
+  color: $white;
+  display: inline-block;
+  height: $orb-size-small;
+  margin: 0.2em 0.3em 0.2em 0;
+  min-width: $orb-size-small;
+  position: relative;
+  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
+  width: $orb-size-small;
+
+  &.status-inqueue {
+    background: $color-status-inqueue;
+  }
+  &.status-cancelled {
+    background: $color-status-cancelled;
+  }
+  &.status-cleaning {
+    background: $color-status-cleaning;
+  }
+  &.status-failed {
+    background: $color-status-failed;
+  }
+  &.status-finished {
+    background: $color-status-finished;
+  }
+  &.status-pending {
+    background: $color-status-pending;
+  }
+  &.status-running {
+    background: $color-status-running;
+  }
+  &.status-warning {
+    background: $color-status-warning;
+  }
+
+  &.labelled {
+    border-radius: $orb-size-half;
+    height: $orb-size;
+    min-width: $orb-size;
+    width: $orb-size;
+
+    &:after {
+      font-size: 0.7em;
+      font-weight: bold;
+      position: absolute;
+      text-align: center;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+    }
+
+    &.HTTP_HARVEST:after {
+      content: 'Hh';
+    }
+    &.OAIPMH_HARVEST:after {
+      content: 'Ho';
+    }
+    &.TRANSFORMATION:after {
+      content: 'T';
+    }
+    &.LINK_CHECKING:after {
+      content: 'L';
+    }
+    &.ENRICHMENT:after {
+      content: 'E';
+    }
+    &.MEDIA_PROCESS:after {
+      content: 'M';
+    }
+    &.VALIDATION_EXTERNAL:after {
+      content: 'Ve';
+    }
+    &.VALIDATION_INTERNAL:after {
+      content: 'Vi';
+    }
+    &.NORMALIZATION:after {
+      content: 'N';
+    }
+    &.PENDING:after {
+      content: 'Pe';
+    }
+    &.PREVIEW:after {
+      content: 'Pr';
+    }
+    &.PUBLISH:after {
+      content: 'Pu';
+    }
+    &.REINDEX_TO_PREVIEW:after {
+      content: 'Xr';
+    }
+    &.REINDEX_TO_PUBLISH:after {
+      content: 'Xu';
+    }
+  }
+}
+
+.labelled-orb .orb-status {
+  margin-right: 0.75em;
 }

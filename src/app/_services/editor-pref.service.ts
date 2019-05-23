@@ -22,7 +22,7 @@ export class EditorPrefService {
     return this.getEditorPref() === 'default';
   }
 
-  toggleTheme(editors: QueryList<CodemirrorComponent>): boolean {
+  toggleTheme(editors: QueryList<CodemirrorComponent>): string {
     const currTheme = this.getEditorPref();
     const newTheme = currTheme === 'default' ? this.altTheme : 'default';
 
@@ -31,7 +31,7 @@ export class EditorPrefService {
     });
 
     this.setEditorPref(newTheme);
-    return this.currentThemeIsDefault();
+    return newTheme;
   }
 
   getEditorConfig(readOnly: boolean): EditorConfiguration {
@@ -45,7 +45,7 @@ export class EditorPrefService {
       viewportMargin: Infinity,
       lineWrapping: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-      theme: this.getEditorPref(),
+      theme: this.getEditorPref()
     };
   }
 }

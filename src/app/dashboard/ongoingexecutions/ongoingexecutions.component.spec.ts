@@ -5,7 +5,7 @@ import {
   createMockPipe,
   MockTranslateService,
   mockWorkflowExecution,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -19,12 +19,16 @@ describe('OngoingexecutionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [OngoingexecutionsComponent, createMockPipe('translate')],
+      declarations: [
+        OngoingexecutionsComponent,
+        createMockPipe('renameWorkflow'),
+        createMockPipe('translate')
+      ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 

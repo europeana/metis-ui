@@ -7,6 +7,7 @@ import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
 import {
   CancellationRequest,
+  DatasetOverview,
   getCurrentPlugin,
   getCurrentPluginIndex,
   HarvestData,
@@ -25,7 +26,7 @@ import {
   Workflow,
   WorkflowExecution,
   WorkflowStatus,
-  XmlSample,
+  XmlSample
 } from '../_models';
 
 import { AuthenticationService } from './authentication.service';
@@ -38,7 +39,7 @@ export class WorkflowService {
     private http: HttpClient,
     private datasetsService: DatasetsService,
     private errors: ErrorService,
-    private authenticationServer: AuthenticationService,
+    private authenticationServer: AuthenticationService
   ) {}
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
@@ -47,24 +48,24 @@ export class WorkflowService {
 
   private collectAllResults<T>(
     getResults: (page: number) => Observable<Results<T>>,
-    page: number,
+    page: number
   ): Observable<T[]> {
     return getResults(page).pipe(
       switchMap(({ results, nextPage }) => {
         if (nextPage !== -1) {
           return this.collectAllResults(getResults, page + 1).pipe(
-            map((nextResults) => results.concat(nextResults)),
+            map((nextResults) => results.concat(nextResults))
           );
         } else {
           return of(results);
         }
-      }),
+      })
     );
   }
 
   private collectResultsUptoPage<T>(
     getResults: (page: number) => Observable<Results<T>>,
-    endPage: number,
+    endPage: number
   ): Observable<MoreResults<T>> {
     const observables: Observable<Results<T>>[] = [];
     for (let i = 0; i <= endPage; i++) {
@@ -76,7 +77,24 @@ export class WorkflowService {
         const lastResult = resultList[resultList.length - 1];
         const more = lastResult.nextPage >= 0;
         return { results, more };
-      }),
+      })
+    );
+  }
+
+  private collectAllResultsUptoPage<T>(
+    getResults: (page: number) => Observable<Results<T>>,
+    endPage: number
+  ): Observable<MoreResults<T>> {
+    const observables: Observable<Results<T>>[] = [];
+    observables.push(getResults(endPage));
+
+    return forkJoin(observables).pipe(
+      map((resultList) => {
+        const results = ([] as T[]).concat(...resultList.map((r) => r.results));
+        const lastResult = resultList[resultList.length - 1];
+        const more = lastResult.nextPage >= 0;
+        return { results, more };
+      })
     );
   }
 
@@ -97,7 +115,7 @@ export class WorkflowService {
   createWorkflowForDataset(
     id: string,
     values: Partial<Workflow>,
-    newWorkflow: boolean,
+    newWorkflow: boolean
   ): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
     if (!newWorkflow) {
@@ -123,7 +141,7 @@ export class WorkflowService {
     taskId?: string,
     topologyName?: TopologyName,
     start?: number,
-    finish?: number,
+    finish?: number
   ): Observable<SubTaskInfo[]> {
     const url = `${
       apiSettings.apiHostCore
@@ -151,14 +169,14 @@ export class WorkflowService {
     return this.getReportAvailable(taskId, topologyName as TopologyName).pipe(
       map((res) => {
         return res.existsExternalTaskReport;
-      }),
+      })
     );
   }
 
   getCachedHasErrors(
     taskId: string,
     topologyName: TopologyName,
-    pluginIsCompleted: boolean,
+    pluginIsCompleted: boolean
   ): Observable<boolean> {
     const key = `${taskId}/${topologyName}/${pluginIsCompleted}`;
     if (pluginIsCompleted) {
@@ -171,7 +189,7 @@ export class WorkflowService {
           } else {
             return this.hasErrorsCache.get(key, true);
           }
-        }),
+        })
       );
     }
   }
@@ -186,7 +204,7 @@ export class WorkflowService {
 
   getCompletedDatasetExecutionsUptoPage(
     id: string,
-    endPage: number,
+    endPage: number
   ): Observable<MoreResults<WorkflowExecution>> {
     const getResults = (page: number) => this.getCompletedDatasetExecutions(id, page);
     return this.collectResultsUptoPage(getResults, endPage);
@@ -203,7 +221,7 @@ export class WorkflowService {
   getDatasetExecutionsCollectingPages(id: string): Observable<WorkflowExecution[]> {
     const getResults = (page: number) => this.getDatasetExecutions(id, page);
     return this.collectAllResults(getResults, 0).pipe(
-      switchMap((executions) => this.addDatasetNameAndCurrentPlugin(executions)),
+      switchMap((executions) => this.addDatasetNameAndCurrentPlugin(executions))
     );
   }
 
@@ -225,7 +243,7 @@ export class WorkflowService {
       .pipe(
         map((lastExecution) => {
           return lastExecution.results[0];
-        }),
+        })
       )
       .pipe(this.errors.handleRetry());
   }
@@ -233,7 +251,7 @@ export class WorkflowService {
   //  get all executions for the user's organisation, either ongoing or finished/failed
   protected getAllExecutions(
     page: number,
-    ongoing?: boolean,
+    ongoing?: boolean
   ): Observable<Results<WorkflowExecution>> {
     let url = `${
       apiSettings.apiHostCore
@@ -247,18 +265,40 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
+  getCompletedDatasetSummaries(
+    page?: number,
+    params?: string
+  ): Observable<Results<DatasetOverview>> {
+    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/overview?`;
+
+    if (page && page > 0) {
+      url += `pageCount=${page + 1}&nextPage=0`;
+    } else {
+      url += `nextPage=${page}`;
+    }
+    url += params ? params : '';
+    return this.http.get<Results<DatasetOverview>>(url).pipe(this.errors.handleRetry());
+  }
+
+  getCompletedDatasetOverviewsUptoPage(
+    endPage: number,
+    params?: string
+  ): Observable<MoreResults<DatasetOverview>> {
+    const getResults = (page: number) => this.getCompletedDatasetSummaries(page, params);
+    return this.collectAllResultsUptoPage(getResults, endPage);
+  }
+
   addDatasetNameAndCurrentPlugin(executions: WorkflowExecution[]): Observable<WorkflowExecution[]> {
     if (executions.length === 0) {
       return of(executions);
     }
-
     executions.forEach((execution) => {
       execution.currentPlugin = getCurrentPlugin(execution);
       execution.currentPluginIndex = getCurrentPluginIndex(execution);
     });
 
     const observables = executions.map(({ datasetId }) =>
-      this.datasetsService.getDataset(datasetId),
+      this.datasetsService.getDataset(datasetId)
     );
     return forkJoin(observables).pipe(
       map((datasets) => {
@@ -266,7 +306,7 @@ export class WorkflowService {
           execution.datasetName = datasets[i].datasetName;
         });
         return executions;
-      }),
+      })
     );
 
     // TODO: error handling?
@@ -275,19 +315,19 @@ export class WorkflowService {
   getAllExecutionsCollectingPages(ongoing: boolean): Observable<WorkflowExecution[]> {
     const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectAllResults(getResults, 0).pipe(
-      switchMap((executions) => this.addDatasetNameAndCurrentPlugin(executions)),
+      switchMap((executions) => this.addDatasetNameAndCurrentPlugin(executions))
     );
   }
 
   getAllExecutionsUptoPage(
     endPage: number,
-    ongoing: boolean,
+    ongoing: boolean
   ): Observable<MoreResults<WorkflowExecution>> {
     const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectResultsUptoPage(getResults, endPage).pipe(
       switchMap(({ results, more }) =>
-        this.addDatasetNameAndCurrentPlugin(results).pipe(map((r2) => ({ results: r2, more }))),
-      ),
+        this.addDatasetNameAndCurrentPlugin(results).pipe(map((r2) => ({ results: r2, more })))
+      )
     );
   }
 
@@ -298,14 +338,14 @@ export class WorkflowService {
         this.getCachedHasErrors(
           externalTaskId,
           topologyName,
-          isPluginCompleted(pluginExecution),
+          isPluginCompleted(pluginExecution)
         ).subscribe(
           (hasErrors) => {
             pluginExecution.hasReport = hasErrors;
           },
           (err: HttpErrorResponse) => {
             this.errors.handleError(err);
-          },
+          }
         );
       }
     });
@@ -321,7 +361,7 @@ export class WorkflowService {
   promptCancelThisWorkflow(
     workflowExecutionId: string,
     datasetId: string,
-    datasetName: string,
+    datasetName: string
   ): void {
     this.promptCancelWorkflow.emit({ workflowExecutionId, datasetId, datasetName });
   }
@@ -336,7 +376,7 @@ export class WorkflowService {
       .pipe(
         map((samples) => {
           return samples.records;
-        }),
+        })
       )
       .pipe(this.errors.handleRetry());
   }
@@ -345,7 +385,7 @@ export class WorkflowService {
   getWorkflowComparisons(
     executionId: string,
     pluginType: PluginType,
-    ids: Array<string>,
+    ids: Array<string>
   ): Observable<XmlSample[]> {
     const url = `${
       apiSettings.apiHostCore
@@ -355,7 +395,7 @@ export class WorkflowService {
       .pipe(
         map((samples) => {
           return samples.records;
-        }),
+        })
       )
       .pipe(this.errors.handleRetry());
   }
@@ -370,7 +410,7 @@ export class WorkflowService {
       .pipe(
         map((res) => {
           return res.evolutionSteps;
-        }),
+        })
       )
       .pipe(this.errors.handleRetry());
   }
@@ -386,7 +426,7 @@ export class WorkflowService {
   getStatisticsDetail(
     topologyName: TopologyName,
     taskId: string,
-    xPath: string,
+    xPath: string
   ): Observable<NodePathStatistics> {
     const url = `${
       apiSettings.apiHostCore
@@ -403,7 +443,7 @@ export class WorkflowService {
         return this.authenticationServer.getUserByUserId(cancelledBy).pipe(
           map((user) => {
             return `Cancelled by user: ${user.firstName} ${user.lastName}`;
-          }),
+          })
         );
       }
     }

@@ -1,10 +1,17 @@
 import { Results } from '../../src/app/_models/results';
 import {
   PluginStatus,
+  PluginType,
   TaskState,
   WorkflowExecution,
-  WorkflowStatus,
+  WorkflowStatus
 } from '../../src/app/_models/workflow-execution';
+
+export const runningExecutionsEmpty: Results<WorkflowExecution> = {
+  results: [],
+  listSize: 0,
+  nextPage: -1
+};
 
 export const runningExecutions: Results<WorkflowExecution> = {
   results: [
@@ -19,7 +26,7 @@ export const runningExecutions: Results<WorkflowExecution> = {
       finishedDate: '2018-11-13T08:47:32.008Z',
       metisPlugins: [
         {
-          pluginType: 'OAIPMH_HARVEST',
+          pluginType: PluginType.OAIPMH_HARVEST,
           id: '5bea8f7e729e6f000d3a8764-OAIPMH_HARVEST',
           pluginStatus: PluginStatus.RUNNING,
           startedDate: '2018-11-13T08:46:54.476Z',
@@ -31,19 +38,19 @@ export const runningExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: TaskState.PENDING,
+            status: TaskState.PENDING
           },
           pluginMetadata: {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             mocked: false,
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
-        },
-      ],
+          topologyName: 'oai_harvest'
+        }
+      ]
     },
     {
       id: 'vfv5325dsvfdv',
@@ -56,7 +63,7 @@ export const runningExecutions: Results<WorkflowExecution> = {
       finishedDate: '2018-11-13T08:47:32.008Z',
       metisPlugins: [
         {
-          pluginType: 'OAIPMH_HARVEST',
+          pluginType: PluginType.OAIPMH_HARVEST,
           id: '5bea8f7e729e6f000d3a8764-OAIPMH_HARVEST',
           pluginStatus: PluginStatus.RUNNING,
           startedDate: '2018-11-13T08:46:54.476Z',
@@ -68,21 +75,21 @@ export const runningExecutions: Results<WorkflowExecution> = {
             processedRecords: 0,
             progressPercentage: 0,
             errors: 0,
-            status: TaskState.PENDING,
+            status: TaskState.PENDING
           },
           pluginMetadata: {
-            pluginType: 'OAIPMH_HARVEST',
+            pluginType: PluginType.OAIPMH_HARVEST,
             mocked: false,
             enabled: true,
             url: 'https://oai-pmh.eanadev.org/oai',
             metadataFormat: 'edm',
-            setSpec: '2021006',
+            setSpec: '2021006'
           },
-          topologyName: 'oai_harvest',
-        },
-      ],
-    },
+          topologyName: 'oai_harvest'
+        }
+      ]
+    }
   ],
   listSize: 5,
-  nextPage: -1,
+  nextPage: -1
 };

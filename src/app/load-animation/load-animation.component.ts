@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-load-animation',
   templateUrl: './load-animation.component.html',
-  styleUrls: ['./load-animation.component.scss'],
+  styleUrls: ['./load-animation.component.scss']
 })
 export class LoadAnimationComponent {
   message: string;

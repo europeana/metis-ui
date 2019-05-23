@@ -5,6 +5,7 @@ import { apiSettings } from '../../environments/apisettings';
 import { gatherValuesAsync, MockHttp } from '../_helpers/test-helpers';
 import {
   MockAuthenticationService,
+  mockDatasetOverviewResults,
   MockDatasetsService,
   MockErrorService,
   mockFirstPageResults,
@@ -17,9 +18,9 @@ import {
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
-  mockXmlSamples,
+  mockXmlSamples
 } from '../_mocked';
-import { ReportAvailability, WorkflowExecution } from '../_models';
+import { PluginType, ReportAvailability, WorkflowExecution } from '../_models';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
@@ -33,9 +34,9 @@ describe('workflow service', () => {
         WorkflowService,
         { provide: ErrorService, useClass: MockErrorService },
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService }
       ],
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
     service = TestBed.get(WorkflowService);
@@ -112,7 +113,7 @@ describe('workflow service', () => {
     gatherValuesAsync(service.getCachedHasErrors('54353534', 'normalization', true)).subscribe(
       (res) => {
         expect(res).toEqual([false]);
-      },
+      }
     );
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/54353534/report/exists')
@@ -121,12 +122,12 @@ describe('workflow service', () => {
     gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', true)).subscribe(
       (res) => {
         expect(res).toEqual([true]);
-      },
+      }
     );
     gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', true)).subscribe(
       (res) => {
         expect(res).toEqual([true]);
-      },
+      }
     );
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/7866/report/exists')
@@ -137,7 +138,7 @@ describe('workflow service', () => {
     function getReportAvailability(
       reportAvailability: ReportAvailability,
       expectRequest: boolean,
-      done: () => void,
+      done: () => void
     ): void {
       service.getCachedHasErrors('7866', 'normalization', false).subscribe((res) => {
         expect(res).toEqual(true);
@@ -163,6 +164,18 @@ describe('workflow service', () => {
     });
   });
 
+  it('should get dataset execution summaries per page', () => {
+    service.getCompletedDatasetOverviewsUptoPage(0).subscribe((results) => {
+      expect(results).toEqual({
+        results: mockDatasetOverviewResults.results,
+        more: false
+      });
+    });
+    mockHttp
+      .expect('GET', '/orchestrator/workflows/executions/overview' + '?nextPage=0')
+      .send(mockDatasetOverviewResults);
+  });
+
   it('should get completed executions for a dataset per page', () => {
     service.getCompletedDatasetExecutions('543452', 6).subscribe((results) => {
       expect(results).toEqual(mockWorkflowExecutionResults);
@@ -172,7 +185,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/dataset/543452' +
           '?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED' +
-          '&orderField=CREATED_DATE&ascending=false&nextPage=6',
+          '&orderField=CREATED_DATE&ascending=false&nextPage=6'
       )
       .send(mockWorkflowExecutionResults);
   });
@@ -181,7 +194,7 @@ describe('workflow service', () => {
     service.getCompletedDatasetExecutionsUptoPage('543452', 1).subscribe((results) => {
       expect(results).toEqual({
         results: mockWorkflowExecutionResults.results.concat(mockWorkflowExecutionResults.results),
-        more: false,
+        more: false
       });
     });
     mockHttp
@@ -189,7 +202,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/dataset/543452' +
           '?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED' +
-          '&orderField=CREATED_DATE&ascending=false&nextPage=0',
+          '&orderField=CREATED_DATE&ascending=false&nextPage=0'
       )
       .send(mockWorkflowExecutionResults);
     mockHttp
@@ -197,7 +210,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/dataset/543452' +
           '?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED' +
-          '&orderField=CREATED_DATE&ascending=false&nextPage=1',
+          '&orderField=CREATED_DATE&ascending=false&nextPage=1'
       )
       .send(mockWorkflowExecutionResults);
 
@@ -209,7 +222,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/dataset/543452' +
           '?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED' +
-          '&orderField=CREATED_DATE&ascending=false&nextPage=0',
+          '&orderField=CREATED_DATE&ascending=false&nextPage=0'
       )
       .send(mockFirstPageResults);
   });
@@ -221,7 +234,7 @@ describe('workflow service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/dataset/543341?orderField=CREATED_DATE&ascending=false&nextPage=7',
+        '/orchestrator/workflows/executions/dataset/543341?orderField=CREATED_DATE&ascending=false&nextPage=7'
       )
       .send(mockWorkflowExecutionResults);
   });
@@ -229,19 +242,19 @@ describe('workflow service', () => {
   it('should get all executions for a dataset', () => {
     service.getDatasetExecutionsCollectingPages('879').subscribe((results) => {
       expect(results).toEqual(
-        mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results),
+        mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results)
       );
     });
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/dataset/879?orderField=CREATED_DATE&ascending=false&nextPage=0',
+        '/orchestrator/workflows/executions/dataset/879?orderField=CREATED_DATE&ascending=false&nextPage=0'
       )
       .send(mockFirstPageResults);
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/dataset/879?orderField=CREATED_DATE&ascending=false&nextPage=1',
+        '/orchestrator/workflows/executions/dataset/879?orderField=CREATED_DATE&ascending=false&nextPage=1'
       )
       .send(mockWorkflowExecutionResults);
   });
@@ -253,7 +266,7 @@ describe('workflow service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/dataset/677?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=8',
+        '/orchestrator/workflows/executions/dataset/677?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=8'
       )
       .send(mockWorkflowExecutionResults);
   });
@@ -265,7 +278,7 @@ describe('workflow service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/dataset/787?orderField=CREATED_DATE&ascending=false',
+        '/orchestrator/workflows/executions/dataset/787?orderField=CREATED_DATE&ascending=false'
       )
       .send(mockWorkflowExecutionResults);
   });
@@ -273,7 +286,7 @@ describe('workflow service', () => {
   it('should get all executions', () => {
     service.getAllExecutionsCollectingPages(false).subscribe((results) => {
       expect(results).toEqual(
-        mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results),
+        mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results)
       );
     });
     mockHttp
@@ -281,7 +294,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
-          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED',
+          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
       .send(mockFirstPageResults);
     mockHttp
@@ -289,13 +302,13 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
-          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED',
+          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
       .send(mockWorkflowExecutionResults);
 
     service.getAllExecutionsCollectingPages(true).subscribe((results) => {
       expect(results).toEqual(
-        mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results),
+        mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results)
       );
     });
     mockHttp
@@ -303,7 +316,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
-          '&workflowStatus=INQUEUE&workflowStatus=RUNNING',
+          '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
       .send(mockFirstPageResults);
     mockHttp
@@ -311,7 +324,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
-          '&workflowStatus=INQUEUE&workflowStatus=RUNNING',
+          '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
       .send(mockWorkflowExecutionResults);
   });
@@ -320,7 +333,7 @@ describe('workflow service', () => {
     service.getAllExecutionsUptoPage(1, false).subscribe((results) => {
       expect(results).toEqual({
         results: mockWorkflowExecutionResults.results.concat(mockWorkflowExecutionResults.results),
-        more: false,
+        more: false
       });
     });
     mockHttp
@@ -328,7 +341,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
-          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED',
+          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
       .send(mockWorkflowExecutionResults);
     mockHttp
@@ -336,14 +349,14 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
-          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED',
+          '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED'
       )
       .send(mockWorkflowExecutionResults);
 
     service.getAllExecutionsUptoPage(1, true).subscribe((results) => {
       expect(results).toEqual({
         results: mockWorkflowExecutionResults.results.concat(mockFirstPageResults.results),
-        more: true,
+        more: true
       });
     });
     mockHttp
@@ -351,7 +364,7 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
-          '&workflowStatus=INQUEUE&workflowStatus=RUNNING',
+          '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
       .send(mockWorkflowExecutionResults);
     mockHttp
@@ -359,14 +372,14 @@ describe('workflow service', () => {
         'GET',
         '/orchestrator/workflows/executions/' +
           '?orderField=CREATED_DATE&ascending=false&nextPage=1' +
-          '&workflowStatus=INQUEUE&workflowStatus=RUNNING',
+          '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
       .send(mockFirstPageResults);
   });
 
   it('should get the report availabilities for an execution', () => {
     const execution: WorkflowExecution = JSON.parse(
-      JSON.stringify(mockWorkflowExecutionResults.results[4]),
+      JSON.stringify(mockWorkflowExecutionResults.results[4])
     );
     expect(execution.metisPlugins[0].hasReport).toBe(undefined);
     service.getReportsForExecution(execution);
@@ -382,27 +395,28 @@ describe('workflow service', () => {
   });
 
   it('should get samples', () => {
-    service.getWorkflowSamples('5653454353', 'ENRICHMENT').subscribe((samples) => {
+    service.getWorkflowSamples('5653454353', PluginType.ENRICHMENT).subscribe((samples) => {
       expect(samples).toEqual(mockXmlSamples);
     });
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/proxies/records?workflowExecutionId=5653454353&pluginType=ENRICHMENT&nextPage=',
+        '/orchestrator/proxies/records?workflowExecutionId=5653454353&pluginType=ENRICHMENT&nextPage='
       )
       .send({ records: mockXmlSamples });
   });
 
   it('should get sample comparisons', () => {
     const ids = { ids: ['1', '2'] };
-
-    service.getWorkflowComparisons('5653454353', 'ENRICHMENT', ids.ids).subscribe((samples) => {
-      expect(samples).toEqual(mockXmlSamples);
-    });
+    service
+      .getWorkflowComparisons('5653454353', PluginType.ENRICHMENT, ids.ids)
+      .subscribe((samples) => {
+        expect(samples).toEqual(mockXmlSamples);
+      });
     mockHttp
       .expect(
         'POST',
-        '/orchestrator/proxies/recordsbyids?workflowExecutionId=5653454353&pluginType=ENRICHMENT',
+        '/orchestrator/proxies/recordsbyids?workflowExecutionId=5653454353&pluginType=ENRICHMENT'
       )
       .body(ids)
       .send({ records: mockXmlSamples });
@@ -438,7 +452,7 @@ describe('workflow service', () => {
     expect(service.promptCancelWorkflow.emit).toHaveBeenCalledWith({
       workflowExecutionId: '15',
       datasetId: '11',
-      datasetName: 'The Name',
+      datasetName: 'The Name'
     });
   });
 });

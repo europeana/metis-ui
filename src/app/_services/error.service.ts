@@ -49,10 +49,10 @@ export class ErrorService {
               throw errorM;
             }
           }),
-          take(this.numberOfRetries),
+          take(this.numberOfRetries)
         ),
-        throwError({ status: 0, error: { errorMessage: 'Retry failed' } }),
-      ),
+        throwError({ status: 0, error: { errorMessage: 'Retry failed' } })
+      )
     );
   }
 

@@ -12,7 +12,7 @@ describe('DatasetsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [DatasetsComponent, createMockPipe('translate')],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 

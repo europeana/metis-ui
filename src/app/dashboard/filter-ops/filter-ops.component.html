@@ -1,0 +1,39 @@
+<div class="filter-ops">
+  <app-load-title title="{{ title }}" [isLoading]="isLoading"></app-load-title>
+  <ul class="filter" (clickOutside)="hide()">
+    <li class="dropdown arrow-right">
+      <a
+        (click)="toggle()"
+        [ngClass]="{ active: anyValueSet(), error: anyErrors() }"
+        [attr.title]="showing ? '' : getSetSummary()"
+        >{{ 'filter' | translate }}</a
+      >
+      <a (click)="reset()">{{ 'reset' | translate }}</a>
+      <div class="dropdown-wrapper" [ngClass]="{ hidden: !showing }">
+        <div class="dropdown-content">
+          <div class="filter-grid">
+            <ng-container *ngFor="let filter of conf">
+              <span class="start-row filter-cell">
+                {{ filter.label | translate }}
+              </span>
+              <ng-container *ngFor="let op of filter.options; index as i">
+                <app-filter-option
+                  #wrapper
+                  [index]="op.input ? i : null"
+                  [config]="op"
+                  [filterName]="filter.name"
+                  [multi]="filter.multi"
+                  [parentCmp]="this"
+                  [params]="params"
+                  [isRowEnd]="i + 1 === filter.options.length"
+                  [rowIndex]="i"
+                ></app-filter-option>
+                <ng-container [ngTemplateOutlet]="wrapper.filterOptionTemplate"></ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

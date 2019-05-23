@@ -4,7 +4,7 @@ import { StringifyHttpError } from '../_helpers/stringify-http-error';
 
 export enum NotificationType {
   SUCCESS = 'SUCCESS',
-  ERROR = 'ERROR',
+  ERROR = 'ERROR'
 }
 
 export interface Notification {
@@ -21,21 +21,21 @@ export interface NotificationOptions {
 
 export function errorNotification(
   content: string,
-  options: NotificationOptions = {},
+  options: NotificationOptions = {}
 ): Notification {
   return { type: NotificationType.ERROR, content, ...options };
 }
 
 export function successNotification(
   content: string,
-  options: NotificationOptions = {},
+  options: NotificationOptions = {}
 ): Notification {
   return { type: NotificationType.SUCCESS, content, ...options };
 }
 
 export function httpErrorNotification(
   error: false | HttpErrorResponse,
-  options: NotificationOptions = {},
+  options: NotificationOptions = {}
 ): Notification {
   return errorNotification(StringifyHttpError(error), options);
 }

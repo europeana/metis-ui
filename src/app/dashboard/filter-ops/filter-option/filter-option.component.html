@@ -1,0 +1,25 @@
+<ng-template #filterOptionTemplate>
+  <span
+    [ngClass]="{
+      active: valueIsSet(),
+      'end-row': isRowEnd,
+      'continue-row-3': (rowIndex + 1) % 2 === 1,
+      'continue-row-4': (rowIndex + 1) % 3 === 1,
+      'continue-row-6': (rowIndex + 1) % 5 === 1,
+      error: hasError
+    }"
+    class="filter-cell"
+    ><a (click)="handleClick()" *ngIf="config && !config.input">{{ config.label | translate }}</a>
+    <label *ngIf="config && config.input" class="input-label">
+      <span class="label">{{ config.label | translate }}:</span>
+      <input
+        #input
+        placeholder="{{ 'YYYY-MM-DD' | translate }}"
+        *ngIf="config"
+        [attr.id]="config.input.id"
+        [attr.type]="config.input.type"
+        [attr.max]="config.input.max"
+        (change)="handleChange()"
+        (focus)="handleFocus()"/></label
+  ></span>
+</ng-template>

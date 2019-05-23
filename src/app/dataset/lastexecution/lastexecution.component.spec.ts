@@ -15,9 +15,9 @@ describe('LastExecutionComponent', () => {
       declarations: [
         LastExecutionComponent,
         createMockPipe('translate'),
-        createMockPipe('renameWorkflow'),
+        createMockPipe('renameWorkflow')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -38,7 +38,7 @@ describe('LastExecutionComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'validation',
       taskId: '123',
-      message: undefined,
+      message: undefined
     });
   });
 
@@ -50,7 +50,7 @@ describe('LastExecutionComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: undefined,
       taskId: undefined,
-      message: 'fail message report',
+      message: 'fail message report'
     });
   });
 

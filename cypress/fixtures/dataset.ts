@@ -18,13 +18,13 @@ export const dataset: Dataset = {
   country: {
     enum: 'GREECE',
     name: 'Greece',
-    isoCode: 'GR',
+    isoCode: 'GR'
   },
   language: {
     enum: 'EL',
-    name: 'Greek',
+    name: 'Greek'
   },
   description: '',
   notes: '',
-  xsltId: null,
+  xsltId: null
 };

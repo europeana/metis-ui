@@ -11,9 +11,9 @@ import {
   mockHistoryVersions,
   MockTranslateService,
   mockWorkflowExecution,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
-import { XmlSample } from '../../_models';
+import { PluginType, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewFilters } from '../dataset.component';
@@ -27,11 +27,11 @@ describe('PreviewComponent', () => {
   const previewFilterData = {
     execution: mockWorkflowExecution,
     plugin: 'NORMALIZATION',
-    startedDate: '111111',
+    startedDate: '111111'
   } as PreviewFilters;
 
   const previewFilterDataBasic = {
-    execution: mockWorkflowExecution,
+    execution: mockWorkflowExecution
   } as PreviewFilters;
 
   beforeEach(async(() => {
@@ -41,15 +41,15 @@ describe('PreviewComponent', () => {
         PreviewComponent,
         createMockPipe('translate'),
         createMockPipe('beautifyXML'),
-        createMockPipe('renameWorkflow'),
+        createMockPipe('renameWorkflow')
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: ErrorService, useClass: MockErrorService },
-        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -128,40 +128,40 @@ describe('PreviewComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
 
     expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
-    component.getXMLSamplesCompare('NORMALIZATION', '123');
+    component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123');
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
   });
 
   it('should toggle filters', () => {
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length
     ).toBeFalsy();
     component.datasetData = mockDataset;
     component.toggleFilterDate();
     fixture.detectChanges();
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length
     ).toBeTruthy();
 
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length
     ).toBeFalsy();
-    component.allPlugins = [{ type: 'NORMALIZATION', error: false }];
+    component.allPlugins = [{ type: PluginType.NORMALIZATION, error: false }];
     component.toggleFilterPlugin();
     fixture.detectChanges();
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-plugin .dropdown-wrapper')).length
     ).toBeTruthy();
 
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length
     ).toBeFalsy();
     component.historyVersions = mockHistoryVersions;
     component.toggleFilterCompare();
     fixture.detectChanges();
     expect(
-      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length,
+      fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length
     ).toBeTruthy();
   });
 
@@ -182,20 +182,21 @@ describe('PreviewComponent', () => {
 
   it('toggles the editor theme', () => {
     component.datasetData = mockDataset;
-    expect(component.editorIsDefaultTheme).toEqual(true);
+    fixture.detectChanges();
+    expect(component.editorConfig.theme).toEqual('default');
     component.transformSamples('default');
     fixture.detectChanges();
     component.onThemeSet(false);
-    expect(component.editorIsDefaultTheme).toEqual(false);
+    expect(component.editorConfig.theme).not.toEqual('default');
     component.onThemeSet(true);
-    expect(component.editorIsDefaultTheme).toEqual(true);
+    expect(component.editorConfig.theme).toEqual('default');
   });
 
   it('has utility to strip blank lines', () => {
     const samples = [
       {
-        xmlRecord: '\n\r',
-      },
+        xmlRecord: '\n\r'
+      }
     ] as XmlSample[];
 
     const res: XmlSample[] = component.undoNewLines(samples);

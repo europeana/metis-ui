@@ -5,6 +5,19 @@ body {
   background-image: none;
 }
 
+.br {
+  @media (min-width: $bp-med) {
+    &::before {
+      content: '\a';
+      display: block;
+    }
+  }
+}
+
+.inline-block {
+  display: inline-block;
+}
+
 .btns-set {
   background-color: $white;
   border: 0;
@@ -173,7 +186,7 @@ body {
     }
   }
 
-  ul {
+  .dropdown-content {
     background: $white;
     box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
     left: 1rem;
@@ -192,17 +205,16 @@ body {
       white-space: nowrap;
     }
 
-    li a {
+    a {
       border: 0;
-    }
-
-    li a:hover {
-      text-decoration: underline;
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
   &.arrow-right {
-    ul {
+    .dropdown-content {
       left: auto;
       right: 0;
     }
@@ -264,8 +276,11 @@ li.dropdown a {
 
   .progress-percentage {
     text-align: right;
-    text-transform: uppercase;
     white-space: nowrap;
+  }
+
+  .progress-percentage:not(.capitalise) {
+    text-transform: uppercase;
   }
 
   .progressbar {

@@ -10,14 +10,14 @@ import {
   TopologyName,
   Workflow,
   WorkflowExecution,
-  WorkflowStatus,
+  WorkflowStatus
 } from '../../_models';
 import { WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.component.html',
-  styleUrls: ['./actionbar.component.scss'],
+  styleUrls: ['./actionbar.component.scss']
 })
 export class ActionbarComponent {
   constructor(private workflows: WorkflowService) {}
@@ -65,10 +65,13 @@ export class ActionbarComponent {
       this.currentExternalTaskId = this.currentPlugin.externalTaskId;
       this.currentTopology = this.currentPlugin.topologyName;
       const { executionProgress } = this.currentPlugin;
-      this.totalErrors = executionProgress.errors;
-      this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
-      this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
-      this.totalInDataset = executionProgress.expectedRecords;
+
+      if (executionProgress) {
+        this.totalErrors = executionProgress.errors;
+        this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
+        this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
+        this.totalInDataset = executionProgress.expectedRecords;
+      }
 
       this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
       this.workflowPercentage = 0;
@@ -87,7 +90,11 @@ export class ActionbarComponent {
             this.cancelledBy = cancelledBy;
           });
       } else {
-        if (this.totalProcessed !== 0 && this.totalInDataset !== 0) {
+        if (
+          this.currentPlugin.executionProgress &&
+          this.totalProcessed !== 0 &&
+          this.totalInDataset !== 0
+        ) {
           this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
         }
       }
@@ -114,7 +121,7 @@ export class ActionbarComponent {
     this.workflows.promptCancelThisWorkflow(
       this.lastExecutionData!.id,
       this.datasetId,
-      this.datasetName,
+      this.datasetName
     );
   }
 

@@ -19,7 +19,7 @@
           }}<span *ngIf="selectedDate">: {{ selectedDate | date: 'dd/MM/yyyy - HH:mm' }}</span></a
         >
         <div *ngIf="filterDateOpen" class="dropdown-wrapper">
-          <ul>
+          <ul class="dropdown-content">
             <li *ngFor="let w of allWorkflowExecutions; trackBy: byId">
               <a (click)="addPluginsFilter(w)">{{ w.startedDate | date: 'dd/MM/yyyy - HH:mm' }}</a>
             </li>
@@ -40,7 +40,7 @@
           }}<span *ngIf="selectedPlugin">: {{ selectedPlugin | renameWorkflow }}</span></a
         >
         <div *ngIf="filterPluginOpen" class="dropdown-wrapper">
-          <ul>
+          <ul class="dropdown-content">
             <li *ngFor="let w of allPlugins">
               <a (click)="getXMLSamples(w.type)" *ngIf="!w.error">{{ w.type | renameWorkflow }}</a>
               <span class="notavailable" *ngIf="w.error">{{ w.type | renameWorkflow }}</span>
@@ -60,7 +60,7 @@
           }}<span *ngIf="selectedComparison">: {{ selectedComparison | renameWorkflow }}</span></a
         >
         <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
-          <ul>
+          <ul class="dropdown-content">
             <li *ngFor="let h of historyVersions">
               <a (click)="getXMLSamplesCompare(h.pluginType, h.workflowExecutionId)">{{
                 h.pluginType | renameWorkflow
@@ -89,7 +89,7 @@
 
         <app-theme-selector
           (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorIsDefaultTheme"
+          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
         ></app-theme-selector>
         <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
           <a (click)="expandSample(i)">-</a>
@@ -144,7 +144,7 @@
       </h3>
       <app-theme-selector
         (themeSet)="onThemeSet($event)"
-        [editorIsDefaultTheme]="editorIsDefaultTheme"
+        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
       ></app-theme-selector>
     </div>
     <div
@@ -182,7 +182,7 @@
         </h3>
         <app-theme-selector
           (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorIsDefaultTheme"
+          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
         ></app-theme-selector>
       </div>
       <div class="view-sample-editor">

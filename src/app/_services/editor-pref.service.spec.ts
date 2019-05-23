@@ -11,7 +11,7 @@ describe('editor pref service', () => {
   beforeEach(async(() => {
     localStorage.removeItem('editor-pref');
     TestBed.configureTestingModule({
-      providers: [EditorPrefService],
+      providers: [EditorPrefService]
     }).compileComponents();
     service = TestBed.get(EditorPrefService);
     altTheme = service.altTheme;
@@ -43,8 +43,8 @@ describe('editor pref service', () => {
 
   it('indicates if the toggled theme is the default theme', () => {
     expect(service.getEditorPref()).toEqual('default');
-    expect(service.toggleTheme(getCodeMirrorEditors())).toEqual(false);
-    expect(service.toggleTheme(getCodeMirrorEditors())).toEqual(true);
+    expect(service.toggleTheme(getCodeMirrorEditors())).not.toEqual('default');
+    expect(service.toggleTheme(getCodeMirrorEditors())).toEqual('default');
   });
 
   it('provides an editor configuration object (read only)', () => {

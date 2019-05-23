@@ -8,7 +8,7 @@ const TEXTS = ['Very bad', 'Bad', 'Weak', 'Good', 'Strong'];
 @Component({
   selector: 'app-password-check',
   templateUrl: './password-check.component.html',
-  styleUrls: ['./password-check.component.scss'],
+  styleUrls: ['./password-check.component.scss']
 })
 export class PasswordCheckComponent {
   info = false;

@@ -14,6 +14,6 @@ export const user: User = {
   createdDate: 1509698100000,
   updatedDate: 1522837307000,
   metisUserAccessToken: {
-    accessToken: 'DsBOGusbvSGSSJxeYC9b',
-  },
+    accessToken: 'DsBOGusbvSGSSJxeYC9b'
+  }
 };

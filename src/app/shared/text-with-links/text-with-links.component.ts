@@ -8,7 +8,7 @@ export interface IPart {
 @Component({
   selector: 'app-text-with-links',
   templateUrl: './text-with-links.component.html',
-  styleUrls: ['./text-with-links.component.scss'],
+  styleUrls: ['./text-with-links.component.scss']
 })
 export class TextWithLinksComponent {
   parts: IPart[] = [];

@@ -9,13 +9,13 @@ import { TranslateService } from '../../_translate';
 
 @Component({
   selector: 'app-datasetlog',
-  templateUrl: './datasetlog.component.html',
+  templateUrl: './datasetlog.component.html'
 })
 export class DatasetlogComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
     private errors: ErrorService,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {}
 
   @Output() closed = new EventEmitter<void>();
@@ -36,10 +36,14 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     const old = this._showPluginLog;
     let changed = true;
     if (old) {
+      const diffProcessedCount: boolean =
+        value.executionProgress !== undefined &&
+        old.executionProgress !== undefined &&
+        value.executionProgress.processedRecords !== old.executionProgress.processedRecords;
       changed =
         value.externalTaskId !== old.externalTaskId ||
         value.pluginStatus !== old.pluginStatus ||
-        value.executionProgress.processedRecords !== old.executionProgress.processedRecords;
+        diffProcessedCount;
     }
 
     this._showPluginLog = value;
@@ -81,7 +85,8 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   returnLog(): void {
-    const processed = this.showPluginLog.executionProgress.processedRecords;
+    const processed =
+      this.showPluginLog.executionProgress && this.showPluginLog.executionProgress.processedRecords;
 
     this.logTo = processed || 0;
 
@@ -102,7 +107,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
         this.showPluginLog.externalTaskId,
         this.showPluginLog.topologyName,
         this.getLogFrom(),
-        this.logTo,
+        this.logTo
       )
       .subscribe(
         (result) => {
@@ -112,7 +117,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
         (err: HttpErrorResponse) => {
           this.isFirstLoading = false;
           this.errors.handleError(err);
-        },
+        }
       );
   }
 

@@ -2,12 +2,14 @@ import { EventEmitter } from '@angular/core';
 import { Observable, of as observableOf } from 'rxjs';
 
 import {
+  DatasetOverview,
   HarvestData,
   HistoryVersion,
   MoreResults,
   NodePathStatistics,
   PluginExecution,
   PluginStatus,
+  PluginType,
   Report,
   ReportAvailability,
   Results,
@@ -17,22 +19,22 @@ import {
   Workflow,
   WorkflowExecution,
   WorkflowStatus,
-  XmlSample,
+  XmlSample
 } from '../_models';
 
 export const mockHistoryVersions: Array<HistoryVersion> = [
   {
     workflowExecutionId: 1,
-    pluginType: 'OAIPMH_HARVEST',
+    pluginType: PluginType.OAIPMH_HARVEST
   },
   {
     workflowExecutionId: 1,
-    pluginType: 'VALIDATION_EXTERNAL',
+    pluginType: PluginType.VALIDATION_EXTERNAL
   },
   {
     workflowExecutionId: 1,
-    pluginType: 'TRANSFORMATION',
-  },
+    pluginType: PluginType.TRANSFORMATION
+  }
 ];
 
 export const mockWorkflow: Workflow = {
@@ -42,24 +44,230 @@ export const mockWorkflow: Workflow = {
     {
       enabled: true,
       metadataFormat: 'edm',
-      pluginType: 'OAIPMH_HARVEST',
+      pluginType: PluginType.OAIPMH_HARVEST,
       setSpec: 'oai_test',
-      url: 'http://www.mocked.com',
+      url: 'http://www.mocked.com'
     },
     {
       enabled: true,
-      pluginType: 'TRANSFORMATION',
-      customXslt: false,
+      pluginType: PluginType.TRANSFORMATION,
+      customXslt: false
     },
     {
       enabled: true,
-      pluginType: 'MEDIA_PROCESS',
+      pluginType: PluginType.MEDIA_PROCESS
     },
     {
       enabled: true,
-      pluginType: 'LINK_CHECKING',
+      pluginType: PluginType.LINK_CHECKING
+    }
+  ]
+};
+
+export const mockDatasetOverviewResults: Results<DatasetOverview> = {
+  results: [
+    {
+      dataset: {
+        datasetName: 'Dataset 2',
+        datasetId: '129'
+      },
+      executionProgress: {
+        stepsDone: 3,
+        stepsTotal: 11,
+        currentPluginProgress: {
+          errors: 49,
+          processedRecords: 232,
+          expectedRecords: 233,
+          progressPercentage: 99
+        }
+      },
+      execution: {
+        id: 'execution-id-1',
+        finishedDate: '2018-10-19T09:23:70.844Z',
+        startedDate: '2018-10-19T09:05:40.844Z',
+        plugins: [
+          {
+            pluginType: PluginType.OAIPMH_HARVEST,
+            pluginStatus: PluginStatus.CANCELLED,
+
+            progress: {
+              expectedRecords: 114092,
+              processedRecords: 114092,
+              progressPercentage: 100,
+              errors: 0
+            },
+
+            finishedDate: '2019-11-19T13:07:70.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
+          },
+          {
+            pluginType: PluginType.HTTP_HARVEST,
+            pluginStatus: PluginStatus.CANCELLED,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 900,
+              progressPercentage: 100,
+              errors: 20
+            },
+
+            finishedDate: '2019-11-19T13:07:70.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
+          },
+          {
+            pluginType: PluginType.TRANSFORMATION,
+            pluginStatus: PluginStatus.FINISHED,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 90,
+              progressPercentage: 10,
+              errors: 12
+            },
+
+            finishedDate: '2019-11-19T13:07:70.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
+          }
+        ]
+      }
     },
+    {
+      dataset: {
+        datasetName: 'Dataset 1',
+        datasetId: '123'
+      },
+      executionProgress: {
+        stepsDone: 2,
+        stepsTotal: 3,
+        currentPluginProgress: {
+          errors: 92,
+          processedRecords: 444,
+          expectedRecords: 3000,
+          progressPercentage: 22
+        }
+      },
+      execution: {
+        id: 'execution-id-1',
+        startedDate: '2011-11-19T09:05:40.844Z',
+        plugins: [
+          {
+            pluginType: PluginType.OAIPMH_HARVEST,
+            pluginStatus: PluginStatus.CANCELLED,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 90,
+              progressPercentage: 10,
+              errors: 12
+            },
+
+            finishedDate: '2019-11-19T13:07:70.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
+          },
+          {
+            pluginType: PluginType.HTTP_HARVEST,
+            pluginStatus: PluginStatus.CANCELLED,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 10,
+              progressPercentage: 0,
+              errors: 10
+            },
+
+            finishedDate: '2019-11-19T13:07:70.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
+          },
+          {
+            pluginType: PluginType.TRANSFORMATION,
+            pluginStatus: PluginStatus.FINISHED,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 10,
+              progressPercentage: 0,
+              errors: 10
+            },
+
+            finishedDate: '2019-11-19T13:07:70.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
+          },
+          {
+            pluginType: PluginType.LINK_CHECKING,
+            pluginStatus: PluginStatus.FINISHED,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 10,
+              progressPercentage: 0,
+              errors: 10
+            },
+
+            finishedDate: '2019-11-19T13:07:70.844Z',
+            startedDate: '2019-11-19T12:47:10.844Z'
+          },
+          {
+            pluginType: PluginType.ENRICHMENT,
+            pluginStatus: PluginStatus.RUNNING,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 10,
+              progressPercentage: 0,
+              errors: 10
+            },
+
+            startedDate: '2019-11-19T12:47:10.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
+          },
+          {
+            pluginType: PluginType.MEDIA_PROCESS,
+            pluginStatus: PluginStatus.RUNNING,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 10,
+              progressPercentage: 0,
+              errors: 10
+            },
+
+            startedDate: '2019-11-19T12:47:10.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
+          },
+          {
+            pluginType: PluginType.VALIDATION_EXTERNAL,
+            pluginStatus: PluginStatus.INQUEUE,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 10,
+              progressPercentage: 0,
+              errors: 10
+            },
+
+            startedDate: '2019-11-19T12:47:10.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
+          },
+          {
+            pluginType: PluginType.VALIDATION_INTERNAL,
+            pluginStatus: PluginStatus.CLEANING,
+
+            progress: {
+              expectedRecords: 900,
+              processedRecords: 10,
+              progressPercentage: 0,
+              errors: 10
+            },
+
+            startedDate: '2019-11-19T12:47:10.844Z',
+            finishedDate: '2019-11-19T13:07:70.844Z'
+          }
+        ]
+      }
+    }
   ],
+  listSize: 5,
+  nextPage: -1
 };
 
 export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
@@ -73,14 +281,14 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'VALIDATION_EXTERNAL',
+          pluginType: PluginType.VALIDATION_EXTERNAL,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'VALIDATION_EXTERNAL',
+            pluginType: PluginType.VALIDATION_EXTERNAL,
             mocked: true,
-            enabled: false,
+            enabled: false
           },
           pluginStatus: PluginStatus.INQUEUE,
           externalTaskId: '123',
@@ -90,10 +298,10 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
             expectedRecords: 1000,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.SENT,
-          },
-        },
-      ],
+            status: TaskState.SENT
+          }
+        }
+      ]
     },
     {
       id: '253453453',
@@ -104,14 +312,14 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: PluginType.NORMALIZATION,
             mocked: true,
-            enabled: false,
+            enabled: false
           },
           pluginStatus: PluginStatus.RUNNING,
           externalTaskId: '123',
@@ -121,10 +329,10 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
             expectedRecords: 1000,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
-          },
-        },
-      ],
+            status: TaskState.PROCESSED
+          }
+        }
+      ]
     },
     {
       id: '253453453',
@@ -135,14 +343,14 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: PluginType.NORMALIZATION,
             mocked: true,
-            enabled: false,
+            enabled: false
           },
           pluginStatus: PluginStatus.FAILED,
           externalTaskId: '123',
@@ -152,10 +360,10 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
             expectedRecords: 1000,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
-          },
-        },
-      ],
+            status: TaskState.PROCESSED
+          }
+        }
+      ]
     },
     {
       id: '253453453',
@@ -166,14 +374,14 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
             pluginType: 'NORMALIZATION',
             mocked: true,
-            enabled: false,
+            enabled: false
           },
           pluginStatus: PluginStatus.CANCELLED,
           externalTaskId: '123',
@@ -183,10 +391,10 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
             expectedRecords: 1000,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
-          },
-        },
-      ],
+            status: TaskState.PROCESSED
+          }
+        }
+      ]
     },
     {
       id: '253453453',
@@ -197,14 +405,14 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       startedDate: '',
       metisPlugins: [
         {
-          pluginType: 'NORMALIZATION',
+          pluginType: PluginType.NORMALIZATION,
           id: '432552345',
           startedDate: '2018-11-05T15:38:18.450Z',
           updatedDate: '2018-11-05T15:38:18.450Z',
           pluginMetadata: {
-            pluginType: 'NORMALIZATION',
+            pluginType: PluginType.NORMALIZATION,
             mocked: true,
-            enabled: false,
+            enabled: false
           },
           pluginStatus: PluginStatus.FINISHED,
           externalTaskId: '123',
@@ -214,19 +422,19 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
             expectedRecords: 1000,
             progressPercentage: 100,
             errors: 0,
-            status: TaskState.PROCESSED,
-          },
-        },
-      ],
-    },
+            status: TaskState.PROCESSED
+          }
+        }
+      ]
+    }
   ],
   listSize: 5,
-  nextPage: -1,
+  nextPage: -1
 };
 
 export const mockFirstPageResults: Results<WorkflowExecution> = {
   ...mockWorkflowExecutionResults,
-  nextPage: 1,
+  nextPage: 1
 };
 
 export const mockWorkflowExecution: WorkflowExecution = mockWorkflowExecutionResults.results[0];
@@ -235,8 +443,8 @@ export const mockPluginExecution: PluginExecution = mockWorkflowExecution.metisP
 export const mockXmlSamples: XmlSample[] = [
   {
     ecloudId: '1',
-    xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>',
-  },
+    xmlRecord: '<?xml version="1.0" encoding="UTF-8"?>'
+  }
 ];
 
 export const mockStatistics: Statistics = {
@@ -254,13 +462,13 @@ export const mockStatistics: Statistics = {
             {
               xPath: '//rdf:RDF/edm:ProvidedCHO/dc:creator/@xml:lang',
               occurrences: 2,
-              value: 'ca',
-            },
-          ],
-        },
-      ],
-    },
-  ],
+              value: 'ca'
+            }
+          ]
+        }
+      ]
+    }
+  ]
 };
 
 export const mockStatisticsDetail: NodePathStatistics = {
@@ -273,26 +481,26 @@ export const mockStatisticsDetail: NodePathStatistics = {
         {
           xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
           value: 'new value 1',
-          occurrences: 9,
+          occurrences: 9
         },
         {
           xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
           value: 'new value 2',
-          occurrences: 8,
+          occurrences: 8
         },
         {
           xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
           value: 'new value 3',
-          occurrences: 7,
+          occurrences: 7
         },
         {
           xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
           value: 'new value 4',
-          occurrences: 6,
-        },
-      ],
-    },
-  ],
+          occurrences: 6
+        }
+      ]
+    }
+  ]
 };
 
 export const mockReport: Report = {
@@ -302,13 +510,13 @@ export const mockReport: Report = {
       errorType: 'errorType',
       message: 'errorMessage',
       occurrences: 9,
-      errorDetails: [],
-    },
-  ],
+      errorDetails: []
+    }
+  ]
 };
 
 export const mockReportAvailability: ReportAvailability = {
-  existsExternalTaskReport: true,
+  existsExternalTaskReport: true
 };
 
 export const mockHarvestData: HarvestData = {
@@ -320,7 +528,7 @@ export const mockHarvestData: HarvestData = {
   lastPublishedRecords: 842,
   lastPublishedRecordsReadyForViewing: true,
   lastHarvestedDate: '2018-03-30T13:53:04.762Z',
-  lastHarvestedRecords: 842,
+  lastHarvestedRecords: 842
 };
 
 export const mockLogs = [
@@ -329,8 +537,8 @@ export const mockLogs = [
     resource: 'dsv',
     state: 'st',
     info: 'fdsfsd',
-    resultResource: 'xcsdc',
-  },
+    resultResource: 'xcsdc'
+  }
 ];
 
 export class MockWorkflowService {
@@ -358,6 +566,10 @@ export class MockWorkflowService {
 
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
     return observableOf({ results: mockWorkflowExecutionResults.results, more: false });
+  }
+
+  getCompletedDatasetOverviewsUptoPage(): Observable<MoreResults<DatasetOverview>> {
+    return observableOf({ results: mockDatasetOverviewResults.results, more: false });
   }
 
   getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution>> {

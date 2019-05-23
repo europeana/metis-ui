@@ -4,13 +4,13 @@ import { calcProgress } from './calcprogress';
 
 function makeWorkflowExecution(currIndex: number, progressStatuses: number[]): WorkflowExecution {
   // tslint:disable:no-any
-  const fakePlugins = progressStatuses.map(
-    (status) => ({ executionProgress: { progressPercentage: status } } as any),
+  const fakePlugins = progressStatuses.map((status) =>
+    status > -1 ? ({ executionProgress: { progressPercentage: status } } as any) : {}
   );
 
   return ({
     currentPluginIndex: currIndex,
-    metisPlugins: fakePlugins,
+    metisPlugins: fakePlugins
   } as any) as WorkflowExecution;
 }
 
@@ -25,5 +25,9 @@ describe('calc progress', () => {
   it('should calculate an overall status based on the current plugin when multiple plugins are supplied', () => {
     expect(calcProgress(makeWorkflowExecution(1, [100, 50]))).toBe(75);
     expect(calcProgress(makeWorkflowExecution(3, [100, 100, 100, 0]))).toBe(75);
+  });
+
+  it('should treat null executionProgress objects as zero', () => {
+    expect(calcProgress(makeWorkflowExecution(0, [-1]))).toBe(0);
   });
 });

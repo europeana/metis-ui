@@ -8,12 +8,12 @@ import {
   Report,
   SimpleReportRequest,
   TopologyName,
-  WorkflowExecution,
+  WorkflowExecution
 } from '../../_models';
 
 @Component({
   selector: 'app-lastexecution',
-  templateUrl: './lastexecution.component.html',
+  templateUrl: './lastexecution.component.html'
 })
 export class LastExecutionComponent {
   @Input() datasetId: string;

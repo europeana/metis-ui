@@ -51,14 +51,16 @@
           >
         </td>
         <td class="nowrap centered">
-          {{ pe.executionProgress.processedRecords - pe.executionProgress.errors }}
-          <span class="errors" *ngIf="pe.executionProgress.errors > 0"
-            >({{ pe.executionProgress.errors }})</span
-          >
+          <span *ngIf="pe.executionProgress">
+            {{ pe.executionProgress.processedRecords - pe.executionProgress.errors }}
+            <span class="errors" *ngIf="pe.executionProgress.errors > 0"
+              >({{ pe.executionProgress.errors }})</span
+            >
+          </span>
         </td>
         <td class="nowrap uppercase centered">
           {{
-            pe.executionProgress.expectedRecords >= 0
+            pe.executionProgress && pe.executionProgress.expectedRecords >= 0
               ? pe.executionProgress.expectedRecords
               : ('unknown' | translate)
           }}

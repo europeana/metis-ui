@@ -10,13 +10,15 @@ const workflowNames: { [key: string]: string } = {
   OAIPMH_HARVEST: 'Import OAI-PMH',
   PREVIEW: 'Preview',
   PUBLISH: 'Publish',
+  REINDEX_TO_PREVIEW: 'Reindex Preview',
+  REINDEX_TO_PUBLISH: 'Reindex Publish',
   TRANSFORMATION: 'Transform',
   VALIDATION_EXTERNAL: 'Validate (EDM external)',
-  VALIDATION_INTERNAL: 'Validate (EDM internal)',
+  VALIDATION_INTERNAL: 'Validate (EDM internal)'
 };
 
 @Pipe({
-  name: 'renameWorkflow',
+  name: 'renameWorkflow'
 })
 export class RenameWorkflowPipe implements PipeTransform {
   transform(value: string): string {

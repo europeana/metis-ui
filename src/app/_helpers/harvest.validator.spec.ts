@@ -15,10 +15,10 @@ describe('harvest validator', () => {
 
   it('should not accept urls with query params', () => {
     expect(harvestValidator(makeControl('http://example.com?key=value'))).toEqual({
-      validParameter: true,
+      validParameter: true
     });
     expect(harvestValidator(makeControl('https://europeana.eu/data/set/test?'))).toEqual({
-      validParameter: true,
+      validParameter: true
     });
   });
 
@@ -26,7 +26,7 @@ describe('harvest validator', () => {
     expect(harvestValidator(makeControl(''))).toEqual({ validUrl: true });
     expect(harvestValidator(makeControl('https:/'))).toEqual({ validUrl: true });
     expect(harvestValidator(makeControl('ss fra gnd,gnejravvf fmgfdnmgn s'))).toEqual({
-      validUrl: true,
+      validUrl: true
     });
   });
 });

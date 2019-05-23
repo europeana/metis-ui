@@ -1,0 +1,136 @@
+@import '../../scss/generic/variables';
+@import '../settings/metis-variables';
+
+$space-overflow-selected: 0.25em;
+
+.grid-cell {
+  a {
+    color: $eu-blue-link;
+    text-decoration: underline;
+  }
+}
+
+.grid-cell,
+.grid-sub {
+  padding: 1em 0;
+  @media (max-width: $bp-med) {
+    display: flex;
+    align-items: center;
+  }
+  @media (min-width: $bp-med) {
+    line-height: 2.25em;
+  }
+}
+
+.grid-header {
+  white-space: nowrap;
+
+  &:first-of-type,
+  &.last-header {
+    position: relative;
+    &::after {
+      bottom: -1em;
+      content: ' ';
+      display: block;
+      height: 3px;
+      position: absolute;
+      width: 100000em;
+    }
+  }
+
+  &:first-of-type {
+    &::after {
+      background: $eu-jade;
+      left: -2em;
+    }
+  }
+
+  &.last-header {
+    &::after {
+      // create 'space' for selection line to occupy
+      background: $offwhite;
+      height: 10em;
+      right: -1.75em;
+      top: -1em;
+      width: $space-overflow-selected;
+    }
+  }
+
+  font-weight: bold;
+  margin-bottom: 1em;
+  text-transform: capitalize;
+}
+
+.ongoing-executions,
+.executions-grid {
+  background: $white;
+  color: $gray-light;
+  font-size: 0.8125rem;
+  margin-bottom: 2em;
+  margin-right: -0.5em;
+  overflow: hidden;
+}
+
+.row-divider {
+  position: relative;
+
+  // horizontal line (top)
+  &::before {
+    background: $grid-h-line-item-color;
+    content: ' ';
+    display: block;
+    height: $grid-row-border-height;
+    position: absolute;
+    top: 0;
+    transform: translateX(-20%);
+    width: $grid-size-massive;
+    z-index: 4;
+  }
+}
+
+.row-start {
+  position: relative;
+
+  // hover / active indicator
+  &::after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    background: $white;
+    left: -1em;
+    width: $v-line-left-width;
+  }
+
+  &.active {
+    &::after {
+      background: $eu-jade;
+    }
+  }
+
+  // hover / click target
+  &::before {
+    cursor: pointer;
+    height: 500%;
+    top: 0;
+    width: $grid-size-massive;
+    @media (min-width: $bp-med) {
+      height: 100%;
+    }
+  }
+
+  // avoid trapping link click events
+  a {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// side edges
+.row-end,
+.row-start {
+  &::after {
+    height: $grid-size-massive;
+    top: 0;
+    z-index: 3;
+  }
+}

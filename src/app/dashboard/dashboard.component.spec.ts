@@ -6,14 +6,14 @@ import {
   MockAuthenticationService,
   MockDatasetsService,
   MockErrorService,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../_mocked';
-import { PluginStatus } from '../_models';
+import { PluginStatus, PluginType } from '../_models';
 import {
   AuthenticationService,
   DatasetsService,
   ErrorService,
-  WorkflowService,
+  WorkflowService
 } from '../_services';
 
 import { DashboardComponent } from '.';
@@ -29,9 +29,9 @@ describe('DashboardComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: WorkflowService, useClass: MockWorkflowService },
-        { provide: ErrorService, useClass: MockErrorService },
+        { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -48,36 +48,35 @@ describe('DashboardComponent', () => {
   it('should open log messages', () => {
     component.showPluginLog = {
       id: 'xx5',
-      pluginType: 'OAIPMH_HARVEST',
+      pluginType: PluginType.OAIPMH_HARVEST,
       pluginStatus: PluginStatus.RUNNING,
       executionProgress: {
         expectedRecords: 1000,
         processedRecords: 500,
         progressPercentage: 50,
-        errors: 5,
+        errors: 5
       },
       pluginMetadata: {
-        pluginType: 'OAIPMH_HARVEST',
+        pluginType: PluginType.OAIPMH_HARVEST,
         url: 'example.com',
         setSpec: 'test',
-        metadataFormat: 'edm',
+        metadataFormat: 'edm'
       },
-      topologyName: 'oai_harvest',
+      topologyName: 'oai_harvest'
     };
     fixture.detectChanges();
     expect(component.showPluginLog).toBeTruthy();
   });
 
-  it('should open more than 1 page', () => {
-    component.getNextPage();
-    fixture.detectChanges();
-    expect(component.finishedCurrentPage).toBe(1);
+  it('provides a setter for the selectedExecutionDsId', () => {
+    expect(component.selectedExecutionDsId).toBe(undefined);
+    component.setSelectedExecutionDsId('xxx');
+    expect(component.selectedExecutionDsId).toBe('xxx');
   });
 
-  it('should get a list of executions', () => {
-    component.finishedCurrentPage = 1;
-    component.getFinishedExecutions();
-    fixture.detectChanges();
-    expect(component.finishedCurrentPage).toBe(1);
+  it('should clean up', () => {
+    expect(component.runningTimer).not.toBe(undefined);
+    component.ngOnDestroy();
+    expect(component.runningTimer).toBe(undefined);
   });
 });

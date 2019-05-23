@@ -22,7 +22,7 @@ export function gatherError<Value>(observable: Observable<Value>): any {
   observable.subscribe({
     error: (e) => {
       error = e;
-    },
+    }
   });
   return error;
 }
@@ -31,9 +31,9 @@ export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
   return ([
     {
       instance: {
-        setOption: jasmine.createSpy('setEditorOption'),
-      },
-    },
+        setOption: jasmine.createSpy('setEditorOption')
+      }
+    }
     // tslint:disable-next-line
   ] as any) as QueryList<CodemirrorComponent>;
 }

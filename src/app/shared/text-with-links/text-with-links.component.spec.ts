@@ -8,7 +8,7 @@ describe('TextWithLinksComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TextWithLinksComponent],
+      declarations: [TextWithLinksComponent]
     }).compileComponents();
   }));
 
@@ -41,23 +41,23 @@ describe('TextWithLinksComponent', () => {
     checkParts('https://example.com/test', [{ content: 'https://example.com/test', isLink: true }]);
     checkParts('before http://example.com/test', [
       { content: 'before ' },
-      { content: 'http://example.com/test', isLink: true },
+      { content: 'http://example.com/test', isLink: true }
     ]);
     checkParts('https://example.com/test after', [
       { content: 'https://example.com/test', isLink: true },
-      { content: ' after' },
+      { content: ' after' }
     ]);
     checkParts('before "http://exa" after', [
       { content: 'before "' },
       { content: 'http://exa', isLink: true },
-      { content: '" after' },
+      { content: '" after' }
     ]);
     checkParts('1 http://2 3 http://4 5', [
       { content: '1 ' },
       { content: 'http://2', isLink: true },
       { content: ' 3 ' },
       { content: 'http://4', isLink: true },
-      { content: ' 5' },
+      { content: ' 5' }
     ]);
   });
 });

@@ -13,7 +13,7 @@ import {
   Report,
   SimpleReportRequest,
   TopologyName,
-  WorkflowExecution,
+  WorkflowExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { PreviewFilters } from '../dataset.component';
@@ -26,13 +26,13 @@ interface IWorkflowOrPluginExecution {
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss'],
+  styleUrls: ['./history.component.scss']
 })
 export class HistoryComponent implements OnInit, OnDestroy {
   constructor(
     private workflows: WorkflowService,
     private errors: ErrorService,
-    private router: Router,
+    private router: Router
   ) {}
 
   @Input() datasetData: Dataset;
@@ -92,7 +92,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
-        },
+        }
       );
   }
 
@@ -115,7 +115,10 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   hasPreview(plugin: PluginExecution): boolean {
-    return plugin.executionProgress.processedRecords > plugin.executionProgress.errors;
+    return (
+      plugin.executionProgress !== undefined &&
+      plugin.executionProgress.processedRecords > plugin.executionProgress.errors
+    );
   }
 
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {

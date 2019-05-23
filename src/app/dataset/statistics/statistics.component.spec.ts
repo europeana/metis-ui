@@ -11,7 +11,7 @@ import {
   MockDatasetsService,
   MockErrorService,
   MockTranslateService,
-  MockWorkflowService,
+  MockWorkflowService
 } from '../../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -20,11 +20,11 @@ import { StatisticsComponent } from '.';
 
 function setServiceError(
   mockService: WorkflowService,
-  serviceName: 'getStatistics' | 'getFinishedDatasetExecutions' | 'getStatisticsDetail',
+  serviceName: 'getStatistics' | 'getFinishedDatasetExecutions' | 'getStatisticsDetail'
   // tslint:disable-next-line: no-any
 ): any {
   return spyOn(mockService, serviceName).and.returnValue(
-    throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })),
+    throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
   );
 }
 
@@ -40,15 +40,15 @@ describe('StatisticsComponent', () => {
       declarations: [
         StatisticsComponent,
         createMockPipe('translate'),
-        createMockPipe('beautifyXML'),
+        createMockPipe('beautifyXML')
       ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: TranslateService, useClass: MockTranslateService },
-        { provide: ErrorService, useClass: MockErrorService },
+        { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   }));
 

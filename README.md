@@ -103,6 +103,6 @@ The release documentation is in the "Release Metis UI/Metis Framework/ECloud man
 
 ## License
 
-Licensed under the EUPL v. 1.1.
+Licensed under the EUPL v. 1.2.
 
 For full details, see [LICENSE.md](LICENSE.md).

@@ -1,6 +1,6 @@
 {
   "name": "metis-ui",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -18,7 +18,7 @@
     "test:ci": "ng test --progress=false --watch=false --code-coverage --source-map=false",
     "cypress:ci": "run-p --race start:ci cypress:run",
     "start:ci": "ng serve --progress=false --port 4280 --live-reload=false",
-    "cypress:run": "sleep 10 && cypress run",
+    "cypress:run": "sleep 100 && cypress run",
     "dist": "ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
   },
   "private": true,
@@ -40,10 +40,10 @@
     "zone.js": "^0.8.29"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.12.3",
+    "@angular-devkit/build-angular": "^0.13.8",
     "@angular/cli": "^7.2.3",
     "@angular/compiler": "^7.2.2",
-    "@angular/compiler-cli": "^7.2.2",
+    "@angular/compiler-cli": "^7.2.14",
     "@angular/language-service": "^7.2.2",
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
@@ -59,13 +59,14 @@
     "cypress": "^3.1.4",
     "jasmine-core": "^3.3.0",
     "jasmine-spec-reporter": "^4.2.1",
-    "karma": "^4.0.0",
+    "karma": "^4.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage-istanbul-reporter": "^2.0.4",
     "karma-jasmine": "^2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.16.1",
+    "tar": "^4.4.8",
     "ts-loader": "^5.3.3",
     "tslint": "^5.12.1",
     "tslint-angular": "^1.1.2",
@@ -78,6 +79,6 @@
     "arrowParens": "always",
     "printWidth": 100,
     "singleQuote": true,
-    "trailingComma": "all"
+    "trailingComma": "none"
   }
 }

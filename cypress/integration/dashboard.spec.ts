@@ -1,30 +1,63 @@
+import { datasetOverviewEmpty, runningExecutionsEmpty } from '../fixtures';
 import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
-  return cy.get('.latest-ongoing');
+  return cy.get('.ongoing-executions .status');
 }
 
-function runningByIndex(index: number, sel: string): Cypress.Chainable {
-  return cy.get(`.latest-ongoing:nth-child(${index + 1}) ${sel}`);
-}
-
-function allExecutions(): Cypress.Chainable {
-  return cy.get('.executions-table tbody tr');
-}
-
-function executionByIndex(index: number, sel: string): Cypress.Chainable {
-  return cy.get(`.executions-table tbody tr:nth-child(${index + 1}) ${sel}`);
+function runningByIndex(index: number): Cypress.Chainable {
+  return cy.get(`.ongoing-executions :nth-child(${index})`);
 }
 
 context('metis-ui', () => {
+  describe('dashboard no ongoing', () => {
+    beforeEach(() => {
+      cy.server({ force404: true });
+      setupUser();
+      setupWorkflowRoutes();
+      cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutionsEmpty).as(
+        'runningExecutionsEmpty'
+      );
+      cy.visit('/dashboard');
+      cy.wait(['@getOverview']);
+    });
+
+    it('should show a message when there are no running executions', () => {
+      cy.get('.ongoing-executions .no-content-message').should('have.length', 1);
+    });
+  });
+  describe('dashboard no filter results', () => {
+    beforeEach(() => {
+      cy.server({ force404: true });
+      setupUser();
+      setupWorkflowRoutes();
+      cy.route('GET', '/orchestrator/workflows/executions/overview*', datasetOverviewEmpty).as(
+        'getOverviewEmpty'
+      );
+      cy.visit('/dashboard');
+      cy.wait(['@getOverviewEmpty']);
+    });
+
+    it('should show a message when there are no filtered results', () => {
+      cy.get('.filter a')
+        .first()
+        .click();
+      cy.get('.filter-cell a')
+        .last()
+        .click();
+      cy.get('.filter a')
+        .first()
+        .click();
+      cy.get('.executions-grid .no-content-message').should('have.length', 1);
+    });
+  });
   describe('dashboard', () => {
     beforeEach(() => {
       cy.server({ force404: true });
       setupUser();
       setupWorkflowRoutes();
-
       cy.visit('/dashboard');
-      cy.wait(['@getRunningExecutions', '@getFinishedExecutions', '@getDataset']);
+      cy.wait(['@getDataset', '@getOverview']);
     });
 
     it('should show the welcome message', () => {
@@ -33,29 +66,15 @@ context('metis-ui', () => {
 
     it('should show the currently running executions', () => {
       allRunning().should('have.length', 2);
-      runningByIndex(0, '.progress').contains('64');
-      runningByIndex(1, '.progress').contains('194');
+      runningByIndex(3).contains('64');
+      runningByIndex(6).contains('194');
     });
 
     it('should show the last executions to have run', () => {
-      cy.get('.executions-table tbody tr').should('have.length', 7);
-      executionByIndex(0, 'td.nowrap').contains('64');
-      executionByIndex(1, 'td.nowrap').contains('194');
-      executionByIndex(2, 'td.nowrap').contains('58');
-      executionByIndex(6, 'td.nowrap').contains('80');
-      const expectedClasses = [
-        'status-running',
-        'status-running',
-        'status-finished',
-        'status-finished',
-        'status-finished',
-        'status-finished',
-        'status-failed',
-      ];
-
-      expectedClasses.forEach((expectedClass, i) => {
-        executionByIndex(i, '.errorindicator .status').should('have.class', expectedClass);
-      });
+      cy.get('.executions-grid .grid-header').should('have.length', 5);
+      cy.get('.executions-grid .row-start').contains('Dataset 1');
+      cy.get('.executions-grid .row-start').should('have.length', 2);
+      cy.get('.executions-grid .grid-cell').should('have.length', 10);
     });
 
     it('should have action buttons', () => {
@@ -64,37 +83,14 @@ context('metis-ui', () => {
     });
 
     it('the dataset name should link to the dataset page', () => {
-      checkAHref(runningByIndex(0, '.workflowname'), '/dataset/edit/64');
-      checkAHref(runningByIndex(1, '.workflowname'), '/dataset/edit/194');
-
-      checkAHref(executionByIndex(0, '.datasetName'), '/dataset/edit/64');
-      checkAHref(executionByIndex(4, '.datasetName'), '/dataset/edit/58');
-      checkAHref(executionByIndex(6, '.datasetName'), '/dataset/edit/80');
-    });
-
-    it('should have cancel, log and history buttons for running executions', () => {
-      runningByIndex(0, '.svg-icon-cancel').click();
-      cy.get('.modal .head').contains('Cancel');
-      cy.get('.modal .button')
-        .contains('Yes')
-        .click();
-      cy.wait('@deleteExecution');
-
-      runningByIndex(0, '.svg-icon-log').click();
-      cy.get('.modal .head').contains('Log OAIPMH_HARVEST');
-      cy.get('.modal .btn-close').click();
-      cy.get('.modal').should('not.exist');
-
-      checkAHref(runningByIndex(0, '.svg-icon-history'), '/dataset/log/64');
-      checkAHref(executionByIndex(1, '.svg-icon-history'), '/dataset/log/194');
+      checkAHref(cy.get('.executions-grid .row-start:nth-child(7) a'), '/dataset/edit/129');
+      checkAHref(cy.get('.executions-grid .row-start:nth-child(13) a'), '/dataset/edit/123');
     });
 
     it('should have a "load more" button', () => {
-      allExecutions().should('have.length', 7);
-      cy.get('.load-more-btn')
-        .contains('Load more')
-        .click();
-      allExecutions().should('have.length', 12);
+      cy.get('.executions-grid .row-start').should('have.length', 2);
+      cy.get('.executions-grid .grid-cell').should('have.length', 10);
+      cy.get('.load-more-btn').contains('Load more');
     });
   });
 });

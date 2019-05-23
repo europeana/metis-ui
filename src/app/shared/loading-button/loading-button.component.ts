@@ -11,7 +11,7 @@ export type NgClass =
 @Component({
   selector: 'app-loading-button',
   templateUrl: './loading-button.component.html',
-  styleUrls: ['./loading-button.component.scss'],
+  styleUrls: ['./loading-button.component.scss']
 })
 export class LoadingButtonComponent {
   @Input() classes: NgClass = '';

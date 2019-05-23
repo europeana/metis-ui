@@ -24,9 +24,8 @@
 
   &.disabled,
   &.is-disabled {
-    background: lighten($eu-jade, 30%);
+    background: $eu-light-jade;
     cursor: not-allowed;
-
     &:hover {
       color: darken($text_secondary, 20%);
     }

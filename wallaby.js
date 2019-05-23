@@ -3,7 +3,7 @@ var path = require('path');
 
 var compilerOptions = Object.assign(
   require('./tsconfig.json').compilerOptions,
-  require('./src/tsconfig.spec.json').compilerOptions,
+  require('./src/tsconfig.spec.json').compilerOptions
 );
 
 compilerOptions.module = 'CommonJs';
@@ -20,21 +20,21 @@ module.exports = function(wallaby) {
           test: /\.ts$/,
           loader: '@ngtools/webpack',
           include: /node_modules/,
-          query: { tsConfigPath: 'tsconfig.json' },
+          query: { tsConfigPath: 'tsconfig.json' }
         },
         {
           test: /\.js$/,
           loader: 'angular2-template-loader',
-          exclude: /node_modules/,
+          exclude: /node_modules/
         },
         { test: /\.styl$/, loaders: ['raw-loader', 'stylus-loader'] },
         {
           test: /\.less$/,
-          loaders: ['raw-loader', { loader: 'less-loader', options: { paths: [__dirname] } }],
+          loaders: ['raw-loader', { loader: 'less-loader', options: { paths: [__dirname] } }]
         },
         { test: /\.scss$|\.sass$/, loaders: ['raw-loader', 'sass-loader'] },
-        { test: /\.(jpg|png|svg)$/, loader: 'url-loader?limit=128000' },
-      ],
+        { test: /\.(jpg|png|svg)$/, loader: 'url-loader?limit=128000' }
+      ]
     },
 
     resolve: {
@@ -42,15 +42,15 @@ module.exports = function(wallaby) {
       modules: [
         path.join(wallaby.projectCacheDir, 'src/app'),
         path.join(wallaby.projectCacheDir, 'src'),
-        'node_modules',
-      ],
+        'node_modules'
+      ]
     },
     node: {
       fs: 'empty',
       net: 'empty',
       tls: 'empty',
-      dns: 'empty',
-    },
+      dns: 'empty'
+    }
   });
 
   return {
@@ -58,10 +58,10 @@ module.exports = function(wallaby) {
       { pattern: 'src/+(main|test).ts', ignore: true },
       {
         pattern: 'src/**/*.+(ts|css|less|scss|sass|styl|html|json|svg)',
-        load: false,
+        load: false
       },
       { pattern: 'src/**/*.d.ts', ignore: true },
-      { pattern: 'src/**/*.spec.ts', ignore: true },
+      { pattern: 'src/**/*.spec.ts', ignore: true }
     ],
 
     tests: [{ pattern: 'src/**/*.spec.ts', load: false }],
@@ -69,7 +69,7 @@ module.exports = function(wallaby) {
     testFramework: 'jasmine',
 
     compilers: {
-      '**/*.ts': wallaby.compilers.typeScript(compilerOptions),
+      '**/*.ts': wallaby.compilers.typeScript(compilerOptions)
     },
 
     middleware: function(app, express) {
@@ -79,7 +79,7 @@ module.exports = function(wallaby) {
     },
 
     env: {
-      kind: 'chrome',
+      kind: 'chrome'
     },
 
     postprocessor: webpackPostprocessor,
@@ -88,6 +88,6 @@ module.exports = function(wallaby) {
       window.__moduleBundler.loadTests();
     },
 
-    debug: false,
+    debug: false
   };
 };

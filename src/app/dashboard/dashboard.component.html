@@ -6,21 +6,19 @@
     </p>
   </div>
 
-  <app-load-animation
-    *ngIf="runningIsFirstLoading || finishedIsFirstLoading"
-    [resources]="{
-      'running workflows': runningIsFirstLoading,
-      'finished workflows': finishedIsFirstLoading
-    }"
-  ></app-load-animation>
-
-  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading && !finishedIsFirstLoading">
+  <div class="metis-dashboard">
     <div class="metis-dashboard-left">
       <app-dashboardactions></app-dashboardactions>
+    </div>
+  </div>
+
+  <div class="metis-dashboard" *ngIf="!runningIsFirstLoading">
+    <div class="metis-dashboard-left">
       <app-ongoingexecutions
         [showPluginLog]="showPluginLog"
         [runningExecutions]="runningExecutions"
         (setShowPluginLog)="showPluginLog = $event"
+        [selectedExecutionDsId]="selectedExecutionDsId"
       ></app-ongoingexecutions>
       <app-datasetlog
         *ngIf="showPluginLog"
@@ -30,13 +28,7 @@
     </div>
 
     <div class="metis-dashboard-right">
-      <app-executions
-        [runningExecutions]="runningExecutions"
-        [finishedExecutions]="finishedExecutions"
-        [isLoading]="finishedIsLoading"
-        [hasMore]="finishedHasMore"
-        (nextPage)="getNextPage()"
-      ></app-executions>
+      <app-executionsgrid (selectedSet)="setSelectedExecutionDsId($event)"></app-executionsgrid>
     </div>
   </div>
 </div>

@@ -7,7 +7,7 @@ import { ErrorService, WorkflowService } from '../../_services';
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss'],
+  styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
   constructor(private errors: ErrorService, private workflows: WorkflowService) {}
@@ -42,6 +42,7 @@ export class StatisticsComponent implements OnInit {
           }
         }
         if (!this.taskId) {
+          this.setLoading(false);
           return;
         }
         this.workflows.getStatistics('validation', this.taskId).subscribe(
@@ -54,14 +55,14 @@ export class StatisticsComponent implements OnInit {
             const error = this.errors.handleError(err);
             this.notification = httpErrorNotification(error);
             this.setLoading(false);
-          },
+          }
         );
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.setLoading(false);
-      },
+      }
     );
   }
 
@@ -74,7 +75,7 @@ export class StatisticsComponent implements OnInit {
       .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
       .subscribe(
         (result) => {
-          this.statistics.nodePathStatistics.map((stat) => {
+          this.statistics.nodePathStatistics.forEach((stat) => {
             if (stat.xPath === result.xPath) {
               stat.moreLoaded = true;
               stat.nodeValueStatistics = result.nodeValueStatistics;
@@ -88,7 +89,7 @@ export class StatisticsComponent implements OnInit {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
           this.setLoading(false);
-        },
+        }
       );
   }
 

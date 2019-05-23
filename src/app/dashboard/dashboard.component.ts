@@ -8,26 +8,21 @@ import {
   DatasetsService,
   DocumentTitleService,
   ErrorService,
-  WorkflowService,
+  WorkflowService
 } from '../_services';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer: number;
+  runningTimer: number | undefined;
   runningIsLoading = true;
   runningIsFirstLoading = true;
-  finishedExecutions: WorkflowExecution[];
-  finishedTimer: number;
-  finishedIsLoading = true;
-  finishedIsFirstLoading = true;
-  finishedCurrentPage = 0;
-  finishedHasMore = false;
+
+  selectedExecutionDsId: string | undefined;
   showPluginLog?: PluginExecution;
   favoriteDatasets?: Dataset[];
 
@@ -36,14 +31,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private datasets: DatasetsService,
     private workflows: WorkflowService,
     private errors: ErrorService,
-    private documentTitleService: DocumentTitleService,
+    private documentTitleService: DocumentTitleService
   ) {}
 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
 
     this.getRunningExecutions();
-    this.getFinishedExecutions();
     this.datasets.getFavorites().subscribe((datasets) => {
       datasets.reverse();
       this.favoriteDatasets = datasets;
@@ -57,14 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
-    clearTimeout(this.finishedTimer);
-  }
-
-  getNextPage(): void {
-    this.finishedCurrentPage++;
-
-    clearTimeout(this.finishedTimer);
-    this.getFinishedExecutions();
+    this.runningTimer = undefined;
   }
 
   checkUpdateLog(executions: WorkflowExecution[]): void {
@@ -98,31 +85,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.errors.handleError(err);
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
-      },
+      }
     );
   }
 
-  //  get history of all executions (finished, cancelled, failed) and start polling again
-  getFinishedExecutions(): void {
-    this.finishedIsLoading = true;
-    this.workflows.getAllExecutionsUptoPage(this.finishedCurrentPage, false).subscribe(
-      ({ results, more }) => {
-        this.finishedExecutions = results;
-        this.finishedHasMore = more;
-        this.finishedIsLoading = false;
-        this.finishedIsFirstLoading = false;
-
-        this.checkUpdateLog(results);
-
-        this.finishedTimer = window.setTimeout(() => {
-          this.getFinishedExecutions();
-        }, environment.intervalStatusMedium);
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-        this.finishedIsLoading = false;
-        this.finishedIsFirstLoading = false;
-      },
-    );
+  setSelectedExecutionDsId(id: string): void {
+    this.selectedExecutionDsId = id;
   }
 }

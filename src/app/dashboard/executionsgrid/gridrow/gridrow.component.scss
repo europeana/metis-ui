@@ -1,0 +1,232 @@
+@import '../../../../assets/sass/scss/generic/variables';
+@import '../../../../assets/sass/pandora/settings/metis-variables';
+
+$color-bottom-edge: #ccc;
+$color-right-edge: $color-bottom-edge;
+$row-border-height-min: 3px;
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 -3px $color-status-running;
+  }
+  50% {
+    box-shadow: 0 0 3px $color-status-running;
+  }
+  100% {
+    box-shadow: 0 0 -3px $color-status-running;
+  }
+}
+
+@keyframes pulseInqueue {
+  0% {
+    box-shadow: 0 0 0 0 rgba($color-status-inqueue, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba($color-status-inqueue, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($color-status-inqueue, 0);
+  }
+}
+
+@keyframes pulsePending {
+  0% {
+    box-shadow: 0 0 0 0 rgba($color-status-pending, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba($color-status-pending, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($color-status-pending, 0);
+  }
+}
+
+.error-count {
+  color: $eu-red;
+}
+
+.orbs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.status-label,
+.time {
+  color: #ccc;
+}
+
+.time.empty::after {
+  content: '--';
+}
+
+// all edges
+.row-end,
+.row-start,
+.row-start.active + .row-steps,
+.group-end,
+.grid-sub.start {
+  position: relative;
+  &::after {
+    content: ' ';
+    display: block;
+    position: absolute;
+  }
+}
+
+// right edge
+.row-end {
+  &::after {
+    right: -1.75em;
+    width: 0.25em;
+    background: $offwhite;
+  }
+  &.active {
+    &::after {
+      background: $color-right-edge;
+    }
+  }
+}
+
+// bottom edge
+.group-end {
+  &::after {
+    background: $color-bottom-edge;
+    bottom: 0;
+    height: $grid-row-border-height;
+    right: -3em;
+    transform: translateY(5px);
+    width: $grid-size-massive;
+    z-index: 2;
+  }
+}
+
+// hover edges
+.row-end,
+.row-start,
+.row-steps {
+  position: relative;
+
+  &::before {
+    content: ' ';
+    display: block;
+    position: absolute;
+  }
+}
+
+.row-start {
+  grid-column-start: start;
+}
+
+.row-start:not(.active):hover {
+  & + .grid-cell + .grid-cell + .grid-cell + .row-end {
+    &::before {
+      background: $color-bottom-edge;
+      bottom: 0;
+      right: $grid-size-massive-offset;
+      height: $row-border-height-half;
+      width: $grid-size-massive;
+      z-index: 3;
+
+      @media (max-width: $bp-med) {
+        bottom: -0.5em;
+      }
+    }
+  }
+}
+
+.row-end,
+.row-steps {
+  // maintain hover events
+  pointer-events: none;
+}
+
+.row-start.active + .row-steps {
+  // underline the open item
+  &::after {
+    background: $grid-h-line-item-color;
+    height: 2px;
+    bottom: 0;
+    transform: translateX(-20%);
+    width: $grid-size-massive;
+    z-index: 1;
+  }
+}
+
+@media (max-width: $bp-med) {
+  .grid-cell {
+    margin-bottom: 0.5em;
+    padding: 0.5em 1em 0.5em 1em;
+    justify-content: space-between;
+
+    // pull process stats over to right
+    &:nth-of-type(5n + 3) {
+      position: absolute;
+      right: 2em;
+    }
+
+    // put dates side by side
+    &:nth-of-type(5n + 4),
+    &:nth-of-type(5n + 5) {
+      display: inline-block;
+    }
+
+    .orb-status:last-of-type {
+      margin-right: 0;
+    }
+  }
+
+  .grid-sub {
+    flex-direction: row-reverse;
+    margin-left: 2em;
+    margin-right: 1em;
+    justify-content: flex-end;
+
+    .orb-status {
+      margin-left: 0.75em;
+      margin-right: 0;
+    }
+  }
+
+  .row-start:not(:nth-child(7)) {
+    border-top: 1px solid $offwhite;
+  }
+
+  .row-divider::before,
+  .row-end::after {
+    display: none;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .time:not(.br) {
+    margin-right: 1em;
+  }
+}
+
+.grid-sub {
+  align-items: center;
+  display: flex;
+
+  &.start {
+    grid-column-start: sub-start;
+  }
+
+  &.dates {
+    grid-column-start: sub-date-start;
+    grid-column-end: sub-date-end;
+  }
+
+  // set animations
+  .orb-status {
+    &.status-inqueue {
+      animation: pulseInqueue 4000ms infinite;
+    }
+    &.status-pending {
+      animation: pulsePending 3000ms infinite;
+    }
+    &.status-running {
+      animation: glowing 2000ms infinite;
+    }
+  }
+}

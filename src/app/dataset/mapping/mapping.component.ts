@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
   QueryList,
-  ViewChildren,
+  ViewChildren
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
@@ -30,7 +30,7 @@ type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
-  styleUrls: ['./mapping.component.scss'],
+  styleUrls: ['./mapping.component.scss']
 })
 export class MappingComponent implements OnInit {
   constructor(
@@ -38,7 +38,7 @@ export class MappingComponent implements OnInit {
     private errors: ErrorService,
     private datasets: DatasetsService,
     private translate: TranslateService,
-    private router: Router,
+    private router: Router
   ) {}
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
@@ -53,11 +53,9 @@ export class MappingComponent implements OnInit {
   xsltToSave?: string;
   notification?: Notification;
   msgXSLTSuccess: string;
-  editorIsDefaultTheme = true;
 
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
-    this.editorIsDefaultTheme = this.editorPrefs.currentThemeIsDefault();
     this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     this.loadCustomXSLT();
   }
@@ -83,7 +81,7 @@ export class MappingComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
-      },
+      }
     );
   }
 
@@ -97,18 +95,19 @@ export class MappingComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
-      },
+      }
     );
   }
 
   onThemeSet(toDefault: boolean): void {
+    const isDef = this.editorPrefs.currentThemeIsDefault();
     if (toDefault) {
-      if (!this.editorIsDefaultTheme) {
-        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      if (!isDef) {
+        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
       }
     } else {
-      if (this.editorIsDefaultTheme) {
-        this.editorIsDefaultTheme = this.editorPrefs.toggleTheme(this.allEditors);
+      if (isDef) {
+        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
       }
     }
   }
@@ -125,7 +124,7 @@ export class MappingComponent implements OnInit {
       .pipe(
         switchMap(() => {
           return this.datasets.getDataset(this.datasetData.datasetId, true);
-        }),
+        })
       )
       .subscribe(
         (newDataset) => {
@@ -139,7 +138,7 @@ export class MappingComponent implements OnInit {
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
-        },
+        }
       );
   }
 

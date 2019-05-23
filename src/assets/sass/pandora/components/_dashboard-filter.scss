@@ -1,0 +1,13 @@
+@import '../../scss/generic/variables';
+@import '../settings/metis-variables';
+
+$cell-height: 2.5em;
+
+.filter-cell {
+  align-items: center;
+  color: $black;
+  display: flex;
+  height: $cell-height;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
