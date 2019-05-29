@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 
@@ -11,12 +19,16 @@ import {
   isWorkflowCompleted,
   Notification,
   PluginMetadata,
+  PluginType,
   successNotification,
   Workflow,
-  WorkflowExecution
+  WorkflowExecution,
+  WorkflowFieldData
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+
+import { WorkflowFormFieldComponent } from './workflow-form-field';
 
 @Component({
   selector: 'app-workflow',
@@ -48,26 +60,15 @@ export class WorkflowComponent implements OnInit {
   @Input() workflowData?: Workflow;
   @Input() lastExecution?: WorkflowExecution;
   @Input() isStarting = false;
+  @Input() fieldConf: Array<WorkflowFieldData>;
 
   @Output() startWorkflow = new EventEmitter<void>();
+  @ViewChildren(WorkflowFormFieldComponent) inputFields: QueryList<WorkflowFormFieldComponent>;
 
   notification?: Notification;
-  harvestprotocol: string;
   newWorkflow = true;
   workflowForm: FormGroup;
   currentUrl: string;
-  pluginsOrdered: Array<string> = [
-    'pluginHARVEST',
-    'pluginVALIDATION_EXTERNAL',
-    'pluginTRANSFORMATION',
-    'pluginVALIDATION_INTERNAL',
-    'pluginNORMALIZATION',
-    'pluginENRICHMENT',
-    'pluginMEDIA_PROCESS',
-    'pluginPREVIEW',
-    'pluginPUBLISH',
-    'pluginLINK_CHECKING'
-  ];
   isSaving = false;
 
   newNotification: Notification;
@@ -126,7 +127,6 @@ export class WorkflowComponent implements OnInit {
       url: [''],
       customXslt: ['']
     });
-
     this.updateRequired();
   }
 
@@ -190,57 +190,30 @@ export class WorkflowComponent implements OnInit {
   workflowStepAllowed(_: string): void {
     let hasValue = 0;
 
-    this.pluginsOrdered.forEach((value) => {
-      if (value !== 'pluginLINK_CHECKING') {
-        this.workflowForm.get(value)!.disable();
+    this.fieldConf.map((field) => {
+      if (field.name !== 'pluginLINK_CHECKING') {
+        this.workflowForm.get(field.name)!.disable();
       }
     });
 
-    this.pluginsOrdered.forEach((value, index) => {
-      if (this.workflowForm.get(value)!.value) {
+    this.fieldConf.forEach((field, index) => {
+      if (this.workflowForm.get(field.name)!.value) {
         hasValue++;
         if (index - 1 >= 0) {
-          this.workflowForm.get(this.pluginsOrdered[index - 1])!.enable();
+          this.workflowForm.get(this.fieldConf[index - 1].name)!.enable();
         }
-        this.workflowForm.get(this.pluginsOrdered[index])!.enable();
-        if (index + 1 < this.pluginsOrdered.length) {
-          this.workflowForm.get(this.pluginsOrdered[index + 1])!.enable();
+        this.workflowForm.get(this.fieldConf[index].name)!.enable();
+        if (index + 1 < this.fieldConf.length) {
+          this.workflowForm.get(this.fieldConf[index + 1].name)!.enable();
         }
       }
     });
 
     if (hasValue === 0) {
-      this.pluginsOrdered.forEach((value) => {
-        this.workflowForm.get(value)!.enable();
+      this.fieldConf.forEach((field) => {
+        this.workflowForm.get(field.name)!.enable();
       });
     }
-  }
-
-  /** changeHarvestProtocol
-  /* update form according to selected protocol
-  */
-  changeHarvestProtocol(protocol: string): void {
-    this.harvestprotocol = protocol;
-  }
-
-  changeLinkCheckSampling(sample: boolean): void {
-    this.workflowForm.value.performSampling = sample;
-  }
-
-  getImportSummary(): string {
-    let res = 'Harvest URL: ';
-    if (this.harvestprotocol === 'HTTP_HARVEST') {
-      res += this.workflowForm.value.url.trim();
-    } else {
-      res +=
-        this.workflowForm.value.harvestUrl.trim() +
-        '<br/>Setspec: ' +
-        this.workflowForm.value.setSpec;
-    }
-    if (this.workflowForm.value.metadataFormat) {
-      res += '<br/>Metadata format: ' + this.workflowForm.value.metadataFormat;
-    }
-    return res;
   }
 
   getWorkflow(): void {
@@ -248,11 +221,10 @@ export class WorkflowComponent implements OnInit {
     if (!workflow) {
       return;
     }
-
     this.newWorkflow = false;
 
-    this.pluginsOrdered.forEach((pluginName) => {
-      this.workflowForm.get(pluginName)!.setValue(false);
+    this.fieldConf.forEach((field) => {
+      this.workflowForm.get(field.name)!.setValue(false);
     });
 
     for (let w = 0; w < workflow.metisPluginsMetadata.length; w++) {
@@ -271,19 +243,19 @@ export class WorkflowComponent implements OnInit {
         }
       }
 
-      // import/harvest
-      if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-        this.harvestprotocol = 'OAIPMH_HARVEST';
-        this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
-        this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
-        this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
-        this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
-      }
-
-      if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
-        this.harvestprotocol = 'HTTP_HARVEST';
-        this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
-        this.workflowForm.controls.url.setValue(thisWorkflow.url);
+      if (['OAIPMH_HARVEST', 'HTTP_HARVEST'].indexOf(thisWorkflow.pluginType) > -1) {
+        setTimeout(() => {
+          this.fieldConf[0].harvestprotocol = thisWorkflow.pluginType;
+        });
+        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
+          this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
+          this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
+          this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
+        } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
+          this.workflowForm.controls.url.setValue(thisWorkflow.url);
+        }
       }
 
       // transformation
@@ -310,6 +282,8 @@ export class WorkflowComponent implements OnInit {
   /* format the form values so they can be submitted in a proper format
   */
   formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
+    console.error('IN FORMAT FORM VALUES');
+
     const plugins: PluginMetadata[] = [];
 
     // import/harvest
@@ -334,7 +308,7 @@ export class WorkflowComponent implements OnInit {
     // validation external
     if (this.workflowForm.value.pluginVALIDATION_EXTERNAL === true) {
       plugins.push({
-        pluginType: 'VALIDATION_EXTERNAL',
+        pluginType: PluginType.VALIDATION_EXTERNAL,
         mocked: false
       });
     }
@@ -342,7 +316,7 @@ export class WorkflowComponent implements OnInit {
     // transformation
     if (this.workflowForm.value.pluginTRANSFORMATION === true) {
       plugins.push({
-        pluginType: 'TRANSFORMATION',
+        pluginType: PluginType.TRANSFORMATION,
         customXslt: this.workflowForm.value.customXslt ? this.workflowForm.value.customXslt : false,
         mocked: false
       });
@@ -351,7 +325,7 @@ export class WorkflowComponent implements OnInit {
     // validation internal
     if (this.workflowForm.value.pluginVALIDATION_INTERNAL === true) {
       plugins.push({
-        pluginType: 'VALIDATION_INTERNAL',
+        pluginType: PluginType.VALIDATION_INTERNAL,
         mocked: false
       });
     }
@@ -359,7 +333,7 @@ export class WorkflowComponent implements OnInit {
     // normalization
     if (this.workflowForm.value.pluginNORMALIZATION === true) {
       plugins.push({
-        pluginType: 'NORMALIZATION',
+        pluginType: PluginType.NORMALIZATION,
         mocked: false
       });
     }
@@ -367,7 +341,7 @@ export class WorkflowComponent implements OnInit {
     // enrichment
     if (this.workflowForm.value.pluginENRICHMENT === true) {
       plugins.push({
-        pluginType: 'ENRICHMENT',
+        pluginType: PluginType.ENRICHMENT,
         mocked: false
       });
     }
@@ -375,7 +349,7 @@ export class WorkflowComponent implements OnInit {
     // mediaservice
     if (this.workflowForm.value.pluginMEDIA_PROCESS === true) {
       plugins.push({
-        pluginType: 'MEDIA_PROCESS',
+        pluginType: PluginType.MEDIA_PROCESS,
         mocked: false
       });
     }
@@ -383,7 +357,7 @@ export class WorkflowComponent implements OnInit {
     // publish to preview
     if (this.workflowForm.value.pluginPREVIEW === true) {
       plugins.push({
-        pluginType: 'PREVIEW',
+        pluginType: PluginType.PREVIEW,
         mocked: false
       });
     }
@@ -391,7 +365,7 @@ export class WorkflowComponent implements OnInit {
     // publish to publish
     if (this.workflowForm.value.pluginPUBLISH === true) {
       plugins.push({
-        pluginType: 'PUBLISH',
+        pluginType: PluginType.PUBLISH,
         mocked: false
       });
     }
@@ -399,7 +373,7 @@ export class WorkflowComponent implements OnInit {
     // link checking
     if (this.workflowForm.value.pluginLINK_CHECKING === true) {
       plugins.push({
-        pluginType: 'LINK_CHECKING',
+        pluginType: PluginType.LINK_CHECKING,
         mocked: false,
         performSampling: this.workflowForm.value.performSampling
           ? this.workflowForm.value.performSampling

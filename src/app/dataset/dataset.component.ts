@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 
@@ -18,6 +18,9 @@ import {
   WorkflowExecution
 } from '../_models';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
+
+import { workflowFormFieldConf } from './dataset-workflow-field-conf';
+import { WorkflowComponent } from './workflow';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;
@@ -39,6 +42,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private documentTitleService: DocumentTitleService
   ) {}
 
+  fieldConf = workflowFormFieldConf;
   activeTab = 'edit';
   datasetId: string;
   prevTab?: string;
@@ -68,6 +72,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
   reportErrors: any;
   reportMsg?: string;
   reportLoading: boolean;
+
+  @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');

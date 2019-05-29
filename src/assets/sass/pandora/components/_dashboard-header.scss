@@ -1,5 +1,7 @@
+@import '../settings/metis-variables';
+
 .header-wrapper header {
-  height: 4.8rem;
+  height: $fixed-header-height;
   min-height: auto;
 
   .header-container {

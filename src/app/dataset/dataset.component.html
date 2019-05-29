@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div class="metis-dashboard">
+    <div class="tabbed-content">
       <ul class="tabs">
         <li [ngClass]="{ active: activeTab === 'edit' }">
           <a routerLink="/dataset/edit/{{ datasetId }}">
@@ -99,6 +99,7 @@
         </li>
       </ul>
     </div>
+
     <div class="tab-content">
       <app-datasetform
         *ngIf="activeTab === 'new' || activeTab === 'edit'"
@@ -110,6 +111,7 @@
       <app-workflow
         *ngIf="activeTab === 'workflow'"
         [datasetData]="datasetData"
+        [fieldConf]="fieldConf"
         [workflowData]="workflowData"
         [lastExecution]="lastExecutionData"
         [isStarting]="isStarting"

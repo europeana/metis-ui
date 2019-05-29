@@ -1,5 +1,6 @@
 export * from './actionbar/';
 export * from './dataset.component';
+export * from './dataset-workflow-field-conf';
 export * from './datasetform/';
 export * from './datasetlog/';
 export * from './generalinfo/';

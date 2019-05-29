@@ -32,7 +32,11 @@ import {
   PreviewComponent,
   ReportSimpleComponent,
   StatisticsComponent,
-  WorkflowComponent
+  WorkflowComponent,
+  WorkflowFormFieldComponent,
+  WorkflowFormFieldHarvestComponent,
+  WorkflowFormFieldLinkCheckComponent,
+  WorkflowFormFieldTransformComponent
 } from './dataset';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
@@ -78,6 +82,10 @@ import { ThemeSelectorComponent } from './theme-selector';
     HistoryComponent,
     ActionbarComponent,
     WorkflowComponent,
+    WorkflowFormFieldComponent,
+    WorkflowFormFieldHarvestComponent,
+    WorkflowFormFieldLinkCheckComponent,
+    WorkflowFormFieldTransformComponent,
     MappingComponent,
     PreviewComponent,
     DatasetlogComponent,
