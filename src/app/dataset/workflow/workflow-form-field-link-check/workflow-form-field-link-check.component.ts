@@ -11,8 +11,4 @@ import { WorkflowFieldData } from '../../../_models';
 export class WorkflowFormFieldLinkCheckComponent {
   @Input() conf: WorkflowFieldData;
   @Input() workflowForm: FormGroup;
-
-  changeLinkCheckSampling(sample: boolean): void {
-    this.workflowForm.value.performSampling = sample;
-  }
 }

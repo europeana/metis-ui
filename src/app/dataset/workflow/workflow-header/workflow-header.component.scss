@@ -1,0 +1,63 @@
+@import '../../../../assets/sass/scss/generic/variables';
+@import '../../../../assets/sass/pandora/settings/metis-variables';
+
+a {
+  color: $eu-jade;
+  &:not(last-of-type) {
+    margin-right: 0.75em;
+  }
+}
+
+.full-view {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em;
+}
+
+.orb-status {
+  background: $white;
+  border-color: #cac7c7;
+  font-size: 1.5em;
+
+  &::after {
+    color: $gray-light;
+  }
+
+  &.active {
+    background: $eu-jade;
+    &::after {
+      color: $white;
+    }
+  }
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+}
+
+.workflow-header {
+  background: $white;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25);
+
+  // disable for now
+  display: none;
+
+  margin: 0 1em;
+  position: sticky;
+  top: 5.8rem;
+  transform: translateY(-1rem);
+  z-index: 1;
+}
+
+.stuck {
+  .full-view {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: 0.3s linear height;
+    transition: 0.3s linear padding;
+  }
+}

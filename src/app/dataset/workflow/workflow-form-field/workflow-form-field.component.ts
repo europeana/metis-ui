@@ -16,6 +16,10 @@ export class WorkflowFormFieldComponent {
 
   constructor() {}
 
+  scrollToInput(): void {
+    this.pluginElement.nativeElement.scrollIntoView(true);
+  }
+
   onFieldChanged(fieldName: string): void {
     this.fieldChanged.emit(fieldName);
   }

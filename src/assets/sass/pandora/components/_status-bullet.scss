@@ -101,6 +101,9 @@ $orb-size-small-half: 0.75em;
       width: 100%;
     }
 
+    &.HARVEST:after {
+      content: 'H';
+    }
     &.HTTP_HARVEST:after {
       content: 'Hh';
     }

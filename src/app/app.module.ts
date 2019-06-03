@@ -36,7 +36,8 @@ import {
   WorkflowFormFieldComponent,
   WorkflowFormFieldHarvestComponent,
   WorkflowFormFieldLinkCheckComponent,
-  WorkflowFormFieldTransformComponent
+  WorkflowFormFieldTransformComponent,
+  WorkflowHeaderComponent
 } from './dataset';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
@@ -82,6 +83,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     HistoryComponent,
     ActionbarComponent,
     WorkflowComponent,
+    WorkflowHeaderComponent,
     WorkflowFormFieldComponent,
     WorkflowFormFieldHarvestComponent,
     WorkflowFormFieldLinkCheckComponent,

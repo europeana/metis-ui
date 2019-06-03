@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
+import { PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
 
 import { WorkflowFormFieldComponent } from '.';
@@ -33,7 +34,11 @@ describe('WorkflowFormFieldComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowFormFieldComponent);
     component = fixture.componentInstance;
-    component.conf = { label: 'TRANSFORMATION', name: 'pluginTRANSFORMATION' };
+    component.conf = {
+      label: PluginType.TRANSFORMATION,
+      name: 'pluginTRANSFORMATION'
+    };
+
     component.workflowForm = formBuilder.group({
       pluginTRANSFORMATION: null
     });
@@ -44,5 +49,11 @@ describe('WorkflowFormFieldComponent', () => {
   it('should create', () => {
     fixture.detectChanges();
     expect(component).toBeTruthy();
+  });
+
+  it('should scroll to input', () => {
+    spyOn(component, 'scrollToInput');
+    component.scrollToInput();
+    expect(component.scrollToInput).toHaveBeenCalled();
   });
 });

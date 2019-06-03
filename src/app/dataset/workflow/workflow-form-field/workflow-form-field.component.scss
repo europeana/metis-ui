@@ -2,19 +2,15 @@
 @import '../../../../assets/sass/pandora/settings/metis-variables';
 
 app-workflow-form-field-harvest {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   width: 100%;
 }
 
 .form-field-anchor {
-  position: relative;
-  top: -10.2rem;
+  position: absolute;
+  top: -9.2rem;
 }
 
-> label {
+label {
   padding-bottom: 0;
 }
 
@@ -41,6 +37,7 @@ app-workflow-form-field-harvest {
 
 .form-fields.disabled,
 .form-fields.inactive {
+  align-items: center;
   display: flex;
 }
 

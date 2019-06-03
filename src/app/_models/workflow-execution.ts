@@ -118,12 +118,6 @@ export interface WorkflowExecution {
   currentPluginIndex?: number;
 }
 
-export interface WorkflowFieldData {
-  label: string;
-  name: string;
-  harvestprotocol?: string;
-}
-
 export interface DatasetOverviewExecution {
   finishedDate?: string;
   startedDate?: string;

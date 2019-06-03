@@ -100,6 +100,13 @@
       </ul>
     </div>
 
+    <app-workflow-header
+      (headerOrbClicked)="headerOrbClicked($event)"
+      [conf]="fieldConf"
+      *ngIf="activeTab === 'workflow'"
+    >
+    </app-workflow-header>
+
     <div class="tab-content">
       <app-datasetform
         *ngIf="activeTab === 'new' || activeTab === 'edit'"
@@ -116,6 +123,7 @@
         [lastExecution]="lastExecutionData"
         [isStarting]="isStarting"
         (startWorkflow)="startWorkflow()"
+        (formInitialised)="formInitialised($event)"
       ></app-workflow>
       <app-mapping
         *ngIf="activeTab === 'mapping'"

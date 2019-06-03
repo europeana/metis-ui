@@ -23,7 +23,7 @@ import {
   successNotification,
   Workflow,
   WorkflowExecution,
-  WorkflowFieldData
+  WorkflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -60,9 +60,11 @@ export class WorkflowComponent implements OnInit {
   @Input() workflowData?: Workflow;
   @Input() lastExecution?: WorkflowExecution;
   @Input() isStarting = false;
-  @Input() fieldConf: Array<WorkflowFieldData>;
+  @Input() fieldConf: WorkflowFormFieldConf;
 
   @Output() startWorkflow = new EventEmitter<void>();
+  @Output() formInitialised = new EventEmitter<FormGroup>();
+
   @ViewChildren(WorkflowFormFieldComponent) inputFields: QueryList<WorkflowFormFieldComponent>;
 
   notification?: Notification;
@@ -85,6 +87,8 @@ export class WorkflowComponent implements OnInit {
   ngOnInit(): void {
     this.buildForm();
     this.getWorkflow();
+    this.formInitialised.emit(this.workflowForm);
+
     this.currentUrl = this.router.url.split('#')[0];
 
     this.newNotification = successNotification(this.translate.instant('workflowsavenew'), {
@@ -105,29 +109,26 @@ export class WorkflowComponent implements OnInit {
   /* set up a reactive form for creating and editing a workflow
   */
   buildForm(): void {
-    this.workflowForm = this.fb.group({
-      pluginHARVEST: [''],
-      pluginTRANSFORMATION: [''],
-      pluginVALIDATION_EXTERNAL: [''],
-      pluginENRICHMENT: [''],
-      pluginVALIDATION_INTERNAL: [''],
-      pluginMEDIA_PROCESS: [''],
-      pluginNORMALIZATION: [''],
-      pluginLINK_CHECKING: [''],
-      pluginPREVIEW: [''],
-      pluginPUBLISH: [''],
-      pluginType: [''],
-      harvestUrl: [''],
-      setSpec: [''],
-      metadataFormat: [''],
-      performSampling: [''],
-      recordXPath: [''],
-      ftpHttpUser: [''],
-      ftpHttpPassword: [''],
-      url: [''],
-      customXslt: ['']
+    const formGroupConf = {} as { [key: string]: Array<string> };
+
+    this.fieldConf.forEach((confItem) => {
+      formGroupConf[confItem.name] = [''];
+      if (confItem.parameterFields) {
+        confItem.parameterFields.forEach((paramField) => {
+          formGroupConf[paramField] = [''];
+        });
+      }
     });
+    this.workflowForm = this.fb.group(formGroupConf);
     this.updateRequired();
+  }
+
+  scrollToPlugin(name: string): void {
+    this.inputFields.forEach((input) => {
+      if (input.conf.name === name) {
+        input.scrollToInput();
+      }
+    });
   }
 
   /** updateRequired
@@ -244,9 +245,6 @@ export class WorkflowComponent implements OnInit {
       }
 
       if (['OAIPMH_HARVEST', 'HTTP_HARVEST'].indexOf(thisWorkflow.pluginType) > -1) {
-        setTimeout(() => {
-          this.fieldConf[0].harvestprotocol = thisWorkflow.pluginType;
-        });
         if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
           this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
           this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
@@ -256,18 +254,21 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
           this.workflowForm.controls.url.setValue(thisWorkflow.url);
         }
-      }
+      } else {
+        this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
+        this.workflowStepAllowed('plugin' + thisWorkflow.pluginType);
 
-      // transformation
-      if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-        this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-      }
+        // transformation
+        if (thisWorkflow.pluginType === 'TRANSFORMATION') {
+          this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+        }
 
-      // link checking
-      if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-        this.workflowForm.controls.performSampling.setValue(
-          thisWorkflow.performSampling ? 'true' : 'false'
-        );
+        // link checking
+        if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+          this.workflowForm.controls.performSampling.setValue(
+            thisWorkflow.performSampling ? 'true' : 'false'
+          );
+        }
       }
     }
   }
@@ -278,109 +279,43 @@ export class WorkflowComponent implements OnInit {
     this.notification = undefined;
   }
 
-  /** formatFormValues
-  /* format the form values so they can be submitted in a proper format
-  */
   formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
-    console.error('IN FORMAT FORM VALUES');
-
     const plugins: PluginMetadata[] = [];
 
-    // import/harvest
-    if (this.workflowForm.value.pluginHARVEST === true) {
-      if (this.workflowForm.value.pluginType === 'OAIPMH_HARVEST') {
-        plugins.push({
-          pluginType: 'OAIPMH_HARVEST',
-          setSpec: this.workflowForm.value.setSpec,
-          url: this.workflowForm.value.harvestUrl.trim(),
-          metadataFormat: this.workflowForm.value.metadataFormat,
-          mocked: false
-        });
-      } else if (this.workflowForm.value.pluginType === 'HTTP_HARVEST') {
-        plugins.push({
-          pluginType: 'HTTP_HARVEST',
-          url: this.workflowForm.value.url.trim(),
-          mocked: false
-        });
+    this.fieldConf.forEach((conf) => {
+      if (this.workflowForm.value[conf.name]) {
+        if (conf.name === 'pluginHARVEST') {
+          if (this.workflowForm.value.pluginType === PluginType.OAIPMH_HARVEST) {
+            plugins.push({
+              pluginType: PluginType.OAIPMH_HARVEST,
+              setSpec: this.workflowForm.value.setSpec,
+              url: this.workflowForm.value.harvestUrl.trim(),
+              metadataFormat: this.workflowForm.value.metadataFormat
+            });
+          } else if (this.workflowForm.value.pluginType === PluginType.HTTP_HARVEST) {
+            plugins.push({
+              pluginType: PluginType.HTTP_HARVEST,
+              url: this.workflowForm.value.url.trim()
+            });
+          }
+        } else {
+          plugins.push(Object.assign(
+            {
+              pluginType: conf.label as PluginType
+            },
+            conf.parameterFields
+              ? conf.parameterFields
+                  .map((pf) => {
+                    return {
+                      [pf]: this.workflowForm.value[pf] ? this.workflowForm.value[pf] : false
+                    };
+                  })
+                  .pop()
+              : {}
+          ) as PluginMetadata);
+        }
       }
-    }
-
-    // validation external
-    if (this.workflowForm.value.pluginVALIDATION_EXTERNAL === true) {
-      plugins.push({
-        pluginType: PluginType.VALIDATION_EXTERNAL,
-        mocked: false
-      });
-    }
-
-    // transformation
-    if (this.workflowForm.value.pluginTRANSFORMATION === true) {
-      plugins.push({
-        pluginType: PluginType.TRANSFORMATION,
-        customXslt: this.workflowForm.value.customXslt ? this.workflowForm.value.customXslt : false,
-        mocked: false
-      });
-    }
-
-    // validation internal
-    if (this.workflowForm.value.pluginVALIDATION_INTERNAL === true) {
-      plugins.push({
-        pluginType: PluginType.VALIDATION_INTERNAL,
-        mocked: false
-      });
-    }
-
-    // normalization
-    if (this.workflowForm.value.pluginNORMALIZATION === true) {
-      plugins.push({
-        pluginType: PluginType.NORMALIZATION,
-        mocked: false
-      });
-    }
-
-    // enrichment
-    if (this.workflowForm.value.pluginENRICHMENT === true) {
-      plugins.push({
-        pluginType: PluginType.ENRICHMENT,
-        mocked: false
-      });
-    }
-
-    // mediaservice
-    if (this.workflowForm.value.pluginMEDIA_PROCESS === true) {
-      plugins.push({
-        pluginType: PluginType.MEDIA_PROCESS,
-        mocked: false
-      });
-    }
-
-    // publish to preview
-    if (this.workflowForm.value.pluginPREVIEW === true) {
-      plugins.push({
-        pluginType: PluginType.PREVIEW,
-        mocked: false
-      });
-    }
-
-    // publish to publish
-    if (this.workflowForm.value.pluginPUBLISH === true) {
-      plugins.push({
-        pluginType: PluginType.PUBLISH,
-        mocked: false
-      });
-    }
-
-    // link checking
-    if (this.workflowForm.value.pluginLINK_CHECKING === true) {
-      plugins.push({
-        pluginType: PluginType.LINK_CHECKING,
-        mocked: false,
-        performSampling: this.workflowForm.value.performSampling
-          ? this.workflowForm.value.performSampling
-          : false
-      });
-    }
-
+    });
     return {
       metisPluginsMetadata: plugins
     };

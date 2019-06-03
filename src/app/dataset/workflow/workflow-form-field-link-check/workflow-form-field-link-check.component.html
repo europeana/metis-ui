@@ -13,7 +13,6 @@
         formControlName="performSampling"
         value="true"
         [checked]="workflowForm.value.performSampling === 'true'"
-        (change)="changeLinkCheckSampling(true)"
       />
       {{ 'checksample' | translate }}
     </label>
@@ -24,7 +23,6 @@
         formControlName="performSampling"
         value="false"
         [checked]="workflowForm.value.performSampling !== 'true'"
-        (change)="changeLinkCheckSampling(false)"
       />
       {{ 'checkall' | translate }}
     </label>

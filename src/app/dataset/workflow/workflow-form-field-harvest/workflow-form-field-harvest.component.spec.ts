@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
+import { PluginType, WorkflowFieldDataParameterised } from '../../../_models';
 import { TranslateService } from '../../../_translate';
 
 import { WorkflowFormFieldHarvestComponent } from '.';
@@ -12,8 +13,9 @@ describe('WorkflowFormFieldHarvestComponent', () => {
   let fixture: ComponentFixture<WorkflowFormFieldHarvestComponent>;
 
   const formBuilder: FormBuilder = new FormBuilder();
-  const httpHarvest = 'HTTP_HARVEST';
-  const nonHttpHarvest = 'NOT_HTTP';
+  const urlHarvest1 = 'http://harvest-1';
+  const urlHarvest2 = 'http://harvest-2';
+  const spec = 'specification';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,14 +35,23 @@ describe('WorkflowFormFieldHarvestComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowFormFieldHarvestComponent);
     component = fixture.componentInstance;
-    component.conf = { label: 'HARVEST', name: 'pluginHARVEST' };
+
+    component.conf = {
+      label: 'HARVEST',
+      name: 'pluginHARVEST',
+      parameterFields: ['pluginType']
+    } as WorkflowFieldDataParameterised;
+
     component.workflowForm = formBuilder.group({
       pluginHARVEST: null,
-      harvestUrl: httpHarvest,
-      url: nonHttpHarvest,
-      setSpec: 'spec',
+      pluginType: null,
+      harvestUrl: urlHarvest1,
+      url: urlHarvest2,
+      setSpec: spec,
       metadataFormat: 'mdf'
     });
+
+    // component.workflowForm =
 
     fixture.detectChanges();
   });
@@ -51,19 +62,25 @@ describe('WorkflowFormFieldHarvestComponent', () => {
     expect(component.fieldChanged.emit).toHaveBeenCalled();
   });
 
-  it('should change the harvest protocol', () => {
-    expect(component.conf.harvestprotocol).toBeFalsy();
-    component.changeHarvestProtocol('OAIPMH_HARVEST');
-    expect(component.conf.harvestprotocol).toBeTruthy();
+  it('should report if the harvest protocol is HTTP', () => {
+    expect(component.isProtocolHTTP()).toBeFalsy();
+    component.workflowForm.value.pluginType = PluginType.HTTP_HARVEST;
+    expect(component.isProtocolHTTP()).toBeTruthy();
+    component.workflowForm.value.pluginType = PluginType.OAIPMH_HARVEST;
+    expect(component.isProtocolHTTP()).toBeFalsy();
   });
 
   it('should get an accurate import summary', () => {
-    expect(component.getImportSummary().indexOf(httpHarvest)).toBeGreaterThan(0);
-    expect(component.getImportSummary().indexOf(nonHttpHarvest)).toBeLessThan(0);
+    component.workflowForm.value.pluginType = PluginType.HTTP_HARVEST;
 
-    component.changeHarvestProtocol(httpHarvest);
+    expect(component.getImportSummary().indexOf(spec)).toBeLessThan(0);
+    expect(component.getImportSummary().indexOf(urlHarvest1)).toBeLessThan(0);
+    expect(component.getImportSummary().indexOf(urlHarvest2)).toBeGreaterThan(0);
 
-    expect(component.getImportSummary().indexOf(httpHarvest)).toBeLessThan(0);
-    expect(component.getImportSummary().indexOf(nonHttpHarvest)).toBeGreaterThan(0);
+    component.workflowForm.value.pluginType = PluginType.OAIPMH_HARVEST;
+
+    expect(component.getImportSummary().indexOf(spec)).toBeGreaterThan(0);
+    expect(component.getImportSummary().indexOf(urlHarvest1)).toBeGreaterThan(0);
+    expect(component.getImportSummary().indexOf(urlHarvest2)).toBeLessThan(0);
   });
 });

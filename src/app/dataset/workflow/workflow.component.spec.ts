@@ -3,7 +3,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { workflowFormFieldConf } from '../';
 import {
   createMockPipe,
   mockDataset,
@@ -11,7 +10,7 @@ import {
   MockTranslateService,
   MockWorkflowService
 } from '../../_mocked';
-import { successNotification } from '../../_models';
+import { successNotification, workflowFormFieldConf } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 

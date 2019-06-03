@@ -1,26 +1,6 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
-.form-fields.inactive {
-  background-color: $gray-lightest;
-  color: $gray-lighter;
-
-  .form-group label,
-  input {
-    border-color: $gray-lighter;
-    color: $gray-lighter;
-  }
-
-  &:hover {
-    background-color: white;
-  }
-}
-
-.form-fields.disabled,
-.form-fields.inactive {
-  display: flex;
-}
-
 .form-fields.disabled {
   background-color: $gray-almost-lightest;
 

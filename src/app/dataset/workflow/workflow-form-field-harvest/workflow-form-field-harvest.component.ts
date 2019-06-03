@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { WorkflowFieldData } from '../../../_models';
+import { PluginType, WorkflowFieldDataParameterised } from '../../../_models';
 
 @Component({
   selector: 'app-workflow-form-field-harvest',
@@ -9,7 +9,7 @@ import { WorkflowFieldData } from '../../../_models';
   styleUrls: ['./workflow-form-field-harvest.component.scss']
 })
 export class WorkflowFormFieldHarvestComponent {
-  @Input() conf: WorkflowFieldData;
+  @Input() conf: WorkflowFieldDataParameterised;
   @Input() workflowForm: FormGroup;
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
 
@@ -17,13 +17,15 @@ export class WorkflowFormFieldHarvestComponent {
     this.fieldChanged.emit(fieldName);
   }
 
-  changeHarvestProtocol(protocol: string): void {
-    this.conf.harvestprotocol = protocol;
+  isProtocolHTTP(): boolean {
+    return this.workflowForm
+      ? this.workflowForm.value.pluginType === PluginType.HTTP_HARVEST
+      : false;
   }
 
   getImportSummary(): string {
     let res = 'Harvest URL: ';
-    if (this.conf.harvestprotocol === 'HTTP_HARVEST') {
+    if (this.isProtocolHTTP()) {
       res += this.workflowForm.value.url.trim();
     } else {
       res +=
