@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -13,6 +14,7 @@ import {
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
 import { DatasetComponent } from '.';
+import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
 describe('DatasetComponent', () => {
   let component: DatasetComponent;
@@ -38,9 +40,11 @@ describe('DatasetComponent', () => {
     workflows = TestBed.get(WorkflowService);
   });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
+  it('responds to form initialisation by setting it in the header', () => {
+    component.workflowHeaderRef = new WorkflowHeaderComponent();
+    spyOn(component.workflowHeaderRef, 'setWorkflowForm');
+    component.formInitialised({} as FormGroup);
+    expect(component.workflowHeaderRef.setWorkflowForm).toHaveBeenCalled();
   });
 
   it('should get dataset info', () => {
