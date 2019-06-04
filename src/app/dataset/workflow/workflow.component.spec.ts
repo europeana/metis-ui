@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import {
@@ -9,10 +8,9 @@ import {
   mockDataset,
   MockErrorService,
   MockTranslateService,
-  mockWorkflow,
   MockWorkflowService
 } from '../../_mocked';
-import { successNotification } from '../../_models';
+import { successNotification, workflowFormFieldConf } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -42,50 +40,14 @@ describe('WorkflowComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowComponent);
     component = fixture.componentInstance;
+
+    component.fieldConf = workflowFormFieldConf;
+
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should check for changes and update required fields (harvest protocol)', () => {
-    component.workflowForm.get('pluginHARVEST')!.setValue(true);
-    component.workflowForm.get('pluginType')!.setValue('OAIPMH_HARVEST');
-    component.changeHarvestProtocol('OAIPMH_HARVEST');
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('#harvest-url'))).toBeTruthy();
-    expect(fixture.debugElement.query(By.css('#setspec'))).toBeTruthy();
-
-    component.workflowForm.get('pluginType')!.setValue('HTTP_HARVEST');
-    component.changeHarvestProtocol('HTTP_HARVEST');
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('#harvest-url'))).toBeFalsy();
-    expect(fixture.debugElement.query(By.css('#setspec'))).toBeFalsy();
-  });
-
-  it('should check for changes and update required fields (link checking)', () => {
-    expect(fixture.debugElement.query(By.css('#check-sample'))).toBeFalsy();
-    expect(fixture.debugElement.query(By.css('#check-all'))).toBeFalsy();
-    component.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('#check-sample'))).toBeTruthy();
-    expect(fixture.debugElement.query(By.css('#check-all'))).toBeTruthy();
-  });
-
-  it('should get the workflow for this dataset', () => {
-    component.datasetData = mockDataset;
-    component.workflowData = mockWorkflow;
-    component.getWorkflow();
-    fixture.detectChanges();
-    expect(component.harvestprotocol).toBe('OAIPMH_HARVEST');
-
-    component.workflowData.metisPluginsMetadata[0].pluginType = 'HTTP_HARVEST';
-    component.getWorkflow();
-    fixture.detectChanges();
-    expect(component.harvestprotocol).toBe('HTTP_HARVEST');
-
-    component.workflowData.metisPluginsMetadata[0].pluginType = 'OAIPMH_HARVEST';
   });
 
   it('should reset', () => {

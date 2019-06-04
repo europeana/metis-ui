@@ -1,0 +1,50 @@
+<div
+  class="form-group"
+  *ngIf="
+    !workflowForm.get('pluginLINK_CHECKING')!.disabled &&
+    workflowForm.get('pluginLINK_CHECKING')!.value
+  "
+>
+  <div class="form-group-radios" [formGroup]="workflowForm">
+    <label>
+      <input
+        id="check-sample"
+        type="radio"
+        formControlName="performSampling"
+        value="true"
+        [checked]="workflowForm.value.performSampling === 'true'"
+      />
+      {{ 'checksample' | translate }}
+    </label>
+    <label>
+      <input
+        id="check-all"
+        type="radio"
+        formControlName="performSampling"
+        value="false"
+        [checked]="workflowForm.value.performSampling !== 'true'"
+      />
+      {{ 'checkall' | translate }}
+    </label>
+  </div>
+</div>
+
+<div
+  [formGroup]="workflowForm"
+  class="show-on-hover"
+  *ngIf="
+    workflowForm.get('pluginLINK_CHECKING')!.disabled ||
+    !workflowForm.get('pluginLINK_CHECKING')!.value
+  "
+>
+  <div class="form-group-radios">
+    <label>
+      <input type="radio" [checked]="workflowForm.value.performSampling === 'true'" disabled="" />
+      {{ 'checksample' | translate }}
+    </label>
+    <label>
+      <input type="radio" [checked]="workflowForm.value.performSampling !== 'true'" disabled="" />
+      {{ 'checkall' | translate }}
+    </label>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 
@@ -15,9 +16,13 @@ import {
   SimpleReportRequest,
   successNotification,
   Workflow,
-  WorkflowExecution
+  WorkflowExecution,
+  workflowFormFieldConf
 } from '../_models';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
+
+import { WorkflowComponent } from './workflow';
+import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
 export interface PreviewFilters {
   execution?: WorkflowExecution;
@@ -39,6 +44,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private documentTitleService: DocumentTitleService
   ) {}
 
+  fieldConf = workflowFormFieldConf;
   activeTab = 'edit';
   datasetId: string;
   prevTab?: string;
@@ -68,6 +74,20 @@ export class DatasetComponent implements OnInit, OnDestroy {
   reportErrors: any;
   reportMsg?: string;
   reportLoading: boolean;
+
+  @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
+
+  @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
+
+  formInitialised(workflowForm: FormGroup): void {
+    if (this.workflowHeaderRef) {
+      this.workflowHeaderRef.setWorkflowForm(workflowForm);
+    } else {
+      setTimeout(() => {
+        this.formInitialised(workflowForm);
+      }, 50);
+    }
+  }
 
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
@@ -118,6 +138,10 @@ export class DatasetComponent implements OnInit, OnDestroy {
   clearReport(): void {
     this.reportMsg = '';
     this.reportErrors = undefined;
+  }
+
+  headerOrbClicked(step: string): void {
+    this.workflowFormRef.scrollToPlugin(step);
   }
 
   ngOnDestroy(): void {

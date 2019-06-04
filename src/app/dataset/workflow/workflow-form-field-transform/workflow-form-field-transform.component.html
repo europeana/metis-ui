@@ -1,0 +1,19 @@
+<span
+  class="show-on-hover"
+  *ngIf="workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value"
+  ><input type="checkbox" [checked]="workflowForm.value.customXslt" readonly="true" disabled="" />{{
+    'customxslt' | translate
+  }}</span
+>
+<div
+  class="form-group form-group-checkbox"
+  *ngIf="
+    !workflowForm.get('pluginTRANSFORMATION')!.disabled &&
+    workflowForm.get('pluginTRANSFORMATION')!.value
+  "
+  [formGroup]="workflowForm"
+>
+  <label for="customxslt">{{ 'customxslt' | translate }}</label>
+
+  <input id="customxslt" type="checkbox" formControlName="customXslt" />
+</div>

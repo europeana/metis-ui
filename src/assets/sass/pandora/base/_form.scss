@@ -321,3 +321,70 @@
     }
   }
 }
+
+.metis-form.workflow-form {
+  .form-group {
+    input:focus {
+      border-color: $eu-jade;
+      -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+      box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+    }
+  }
+
+  .form-group:not(.form-group-btns) {
+    display: block;
+    margin: 0 auto 1rem auto;
+    width: 75%;
+
+    label {
+      font-weight: normal;
+    }
+  }
+
+  .form-group.form-group-checkbox {
+    display: flex;
+    label {
+      max-width: 10rem;
+    }
+  }
+
+  .svg-icon-plus::before {
+    top: 0;
+  }
+
+  .form-group-radios label {
+    padding: 0.5rem 2rem 0.5rem 0;
+  }
+
+  .form-group label + input[type='checkbox'] {
+    flex: initial;
+  }
+
+  .show-on-hover {
+    display: none;
+    left: 1em;
+    position: relative;
+    width: 100%;
+
+    [type='checkbox'] {
+      position: relative;
+    }
+
+    .form-group-radios label {
+      display: inline-block;
+      padding: 0 1em;
+    }
+  }
+
+  .form-group.form-group-checkbox {
+    padding-top: 1rem;
+  }
+
+  .disabled .show-on-hover {
+    color: $gray-med;
+  }
+
+  .plugin-form-fields:hover .show-on-hover {
+    display: flex;
+  }
+}
