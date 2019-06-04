@@ -50,9 +50,6 @@ describe('WorkflowFormFieldHarvestComponent', () => {
       setSpec: spec,
       metadataFormat: 'mdf'
     });
-
-    // component.workflowForm =
-
     fixture.detectChanges();
   });
 

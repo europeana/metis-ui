@@ -40,23 +40,14 @@
     <input id="harvest-url" type="text" formControlName="harvestUrl" />
     <div
       class="messages"
-      *ngIf="
-        workflowForm.get('harvestUrl')!.errors &&
-        workflowForm.get('harvestUrl')!.dirty &&
-        workflowForm.get('harvestUrl')!.errors!.validParameter
-      "
+      *ngIf="workflowForm.get('harvestUrl')!.errors && workflowForm.get('harvestUrl')!.dirty"
     >
-      <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
-    </div>
-    <div
-      class="messages"
-      *ngIf="
-        workflowForm.get('harvestUrl')!.errors &&
-        workflowForm.get('harvestUrl')!.dirty &&
-        workflowForm.get('harvestUrl')!.errors!.validUrl
-      "
-    >
-      <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+      <div *ngIf="workflowForm.get('harvestUrl')!.errors!.validParameter" class="error-message">
+        {{ 'errorharvestparameters' | translate }}
+      </div>
+      <div *ngIf="workflowForm.get('harvestUrl')!.errors!.validUrl" class="error-message">
+        {{ 'errorharvesturl' | translate }}
+      </div>
     </div>
   </div>
   <div class="form-group" *ngIf="!isProtocolHTTP()" [formGroup]="workflowForm">
@@ -70,25 +61,13 @@
   <div class="form-group" *ngIf="isProtocolHTTP()" [formGroup]="workflowForm">
     <label for="url">{{ 'url' | translate }} *</label>
     <input id="url" type="text" formControlName="url" />
-    <div
-      class="messages"
-      *ngIf="
-        workflowForm.get('url')!.errors &&
-        workflowForm.get('url')!.dirty &&
-        workflowForm.get('url')!.errors!.validParameter
-      "
-    >
-      <div class="error-message">{{ 'errorharvestparameters' | translate }}</div>
-    </div>
-    <div
-      class="messages"
-      *ngIf="
-        workflowForm.get('url')!.errors &&
-        workflowForm.get('url')!.dirty &&
-        workflowForm.get('url')!.errors!.validUrl
-      "
-    >
-      <div class="error-message">{{ 'errorharvesturl' | translate }}</div>
+    <div class="messages" *ngIf="workflowForm.get('url')!.errors && workflowForm.get('url')!.dirty">
+      <div *ngIf="workflowForm.get('url')!.errors!.validParameter" class="error-message">
+        {{ 'errorharvestparameters' | translate }}
+      </div>
+      <div *ngIf="workflowForm.get('url')!.errors!.validUrl" class="error-message">
+        {{ 'errorharvesturl' | translate }}
+      </div>
     </div>
   </div>
 </ng-container>

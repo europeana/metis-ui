@@ -14,8 +14,6 @@ export class WorkflowFormFieldComponent {
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 
-  constructor() {}
-
   scrollToInput(): void {
     this.pluginElement.nativeElement.scrollIntoView(true);
   }
