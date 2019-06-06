@@ -144,6 +144,10 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.workflowFormRef.scrollToPlugin(step);
   }
 
+  returnToTop(): void {
+    this.workflowFormRef.scrollToPlugin();
+  }
+
   ngOnDestroy(): void {
     if (this.harvestSubscription) {
       this.harvestSubscription.unsubscribe();

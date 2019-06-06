@@ -18,6 +18,8 @@ import { WorkflowFieldData } from '../../../_models';
 })
 export class WorkflowHeaderComponent implements AfterViewInit {
   @Output() headerOrbClicked: EventEmitter<string> = new EventEmitter();
+  @Output() returnToTop: EventEmitter<void> = new EventEmitter();
+
   @Input() conf: Array<WorkflowFieldData>;
   @ViewChild('workflowheader') elRef: ElementRef;
 
@@ -33,7 +35,6 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     this.workflowForm = workflowForm;
   }
 
-  // isActive(plugin: WorkflowFieldDataName): boolean {
   isActive(plugin: string): boolean {
     if (this.workflowForm) {
       return this.workflowForm.value[plugin];
@@ -43,9 +44,29 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   getAdjustableLabel(index: number): string {
     if (index === 0 && this.workflowForm) {
-      return this.workflowForm.value.pluginType;
+      if (this.workflowForm.value.pluginType) {
+        return this.workflowForm.value.pluginType;
+      }
+      return this.conf[index].label;
     }
     return this.conf[index].label;
+  }
+
+  clearAll(): void {
+    this.conf.forEach((plugin) => {
+      this.workflowForm.get(plugin.name)!.setValue(false);
+    });
+  }
+
+  selectAll(): void {
+    this.conf.forEach((plugin) => {
+      this.workflowForm.get(plugin.name)!.enable();
+      this.workflowForm.get(plugin.name)!.setValue(true);
+    });
+  }
+
+  scrollToTop(): void {
+    this.returnToTop.emit();
   }
 
   ngAfterViewInit(): void {

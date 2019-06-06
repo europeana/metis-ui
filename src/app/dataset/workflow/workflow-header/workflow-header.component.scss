@@ -1,12 +1,8 @@
 @import '../../../../assets/sass/scss/generic/variables';
 @import '../../../../assets/sass/pandora/settings/metis-variables';
 
-a {
-  color: $eu-jade;
-  &:not(last-of-type) {
-    margin-right: 0.75em;
-  }
-}
+$border-colour-orbs: #cac7c7;
+$border-colour-shortcuts: #dbd9d9;
 
 .full-view {
   display: flex;
@@ -14,10 +10,21 @@ a {
   padding: 1em;
 }
 
+.instruction {
+  font-weight: bold;
+  flex-grow: 2;
+  text-align: center;
+}
+
 .orb-status {
   background: $white;
-  border-color: #cac7c7;
+  border-color: $border-colour-orbs;
+  color: $eu-jade;
   font-size: 1.5em;
+
+  &:not(last-of-type) {
+    margin-right: 0.75em;
+  }
 
   &::after {
     color: $gray-light;
@@ -31,6 +38,39 @@ a {
   }
 }
 
+.shortcuts {
+  border-bottom: 1px solid $border-colour-shortcuts;
+  padding: 0 0.5em 0 0.5em;
+  position: absolute;
+
+  .link {
+    padding: 0 0.75em;
+
+    &:last-of-type {
+      border-left: 1px solid $border-colour-shortcuts;
+    }
+  }
+}
+
+.return {
+  bottom: 0.2em;
+  display: none;
+  line-height: 2.5em;
+  position: absolute;
+  right: 1em;
+}
+
+.link,
+.return {
+  color: $gray-light;
+  font-size: 14px;
+  text-transform: capitalize;
+
+  &:hover {
+    color: $eu-jade;
+  }
+}
+
 .steps {
   display: flex;
   justify-content: center;
@@ -40,24 +80,23 @@ a {
   background: $white;
   border-radius: 2px;
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25);
-
-  // disable for now
-  display: none;
-
   margin: 0 1em;
   position: sticky;
   top: 5.8rem;
   transform: translateY(-1rem);
   z-index: 1;
-}
 
-.stuck {
-  .full-view {
-    height: 0;
-    opacity: 0;
-    overflow: hidden;
-    padding: 0;
-    transition: 0.3s linear height;
-    transition: 0.3s linear padding;
+  &.stuck {
+    .full-view {
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+      padding: 0;
+      transition: 0.3s linear height;
+      transition: 0.3s linear padding;
+    }
+    .return {
+      display: block;
+    }
   }
 }
