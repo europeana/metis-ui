@@ -255,7 +255,6 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.controls.url.setValue(thisWorkflow.url);
         }
       } else {
-        this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
         this.workflowStepAllowed('plugin' + thisWorkflow.pluginType);
 
         // transformation

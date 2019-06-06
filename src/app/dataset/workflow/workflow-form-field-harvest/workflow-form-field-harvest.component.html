@@ -9,13 +9,14 @@
   *ngIf="!workflowForm.get('pluginHARVEST')!.disabled && workflowForm.get('pluginHARVEST')!.value"
 >
   <label>{{ 'harvestprotocol' | translate }} *</label>
+
   <div class="form-group-radios" [formGroup]="workflowForm">
     <label>
       <input
         type="radio"
         formControlName="pluginType"
         value="OAIPMH_HARVEST"
-        [checked]="!isProtocolHTTP()"
+        [checked]="workflowForm.value.pluginType && !isProtocolHTTP()"
         (click)="onFieldChanged('pluginHARVEST')"
       />
       {{ 'oai' | translate }}
@@ -25,7 +26,7 @@
         type="radio"
         formControlName="pluginType"
         value="HTTP_HARVEST"
-        [checked]="isProtocolHTTP()"
+        [checked]="workflowForm.value.pluginType && isProtocolHTTP()"
       />
       {{ 'http' | translate }}
     </label>
