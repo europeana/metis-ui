@@ -13,17 +13,19 @@
   </div>
   <ul class="steps">
     <ng-container *ngFor="let plugin of conf; index as i">
-      <a
-        *ngIf="plugin.name !== 'pluginLINK_CHECKING'"
-        (click)="activatePlugin(plugin.name)"
-        title="{{ getAdjustableLabel(i) | renameWorkflow }}"
-        class="{{ getAdjustableLabel(i) }} orb-status labelled"
-        [ngClass]="{ active: isActive(plugin.name) }"
-      >
-      </a>
+      <li>
+        <a
+          *ngIf="plugin.name !== 'pluginLINK_CHECKING'"
+          (click)="activatePlugin(plugin.name)"
+          title="{{ getAdjustableLabel(i) | renameWorkflow }}"
+          class="{{ getAdjustableLabel(i) }} orb-status labelled"
+          [ngClass]="{ active: isActive(plugin.name) }"
+        >
+        </a>
+      </li>
     </ng-container>
   </ul>
   <a class="return" (click)="scrollToTop()">
-    {{ 'workflow-go-to-top' | translate }}
+    <span class="return-text">{{ 'workflow-go-to-top' | translate }}</span>
   </a>
 </div>

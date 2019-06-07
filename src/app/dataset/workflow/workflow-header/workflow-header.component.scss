@@ -40,34 +40,63 @@ $border-colour-shortcuts: #dbd9d9;
 
 .shortcuts {
   border-bottom: 1px solid $border-colour-shortcuts;
-  padding: 0 0.5em 0 0.5em;
+  padding-bottom: 0.2em;
   position: absolute;
 
   .link {
-    padding: 0 0.75em;
+    display: inline-block;
+    padding: 0 1.25em;
 
     &:last-of-type {
-      border-left: 1px solid $border-colour-shortcuts;
+      position: relative;
+
+      &::after {
+        background: $border-colour-shortcuts;
+        content: ' ';
+        display: block;
+        height: 1.5em;
+        left: 0;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+      }
     }
   }
 }
 
 .return {
+  align-items: center;
   bottom: 0.2em;
   display: none;
   line-height: 2.5em;
   position: absolute;
-  right: 1em;
+  right: 1.6em;
+
+  &::after {
+    background-image: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' fill='%23ACACAC' x='0px' y='0px' viewBox='0 0 20 20' enable-background='new 0 0 20 20' xml:space='preserve'%3E%3Cpath d='M15.484,12.452c-0.436,0.446-1.043,0.481-1.576,0L10,8.705l-3.908,3.747c-0.533,0.481-1.141,0.446-1.574,0 c-0.436-0.445-0.408-1.197,0-1.615c0.406-0.418,4.695-4.502,4.695-4.502C9.43,6.112,9.715,6,10,6s0.57,0.112,0.789,0.335 c0,0,4.287,4.084,4.695,4.502C15.893,11.255,15.92,12.007,15.484,12.452z'%3E%3C/path%3E%3C/svg%3E");
+    content: ' ';
+    position: absolute;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+  }
+  span {
+    display: inline-block;
+  }
 }
 
 .link,
-.return {
+.return-text {
   color: $gray-light;
   font-size: 14px;
-  text-transform: capitalize;
+  text-transform: lowercase;
 
   &:hover {
     color: $eu-jade;
+  }
+  &::first-letter {
+    text-transform: uppercase;
   }
 }
 
@@ -95,8 +124,12 @@ $border-colour-shortcuts: #dbd9d9;
       transition: 0.3s linear height;
       transition: 0.3s linear padding;
     }
+    li {
+      display: flex;
+      align-items: center;
+    }
     .return {
-      display: block;
+      display: flex;
     }
   }
 }

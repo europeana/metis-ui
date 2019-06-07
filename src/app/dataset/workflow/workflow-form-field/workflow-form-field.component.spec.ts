@@ -46,14 +46,18 @@ describe('WorkflowFormFieldComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
+  it('should have different scroll behaviours', () => {
+    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeFalsy();
+    component.scrollToInput(true);
+    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeTruthy();
+    component.scrollToInput();
+    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeFalsy();
   });
 
-  it('should scroll to input', () => {
-    spyOn(component, 'scrollToInput');
-    component.scrollToInput();
-    expect(component.scrollToInput).toHaveBeenCalled();
+  it('should emit events when the field value changes', () => {
+    spyOn(component.fieldChanged, 'emit');
+    document.querySelector('input')!.click();
+    fixture.detectChanges();
+    expect(component.fieldChanged.emit).toHaveBeenCalled();
   });
 });

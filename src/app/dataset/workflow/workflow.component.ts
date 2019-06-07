@@ -114,7 +114,7 @@ export class WorkflowComponent implements OnInit {
         }
       });
     } else {
-      this.inputFields.toArray()[0].scrollToInput();
+      this.inputFields.first.scrollToInput(true);
     }
   }
 
