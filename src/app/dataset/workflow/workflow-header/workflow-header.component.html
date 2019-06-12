@@ -1,24 +1,31 @@
 <div class="workflow-header" #workflowheader>
   <div class="full-view">
     <span class="shortcuts">
-      <a>select all</a>
-      <a>clear all</a>
+      <a class="link" (click)="selectAll()">{{ 'workflow-select-all' | translate }}</a>
+      <a class="link" (click)="clearAll()">{{ 'workflow-clear-all' | translate }}</a>
     </span>
     <span class="instruction">
-      1. Choose your workflow
+      {{ 'workflow-instruction-1' | translate }}
     </span>
     <span class="link-check">
-      <a>add link check</a>
+      <a class="add-link-check"></a>
     </span>
   </div>
   <ul class="steps">
-    <a
-      *ngFor="let plugin of conf; index as i"
-      (click)="activatePlugin(plugin.name)"
-      title="{{ getAdjustableLabel(i) | renameWorkflow }}"
-      class="{{ getAdjustableLabel(i) }} orb-status labelled"
-      [ngClass]="{ active: isActive(plugin.name) }"
-    >
-    </a>
+    <ng-container *ngFor="let plugin of conf; index as i">
+      <li>
+        <a
+          *ngIf="plugin.name !== 'pluginLINK_CHECKING'"
+          (click)="activatePlugin(plugin.name)"
+          title="{{ getAdjustableLabel(i) | renameWorkflow }}"
+          class="{{ getAdjustableLabel(i) }} orb-status labelled"
+          [ngClass]="{ active: isActive(plugin.name) }"
+        >
+        </a>
+      </li>
+    </ng-container>
   </ul>
+  <a class="return" (click)="scrollToTop()">
+    <span class="return-text">{{ 'workflow-go-to-top' | translate }}</span>
+  </a>
 </div>

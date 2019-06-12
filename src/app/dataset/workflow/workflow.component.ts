@@ -9,7 +9,6 @@ import {
   ViewChildren
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavigationEnd, Router } from '@angular/router';
 
 import { harvestValidator } from '../../_helpers';
 import {
@@ -40,21 +39,8 @@ export class WorkflowComponent implements OnInit {
     private workflows: WorkflowService,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private router: Router,
     private translate: TranslateService
-  ) {
-    router.events.subscribe((s) => {
-      if (s instanceof NavigationEnd) {
-        const tree = router.parseUrl(router.url);
-        if (tree.fragment) {
-          const element = document.querySelector('#' + tree.fragment);
-          if (element) {
-            element.scrollIntoView(true);
-          }
-        }
-      }
-    });
-  }
+  ) {}
 
   @Input() datasetData: Dataset;
   @Input() workflowData?: Workflow;
@@ -70,7 +56,6 @@ export class WorkflowComponent implements OnInit {
   notification?: Notification;
   newWorkflow = true;
   workflowForm: FormGroup;
-  currentUrl: string;
   isSaving = false;
 
   newNotification: Notification;
@@ -88,8 +73,6 @@ export class WorkflowComponent implements OnInit {
     this.buildForm();
     this.getWorkflow();
     this.formInitialised.emit(this.workflowForm);
-
-    this.currentUrl = this.router.url.split('#')[0];
 
     this.newNotification = successNotification(this.translate.instant('workflowsavenew'), {
       sticky: true
@@ -123,12 +106,16 @@ export class WorkflowComponent implements OnInit {
     this.updateRequired();
   }
 
-  scrollToPlugin(name: string): void {
-    this.inputFields.forEach((input) => {
-      if (input.conf.name === name) {
-        input.scrollToInput();
-      }
-    });
+  scrollToPlugin(name?: string): void {
+    if (name) {
+      this.inputFields.forEach((input) => {
+        if (input.conf.name === name) {
+          input.scrollToInput();
+        }
+      });
+    } else {
+      this.inputFields.first.scrollToInput(true);
+    }
   }
 
   /** updateRequired
@@ -188,7 +175,7 @@ export class WorkflowComponent implements OnInit {
   /** workflowStepAllowed
   /* make step before and after available for selection
   */
-  workflowStepAllowed(_: string): void {
+  workflowStepAllowed(): void {
     let hasValue = 0;
 
     this.fieldConf.map((field) => {
@@ -237,10 +224,10 @@ export class WorkflowComponent implements OnInit {
           thisWorkflow.pluginType === 'HTTP_HARVEST'
         ) {
           this.workflowForm.controls.pluginHARVEST.setValue(true);
-          this.workflowStepAllowed('pluginHARVEST');
+          this.workflowStepAllowed();
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-          this.workflowStepAllowed('plugin' + thisWorkflow.pluginType);
+          this.workflowStepAllowed();
         }
       }
 
@@ -255,7 +242,7 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.controls.url.setValue(thisWorkflow.url);
         }
       } else {
-        this.workflowStepAllowed('plugin' + thisWorkflow.pluginType);
+        this.workflowStepAllowed();
 
         // transformation
         if (thisWorkflow.pluginType === 'TRANSFORMATION') {

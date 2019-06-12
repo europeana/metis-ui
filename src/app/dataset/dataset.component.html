@@ -102,6 +102,7 @@
 
     <app-workflow-header
       (headerOrbClicked)="headerOrbClicked($event)"
+      (returnToTop)="returnToTop()"
       [conf]="fieldConf"
       *ngIf="activeTab === 'workflow'"
     >

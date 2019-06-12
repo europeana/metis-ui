@@ -14,8 +14,13 @@ export class WorkflowFormFieldComponent {
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 
-  scrollToInput(): void {
-    this.pluginElement.nativeElement.scrollIntoView(true);
+  scrollToInput(smooth?: boolean): void {
+    if (smooth) {
+      this.pluginElement.nativeElement.classList.add('returning');
+    } else {
+      this.pluginElement.nativeElement.classList.remove('returning');
+    }
+    this.pluginElement.nativeElement.scrollIntoView(smooth ? { behavior: 'smooth' } : false);
   }
 
   onFieldChanged(fieldName: string): void {

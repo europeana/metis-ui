@@ -7,7 +7,13 @@ app-workflow-form-field-harvest {
 
 .form-field-anchor {
   position: absolute;
-  top: -9.2rem;
+  top: 100vh;
+  transform: translateY(-8rem);
+
+  &.returning {
+    top: -16rem;
+    transform: none;
+  }
 }
 
 label {
