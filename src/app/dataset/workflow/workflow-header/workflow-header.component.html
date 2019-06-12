@@ -1,3 +1,5 @@
+<span class="ghost LINK_CHECKING orb-status labelled active" #ghost></span>
+
 <div class="workflow-header" #workflowheader>
   <div class="full-view">
     <span class="shortcuts">
@@ -8,17 +10,36 @@
       {{ 'workflow-instruction-1' | translate }}
     </span>
     <span class="link-check">
-      <a class="add-link-check"></a>
+      <a
+        class="add-link-checking"
+        draggable="true"
+        (click)="removeLinkCheck()"
+        (dragstart)="dragStart($event)"
+        (dragend)="dragEnd()"
+        [ngClass]="{ active: linkCheckingEnabled() }"
+        >{{ 'workflow-add-link-check' | translate }}</a
+      >
     </span>
   </div>
   <ul class="steps">
     <ng-container *ngFor="let plugin of conf; index as i">
       <li>
         <a
-          *ngIf="plugin.name !== 'pluginLINK_CHECKING'"
-          (click)="activatePlugin(plugin.name)"
+          *ngIf="plugin.dragType !== DragTypeEnum.dragSource"
           title="{{ getAdjustableLabel(i) | renameWorkflow }}"
+          (click)="activatePlugin(plugin.name)"
           class="{{ getAdjustableLabel(i) }} orb-status labelled"
+          (dragend)="dragEnd()"
+          (dragover)="
+            plugin.dragType == DragTypeEnum.dragNone
+              ? toggleHyperactive($event, isDragging)
+              : undefined
+          "
+          (dragleave)="
+            plugin.dragType !== DragTypeEnum.dragNone ? undefined : toggleHyperactive($event)
+          "
+          (drop)="plugin.dragType !== DragTypeEnum.dragNone ? undefined : drop($event, i)"
+          (dragstart)="plugin.dragType === DragTypeEnum.dragCopy ? dragStart($event) : undefined"
           [ngClass]="{ active: isActive(plugin.name) }"
         >
         </a>

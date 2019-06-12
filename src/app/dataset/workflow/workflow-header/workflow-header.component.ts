@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { WorkflowFieldData } from '../../../_models';
+import { DragType, EventDragDT, WorkflowFieldData, WorkflowFieldDataName } from '../../../_models';
 
 @Component({
   selector: 'app-workflow-header',
@@ -19,13 +19,15 @@ import { WorkflowFieldData } from '../../../_models';
 export class WorkflowHeaderComponent implements AfterViewInit {
   @Output() headerOrbClicked: EventEmitter<string> = new EventEmitter();
   @Output() returnToTop: EventEmitter<void> = new EventEmitter();
+  @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
 
   @Input() conf: Array<WorkflowFieldData>;
   @ViewChild('workflowheader') elRef: ElementRef;
+  @ViewChild('ghost') ghost: ElementRef;
 
   workflowForm: FormGroup;
-
-  constructor() {}
+  isDragging: boolean;
+  DragTypeEnum = DragType;
 
   activatePlugin(plugin: string): void {
     this.headerOrbClicked.emit(plugin);
@@ -35,7 +37,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     this.workflowForm = workflowForm;
   }
 
-  isActive(plugin: string): boolean {
+  isActive(plugin: WorkflowFieldDataName): boolean {
     if (this.workflowForm) {
       return this.workflowForm.value[plugin];
     }
@@ -62,8 +64,57 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     });
   }
 
+  dropIndexAdjust(index: number): number {
+    return index >
+      this.conf.findIndex((plugin) => {
+        return plugin.name === 'pluginLINK_CHECKING';
+      })
+      ? index - 1
+      : index;
+  }
+
+  linkCheckingEnabled(): boolean {
+    return this.conf.filter((plugin) => plugin.dragType === DragType.dragCopy).length > 0;
+  }
+
   scrollToTop(): void {
     this.returnToTop.emit();
+  }
+
+  dragStart(e: EventDragDT): void {
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('metisHeaderOrb', 'true');
+      e.dataTransfer.setDragImage(this.ghost.nativeElement, 20, 20);
+      this.isDragging = true;
+    }
+  }
+
+  dragEnd(): void {
+    this.isDragging = false;
+  }
+
+  toggleHyperactive(e: Event, tf?: boolean): void {
+    const el = e.target as HTMLElement;
+    const clss = 'hyperactive';
+    if (tf) {
+      el!.classList.add(clss);
+    } else {
+      el!.classList.remove(clss);
+    }
+    e.preventDefault();
+  }
+
+  drop(e: EventDragDT, pluginIndex: number): void {
+    if (this.isDragging) {
+      this.isDragging = false;
+      this.toggleHyperactive(e);
+      this.setLinkCheck.emit(this.dropIndexAdjust(pluginIndex));
+      e.preventDefault();
+    }
+  }
+
+  removeLinkCheck(): void {
+    this.setLinkCheck.emit(-1);
   }
 
   ngAfterViewInit(): void {

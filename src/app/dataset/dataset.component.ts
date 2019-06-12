@@ -145,7 +145,12 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   returnToTop(): void {
-    this.workflowFormRef.scrollToPlugin();
+    // this.workflowFormRef.scrollToPlugin();
+    document.querySelector('.tabs > .active')!.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  setLinkCheck(linkCheckIndex: number): void {
+    this.workflowFormRef.rearrange(linkCheckIndex);
   }
 
   ngOnDestroy(): void {

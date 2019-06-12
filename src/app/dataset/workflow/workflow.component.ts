@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { harvestValidator } from '../../_helpers';
 import {
   Dataset,
+  DragType,
   errorNotification,
   httpErrorNotification,
   isWorkflowCompleted,
@@ -63,6 +64,8 @@ export class WorkflowComponent implements OnInit {
   runningNotification: Notification;
   invalidNotification: Notification;
 
+  DragTypeEnum = DragType;
+
   /** ngOnInit
   /* init for this component
   /* set translations
@@ -106,6 +109,10 @@ export class WorkflowComponent implements OnInit {
     this.updateRequired();
   }
 
+  setLinkCheck(linkCheckIndex: number): void {
+    this.rearrange(linkCheckIndex);
+  }
+
   scrollToPlugin(name?: string): void {
     if (name) {
       this.inputFields.forEach((input) => {
@@ -115,6 +122,29 @@ export class WorkflowComponent implements OnInit {
       });
     } else {
       this.inputFields.first.scrollToInput(true);
+    }
+  }
+
+  rearrange(insertIndex: number): void {
+    let removeIndex = -1;
+    let shiftable;
+
+    this.fieldConf.forEach((confItem, index) => {
+      if (confItem.dragType === DragType.dragCopy) {
+        removeIndex = index;
+      } else if (confItem.dragType === DragType.dragSource) {
+        shiftable = Object.assign({}, confItem);
+        shiftable.dragType = DragType.dragCopy;
+      }
+    });
+
+    if (removeIndex > -1) {
+      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(false);
+      this.fieldConf.splice(removeIndex, 1);
+    }
+    if (shiftable && insertIndex > -1) {
+      this.fieldConf.splice(insertIndex + 1, 0, shiftable);
+      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
     }
   }
 
@@ -177,25 +207,26 @@ export class WorkflowComponent implements OnInit {
   */
   workflowStepAllowed(): void {
     let hasValue = 0;
-
-    this.fieldConf.map((field) => {
-      if (field.name !== 'pluginLINK_CHECKING') {
-        this.workflowForm.get(field.name)!.disable();
-      }
-    });
-
-    this.fieldConf.forEach((field, index) => {
-      if (this.workflowForm.get(field.name)!.value) {
-        hasValue++;
-        if (index - 1 >= 0) {
-          this.workflowForm.get(this.fieldConf[index - 1].name)!.enable();
+    this.fieldConf
+      .filter((field) => {
+        if (field.name !== 'pluginLINK_CHECKING') {
+          this.workflowForm.get(field.name)!.disable();
+          return field;
         }
-        this.workflowForm.get(this.fieldConf[index].name)!.enable();
-        if (index + 1 < this.fieldConf.length) {
-          this.workflowForm.get(this.fieldConf[index + 1].name)!.enable();
+        return undefined;
+      })
+      .forEach((field, index) => {
+        if (this.workflowForm.get(field.name)!.value) {
+          hasValue++;
+          if (index - 1 >= 0) {
+            this.workflowForm.get(this.fieldConf[index - 1].name)!.enable();
+          }
+          this.workflowForm.get(this.fieldConf[index].name)!.enable();
+          if (index + 1 < this.fieldConf.length) {
+            this.workflowForm.get(this.fieldConf[index + 1].name)!.enable();
+          }
         }
-      }
-    });
+      });
 
     if (hasValue === 0) {
       this.fieldConf.forEach((field) => {

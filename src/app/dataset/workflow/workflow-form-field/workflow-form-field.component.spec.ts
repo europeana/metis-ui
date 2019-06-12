@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
-import { PluginType } from '../../../_models';
+import { DragType, PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
 
 import { WorkflowFormFieldComponent } from '.';
@@ -36,7 +36,8 @@ describe('WorkflowFormFieldComponent', () => {
     component = fixture.componentInstance;
     component.conf = {
       label: PluginType.TRANSFORMATION,
-      name: 'pluginTRANSFORMATION'
+      name: 'pluginTRANSFORMATION',
+      dragType: DragType.dragNone
     };
 
     component.workflowForm = formBuilder.group({
