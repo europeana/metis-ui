@@ -27,9 +27,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   workflowForm: FormGroup;
   isDragging: boolean;
+  isStuck: boolean;
   DragTypeEnum = DragType;
 
   activatePlugin(plugin: string): void {
+    this.workflowForm.get(plugin)!.setValue(!this.workflowForm.get(plugin)!.value);
     this.headerOrbClicked.emit(plugin);
   }
 
@@ -93,9 +95,9 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     this.isDragging = false;
   }
 
-  toggleHyperactive(e: Event, tf?: boolean): void {
+  toggleDragOver(e: Event, tf?: boolean): void {
     const el = e.target as HTMLElement;
-    const clss = 'hyperactive';
+    const clss = 'drag-over';
     if (tf) {
       el!.classList.add(clss);
     } else {
@@ -107,7 +109,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   drop(e: EventDragDT, pluginIndex: number): void {
     if (this.isDragging) {
       this.isDragging = false;
-      this.toggleHyperactive(e);
+      this.toggleDragOver(e);
       this.setLinkCheck.emit(this.dropIndexAdjust(pluginIndex));
       e.preventDefault();
     }
@@ -119,19 +121,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const el = this.elRef.nativeElement;
-
     window.addEventListener('scroll', () => {
       const cs = getComputedStyle(el);
-
       if (cs && cs.top) {
         const stickyOffset = parseInt(cs.top.replace('px', ''), 10);
-        const isStuck = el.getBoundingClientRect().top <= stickyOffset;
-
-        if (isStuck) {
-          el.classList.add('stuck');
-        } else {
-          el.classList.remove('stuck');
-        }
+        this.isStuck = el.getBoundingClientRect().top <= stickyOffset;
       }
     });
   }

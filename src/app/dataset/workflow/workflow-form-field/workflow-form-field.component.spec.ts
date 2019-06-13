@@ -47,12 +47,10 @@ describe('WorkflowFormFieldComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should have different scroll behaviours', () => {
-    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeFalsy();
-    component.scrollToInput(true);
-    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeTruthy();
-    component.scrollToInput();
-    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeFalsy();
+  it('should indicate if inactive', () => {
+    expect(component.isInactive()).toBeTruthy();
+    component.conf.name = 'pluginLINK_CHECKING';
+    expect(component.isInactive()).toBeFalsy();
   });
 
   it('should emit events when the field value changes', () => {
@@ -60,5 +58,12 @@ describe('WorkflowFormFieldComponent', () => {
     document.querySelector('input')!.click();
     fixture.detectChanges();
     expect(component.fieldChanged.emit).toHaveBeenCalled();
+  });
+
+  it('should emit events when link checking gets set', () => {
+    spyOn(component.setLinkCheck, 'emit');
+    component.ctrlSetLinkCheck(0);
+    fixture.detectChanges();
+    expect(component.setLinkCheck.emit).toHaveBeenCalled();
   });
 });

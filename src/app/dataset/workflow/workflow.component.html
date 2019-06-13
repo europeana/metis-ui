@@ -1,4 +1,7 @@
-<div class="metis-form metis-form-horizontal workflow-form">
+<div
+  class="metis-form metis-form-horizontal workflow-form"
+  [ngClass]="{ 'anchors-offset': isAnchorsOffset }"
+>
   <form [formGroup]="workflowForm">
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">

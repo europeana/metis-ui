@@ -10,7 +10,7 @@ import {
   MockTranslateService,
   MockWorkflowService
 } from '../../_mocked';
-import { successNotification, workflowFormFieldConf } from '../../_models';
+import { DragType, PluginType, successNotification, workflowFormFieldConf } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -46,8 +46,58 @@ describe('WorkflowComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should set the link checking', () => {
+    expect(component.workflowForm.dirty).toBeFalsy();
+    component.setLinkCheck(1);
+    expect(component.workflowForm.dirty).toBeTruthy();
+  });
+
+  it('should rearrange the config', () => {
+    let indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    component.rearrange(1);
+    indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(2);
+    component.rearrange(2);
+    indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(3);
+  });
+
+  it('should rearrange the config (wrapper) onHeaderSynchronise', () => {
+    spyOn(component, 'rearrange');
+    component.workflowData = {
+      datasetId: '1',
+      id: '1',
+      metisPluginsMetadata: [
+        {
+          enabled: true,
+          metadataFormat: 'edm',
+          pluginType: PluginType.OAIPMH_HARVEST,
+          setSpec: 'oai_test',
+          url: 'http://www.mocked.com'
+        },
+        {
+          enabled: true,
+          pluginType: PluginType.TRANSFORMATION,
+          customXslt: false
+        },
+        {
+          enabled: true,
+          pluginType: PluginType.MEDIA_PROCESS
+        },
+        {
+          enabled: true,
+          pluginType: PluginType.LINK_CHECKING
+        }
+      ]
+    };
+    component.onHeaderSynchronised();
+    expect(component.rearrange).toHaveBeenCalledWith(2);
   });
 
   it('should reset', () => {

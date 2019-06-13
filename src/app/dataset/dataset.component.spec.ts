@@ -14,6 +14,7 @@ import {
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
 import { DatasetComponent } from '.';
+import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
 describe('DatasetComponent', () => {
@@ -41,10 +42,11 @@ describe('DatasetComponent', () => {
   });
 
   it('responds to form initialisation by setting it in the header', () => {
+    component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
     component.workflowHeaderRef = new WorkflowHeaderComponent();
-    spyOn(component.workflowHeaderRef, 'setWorkflowForm');
+    spyOn(component.workflowFormRef, 'onHeaderSynchronised');
     component.formInitialised({} as FormGroup);
-    expect(component.workflowHeaderRef.setWorkflowForm).toHaveBeenCalled();
+    expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
   });
 
   it('should get dataset info', () => {

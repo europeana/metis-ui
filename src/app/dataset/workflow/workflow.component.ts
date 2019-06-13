@@ -58,6 +58,7 @@ export class WorkflowComponent implements OnInit {
   newWorkflow = true;
   workflowForm: FormGroup;
   isSaving = false;
+  isAnchorsOffset = false;
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -65,6 +66,15 @@ export class WorkflowComponent implements OnInit {
   invalidNotification: Notification;
 
   DragTypeEnum = DragType;
+
+  onHeaderSynchronised(): void {
+    const index = this.workflowData!.metisPluginsMetadata.findIndex((plugin) => {
+      return plugin.pluginType === 'LINK_CHECKING';
+    });
+    if (index > -1) {
+      this.rearrange(index - 1);
+    }
+  }
 
   /** ngOnInit
   /* init for this component
@@ -111,18 +121,18 @@ export class WorkflowComponent implements OnInit {
 
   setLinkCheck(linkCheckIndex: number): void {
     this.rearrange(linkCheckIndex);
+    this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
   }
 
-  scrollToPlugin(name?: string): void {
-    if (name) {
-      this.inputFields.forEach((input) => {
-        if (input.conf.name === name) {
+  scrollToPlugin(name: string, headerStuck: boolean): void {
+    this.isAnchorsOffset = headerStuck;
+    this.inputFields.forEach((input) => {
+      if (input.conf.name === name) {
+        setTimeout(() => {
           input.scrollToInput();
-        }
-      });
-    } else {
-      this.inputFields.first.scrollToInput(true);
-    }
+        }, 1);
+      }
+    });
   }
 
   rearrange(insertIndex: number): void {
@@ -146,6 +156,7 @@ export class WorkflowComponent implements OnInit {
       this.fieldConf.splice(insertIndex + 1, 0, shiftable);
       this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
     }
+    this.workflowStepAllowed();
   }
 
   /** updateRequired
@@ -153,6 +164,10 @@ export class WorkflowComponent implements OnInit {
   */
   updateRequired(): void {
     this.workflowForm.valueChanges.subscribe(() => {
+      if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
+        this.workflowForm.get('pluginLINK_CHECKING')!.setValidators([Validators.required]);
+      }
+
       if (this.workflowForm.get('pluginHARVEST')!.value === true) {
         this.workflowForm.get('pluginType')!.setValidators([Validators.required]);
         this.workflowForm
@@ -207,26 +222,35 @@ export class WorkflowComponent implements OnInit {
   */
   workflowStepAllowed(): void {
     let hasValue = 0;
-    this.fieldConf
-      .filter((field) => {
-        if (field.name !== 'pluginLINK_CHECKING') {
-          this.workflowForm.get(field.name)!.disable();
-          return field;
-        }
-        return undefined;
-      })
-      .forEach((field, index) => {
+    let prevWasLinkCheck = false;
+    let enableNext = false;
+
+    this.fieldConf.forEach((field, index) => {
+      if (field.name === 'pluginLINK_CHECKING') {
+        prevWasLinkCheck = true;
+      } else {
+        this.workflowForm.get(field.name)!.disable();
+
         if (this.workflowForm.get(field.name)!.value) {
           hasValue++;
-          if (index - 1 >= 0) {
+
+          if (prevWasLinkCheck && index - 2 >= 0) {
+            this.workflowForm.get(this.fieldConf[index - 2].name)!.enable();
+          } else if (index - 1 >= 0) {
             this.workflowForm.get(this.fieldConf[index - 1].name)!.enable();
           }
+
           this.workflowForm.get(this.fieldConf[index].name)!.enable();
           if (index + 1 < this.fieldConf.length) {
-            this.workflowForm.get(this.fieldConf[index + 1].name)!.enable();
+            enableNext = true;
           }
+        } else if (enableNext) {
+          this.workflowForm.get(this.fieldConf[index].name)!.enable();
+          enableNext = false;
         }
-      });
+        prevWasLinkCheck = false;
+      }
+    });
 
     if (hasValue === 0) {
       this.fieldConf.forEach((field) => {
@@ -300,7 +324,7 @@ export class WorkflowComponent implements OnInit {
     const plugins: PluginMetadata[] = [];
 
     this.fieldConf.forEach((conf) => {
-      if (this.workflowForm.value[conf.name]) {
+      if (conf.dragType !== DragType.dragSource && this.workflowForm.value[conf.name]) {
         if (conf.name === 'pluginHARVEST') {
           if (this.workflowForm.value.pluginType === PluginType.OAIPMH_HARVEST) {
             plugins.push({
@@ -333,6 +357,7 @@ export class WorkflowComponent implements OnInit {
         }
       }
     });
+
     return {
       metisPluginsMetadata: plugins
     };

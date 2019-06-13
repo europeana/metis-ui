@@ -63,8 +63,9 @@ $border-colour-shortcuts: #dbd9d9;
       color: $white;
     }
   }
-  &.hyperactive {
-    border: 3px solid red;
+  &.labelled.LINK_CHECKING:hover,
+  &.drag-over {
+    box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
   }
   &.labelled.LINK_CHECKING {
     background: $eu-jade;
@@ -159,6 +160,10 @@ $border-colour-shortcuts: #dbd9d9;
   z-index: 1;
 
   &.stuck {
+    &.labelled.LINK_CHECKING:hover,
+    .drag-over {
+      box-shadow: 0 0 0 3px rgba($eu-jade, 0.3);
+    }
     .full-view {
       height: 0;
       opacity: 0;

@@ -21,9 +21,7 @@ export class WorkflowFormFieldHarvestComponent {
   }
 
   isProtocolHTTP(): boolean {
-    return this.workflowForm
-      ? this.workflowForm.value.pluginType === PluginType.HTTP_HARVEST
-      : false;
+    return this.workflowForm!.value.pluginType === PluginType.HTTP_HARVEST;
   }
 
   getImportSummary(): string {

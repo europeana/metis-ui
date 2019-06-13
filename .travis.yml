@@ -8,6 +8,11 @@ cache:
   - ~/.npm
   - ~/.cache
 
+addons:
+  apt:
+    packages:
+    - libgconf-2-4
+
 before_install:
 - export TZ=Europe/Amsterdam
 

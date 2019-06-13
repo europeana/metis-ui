@@ -73,7 +73,7 @@
             }}</span>
           </a>
         </li>
-        <li [ngClass]="{ active: activeTab === 'workflow' }">
+        <li [ngClass]="{ active: activeTab === 'workflow' }" #tabWorkflow>
           <a routerLink="/dataset/workflow/{{ datasetId }}">
             <span class="tab-title">{{ 'workflow' | translate }}</span>
           </a>

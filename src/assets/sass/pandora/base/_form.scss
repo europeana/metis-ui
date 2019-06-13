@@ -322,7 +322,15 @@
   }
 }
 
+// workflow-form specific
+
 .metis-form.workflow-form {
+  &.anchors-offset {
+    .form-field-anchor {
+      transform: translateY(-8.75rem);
+    }
+  }
+
   .form-group {
     input:focus {
       border-color: $eu-jade;

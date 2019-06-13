@@ -72,7 +72,11 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should respond to orb clicks', () => {
     spyOn(component.headerOrbClicked, 'emit');
-    component.activatePlugin('test');
+    const fGroup: FormGroup = new FormBuilder().group({
+      pluginType: true
+    });
+    component.setWorkflowForm(fGroup);
+    component.activatePlugin('pluginType');
     expect(component.headerOrbClicked.emit).toHaveBeenCalled();
   });
 
@@ -151,6 +155,13 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isDragging).toBeFalsy();
   });
 
+  it('should adjust the index', () => {
+    expect(component.dropIndexAdjust(-1)).toBe(-1);
+    expect(component.dropIndexAdjust(1)).toBe(0);
+    expect(component.dropIndexAdjust(2)).toBe(1);
+    expect(component.dropIndexAdjust(3)).toBe(2);
+  });
+
   it('should add a class to the orbs when the link-checking element is dragged over them', () => {
     const el = fixture.nativeElement.querySelector('.orb-status');
     // tslint:disable: no-any
@@ -159,29 +170,31 @@ describe('WorkflowHeaderComponent', () => {
     spyOn(ev, 'preventDefault');
     expect(el).toBeTruthy();
     if (el) {
-      expect(el.classList.contains('hyperactive')).toBeFalsy();
+      expect(el.classList.contains('drag-over')).toBeFalsy();
       component.isDragging = true;
-      expect(el.classList.contains('hyperactive')).toBeFalsy();
-      component.toggleHyperactive(ev, true);
-      expect(el.classList.contains('hyperactive')).toBeTruthy();
+      expect(el.classList.contains('drag-over')).toBeFalsy();
+      component.toggleDragOver(ev, true);
+      expect(el.classList.contains('drag-over')).toBeTruthy();
       expect(ev.preventDefault).toHaveBeenCalled();
 
-      component.toggleHyperactive(ev, false);
-      expect(el.classList.contains('hyperactive')).toBeFalsy();
-
-      /*
-      component.isDragging = false;
-      component.toggleHyperactive(ev, true);
-      expect(el.classList.contains('hyperactive')).toBeFalsy();
-
-      component.toggleHyperactive(ev, false);
-      expect(el.classList.contains('hyperactive')).toBeFalsy();
-      */
+      component.toggleDragOver(ev, false);
+      expect(el.classList.contains('drag-over')).toBeFalsy();
     }
   });
 
   it('should fire an event when the link-checking element is dropped', () => {
     spyOn(component.setLinkCheck, 'emit');
+    component.isDragging = false;
+    // tslint:disable: no-any
+    component.drop(
+      ({
+        target: fixture.nativeElement.querySelector('.orb-status'),
+        preventDefault: () => {}
+      } as any) as Event,
+      0
+    );
+    expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
+
     component.isDragging = true;
     // tslint:disable: no-any
     component.drop(
@@ -192,6 +205,19 @@ describe('WorkflowHeaderComponent', () => {
       0
     );
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
+  });
+
+  it('should not fire an event if no drag was started', () => {
+    spyOn(component.setLinkCheck, 'emit');
+    // tslint:disable: no-any
+    component.drop(
+      ({
+        target: fixture.nativeElement.querySelector('.orb-status'),
+        preventDefault: () => {}
+      } as any) as Event,
+      0
+    );
+    expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
   });
 
   it('should fire an event to return to top', () => {
@@ -219,27 +245,13 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeFalsy();
   });
 
-  /*
   it('should respond to scrolling', () => {
-    expect(component.elRef.nativeElement.classList.contains('stuck')).toBeFalsy();
-
-    //(window as any).screen = { width: 300, height: 500 };
-
-    component.elRef.nativeElement.scrollIntoView();
-
+    expect(component.isStuck).toBeFalsy();
+    component.isStuck = true;
+    expect(component.isStuck).toBeTruthy();
     window.dispatchEvent(new Event('scroll'));
-
-    // let x = document.createEvent('CustomEvent');
-    // x.initCustomEvent( 'scroll', false, false, null );
-    // window.dispatchEvent(x);
-    // window.dispatchEvent(new Event('scroll'));
-
-    // fixture.detectChanges();
-
-    // console.log(component.elRef.nativeElement.classList);
-    // expect(component.elRef.nativeElement.classList.contains('stuck')).toBeTruthy();
+    expect(component.isStuck).toBeFalsy();
   });
-  */
 
   it('should allow link checking to be removed', () => {
     spyOn(component.setLinkCheck, 'emit');

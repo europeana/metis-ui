@@ -1,6 +1,6 @@
 <span class="ghost LINK_CHECKING orb-status labelled active" #ghost></span>
 
-<div class="workflow-header" #workflowheader>
+<div class="workflow-header" #workflowheader [ngClass]="{ stuck: isStuck }">
   <div class="full-view">
     <span class="shortcuts">
       <a class="link" (click)="selectAll()">{{ 'workflow-select-all' | translate }}</a>
@@ -32,11 +32,11 @@
           (dragend)="dragEnd()"
           (dragover)="
             plugin.dragType == DragTypeEnum.dragNone
-              ? toggleHyperactive($event, isDragging)
+              ? toggleDragOver($event, isDragging)
               : undefined
           "
           (dragleave)="
-            plugin.dragType !== DragTypeEnum.dragNone ? undefined : toggleHyperactive($event)
+            plugin.dragType !== DragTypeEnum.dragNone ? undefined : toggleDragOver($event)
           "
           (drop)="plugin.dragType !== DragTypeEnum.dragNone ? undefined : drop($event, i)"
           (dragstart)="plugin.dragType === DragTypeEnum.dragCopy ? dragStart($event) : undefined"
