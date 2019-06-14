@@ -68,11 +68,14 @@ export class WorkflowComponent implements OnInit {
   DragTypeEnum = DragType;
 
   onHeaderSynchronised(): void {
-    const index = this.workflowData!.metisPluginsMetadata.findIndex((plugin) => {
+    const index = this.workflowData!.metisPluginsMetadata.filter((plugin) => {
+      return plugin.enabled;
+    }).findIndex((plugin) => {
       return plugin.pluginType === 'LINK_CHECKING';
     });
+
     if (index > -1) {
-      this.rearrange(index - 1);
+      this.rearrange(index - 1, true);
     }
   }
 
@@ -120,7 +123,7 @@ export class WorkflowComponent implements OnInit {
   }
 
   setLinkCheck(linkCheckIndex: number): void {
-    this.rearrange(linkCheckIndex);
+    this.rearrange(linkCheckIndex, false);
     this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
   }
 
@@ -135,7 +138,7 @@ export class WorkflowComponent implements OnInit {
     });
   }
 
-  rearrange(insertIndex: number): void {
+  rearrange(insertIndex: number, correctForInactive: boolean): void {
     let removeIndex = -1;
     let shiftable;
 
@@ -153,8 +156,26 @@ export class WorkflowComponent implements OnInit {
       this.fieldConf.splice(removeIndex, 1);
     }
     if (shiftable && insertIndex > -1) {
-      this.fieldConf.splice(insertIndex + 1, 0, shiftable);
       this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
+
+      let activeCount = -1;
+      let newInsertIndex = -1;
+
+      if (correctForInactive) {
+        this.inputFields.map((f, index) => {
+          if (!f.isInactive()) {
+            activeCount++;
+          }
+          if (activeCount === insertIndex && newInsertIndex < 0) {
+            newInsertIndex = index;
+          }
+        });
+      } else {
+        newInsertIndex = insertIndex;
+      }
+      if (newInsertIndex > -1) {
+        this.fieldConf.splice(newInsertIndex + 1, 0, shiftable);
+      }
     }
     this.workflowStepAllowed();
   }
@@ -272,43 +293,41 @@ export class WorkflowComponent implements OnInit {
 
     for (let w = 0; w < workflow.metisPluginsMetadata.length; w++) {
       const thisWorkflow = workflow.metisPluginsMetadata[w];
-
       if (thisWorkflow.enabled === true) {
         if (
           thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
           thisWorkflow.pluginType === 'HTTP_HARVEST'
         ) {
           this.workflowForm.controls.pluginHARVEST.setValue(true);
-          this.workflowStepAllowed();
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-          this.workflowStepAllowed();
         }
-      }
-
-      if (['OAIPMH_HARVEST', 'HTTP_HARVEST'].indexOf(thisWorkflow.pluginType) > -1) {
-        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
-          this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
-          this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
-          this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
-        } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
-          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
-          this.workflowForm.controls.url.setValue(thisWorkflow.url);
-        }
-      } else {
         this.workflowStepAllowed();
 
-        // transformation
-        if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-          this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-        }
+        if (['OAIPMH_HARVEST', 'HTTP_HARVEST'].indexOf(thisWorkflow.pluginType) > -1) {
+          if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+            this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
+            this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
+            this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
+            this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
+          } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+            this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
+            this.workflowForm.controls.url.setValue(thisWorkflow.url);
+          }
+        } else {
+          this.workflowStepAllowed();
 
-        // link checking
-        if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-          this.workflowForm.controls.performSampling.setValue(
-            thisWorkflow.performSampling ? 'true' : 'false'
-          );
+          // transformation
+          if (thisWorkflow.pluginType === 'TRANSFORMATION') {
+            this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+          }
+
+          // link checking
+          if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+            this.workflowForm.controls.performSampling.setValue(
+              thisWorkflow.performSampling ? 'true' : 'false'
+            );
+          }
         }
       }
     }

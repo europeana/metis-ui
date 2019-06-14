@@ -46,13 +46,7 @@
       <ul>
         <li><a class="ctrl remove" (click)="ctrlSetLinkCheck(-1)"></a></li>
         <li>
-          <a
-            class="ctrl up"
-            (click)="ctrlSetLinkCheck(index - 2)"
-            [ngClass]="{
-              disabled: index < 2
-            }"
-          ></a>
+          <a class="ctrl up" (click)="ctrlSetLinkCheck(index - 2)"></a>
         </li>
         <li><a class="ctrl down" (click)="ctrlSetLinkCheck(index)"></a></li>
       </ul>

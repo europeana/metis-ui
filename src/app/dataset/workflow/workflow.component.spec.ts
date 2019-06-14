@@ -46,6 +46,14 @@ describe('WorkflowComponent', () => {
     fixture.detectChanges();
   });
 
+  it('should implement different scroll behaviours', () => {
+    expect(component.isAnchorsOffset).toBeFalsy();
+    component.scrollToPlugin('pluginVALIDATION_EXTERNAL', true);
+    expect(component.isAnchorsOffset).toBeTruthy();
+    component.scrollToPlugin('pluginHARVEST', false);
+    expect(component.isAnchorsOffset).toBeFalsy();
+  });
+
   it('should set the link checking', () => {
     expect(component.workflowForm.dirty).toBeFalsy();
     component.setLinkCheck(1);
@@ -56,12 +64,12 @@ describe('WorkflowComponent', () => {
     let indexCopy = component.fieldConf.findIndex((c) => {
       return c.dragType === DragType.dragCopy;
     });
-    component.rearrange(1);
+    component.rearrange(1, false);
     indexCopy = component.fieldConf.findIndex((c) => {
       return c.dragType === DragType.dragCopy;
     });
     expect(indexCopy).toBe(2);
-    component.rearrange(2);
+    component.rearrange(2, false);
     indexCopy = component.fieldConf.findIndex((c) => {
       return c.dragType === DragType.dragCopy;
     });
@@ -75,29 +83,33 @@ describe('WorkflowComponent', () => {
       id: '1',
       metisPluginsMetadata: [
         {
-          enabled: true,
           metadataFormat: 'edm',
           pluginType: PluginType.OAIPMH_HARVEST,
           setSpec: 'oai_test',
-          url: 'http://www.mocked.com'
+          url: 'http://www.mocked.com',
+          enabled: true
         },
         {
-          enabled: true,
           pluginType: PluginType.TRANSFORMATION,
-          customXslt: false
+          customXslt: false,
+          enabled: true
         },
         {
-          enabled: true,
-          pluginType: PluginType.MEDIA_PROCESS
+          pluginType: PluginType.MEDIA_PROCESS,
+          enabled: true
         },
         {
-          enabled: true,
-          pluginType: PluginType.LINK_CHECKING
+          pluginType: PluginType.LINK_CHECKING,
+          enabled: true
+        },
+        {
+          pluginType: PluginType.VALIDATION_INTERNAL,
+          enabled: true
         }
       ]
     };
     component.onHeaderSynchronised();
-    expect(component.rearrange).toHaveBeenCalledWith(2);
+    expect(component.rearrange).toHaveBeenCalledWith(2, true);
   });
 
   it('should reset', () => {
@@ -111,6 +123,7 @@ describe('WorkflowComponent', () => {
 
     component.workflowForm.get('pluginHARVEST')!.setValue(true);
     component.workflowForm.get('pluginType')!.setValue('HTTP_HARVEST');
+
     component.workflowForm.get('pluginTRANSFORMATION')!.setValue(true);
     component.workflowForm.get('customXslt')!.setValue('mocked');
     component.workflowForm.get('pluginVALIDATION_EXTERNAL')!.setValue(true);
@@ -127,7 +140,6 @@ describe('WorkflowComponent', () => {
     expect(component.getSaveNotification()!.content).toBe('en:workflowsavenew');
 
     component.onSubmit();
-    fixture.detectChanges();
     expect(component.getRunNotification()!.content).toBe('en:workflowsaved');
   });
 

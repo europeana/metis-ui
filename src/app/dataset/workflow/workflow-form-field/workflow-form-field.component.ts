@@ -20,13 +20,8 @@ export class WorkflowFormFieldComponent {
     this.setLinkCheck.emit(index);
   }
 
-  scrollToInput(smooth?: boolean): void {
-    if (smooth) {
-      this.pluginElement.nativeElement.classList.add('returning');
-    } else {
-      this.pluginElement.nativeElement.classList.remove('returning');
-    }
-    this.pluginElement.nativeElement.scrollIntoView(smooth ? { behavior: 'smooth' } : false);
+  scrollToInput(): void {
+    this.pluginElement.nativeElement.scrollIntoView(false);
   }
 
   isInactive(): boolean {

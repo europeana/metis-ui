@@ -400,6 +400,7 @@
     display: flex;
   }
 
+  :nth-child(2) > .plugin-form-fields .link-check-ctrl .ctrl.up,
   .plugin-form-fields .link-check-ctrl .ctrl.disabled,
   :last-of-type > .plugin-form-fields .link-check-ctrl .ctrl.down {
     display: none;

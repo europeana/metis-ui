@@ -30,8 +30,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   isStuck: boolean;
   DragTypeEnum = DragType;
 
-  activatePlugin(plugin: string): void {
-    this.workflowForm.get(plugin)!.setValue(!this.workflowForm.get(plugin)!.value);
+  togglePlugin(plugin: string): void {
+    if (plugin !== 'pluginLINK_CHECKING') {
+      this.workflowForm.get(plugin)!.setValue(!this.workflowForm.get(plugin)!.value);
+      this.workflowForm.markAsDirty();
+    }
     this.headerOrbClicked.emit(plugin);
   }
 

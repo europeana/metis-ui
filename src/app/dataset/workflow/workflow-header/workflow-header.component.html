@@ -27,7 +27,7 @@
         <a
           *ngIf="plugin.dragType !== DragTypeEnum.dragSource"
           title="{{ getAdjustableLabel(i) | renameWorkflow }}"
-          (click)="activatePlugin(plugin.name)"
+          (click)="togglePlugin(plugin.name)"
           class="{{ getAdjustableLabel(i) }} orb-status labelled"
           (dragend)="dragEnd()"
           (dragover)="

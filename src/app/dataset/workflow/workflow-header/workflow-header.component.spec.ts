@@ -76,7 +76,7 @@ describe('WorkflowHeaderComponent', () => {
       pluginType: true
     });
     component.setWorkflowForm(fGroup);
-    component.activatePlugin('pluginType');
+    component.togglePlugin('pluginType');
     expect(component.headerOrbClicked.emit).toHaveBeenCalled();
   });
 
