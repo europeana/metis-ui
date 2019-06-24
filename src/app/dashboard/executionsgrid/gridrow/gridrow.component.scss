@@ -230,3 +230,8 @@ $row-border-height-min: 3px;
     }
   }
 }
+
+.labelled.LINK_CHECKING::after {
+  content: 'L';
+  background: none;
+}

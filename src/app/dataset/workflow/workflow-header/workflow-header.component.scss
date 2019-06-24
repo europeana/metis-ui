@@ -10,10 +10,37 @@ $border-colour-shortcuts: #dbd9d9;
   padding: 1em;
 }
 
+.ghost {
+  position: relative;
+  z-index: -1;
+}
+
+.add-link-checking {
+  position: relative;
+  &.active::after {
+    content: 'x';
+    font-weight: bold;
+    left: -1em;
+    position: absolute;
+  }
+}
+
 .instruction {
   font-weight: bold;
   flex-grow: 2;
   text-align: center;
+}
+
+@keyframes pulseLinkCheckingAdded {
+  0% {
+    box-shadow: 0 0 0 0 rgba($eu-jade, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba($eu-jade, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($eu-jade, 0);
+  }
 }
 
 .orb-status {
@@ -36,6 +63,22 @@ $border-colour-shortcuts: #dbd9d9;
       color: $white;
     }
   }
+  &.labelled.LINK_CHECKING:hover,
+  &.drag-over {
+    box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
+  }
+  &.labelled.LINK_CHECKING {
+    background: $eu-jade;
+
+    animation: pulseLinkCheckingAdded 1000ms 1;
+
+    &::after {
+      background-repeat: no-repeat;
+      font-size: 0.6em;
+      height: 1.5em;
+      transform: translate(19%, -51%);
+    }
+  }
 }
 
 .shortcuts {
@@ -44,7 +87,6 @@ $border-colour-shortcuts: #dbd9d9;
   position: absolute;
 
   .link {
-    display: inline-block;
     padding: 0 1.25em;
 
     &:last-of-type {
@@ -86,9 +128,11 @@ $border-colour-shortcuts: #dbd9d9;
   }
 }
 
+.add-link-checking,
 .link,
 .return-text {
   color: $gray-light;
+  display: inline-block;
   font-size: 14px;
   text-transform: lowercase;
 
@@ -116,6 +160,10 @@ $border-colour-shortcuts: #dbd9d9;
   z-index: 1;
 
   &.stuck {
+    &.labelled.LINK_CHECKING:hover,
+    .drag-over {
+      box-shadow: 0 0 0 3px rgba($eu-jade, 0.3);
+    }
     .full-view {
       height: 0;
       opacity: 0;

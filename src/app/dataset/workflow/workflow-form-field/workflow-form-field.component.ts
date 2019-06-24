@@ -10,17 +10,25 @@ import { WorkflowFieldData } from '../../../_models';
 })
 export class WorkflowFormFieldComponent {
   @Input() conf: WorkflowFieldData;
+  @Input() index: number;
   @Input() workflowForm: FormGroup;
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
+  @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 
-  scrollToInput(smooth?: boolean): void {
-    if (smooth) {
-      this.pluginElement.nativeElement.classList.add('returning');
-    } else {
-      this.pluginElement.nativeElement.classList.remove('returning');
+  ctrlSetLinkCheck(index: number): void {
+    this.setLinkCheck.emit(index);
+  }
+
+  scrollToInput(): void {
+    this.pluginElement.nativeElement.scrollIntoView(false);
+  }
+
+  isInactive(): boolean {
+    if (this.conf.name === 'pluginLINK_CHECKING') {
+      return false;
     }
-    this.pluginElement.nativeElement.scrollIntoView(smooth ? { behavior: 'smooth' } : false);
+    return !this.workflowForm.get(this.conf.name)!.value;
   }
 
   onFieldChanged(fieldName: string): void {

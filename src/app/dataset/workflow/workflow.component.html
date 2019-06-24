@@ -1,4 +1,7 @@
-<div class="metis-form metis-form-horizontal workflow-form">
+<div
+  class="metis-form metis-form-horizontal workflow-form"
+  [ngClass]="{ 'anchors-offset': isAnchorsOffset }"
+>
   <form [formGroup]="workflowForm">
     <div class="predefined-workflows">
       <ul class="predefined-workflows-tabs">
@@ -7,12 +10,16 @@
     </div>
 
     <div class="form-fields-container">
-      <ng-container *ngFor="let conf of fieldConf">
-        <app-workflow-form-field
-          [conf]="conf"
-          [workflowForm]="workflowForm"
-          (fieldChanged)="workflowStepAllowed()"
-        ></app-workflow-form-field>
+      <ng-container *ngFor="let conf of fieldConf; index as i">
+        <ng-container *ngIf="conf.dragType !== DragTypeEnum.dragSource">
+          <app-workflow-form-field
+            [conf]="conf"
+            [index]="i"
+            [workflowForm]="workflowForm"
+            (fieldChanged)="workflowStepAllowed()"
+            (setLinkCheck)="setLinkCheck($event)"
+          ></app-workflow-form-field>
+        </ng-container>
       </ng-container>
 
       <div class="form-fields form-fields-buttons">

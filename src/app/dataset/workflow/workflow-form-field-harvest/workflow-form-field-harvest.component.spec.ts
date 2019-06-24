@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
-import { PluginType, WorkflowFieldDataParameterised } from '../../../_models';
+import { ParameterFieldName, PluginType, WorkflowFieldDataParameterised } from '../../../_models';
 import { TranslateService } from '../../../_translate';
 
 import { WorkflowFormFieldHarvestComponent } from '.';
@@ -15,6 +15,7 @@ describe('WorkflowFormFieldHarvestComponent', () => {
   const formBuilder: FormBuilder = new FormBuilder();
   const urlHarvest1 = 'http://harvest-1';
   const urlHarvest2 = 'http://harvest-2';
+  const fmtMeta = 'EDM';
   const spec = 'specification';
 
   beforeEach(async(() => {
@@ -39,7 +40,7 @@ describe('WorkflowFormFieldHarvestComponent', () => {
     component.conf = {
       label: 'HARVEST',
       name: 'pluginHARVEST',
-      parameterFields: ['pluginType']
+      parameterFields: [ParameterFieldName.pluginType]
     } as WorkflowFieldDataParameterised;
 
     component.workflowForm = formBuilder.group({
@@ -48,7 +49,7 @@ describe('WorkflowFormFieldHarvestComponent', () => {
       harvestUrl: urlHarvest1,
       url: urlHarvest2,
       setSpec: spec,
-      metadataFormat: 'mdf'
+      metadataFormat: null
     });
     fixture.detectChanges();
   });
@@ -79,5 +80,9 @@ describe('WorkflowFormFieldHarvestComponent', () => {
     expect(component.getImportSummary().indexOf(spec)).toBeGreaterThan(0);
     expect(component.getImportSummary().indexOf(urlHarvest1)).toBeGreaterThan(0);
     expect(component.getImportSummary().indexOf(urlHarvest2)).toBeLessThan(0);
+
+    expect(component.getImportSummary().indexOf(fmtMeta)).toBeLessThan(0);
+    component.workflowForm.value.metadataFormat = fmtMeta;
+    expect(component.getImportSummary().indexOf(fmtMeta)).toBeGreaterThan(0);
   });
 });

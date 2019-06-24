@@ -1,5 +1,25 @@
 import { PluginType } from './workflow-execution';
 
+// header
+
+export interface DragDT {
+  setData(s1: string, s2: string): void;
+  getData(s1: string): string;
+  setDragImage(HTMLElement: string, i1: number, i2: number): void;
+}
+
+export interface EventDragDT extends Event {
+  dataTransfer?: DragDT;
+}
+
+export enum DragType {
+  dragNone = 'dragNone',
+  dragCopy = 'dragCopy',
+  dragSource = 'dragSource'
+}
+
+// form
+
 export type WorkflowFieldDataName =
   | 'pluginHARVEST'
   | 'pluginTRANSFORMATION'
@@ -27,6 +47,7 @@ export type ParameterField = Array<ParameterFieldName>;
 interface WorkflowFieldDataBase {
   label: string;
   name: WorkflowFieldDataName;
+  dragType: DragType;
 }
 
 export interface WorkflowFieldData extends WorkflowFieldDataBase {
@@ -65,7 +86,8 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
   {
     label: 'HARVEST',
     name: 'pluginHARVEST' as WorkflowFieldDataName,
-    parameterFields: parameterFieldPresets.HARVEST
+    parameterFields: parameterFieldPresets.HARVEST,
+    dragType: DragType.dragNone
   }
 ].concat(
   Object.values(PluginType)
@@ -74,12 +96,14 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
         ? {
             label: '' as string,
             name: '' as WorkflowFieldDataName,
-            parameterFields: null
+            parameterFields: null,
+            dragType: DragType.dragNone
           }
         : {
             label: PluginType[pType] as string,
             name: ('plugin' + pType) as WorkflowFieldDataName,
-            parameterFields: parameterFieldPresets[pType]
+            parameterFields: parameterFieldPresets[pType],
+            dragType: pType === 'LINK_CHECKING' ? DragType.dragSource : DragType.dragNone
           };
     })
     .filter((fData) => fData.label.length > 0)

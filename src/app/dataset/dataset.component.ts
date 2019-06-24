@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
@@ -78,10 +78,12 @@ export class DatasetComponent implements OnInit, OnDestroy {
   @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
 
   @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
+  @ViewChild('tabWorkflow') tabWorkflow: ElementRef;
 
   formInitialised(workflowForm: FormGroup): void {
-    if (this.workflowHeaderRef) {
+    if (this.workflowHeaderRef && this.workflowFormRef) {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);
+      this.workflowFormRef.onHeaderSynchronised();
     } else {
       setTimeout(() => {
         this.formInitialised(workflowForm);
@@ -141,11 +143,15 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   headerOrbClicked(step: string): void {
-    this.workflowFormRef.scrollToPlugin(step);
+    this.workflowFormRef.scrollToPlugin(step, this.workflowHeaderRef.isStuck);
   }
 
   returnToTop(): void {
-    this.workflowFormRef.scrollToPlugin();
+    this.tabWorkflow.nativeElement!.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  setLinkCheck(linkCheckIndex: number): void {
+    this.workflowFormRef.setLinkCheck(linkCheckIndex);
   }
 
   ngOnDestroy(): void {

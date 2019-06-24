@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { harvestValidator } from '../../_helpers';
 import {
   Dataset,
+  DragType,
   errorNotification,
   httpErrorNotification,
   isWorkflowCompleted,
@@ -57,11 +58,26 @@ export class WorkflowComponent implements OnInit {
   newWorkflow = true;
   workflowForm: FormGroup;
   isSaving = false;
+  isAnchorsOffset = false;
 
   newNotification: Notification;
   saveNotification: Notification;
   runningNotification: Notification;
   invalidNotification: Notification;
+
+  DragTypeEnum = DragType;
+
+  onHeaderSynchronised(): void {
+    const index = this.workflowData!.metisPluginsMetadata.filter((plugin) => {
+      return plugin.enabled;
+    }).findIndex((plugin) => {
+      return plugin.pluginType === 'LINK_CHECKING';
+    });
+
+    if (index > -1) {
+      this.rearrange(index - 1, true);
+    }
+  }
 
   /** ngOnInit
   /* init for this component
@@ -106,16 +122,62 @@ export class WorkflowComponent implements OnInit {
     this.updateRequired();
   }
 
-  scrollToPlugin(name?: string): void {
-    if (name) {
-      this.inputFields.forEach((input) => {
-        if (input.conf.name === name) {
+  setLinkCheck(linkCheckIndex: number): void {
+    this.rearrange(linkCheckIndex, false);
+    this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
+  }
+
+  scrollToPlugin(name: string, headerStuck: boolean): void {
+    this.isAnchorsOffset = headerStuck;
+    this.inputFields.forEach((input) => {
+      if (input.conf.name === name) {
+        setTimeout(() => {
           input.scrollToInput();
-        }
-      });
-    } else {
-      this.inputFields.first.scrollToInput(true);
+        }, 1);
+      }
+    });
+  }
+
+  rearrange(insertIndex: number, correctForInactive: boolean): void {
+    let removeIndex = -1;
+    let shiftable;
+
+    this.fieldConf.forEach((confItem, index) => {
+      if (confItem.dragType === DragType.dragCopy) {
+        removeIndex = index;
+      } else if (confItem.dragType === DragType.dragSource) {
+        shiftable = Object.assign({}, confItem);
+        shiftable.dragType = DragType.dragCopy;
+      }
+    });
+
+    if (removeIndex > -1) {
+      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(false);
+      this.fieldConf.splice(removeIndex, 1);
     }
+    if (shiftable && insertIndex > -1) {
+      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
+
+      let activeCount = -1;
+      let newInsertIndex = -1;
+
+      if (correctForInactive) {
+        this.inputFields.map((f, index) => {
+          if (!f.isInactive()) {
+            activeCount++;
+          }
+          if (activeCount === insertIndex && newInsertIndex < 0) {
+            newInsertIndex = index;
+          }
+        });
+      } else {
+        newInsertIndex = insertIndex;
+      }
+      if (newInsertIndex > -1) {
+        this.fieldConf.splice(newInsertIndex + 1, 0, shiftable);
+      }
+    }
+    this.workflowStepAllowed();
   }
 
   /** updateRequired
@@ -123,6 +185,10 @@ export class WorkflowComponent implements OnInit {
   */
   updateRequired(): void {
     this.workflowForm.valueChanges.subscribe(() => {
+      if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
+        this.workflowForm.get('pluginLINK_CHECKING')!.setValidators([Validators.required]);
+      }
+
       if (this.workflowForm.get('pluginHARVEST')!.value === true) {
         this.workflowForm.get('pluginType')!.setValidators([Validators.required]);
         this.workflowForm
@@ -177,23 +243,33 @@ export class WorkflowComponent implements OnInit {
   */
   workflowStepAllowed(): void {
     let hasValue = 0;
-
-    this.fieldConf.map((field) => {
-      if (field.name !== 'pluginLINK_CHECKING') {
-        this.workflowForm.get(field.name)!.disable();
-      }
-    });
+    let prevWasLinkCheck = false;
+    let enableNext = false;
 
     this.fieldConf.forEach((field, index) => {
-      if (this.workflowForm.get(field.name)!.value) {
-        hasValue++;
-        if (index - 1 >= 0) {
-          this.workflowForm.get(this.fieldConf[index - 1].name)!.enable();
+      if (field.name === 'pluginLINK_CHECKING') {
+        prevWasLinkCheck = true;
+      } else {
+        this.workflowForm.get(field.name)!.disable();
+
+        if (this.workflowForm.get(field.name)!.value) {
+          hasValue++;
+
+          if (prevWasLinkCheck && index - 2 >= 0) {
+            this.workflowForm.get(this.fieldConf[index - 2].name)!.enable();
+          } else if (index - 1 >= 0) {
+            this.workflowForm.get(this.fieldConf[index - 1].name)!.enable();
+          }
+
+          this.workflowForm.get(this.fieldConf[index].name)!.enable();
+          if (index + 1 < this.fieldConf.length) {
+            enableNext = true;
+          }
+        } else if (enableNext) {
+          this.workflowForm.get(this.fieldConf[index].name)!.enable();
+          enableNext = false;
         }
-        this.workflowForm.get(this.fieldConf[index].name)!.enable();
-        if (index + 1 < this.fieldConf.length) {
-          this.workflowForm.get(this.fieldConf[index + 1].name)!.enable();
-        }
+        prevWasLinkCheck = false;
       }
     });
 
@@ -217,43 +293,41 @@ export class WorkflowComponent implements OnInit {
 
     for (let w = 0; w < workflow.metisPluginsMetadata.length; w++) {
       const thisWorkflow = workflow.metisPluginsMetadata[w];
-
       if (thisWorkflow.enabled === true) {
         if (
           thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
           thisWorkflow.pluginType === 'HTTP_HARVEST'
         ) {
           this.workflowForm.controls.pluginHARVEST.setValue(true);
-          this.workflowStepAllowed();
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-          this.workflowStepAllowed();
         }
-      }
-
-      if (['OAIPMH_HARVEST', 'HTTP_HARVEST'].indexOf(thisWorkflow.pluginType) > -1) {
-        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
-          this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
-          this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
-          this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
-        } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
-          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
-          this.workflowForm.controls.url.setValue(thisWorkflow.url);
-        }
-      } else {
         this.workflowStepAllowed();
 
-        // transformation
-        if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-          this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-        }
+        if (['OAIPMH_HARVEST', 'HTTP_HARVEST'].indexOf(thisWorkflow.pluginType) > -1) {
+          if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+            this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
+            this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
+            this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
+            this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
+          } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+            this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
+            this.workflowForm.controls.url.setValue(thisWorkflow.url);
+          }
+        } else {
+          this.workflowStepAllowed();
 
-        // link checking
-        if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-          this.workflowForm.controls.performSampling.setValue(
-            thisWorkflow.performSampling ? 'true' : 'false'
-          );
+          // transformation
+          if (thisWorkflow.pluginType === 'TRANSFORMATION') {
+            this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+          }
+
+          // link checking
+          if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+            this.workflowForm.controls.performSampling.setValue(
+              thisWorkflow.performSampling ? 'true' : 'false'
+            );
+          }
         }
       }
     }
@@ -269,7 +343,7 @@ export class WorkflowComponent implements OnInit {
     const plugins: PluginMetadata[] = [];
 
     this.fieldConf.forEach((conf) => {
-      if (this.workflowForm.value[conf.name]) {
+      if (conf.dragType !== DragType.dragSource && this.workflowForm.value[conf.name]) {
         if (conf.name === 'pluginHARVEST') {
           if (this.workflowForm.value.pluginType === PluginType.OAIPMH_HARVEST) {
             plugins.push({
@@ -302,6 +376,7 @@ export class WorkflowComponent implements OnInit {
         }
       }
     });
+
     return {
       metisPluginsMetadata: plugins
     };

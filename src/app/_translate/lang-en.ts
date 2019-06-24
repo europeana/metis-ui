@@ -176,6 +176,7 @@ export const LANG_EN_TRANS = {
   'workflow step': 'Workflow step',
   workflows: 'workflows',
   'workflow-go-to-top': 'Go to top',
+  'workflow-add-link-check': 'add link check',
   'workflow-clear-all': 'Clear all',
   'workflow-select-all': 'Select all',
   'workflow-instruction-1': '1. Choose your workflow',

@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
-import { PluginType } from '../../../_models';
+import { DragType, PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
 
 import { WorkflowFormFieldComponent } from '.';
@@ -36,7 +36,8 @@ describe('WorkflowFormFieldComponent', () => {
     component = fixture.componentInstance;
     component.conf = {
       label: PluginType.TRANSFORMATION,
-      name: 'pluginTRANSFORMATION'
+      name: 'pluginTRANSFORMATION',
+      dragType: DragType.dragNone
     };
 
     component.workflowForm = formBuilder.group({
@@ -46,12 +47,10 @@ describe('WorkflowFormFieldComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should have different scroll behaviours', () => {
-    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeFalsy();
-    component.scrollToInput(true);
-    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeTruthy();
-    component.scrollToInput();
-    expect(component.pluginElement.nativeElement.classList.contains('returning')).toBeFalsy();
+  it('should indicate if inactive', () => {
+    expect(component.isInactive()).toBeTruthy();
+    component.conf.name = 'pluginLINK_CHECKING';
+    expect(component.isInactive()).toBeFalsy();
   });
 
   it('should emit events when the field value changes', () => {
@@ -59,5 +58,12 @@ describe('WorkflowFormFieldComponent', () => {
     document.querySelector('input')!.click();
     fixture.detectChanges();
     expect(component.fieldChanged.emit).toHaveBeenCalled();
+  });
+
+  it('should emit events when link checking gets set', () => {
+    spyOn(component.setLinkCheck, 'emit');
+    component.ctrlSetLinkCheck(0);
+    fixture.detectChanges();
+    expect(component.setLinkCheck.emit).toHaveBeenCalled();
   });
 });
