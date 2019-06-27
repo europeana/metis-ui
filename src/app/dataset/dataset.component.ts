@@ -147,7 +147,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   returnToTop(): void {
-    this.tabWorkflow.nativeElement!.scrollIntoView({ behavior: 'smooth' });
+    this.tabWorkflow.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
   setLinkCheck(linkCheckIndex: number): void {

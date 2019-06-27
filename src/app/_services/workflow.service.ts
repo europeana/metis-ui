@@ -227,9 +227,9 @@ export class WorkflowService {
 
   //  get history of finished executions for specific datasetid
   getFinishedDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
+    const url =
+      `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}` +
+      `?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 

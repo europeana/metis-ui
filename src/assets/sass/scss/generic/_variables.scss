@@ -44,7 +44,7 @@ $font-size-med: 1.2em;
 $font-size-large: 1.6em;
 $base-font-multiplier: 1;
 
-//Brand colours
+/* Brand colours */
 $brand-facebook: #03539e;
 $brand-twitter: #35ccff;
 $brand-linkedin: #217bc1;
@@ -54,11 +54,11 @@ $brand-soundcloud: #ff5500;
 $brand-tumblr: #35465c;
 $brand-instagram: #ec5972;
 
-//Layout
+/* Layout */
 $max-width: 80rem;
 $offset-left-1: 4.5rem;
 
-//Defaults
+/* Defaults */
 $space: 1.6rem;
 $space-and-half: $space * 1.5;
 $space-double: $space * 2;
@@ -72,21 +72,21 @@ $pad-double: $pad * 2;
 $pad-half: $pad / 2;
 $pad-quarter: $pad / 4;
 
-//Borders
+/* Borders */
 $border-med: 3px;
 $border-thick: 7px;
 $base-border-radius: 4px;
 
-// Global navigation
+/* Global navigation */
 $globalnavheight: $space-triple;
 $globalnavheight-with-search-small: $space * 4.875;
 $globalnavheight-with-search-large: $space * 6.5;
 
-// Global Off screen navigation
+/* Global Off screen navigation */
 $menuwidth_right: 250px;
 $menu_top: 300px;
 
-//Breakpoints
+/* Breakpoints */
 $bp-small: 24em;
 $bp-small-2: 30em;
 $bp-small-3: 40em;
