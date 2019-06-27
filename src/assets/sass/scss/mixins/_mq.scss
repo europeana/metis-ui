@@ -44,7 +44,7 @@ $mq-media-type: all !default;
   $max-width: 0;
   $media-query: '';
 
-  // From: this breakpoint (inclusive)
+  /* From: this breakpoint (inclusive) */
   @if $from {
     @if type-of($from) == number {
       $min-width: mq-px2em($from);
@@ -53,7 +53,7 @@ $mq-media-type: all !default;
     }
   }
 
-  // Until: that breakpoint (exclusive)
+  /* Until: that breakpoint (exclusive) */
   @if $until {
     @if type-of($until) == number {
       $max-width: mq-px2em($until);
@@ -62,12 +62,12 @@ $mq-media-type: all !default;
     }
   }
 
-  // Responsive support is disabled, rasterize the output outside @media blocks
-  // The browser will rely on the cascade itself.
+  /* Responsive support is disabled, rasterize the output outside @media blocks */
+  /* The browser will rely on the cascade itself. */
   @if $responsive == false {
     $static-breakpoint-width: mq-get-breakpoint-width($static-breakpoint, $breakpoints);
     $target-width: mq-px2em($static-breakpoint-width);
-    // Output only rules that start at or span our target width
+    /* Output only rules that start at or span our target width */
     @if (
       $and ==
         false and
@@ -87,7 +87,7 @@ $mq-media-type: all !default;
       $media-query: '#{$media-query} and #{$and}';
     }
 
-    // Remove unnecessary media query prefix 'all and '
+    /* Remove unnecessary media query prefix 'all' and '' */
     @if ($media-type == 'all' and $media-query != '') {
       $media-type: '';
       $media-query: str-slice(unquote($media-query), 6);
@@ -120,7 +120,7 @@ $mq-media-type: all !default;
     top: 0;
     z-index: 100;
 
-    // Loop through the breakpoints that should be shown
+    /* Loop through the breakpoints that should be shown */
     @each $show-breakpoint in $show-breakpoints {
       $width: mq-get-breakpoint-width($show-breakpoint, $breakpoints);
       @include mq($show-breakpoint, $breakpoints: $breakpoints) {

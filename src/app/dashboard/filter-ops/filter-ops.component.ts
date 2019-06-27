@@ -61,7 +61,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     Object.entries(this.params).forEach(([name, val]) => {
       if (val.length > 0) {
         let label = name;
-        this.conf.map((s) => {
+        this.conf.forEach((s) => {
           if (s.name === name) {
             label = s.label;
           }
@@ -128,9 +128,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   updateParameters(): void {
     let paramString = '';
-    Object.entries(this.params).map((entry: [string, FilterParamValue[]]) => {
+    Object.entries(this.params).forEach((entry: [string, FilterParamValue[]]) => {
       if (entry[1].length > 0) {
-        entry[1].map((fpv: FilterParamValue) => {
+        entry[1].forEach((fpv: FilterParamValue) => {
           if (entry[0] === 'DATE') {
             if (['1', '7', '30'].indexOf(fpv.value) > -1) {
               paramString += this.getFromToParam(Number(fpv.value));

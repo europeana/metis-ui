@@ -63,11 +63,11 @@ $border-colour-shortcuts: #dbd9d9;
       color: $white;
     }
   }
-  &.labelled.LINK_CHECKING:hover,
+  &.labelled.link_checking:hover,
   &.drag-over {
     box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
   }
-  &.labelled.LINK_CHECKING {
+  &.labelled.link_checking {
     background: $eu-jade;
 
     animation: pulseLinkCheckingAdded 1000ms 1;
@@ -162,7 +162,7 @@ $border-colour-shortcuts: #dbd9d9;
   z-index: 1;
 
   &.stuck {
-    &.labelled.LINK_CHECKING:hover,
+    &.labelled.link_checking:hover,
     .drag-over {
       box-shadow: 0 0 0 3px rgba($eu-jade, 0.3);
     }

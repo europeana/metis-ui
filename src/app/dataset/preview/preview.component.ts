@@ -160,24 +160,23 @@ export class PreviewComponent implements OnInit, OnDestroy {
     return this.allPlugins;
   }
 
+  errorHandling(err: HttpErrorResponse): void {
+    const error = this.errors.handleError(err);
+    this.notification = httpErrorNotification(error);
+    this.isLoading = false;
+  }
+
   getXMLSamplesCompare(plugin: PluginType, workflowExecutionId: string): void {
     this.filterCompareOpen = false;
     this.isLoading = true;
     this.allSampleComparisons = [];
     this.workflows
       .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
-      .subscribe(
-        (result) => {
-          this.allSampleComparisons = this.undoNewLines(result);
-          this.isLoading = false;
-          this.selectedComparison = plugin;
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-          this.isLoading = false;
-        }
-      );
+      .subscribe((result) => {
+        this.allSampleComparisons = this.undoNewLines(result);
+        this.isLoading = false;
+        this.selectedComparison = plugin;
+      }, this.errorHandling);
   }
 
   // get and show samples based on plugin
@@ -194,43 +193,29 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedPlugin = plugin;
     this.previewFilters.plugin = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
-    this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe(
-      (result) => {
-        this.allSamples = this.undoNewLines(result);
+    this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe((result) => {
+      this.allSamples = this.undoNewLines(result);
 
-        if (this.allSamples.length === 1) {
-          this.expandedSample = 0;
-        }
-        loadingSamples = false;
-        if (!loadingHistories) {
-          this.isLoading = false;
-        }
-        this.sampleRecordIds = [];
-        this.allSamples.forEach((sample) => {
-          this.sampleRecordIds.push(sample.ecloudId);
-        });
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
+      if (this.allSamples.length === 1) {
+        this.expandedSample = 0;
+      }
+      loadingSamples = false;
+      if (!loadingHistories) {
         this.isLoading = false;
       }
-    );
+      this.sampleRecordIds = [];
+      this.allSamples.forEach((sample) => {
+        this.sampleRecordIds.push(sample.ecloudId);
+      });
+    }, this.errorHandling);
 
-    this.workflows.getVersionHistory(this.execution.id, plugin).subscribe(
-      (result) => {
-        loadingHistories = false;
-        if (!loadingSamples) {
-          this.isLoading = false;
-        }
-        this.historyVersions = result;
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
+    this.workflows.getVersionHistory(this.execution.id, plugin).subscribe((result) => {
+      loadingHistories = false;
+      if (!loadingSamples) {
         this.isLoading = false;
       }
-    );
+      this.historyVersions = result;
+    }, this.errorHandling);
   }
 
   // transform samples on the fly based on temp saved XSLT

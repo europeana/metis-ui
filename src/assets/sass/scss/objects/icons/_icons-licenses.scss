@@ -8,7 +8,7 @@
   font-style: normal;
 }
 
-// This triggers a redraw in IE to Fix IE8's ::before content rendering.
+/* This triggers a redraw in IE to Fix IE8's ::before content rendering. */
 html:hover [class^='icon-'] {
   -ms-zoom: 1;
 }
@@ -40,7 +40,7 @@ html:hover [class^='icon-'] {
   width: 1.6em;
 }
 
-// CC license icons
+/* CC license icons */
 .icon-license-nc::before {
   content: '\e600';
 }

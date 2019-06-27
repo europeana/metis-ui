@@ -51,9 +51,9 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   getAdjustableLabel(index: number): string {
     if (index === 0 && this.workflowForm && this.workflowForm.value.pluginType) {
-      return this.workflowForm.value.pluginType;
+      return this.workflowForm.value.pluginType.toLowerCase();
     }
-    return this.conf[index].label;
+    return this.conf[index].label.toLowerCase();
   }
 
   clearAll(): void {
@@ -102,9 +102,9 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     const el = e.target as HTMLElement;
     const clss = 'drag-over';
     if (tf) {
-      el!.classList.add(clss);
+      el.classList.add(clss);
     } else {
-      el!.classList.remove(clss);
+      el.classList.remove(clss);
     }
     e.preventDefault();
   }

@@ -60,7 +60,11 @@ describe('DatasetComponent', () => {
     fixture.detectChanges();
 
     component.activeTab = 'edit';
-    component.datasetIsLoading = component.workflowIsLoading = component.lastExecutionIsLoading = component.harvestIsLoading = false;
+    component.datasetIsLoading = false;
+    component.workflowIsLoading = false;
+    component.lastExecutionIsLoading = false;
+    component.harvestIsLoading = false;
+
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
 

@@ -4,8 +4,7 @@
 .executions-grid {
   @media (min-width: $bp-med) {
     display: grid;
-    grid-column-gap: 1.75em;
-    grid-template-rows: auto;
+    column-gap: 1.75em;
     grid-template-columns: [start] minmax(8em, 2fr) [sub-start] minmax(8em, 2fr) 1fr [sub-date-start] auto auto [sub-date-end] auto;
     padding: 1em 0 0 1em;
   }

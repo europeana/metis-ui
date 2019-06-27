@@ -36,7 +36,7 @@
     >
       <li
         *ngFor="let pi of dsExecution.execution.plugins"
-        class="{{ pi.pluginType }} orb-status labelled {{ getPluginStatusClass(pi) }}"
+        class="{{ pi.pluginType.toLowerCase() }} orb-status labelled {{ getPluginStatusClass(pi) }}"
       ></li>
     </ul>
   </span>

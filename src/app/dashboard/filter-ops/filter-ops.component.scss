@@ -45,10 +45,10 @@ app-filter-option {
   margin: 0.25rem 0;
   padding: 0;
 
-  li > a.active {
+  li > .active {
     font-weight: bold;
   }
-  li > a.error {
+  li > .error {
     color: $eu-red;
   }
   li .filter-grid a {
@@ -59,9 +59,8 @@ app-filter-option {
 
 .filter-grid {
   display: grid;
-  grid-column-gap: 1.25em;
+  column-gap: 1.25em;
   grid-row-gap: 0.75em;
-  grid-template-rows: auto;
   padding: 1em;
 }
 
