@@ -242,42 +242,7 @@ export class WorkflowComponent implements OnInit {
   /* make step before and after available for selection
   */
   workflowStepAllowed(): void {
-    let hasValue = 0;
-    let prevWasLinkCheck = false;
-    let enableNext = false;
-
-    this.fieldConf.forEach((field, index) => {
-      if (field.name === 'pluginLINK_CHECKING') {
-        prevWasLinkCheck = true;
-      } else {
-        this.workflowForm.get(field.name)!.disable();
-
-        if (this.workflowForm.get(field.name)!.value) {
-          hasValue++;
-
-          if (prevWasLinkCheck && index - 2 >= 0) {
-            this.workflowForm.get(this.fieldConf[index - 2].name)!.enable();
-          } else if (index - 1 >= 0) {
-            this.workflowForm.get(this.fieldConf[index - 1].name)!.enable();
-          }
-
-          this.workflowForm.get(this.fieldConf[index].name)!.enable();
-          if (index + 1 < this.fieldConf.length) {
-            enableNext = true;
-          }
-        } else if (enableNext) {
-          this.workflowForm.get(this.fieldConf[index].name)!.enable();
-          enableNext = false;
-        }
-        prevWasLinkCheck = false;
-      }
-    });
-
-    if (hasValue === 0) {
-      this.fieldConf.forEach((field) => {
-        this.workflowForm.get(field.name)!.enable();
-      });
-    }
+    console.log('TODO: prevent incoherent step sequences');
   }
 
   getWorkflow(): void {
