@@ -11,6 +11,9 @@ describe('WorkflowHeaderComponent', () => {
   let component: WorkflowHeaderComponent;
   let fixture: ComponentFixture<WorkflowHeaderComponent>;
 
+  // tslint:disable-next-line: no-any
+  let formGroupConf = {} as any;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -37,6 +40,13 @@ describe('WorkflowHeaderComponent', () => {
         dragType: DragType.dragNone
       }
     ];
+    // tslint:disable-next-line: no-any
+    formGroupConf = {
+      pluginType: 'HARVEST',
+      pluginVALIDATION_EXTERNAL: true,
+      pluginVALIDATION_INTERNAL: true,
+      pluginFAKE: true
+    };
     fixture.detectChanges();
   });
 
@@ -80,13 +90,10 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.headerOrbClicked.emit).toHaveBeenCalled();
   });
 
-  it('should clear all', () => {
-    const fGroup: FormGroup = new FormBuilder().group({
-      pluginVALIDATION_EXTERNAL: true,
-      pluginVALIDATION_INTERNAL: true,
-      pluginFAKE: true
-    });
+  it('should clear all fields in the conf', () => {
+    const fGroup: FormGroup = new FormBuilder().group(formGroupConf);
     component.setWorkflowForm(fGroup);
+    fixture.detectChanges();
 
     expect(fGroup.value.pluginVALIDATION_EXTERNAL).toBeTruthy();
     component.clearAll();
@@ -94,18 +101,60 @@ describe('WorkflowHeaderComponent', () => {
     expect(fGroup.value.pluginFAKE).toBeTruthy();
   });
 
-  it('should select all fields in the conf', () => {
+  it('should enable save when clearAll is called', () => {
+    const fGroup: FormGroup = new FormBuilder().group(formGroupConf);
+    component.setWorkflowForm(fGroup);
+
+    expect(component.workflowForm.pristine).toBeTruthy();
+    component.clearAll();
+    fixture.detectChanges();
+    expect(component.workflowForm.pristine).toBeFalsy();
+  });
+
+  it('should not enable save when clearAll is called and all were already deselected', () => {
     const fGroup: FormGroup = new FormBuilder().group({
-      pluginVALIDATION_EXTERNAL: null,
-      pluginVALIDATION_INTERNAL: true,
-      pluginFAKE: null
+      pluginVALIDATION_EXTERNAL: false,
+      pluginVALIDATION_INTERNAL: false
     });
     component.setWorkflowForm(fGroup);
+    expect(component.workflowForm.pristine).toBeTruthy();
+    component.clearAll();
+    fixture.detectChanges();
+    expect(component.workflowForm.pristine).toBeTruthy();
+  });
+
+  it('should select all fields in the conf', () => {
+    const fGroup: FormGroup = new FormBuilder().group(
+      Object.assign(formGroupConf, { pluginVALIDATION_EXTERNAL: false })
+    );
+    component.setWorkflowForm(fGroup);
+    fixture.detectChanges();
 
     expect(fGroup.value.pluginVALIDATION_EXTERNAL).toBeFalsy();
     component.selectAll();
     expect(fGroup.value.pluginVALIDATION_EXTERNAL).toBeTruthy();
-    expect(fGroup.value.pluginFAKE).toBeFalsy();
+    expect(fGroup.value.pluginFAKE).toBeTruthy();
+  });
+
+  it('should enable save when selectAll is called', () => {
+    const fGroup: FormGroup = new FormBuilder().group(
+      Object.assign(formGroupConf, { pluginVALIDATION_EXTERNAL: false })
+    );
+    component.setWorkflowForm(fGroup);
+
+    expect(component.workflowForm.pristine).toBeTruthy();
+    component.selectAll();
+    fixture.detectChanges();
+    expect(component.workflowForm.pristine).toBeFalsy();
+  });
+
+  it('should not enable save when selectAll is called and all were already selected', () => {
+    const fGroup: FormGroup = new FormBuilder().group(formGroupConf);
+    component.setWorkflowForm(fGroup);
+    expect(component.workflowForm.pristine).toBeTruthy();
+    component.selectAll();
+    fixture.detectChanges();
+    expect(component.workflowForm.pristine).toBeTruthy();
   });
 
   it('should indicate if link checking is enabled', () => {

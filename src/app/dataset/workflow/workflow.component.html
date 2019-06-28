@@ -26,6 +26,7 @@
         <div
           class="form-group form-group-btns user-profile-edit-btns"
           *ngIf="newWorkflow || workflowForm.dirty || isSaving"
+          [ngClass]="{ 'warning-before': saveNotification }"
         >
           <app-notification
             variant="small"
