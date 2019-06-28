@@ -94,7 +94,7 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
     .map((pType: PluginType) => {
       return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].indexOf(pType) > -1
         ? {
-            label: '' as string,
+            label: '',
             name: '' as WorkflowFieldDataName,
             parameterFields: null,
             dragType: DragType.dragNone
