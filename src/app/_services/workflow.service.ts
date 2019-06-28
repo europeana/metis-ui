@@ -63,14 +63,7 @@ export class WorkflowService {
     );
   }
 
-  private collectResultsUptoPage<T>(
-    getResults: (page: number) => Observable<Results<T>>,
-    endPage: number
-  ): Observable<MoreResults<T>> {
-    const observables: Observable<Results<T>>[] = [];
-    for (let i = 0; i <= endPage; i++) {
-      observables.push(getResults(i));
-    }
+  private paginatedResult<T>(observables: Observable<Results<T>>[]): Observable<MoreResults<T>> {
     return forkJoin(observables).pipe(
       map((resultList) => {
         const results = ([] as T[]).concat(...resultList.map((r) => r.results));
@@ -81,13 +74,18 @@ export class WorkflowService {
     );
   }
 
-  private collectAllResultsUptoPage<T>(
+  private collectResultsUptoPage<T>(
     getResults: (page: number) => Observable<Results<T>>,
     endPage: number
   ): Observable<MoreResults<T>> {
     const observables: Observable<Results<T>>[] = [];
-    observables.push(getResults(endPage));
+    for (let i = 0; i <= endPage; i++) {
+      observables.push(getResults(i));
+    }
 
+    console.error('in the new func');
+    return this.paginatedResult(observables);
+    /*
     return forkJoin(observables).pipe(
       map((resultList) => {
         const results = ([] as T[]).concat(...resultList.map((r) => r.results));
@@ -96,6 +94,28 @@ export class WorkflowService {
         return { results, more };
       })
     );
+    */
+  }
+
+  private collectAllResultsUptoPage<T>(
+    getResults: (page: number) => Observable<Results<T>>,
+    endPage: number
+  ): Observable<MoreResults<T>> {
+    const observables: Observable<Results<T>>[] = [];
+    observables.push(getResults(endPage));
+
+    return this.paginatedResult(observables);
+
+    /*
+    return forkJoin(observables).pipe(
+      map((resultList) => {
+        const results = ([] as T[]).concat(...resultList.map((r) => r.results));
+        const lastResult = resultList[resultList.length - 1];
+        const more = lastResult.nextPage >= 0;
+        return { results, more };
+      })
+    );
+    */
   }
 
   getWorkflowForDataset(id: string): Observable<Workflow> {
@@ -308,8 +328,6 @@ export class WorkflowService {
         return executions;
       })
     );
-
-    // TODO: error handling?
   }
 
   getAllExecutionsCollectingPages(ongoing: boolean): Observable<WorkflowExecution[]> {
