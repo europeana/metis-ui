@@ -57,16 +57,25 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   }
 
   clearAll(): void {
+    const hasSelected = Object.values(this.workflowForm.value).indexOf(true) > -1;
     this.conf.forEach((plugin) => {
       this.workflowForm.get(plugin.name)!.setValue(false);
     });
+    if (hasSelected) {
+      this.workflowForm.markAsDirty();
+    }
+    this.removeLinkCheck();
   }
 
   selectAll(): void {
+    const hasUnselected = Object.values(this.workflowForm.value).indexOf(false) > -1;
     this.conf.forEach((plugin) => {
       this.workflowForm.get(plugin.name)!.enable();
       this.workflowForm.get(plugin.name)!.setValue(true);
     });
+    if (hasUnselected) {
+      this.workflowForm.markAsDirty();
+    }
   }
 
   dropIndexAdjust(index: number): number {
