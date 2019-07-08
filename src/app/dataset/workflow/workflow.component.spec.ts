@@ -10,7 +10,13 @@ import {
   MockTranslateService,
   MockWorkflowService
 } from '../../_mocked';
-import { DragType, PluginType, successNotification, workflowFormFieldConf } from '../../_models';
+import {
+  DragType,
+  PluginMetadata,
+  PluginType,
+  successNotification,
+  workflowFormFieldConf
+} from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -78,6 +84,9 @@ describe('WorkflowComponent', () => {
 
   it('should rearrange the config (wrapper) onHeaderSynchronise', () => {
     spyOn(component, 'rearrange');
+    component.onHeaderSynchronised();
+    expect(component.rearrange).not.toHaveBeenCalled();
+
     component.workflowData = {
       datasetId: '1',
       id: '1',
@@ -110,6 +119,14 @@ describe('WorkflowComponent', () => {
     };
     component.onHeaderSynchronised();
     expect(component.rearrange).toHaveBeenCalledWith(2, true);
+  });
+
+  it('should format the form values', () => {
+    let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
+    expect(result.metisPluginsMetadata.length).toBeFalsy();
+    component.workflowForm.get('pluginPREVIEW')!.setValue(true);
+    result = component.formatFormValues();
+    expect(result.metisPluginsMetadata.length).toEqual(1);
   });
 
   it('should reset', () => {
