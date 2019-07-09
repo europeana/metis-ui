@@ -51,7 +51,8 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should get the correct label for the HARVEST orb', () => {
-    expect(component.getAdjustableLabel(0)).toBe('validation_external');
+    expect(component.getAdjustableLabel(0)).toBe('VALIDATION_EXTERNAL');
+    expect(component.getAdjustableLabel(0, true)).toBe('validation_external');
 
     component.conf = [
       {
@@ -61,7 +62,8 @@ describe('WorkflowHeaderComponent', () => {
       }
     ];
 
-    expect(component.getAdjustableLabel(0)).toBe('harvest');
+    expect(component.getAdjustableLabel(0)).toBe('HARVEST');
+    expect(component.getAdjustableLabel(0, true)).toBe('harvest');
 
     component.setWorkflowForm(
       new FormBuilder().group({
@@ -69,7 +71,7 @@ describe('WorkflowHeaderComponent', () => {
       })
     );
 
-    expect(component.getAdjustableLabel(0)).toBe(PluginType.HTTP_HARVEST.toLowerCase());
+    expect(component.getAdjustableLabel(0, true)).toBe(PluginType.HTTP_HARVEST.toLowerCase());
 
     component.setWorkflowForm(
       new FormBuilder().group({
@@ -77,7 +79,7 @@ describe('WorkflowHeaderComponent', () => {
       })
     );
 
-    expect(component.getAdjustableLabel(0)).toBe(PluginType.OAIPMH_HARVEST.toLowerCase());
+    expect(component.getAdjustableLabel(0, true)).toBe(PluginType.OAIPMH_HARVEST.toLowerCase());
   });
 
   it('should respond to orb clicks', () => {
