@@ -68,14 +68,17 @@ export class WorkflowComponent implements OnInit {
   DragTypeEnum = DragType;
 
   onHeaderSynchronised(): void {
-    const index = this.workflowData!.metisPluginsMetadata.filter((plugin) => {
-      return plugin.enabled;
-    }).findIndex((plugin) => {
-      return plugin.pluginType === 'LINK_CHECKING';
-    });
-
-    if (index > -1) {
-      this.rearrange(index - 1, true);
+    if (this.workflowData) {
+      const index = this.workflowData.metisPluginsMetadata
+        .filter((plugin) => {
+          return plugin.enabled;
+        })
+        .findIndex((plugin) => {
+          return plugin.pluginType === 'LINK_CHECKING';
+        });
+      if (index > -1) {
+        this.rearrange(index - 1, true);
+      }
     }
   }
 
@@ -252,12 +255,24 @@ export class WorkflowComponent implements OnInit {
     }
     this.newWorkflow = false;
 
+    // clear form
     this.fieldConf.forEach((field) => {
       this.workflowForm.get(field.name)!.setValue(false);
     });
 
     for (let w = 0; w < workflow.metisPluginsMetadata.length; w++) {
       const thisWorkflow = workflow.metisPluginsMetadata[w];
+
+      // parameter values are recovered even if not enabled
+
+      if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+        this.workflowForm.controls.url.setValue(thisWorkflow.url);
+      } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+        this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
+        this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
+        this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
+      }
+
       if (thisWorkflow.enabled === true) {
         if (
           thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
@@ -269,16 +284,10 @@ export class WorkflowComponent implements OnInit {
         }
         this.workflowStepAllowed();
 
-        if (['OAIPMH_HARVEST', 'HTTP_HARVEST'].indexOf(thisWorkflow.pluginType) > -1) {
-          if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-            this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
-            this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
-            this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
-            this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
-          } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
-            this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
-            this.workflowForm.controls.url.setValue(thisWorkflow.url);
-          }
+        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
+        } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
         } else {
           this.workflowStepAllowed();
 
