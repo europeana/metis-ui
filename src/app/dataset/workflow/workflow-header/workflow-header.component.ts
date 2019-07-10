@@ -49,11 +49,14 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     return false;
   }
 
-  getAdjustableLabel(index: number): string {
+  getAdjustableLabel(index: number, lowerCase?: boolean): string {
+    let res = '';
     if (index === 0 && this.workflowForm && this.workflowForm.value.pluginType) {
-      return this.workflowForm.value.pluginType.toLowerCase();
+      res = this.workflowForm.value.pluginType;
+    } else {
+      res = this.conf[index].label;
     }
-    return this.conf[index].label.toLowerCase();
+    return lowerCase ? res.toLowerCase() : res;
   }
 
   clearAll(): void {
