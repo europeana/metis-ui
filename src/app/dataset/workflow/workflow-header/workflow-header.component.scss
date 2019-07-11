@@ -24,11 +24,20 @@ $border-colour-shortcuts: #dbd9d9;
     position: absolute;
   }
 }
-
 .instruction {
   font-weight: bold;
   flex-grow: 2;
   text-align: center;
+}
+
+.steps-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: auto;
+}
+
+.steps.all-highlighted .orb-status {
+  box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
 }
 
 @keyframes pulseLinkCheckingAdded {
