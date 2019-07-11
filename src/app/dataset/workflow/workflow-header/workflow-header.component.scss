@@ -74,9 +74,8 @@ $border-colour-shortcuts: #dbd9d9;
 
     &::after {
       background-repeat: no-repeat;
-      font-size: 0.6em;
-      height: 1.5em;
-      transform: translate(19%, -51%);
+      height: 2.4em;
+      transform: scale(0.85) translate(7%, -44%);
     }
   }
 }
