@@ -27,6 +27,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   workflowForm: FormGroup;
   isDragging: boolean;
+  isDraggingOverOrbs: boolean;
   isStuck: boolean;
   DragTypeEnum = DragType;
 
@@ -96,6 +97,16 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   scrollToTop(): void {
     this.returnToTop.emit();
+  }
+
+  stepsDragOver(e: Event): void {
+    this.isDraggingOverOrbs = true;
+    e.preventDefault();
+  }
+
+  stepsDragLeave(e: Event): void {
+    this.isDraggingOverOrbs = false;
+    e.preventDefault();
   }
 
   dragStart(e: EventDragDT): void {

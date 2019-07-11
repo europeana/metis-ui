@@ -21,31 +21,39 @@
       >
     </span>
   </div>
-  <ul class="steps">
-    <ng-container *ngFor="let plugin of conf; index as i">
-      <li>
-        <a
-          *ngIf="plugin.dragType !== DragTypeEnum.dragSource"
-          title="{{ getAdjustableLabel(i) | renameWorkflow }}"
-          (click)="togglePlugin(plugin.name)"
-          class="{{ getAdjustableLabel(i, true) }} orb-status labelled"
-          (dragend)="dragEnd()"
-          (dragover)="
-            plugin.dragType == DragTypeEnum.dragNone
-              ? toggleDragOver($event, isDragging)
-              : undefined
-          "
-          (dragleave)="
-            plugin.dragType !== DragTypeEnum.dragNone ? undefined : toggleDragOver($event)
-          "
-          (drop)="plugin.dragType !== DragTypeEnum.dragNone ? undefined : drop($event, i)"
-          (dragstart)="plugin.dragType === DragTypeEnum.dragCopy ? dragStart($event) : undefined"
-          [ngClass]="{ active: isActive(plugin.name) }"
-        >
-        </a>
-      </li>
-    </ng-container>
-  </ul>
+
+  <div class="steps-wrapper">
+    <ul
+      class="steps"
+      [ngClass]="{ 'all-highlighted': isDragging && !isDraggingOverOrbs }"
+      (dragover)="stepsDragOver($event)"
+      (dragleave)="stepsDragLeave($event)"
+    >
+      <ng-container *ngFor="let plugin of conf; index as i">
+        <li>
+          <a
+            *ngIf="plugin.dragType !== DragTypeEnum.dragSource"
+            title="{{ getAdjustableLabel(i) | renameWorkflow }}"
+            (click)="togglePlugin(plugin.name)"
+            class="{{ getAdjustableLabel(i, true) }} orb-status labelled"
+            (dragend)="dragEnd()"
+            (dragover)="
+              plugin.dragType == DragTypeEnum.dragNone
+                ? toggleDragOver($event, isDragging)
+                : undefined
+            "
+            (dragleave)="
+              plugin.dragType !== DragTypeEnum.dragNone ? undefined : toggleDragOver($event)
+            "
+            (drop)="plugin.dragType !== DragTypeEnum.dragNone ? undefined : drop($event, i)"
+            (dragstart)="plugin.dragType === DragTypeEnum.dragCopy ? dragStart($event) : undefined"
+            [ngClass]="{ active: isActive(plugin.name) }"
+          >
+          </a>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
   <a class="return" (click)="scrollToTop()">
     <span class="return-text">{{ 'workflow-go-to-top' | translate }}</span>
   </a>
