@@ -109,6 +109,14 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     e.preventDefault();
   }
 
+  ghostMouseDown(): void {
+    this.ghost.nativeElement.classList.add('dragging');
+  }
+
+  ghostMouseUp(): void {
+    this.ghost.nativeElement.classList.remove('dragging');
+  }
+
   dragStart(e: EventDragDT): void {
     if (e.dataTransfer) {
       e.dataTransfer.setData('metisHeaderOrb', 'true');

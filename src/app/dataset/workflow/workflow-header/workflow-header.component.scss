@@ -10,14 +10,26 @@ $border-colour-shortcuts: #dbd9d9;
   padding: 1em;
 }
 
-.ghost {
-  position: relative;
-  z-index: -1;
+.link-check {
+  align-items: center;
+  display: flex;
+  flex-basis: 0;
+  .ghost {
+    margin: 0;
+    position: relative;
+    transform: translate(0, 0);
+    &.dragging {
+      box-shadow: 0;
+    }
+  }
 }
 
 .add-link-checking {
+  margin-right: 0.5em;
   position: relative;
-  &.active::after {
+  text-align: right;
+  white-space: nowrap;
+  &.active::before {
     content: 'x';
     font-weight: bold;
     left: -1em;
@@ -36,7 +48,7 @@ $border-colour-shortcuts: #dbd9d9;
   margin: auto;
 }
 
-.steps.all-highlighted .orb-status {
+.steps.all-highlighted .orb-status:not(.ghost) {
   box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
 }
 
