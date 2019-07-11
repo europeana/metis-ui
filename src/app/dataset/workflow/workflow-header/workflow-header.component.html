@@ -23,6 +23,8 @@
         (click)="removeLinkCheck()"
         (dragstart)="dragStart($event)"
         (dragend)="dragEnd()"
+        (mousedown)="ghostMouseDown()"
+        (mouseup)="ghostMouseUp()"
         #ghost
       ></span>
     </span>
