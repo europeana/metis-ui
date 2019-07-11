@@ -296,14 +296,6 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeFalsy();
   });
 
-  it('should respond to scrolling', () => {
-    expect(component.isStuck).toBeFalsy();
-    component.isStuck = true;
-    expect(component.isStuck).toBeTruthy();
-    window.dispatchEvent(new Event('scroll'));
-    expect(component.isStuck).toBeFalsy();
-  });
-
   it('should allow link checking to be removed', () => {
     spyOn(component.setLinkCheck, 'emit');
     fixture.nativeElement.querySelector('.add-link-checking').click();
