@@ -11,29 +11,58 @@ $border-colour-shortcuts: #dbd9d9;
 }
 
 .link-check {
+  align-self: flex-end;
+}
+
+.add-link-checking {
   align-items: center;
+  cursor: default;
   display: flex;
-  flex-basis: 0;
+
+  &:hover .link_checking {
+    box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
+  }
+
+  &.active {
+    .remove {
+      display: block;
+    }
+    .add {
+      display: none;
+    }
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
   .ghost {
     margin: 0;
+
+    // by defaulting to the link the drag image is more predictable across browsers
+    pointer-events: none;
     position: relative;
     transform: translate(0, 0);
     &.dragging {
       box-shadow: 0;
     }
   }
-}
 
-.add-link-checking {
-  margin-right: 0.5em;
-  position: relative;
-  text-align: right;
-  white-space: nowrap;
-  &.active::before {
-    content: 'x';
-    font-weight: bold;
-    left: -1em;
-    position: absolute;
+  .remove {
+    display: none;
+  }
+
+  .text {
+    margin: 0 0.4em 0 0.2em;
+    position: relative;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ghost,
+  .remove,
+  .text {
+    cursor: pointer;
   }
 }
 .instruction {
@@ -48,8 +77,18 @@ $border-colour-shortcuts: #dbd9d9;
   margin: auto;
 }
 
+.steps .is-in-view::before {
+  background: $eu-jade;
+  bottom: -8px;
+  content: ' ';
+  display: block;
+  height: 4px;
+  position: absolute;
+  width: 1.5em;
+}
+
 .steps.all-highlighted .orb-status:not(.ghost) {
-  box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
+  box-shadow: 0 0 0 3px rgba($eu-jade, 0.3);
 }
 
 @keyframes pulseLinkCheckingAdded {
@@ -154,13 +193,22 @@ $border-colour-shortcuts: #dbd9d9;
 .link,
 .return-text {
   color: $gray-light;
-  display: inline-block;
-  font-size: 14px;
-  text-transform: lowercase;
 
   &:hover {
     color: $eu-jade;
   }
+}
+
+.link,
+.return-text {
+  display: inline-block;
+}
+
+.add-link-checking .text,
+.link,
+.return-text {
+  font-size: 14px;
+  text-transform: lowercase;
   &::first-letter {
     text-transform: uppercase;
   }
@@ -169,6 +217,7 @@ $border-colour-shortcuts: #dbd9d9;
 .steps {
   display: flex;
   justify-content: center;
+  margin: 0.25em 0;
 }
 
 .workflow-header {

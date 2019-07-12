@@ -11,12 +11,7 @@
 
   <label for="{{ conf.name }}" class="plugin"
     >{{ conf.label | renameWorkflow }}
-    <input
-      type="checkbox"
-      [formControlName]="conf.name"
-      id="{{ conf.name }}"
-      (change)="onFieldChanged(conf.name)"
-    />
+    <input type="checkbox" [formControlName]="conf.name" id="{{ conf.name }}" />
   </label>
 
   <ng-container *ngIf="conf.name === 'pluginHARVEST'">

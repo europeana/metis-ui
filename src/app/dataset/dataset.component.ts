@@ -78,12 +78,12 @@ export class DatasetComponent implements OnInit, OnDestroy {
   @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
 
   @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
-  @ViewChild('tabWorkflow') tabWorkflow: ElementRef;
+  @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
 
   formInitialised(workflowForm: FormGroup): void {
     if (this.workflowHeaderRef && this.workflowFormRef) {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);
-      this.workflowFormRef.onHeaderSynchronised();
+      this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef.nativeElement);
     } else {
       setTimeout(() => {
         this.formInitialised(workflowForm);
@@ -142,12 +142,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.reportErrors = undefined;
   }
 
-  headerOrbClicked(step: string): void {
-    this.workflowFormRef.scrollToPlugin(step, this.workflowHeaderRef.isStuck);
-  }
-
   returnToTop(): void {
-    this.tabWorkflow.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.scrollToTopAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
   setLinkCheck(linkCheckIndex: number): void {

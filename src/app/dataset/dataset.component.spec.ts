@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -44,7 +44,9 @@ describe('DatasetComponent', () => {
 
   it('responds to form initialisation by setting it in the header', () => {
     component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
-    component.workflowHeaderRef = new WorkflowHeaderComponent();
+    const mockHeader = new WorkflowHeaderComponent();
+    mockHeader.elRef = { nativeElement: {} } as ElementRef;
+    component.workflowHeaderRef = mockHeader;
     spyOn(component.workflowFormRef, 'onHeaderSynchronised');
     component.formInitialised({} as FormGroup);
     expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();

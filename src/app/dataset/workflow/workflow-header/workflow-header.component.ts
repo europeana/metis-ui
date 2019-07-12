@@ -17,7 +17,6 @@ import { DragType, EventDragDT, WorkflowFieldData, WorkflowFieldDataName } from 
   styleUrls: ['./workflow-header.component.scss']
 })
 export class WorkflowHeaderComponent implements AfterViewInit {
-  @Output() headerOrbClicked: EventEmitter<string> = new EventEmitter();
   @Output() returnToTop: EventEmitter<void> = new EventEmitter();
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
 
@@ -36,7 +35,6 @@ export class WorkflowHeaderComponent implements AfterViewInit {
       this.workflowForm.get(plugin)!.setValue(!this.workflowForm.get(plugin)!.value);
       this.workflowForm.markAsDirty();
     }
-    this.headerOrbClicked.emit(plugin);
   }
 
   setWorkflowForm(workflowForm: FormGroup): void {

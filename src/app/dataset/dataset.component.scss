@@ -29,7 +29,7 @@ hr {
 
 .tabbed-content {
   flex-wrap: wrap;
-  padding: 1rem;
+  padding: 0.6rem 1rem 1rem 1rem;
 
   @media (min-width: $bp-xl) {
     display: flex;
