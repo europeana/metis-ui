@@ -53,13 +53,6 @@ describe('WorkflowFormFieldComponent', () => {
     expect(component.isInactive()).toBeFalsy();
   });
 
-  it('should emit events when the field value changes', () => {
-    spyOn(component.fieldChanged, 'emit');
-    document.querySelector('input')!.click();
-    fixture.detectChanges();
-    expect(component.fieldChanged.emit).toHaveBeenCalled();
-  });
-
   it('should emit events when link checking gets set', () => {
     spyOn(component.setLinkCheck, 'emit');
     component.ctrlSetLinkCheck(0);

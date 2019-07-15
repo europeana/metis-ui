@@ -83,13 +83,14 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should respond to orb clicks', () => {
-    spyOn(component.headerOrbClicked, 'emit');
     const fGroup: FormGroup = new FormBuilder().group({
       pluginType: true
     });
     component.setWorkflowForm(fGroup);
     component.togglePlugin('pluginType');
-    expect(component.headerOrbClicked.emit).toHaveBeenCalled();
+    expect(component.workflowForm.value.pluginType).toBeFalsy();
+    component.togglePlugin('pluginType');
+    expect(component.workflowForm.value.pluginType).toBeTruthy();
   });
 
   it('should clear all fields in the conf', () => {
@@ -207,9 +208,22 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should adjust the index', () => {
+    expect(component.conf.length).toBe(2);
     expect(component.dropIndexAdjust(-1)).toBe(-1);
     expect(component.dropIndexAdjust(1)).toBe(0);
     expect(component.dropIndexAdjust(2)).toBe(1);
+    expect(component.dropIndexAdjust(3)).toBe(2);
+
+    component.conf.push({
+      label: 'LINK_CHECKING',
+      name: 'pluginLINK_CHECKING',
+      dragType: DragType.dragNone
+    });
+
+    expect(component.conf.length).toBe(3);
+    expect(component.dropIndexAdjust(1)).toBe(1);
+    expect(component.dropIndexAdjust(2)).toBe(2);
+
     expect(component.dropIndexAdjust(3)).toBe(2);
   });
 

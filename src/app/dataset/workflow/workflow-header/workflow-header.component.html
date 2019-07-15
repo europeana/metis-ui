@@ -7,27 +7,19 @@
     <span class="instruction">
       {{ 'workflow-instruction-1' | translate }}
     </span>
-    <span class="link-check">
-      <a
-        class="add-link-checking"
-        draggable="true"
-        (click)="removeLinkCheck()"
-        (dragstart)="dragStart($event)"
-        (dragend)="dragEnd()"
-        [ngClass]="{ active: linkCheckingEnabled() }"
-        >{{ 'workflow-add-link-check' | translate }}</a
-      >
-      <span
-        class="ghost link_checking orb-status labelled active"
-        draggable="true"
-        (click)="removeLinkCheck()"
-        (dragstart)="dragStart($event)"
-        (dragend)="dragEnd()"
-        (mousedown)="ghostMouseDown()"
-        (mouseup)="ghostMouseUp()"
-        #ghost
-      ></span>
-    </span>
+    <a
+      class="add-link-checking"
+      draggable="true"
+      (click)="removeLinkCheck()"
+      (dragstart)="dragStart($event)"
+      (dragend)="dragEnd()"
+      [ngClass]="{ active: linkCheckingEnabled() }"
+    >
+      <span class="remove bold">x </span>
+      <span class="text add">{{ 'workflow-add-link-check' | translate }}</span>
+      <span class="text remove">remove</span>
+      <span class="ghost link_checking orb-status labelled active" #ghost></span>
+    </a>
   </div>
 
   <div class="steps-wrapper">
@@ -55,7 +47,10 @@
             "
             (drop)="plugin.dragType !== DragTypeEnum.dragNone ? undefined : drop($event, i)"
             (dragstart)="plugin.dragType === DragTypeEnum.dragCopy ? dragStart($event) : undefined"
-            [ngClass]="{ active: isActive(plugin.name) }"
+            [ngClass]="{
+              active: isActive(plugin.name),
+              'is-in-view': plugin.currentlyViewed
+            }"
           >
           </a>
         </li>

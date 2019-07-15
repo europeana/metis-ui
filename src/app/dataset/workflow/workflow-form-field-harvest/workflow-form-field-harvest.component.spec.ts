@@ -85,4 +85,10 @@ describe('WorkflowFormFieldHarvestComponent', () => {
     component.workflowForm.value.metadataFormat = fmtMeta;
     expect(component.getImportSummary().indexOf(fmtMeta)).toBeGreaterThan(0);
   });
+
+  it('should emit events when the field value changes', () => {
+    spyOn(component.fieldChanged, 'emit');
+    component.onFieldChanged('');
+    expect(component.fieldChanged.emit).toHaveBeenCalled();
+  });
 });

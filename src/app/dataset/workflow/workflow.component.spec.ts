@@ -21,10 +21,24 @@ import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { WorkflowComponent } from '.';
+import { WorkflowFormFieldComponent } from './workflow-form-field';
 
 describe('WorkflowComponent', () => {
   let component: WorkflowComponent;
   let fixture: ComponentFixture<WorkflowComponent>;
+
+  const getTestEl = function(top: number, bottom?: number): HTMLElement {
+    // tslint:disable:no-any
+    return ({
+      // tslint:disable:no-any
+      getBoundingClientRect(): any {
+        return {
+          bottom: bottom ? bottom : top + 20,
+          top
+        };
+      }
+    } as any) as HTMLElement;
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -46,18 +60,8 @@ describe('WorkflowComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowComponent);
     component = fixture.componentInstance;
-
     component.fieldConf = workflowFormFieldConf;
-
     fixture.detectChanges();
-  });
-
-  it('should implement different scroll behaviours', () => {
-    expect(component.isAnchorsOffset).toBeFalsy();
-    component.scrollToPlugin('pluginVALIDATION_EXTERNAL', true);
-    expect(component.isAnchorsOffset).toBeTruthy();
-    component.scrollToPlugin('pluginHARVEST', false);
-    expect(component.isAnchorsOffset).toBeFalsy();
   });
 
   it('should set the link checking', () => {
@@ -119,6 +123,44 @@ describe('WorkflowComponent', () => {
     };
     component.onHeaderSynchronised();
     expect(component.rearrange).toHaveBeenCalledWith(2, true);
+  });
+
+  it('should get the viewport score', () => {
+    expect(component.getViewportScore(getTestEl(20), 50)).toEqual(0);
+    expect(component.getViewportScore(getTestEl(50), 50)).toEqual(1);
+    expect(component.getViewportScore(getTestEl(70), 50)).toEqual(3);
+    expect(component.getViewportScore(getTestEl(20, 1000), 50)).toEqual(4);
+  });
+
+  it('it should throttle scroll events', () => {
+    component.onHeaderSynchronised();
+    expect(component.busy).toBeFalsy();
+    window.dispatchEvent(new Event('scroll'));
+    expect(component.busy).toBeTruthy();
+  });
+
+  it('it should respond to scroll events', () => {
+    spyOn(component, 'setHighlightedField');
+    component.onHeaderSynchronised();
+    window.dispatchEvent(new Event('scroll'));
+    expect(component.setHighlightedField).toHaveBeenCalled();
+  });
+
+  it('should set the highlighted field', () => {
+    const fields = [
+      {
+        conf: { currentlyViewed: false },
+        pluginElement: { nativeElement: getTestEl(20) }
+      } as WorkflowFormFieldComponent,
+      {
+        conf: { currentlyViewed: false },
+        pluginElement: { nativeElement: getTestEl(500) }
+      } as WorkflowFormFieldComponent
+    ];
+
+    component.setHighlightedField(fields);
+    expect(fields[0].conf.currentlyViewed).toBeTruthy();
+    expect(fields[1].conf.currentlyViewed).toBeFalsy();
   });
 
   it('should format the form values', () => {

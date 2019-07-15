@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div class="tabbed-content">
+    <div class="tabbed-content" #scrollToTopAnchor>
       <ul class="tabs">
         <li [ngClass]="{ active: activeTab === 'edit' }">
           <a routerLink="/dataset/edit/{{ datasetId }}">
@@ -73,7 +73,7 @@
             }}</span>
           </a>
         </li>
-        <li [ngClass]="{ active: activeTab === 'workflow' }" #tabWorkflow>
+        <li [ngClass]="{ active: activeTab === 'workflow' }">
           <a routerLink="/dataset/workflow/{{ datasetId }}">
             <span class="tab-title">{{ 'workflow' | translate }}</span>
           </a>
@@ -101,7 +101,6 @@
     </div>
 
     <app-workflow-header
-      (headerOrbClicked)="headerOrbClicked($event)"
       (returnToTop)="returnToTop()"
       (setLinkCheck)="setLinkCheck($event)"
       [conf]="fieldConf"

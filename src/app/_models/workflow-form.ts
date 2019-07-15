@@ -48,6 +48,7 @@ interface WorkflowFieldDataBase {
   label: string;
   name: WorkflowFieldDataName;
   dragType: DragType;
+  currentlyViewed?: boolean;
 }
 
 export interface WorkflowFieldData extends WorkflowFieldDataBase {

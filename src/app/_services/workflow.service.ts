@@ -82,19 +82,7 @@ export class WorkflowService {
     for (let i = 0; i <= endPage; i++) {
       observables.push(getResults(i));
     }
-
-    console.error('in the new func');
     return this.paginatedResult(observables);
-    /*
-    return forkJoin(observables).pipe(
-      map((resultList) => {
-        const results = ([] as T[]).concat(...resultList.map((r) => r.results));
-        const lastResult = resultList[resultList.length - 1];
-        const more = lastResult.nextPage >= 0;
-        return { results, more };
-      })
-    );
-    */
   }
 
   private collectAllResultsUptoPage<T>(
@@ -103,19 +91,7 @@ export class WorkflowService {
   ): Observable<MoreResults<T>> {
     const observables: Observable<Results<T>>[] = [];
     observables.push(getResults(endPage));
-
     return this.paginatedResult(observables);
-
-    /*
-    return forkJoin(observables).pipe(
-      map((resultList) => {
-        const results = ([] as T[]).concat(...resultList.map((r) => r.results));
-        const lastResult = resultList[resultList.length - 1];
-        const more = lastResult.nextPage >= 0;
-        return { results, more };
-      })
-    );
-    */
   }
 
   getWorkflowForDataset(id: string): Observable<Workflow> {

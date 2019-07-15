@@ -58,7 +58,6 @@ export class WorkflowComponent implements OnInit {
   newWorkflow = true;
   workflowForm: FormGroup;
   isSaving = false;
-  isAnchorsOffset = false;
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -66,8 +65,9 @@ export class WorkflowComponent implements OnInit {
   invalidNotification: Notification;
 
   DragTypeEnum = DragType;
+  busy = false;
 
-  onHeaderSynchronised(): void {
+  onHeaderSynchronised(elHeader?: HTMLElement): void {
     if (this.workflowData) {
       const index = this.workflowData.metisPluginsMetadata
         .filter((plugin) => {
@@ -80,6 +80,18 @@ export class WorkflowComponent implements OnInit {
         this.rearrange(index - 1, true);
       }
     }
+
+    window.addEventListener('scroll', () => {
+      if (this.busy) {
+        return;
+      }
+      this.busy = true;
+      this.setHighlightedField(this.inputFields.toArray(), elHeader);
+      setTimeout(() => {
+        this.setHighlightedField(this.inputFields.toArray(), elHeader);
+        this.busy = false;
+      }, 100);
+    });
   }
 
   /** ngOnInit
@@ -107,6 +119,41 @@ export class WorkflowComponent implements OnInit {
     });
   }
 
+  getViewportScore(el: HTMLElement, headerHeight: number): number {
+    const rect = el.getBoundingClientRect();
+    const wh = window.innerHeight || document.documentElement.clientHeight;
+    const topOnScreen = rect.top > headerHeight && rect.top <= wh;
+    const bottomOnScreen = rect.bottom >= headerHeight && rect.bottom <= wh;
+    const elSpansViewport = rect.top <= headerHeight && rect.bottom >= wh;
+
+    return elSpansViewport
+      ? 4
+      : topOnScreen && bottomOnScreen
+      ? 3
+      : topOnScreen
+      ? 2
+      : bottomOnScreen
+      ? 1
+      : 0;
+  }
+
+  setHighlightedField(fields: Array<WorkflowFormFieldComponent>, headerEl?: HTMLElement): void {
+    const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
+    let scorePositive = false;
+
+    const sorted = fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
+      const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
+      const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
+      if (!scorePositive && scoreA + scoreB > 0) {
+        scorePositive = true;
+      }
+      return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
+    });
+    sorted.forEach((item: WorkflowFormFieldComponent, i) => {
+      item.conf.currentlyViewed = i === 0 && scorePositive;
+    });
+  }
+
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
   */
@@ -128,17 +175,6 @@ export class WorkflowComponent implements OnInit {
   setLinkCheck(linkCheckIndex: number): void {
     this.rearrange(linkCheckIndex, false);
     this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
-  }
-
-  scrollToPlugin(name: string, headerStuck: boolean): void {
-    this.isAnchorsOffset = headerStuck;
-    this.inputFields.forEach((input) => {
-      if (input.conf.name === name) {
-        setTimeout(() => {
-          input.scrollToInput();
-        }, 1);
-      }
-    });
   }
 
   rearrange(insertIndex: number, correctForInactive: boolean): void {
