@@ -15,9 +15,8 @@
       (dragend)="dragEnd()"
       [ngClass]="{ active: linkCheckingEnabled() }"
     >
-      <span class="remove bold">x </span>
       <span class="text add">{{ 'workflow-add-link-check' | translate }}</span>
-      <span class="text remove">remove</span>
+      <span class="text remove">{{ 'workflow-remove-link-check' | translate }}</span>
       <span class="ghost link_checking orb-status labelled active" #ghost></span>
     </a>
   </div>
