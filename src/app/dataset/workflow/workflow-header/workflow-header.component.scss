@@ -124,7 +124,7 @@ $border-colour-shortcuts: #dbd9d9;
     }
   }
   &.error {
-    border-color: red;
+    border-color: $eu-red;
   }
   &.labelled.link_checking:hover,
   &.drag-over {

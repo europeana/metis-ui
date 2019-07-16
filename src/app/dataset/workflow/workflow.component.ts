@@ -119,7 +119,7 @@ export class WorkflowComponent implements OnInit {
     this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
       sticky: true
     });
-    this.gapInSequenceNotification = errorNotification(this.translate.instant('gaperror'), {
+    this.gapInSequenceNotification = successNotification(this.translate.instant('gaperror'), {
       sticky: true
     });
   }
