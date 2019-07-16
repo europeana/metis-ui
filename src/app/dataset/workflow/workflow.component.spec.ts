@@ -207,4 +207,57 @@ describe('WorkflowComponent', () => {
     component.start();
     expect(component.startWorkflow.emit).toHaveBeenCalledWith();
   });
+
+  it('should detect gaps in the workflow sequence', () => {
+    // tslint:disable:no-any
+    const fakeInputs = [
+      {
+        conf: {
+          name: 'pluginHARVEST',
+          error: false
+        }
+      },
+      {
+        conf: {
+          name: 'pluginType',
+          error: false
+        }
+      },
+      {
+        conf: {
+          name: 'pluginTRANSFORMATION',
+          error: false
+        }
+      },
+      {
+        conf: {
+          name: 'pluginVALIDATION_INTERNAL',
+          error: false
+        }
+      }
+    ] as any;
+
+    // tslint:disable:no-any
+    expect(
+      fakeInputs.filter((item: any) => {
+        return item.conf.error;
+      }).length
+    ).toBe(0);
+
+    component.workflowForm.get('pluginHARVEST')!.setValue(true);
+    component.workflowStepAllowed(fakeInputs);
+    // tslint:disable:no-any
+    expect(
+      fakeInputs.filter((item: any) => {
+        return item.conf.error;
+      }).length
+    ).toBe(0);
+
+    component.workflowForm.get('pluginVALIDATION_INTERNAL')!.setValue(true);
+    component.workflowStepAllowed(fakeInputs);
+
+    expect(fakeInputs[1].conf.error).toBeTruthy();
+    expect(fakeInputs[2].conf.error).toBeTruthy();
+    expect(component.gapInSequence).toBeTruthy();
+  });
 });

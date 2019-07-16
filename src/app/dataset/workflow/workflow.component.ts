@@ -58,11 +58,13 @@ export class WorkflowComponent implements OnInit {
   newWorkflow = true;
   workflowForm: FormGroup;
   isSaving = false;
+  gapInSequence = false;
 
   newNotification: Notification;
   saveNotification: Notification;
   runningNotification: Notification;
   invalidNotification: Notification;
+  gapInSequenceNotification: Notification;
 
   DragTypeEnum = DragType;
   busy = false;
@@ -115,6 +117,9 @@ export class WorkflowComponent implements OnInit {
       sticky: true
     });
     this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
+      sticky: true
+    });
+    this.gapInSequenceNotification = successNotification(this.translate.instant('gaperror'), {
       sticky: true
     });
   }
@@ -216,7 +221,9 @@ export class WorkflowComponent implements OnInit {
         this.fieldConf.splice(newInsertIndex + 1, 0, shiftable);
       }
     }
-    this.workflowStepAllowed();
+    setTimeout(() => {
+      this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
+    }, 0);
   }
 
   /** updateRequired
@@ -224,6 +231,8 @@ export class WorkflowComponent implements OnInit {
   */
   updateRequired(): void {
     this.workflowForm.valueChanges.subscribe(() => {
+      this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
+
       if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
         this.workflowForm.get('pluginLINK_CHECKING')!.setValidators([Validators.required]);
       }
@@ -280,8 +289,26 @@ export class WorkflowComponent implements OnInit {
   /** workflowStepAllowed
   /* make step before and after available for selection
   */
-  workflowStepAllowed(): void {
-    console.log('TODO: prevent incoherent step sequences');
+  workflowStepAllowed(fieldsArray?: Array<WorkflowFormFieldComponent>): void {
+    if (fieldsArray) {
+      const tTotal = fieldsArray.filter((item) => {
+        return this.workflowForm.value[item.conf.name];
+      }).length;
+
+      let tCount = 0;
+      this.gapInSequence = false;
+
+      fieldsArray.forEach((item) => {
+        item.conf.error = false;
+        if (this.workflowForm.value[item.conf.name]) {
+          tCount++;
+        } else if (tCount > 0 && tCount < tTotal) {
+          item.conf.error = true;
+          this.workflowForm.controls[item.conf.name].setErrors({ incorrect: true });
+          this.gapInSequence = true;
+        }
+      });
+    }
   }
 
   getWorkflow(): void {
@@ -318,20 +345,15 @@ export class WorkflowComponent implements OnInit {
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
         }
-        this.workflowStepAllowed();
-
         if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
           this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
         } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
           this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
         } else {
-          this.workflowStepAllowed();
-
           // transformation
           if (thisWorkflow.pluginType === 'TRANSFORMATION') {
             this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
           }
-
           // link checking
           if (thisWorkflow.pluginType === 'LINK_CHECKING') {
             this.workflowForm.controls.performSampling.setValue(
@@ -454,8 +476,8 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.valid) {
       return this.newWorkflow ? this.newNotification : this.saveNotification;
     } else {
-      return this.invalidNotification;
     }
+    return this.gapInSequence ? this.gapInSequenceNotification : this.invalidNotification;
   }
 
   getRunNotification(): Notification | undefined {

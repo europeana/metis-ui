@@ -49,6 +49,7 @@
             (dragstart)="plugin.dragType === DragTypeEnum.dragCopy ? dragStart($event) : undefined"
             [ngClass]="{
               active: isActive(plugin.name),
+              error: plugin.error,
               'is-in-view': plugin.currentlyViewed
             }"
           >

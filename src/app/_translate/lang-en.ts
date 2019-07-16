@@ -62,6 +62,7 @@ export const LANG_EN_TRANS = {
   ftppassword: 'FTP/HTTP password',
   ftpuser: 'FTP/HTTP user',
   fullhistory: 'See full processing history',
+  gaperror: 'Gaps are not allowed in the workflow sequence',
   gotomapping: 'Go back to Mapping',
   harvestprotocol: 'Harvest protocol',
   harvesturl: 'Harvest URL',
