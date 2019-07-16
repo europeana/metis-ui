@@ -17,34 +17,6 @@
   margin-bottom: 20rem;
 }
 
-.predefined-workflows {
-  background: $white;
-  margin-bottom: 2rem;
-  width: 100%;
-
-  .predefined-workflows-tabs {
-    border-bottom: 4px solid $eu-jade;
-    display: flex;
-
-    li {
-      border-left: 2px solid $gray-lightest;
-      cursor: pointer;
-      flex: 1;
-      max-width: 33.3333333333%;
-      padding: 2rem;
-    }
-
-    li:first-child {
-      border-left: 0;
-    }
-
-    .active {
-      background: $eu-jade;
-      color: $white;
-    }
-  }
-}
-
 .warning-before {
   position: relative;
   &::before {
