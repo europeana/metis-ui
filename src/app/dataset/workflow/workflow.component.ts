@@ -178,6 +178,7 @@ export class WorkflowComponent implements OnInit {
       if(this.gapInSequence){
         return { gapInSequence: true };
       }
+      return null;
     }});
     this.updateRequired();
   }
