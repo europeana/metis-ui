@@ -121,6 +121,13 @@ $border-colour-shortcuts: #dbd9d9;
   color: $eu-jade;
   font-size: 1.5em;
 
+  &:hover {
+    border-color: $eu-jade-light;
+    &.active {
+      border-color: $eu-jade-dark;
+    }
+  }
+
   &:not(last-of-type) {
     margin-right: 0.75em;
   }
@@ -130,6 +137,7 @@ $border-colour-shortcuts: #dbd9d9;
   }
 
   &.active {
+    border-color: $eu-jade;
     background: $eu-jade;
     &::after {
       color: $white;
