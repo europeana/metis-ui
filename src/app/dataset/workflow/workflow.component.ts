@@ -174,12 +174,14 @@ export class WorkflowComponent implements OnInit {
       }
     });
 
-    this.workflowForm = this.fb.group(formGroupConf, { validator: ()=>{
-      if(this.gapInSequence){
-        return { gapInSequence: true };
+    this.workflowForm = this.fb.group(formGroupConf, {
+      validator: () => {
+        if (this.gapInSequence) {
+          return { gapInSequence: true };
+        }
+        return null;
       }
-      return null;
-    }});
+    });
     this.updateRequired();
   }
 
