@@ -173,7 +173,12 @@ export class WorkflowComponent implements OnInit {
         });
       }
     });
-    this.workflowForm = this.fb.group(formGroupConf);
+
+    this.workflowForm = this.fb.group(formGroupConf, { validator: ()=>{
+      if(this.gapInSequence){
+        return { gapInSequence: true };
+      }
+    }});
     this.updateRequired();
   }
 
@@ -223,7 +228,8 @@ export class WorkflowComponent implements OnInit {
     }
     setTimeout(() => {
       this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
-    }, 0);
+      this.workflowForm.updateValueAndValidity();
+    }, 10);
   }
 
   /** updateRequired
@@ -304,7 +310,6 @@ export class WorkflowComponent implements OnInit {
           tCount++;
         } else if (tCount > 0 && tCount < tTotal) {
           item.conf.error = true;
-          this.workflowForm.controls[item.conf.name].setErrors({ incorrect: true });
           this.gapInSequence = true;
         }
       });
@@ -476,8 +481,8 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.valid) {
       return this.newWorkflow ? this.newNotification : this.saveNotification;
     } else {
+      return this.gapInSequence ? this.gapInSequenceNotification : this.invalidNotification;
     }
-    return this.gapInSequence ? this.gapInSequenceNotification : this.invalidNotification;
   }
 
   getRunNotification(): Notification | undefined {
