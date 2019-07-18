@@ -120,7 +120,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
       this.isDragging = true;
       e.dataTransfer.setData('metisHeaderOrb', 'true');
 
-      const n: HTMLElement = this.ghost.nativeElement.cloneNode();
+      const n = this.ghost.nativeElement.cloneNode();
       n.style.border = '3px solid #71c07b';
       n.style.boxSizing = 'border-box';
       n.style.top = '-1000px';
