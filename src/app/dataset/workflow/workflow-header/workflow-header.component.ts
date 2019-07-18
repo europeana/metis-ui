@@ -107,14 +107,6 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     e.preventDefault();
   }
 
-  ghostMouseDown(): void {
-    this.ghost.nativeElement.classList.add('dragging');
-  }
-
-  ghostMouseUp(): void {
-    this.ghost.nativeElement.classList.remove('dragging');
-  }
-
   dragStart(e: EventDragDT): void {
     if (e.dataTransfer) {
       this.isDragging = true;
@@ -135,6 +127,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   dragEnd(): void {
     this.isDragging = false;
+    this.isDraggingOverOrbs = false;
   }
 
   toggleDragOver(e: Event, tf?: boolean): void {
