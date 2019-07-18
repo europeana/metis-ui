@@ -117,9 +117,19 @@ export class WorkflowHeaderComponent implements AfterViewInit {
 
   dragStart(e: EventDragDT): void {
     if (e.dataTransfer) {
-      e.dataTransfer.setData('metisHeaderOrb', 'true');
-      e.dataTransfer.setDragImage(this.ghost.nativeElement, 20, 20);
       this.isDragging = true;
+      e.dataTransfer.setData('metisHeaderOrb', 'true');
+
+      const n: HTMLElement = this.ghost.nativeElement.cloneNode();
+      n.style.border = '3px solid #71c07b';
+      n.style.boxSizing = 'border-box';
+      n.style.top = '-1000px';
+      n.style.transform = 'scale(1)';
+      n.style.backgroundSize = 'contain';
+      n.style.height = '40px';
+      n.style.width = '40px';
+      document.body.appendChild(n);
+      e.dataTransfer.setDragImage(n, 20, 20);
     }
   }
 
