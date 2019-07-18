@@ -43,9 +43,9 @@ $border-colour-shortcuts: #dbd9d9;
     pointer-events: none;
     position: relative;
     transform: translate(0, 0);
-    &.dragging {
-      box-shadow: 0;
-    }
+    //    &.dragging {
+    //    box-shadow: 0;
+    //}
   }
 
   .remove {
