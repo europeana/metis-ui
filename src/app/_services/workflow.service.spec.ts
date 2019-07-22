@@ -266,7 +266,8 @@ describe('workflow service', () => {
     mockHttp
       .expect(
         'GET',
-        '/orchestrator/workflows/executions/dataset/677?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=8'
+        '/orchestrator/workflows/executions/dataset/677' +
+          '?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=8'
       )
       .send(mockWorkflowExecutionResults);
   });

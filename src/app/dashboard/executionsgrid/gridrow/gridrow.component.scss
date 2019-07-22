@@ -60,7 +60,7 @@ $row-border-height-min: 3px;
   content: '--';
 }
 
-// all edges
+/* all edges */
 .row-end,
 .row-start,
 .row-start.active + .row-steps,
@@ -74,7 +74,7 @@ $row-border-height-min: 3px;
   }
 }
 
-// right edge
+/* right edge */
 .row-end {
   &::after {
     right: -1.75em;
@@ -88,7 +88,7 @@ $row-border-height-min: 3px;
   }
 }
 
-// bottom edge
+/* bottom edge */
 .group-end {
   &::after {
     background: $color-bottom-edge;
@@ -101,7 +101,7 @@ $row-border-height-min: 3px;
   }
 }
 
-// hover edges
+/* hover edges */
 .row-end,
 .row-start,
 .row-steps {
@@ -137,12 +137,12 @@ $row-border-height-min: 3px;
 
 .row-end,
 .row-steps {
-  // maintain hover events
+  /* maintain hover events */
   pointer-events: none;
 }
 
 .row-start.active + .row-steps {
-  // underline the open item
+  /* underline the open item */
   &::after {
     background: $grid-h-line-item-color;
     height: 2px;
@@ -159,13 +159,13 @@ $row-border-height-min: 3px;
     padding: 0.5em 1em 0.5em 1em;
     justify-content: space-between;
 
-    // pull process stats over to right
+    /* pull process stats over to right */
     &:nth-of-type(5n + 3) {
       position: absolute;
       right: 2em;
     }
 
-    // put dates side by side
+    /* put dates side by side */
     &:nth-of-type(5n + 4),
     &:nth-of-type(5n + 5) {
       display: inline-block;
@@ -217,7 +217,7 @@ $row-border-height-min: 3px;
     grid-column-end: sub-date-end;
   }
 
-  // set animations
+  /* set animations */
   .orb-status {
     &.status-inqueue {
       animation: pulseInqueue 4000ms infinite;
@@ -229,4 +229,9 @@ $row-border-height-min: 3px;
       animation: glowing 2000ms infinite;
     }
   }
+}
+
+.labelled.link_checking::after {
+  content: 'L';
+  background: none;
 }

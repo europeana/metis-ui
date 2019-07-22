@@ -15,6 +15,12 @@ input[type='date'] {
   -webkit-appearance: none;
 }
 
+input[type='date']::-webkit-datetime-edit-year-field,
+input[type='date']::-webkit-datetime-edit-month-field,
+input[type='date']::-webkit-datetime-edit-day-field {
+  color: $black;
+}
+
 .input-label {
   align-items: center;
   display: flex;

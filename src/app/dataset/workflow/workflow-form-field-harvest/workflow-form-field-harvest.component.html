@@ -1,0 +1,74 @@
+<div
+  class="show-on-hover"
+  *ngIf="workflowForm.get('pluginHARVEST')!.disabled || !workflowForm.get('pluginHARVEST')!.value"
+>
+  <span class="content" [innerHTML]="getImportSummary()"></span>
+</div>
+<div
+  class="form-group"
+  *ngIf="!workflowForm.get('pluginHARVEST')!.disabled && workflowForm.get('pluginHARVEST')!.value"
+>
+  <label>{{ 'harvestprotocol' | translate }} *</label>
+
+  <div class="form-group-radios" [formGroup]="workflowForm">
+    <label>
+      <input
+        type="radio"
+        formControlName="pluginType"
+        value="OAIPMH_HARVEST"
+        [checked]="workflowForm.value.pluginType && !isProtocolHTTP()"
+        (click)="onFieldChanged('pluginHARVEST')"
+      />
+      {{ 'oai' | translate }}
+    </label>
+    <label>
+      <input
+        type="radio"
+        formControlName="pluginType"
+        value="HTTP_HARVEST"
+        [checked]="workflowForm.value.pluginType && isProtocolHTTP()"
+      />
+      {{ 'http' | translate }}
+    </label>
+  </div>
+</div>
+
+<ng-container
+  *ngIf="!workflowForm.get('pluginHARVEST')!.disabled && workflowForm.get('pluginHARVEST')!.value"
+>
+  <div class="form-group" *ngIf="!isProtocolHTTP()" [formGroup]="workflowForm">
+    <label for="harvest-url">{{ 'harvesturl' | translate }} *</label>
+    <input id="harvest-url" type="text" formControlName="harvestUrl" />
+    <div
+      class="messages"
+      *ngIf="workflowForm.get('harvestUrl')!.errors && workflowForm.get('harvestUrl')!.dirty"
+    >
+      <div *ngIf="workflowForm.get('harvestUrl')!.errors!.validParameter" class="error-message">
+        {{ 'errorharvestparameters' | translate }}
+      </div>
+      <div *ngIf="workflowForm.get('harvestUrl')!.errors!.validUrl" class="error-message">
+        {{ 'errorharvesturl' | translate }}
+      </div>
+    </div>
+  </div>
+  <div class="form-group" *ngIf="!isProtocolHTTP()" [formGroup]="workflowForm">
+    <label for="setspec">{{ 'setspec' | translate }}</label>
+    <input id="setspec" type="tel" formControlName="setSpec" />
+  </div>
+  <div class="form-group" *ngIf="!isProtocolHTTP()" [formGroup]="workflowForm">
+    <label for="metadata-format">{{ 'metadataformat' | translate }} *</label>
+    <input id="metadata-format" type="text" formControlName="metadataFormat" />
+  </div>
+  <div class="form-group" *ngIf="isProtocolHTTP()" [formGroup]="workflowForm">
+    <label for="url">{{ 'url' | translate }} *</label>
+    <input id="url" type="text" formControlName="url" />
+    <div class="messages" *ngIf="workflowForm.get('url')!.errors && workflowForm.get('url')!.dirty">
+      <div *ngIf="workflowForm.get('url')!.errors!.validParameter" class="error-message">
+        {{ 'errorharvestparameters' | translate }}
+      </div>
+      <div *ngIf="workflowForm.get('url')!.errors!.validUrl" class="error-message">
+        {{ 'errorharvesturl' | translate }}
+      </div>
+    </div>
+  </div>
+</ng-container>

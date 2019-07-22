@@ -26,8 +26,6 @@ function checkStaticField(name: string, value: string): void {
 }
 
 function checkPluginStatus(name: string, enabled: boolean): void {
-  cy.get(enabled ? '.predefined-steps li' : '.predefined-steps li.inactive').contains(name);
-
   const input = cy
     .get('.plugin')
     .contains(name)
@@ -110,7 +108,6 @@ context('metis-ui', () => {
       checkPluginStatus('Process Media', true);
       checkPluginStatus('Preview', false);
       checkPluginStatus('Publish', false);
-      checkPluginStatus('Check Links', true);
     });
 
     // TODO: check and update fields

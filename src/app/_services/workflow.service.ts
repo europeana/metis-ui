@@ -63,14 +63,7 @@ export class WorkflowService {
     );
   }
 
-  private collectResultsUptoPage<T>(
-    getResults: (page: number) => Observable<Results<T>>,
-    endPage: number
-  ): Observable<MoreResults<T>> {
-    const observables: Observable<Results<T>>[] = [];
-    for (let i = 0; i <= endPage; i++) {
-      observables.push(getResults(i));
-    }
+  private paginatedResult<T>(observables: Observable<Results<T>>[]): Observable<MoreResults<T>> {
     return forkJoin(observables).pipe(
       map((resultList) => {
         const results = ([] as T[]).concat(...resultList.map((r) => r.results));
@@ -81,21 +74,24 @@ export class WorkflowService {
     );
   }
 
+  private collectResultsUptoPage<T>(
+    getResults: (page: number) => Observable<Results<T>>,
+    endPage: number
+  ): Observable<MoreResults<T>> {
+    const observables: Observable<Results<T>>[] = [];
+    for (let i = 0; i <= endPage; i++) {
+      observables.push(getResults(i));
+    }
+    return this.paginatedResult(observables);
+  }
+
   private collectAllResultsUptoPage<T>(
     getResults: (page: number) => Observable<Results<T>>,
     endPage: number
   ): Observable<MoreResults<T>> {
     const observables: Observable<Results<T>>[] = [];
     observables.push(getResults(endPage));
-
-    return forkJoin(observables).pipe(
-      map((resultList) => {
-        const results = ([] as T[]).concat(...resultList.map((r) => r.results));
-        const lastResult = resultList[resultList.length - 1];
-        const more = lastResult.nextPage >= 0;
-        return { results, more };
-      })
-    );
+    return this.paginatedResult(observables);
   }
 
   getWorkflowForDataset(id: string): Observable<Workflow> {
@@ -227,9 +223,9 @@ export class WorkflowService {
 
   //  get history of finished executions for specific datasetid
   getFinishedDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/dataset/${id}?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
+    const url =
+      `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}` +
+      `?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
@@ -308,8 +304,6 @@ export class WorkflowService {
         return executions;
       })
     );
-
-    // TODO: error handling?
   }
 
   getAllExecutionsCollectingPages(ongoing: boolean): Observable<WorkflowExecution[]> {

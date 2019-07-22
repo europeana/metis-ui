@@ -1,22 +1,34 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavigationEnd, Router } from '@angular/router';
 
 import { harvestValidator } from '../../_helpers';
 import {
   Dataset,
+  DragType,
   errorNotification,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
   PluginMetadata,
+  PluginType,
   successNotification,
   Workflow,
-  WorkflowExecution
+  WorkflowExecution,
+  WorkflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+
+import { WorkflowFormFieldComponent } from './workflow-form-field';
 
 @Component({
   selector: 'app-workflow',
@@ -28,52 +40,61 @@ export class WorkflowComponent implements OnInit {
     private workflows: WorkflowService,
     private fb: FormBuilder,
     private errors: ErrorService,
-    private router: Router,
     private translate: TranslateService
-  ) {
-    router.events.subscribe((s) => {
-      if (s instanceof NavigationEnd) {
-        const tree = router.parseUrl(router.url);
-        if (tree.fragment) {
-          const element = document.querySelector('#' + tree.fragment);
-          if (element) {
-            element.scrollIntoView(true);
-          }
-        }
-      }
-    });
-  }
+  ) {}
 
   @Input() datasetData: Dataset;
   @Input() workflowData?: Workflow;
   @Input() lastExecution?: WorkflowExecution;
   @Input() isStarting = false;
+  @Input() fieldConf: WorkflowFormFieldConf;
 
   @Output() startWorkflow = new EventEmitter<void>();
+  @Output() formInitialised = new EventEmitter<FormGroup>();
+
+  @ViewChildren(WorkflowFormFieldComponent) inputFields: QueryList<WorkflowFormFieldComponent>;
 
   notification?: Notification;
-  harvestprotocol: string;
   newWorkflow = true;
   workflowForm: FormGroup;
-  currentUrl: string;
-  pluginsOrdered: Array<string> = [
-    'pluginHARVEST',
-    'pluginVALIDATION_EXTERNAL',
-    'pluginTRANSFORMATION',
-    'pluginVALIDATION_INTERNAL',
-    'pluginNORMALIZATION',
-    'pluginENRICHMENT',
-    'pluginMEDIA_PROCESS',
-    'pluginPREVIEW',
-    'pluginPUBLISH',
-    'pluginLINK_CHECKING'
-  ];
   isSaving = false;
+  gapInSequence = false;
 
   newNotification: Notification;
   saveNotification: Notification;
   runningNotification: Notification;
   invalidNotification: Notification;
+  gapInSequenceNotification: Notification;
+
+  DragTypeEnum = DragType;
+  busy = false;
+
+  onHeaderSynchronised(elHeader?: HTMLElement): void {
+    if (this.workflowData) {
+      const index = this.workflowData.metisPluginsMetadata
+        .filter((plugin) => {
+          return plugin.enabled;
+        })
+        .findIndex((plugin) => {
+          return plugin.pluginType === 'LINK_CHECKING';
+        });
+      if (index > -1) {
+        this.rearrange(index - 1, true);
+      }
+    }
+
+    window.addEventListener('scroll', () => {
+      if (this.busy) {
+        return;
+      }
+      this.busy = true;
+      this.setHighlightedField(this.inputFields.toArray(), elHeader);
+      setTimeout(() => {
+        this.setHighlightedField(this.inputFields.toArray(), elHeader);
+        this.busy = false;
+      }, 100);
+    });
+  }
 
   /** ngOnInit
   /* init for this component
@@ -84,7 +105,7 @@ export class WorkflowComponent implements OnInit {
   ngOnInit(): void {
     this.buildForm();
     this.getWorkflow();
-    this.currentUrl = this.router.url.split('#')[0];
+    this.formInitialised.emit(this.workflowForm);
 
     this.newNotification = successNotification(this.translate.instant('workflowsavenew'), {
       sticky: true
@@ -98,36 +119,120 @@ export class WorkflowComponent implements OnInit {
     this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
       sticky: true
     });
+    this.gapInSequenceNotification = successNotification(this.translate.instant('gaperror'), {
+      sticky: true
+    });
+  }
+
+  getViewportScore(el: HTMLElement, headerHeight: number): number {
+    const rect = el.getBoundingClientRect();
+    const wh = window.innerHeight || document.documentElement.clientHeight;
+    const topOnScreen = rect.top > headerHeight && rect.top <= wh;
+    const bottomOnScreen = rect.bottom >= headerHeight && rect.bottom <= wh;
+    const elSpansViewport = rect.top <= headerHeight && rect.bottom >= wh;
+
+    return elSpansViewport
+      ? 4
+      : topOnScreen && bottomOnScreen
+      ? 3
+      : topOnScreen
+      ? 2
+      : bottomOnScreen
+      ? 1
+      : 0;
+  }
+
+  setHighlightedField(fields: Array<WorkflowFormFieldComponent>, headerEl?: HTMLElement): void {
+    const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
+    let scorePositive = false;
+
+    const sorted = fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
+      const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
+      const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
+      if (!scorePositive && scoreA + scoreB > 0) {
+        scorePositive = true;
+      }
+      return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
+    });
+    sorted.forEach((item: WorkflowFormFieldComponent, i) => {
+      item.conf.currentlyViewed = i === 0 && scorePositive;
+    });
   }
 
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
   */
   buildForm(): void {
-    this.workflowForm = this.fb.group({
-      pluginHARVEST: [''],
-      pluginTRANSFORMATION: [''],
-      pluginVALIDATION_EXTERNAL: [''],
-      pluginENRICHMENT: [''],
-      pluginVALIDATION_INTERNAL: [''],
-      pluginMEDIA_PROCESS: [''],
-      pluginNORMALIZATION: [''],
-      pluginLINK_CHECKING: [''],
-      pluginPREVIEW: [''],
-      pluginPUBLISH: [''],
-      pluginType: [''],
-      harvestUrl: [''],
-      setSpec: [''],
-      metadataFormat: [''],
-      performSampling: [''],
-      recordXPath: [''],
-      ftpHttpUser: [''],
-      ftpHttpPassword: [''],
-      url: [''],
-      customXslt: ['']
+    const formGroupConf = {} as { [key: string]: Array<string> };
+
+    this.fieldConf.forEach((confItem) => {
+      formGroupConf[confItem.name] = [''];
+      if (confItem.parameterFields) {
+        confItem.parameterFields.forEach((paramField) => {
+          formGroupConf[paramField] = [''];
+        });
+      }
     });
 
+    this.workflowForm = this.fb.group(formGroupConf, {
+      validator: () => {
+        if (this.gapInSequence) {
+          return { gapInSequence: true };
+        }
+        return null;
+      }
+    });
     this.updateRequired();
+  }
+
+  setLinkCheck(linkCheckIndex: number): void {
+    this.rearrange(linkCheckIndex, false);
+    this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
+  }
+
+  rearrange(insertIndex: number, correctForInactive: boolean): void {
+    let removeIndex = -1;
+    let shiftable;
+
+    this.fieldConf.forEach((confItem, index) => {
+      if (confItem.dragType === DragType.dragCopy) {
+        removeIndex = index;
+      } else if (confItem.dragType === DragType.dragSource) {
+        shiftable = Object.assign({}, confItem);
+        shiftable.dragType = DragType.dragCopy;
+      }
+    });
+
+    if (removeIndex > -1) {
+      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(false);
+      this.fieldConf.splice(removeIndex, 1);
+    }
+    if (shiftable && insertIndex > -1) {
+      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
+
+      let activeCount = -1;
+      let newInsertIndex = -1;
+
+      if (correctForInactive) {
+        this.inputFields.map((f, index) => {
+          if (!f.isInactive()) {
+            activeCount++;
+          }
+          if (activeCount === insertIndex && newInsertIndex < 0) {
+            newInsertIndex = index;
+          }
+        });
+      } else {
+        newInsertIndex = insertIndex;
+      }
+      if (newInsertIndex > -1) {
+        this.fieldConf.splice(newInsertIndex + 1, 0, shiftable);
+      }
+    }
+    setTimeout(() => {
+      this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
+      this.workflowForm.updateValueAndValidity();
+    }, 10);
   }
 
   /** updateRequired
@@ -135,6 +240,12 @@ export class WorkflowComponent implements OnInit {
   */
   updateRequired(): void {
     this.workflowForm.valueChanges.subscribe(() => {
+      this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
+
+      if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
+        this.workflowForm.get('pluginLINK_CHECKING')!.setValidators([Validators.required]);
+      }
+
       if (this.workflowForm.get('pluginHARVEST')!.value === true) {
         this.workflowForm.get('pluginType')!.setValidators([Validators.required]);
         this.workflowForm
@@ -187,60 +298,25 @@ export class WorkflowComponent implements OnInit {
   /** workflowStepAllowed
   /* make step before and after available for selection
   */
-  workflowStepAllowed(_: string): void {
-    let hasValue = 0;
+  workflowStepAllowed(fieldsArray?: Array<WorkflowFormFieldComponent>): void {
+    if (fieldsArray) {
+      const tTotal = fieldsArray.filter((item) => {
+        return this.workflowForm.value[item.conf.name];
+      }).length;
 
-    this.pluginsOrdered.forEach((value) => {
-      if (value !== 'pluginLINK_CHECKING') {
-        this.workflowForm.get(value)!.disable();
-      }
-    });
+      let tCount = 0;
+      this.gapInSequence = false;
 
-    this.pluginsOrdered.forEach((value, index) => {
-      if (this.workflowForm.get(value)!.value) {
-        hasValue++;
-        if (index - 1 >= 0) {
-          this.workflowForm.get(this.pluginsOrdered[index - 1])!.enable();
+      fieldsArray.forEach((item) => {
+        item.conf.error = false;
+        if (this.workflowForm.value[item.conf.name]) {
+          tCount++;
+        } else if (tCount > 0 && tCount < tTotal) {
+          item.conf.error = true;
+          this.gapInSequence = true;
         }
-        this.workflowForm.get(this.pluginsOrdered[index])!.enable();
-        if (index + 1 < this.pluginsOrdered.length) {
-          this.workflowForm.get(this.pluginsOrdered[index + 1])!.enable();
-        }
-      }
-    });
-
-    if (hasValue === 0) {
-      this.pluginsOrdered.forEach((value) => {
-        this.workflowForm.get(value)!.enable();
       });
     }
-  }
-
-  /** changeHarvestProtocol
-  /* update form according to selected protocol
-  */
-  changeHarvestProtocol(protocol: string): void {
-    this.harvestprotocol = protocol;
-  }
-
-  changeLinkCheckSampling(sample: boolean): void {
-    this.workflowForm.value.performSampling = sample;
-  }
-
-  getImportSummary(): string {
-    let res = 'Harvest URL: ';
-    if (this.harvestprotocol === 'HTTP_HARVEST') {
-      res += this.workflowForm.value.url.trim();
-    } else {
-      res +=
-        this.workflowForm.value.harvestUrl.trim() +
-        '<br/>Setspec: ' +
-        this.workflowForm.value.setSpec;
-    }
-    if (this.workflowForm.value.metadataFormat) {
-      res += '<br/>Metadata format: ' + this.workflowForm.value.metadataFormat;
-    }
-    return res;
   }
 
   getWorkflow(): void {
@@ -248,15 +324,25 @@ export class WorkflowComponent implements OnInit {
     if (!workflow) {
       return;
     }
-
     this.newWorkflow = false;
 
-    this.pluginsOrdered.forEach((pluginName) => {
-      this.workflowForm.get(pluginName)!.setValue(false);
+    // clear form
+    this.fieldConf.forEach((field) => {
+      this.workflowForm.get(field.name)!.setValue(false);
     });
 
     for (let w = 0; w < workflow.metisPluginsMetadata.length; w++) {
       const thisWorkflow = workflow.metisPluginsMetadata[w];
+
+      // parameter values are recovered even if not enabled
+
+      if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+        this.workflowForm.controls.url.setValue(thisWorkflow.url);
+      } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+        this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
+        this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
+        this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
+      }
 
       if (thisWorkflow.enabled === true) {
         if (
@@ -264,38 +350,25 @@ export class WorkflowComponent implements OnInit {
           thisWorkflow.pluginType === 'HTTP_HARVEST'
         ) {
           this.workflowForm.controls.pluginHARVEST.setValue(true);
-          this.workflowStepAllowed('pluginHARVEST');
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-          this.workflowStepAllowed('plugin' + thisWorkflow.pluginType);
         }
-      }
-
-      // import/harvest
-      if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-        this.harvestprotocol = 'OAIPMH_HARVEST';
-        this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
-        this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
-        this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
-        this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
-      }
-
-      if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
-        this.harvestprotocol = 'HTTP_HARVEST';
-        this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
-        this.workflowForm.controls.url.setValue(thisWorkflow.url);
-      }
-
-      // transformation
-      if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-        this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-      }
-
-      // link checking
-      if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-        this.workflowForm.controls.performSampling.setValue(
-          thisWorkflow.performSampling ? 'true' : 'false'
-        );
+        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
+        } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
+        } else {
+          // transformation
+          if (thisWorkflow.pluginType === 'TRANSFORMATION') {
+            this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+          }
+          // link checking
+          if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+            this.workflowForm.controls.performSampling.setValue(
+              thisWorkflow.performSampling ? 'true' : 'false'
+            );
+          }
+        }
       }
     }
   }
@@ -306,106 +379,43 @@ export class WorkflowComponent implements OnInit {
     this.notification = undefined;
   }
 
-  /** formatFormValues
-  /* format the form values so they can be submitted in a proper format
-  */
   formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
     const plugins: PluginMetadata[] = [];
 
-    // import/harvest
-    if (this.workflowForm.value.pluginHARVEST === true) {
-      if (this.workflowForm.value.pluginType === 'OAIPMH_HARVEST') {
-        plugins.push({
-          pluginType: 'OAIPMH_HARVEST',
-          setSpec: this.workflowForm.value.setSpec,
-          url: this.workflowForm.value.harvestUrl.trim(),
-          metadataFormat: this.workflowForm.value.metadataFormat,
-          mocked: false
-        });
-      } else if (this.workflowForm.value.pluginType === 'HTTP_HARVEST') {
-        plugins.push({
-          pluginType: 'HTTP_HARVEST',
-          url: this.workflowForm.value.url.trim(),
-          mocked: false
-        });
+    this.fieldConf.forEach((conf) => {
+      if (conf.dragType !== DragType.dragSource && this.workflowForm.value[conf.name]) {
+        if (conf.name === 'pluginHARVEST') {
+          if (this.workflowForm.value.pluginType === PluginType.OAIPMH_HARVEST) {
+            plugins.push({
+              pluginType: PluginType.OAIPMH_HARVEST,
+              setSpec: this.workflowForm.value.setSpec,
+              url: this.workflowForm.value.harvestUrl.trim(),
+              metadataFormat: this.workflowForm.value.metadataFormat
+            });
+          } else if (this.workflowForm.value.pluginType === PluginType.HTTP_HARVEST) {
+            plugins.push({
+              pluginType: PluginType.HTTP_HARVEST,
+              url: this.workflowForm.value.url.trim()
+            });
+          }
+        } else {
+          plugins.push(Object.assign(
+            {
+              pluginType: conf.label as PluginType
+            },
+            conf.parameterFields
+              ? conf.parameterFields
+                  .map((pf) => {
+                    return {
+                      [pf]: this.workflowForm.value[pf] ? this.workflowForm.value[pf] : false
+                    };
+                  })
+                  .pop()
+              : {}
+          ) as PluginMetadata);
+        }
       }
-    }
-
-    // validation external
-    if (this.workflowForm.value.pluginVALIDATION_EXTERNAL === true) {
-      plugins.push({
-        pluginType: 'VALIDATION_EXTERNAL',
-        mocked: false
-      });
-    }
-
-    // transformation
-    if (this.workflowForm.value.pluginTRANSFORMATION === true) {
-      plugins.push({
-        pluginType: 'TRANSFORMATION',
-        customXslt: this.workflowForm.value.customXslt ? this.workflowForm.value.customXslt : false,
-        mocked: false
-      });
-    }
-
-    // validation internal
-    if (this.workflowForm.value.pluginVALIDATION_INTERNAL === true) {
-      plugins.push({
-        pluginType: 'VALIDATION_INTERNAL',
-        mocked: false
-      });
-    }
-
-    // normalization
-    if (this.workflowForm.value.pluginNORMALIZATION === true) {
-      plugins.push({
-        pluginType: 'NORMALIZATION',
-        mocked: false
-      });
-    }
-
-    // enrichment
-    if (this.workflowForm.value.pluginENRICHMENT === true) {
-      plugins.push({
-        pluginType: 'ENRICHMENT',
-        mocked: false
-      });
-    }
-
-    // mediaservice
-    if (this.workflowForm.value.pluginMEDIA_PROCESS === true) {
-      plugins.push({
-        pluginType: 'MEDIA_PROCESS',
-        mocked: false
-      });
-    }
-
-    // publish to preview
-    if (this.workflowForm.value.pluginPREVIEW === true) {
-      plugins.push({
-        pluginType: 'PREVIEW',
-        mocked: false
-      });
-    }
-
-    // publish to publish
-    if (this.workflowForm.value.pluginPUBLISH === true) {
-      plugins.push({
-        pluginType: 'PUBLISH',
-        mocked: false
-      });
-    }
-
-    // link checking
-    if (this.workflowForm.value.pluginLINK_CHECKING === true) {
-      plugins.push({
-        pluginType: 'LINK_CHECKING',
-        mocked: false,
-        performSampling: this.workflowForm.value.performSampling
-          ? this.workflowForm.value.performSampling
-          : false
-      });
-    }
+    });
 
     return {
       metisPluginsMetadata: plugins
@@ -474,7 +484,7 @@ export class WorkflowComponent implements OnInit {
     if (this.workflowForm.valid) {
       return this.newWorkflow ? this.newNotification : this.saveNotification;
     } else {
-      return this.invalidNotification;
+      return this.gapInSequence ? this.gapInSequenceNotification : this.invalidNotification;
     }
   }
 

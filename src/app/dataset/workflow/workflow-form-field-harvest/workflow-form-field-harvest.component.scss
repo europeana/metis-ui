@@ -1,0 +1,13 @@
+@import '../../../../assets/sass/scss/generic/variables';
+@import '../../../../assets/sass/pandora/settings/metis-variables';
+
+.content {
+  line-height: 1.3em;
+  position: absolute;
+  transform: translateY(-50%);
+}
+
+.show-on-hover {
+  align-items: flex-start;
+  flex-direction: column;
+}

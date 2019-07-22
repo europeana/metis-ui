@@ -1,0 +1,63 @@
+<div class="workflow-header" #workflowheader [ngClass]="{ stuck: isStuck }">
+  <div class="full-view">
+    <span class="shortcuts">
+      <a class="link" (click)="selectAll()">{{ 'workflow-select-all' | translate }}</a>
+      <a class="link" (click)="clearAll()">{{ 'workflow-clear-all' | translate }}</a>
+    </span>
+    <span class="instruction">
+      {{ 'workflow-instruction-1' | translate }}
+    </span>
+    <a
+      class="add-link-checking"
+      draggable="true"
+      (click)="removeLinkCheck()"
+      (dragstart)="dragStart($event)"
+      (dragend)="dragEnd()"
+      [ngClass]="{ active: linkCheckingEnabled() }"
+    >
+      <span class="text add">{{ 'workflow-add-link-check' | translate }}</span>
+      <span class="text remove">{{ 'workflow-remove-link-check' | translate }}</span>
+      <span class="ghost link_checking orb-status labelled active" #ghost></span>
+    </a>
+  </div>
+
+  <div class="steps-wrapper">
+    <ul
+      class="steps"
+      [ngClass]="{ 'all-highlighted': isDragging && !isDraggingOverOrbs }"
+      (dragover)="stepsDragOver($event)"
+      (dragleave)="stepsDragLeave($event)"
+    >
+      <ng-container *ngFor="let plugin of conf; index as i">
+        <li>
+          <a
+            *ngIf="plugin.dragType !== DragTypeEnum.dragSource"
+            title="{{ getAdjustableLabel(i) | renameWorkflow }}"
+            (click)="togglePlugin(plugin.name)"
+            class="{{ getAdjustableLabel(i, true) }} orb-status labelled"
+            (dragend)="dragEnd()"
+            (dragover)="
+              plugin.dragType == DragTypeEnum.dragNone
+                ? toggleDragOver($event, isDragging)
+                : undefined
+            "
+            (dragleave)="
+              plugin.dragType !== DragTypeEnum.dragNone ? undefined : toggleDragOver($event)
+            "
+            (drop)="plugin.dragType !== DragTypeEnum.dragNone ? undefined : drop($event, i)"
+            (dragstart)="plugin.dragType === DragTypeEnum.dragCopy ? dragStart($event) : undefined"
+            [ngClass]="{
+              active: isActive(plugin.name),
+              error: plugin.error,
+              'is-in-view': plugin.currentlyViewed
+            }"
+          >
+          </a>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+  <a class="return" (click)="scrollToTop()">
+    <span class="return-text">{{ 'workflow-go-to-top' | translate }}</span>
+  </a>
+</div>

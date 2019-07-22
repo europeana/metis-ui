@@ -27,6 +27,15 @@ hr {
   color: $eu-jade;
 }
 
+.tabbed-content {
+  flex-wrap: wrap;
+  padding: 0.6rem 1rem 1rem 1rem;
+
+  @media (min-width: $bp-xl) {
+    display: flex;
+  }
+}
+
 .unfit-to-publish {
   color: red;
   font-weight: bold;

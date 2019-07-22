@@ -13,4 +13,5 @@ export * from './user';
 export * from './user-token';
 export * from './workflow';
 export * from './workflow-execution';
+export * from './workflow-form';
 export * from './xml-sample';

@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import {
@@ -9,18 +8,37 @@ import {
   mockDataset,
   MockErrorService,
   MockTranslateService,
-  mockWorkflow,
   MockWorkflowService
 } from '../../_mocked';
-import { successNotification } from '../../_models';
+import {
+  DragType,
+  PluginMetadata,
+  PluginType,
+  successNotification,
+  workflowFormFieldConf
+} from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { WorkflowComponent } from '.';
+import { WorkflowFormFieldComponent } from './workflow-form-field';
 
 describe('WorkflowComponent', () => {
   let component: WorkflowComponent;
   let fixture: ComponentFixture<WorkflowComponent>;
+
+  const getTestEl = function(top: number, bottom?: number): HTMLElement {
+    // tslint:disable:no-any
+    return ({
+      // tslint:disable:no-any
+      getBoundingClientRect(): any {
+        return {
+          bottom: bottom ? bottom : top + 20,
+          top
+        };
+      }
+    } as any) as HTMLElement;
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -42,50 +60,115 @@ describe('WorkflowComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkflowComponent);
     component = fixture.componentInstance;
+    component.fieldConf = workflowFormFieldConf;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should set the link checking', () => {
+    expect(component.workflowForm.dirty).toBeFalsy();
+    component.setLinkCheck(1);
+    expect(component.workflowForm.dirty).toBeTruthy();
   });
 
-  it('should check for changes and update required fields (harvest protocol)', () => {
-    component.workflowForm.get('pluginHARVEST')!.setValue(true);
-    component.workflowForm.get('pluginType')!.setValue('OAIPMH_HARVEST');
-    component.changeHarvestProtocol('OAIPMH_HARVEST');
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('#harvest-url'))).toBeTruthy();
-    expect(fixture.debugElement.query(By.css('#setspec'))).toBeTruthy();
-
-    component.workflowForm.get('pluginType')!.setValue('HTTP_HARVEST');
-    component.changeHarvestProtocol('HTTP_HARVEST');
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('#harvest-url'))).toBeFalsy();
-    expect(fixture.debugElement.query(By.css('#setspec'))).toBeFalsy();
+  it('should rearrange the config', () => {
+    let indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    component.rearrange(1, false);
+    indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(2);
+    component.rearrange(2, false);
+    indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(3);
   });
 
-  it('should check for changes and update required fields (link checking)', () => {
-    expect(fixture.debugElement.query(By.css('#check-sample'))).toBeFalsy();
-    expect(fixture.debugElement.query(By.css('#check-all'))).toBeFalsy();
-    component.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('#check-sample'))).toBeTruthy();
-    expect(fixture.debugElement.query(By.css('#check-all'))).toBeTruthy();
+  it('should rearrange the config (wrapper) onHeaderSynchronise', () => {
+    spyOn(component, 'rearrange');
+    component.onHeaderSynchronised();
+    expect(component.rearrange).not.toHaveBeenCalled();
+
+    component.workflowData = {
+      datasetId: '1',
+      id: '1',
+      metisPluginsMetadata: [
+        {
+          metadataFormat: 'edm',
+          pluginType: PluginType.OAIPMH_HARVEST,
+          setSpec: 'oai_test',
+          url: 'http://www.mocked.com',
+          enabled: true
+        },
+        {
+          pluginType: PluginType.TRANSFORMATION,
+          customXslt: false,
+          enabled: true
+        },
+        {
+          pluginType: PluginType.MEDIA_PROCESS,
+          enabled: true
+        },
+        {
+          pluginType: PluginType.LINK_CHECKING,
+          enabled: true
+        },
+        {
+          pluginType: PluginType.VALIDATION_INTERNAL,
+          enabled: true
+        }
+      ]
+    };
+    component.onHeaderSynchronised();
+    expect(component.rearrange).toHaveBeenCalledWith(2, true);
   });
 
-  it('should get the workflow for this dataset', () => {
-    component.datasetData = mockDataset;
-    component.workflowData = mockWorkflow;
-    component.getWorkflow();
-    fixture.detectChanges();
-    expect(component.harvestprotocol).toBe('OAIPMH_HARVEST');
+  it('should get the viewport score', () => {
+    expect(component.getViewportScore(getTestEl(20), 50)).toEqual(0);
+    expect(component.getViewportScore(getTestEl(50), 50)).toEqual(1);
+    expect(component.getViewportScore(getTestEl(70), 50)).toEqual(3);
+    expect(component.getViewportScore(getTestEl(20, 1000), 50)).toEqual(4);
+  });
 
-    component.workflowData.metisPluginsMetadata[0].pluginType = 'HTTP_HARVEST';
-    component.getWorkflow();
-    fixture.detectChanges();
-    expect(component.harvestprotocol).toBe('HTTP_HARVEST');
+  it('it should throttle scroll events', () => {
+    component.onHeaderSynchronised();
+    expect(component.busy).toBeFalsy();
+    window.dispatchEvent(new Event('scroll'));
+    expect(component.busy).toBeTruthy();
+  });
 
-    component.workflowData.metisPluginsMetadata[0].pluginType = 'OAIPMH_HARVEST';
+  it('it should respond to scroll events', () => {
+    spyOn(component, 'setHighlightedField');
+    component.onHeaderSynchronised();
+    window.dispatchEvent(new Event('scroll'));
+    expect(component.setHighlightedField).toHaveBeenCalled();
+  });
+
+  it('should set the highlighted field', () => {
+    const fields = [
+      {
+        conf: { currentlyViewed: false },
+        pluginElement: { nativeElement: getTestEl(20) }
+      } as WorkflowFormFieldComponent,
+      {
+        conf: { currentlyViewed: false },
+        pluginElement: { nativeElement: getTestEl(500) }
+      } as WorkflowFormFieldComponent
+    ];
+
+    component.setHighlightedField(fields);
+    expect(fields[0].conf.currentlyViewed).toBeTruthy();
+    expect(fields[1].conf.currentlyViewed).toBeFalsy();
+  });
+
+  it('should format the form values', () => {
+    let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
+    expect(result.metisPluginsMetadata.length).toBeFalsy();
+    component.workflowForm.get('pluginPREVIEW')!.setValue(true);
+    result = component.formatFormValues();
+    expect(result.metisPluginsMetadata.length).toEqual(1);
   });
 
   it('should reset', () => {
@@ -99,6 +182,7 @@ describe('WorkflowComponent', () => {
 
     component.workflowForm.get('pluginHARVEST')!.setValue(true);
     component.workflowForm.get('pluginType')!.setValue('HTTP_HARVEST');
+
     component.workflowForm.get('pluginTRANSFORMATION')!.setValue(true);
     component.workflowForm.get('customXslt')!.setValue('mocked');
     component.workflowForm.get('pluginVALIDATION_EXTERNAL')!.setValue(true);
@@ -115,7 +199,6 @@ describe('WorkflowComponent', () => {
     expect(component.getSaveNotification()!.content).toBe('en:workflowsavenew');
 
     component.onSubmit();
-    fixture.detectChanges();
     expect(component.getRunNotification()!.content).toBe('en:workflowsaved');
   });
 
@@ -123,5 +206,58 @@ describe('WorkflowComponent', () => {
     spyOn(component.startWorkflow, 'emit');
     component.start();
     expect(component.startWorkflow.emit).toHaveBeenCalledWith();
+  });
+
+  it('should detect gaps in the workflow sequence', () => {
+    // tslint:disable:no-any
+    const fakeInputs = [
+      {
+        conf: {
+          name: 'pluginHARVEST',
+          error: false
+        }
+      },
+      {
+        conf: {
+          name: 'pluginType',
+          error: false
+        }
+      },
+      {
+        conf: {
+          name: 'pluginTRANSFORMATION',
+          error: false
+        }
+      },
+      {
+        conf: {
+          name: 'pluginVALIDATION_INTERNAL',
+          error: false
+        }
+      }
+    ] as any;
+
+    // tslint:disable:no-any
+    expect(
+      fakeInputs.filter((item: any) => {
+        return item.conf.error;
+      }).length
+    ).toBe(0);
+
+    component.workflowForm.get('pluginHARVEST')!.setValue(true);
+    component.workflowStepAllowed(fakeInputs);
+    // tslint:disable:no-any
+    expect(
+      fakeInputs.filter((item: any) => {
+        return item.conf.error;
+      }).length
+    ).toBe(0);
+
+    component.workflowForm.get('pluginVALIDATION_INTERNAL')!.setValue(true);
+    component.workflowStepAllowed(fakeInputs);
+
+    expect(fakeInputs[1].conf.error).toBeTruthy();
+    expect(fakeInputs[2].conf.error).toBeTruthy();
+    expect(component.gapInSequence).toBeTruthy();
   });
 });

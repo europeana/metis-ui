@@ -1,0 +1,11 @@
+.show-on-hover {
+  align-items: center;
+  height: 100%;
+  &.fixed {
+    display: flex;
+  }
+}
+
+.form-group-radios {
+  padding-top: 1rem;
+}

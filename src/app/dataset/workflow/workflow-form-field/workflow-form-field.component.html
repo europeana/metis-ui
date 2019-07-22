@@ -1,0 +1,58 @@
+<div
+  class="form-fields plugin-form-fields"
+  [formGroup]="workflowForm"
+  [ngClass]="{
+    inactive: isInactive(),
+    disabled: workflowForm.get(conf.name)!.disabled,
+    'link-check': conf.name === 'pluginLINK_CHECKING'
+  }"
+>
+  <a class="form-field-anchor" #pluginElement></a>
+
+  <label for="{{ conf.name }}" class="plugin"
+    >{{ conf.label | renameWorkflow }}
+    <input type="checkbox" [formControlName]="conf.name" id="{{ conf.name }}" />
+  </label>
+
+  <ng-container *ngIf="conf.name === 'pluginHARVEST'">
+    <app-workflow-form-field-harvest
+      [conf]="conf"
+      [workflowForm]="workflowForm"
+      (fieldChanged)="onFieldChanged($event)"
+    ></app-workflow-form-field-harvest>
+  </ng-container>
+
+  <ng-container *ngIf="conf.name === 'pluginLINK_CHECKING'">
+    <app-workflow-form-field-link-check
+      [conf]="conf"
+      [workflowForm]="workflowForm"
+    ></app-workflow-form-field-link-check>
+  </ng-container>
+
+  <ng-container *ngIf="conf.name === 'pluginTRANSFORMATION'">
+    <app-workflow-form-field-transform
+      [conf]="conf"
+      [workflowForm]="workflowForm"
+    ></app-workflow-form-field-transform>
+  </ng-container>
+
+  <ng-container *ngIf="conf.name === 'pluginLINK_CHECKING'">
+    <div class="link-check-ctrl">
+      <ul>
+        <li><a class="ctrl remove" (click)="ctrlSetLinkCheck(-1)"></a></li>
+        <li>
+          <a class="ctrl up" (click)="ctrlSetLinkCheck(index - 2)"></a>
+        </li>
+        <li><a class="ctrl down" (click)="ctrlSetLinkCheck(index)"></a></li>
+      </ul>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="conf.name !== 'pluginLINK_CHECKING'">
+    <div class="link-check-ctrl">
+      <ul>
+        <li><a class="ctrl add" (click)="ctrlSetLinkCheck(index)"></a></li>
+      </ul>
+    </div>
+  </ng-container>
+</div>

@@ -1,4 +1,4 @@
-// messages
+/* messages */
 .messages {
   max-width: 100%;
 
@@ -23,7 +23,7 @@
   }
 }
 
-// the form
+/* the form */
 .metis-form {
   align-items: center;
   display: flex;
@@ -37,7 +37,7 @@
     width: 25rem;
   }
 
-  // formheader
+  /* formheader */
   .form-header {
     width: auto;
 
@@ -53,7 +53,7 @@
   }
 }
 
-// fields
+/* fields */
 .form-fields {
   background-color: $offwhite;
   padding: 2rem 0;
@@ -118,7 +118,7 @@
     }
   }
 
-  // buttons
+  /* buttons */
   .form-group-btns {
     align-items: flex-start;
     display: flex;
@@ -161,7 +161,7 @@
     }
   }
 
-  // extra line of text
+  /* extra line of text */
   .profile-form-extra,
   .forgot-credentials,
   .form-requirements-warning {
@@ -181,7 +181,7 @@
     padding-top: 1rem;
   }
 
-  // autocomplete
+  /* autocomplete */
   .metis-autocomplete {
     position: relative;
 
@@ -319,5 +319,84 @@
         }
       }
     }
+  }
+}
+
+/* workflow-form specific */
+
+.metis-form.workflow-form {
+  .form-group {
+    input:focus {
+      border-color: $eu-jade;
+      -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+      box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
+    }
+  }
+
+  .form-group:not(.form-group-btns) {
+    display: block;
+    margin: 0 auto 1rem auto;
+    width: 75%;
+
+    &:last-of-type {
+      margin: 0 auto 0rem auto;
+    }
+
+    label {
+      font-weight: normal;
+    }
+  }
+
+  .form-group.form-group-checkbox {
+    display: flex;
+    label {
+      max-width: 10rem;
+    }
+  }
+
+  .svg-icon-plus::before {
+    top: 0;
+  }
+
+  .form-group-radios label {
+    padding: 0.5rem 2rem 0.5rem 0;
+  }
+
+  .form-group label + input[type='checkbox'] {
+    flex: initial;
+  }
+
+  .show-on-hover {
+    display: none;
+    left: 1em;
+    position: relative;
+    width: 100%;
+
+    [type='checkbox'] {
+      position: relative;
+    }
+
+    .form-group-radios label {
+      display: inline-block;
+      padding: 0 1em;
+    }
+  }
+
+  .form-group.form-group-checkbox {
+    padding-top: 1rem;
+  }
+
+  .disabled .show-on-hover {
+    color: $gray-med;
+  }
+
+  .plugin-form-fields:hover .show-on-hover {
+    display: flex;
+  }
+
+  :nth-child(2) > .plugin-form-fields .link-check-ctrl .ctrl.up,
+  .plugin-form-fields .link-check-ctrl .ctrl.disabled,
+  :last-of-type > .plugin-form-fields .link-check-ctrl .ctrl.down {
+    display: none;
   }
 }

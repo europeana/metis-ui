@@ -3,25 +3,17 @@
 @import 'assets/sass/scss/generic/variables';
 @import 'assets/sass/scss/iconography/svg-icons-metis';
 
-//------------------------------------
-// Mixins
-//------------------------------------
+/* Mixins */
 @import 'assets/sass/scss/generic/mixins';
 
-//------------------------------------
-// SITE SPECIFIC VARIABLE OVERRIDES HERE
-//------------------------------------
+/* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 $accent: $eu-blue;
 $textcolour_highlight: $accent;
 
-//------------------------------------
-// Reset
-//------------------------------------
+/* Reset */
 @import 'assets/sass/scss/generic/reset';
 
-//------------------------------------
-// $GLOBAL ELEMENTS
-//------------------------------------
+/* GLOBAL ELEMENTS */
 @import 'assets/sass/scss/base/global-classes';
 @import 'assets/sass/scss/base/main';
 @import 'assets/sass/scss/base/links';
@@ -32,33 +24,23 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/scss/base/tables';
 @import 'assets/sass/scss/base/text';
 
-//------------------------------------
-// $PAGE STRUCTURE
-//------------------------------------
+/* PAGE STRUCTURE */
 @import 'assets/sass/scss/objects/header';
 @import 'assets/sass/scss/objects/blocks/site-hero';
 
-//------------------------------------
-// $NAVIGATION
-//------------------------------------
+/* NAVIGATION */
 @import 'assets/sass/scss/objects/nav';
 @import 'assets/sass/scss/objects/navigation/phase-flags';
 
-//------------------------------------
-// Buttons and text Styles
-//------------------------------------
+/* Buttons and text Styles */
 @import 'assets/sass/scss/objects/buttons';
 @import 'assets/sass/scss/objects/attribution';
 @import 'assets/sass/scss/theme/hero-branding-v2';
 
-//------------------------------------
-// Global icons (svg)
-//------------------------------------
+/* Global icons (svg) */
 @import 'assets/sass/scss/objects/icons/icons-licenses';
 
-//------------------------------------
-// Metis
-//------------------------------------
+/* Metis */
 @import 'assets/sass/pandora/settings/metis-variables';
 @import 'assets/sass/pandora/tools/ellipsis-mixin';
 
