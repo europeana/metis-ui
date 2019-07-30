@@ -436,7 +436,7 @@ export class WorkflowService {
       } else {
         return this.authenticationServer.getUserByUserId(cancelledBy).pipe(
           map((user) => {
-            return `Cancelled by user: ${user.firstName} ${user.lastName}`;
+            return `${user.firstName} ${user.lastName}`;
           })
         );
       }

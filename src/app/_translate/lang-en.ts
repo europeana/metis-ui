@@ -12,6 +12,7 @@ export const LANG_EN_TRANS = {
   cancelareyousure: 'Are you sure you want to cancel?',
   CANCELLED: 'Cancelled',
   cancelling: 'Cancelling',
+  'cancelled-by': 'Cancelled by user',
   changepassword: 'Change password',
   checkall: 'Check all',
   checksample: 'Check sample',

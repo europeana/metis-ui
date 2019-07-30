@@ -1,0 +1,82 @@
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
+
+$width-orb: 3em;
+
+.orb-status {
+  cursor: pointer;
+  margin: 0;
+
+  &.labelled.link_checking::after {
+    background-image: none;
+    content: 'Lc';
+  }
+}
+
+.table-btn,
+.table-grid {
+  color: $gray-light;
+}
+
+.table-btn {
+  align-items: center;
+}
+
+.time:not(.br) {
+  margin-right: 0;
+  text-align: center;
+  &::after {
+    width: 100%;
+  }
+}
+
+@media all and (max-width: $bp-med) {
+  .buttonplaceholder {
+    text-align: right;
+    &:empty {
+      display: none;
+    }
+  }
+
+  .table-btn {
+    margin-left: auto;
+    width: 8em;
+  }
+
+  .table-grid-row-start {
+    display: inline-block;
+    width: $width-orb;
+  }
+
+  .totals {
+    align-self: center;
+    display: flex;
+    float: right;
+    position: relative;
+    width: calc(100% - #{$width-orb});
+  }
+}
+
+@media all and (min-width: $bp-med) {
+  .head-prefix {
+    display: inline-block;
+  }
+}
+
+.status,
+.svg-icon {
+  margin: 0 0.7em;
+}
+
+.buttonplaceholder {
+  justify-content: center;
+}
+
+.xml-icon {
+  font-size: 130%;
+  font-weight: bold;
+  line-height: 1rem;
+  margin-left: 0.4em;
+  margin-right: 0.2em;
+  transform: translateY(-10%);
+}

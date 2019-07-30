@@ -51,15 +51,6 @@ $row-border-height-min: 3px;
   flex-wrap: wrap;
 }
 
-.status-label,
-.time {
-  color: #ccc;
-}
-
-.time.empty::after {
-  content: '--';
-}
-
 /* all edges */
 .row-end,
 .row-start,
@@ -195,12 +186,6 @@ $row-border-height-min: 3px;
   .row-divider::before,
   .row-end::after {
     display: none;
-  }
-}
-
-@media (min-width: $bp-med) {
-  .time:not(.br) {
-    margin-right: 1em;
   }
 }
 

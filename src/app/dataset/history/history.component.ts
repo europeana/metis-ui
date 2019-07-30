@@ -9,19 +9,14 @@ import {
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
-  PluginExecution,
   Report,
   SimpleReportRequest,
-  TopologyName,
-  WorkflowExecution
+  WorkflowAndPluginExecution,
+  WorkflowExecution,
+  WorkflowOrPluginExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { PreviewFilters } from '../dataset.component';
-
-interface IWorkflowOrPluginExecution {
-  execution: WorkflowExecution;
-  pluginExecution?: PluginExecution;
-}
 
 @Component({
   selector: 'app-history',
@@ -42,7 +37,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   notification?: Notification;
   currentPage = 0;
-  allExecutions: Array<IWorkflowOrPluginExecution> = [];
+  allExecutions: Array<WorkflowOrPluginExecution> = [];
   hasMore = false;
   subscription: Subscription;
   report?: Report;
@@ -101,8 +96,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.returnAllExecutions();
   }
 
-  openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
-    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
+  openFailReport(req: SimpleReportRequest): void {
+    this.setReportMsg.emit(req);
   }
 
   copyInformation(type: string, id1: string, id2: string): void {
@@ -110,18 +105,14 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.contentCopied = true;
   }
 
-  byId(_: number, item: IWorkflowOrPluginExecution): string {
+  byId(_: number, item: WorkflowOrPluginExecution): string {
     return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
   }
 
-  hasPreview(plugin: PluginExecution): boolean {
-    return (
-      plugin.executionProgress !== undefined &&
-      plugin.executionProgress.processedRecords > plugin.executionProgress.errors
-    );
-  }
+  goToPreview(previewData: WorkflowAndPluginExecution): void {
+    const execution = previewData.execution;
+    const pluginExecution = previewData.pluginExecution;
 
-  goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
     this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
