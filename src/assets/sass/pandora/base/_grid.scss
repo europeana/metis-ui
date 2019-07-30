@@ -1,7 +1,3 @@
-app-executions-grid-data {
-  display: none;
-}
-
 .date-and-time:empty,
 .status-label,
 .time {
@@ -62,6 +58,10 @@ app-executions-grid-data {
     }
   }
 
+  .time{
+    margin-left: 0.4em;
+  }
+
   > span {
     align-items: center;
     align-self: center;
@@ -103,7 +103,7 @@ app-executions-grid-data {
 @media all and (min-width: $bp-med) {
   .table-grid {
     display: grid;
-    grid-template-columns: 3fr 2fr 2fr 2fr 1fr;
+    grid-template-columns: 3fr 2fr 2fr 2fr 1fr auto;
 
     .table-grid-header {
       display: block;
@@ -134,7 +134,7 @@ app-executions-grid-data {
 
 @media all and (min-width: $bp-large) {
   .table-grid {
-    grid-template-columns: 4fr 2fr 2fr 2fr 2fr;
+    grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
 
     .date-header {
       text-align: left;
@@ -149,7 +149,7 @@ app-executions-grid-data {
 
 @media all and (min-width: $bp-xl) {
   .table-grid {
-    grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
+    grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
 
     .date-header {
       text-align: center;
@@ -178,18 +178,18 @@ app-executions-grid-data {
 @media all and (min-width: $bp-med) {
   .table-grid.last-execution {
     display: grid;
-    grid-template-columns: 2fr 2fr 2fr 2fr 2fr;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr auto;
   }
 }
 
 @media all and (min-width: $bp-large) {
   .table-grid.last-execution {
-    grid-template-columns: 4fr 2fr 2fr 2fr 2fr;
+    grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
   }
 }
 
 @media all and (min-width: $bp-xl) {
   .table-grid.last-execution {
-    grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
+    grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
   }
 }
