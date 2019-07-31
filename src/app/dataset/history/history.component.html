@@ -1,109 +1,57 @@
+<ng-template #empty_date><span class="date-and-time"></span></ng-template>
+
 <app-notification
   [notification]="notification"
   (closed)="notification = undefined"
 ></app-notification>
 
-<table class="table-horizontal-layout table-in-tab history-table">
-  <thead>
-    <tr>
-      <th colspan="2"></th>
-      <th>{{ 'workflow step' | translate }}</th>
-      <th class="centered">{{ 'totalprocessed' | translate }}</th>
-      <th class="centered">{{ 'totaldataset' | translate }}</th>
-      <th>{{ 'status' | translate }}</th>
-      <th class="centered">{{ 'startdate' | translate }}</th>
-      <th class="centered">{{ 'enddate' | translate }}</th>
-      <th colspan="2"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let wpe of allExecutions; trackBy: byId">
-      <td
-        *ngIf="!wpe.pluginExecution && wpe.execution; let execution"
-        colspan="9"
-        class="workflow-head"
+<div class="table-grid history">
+  <div class="table-grid-header">
+    {{ 'step' | translate }}
+  </div>
+  <div class="table-grid-header">
+    {{ 'processed-records' | translate }}
+  </div>
+  <div class="table-grid-header date-header">
+    {{ 'starttime' | translate }}
+  </div>
+  <div class="table-grid-header date-header">
+    {{ 'endtime' | translate }}
+  </div>
+  <div class="table-grid-header"></div>
+
+  <ng-container *ngFor="let wpe of allExecutions; trackBy: byId">
+    <div
+      *ngIf="!wpe.pluginExecution && wpe.execution; let execution"
+      class="sub-header workflow-head"
+    >
+      <div
+        class="head-text"
+        (dblclick)="copyInformation('execution', execution.id, execution.ecloudDatasetId)"
+        title="{{ 'doubleclicktocopy' | translate }}"
       >
-        <div class="head-whitespace"></div>
-        <div
-          class="head-text"
-          (dblclick)="copyInformation('execution', execution.id, execution.ecloudDatasetId)"
-        >
-          <span class="tooltip" title="{{ 'doubleclicktocopy' | translate }}"
-            >{{ 'workflowcreated' | translate }}
-            {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}</span
-          >
-        </div>
+        <span class="head-prefix">{{ 'workflowcreated' | translate }}</span>
+        {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}
         <div class="head-right">
+          <span class="head-prefix">{{ 'cancelled-by' | translate }}</span>
           {{ getCancelledBy(execution) | async }}
         </div>
-      </td>
-      <ng-template [ngIf]="wpe.pluginExecution" let-pe>
-        <td class="centered"><span class="svg-icon-{{ pe.pluginType }}"></span></td>
-        <td class="errorindicator">
-          <span *ngIf="pe.hasReport" class="status status-warning"></span>
-        </td>
-        <td
-          class="nowrap uppercase"
-          (dblclick)="copyInformation('plugin', pe.externalTaskId, pe.id)"
-        >
-          <span class="tooltip" title="{{ 'doubleclicktocopy' | translate }}"
-            >{{ pe.pluginType | renameWorkflow }} {{ pe.workflowCreated }}</span
-          >
-        </td>
-        <td class="nowrap centered">
-          <span *ngIf="pe.executionProgress">
-            {{ pe.executionProgress.processedRecords - pe.executionProgress.errors }}
-            <span class="errors" *ngIf="pe.executionProgress.errors > 0"
-              >({{ pe.executionProgress.errors }})</span
-            >
-          </span>
-        </td>
-        <td class="nowrap uppercase centered">
-          {{
-            pe.executionProgress && pe.executionProgress.expectedRecords >= 0
-              ? pe.executionProgress.expectedRecords
-              : ('unknown' | translate)
-          }}
-        </td>
-        <td class="nowrap">{{ pe.pluginStatus }}</td>
-        <td class="centered">
-          <span class="date">{{ pe.startedDate | date: 'dd/MM/yyyy' }}</span>
-          <span class="datedivider">-</span>
-          <span class="time">{{ pe.startedDate | date: 'HH:mm' }}</span>
-        </td>
-        <td class="centered">
-          <span class="date">{{ pe.finishedDate | date: 'dd/MM/yyyy' }}</span>
-          <span class="datedivider">-</span>
-          <span class="time">{{ pe.finishedDate | date: 'HH:mm' }}</span>
-        </td>
-        <td class="buttonplaceholder nowrap">
-          <a
-            *ngIf="pe.failMessage || pe.hasReport"
-            class="table-btn svg-icon-report"
-            (click)="
-              openFailReport(
-                pe.hasReport ? pe.topologyName : undefined,
-                pe.hasReport ? pe.externalTaskId : undefined,
-                pe.failMessage
-              )
-            "
-          >
-            {{ 'report' | translate }}
-          </a>
-          <a *ngIf="hasPreview(pe)" class="table-btn" (click)="goToPreview(wpe.execution, pe)"
-            ><span class="xml-icon">&#8249;&#8250;</span> XML</a
-          >
-        </td>
-      </ng-template>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr class="loadmore">
-      <td colspan="10">
-        <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{
-          'loadmore' | translate
-        }}</a>
-      </td>
-    </tr>
-  </tfoot>
-</table>
+      </div>
+    </div>
+
+    <ng-container *ngIf="wpe.pluginExecution; let plugin">
+      <app-executions-grid-data
+        #dataWrapper
+        [plugin]="wpe.pluginExecution"
+        [wpe]="wpe"
+        (openPreview)="goToPreview($event)"
+        (setReportMsg)="openFailReport($event)"
+      ></app-executions-grid-data>
+      <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
+    </ng-container>
+  </ng-container>
+
+  <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">
+    <a class="load-more-btn">{{ 'loadmore' | translate }}</a>
+  </span>
+</div>

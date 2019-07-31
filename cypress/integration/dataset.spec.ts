@@ -9,8 +9,8 @@ function setupDatasetPage(name: string): void {
   cy.wait(['@getDataset', '@getWorkflow', '@getHarvestData']);
 }
 
-function getHistoryRow(index: number, sel: string): Cypress.Chainable {
-  return cy.get(`.history-table tbody tr:nth-child(${index + 1}) ${sel}`);
+function getHistoryRow(index: number): Cypress.Chainable {
+  return cy.get('.table-grid.last-execution .table-grid-row-start').eq(index);
 }
 
 function checkFormField(name: string, value: string): void {
@@ -53,13 +53,10 @@ context('metis-ui', () => {
       cy.get('@status').contains('Preview');
       cy.get('@status').contains('FAILED');
 
-      cy.get('.history-table tbody tr').should('have.length', 8);
-      getHistoryRow(0, 'td').contains('Preview');
-      getHistoryRow(0, 'td').contains('CANCELLED');
-      getHistoryRow(1, 'td').contains('Process Media');
-      getHistoryRow(1, 'td').contains('CANCELLED');
-      getHistoryRow(7, 'td').contains('Import OAI-PMH');
-      getHistoryRow(7, 'td').contains('FINISHED');
+      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 8);
+      getHistoryRow(0).contains('Preview');
+      getHistoryRow(1).contains('Process Media');
+      getHistoryRow(7).contains('Import OAI-PMH');
     });
 
     it('should show the tabs', () => {
@@ -112,7 +109,6 @@ context('metis-ui', () => {
 
     // TODO: check and update fields
   });
-
   // TODO: mapping
 
   // TODO: preview
@@ -123,45 +119,36 @@ context('metis-ui', () => {
     });
 
     it('should show the error bullets', () => {
-      cy.get('.history-table tr')
-        .eq(6)
-        .find('.errorindicator .status')
+      cy.get('.table-grid.history .table-grid-row-start .orb-status')
+        .eq(5)
         .should('have.class', 'status-failed');
     });
 
     it('should show the log', () => {
-      cy.get('.workflow-head')
-        .contains('Workflow created on 19/11/2018 10:10')
-        .closest('tr')
-        .as('headRow');
-
-      cy.get('@headRow')
-        .next()
-        .as('row');
-      cy.get('@row')
-        .find('td')
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(0)
+        .contains('Preview');
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(1)
+        .contains('Process Media');
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(2)
+        .contains('Enrich');
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(3)
+        .contains('Normalise');
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(4)
+        .contains('Validate (EDM internal)');
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(5)
+        .contains('Transform');
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(6)
         .contains('Validate (EDM external)');
-
-      cy.get('@row')
-        .find('td')
-        .contains('0 (760)');
-
-      cy.get('@row')
-        .find('td')
-        .contains('FINISHED');
-
-      cy.get('@row')
-        .next()
-        .as('row');
-      cy.get('@row')
-        .find('td')
+      cy.get('.table-grid.history .plugin-name.desktop')
+        .eq(7)
         .contains('Import OAI-PMH');
-      cy.get('@row')
-        .find('td')
-        .contains('760');
-      cy.get('@row')
-        .find('td')
-        .contains('FINISHED');
     });
   });
 });

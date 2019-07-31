@@ -37,59 +37,23 @@ describe('HistoryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HistoryComponent);
     component = fixture.componentInstance;
-    component.datasetData = mockDataset;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should open a report', () => {
-    spyOn(component.setReportMsg, 'emit');
-    component.openFailReport('validation', '123');
+  it('should update history panel', () => {
+    component.datasetData = mockDataset;
+    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
     fixture.detectChanges();
-    expect(component.setReportMsg.emit).toHaveBeenCalledWith({
-      topology: 'validation',
-      taskId: '123',
-      message: undefined
-    });
-  });
-
-  it('should open a simple report', () => {
-    spyOn(component.setReportMsg, 'emit');
-    const msg = 'fail message report';
-    component.openFailReport(undefined, undefined, msg);
-    fixture.detectChanges();
-    expect(component.setReportMsg.emit).toHaveBeenCalledWith({
-      topology: undefined,
-      taskId: undefined,
-      message: 'fail message report'
-    });
+    expect(component.allExecutions).toBeTruthy();
   });
 
   it('should display history in tabs', () => {
     component.datasetData = mockDataset;
     component.returnAllExecutions();
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
-  });
-
-  it('should load next page', () => {
-    component.datasetData = mockDataset;
-    component.loadNextPage();
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.history-table tbody tr')).length).toBeTruthy();
-  });
-
-  it('should update history panel', () => {
-    component.lastExecutionData = mockWorkflowExecutionResults.results[4];
-    fixture.detectChanges();
-    expect(component.allExecutions).toBeTruthy();
-  });
-
-  it('should copy something to the clipboard', () => {
-    component.copyInformation('plugin', '1', '2');
-    expect(component.contentCopied).toBe(true);
+    expect(fixture.debugElement.queryAll(By.css('.table-grid.history')).length).toBeTruthy();
   });
 });

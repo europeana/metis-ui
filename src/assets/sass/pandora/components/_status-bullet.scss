@@ -6,36 +6,6 @@ $orb-size-half: 0.75em;
 $orb-size-small: 1em;
 $orb-size-small-half: 0.75em;
 
-.errorindicator {
-  .status {
-    border-radius: 0.3rem;
-    display: inline-block;
-    height: 0.7rem;
-    width: 0.7rem;
-  }
-  .status-failed {
-    background: $color-status-failed;
-  }
-  .status-warning {
-    background: $color-status-warning;
-  }
-  .status-running {
-    background: $color-status-running;
-  }
-  .status-inqueue {
-    background: $color-status-inqueue;
-  }
-  .status-pending {
-    background: $color-status-pending;
-  }
-  .status-finished {
-    background: $color-status-finished;
-  }
-  .status-cancelled {
-    background: $color-status-cancelled;
-  }
-}
-
 .running td:first-child::before {
   background: $eu-jade;
   content: '';
@@ -57,6 +27,7 @@ $orb-size-small-half: 0.75em;
   margin: 0.2em 0.3em 0.2em 0;
   min-width: $orb-size-small;
   position: relative;
+  text-align: left;
   text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
   width: $orb-size-small;
 
