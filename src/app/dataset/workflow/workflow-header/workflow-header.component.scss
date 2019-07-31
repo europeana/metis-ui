@@ -6,7 +6,7 @@ $border-colour-shortcuts: #dbd9d9;
 
 .full-view {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   padding: 1em;
 }
 
@@ -18,6 +18,8 @@ $border-colour-shortcuts: #dbd9d9;
   align-items: center;
   cursor: default;
   display: flex;
+  flex-direction: column;
+  order: 2;
 
   &:hover .link_checking {
     box-shadow: 0 0 0 4px rgba($eu-jade, 0.3);
@@ -43,9 +45,6 @@ $border-colour-shortcuts: #dbd9d9;
     pointer-events: none;
     position: relative;
     transform: translate(0, 0);
-    //    &.dragging {
-    //    box-shadow: 0;
-    //}
   }
 
   .remove {
@@ -65,9 +64,8 @@ $border-colour-shortcuts: #dbd9d9;
   }
 
   .text {
-    margin: 0 0.4em 0 0.2em;
+    margin: 1em;
     position: relative;
-    text-align: right;
     white-space: nowrap;
   }
 
@@ -78,6 +76,7 @@ $border-colour-shortcuts: #dbd9d9;
   }
 }
 .instruction {
+  display: block;
   font-weight: bold;
   flex-grow: 2;
   text-align: center;
@@ -86,7 +85,7 @@ $border-colour-shortcuts: #dbd9d9;
 .steps-wrapper {
   display: flex;
   justify-content: center;
-  margin: auto;
+  margin: 2em;
 }
 
 .steps .is-in-view::before {
@@ -165,27 +164,16 @@ $border-colour-shortcuts: #dbd9d9;
 
 .shortcuts {
   border-bottom: 1px solid $border-colour-shortcuts;
+  display: block;
+  margin: 1em 3em 0em 3em;
+  order: 1;
   padding-bottom: 0.2em;
-  position: absolute;
+  text-align: center;
 
   .link {
+    display: inline-block;
     padding: 0 1.25em;
-
-    &:last-of-type {
-      position: relative;
-
-      &::after {
-        background: $border-colour-shortcuts;
-        content: ' ';
-        display: block;
-        height: 1.5em;
-        left: 0;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 1px;
-      }
-    }
+    width: 100%;
   }
 }
 
@@ -239,6 +227,7 @@ $border-colour-shortcuts: #dbd9d9;
 
 .steps {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   margin: 0.25em 0;
 }
@@ -272,6 +261,81 @@ $border-colour-shortcuts: #dbd9d9;
     }
     .return {
       display: flex;
+    }
+  }
+
+  .return-text {
+    font-size: 0;
+  }
+}
+
+@media (min-width: $bp-small-2) {
+  .shortcuts {
+    margin: 2em 2em 1em;
+
+    .link {
+      width: 50%;
+
+      &:last-of-type {
+        position: relative;
+
+        &::after {
+          background: $border-colour-shortcuts;
+          content: ' ';
+          display: block;
+          height: 1.5em;
+          left: 0;
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1px;
+        }
+      }
+    }
+  }
+
+  .steps-wrapper {
+    margin: auto;
+    padding: 1em;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .add-link-checking {
+    flex-direction: row;
+    order: unset;
+
+    .text {
+      margin: 0 0.4em 0 0.2em;
+      text-align: right;
+    }
+  }
+
+  .instruction {
+    display: block;
+  }
+
+  .full-view {
+    flex-direction: row;
+  }
+
+  .shortcuts {
+    margin: 0;
+    order: unset;
+    .link {
+      display: inline;
+    }
+  }
+
+  .steps-wrapper {
+    padding: 0;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .workflow-header {
+    .return-text {
+      font-size: 1em;
     }
   }
 }
