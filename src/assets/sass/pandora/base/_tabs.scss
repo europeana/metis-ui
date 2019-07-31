@@ -1,9 +1,6 @@
 .tabs {
   background: $white;
-  border-bottom: 5px solid $eu-jade;
   border-right: 0;
-  border-top: 5px solid $white;
-  display: flex;
   min-height: $tab-header-min-height;
   line-height: 1.3em;
   margin-bottom: 0;
@@ -12,7 +9,7 @@
   z-index: 1;
 
   li {
-    display: inline-block;
+    display: block;
     flex: 1 1 0%;
 
     a {
@@ -41,6 +38,12 @@
     span {
       color: inherit;
     }
+  }
+
+  @media (min-width: $bp-med) {
+    border-bottom: 5px solid $eu-jade;
+    border-top: 5px solid $white;
+    display: flex;
   }
 }
 
