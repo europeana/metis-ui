@@ -165,7 +165,7 @@ $border-colour-shortcuts: #dbd9d9;
 .shortcuts {
   border-bottom: 1px solid $border-colour-shortcuts;
   display: block;
-  margin: 1em 3em 0em 3em;
+  margin: 2em 2em 1em;
   order: 1;
   padding-bottom: 0.2em;
   text-align: center;
@@ -173,7 +173,7 @@ $border-colour-shortcuts: #dbd9d9;
   .link {
     display: inline-block;
     padding: 0 1.25em;
-    width: 100%;
+    width: 50%;
   }
 }
 
@@ -270,26 +270,20 @@ $border-colour-shortcuts: #dbd9d9;
 }
 
 @media (min-width: $bp-small-2) {
-  .shortcuts {
-    margin: 2em 2em 1em;
+  .shortcuts .link {
+    &:last-of-type {
+      position: relative;
 
-    .link {
-      width: 50%;
-
-      &:last-of-type {
-        position: relative;
-
-        &::after {
-          background: $border-colour-shortcuts;
-          content: ' ';
-          display: block;
-          height: 1.5em;
-          left: 0;
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 1px;
-        }
+      &::after {
+        background: $border-colour-shortcuts;
+        content: ' ';
+        display: block;
+        height: 1.5em;
+        left: 0;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
       }
     }
   }
