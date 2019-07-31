@@ -78,7 +78,9 @@ export class WorkflowComponent implements OnInit {
         .findIndex((plugin) => {
           return plugin.pluginType === 'LINK_CHECKING';
         });
-      if (index > -1) {
+      if (index === 0) {
+        this.rearrange(0, false);
+      } else if (index > 0) {
         this.rearrange(index - 1, true);
       }
     }
@@ -338,7 +340,9 @@ export class WorkflowComponent implements OnInit {
 
       if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
+        this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
       } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+        this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
         this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
@@ -352,12 +356,6 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.controls.pluginHARVEST.setValue(true);
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-        }
-        if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
-        } else if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
-          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
-        } else {
           // transformation
           if (thisWorkflow.pluginType === 'TRANSFORMATION') {
             this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
