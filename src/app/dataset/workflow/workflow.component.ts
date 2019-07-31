@@ -80,7 +80,7 @@ export class WorkflowComponent implements OnInit {
         });
       if (index === 0) {
         this.rearrange(0, false);
-      } else if (index > -1) {
+      } else if (index > 0) {
         this.rearrange(index - 1, true);
       }
     }
