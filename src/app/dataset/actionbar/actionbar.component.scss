@@ -55,14 +55,9 @@ nav {
   }
 
   li {
-    border-left: 1px solid $offwhite;
     display: inline-block;
     padding: 0.4rem;
     position: relative;
-
-    &:first-child {
-      border-left: 0;
-    }
 
     &:last-child {
       padding-right: 0;
@@ -117,5 +112,8 @@ nav {
   }
   nav ul {
     display: block;
+    li:not(:first-child) {
+      border-left: 1px solid $offwhite;
+    }
   }
 }
