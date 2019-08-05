@@ -306,17 +306,46 @@
       }
 
       &.form-group-btns {
-        height: 7vh;
-        justify-content: flex-end;
+        display: block;
         margin-bottom: 0;
-        flex-wrap: nowrap;
+        text-align: center;
 
         button {
           display: inline-block;
-          margin: 0;
-          margin-left: 1rem;
-          padding: 0.8rem 5rem;
+          max-width: 100%;
+          margin: 1rem;
+          padding: 1rem;
         }
+
+        .messages {
+          display: inline-block;
+          text-align: left;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: $bp-small-3) {
+  .metis-form-horizontal .form-fields .form-group.form-group-btns button {
+    padding: 0.9rem 2.5rem;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .metis-form-horizontal .form-fields .form-group {
+    &.form-group-btns {
+      display: flex;
+      flex-direction: row;
+      height: 7vh;
+
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+      text-align: left;
+
+      button {
+        padding: 0.8rem 5rem;
       }
     }
   }
