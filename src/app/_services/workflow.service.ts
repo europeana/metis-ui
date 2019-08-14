@@ -28,6 +28,7 @@ import {
   WorkflowStatus,
   XmlSample
 } from '../_models';
+import { TranslateService } from '../_translate';
 
 import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
@@ -39,7 +40,8 @@ export class WorkflowService {
     private http: HttpClient,
     private datasetsService: DatasetsService,
     private errors: ErrorService,
-    private authenticationServer: AuthenticationService
+    private authenticationServer: AuthenticationService,
+    private translate: TranslateService
   ) {}
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
@@ -432,7 +434,7 @@ export class WorkflowService {
     const cancelledBy = workflow.cancelledBy;
     if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
       if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
-        return of('Cancelled by system after timeout');
+        return of(this.translate.instant('system time-out'));
       } else {
         return this.authenticationServer.getUserByUserId(cancelledBy).pipe(
           map((user) => {

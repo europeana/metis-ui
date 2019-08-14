@@ -7,7 +7,7 @@
 
 <div class="table-grid history">
   <div class="table-grid-header">
-    {{ 'step' | translate }}
+    {{ 'workflow step' | translate }}
   </div>
   <div class="table-grid-header">
     {{ 'processed-records' | translate }}
@@ -32,7 +32,7 @@
       >
         <span class="head-prefix">{{ 'workflowcreated' | translate }}</span>
         {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}
-        <div class="head-right">
+        <div class="head-right" *ngIf="getCancelledBy(execution)?.value">
           <span class="head-prefix">{{ 'cancelled-by' | translate }}</span>
           {{ getCancelledBy(execution) | async }}
         </div>

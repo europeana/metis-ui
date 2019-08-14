@@ -45,6 +45,10 @@
   }
 }
 
+.svg-icon-report::before {
+  transform: translate(-25%, 30%);
+}
+
 nav {
   white-space: nowrap;
 
@@ -70,10 +74,6 @@ nav {
     }
 
     @media (max-width: $bp-xxl) {
-      span {
-        display: none;
-      }
-
       .newaction-btn span {
         display: inline-block;
       }

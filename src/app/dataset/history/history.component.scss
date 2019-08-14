@@ -5,6 +5,9 @@ $width-orb: 3em;
 
 .head-prefix {
   display: none;
+  &::after {
+    content: ': ';
+  }
 }
 
 @media all and (min-width: $bp-med) {
