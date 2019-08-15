@@ -70,11 +70,8 @@ $small-margin: 0.82rem;
 }
 
 @media (max-width: $bp-med) {
+  .readonly-field,
   .dataset-label + input[type='checkbox'] {
-    margin-left: 0;
-  }
-
-  .readonly-field {
     margin-left: 0;
   }
 
