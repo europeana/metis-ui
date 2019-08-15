@@ -1,16 +1,19 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+$small-margin: 0.82rem;
+
 .messages {
   width: 100%;
 }
 
 .metis-form .form-fields .form-group:not(.form-group-btns) {
   .input-subtitle {
-    margin-left: 14.85rem;
-    margin-bottom: -1.5rem;
-    width: 100%;
     font-size: $font-size-sm;
+
+    margin-bottom: -1.5rem;
+    margin-left: 14.85rem;
+    width: 100%;
   }
   .input-subtitle-error {
     color: $eu-red;
@@ -20,8 +23,10 @@
     border-color: $eu-red;
   }
 
-  input:not([type='checkbox']) {
-    padding-right: 2.5rem;
+  @media (min-width: $bp-med) {
+    input:not([type='checkbox']) {
+      padding-right: 2.5rem;
+    }
   }
 }
 
@@ -50,11 +55,45 @@
   }
 }
 
-label + input[type='checkbox'] {
-  flex: initial;
+.metis-form.metis-form-horizontal .form-fields .form-group .dataset-label {
+  padding-bottom: 0em;
 }
 
-label + input[type='checkbox'],
+.dataset-label + input[type='checkbox'] {
+  flex: initial;
+  margin-left: $small-margin;
+}
+
 .readonly-field {
-  margin-left: 0.82rem;
+  margin-left: $small-margin;
+  word-break: break-all;
+}
+
+@media (max-width: $bp-med) {
+  .readonly-field,
+  .dataset-label + input[type='checkbox'] {
+    margin-left: 0;
+  }
+
+  .metis-form.metis-form-horizontal .form-fields .form-group {
+    .dataset-label {
+      flex: 1 0 100%;
+      max-width: none;
+      padding-right: 0;
+      padding-bottom: 0.5em;
+      width: 100%;
+    }
+
+    .dataset-input {
+      width: 100%;
+    }
+
+    .input-subtitle {
+      margin-left: 0;
+    }
+
+    .input-clear {
+      transform: translate(0, 1em);
+    }
+  }
 }
