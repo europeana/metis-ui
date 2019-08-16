@@ -169,10 +169,8 @@
     white-space: nowrap;
   }
 
-  @media (max-width: $bp-xxl) {
-    &.svg-icon-report {
-      padding: 0 0.5em;
-    }
+  &.svg-icon-report {
+    padding: 0 0.5em;
   }
 }
 
