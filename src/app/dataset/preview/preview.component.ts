@@ -132,25 +132,28 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.setPreviewFilters.emit(this.previewFilters);
     for (let i = 0; i < execution.metisPlugins.length; i++) {
       const pi = execution.metisPlugins[i];
-      if (pi.pluginStatus === 'FINISHED') {
-        this.allPlugins.push({
-          type: pi.pluginType,
-          error: false
-        });
-      } else {
-        if (
-          pi.executionProgress !== undefined &&
-          pi.executionProgress.processedRecords > pi.executionProgress.errors
-        ) {
+
+      if (['REINDEX_TO_PREVIEW', 'REINDEX_TO_PUBLISH'].indexOf(pi.pluginType) === -1) {
+        if (pi.pluginStatus === 'FINISHED') {
           this.allPlugins.push({
             type: pi.pluginType,
             error: false
           });
         } else {
-          this.allPlugins.push({
-            type: pi.pluginType,
-            error: true
-          });
+          if (
+            pi.executionProgress !== undefined &&
+            pi.executionProgress.processedRecords > pi.executionProgress.errors
+          ) {
+            this.allPlugins.push({
+              type: pi.pluginType,
+              error: false
+            });
+          } else {
+            this.allPlugins.push({
+              type: pi.pluginType,
+              error: true
+            });
+          }
         }
       }
     }
