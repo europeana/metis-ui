@@ -130,10 +130,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedComparison = undefined;
     this.previewFilters.execution = execution;
     this.setPreviewFilters.emit(this.previewFilters);
-    for (let i = 0; i < execution.metisPlugins.length; i++) {
-      const pi = execution.metisPlugins[i];
 
-      if (['REINDEX_TO_PREVIEW', 'REINDEX_TO_PUBLISH'].indexOf(pi.pluginType) === -1) {
+    execution.metisPlugins
+      .filter((pi) => ['REINDEX_TO_PREVIEW', 'REINDEX_TO_PUBLISH'].indexOf(pi.pluginType) === -1)
+      .forEach((pi) => {
         if (pi.pluginStatus === 'FINISHED') {
           this.allPlugins.push({
             type: pi.pluginType,
@@ -155,8 +155,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
             });
           }
         }
-      }
-    }
+      });
   }
 
   getComparePlugins(): Array<{ type: PluginType; error: boolean }> {
