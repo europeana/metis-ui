@@ -18,6 +18,9 @@ import {
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
+  OAIHarvestPluginMetadataTmp,
+  ParameterField,
+  ParameterFieldName,
   PluginMetadata,
   PluginType,
   successNotification,
@@ -340,9 +343,13 @@ export class WorkflowComponent implements OnInit {
 
       if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
-        this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
+        if (thisWorkflow.enabled === true) {
+          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
+        }
       } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-        this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
+        if (thisWorkflow.enabled === true) {
+          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
+        }
         this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
@@ -377,43 +384,59 @@ export class WorkflowComponent implements OnInit {
     this.notification = undefined;
   }
 
+  formatFormValue(pt: PluginType, params: ParameterField, enabled: boolean): PluginMetadata {
+    return Object.assign(
+      {
+        pluginType: pt,
+        enabled
+      },
+      ...params.map((pf) => {
+        return {
+          [pf]: this.workflowForm.value[pf] ? this.workflowForm.value[pf] : false
+        };
+      })
+    ) as PluginMetadata;
+  }
+
   formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
     const plugins: PluginMetadata[] = [];
 
-    this.fieldConf.forEach((conf) => {
-      if (conf.dragType !== DragType.dragSource && this.workflowForm.value[conf.name]) {
+    this.fieldConf
+      .filter((conf) => conf.dragType !== DragType.dragSource)
+      .forEach((conf) => {
+        const enabled = this.workflowForm.value[conf.name];
+
         if (conf.name === 'pluginHARVEST') {
-          if (this.workflowForm.value.pluginType === PluginType.OAIPMH_HARVEST) {
-            plugins.push({
-              pluginType: PluginType.OAIPMH_HARVEST,
-              setSpec: this.workflowForm.value.setSpec,
-              url: this.workflowForm.value.harvestUrl.trim(),
-              metadataFormat: this.workflowForm.value.metadataFormat
-            });
-          } else if (this.workflowForm.value.pluginType === PluginType.HTTP_HARVEST) {
-            plugins.push({
-              pluginType: PluginType.HTTP_HARVEST,
-              url: this.workflowForm.value.url.trim()
-            });
-          }
+          const paramsOAIPMH: ParameterField = [
+            ParameterFieldName.harvestUrl,
+            ParameterFieldName.metadataFormat,
+            ParameterFieldName.setSpec
+          ];
+          const paramsHTTP: ParameterField = [ParameterFieldName.url];
+          const dataHTTP = this.formatFormValue(
+            PluginType.HTTP_HARVEST,
+            paramsHTTP,
+            enabled && this.workflowForm.value.pluginType === PluginType.HTTP_HARVEST
+          );
+          const dataOAIPMH = this.formatFormValue(
+            PluginType.OAIPMH_HARVEST,
+            paramsOAIPMH,
+            enabled && this.workflowForm.value.pluginType === PluginType.OAIPMH_HARVEST
+          );
+
+          delete Object.assign(dataOAIPMH, {
+            ['url']: (dataOAIPMH as OAIHarvestPluginMetadataTmp).harvestUrl
+          } as OAIHarvestPluginMetadataTmp).harvestUrl;
+
+          plugins.push(dataHTTP);
+          plugins.push(dataOAIPMH);
         } else {
-          plugins.push(Object.assign(
-            {
-              pluginType: conf.label as PluginType
-            },
-            conf.parameterFields
-              ? conf.parameterFields
-                  .map((pf) => {
-                    return {
-                      [pf]: this.workflowForm.value[pf] ? this.workflowForm.value[pf] : false
-                    };
-                  })
-                  .pop()
-              : {}
-          ) as PluginMetadata);
+          conf.parameterFields = conf.parameterFields ? conf.parameterFields : [];
+          plugins.push(
+            this.formatFormValue(conf.label as PluginType, conf.parameterFields, enabled)
+          );
         }
-      }
-    });
+      });
 
     return {
       metisPluginsMetadata: plugins
