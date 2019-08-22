@@ -165,10 +165,10 @@ describe('WorkflowComponent', () => {
 
   it('should format the form values', () => {
     let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
-    expect(result.metisPluginsMetadata.length).toBeFalsy();
+    expect(result.metisPluginsMetadata.length).toBeGreaterThan(1);
     component.workflowForm.get('pluginPREVIEW')!.setValue(true);
     result = component.formatFormValues();
-    expect(result.metisPluginsMetadata.length).toEqual(1);
+    expect(result.metisPluginsMetadata.filter((x) => x.enabled).length).toEqual(1);
   });
 
   it('should reset', () => {
