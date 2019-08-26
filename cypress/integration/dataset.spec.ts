@@ -150,5 +150,18 @@ context('metis-ui', () => {
         .eq(7)
         .contains('Import OAI-PMH');
     });
+
+    it('should show the user who cancelled an execution', () => {
+      cy.route({
+        method: 'POST',
+        url: '/authentication/user_by_user_id',
+        status: 200,
+        response: { firstName: 'Valentine', lastName: 'Charles' }
+      });
+
+      cy.get('.table-grid.history .head-right')
+        .eq(0)
+        .contains('Valentine');
+    });
   });
 });

@@ -207,6 +207,7 @@ export const workflowExecutions: Results<WorkflowExecution> = {
       id: '5bf2d6ac9f7dd000084d4cbb',
       datasetId: '58',
       workflowStatus: WorkflowStatus.CANCELLED,
+      cancelledBy: '1482250000003948001',
       ecloudDatasetId: 'fa07e945-48c4-4547-8929-6fde4055a403',
       workflowPriority: 0,
       cancelling: false,
