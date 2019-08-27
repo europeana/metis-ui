@@ -340,16 +340,9 @@ export class WorkflowComponent implements OnInit {
       const thisWorkflow = workflow.metisPluginsMetadata[w];
 
       // parameter values are recovered even if not enabled
-
       if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
-        if (thisWorkflow.enabled === true) {
-          this.workflowForm.controls.pluginType.setValue('HTTP_HARVEST');
-        }
       } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-        if (thisWorkflow.enabled === true) {
-          this.workflowForm.controls.pluginType.setValue('OAIPMH_HARVEST');
-        }
         this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
@@ -360,6 +353,7 @@ export class WorkflowComponent implements OnInit {
           thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
           thisWorkflow.pluginType === 'HTTP_HARVEST'
         ) {
+          this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
           this.workflowForm.controls.pluginHARVEST.setValue(true);
         } else {
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);

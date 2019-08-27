@@ -27,6 +27,7 @@ export interface OAIHarvestPluginMetadata extends HarvestPluginMetadataBase {
   metadataFormat: string;
 }
 
+// Allow OAIHarvestPluginMetadata to have the property 'harvestUrl' temporarily
 export interface OAIHarvestPluginMetadataTmp extends OAIHarvestPluginMetadata {
   harvestUrl: string;
 }
