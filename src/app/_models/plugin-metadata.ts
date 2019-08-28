@@ -15,22 +15,25 @@ export interface BasicPluginMetadata {
   performSampling?: boolean;
 }
 
-export interface OAIHarvestPluginMetadata {
-  pluginType: 'OAIPMH_HARVEST';
+export interface HarvestPluginMetadataBase {
   mocked?: boolean;
   enabled?: boolean;
-
   url: string;
+}
+
+export interface OAIHarvestPluginMetadata extends HarvestPluginMetadataBase {
+  pluginType: 'OAIPMH_HARVEST';
   setSpec: string;
   metadataFormat: string;
 }
 
-export interface HttpHarvestPluginMetadata {
-  pluginType: 'HTTP_HARVEST';
-  mocked?: boolean;
-  enabled?: boolean;
+// Allow OAIHarvestPluginMetadata to have the property 'harvestUrl' temporarily
+export interface OAIHarvestPluginMetadataTmp extends OAIHarvestPluginMetadata {
+  harvestUrl: string;
+}
 
-  url: string;
+export interface HttpHarvestPluginMetadata extends HarvestPluginMetadataBase {
+  pluginType: 'HTTP_HARVEST';
 }
 
 export interface TransformationPluginMetadata {
@@ -44,5 +47,6 @@ export interface TransformationPluginMetadata {
 export type PluginMetadata =
   | BasicPluginMetadata
   | OAIHarvestPluginMetadata
+  | OAIHarvestPluginMetadataTmp
   | HttpHarvestPluginMetadata
   | TransformationPluginMetadata;

@@ -69,7 +69,7 @@ context('metis-ui', () => {
     });
   });
 
-  describe('dataset infomation', () => {
+  describe('dataset information', () => {
     beforeEach(() => {
       setupDatasetPage('edit');
       cy.wait(['@getCountries', '@getLanguages']);
