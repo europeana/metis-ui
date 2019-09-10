@@ -1,0 +1,314 @@
+{
+	"results": [
+
+    {
+		"id": "5c66c328fbe16c000ad60bc6",
+		"datasetId": "129",
+		"workflowStatus": "CANCELLED",
+		"ecloudDatasetId": "4568fdab-fe24-461f-bfde-dfd62a3d42b0",
+		"cancelledBy": "1482250000003948001",
+		"workflowPriority": 0,
+		"cancelling": false,
+		"createdDate": "2019-02-15T13:48:24.860Z",
+		"startedDate": "2019-02-15T13:48:24.906Z",
+		"updatedDate": "2019-02-15T13:59:08.465Z",
+		"finishedDate": null,
+
+		"metisPlugins": [
+      {
+        "pluginType": "VALIDATION_EXTERNAL",
+        "id": "5c66bf26fbe16c000ad60ba9-VALIDATION_EXTERNAL",
+        "pluginStatus": "PENDING",
+        "failMessage": null,
+        "startedDate": "2019-02-15T13:33:43.509Z",
+        "updatedDate": "2019-02-15T13:33:53.953Z",
+        "finishedDate": "2019-02-15T13:33:53.958Z",
+        "externalTaskId": "-3777206523521514223",
+        "executionProgress": {
+          "expectedRecords": 234,
+          "processedRecords": 234,
+          "progressPercentage": 100,
+          "errors": 0,
+          "status": "PENDING"
+        }
+      }
+    ]
+	},
+
+
+
+
+  {
+		"id": "5c66bf26fbe16c000ad60bae",
+		"datasetId": "129",
+		"workflowStatus": "FINISHED",
+		"ecloudDatasetId": "4568fdab-fe24-461f-bfde-dfd62a3d42b0",
+		"cancelledBy": null,
+		"workflowPriority": 0,
+		"cancelling": false,
+		"createdDate": "2019-02-15T13:31:18.910Z",
+		"startedDate": "2019-02-15T13:33:02.621Z",
+		"updatedDate": "2019-02-15T13:34:55.911Z",
+		"finishedDate": "2019-02-15T13:34:55.919Z",
+		"metisPlugins": [{
+			"pluginType": "OAIPMH_HARVEST",
+			"id": "5c66bf26fbe16c000ad60ba8-OAIPMH_HARVEST",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:33:02.621Z",
+			"updatedDate": "2019-02-15T13:33:43.498Z",
+			"finishedDate": "2019-02-15T13:33:43.502Z",
+			"externalTaskId": "9208889679735769481",
+			"executionProgress": {
+				"expectedRecords": 234,
+				"processedRecords": 234,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "OAIPMH_HARVEST",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": null,
+				"revisionTimestampPreviousPlugin": null,
+				"url": "https://aggregator.ekt.gr/aggregator-oai/request",
+				"metadataFormat": "edm",
+				"setSpec": "KOTH",
+				"fromDate": null,
+				"untilDate": null,
+				"datasetId": "129",
+				"useDefaultIdentifiers": false,
+				"identifierPrefixRemoval": null
+			},
+			"topologyName": "oai_harvest"
+		}, {
+			"pluginType": "VALIDATION_EXTERNAL",
+			"id": "5c66bf26fbe16c000ad60ba9-VALIDATION_EXTERNAL",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:33:43.509Z",
+			"updatedDate": "2019-02-15T13:33:53.953Z",
+			"finishedDate": "2019-02-15T13:33:53.958Z",
+			"externalTaskId": "-3777206523521514223",
+			"executionProgress": {
+				"expectedRecords": 234,
+				"processedRecords": 234,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "VALIDATION_EXTERNAL",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "OAIPMH_HARVEST",
+				"revisionTimestampPreviousPlugin": "2019-02-15T13:33:02.621Z",
+				"urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+				"schemaRootPath": "EDM.xsd",
+				"schematronRootPath": "schematron/schematron.xsl"
+			},
+			"topologyName": "validation"
+		}, {
+			"pluginType": "TRANSFORMATION",
+			"id": "5c66bf26fbe16c000ad60baa-TRANSFORMATION",
+			"pluginStatus": "FINISHED",
+			"failMessage": "A fail message",
+			"startedDate": "2019-02-15T13:33:53.966Z",
+			"updatedDate": "2019-02-15T13:33:59.364Z",
+			"finishedDate": "2019-02-15T13:33:59.368Z",
+			"externalTaskId": "-1552731044350374206",
+			"executionProgress": {
+				"expectedRecords": 543,
+				"processedRecords": 543,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "TRANSFORMATION",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "VALIDATION_EXTERNAL",
+				"revisionTimestampPreviousPlugin": "2019-02-15T13:33:43.509Z",
+				"xsltUrl": "https://metis-core-rest-test.eanadev.org/datasets/xslt/5b2bb8268e3b95000bacc522",
+				"customXslt": false,
+				"datasetId": "129",
+				"datasetName": "123_Handling_Of_Color_Spaces",
+				"country": "Finland",
+				"language": "gd"
+			},
+			"topologyName": "xslt_transform"
+		}, {
+			"pluginType": "VALIDATION_INTERNAL",
+			"id": "5c66bf26fbe16c000ad60bab-VALIDATION_INTERNAL",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:33:59.375Z",
+			"updatedDate": "2019-02-15T13:34:14.829Z",
+			"finishedDate": "2019-02-15T13:34:14.833Z",
+			"externalTaskId": "3189264115802456904",
+			"executionProgress": {
+				"expectedRecords": 234,
+				"processedRecords": 234,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "VALIDATION_INTERNAL",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "TRANSFORMATION",
+				"revisionTimestampPreviousPlugin": "2019-02-15T13:33:53.966Z",
+				"urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+				"schemaRootPath": "EDM-INTERNAL.xsd",
+				"schematronRootPath": "schematron/schematron-internal.xsl"
+			},
+			"topologyName": "validation"
+		}, {
+			"pluginType": "NORMALIZATION",
+			"id": "5c66bf26fbe16c000ad60bac-NORMALIZATION",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:34:14.840Z",
+			"updatedDate": "2019-02-15T13:34:20.217Z",
+			"finishedDate": "2019-02-15T13:34:20.221Z",
+			"externalTaskId": "-281521201256906267",
+			"executionProgress": {
+				"expectedRecords": 234,
+				"processedRecords": 234,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "NORMALIZATION",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "VALIDATION_INTERNAL",
+				"revisionTimestampPreviousPlugin": "2019-02-15T13:33:59.375Z"
+			},
+			"topologyName": "normalization"
+		}, {
+			"pluginType": "ENRICHMENT",
+			"id": "5c66bf26fbe16c000ad60bad-ENRICHMENT",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:34:20.230Z",
+			"updatedDate": "2019-02-15T13:34:55.911Z",
+			"finishedDate": "2019-02-15T13:34:55.919Z",
+			"externalTaskId": "-9075337563909828942",
+			"executionProgress": {
+				"expectedRecords": 234,
+				"processedRecords": 234,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "ENRICHMENT",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "NORMALIZATION",
+				"revisionTimestampPreviousPlugin": "2019-02-15T13:34:14.840Z"
+			},
+			"topologyName": "enrichment"
+		}]
+	}, {
+		"id": "5c66befafbe16c000ad60ba5",
+		"datasetId": "129",
+		"workflowStatus": "FINISHED",
+		"ecloudDatasetId": "ac64b4c7-e1f2-46ac-974c-e495a52c1ea1",
+		"cancelledBy": null,
+		"workflowPriority": 0,
+		"cancelling": false,
+		"createdDate": "2019-02-15T13:30:34.730Z",
+		"startedDate": "2019-02-15T13:30:34.797Z",
+		"updatedDate": "2019-02-15T13:33:02.588Z",
+		"finishedDate": "2019-02-15T13:33:02.592Z",
+		"metisPlugins": [{
+			"pluginType": "VALIDATION_INTERNAL",
+			"id": "5c66befafbe1",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:30:34.797Z",
+			"updatedDate": "2019-02-15T13:31:10.662Z",
+			"finishedDate": "2019-02-15T13:31:10.665Z",
+			"externalTaskId": "-3218872458339860141",
+			"executionProgress": {
+				"expectedRecords": 1249,
+				"processedRecords": 1249,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "VALIDATION_INTERNAL",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "TRANSFORMATION",
+				"revisionTimestampPreviousPlugin": "2019-02-13T10:53:59.074Z",
+				"urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+				"schemaRootPath": "EDM-INTERNAL.xsd",
+				"schematronRootPath": "schematron/schematron-internal.xsl"
+			},
+			"topologyName": "validation"
+		}, {
+			"pluginType": "NORMALIZATION",
+			"id": "5c66befafbe16c000ad60ba3-NORMALIZATION",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:31:10.671Z",
+			"updatedDate": "2019-02-15T13:31:36.338Z",
+			"finishedDate": "2019-02-15T13:31:36.342Z",
+			"externalTaskId": "-2687142410433574828",
+			"executionProgress": {
+				"expectedRecords": 1249,
+				"processedRecords": 1249,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "NORMALIZATION",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "VALIDATION_INTERNAL",
+				"revisionTimestampPreviousPlugin": "2019-02-15T13:30:34.797Z"
+			},
+			"topologyName": "normalization"
+		}, {
+			"pluginType": "ENRICHMENT",
+			"id": "5c66befafbe16c000ad60ba4-ENRICHMENT",
+			"pluginStatus": "FINISHED",
+			"failMessage": null,
+			"startedDate": "2019-02-15T13:31:36.348Z",
+			"updatedDate": "2019-02-15T13:33:02.588Z",
+			"finishedDate": "2019-02-15T13:33:02.592Z",
+			"externalTaskId": "4128562563182445145",
+			"executionProgress": {
+				"expectedRecords": 1249,
+				"processedRecords": 1249,
+				"progressPercentage": 100,
+				"errors": 0,
+				"status": "PROCESSED"
+			},
+			"pluginMetadata": {
+				"pluginType": "ENRICHMENT",
+				"mocked": false,
+				"enabled": true,
+				"revisionNamePreviousPlugin": "NORMALIZATION",
+				"revisionTimestampPreviousPlugin": "2019-02-15T13:31:10.671Z"
+			},
+			"topologyName": "enrichment"
+		}]
+	}
+
+
+
+
+  ],
+	"listSize": 2,
+	"nextPage": -1
+}

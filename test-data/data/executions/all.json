@@ -1,0 +1,694 @@
+{
+	"results": [
+    {
+  		"id": "5c6ea58cd4143e000e1548bd",
+  		"datasetId": "123",
+  		"workflowStatus": "FINISHED",
+  		"ecloudDatasetId": "4568fdab-fe24-461f-bfde-dfd62a3d42b0",
+  		"cancelledBy": null,
+  		"workflowPriority": 0,
+  		"cancelling": false,
+  		"createdDate": "2019-02-21T13:20:12.351Z",
+  		"startedDate": "2019-02-21T13:20:12.412Z",
+  		"updatedDate": "2019-02-21T13:50:53.156Z",
+  		"finishedDate": "2019-02-21T13:50:53.164Z",
+
+  		"metisPlugins": [
+        {
+    			"pluginType": "OAIPMH_HARVEST",
+    			"pluginType": "OAIPMH_HARVEST",
+    			"id": "5c6ea58cd4143e000e1548b6-OAIPMH_HARVEST",
+    			"pluginStatus": "FINISHED",
+    			"failMessage": null,
+    			"startedDate": "2019-02-21T13:20:12.412Z",
+    			"updatedDate": "2019-02-21T13:20:33.113Z",
+    			"finishedDate": "2019-02-21T13:20:33.118Z",
+    			"externalTaskId": "-5073830345606084187",
+    			"executionProgress":
+          {
+    				"expectedRecords": 234,
+    				"processedRecords": 234,
+    				"progressPercentage": 100,
+    				"errors": 0,
+    				"status": "PROCESSED"
+    			},
+    			"pluginMetadata": {
+    				"pluginType": "OAIPMH_HARVEST",
+    				"mocked": false,
+    				"enabled": true,
+    				"revisionNamePreviousPlugin": null,
+    				"revisionTimestampPreviousPlugin": null,
+    				"url": "https://aggregator.ekt.gr/aggregator-oai/request",
+    				"metadataFormat": "edm",
+    				"setSpec": "KOTH",
+    				"fromDate": null,
+    				"untilDate": null,
+    				"datasetId": "123",
+    				"useDefaultIdentifiers": false,
+    				"identifierPrefixRemoval": null,
+    				"pluginType": "OAIPMH_HARVEST"
+    			},
+    			"topologyName": "oai_harvest"
+    		},
+        {
+    			"pluginType": "VALIDATION_EXTERNAL",
+    			"pluginType": "VALIDATION_EXTERNAL",
+    			"id": "5c6ea58cd4143e000e1548b7-VALIDATION_EXTERNAL",
+    			"pluginStatus": "FINISHED",
+    			"failMessage": null,
+    			"startedDate": "2019-02-21T13:20:33.125Z",
+    			"updatedDate": "2019-02-21T13:20:38.530Z",
+    			"finishedDate": "2019-02-21T13:20:38.537Z",
+    			"externalTaskId": "-5595707296664367306",
+    			"executionProgress": {
+    				"expectedRecords": 234,
+    				"processedRecords": 234,
+    				"progressPercentage": 100,
+    				"errors": 0,
+    				"status": "PROCESSED"
+    			},
+    			"pluginMetadata": {
+    				"pluginType": "VALIDATION_EXTERNAL",
+    				"mocked": false,
+    				"enabled": true,
+    				"revisionNamePreviousPlugin": "OAIPMH_HARVEST",
+    				"revisionTimestampPreviousPlugin": "2019-02-21T13:20:12.412Z",
+    				"urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+    				"schemaRootPath": "EDM.xsd",
+    				"schematronRootPath": "schematron/schematron.xsl",
+    				"pluginType": "VALIDATION_EXTERNAL"
+    			},
+    			"topologyName": "validation"
+    		},
+        {
+    			"pluginType": "TRANSFORMATION",
+    			"id": "5c6ea58cd4143e000e1548b8-TRANSFORMATION",
+    			"pluginStatus": "FINISHED",
+    			"failMessage": null,
+    			"startedDate": "2019-02-21T13:20:38.551Z",
+    			"updatedDate": "2019-02-21T13:20:43.938Z",
+    			"finishedDate": "2019-02-21T13:20:43.942Z",
+    			"externalTaskId": "1504980059388919901",
+    			"executionProgress": {
+    				"expectedRecords": 234,
+    				"processedRecords": 234,
+    				"progressPercentage": 100,
+    				"errors": 0,
+    				"status": "PROCESSED"
+    			},
+    			"pluginMetadata": {
+    				"pluginType": "TRANSFORMATION",
+    				"mocked": false,
+    				"enabled": true,
+    				"revisionNamePreviousPlugin": "VALIDATION_EXTERNAL",
+    				"revisionTimestampPreviousPlugin": "2019-02-21T13:20:33.125Z",
+    				"xsltUrl": "https://metis-core-rest-test.eanadev.org/datasets/xslt/5b2bb8268e3b95000bacc522",
+    				"customXslt": false,
+    				"datasetId": "123",
+    				"datasetName": "123_Handling_Of_Color_Spaces",
+    				"country": "Finland",
+    				"language": "gd",
+    				"pluginType": "TRANSFORMATION"
+    			},
+    			"topologyName": "xslt_transform"
+    		},
+        {
+    			"pluginType": "VALIDATION_INTERNAL",
+    			"pluginType": "VALIDATION_INTERNAL",
+    			"id": "5c6ea58cd4143e000e1548b9-VALIDATION_INTERNAL",
+    			"pluginStatus": "FINISHED",
+    			"failMessage": null,
+    			"startedDate": "2019-02-21T13:20:43.953Z",
+    			"updatedDate": "2019-02-21T13:20:54.409Z",
+    			"finishedDate": "2019-02-21T13:20:54.416Z",
+    			"externalTaskId": "6676019243445076313",
+    			"executionProgress": {
+    				"expectedRecords": 234,
+    				"processedRecords": 234,
+    				"progressPercentage": 100,
+    				"errors": 0,
+    				"status": "PROCESSED"
+    			},
+    			"pluginMetadata": {
+    				"pluginType": "VALIDATION_INTERNAL",
+    				"mocked": false,
+    				"enabled": true,
+    				"revisionNamePreviousPlugin": "TRANSFORMATION",
+    				"revisionTimestampPreviousPlugin": "2019-02-21T13:20:38.551Z",
+    				"urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+    				"schemaRootPath": "EDM-INTERNAL.xsd",
+    				"schematronRootPath": "schematron/schematron-internal.xsl",
+    				"pluginType": "VALIDATION_INTERNAL"
+    			},
+    			"topologyName": "validation"
+    		},
+        {
+    			"pluginType": "NORMALIZATION",
+    			"pluginType": "NORMALIZATION",
+    			"id": "5c6ea58cd4143e000e1548ba-NORMALIZATION",
+    			"pluginStatus": "FINISHED",
+    			"failMessage": null,
+    			"startedDate": "2019-02-21T13:20:54.422Z",
+    			"updatedDate": "2019-02-21T13:21:04.882Z",
+    			"finishedDate": "2019-02-21T13:21:04.887Z",
+    			"externalTaskId": "9103056288913376186",
+    			"executionProgress": {
+    				"expectedRecords": 234,
+    				"processedRecords": 234,
+    				"progressPercentage": 100,
+    				"errors": 0,
+    				"status": "PROCESSED"
+    			},
+    			"pluginMetadata": {
+    				"pluginType": "NORMALIZATION",
+    				"mocked": false,
+    				"enabled": true,
+    				"revisionNamePreviousPlugin": "VALIDATION_INTERNAL",
+    				"revisionTimestampPreviousPlugin": "2019-02-21T13:20:43.953Z",
+    				"pluginType": "NORMALIZATION"
+    			},
+    			"topologyName": "normalization"
+    		},
+        {
+    			"pluginType": "ENRICHMENT",
+    			"pluginType": "ENRICHMENT",
+    			"id": "5c6ea58cd4143e000e1548bb-ENRICHMENT",
+    			"pluginStatus": "FINISHED",
+    			"failMessage": null,
+    			"startedDate": "2019-02-21T13:21:04.899Z",
+    			"updatedDate": "2019-02-21T13:21:55.793Z",
+    			"finishedDate": "2019-02-21T13:21:55.798Z",
+    			"externalTaskId": "6145450027595418463",
+    			"executionProgress": {
+    				"expectedRecords": 234,
+    				"processedRecords": 234,
+    				"progressPercentage": 100,
+    				"errors": 0,
+    				"status": "PROCESSED"
+    			},
+    			"pluginMetadata": {
+    				"pluginType": "ENRICHMENT",
+    				"mocked": false,
+    				"enabled": true,
+    				"revisionNamePreviousPlugin": "NORMALIZATION",
+    				"revisionTimestampPreviousPlugin": "2019-02-21T13:20:54.422Z",
+    				"pluginType": "ENRICHMENT"
+    			},
+    			"topologyName": "enrichment"
+    		},
+        {
+    			"pluginType": "MEDIA_PROCESS",
+    			"id": "5c6ea58cd4143e000e1548bc-MEDIA_PROCESS",
+    			"pluginStatus": "FINISHED",
+    			"failMessage": null,
+    			"startedDate": "2019-02-21T13:21:55.804Z",
+    			"updatedDate": "2019-02-21T13:50:53.156Z",
+    			"finishedDate": "2019-02-21T13:50:53.164Z",
+    			"externalTaskId": "-8770281815391648526",
+    			"executionProgress":
+          {
+    				"expectedRecords": 234,
+    				"processedRecords": 234,
+    				"progressPercentage": 100,
+    				"errors": 0,
+    				"status": "PROCESSED"
+    			},
+    			"pluginMetadata":
+          {
+    				"pluginType": "MEDIA_PROCESS",
+    				"mocked": false,
+    				"enabled": true,
+    				"revisionNamePreviousPlugin": "ENRICHMENT",
+    				"revisionTimestampPreviousPlugin": "2019-02-21T13:21:04.899Z",
+    				"connectionLimitToDomains": {},
+    				"pluginType": "MEDIA_PROCESS"
+    			},
+    			"topologyName": "media_process"
+  		  }
+    ]
+	},
+
+
+
+
+
+  {
+		"id": "5c6ea50ed4143e000e1548b5",
+		"datasetId": "123",
+		"workflowStatus": "CANCELLED",
+		"ecloudDatasetId": "4568fdab-fe24-461f-bfde-dfd62a3d42b0",
+		"cancelledBy": "1482250000003948001",
+		"workflowPriority": 0,
+		"cancelling": false,
+		"createdDate": "2019-02-21T13:18:06.864Z",
+		"startedDate": "2019-02-21T13:18:06.891Z",
+		"updatedDate": "2019-02-21T13:18:17.676Z",
+		"finishedDate": null,
+		"metisPlugins": [
+      {
+  			"pluginType": "OAIPMH_HARVEST",
+  			"pluginType": "OAIPMH_HARVEST",
+  			"id": "5c6ea50ed4143e000e1548ae-OAIPMH_HARVEST",
+  			"pluginStatus": "CANCELLED",
+  			"failMessage": null,
+  			"startedDate": "2019-02-21T13:18:06.891Z",
+  			"updatedDate": "2019-02-21T13:18:12.579Z",
+  			"finishedDate": null,
+  			"externalTaskId": "4754718075915226797",
+  			"executionProgress": {
+  				"expectedRecords": 234,
+  				"processedRecords": 0,
+  				"progressPercentage": 0,
+  				"errors": 0,
+  				"status": "CURRENTLY_PROCESSING"
+  			},
+  			"pluginMetadata": {
+  				"pluginType": "OAIPMH_HARVEST",
+  				"mocked": false,
+  				"enabled": true,
+  				"revisionNamePreviousPlugin": null,
+  				"revisionTimestampPreviousPlugin": null,
+  				"url": "https://aggregator.ekt.gr/aggregator-oai/request",
+  				"metadataFormat": "edm",
+  				"setSpec": "KOTH",
+  				"fromDate": null,
+  				"untilDate": null,
+  				"datasetId": "123",
+  				"useDefaultIdentifiers": false,
+  				"identifierPrefixRemoval": null,
+  				"pluginType": "OAIPMH_HARVEST"
+  			},
+  			"topologyName": "oai_harvest"
+  		},
+      {
+  			"pluginType": "VALIDATION_EXTERNAL",
+  			"pluginType": "VALIDATION_EXTERNAL",
+  			"id": "5c6ea50ed4143e000e1548af-VALIDATION_EXTERNAL",
+  			"pluginStatus": "CANCELLED",
+  			"failMessage": null,
+  			"startedDate": null,
+  			"updatedDate": null,
+  			"finishedDate": null,
+  			"externalTaskId": null,
+  			"executionProgress": {
+  				"expectedRecords": 0,
+  				"processedRecords": 0,
+  				"progressPercentage": 0,
+  				"errors": 0,
+  				"status": null
+  			},
+  			"pluginMetadata": {
+  				"pluginType": "VALIDATION_EXTERNAL",
+  				"mocked": false,
+  				"enabled": true,
+  				"revisionNamePreviousPlugin": null,
+  				"revisionTimestampPreviousPlugin": null,
+  				"urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+  				"schemaRootPath": "EDM.xsd",
+  				"schematronRootPath": "schematron/schematron.xsl",
+  				"pluginType": "VALIDATION_EXTERNAL"
+  			},
+  			"topologyName": "validation"
+  		},
+      {
+  			"pluginType": "TRANSFORMATION",
+  			"pluginType": "TRANSFORMATION",
+  			"id": "5c6ea50ed4143e000e1548b0-TRANSFORMATION",
+  			"pluginStatus": "CANCELLED",
+  			"failMessage": null,
+  			"startedDate": null,
+  			"updatedDate": null,
+  			"finishedDate": null,
+  			"externalTaskId": null,
+  			"executionProgress": {
+  				"expectedRecords": 0,
+  				"processedRecords": 0,
+  				"progressPercentage": 0,
+  				"errors": 0,
+  				"status": null
+  			},
+  			"pluginMetadata": {
+  				"pluginType": "TRANSFORMATION",
+  				"mocked": false,
+  				"enabled": true,
+  				"revisionNamePreviousPlugin": null,
+  				"revisionTimestampPreviousPlugin": null,
+  				"xsltUrl": "https://metis-core-rest-test.eanadev.org/datasets/xslt/5b2bb8268e3b95000bacc522",
+  				"customXslt": false,
+  				"datasetId": "123",
+  				"datasetName": "123_Handling_Of_Color_Spaces",
+  				"country": "Finland",
+  				"language": "gd",
+  				"pluginType": "TRANSFORMATION"
+  			},
+  			"topologyName": "xslt_transform"
+  		},
+      {
+  			"pluginType": "VALIDATION_INTERNAL",
+  			"pluginType": "VALIDATION_INTERNAL",
+  			"id": "5c6ea50ed4143e000e1548b1-VALIDATION_INTERNAL",
+  			"pluginStatus": "CANCELLED",
+  			"failMessage": null,
+  			"startedDate": null,
+  			"updatedDate": null,
+  			"finishedDate": null,
+  			"externalTaskId": null,
+  			"executionProgress": {
+  				"expectedRecords": 0,
+  				"processedRecords": 0,
+  				"progressPercentage": 0,
+  				"errors": 0,
+  				"status": null
+  			},
+  			"pluginMetadata": {
+  				"pluginType": "VALIDATION_INTERNAL",
+  				"mocked": false,
+  				"enabled": true,
+  				"revisionNamePreviousPlugin": null,
+  				"revisionTimestampPreviousPlugin": null,
+  				"urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+  				"schemaRootPath": "EDM-INTERNAL.xsd",
+  				"schematronRootPath": "schematron/schematron-internal.xsl",
+  				"pluginType": "VALIDATION_INTERNAL"
+  			},
+  			"topologyName": "validation"
+  		},
+      {
+  			"pluginType": "NORMALIZATION",
+  			"pluginType": "NORMALIZATION",
+  			"id": "5c6ea50ed4143e000e1548b2-NORMALIZATION",
+  			"pluginStatus": "CANCELLED",
+  			"failMessage": null,
+  			"startedDate": null,
+  			"updatedDate": null,
+  			"finishedDate": null,
+  			"externalTaskId": null,
+  			"executionProgress": {
+  				"expectedRecords": 0,
+  				"processedRecords": 0,
+  				"progressPercentage": 0,
+  				"errors": 0,
+  				"status": null
+  			},
+  			"pluginMetadata": {
+  				"pluginType": "NORMALIZATION",
+  				"mocked": false,
+  				"enabled": true,
+  				"revisionNamePreviousPlugin": null,
+  				"revisionTimestampPreviousPlugin": null,
+  				"pluginType": "NORMALIZATION"
+  			},
+  			"topologyName": "normalization"
+  		},
+      {
+  			"pluginType": "ENRICHMENT",
+  			"pluginType": "ENRICHMENT",
+  			"id": "5c6ea50ed4143e000e1548b3-ENRICHMENT",
+  			"pluginStatus": "CANCELLED",
+  			"failMessage": null,
+  			"startedDate": null,
+  			"updatedDate": null,
+  			"finishedDate": null,
+  			"externalTaskId": null,
+  			"executionProgress": {
+  				"expectedRecords": 0,
+  				"processedRecords": 0,
+  				"progressPercentage": 0,
+  				"errors": 0,
+  				"status": null
+  			},
+  			"pluginMetadata": {
+  				"pluginType": "ENRICHMENT",
+  				"mocked": false,
+  				"enabled": true,
+  				"revisionNamePreviousPlugin": null,
+  				"revisionTimestampPreviousPlugin": null,
+  				"pluginType": "ENRICHMENT"
+  			},
+  			"topologyName": "enrichment"
+  		},
+      {
+  			"pluginType": "MEDIA_PROCESS",
+  			"id": "5c6ea50ed4143e000e1548b4-MEDIA_PROCESS",
+  			"pluginStatus": "CANCELLED",
+  			"failMessage": null,
+  			"startedDate": null,
+  			"updatedDate": null,
+  			"finishedDate": null,
+  			"externalTaskId": null,
+  			"executionProgress": {
+  				"expectedRecords": 0,
+  				"processedRecords": 0,
+  				"progressPercentage": 0,
+  				"errors": 0,
+  				"status": null
+  			},
+  			"pluginMetadata": {
+  				"pluginType": "MEDIA_PROCESS",
+  				"mocked": false,
+  				"enabled": true,
+  				"revisionNamePreviousPlugin": null,
+  				"revisionTimestampPreviousPlugin": null,
+  				"connectionLimitToDomains": {},
+  				"pluginType": "MEDIA_PROCESS"
+  			},
+  			"topologyName": "media_process"
+  		}
+    ]
+	},
+
+
+
+
+
+  {
+    "id": "5c6ea50ed4143e000e154",
+    "datasetId": "129",
+    "workflowStatus": "CANCELLED",
+    "ecloudDatasetId": "4568fdab-fe24-461f-bfde-dfd62a3d42b0",
+    "cancelledBy": "1482250000003948001",
+    "workflowPriority": 0,
+    "cancelling": false,
+    "createdDate": "2019-02-21T13:18:06.864Z",
+    "startedDate": "2019-02-21T13:18:06.891Z",
+    "updatedDate": "2019-02-21T13:18:17.676Z",
+    "finishedDate": null,
+    "metisPlugins": [
+      {
+        "pluginType": "OAIPMH_HARVEST",
+        "pluginType": "OAIPMH_HARVEST",
+        "id": "5c6ea50ed4143e000e1548ae-OAIPMH_HARVEST-2",
+        "pluginStatus": "CANCELLED",
+        "failMessage": null,
+        "startedDate": "2019-02-21T13:18:06.891Z",
+        "updatedDate": "2019-02-21T13:18:12.579Z",
+        "finishedDate": null,
+        "externalTaskId": "4754718075915226797",
+        "executionProgress": {
+          "expectedRecords": 234,
+          "processedRecords": 0,
+          "progressPercentage": 0,
+          "errors": 0,
+          "status": "CURRENTLY_PROCESSING"
+        },
+        "pluginMetadata": {
+          "pluginType": "OAIPMH_HARVEST",
+          "mocked": false,
+          "enabled": true,
+          "revisionNamePreviousPlugin": null,
+          "revisionTimestampPreviousPlugin": null,
+          "url": "https://aggregator.ekt.gr/aggregator-oai/request",
+          "metadataFormat": "edm",
+          "setSpec": "KOTH",
+          "fromDate": null,
+          "untilDate": null,
+          "datasetId": "129",
+          "useDefaultIdentifiers": false,
+          "identifierPrefixRemoval": null,
+          "pluginType": "OAIPMH_HARVEST"
+        },
+        "topologyName": "oai_harvest"
+      },
+      {
+        "pluginType": "VALIDATION_EXTERNAL",
+        "pluginType": "VALIDATION_EXTERNAL",
+        "id": "5c6ea50ed4143e000e1548af-VALIDATION_EXTERNAL-2",
+        "pluginStatus": "CANCELLED",
+        "failMessage": null,
+        "startedDate": null,
+        "updatedDate": null,
+        "finishedDate": null,
+        "externalTaskId": null,
+        "executionProgress": {
+          "expectedRecords": 0,
+          "processedRecords": 0,
+          "progressPercentage": 0,
+          "errors": 0,
+          "status": null
+        },
+        "pluginMetadata": {
+          "pluginType": "VALIDATION_EXTERNAL",
+          "mocked": false,
+          "enabled": true,
+          "revisionNamePreviousPlugin": null,
+          "revisionTimestampPreviousPlugin": null,
+          "urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+          "schemaRootPath": "EDM.xsd",
+          "schematronRootPath": "schematron/schematron.xsl",
+          "pluginType": "VALIDATION_EXTERNAL"
+        },
+        "topologyName": "validation"
+      },
+      {
+        "pluginType": "TRANSFORMATION",
+        "pluginType": "TRANSFORMATION",
+        "id": "5c6ea50ed4143e000e1548b0-TRANSFORMATION",
+        "pluginStatus": "CANCELLED",
+        "failMessage": null,
+        "startedDate": null,
+        "updatedDate": null,
+        "finishedDate": null,
+        "externalTaskId": null,
+        "executionProgress": {
+          "expectedRecords": 0,
+          "processedRecords": 0,
+          "progressPercentage": 0,
+          "errors": 0,
+          "status": null
+        },
+        "pluginMetadata": {
+          "pluginType": "TRANSFORMATION",
+          "mocked": false,
+          "enabled": true,
+          "revisionNamePreviousPlugin": null,
+          "revisionTimestampPreviousPlugin": null,
+          "xsltUrl": "https://metis-core-rest-test.eanadev.org/datasets/xslt/5b2bb8268e3b95000bacc522",
+          "customXslt": false,
+          "datasetId": "129",
+          "datasetName": "test_scotland",
+          "country": "Finland",
+          "language": "gd",
+          "pluginType": "TRANSFORMATION"
+        },
+        "topologyName": "xslt_transform"
+      },
+      {
+        "pluginType": "VALIDATION_INTERNAL",
+        "pluginType": "VALIDATION_INTERNAL",
+        "id": "5c6ea50ed4143e000e1548b1-VALIDATION_INTERNAL-2",
+        "pluginStatus": "CANCELLED",
+        "failMessage": null,
+        "startedDate": null,
+        "updatedDate": null,
+        "finishedDate": null,
+        "externalTaskId": null,
+        "executionProgress": {
+          "expectedRecords": 0,
+          "processedRecords": 0,
+          "progressPercentage": 0,
+          "errors": 0,
+          "status": null
+        },
+        "pluginMetadata": {
+          "pluginType": "VALIDATION_INTERNAL",
+          "mocked": false,
+          "enabled": true,
+          "revisionNamePreviousPlugin": null,
+          "revisionTimestampPreviousPlugin": null,
+          "urlOfSchemasZip": "http://ftp.eanadev.org/schema_zips/europeana_schemas-20190214_v3.zip",
+          "schemaRootPath": "EDM-INTERNAL.xsd",
+          "schematronRootPath": "schematron/schematron-internal.xsl",
+          "pluginType": "VALIDATION_INTERNAL"
+        },
+        "topologyName": "validation"
+      },
+      {
+        "pluginType": "NORMALIZATION",
+        "pluginType": "NORMALIZATION",
+        "id": "5c6ea50ed4143e000e1548b2-NORMALIZATION-2",
+        "pluginStatus": "CANCELLED",
+        "failMessage": null,
+        "startedDate": null,
+        "updatedDate": null,
+        "finishedDate": null,
+        "externalTaskId": null,
+        "executionProgress": {
+          "expectedRecords": 0,
+          "processedRecords": 0,
+          "progressPercentage": 0,
+          "errors": 0,
+          "status": null
+        },
+        "pluginMetadata": {
+          "pluginType": "NORMALIZATION",
+          "mocked": false,
+          "enabled": true,
+          "revisionNamePreviousPlugin": null,
+          "revisionTimestampPreviousPlugin": null,
+          "pluginType": "NORMALIZATION"
+        },
+        "topologyName": "normalization"
+      },
+      {
+        "pluginType": "ENRICHMENT",
+        "pluginType": "ENRICHMENT",
+        "id": "5c6ea50ed4143e000e1548b3-ENRICHMENT",
+        "pluginStatus": "CANCELLED",
+        "failMessage": null,
+        "startedDate": null,
+        "updatedDate": null,
+        "finishedDate": null,
+        "externalTaskId": null,
+        "executionProgress": {
+          "expectedRecords": 0,
+          "processedRecords": 0,
+          "progressPercentage": 0,
+          "errors": 0,
+          "status": null
+        },
+        "pluginMetadata": {
+          "pluginType": "ENRICHMENT",
+          "mocked": false,
+          "enabled": true,
+          "revisionNamePreviousPlugin": null,
+          "revisionTimestampPreviousPlugin": null,
+          "pluginType": "ENRICHMENT"
+        },
+        "topologyName": "enrichment"
+      },
+      {
+        "pluginType": "MEDIA_PROCESS",
+        "id": "5c6ea50ed4143e000e1548b4-MEDIA_PROCESS",
+        "pluginStatus": "CANCELLED",
+        "failMessage": null,
+        "startedDate": null,
+        "updatedDate": null,
+        "finishedDate": null,
+        "externalTaskId": null,
+        "executionProgress": {
+          "expectedRecords": 0,
+          "processedRecords": 0,
+          "progressPercentage": 0,
+          "errors": 0,
+          "status": null
+        },
+        "pluginMetadata": {
+          "pluginType": "MEDIA_PROCESS",
+          "mocked": false,
+          "enabled": true,
+          "revisionNamePreviousPlugin": null,
+          "revisionTimestampPreviousPlugin": null,
+          "connectionLimitToDomains": {},
+          "pluginType": "MEDIA_PROCESS"
+        },
+        "topologyName": "media_process"
+      }
+    ]
+  }
+
+
+  ],
+	"listSize": 3,
+	"nextPage": -1,
+  "ANDY": "123 finished, 123 cancelled, 129 cancelled"
+}

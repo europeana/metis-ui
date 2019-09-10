@@ -1,0 +1,31 @@
+{
+  "xPath": "//rdf:RDF/edm:ProvidedCHO",
+  "nodeValueStatistics": [
+      {
+          "value": "value 1",
+          "occurrences": 876,
+          "attributeStatistics": [
+            {
+                "xPath": "//rdf:RDF/edm:ProvidedCHO/@rdf:about",
+                "value": "new value 1",
+                "occurrences": 9
+            },
+            {
+                "xPath": "//rdf:RDF/edm:ProvidedCHO/@rdf:about",
+                "value": "new value 2",
+                "occurrences": 8
+            },
+            {
+                "xPath": "//rdf:RDF/edm:ProvidedCHO/@rdf:about",
+                "value": "new value 3",
+                "occurrences": 7
+            },
+            {
+                "xPath": "//rdf:RDF/edm:ProvidedCHO/@rdf:about",
+                "value": "new value 4",
+                "occurrences": 6
+            }
+          ]
+      }
+  ]
+}

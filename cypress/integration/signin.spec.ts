@@ -1,10 +1,9 @@
 import { user } from '../fixtures';
-import { setupWorkflowRoutes } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('signin', () => {
     beforeEach(() => {
-      cy.server({ force404: true });
+      cy.server();
     });
 
     before(() => {
@@ -79,7 +78,6 @@ context('metis-ui', () => {
     });
 
     it('should login', () => {
-      setupWorkflowRoutes();
       cy.route('POST', '/authentication/login', user);
 
       cy.get('#email')

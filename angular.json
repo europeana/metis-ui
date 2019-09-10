@@ -32,6 +32,14 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/apisettings.ts",
+                  "with": "src/environments/apisettings-ci.ts"
+                }
+              ]
             }
           }
         },
@@ -43,6 +51,9 @@
           "configurations": {
             "prod": {
               "browserTarget": "metis:build:prod"
+            },
+            "e2e": {
+              "browserTarget": "metis:build:e2e"
             }
           }
         },

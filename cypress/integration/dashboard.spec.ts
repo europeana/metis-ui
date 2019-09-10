@@ -1,5 +1,4 @@
-import { datasetOverviewEmpty, runningExecutionsEmpty } from '../fixtures';
-import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
+import { checkAHref, setupUser, setEmptyDataResult } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
   return cy.get('.ongoing-executions .status');
@@ -12,30 +11,29 @@ function runningByIndex(index: number): Cypress.Chainable {
 context('metis-ui', () => {
   describe('dashboard no ongoing', () => {
     beforeEach(() => {
-      cy.server({ force404: true });
+      cy.server();
       setupUser();
-      setupWorkflowRoutes();
-      cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutionsEmpty).as(
-        'runningExecutionsEmpty'
+      cy.request(Cypress.env('dataServer') + '/METIS_UI_CLEAR');
+      setEmptyDataResult(
+        '/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       );
       cy.visit('/dashboard');
-      cy.wait(['@getOverview']);
     });
 
     it('should show a message when there are no running executions', () => {
       cy.get('.ongoing-executions .no-content-message').should('have.length', 1);
     });
   });
+
   describe('dashboard no filter results', () => {
     beforeEach(() => {
-      cy.server({ force404: true });
+      cy.server();
       setupUser();
-      setupWorkflowRoutes();
-      cy.route('GET', '/orchestrator/workflows/executions/overview*', datasetOverviewEmpty).as(
-        'getOverviewEmpty'
+      cy.request(Cypress.env('dataServer') + '/METIS_UI_CLEAR');
+      setEmptyDataResult(
+        '/orchestrator/workflows/executions/overview?nextPage=0&pluginType=HTTP_HARVEST'
       );
       cy.visit('/dashboard');
-      cy.wait(['@getOverviewEmpty']);
     });
 
     it('should show a message when there are no filtered results', () => {
@@ -43,7 +41,7 @@ context('metis-ui', () => {
         .first()
         .click();
       cy.get('.filter-cell a')
-        .last()
+        .first()
         .click();
       cy.get('.filter a')
         .first()
@@ -51,13 +49,13 @@ context('metis-ui', () => {
       cy.get('.executions-grid .no-content-message').should('have.length', 1);
     });
   });
+
   describe('dashboard', () => {
     beforeEach(() => {
-      cy.server({ force404: true });
+      cy.server();
       setupUser();
-      setupWorkflowRoutes();
+      cy.request(Cypress.env('dataServer') + '/METIS_UI_CLEAR');
       cy.visit('/dashboard');
-      cy.wait(['@getDataset', '@getOverview']);
     });
 
     it('should show the welcome message', () => {
@@ -66,8 +64,8 @@ context('metis-ui', () => {
 
     it('should show the currently running executions', () => {
       allRunning().should('have.length', 2);
-      runningByIndex(3).contains('64');
-      runningByIndex(6).contains('194');
+      runningByIndex(6).contains('129');
+      runningByIndex(3).contains('126');
     });
 
     it('should show the last executions to have run', () => {
