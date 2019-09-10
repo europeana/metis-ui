@@ -24,7 +24,8 @@
     "stop:ci-data": "killall -SIGINT test-data-server",
     "cypress:run": "sleep 10 && cypress run",
     "XXXtest:e2e": "((cd test-data && node index.js test-data-server) & npm run cypress:ci) && killall -SIGINT test-data-server",
-    "test:e2e": "tsc && npm run start:ci-data & npm run cypress:ci && killall -SIGINT test-data-server",
+    "XXtest:e2e": "tsc && npm run start:ci-data & npm run cypress:ci && killall -SIGINT test-data-server",
+    "test:e2e": "tsc && (cd test-data && node ../dist/out-tsc/test-data/index.js test-data-server) & npm run cypress:ci && killall -SIGINT test-data-server",
     "dist": "ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
   },
   "private": true,
