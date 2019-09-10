@@ -1,4 +1,4 @@
-import { checkAHref, setupUser, setEmptyDataResult } from '../support/helpers';
+import { checkAHref, setEmptyDataResult, setupUser } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
   return cy.get('.ongoing-executions .status');
@@ -15,7 +15,8 @@ context('metis-ui', () => {
       setupUser();
       cy.request(Cypress.env('dataServer') + '/METIS_UI_CLEAR');
       setEmptyDataResult(
-        '/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
+        '/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false'
+        + '&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       );
       cy.visit('/dashboard');
     });
