@@ -1,9 +1,9 @@
 import { checkAHref, setupUser } from '../support/helpers';
 
-function setupDatasetPage(name: string): void {
+function setupDatasetPage(name: string, index: number): void {
   cy.server();
   setupUser();
-  cy.visit(`/dataset/${name}/123`);
+  cy.visit(`/dataset/${name}/${index}`);
 }
 
 function getHistoryRow(index: number): Cypress.Chainable {
@@ -33,49 +33,57 @@ function checkPluginStatus(name: string, enabled: boolean): void {
 context('metis-ui', () => {
   describe('dataset page', () => {
     beforeEach(() => {
-      setupDatasetPage('edit');
+      setupDatasetPage('edit', 0);
     });
 
+    const expectedId = '0';
+    const lastPublished = '19/02/2019 - 08:49';
+
     it('should show the dataset, general info, status, history', () => {
-      cy.get('.dataset-name').contains('Handling of Color Spaces');
+      cy.get('.dataset-name').contains('Dataset 1');
 
       cy.get('.metis-dataset-info-block dd').as('dd');
       cy.get('@dd').contains('Europeana');
-      cy.get('@dd').contains('234');
-      cy.get('@dd').contains('18/02/2019 - 08:36 ');
+      cy.get('@dd').contains('865');
+      cy.get('@dd').contains(lastPublished);
 
       cy.get('.dataset-actionbar .status').as('status');
-      cy.get('@status').contains('Validate');
+      cy.get('@status').contains('FINISHED');
 
-      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 2);
-      getHistoryRow(0).contains('Validate (EDM external)');
-      getHistoryRow(1).contains('Process Media');
+      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 10);
+      getHistoryRow(0).contains('Check Links');
+      getHistoryRow(1).contains('Publish');
+      getHistoryRow(2).contains('Preview');
+      getHistoryRow(3).contains('Process Media');
     });
 
     it('should show the tabs', () => {
       cy.get('.tabs .tab-title').as('tabTitle');
-      checkAHref(cy.get('@tabTitle').contains('Dataset Information'), '/dataset/edit/123');
-      checkAHref(cy.get('@tabTitle').contains('Workflow'), '/dataset/workflow/123');
-      checkAHref(cy.get('@tabTitle').contains('Mapping'), '/dataset/mapping/123');
-      checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/123');
-      checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/123');
+      checkAHref(
+        cy.get('@tabTitle').contains('Dataset Information'),
+        '/dataset/edit/' + expectedId
+      );
+      checkAHref(cy.get('@tabTitle').contains('Workflow'), '/dataset/workflow/' + expectedId);
+      checkAHref(cy.get('@tabTitle').contains('Mapping'), '/dataset/mapping/' + expectedId);
+      checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/' + expectedId);
+      checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/' + expectedId);
     });
   });
 
   describe('dataset information', () => {
     beforeEach(() => {
-      setupDatasetPage('edit');
+      setupDatasetPage('edit', 0);
     });
 
     it('should show the fields', () => {
-      checkFormField('Dataset Name', 'Handling of Color Spaces');
-      checkFormField('Provider', 'Europeana');
-      checkStaticField('Date Created', '11/02/2019 - 11:08');
-      checkStaticField('Created by', '1482250000003948001');
-      checkStaticField('Last published', '18/02/2019 - 08:36');
-      checkStaticField('Number of items published', '234');
-      checkStaticField('Last date of harvest', '21/02/2019 - 14:20');
-      checkStaticField('Number of items harvested', '234');
+      checkFormField('Dataset Name', 'Dataset 1');
+      checkFormField('Provider', 'Europeana Provider');
+      checkStaticField('Date Created', '19/02/2019 - 08:36');
+      checkStaticField('Created by', '123');
+      checkStaticField('Last published', '19/02/2019 - 08:49');
+      checkStaticField('Number of items published', '865');
+      checkStaticField('Last date of harvest', '19/02/2019 - 08:41');
+      checkStaticField('Number of items harvested', '879');
     });
 
     // TODO: edit
@@ -83,7 +91,7 @@ context('metis-ui', () => {
 
   describe('dataset workflow', () => {
     beforeEach(() => {
-      setupDatasetPage('workflow');
+      setupDatasetPage('workflow', 1);
     });
 
     it('should show the workflow', () => {
@@ -92,8 +100,8 @@ context('metis-ui', () => {
       checkPluginStatus('Transform', true);
       checkPluginStatus('Validate (EDM internal)', true);
       checkPluginStatus('Normalise', true);
-      checkPluginStatus('Enrich', true);
-      checkPluginStatus('Process Media', true);
+      checkPluginStatus('Enrich', false);
+      checkPluginStatus('Process Media', false);
       checkPluginStatus('Preview', false);
       checkPluginStatus('Publish', false);
     });
@@ -105,7 +113,7 @@ context('metis-ui', () => {
   // TODO: preview
   describe('dataset log', () => {
     beforeEach(() => {
-      setupDatasetPage('log');
+      setupDatasetPage('log', 2);
     });
 
     it('should show the error bullets', () => {
@@ -117,28 +125,25 @@ context('metis-ui', () => {
     it('should show the log', () => {
       cy.get('.table-grid.history .plugin-name.desktop')
         .eq(0)
-        .contains('Validate (EDM external)');
-      cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(1)
         .contains('Process Media');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(3)
+        .eq(1)
         .contains('Enrich');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(4)
+        .eq(2)
         .contains('Normalise');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(5)
+        .eq(3)
         .contains('Validate (EDM internal)');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(6)
+        .eq(4)
         .contains('Transform');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(7)
+        .eq(5)
         .contains('Validate (EDM external)');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(8)
-        .contains('Import OAI-PMH');
+        .eq(6)
+        .contains('Import HTTP');
     });
 
     it('should show the user who cancelled an execution', () => {

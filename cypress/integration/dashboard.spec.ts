@@ -1,3 +1,4 @@
+import { urlManipulation } from '../../test-data/_models/test-models';
 import { checkAHref, setEmptyDataResult, setupUser } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
@@ -13,7 +14,7 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server();
       setupUser();
-      cy.request(Cypress.env('dataServer') + '/METIS_UI_CLEAR');
+      cy.request(Cypress.env('dataServer') + '/' + urlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false' +
           '&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
@@ -30,7 +31,7 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server();
       setupUser();
-      cy.request(Cypress.env('dataServer') + '/METIS_UI_CLEAR');
+      cy.request(Cypress.env('dataServer') + '/' + urlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions/overview?nextPage=0&pluginType=HTTP_HARVEST'
       );
@@ -55,25 +56,32 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server();
       setupUser();
-      cy.request(Cypress.env('dataServer') + '/METIS_UI_CLEAR');
+      cy.request(Cypress.env('dataServer') + '/' + urlManipulation.METIS_UI_CLEAR);
       cy.visit('/dashboard');
     });
+
+    const expectedRowCount = 5;
+    const expectedHeaderCount = 5;
 
     it('should show the welcome message', () => {
       cy.get('.metis-welcome-message').contains('Welcome');
     });
 
     it('should show the currently running executions', () => {
-      allRunning().should('have.length', 2);
-      runningByIndex(6).contains('129');
-      runningByIndex(3).contains('126');
+      allRunning().should('have.length', 3);
+      runningByIndex(6).contains('0');
+      runningByIndex(3).contains('0');
+      runningByIndex(9).contains('1');
     });
 
     it('should show the last executions to have run', () => {
-      cy.get('.executions-grid .grid-header').should('have.length', 5);
+      cy.get('.executions-grid .grid-header').should('have.length', expectedHeaderCount);
       cy.get('.executions-grid .row-start').contains('Dataset 1');
-      cy.get('.executions-grid .row-start').should('have.length', 2);
-      cy.get('.executions-grid .grid-cell').should('have.length', 10);
+      cy.get('.executions-grid .row-start').should('have.length', expectedRowCount);
+      cy.get('.executions-grid .grid-cell').should(
+        'have.length',
+        expectedHeaderCount * expectedRowCount
+      );
     });
 
     it('should have action buttons', () => {
@@ -82,13 +90,16 @@ context('metis-ui', () => {
     });
 
     it('the dataset name should link to the dataset page', () => {
-      checkAHref(cy.get('.executions-grid .row-start:nth-child(7) a'), '/dataset/edit/129');
-      checkAHref(cy.get('.executions-grid .row-start:nth-child(13) a'), '/dataset/edit/123');
+      checkAHref(cy.get('.executions-grid .row-start:nth-child(7) a'), '/dataset/edit/0');
+      checkAHref(cy.get('.executions-grid .row-start:nth-child(13) a'), '/dataset/edit/0');
     });
 
     it('should have a "load more" button', () => {
-      cy.get('.executions-grid .row-start').should('have.length', 2);
-      cy.get('.executions-grid .grid-cell').should('have.length', 10);
+      cy.get('.executions-grid .row-start').should('have.length', expectedRowCount);
+      cy.get('.executions-grid .grid-cell').should(
+        'have.length',
+        expectedHeaderCount * expectedRowCount
+      );
       cy.get('.load-more-btn').contains('Load more');
     });
   });
