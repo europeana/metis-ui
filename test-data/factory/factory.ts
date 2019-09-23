@@ -375,7 +375,6 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
         prc.numExpected = 0;
         prc.numErr = 0;
       }
-      console.log('run exec progress');
       pe.executionProgress = getExecutionProgress(prc);
       return pe;
     })

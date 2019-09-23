@@ -4,7 +4,7 @@ export function setupUser(): void {
   cy.window().then((w) => {
     cy.request('POST', Cypress.env('dataServer') + '/users/data/authenticate.json').then(
       (response) => {
-        const user = JSON.parse(response.body) as User;
+        const user = response.body as User;
         w.localStorage.setItem(
           'currentUser',
           JSON.stringify({

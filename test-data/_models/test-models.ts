@@ -48,10 +48,3 @@ export interface ResultList {
   listSize: number;
   nextPage: number;
 }
-
-/*
-export interface RouteMatch {
-  reg: RegExp;
-  path: string;
-}
-*/

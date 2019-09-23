@@ -13,7 +13,6 @@ import {
 } from './factory/factory';
 import { urlManipulation } from './_models/test-models';
 
-const fs = require('fs');
 const port = 3000;
 
 let switchedOff: { [key: string]: string } = {};
@@ -217,7 +216,7 @@ function routeToFile(response: ServerResponse, route: string): boolean {
 
   if (regRes) {
     console.log('unhandled.....');
-    // response.end();
+    response.end();
     return true;
   }
 
@@ -270,6 +269,7 @@ function routeToFile(response: ServerResponse, route: string): boolean {
   }
 
   regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/nodestatistics/);
+
   if (regRes) {
     response.end(getStatisticsDetail());
     return true;
@@ -285,6 +285,7 @@ function routeToFile(response: ServerResponse, route: string): boolean {
   regRes = route.match(
     /orchestrator\/proxies\/records\?workflowExecutionId=(\d+)\&pluginType=(\S+)\&nextPage/
   );
+
   if (regRes) {
     response.end(JSON.stringify(evolution(regRes[1], regRes[2])));
     return true;
@@ -345,28 +346,28 @@ const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
 
   let requestHandled = routeToFile(response, route);
 
-  // console.log('boolean requestHandled  =  ' + requestHandled + '\t\t' + route);
-
   if (!requestHandled) {
     if (request.method === 'POST') {
-      console.log(' post ');
-      if (request.url && request.url.match(/orchestrator\/proxies\/recordsbyids(\S)/)) {
-        fs.readFile('data/records/records.json', 'utf8', function(err: Error, contents: string) {
-          if (err) {
-            console.log(err);
-            return;
-          }
-          response.end(contents);
-        });
-      } else {
-        fs.readFile('data/authenticate.json', 'utf8', function(err: Error, contents: string) {
-          if (err) {
-            console.log(err);
-            return;
-          }
-          response.end(contents);
-        });
-      }
+      response.setHeader('Content-Type', 'application/json;charset=UTF-8');
+
+      let result = {
+        userId: '1',
+        email: 'xxx@xxx.xxx',
+        firstName: 'Valentine',
+        lastName: 'Charles',
+        organizationId: '1482250000001617026',
+        organizationName: 'Europeana Foundation',
+        accountRole: 'EUROPEANA_DATA_OFFICER',
+        country: 'Netherlands',
+        networkMember: false,
+        metisUserFlag: true,
+        createdDate: 1509698100000,
+        updatedDate: 1545129021000,
+        metisUserAccessToken: {
+          accessToken: 'xxx--ANDY-xxx'
+        }
+      };
+      response.end(JSON.stringify(result));
     } else {
       console.log(' 404 :( ');
       return404(response);
