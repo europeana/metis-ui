@@ -1,6 +1,6 @@
 {
   "name": "metis-ui",
-  "version": "1.4.0-development",
+  "version": "1.5.0-development",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
