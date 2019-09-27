@@ -15,12 +15,14 @@ import {
   mockReportAvailability,
   mockStatistics,
   mockStatisticsDetail,
+  MockTranslateService,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionResults,
   mockXmlSamples
 } from '../_mocked';
 import { PluginType, ReportAvailability, WorkflowExecution } from '../_models';
+import { TranslateService } from '../_translate';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
@@ -34,6 +36,7 @@ describe('workflow service', () => {
         WorkflowService,
         { provide: ErrorService, useClass: MockErrorService },
         { provide: DatasetsService, useClass: MockDatasetsService },
+        { provide: TranslateService, useClass: MockTranslateService },
         { provide: AuthenticationService, useClass: MockAuthenticationService }
       ],
       imports: [HttpClientTestingModule]

@@ -9,7 +9,11 @@
       (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
       >{{ currentPluginName! | renameWorkflow }}</strong
     >
-    {{ (currentStatus == 'CANCELLED' ? cancelledBy : '') || currentStatus || '' | uppercase }}
+    {{
+      (currentStatus == 'CANCELLED' ? ('cancelled-by' | translate) + ' ' + cancelledBy : '') ||
+        currentStatus ||
+        '' | uppercase
+    }}
   </div>
   <div class="progress">
     <div class="progress-status" *ngIf="!isCompleted">
@@ -38,34 +42,34 @@
     <span class="time">{{ now | date: 'HH:mm' }}</span>
   </div>
   <nav>
-    <ul>
-      <li *ngIf="!isCompleted && currentPluginName !== 'PUBLISH'">
+    <ul class="nav-ctrls">
+      <li class="nav-ctrl" *ngIf="!isCompleted && currentPluginName !== 'PUBLISH'">
         <a
-          class="cancel-btn svg-icon-cancel tooltip"
+          class="nav-btn cancel-btn svg-icon-cancel tooltip"
           title="{{ 'cancel' | translate }}"
           (click)="cancelWorkflow()"
           ><span>{{ 'cancel' | translate }}</span></a
         >
       </li>
-      <li>
+      <li class="nav-ctrl">
         <a
-          class="log-btn svg-icon-log tooltip"
+          class="nav-btn log-btn svg-icon-log tooltip"
           title="{{ 'log' | translate }}"
           (click)="showLog()"
           *ngIf="currentStatus !== 'INQUEUE' && currentExternalTaskId && currentTopology"
           ><span>{{ 'log' | translate }}</span></a
         >
       </li>
-      <li *ngIf="hasReport && currentExternalTaskId && currentTopology">
+      <li class="nav-ctrl" *ngIf="hasReport && currentExternalTaskId && currentTopology">
         <a
-          class="report-btn svg-icon-report tooltip"
+          class="nav-btn report-btn svg-icon-report tooltip"
           title="{{ 'report' | translate }}"
           (click)="openFailReport(currentTopology, currentExternalTaskId)"
           ><span>{{ 'report' | translate }}</span></a
         >
       </li>
-      <li *ngIf="isCompleted">
-        <a class="newaction-btn" (click)="beginWorkflow()">
+      <li class="nav-ctrl" *ngIf="isCompleted">
+        <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
       </li>

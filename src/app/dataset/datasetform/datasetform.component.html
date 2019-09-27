@@ -7,8 +7,9 @@
       </div>
 
       <div class="form-group">
-        <label for="dataset-name">{{ 'datasetname' | translate }}</label>
+        <label class="dataset-label" for="dataset-name">{{ 'datasetname' | translate }}</label>
         <input
+          class="dataset-input"
           id="dataset-name"
           type="text"
           formControlName="datasetName"
@@ -32,8 +33,14 @@
       </div>
 
       <div class="form-group">
-        <label for="provider">{{ 'provider' | translate }}</label>
-        <input id="provider" type="text" formControlName="provider" (blur)="saveTempData()" />
+        <label class="dataset-label" for="provider">{{ 'provider' | translate }}</label>
+        <input
+          class="dataset-input"
+          id="provider"
+          type="text"
+          formControlName="provider"
+          (blur)="saveTempData()"
+        />
         <div
           class="input-clear"
           *ngIf="fieldHasValue('provider')"
@@ -47,8 +54,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="data-provider">{{ 'dataprovider' | translate }}</label>
+        <label class="dataset-label" for="data-provider">{{ 'dataprovider' | translate }}</label>
         <input
+          class="dataset-input"
           id="data-provider"
           type="text"
           formControlName="dataProvider"
@@ -61,8 +69,11 @@
         ></div>
       </div>
       <div class="form-group">
-        <label for="intermediate-provider">{{ 'intermediateprovider' | translate }}</label>
+        <label class="dataset-label" for="intermediate-provider">{{
+          'intermediateprovider' | translate
+        }}</label>
         <input
+          class="dataset-input"
           id="intermediate-provider"
           type="text"
           formControlName="intermediateProvider"
@@ -76,20 +87,20 @@
       </div>
 
       <div class="form-group" *ngIf="!isNew">
-        <label>{{ 'datecreated' | translate }}</label>
+        <label class="dataset-label">{{ 'datecreated' | translate }}</label>
         <span class="readonly-field">{{
           datasetData.createdDate | date: 'dd/MM/yyyy - HH:mm'
         }}</span>
       </div>
       <div class="form-group" *ngIf="!isNew">
-        <label>{{ 'dateupdated' | translate }}</label>
+        <label class="dataset-label">{{ 'dateupdated' | translate }}</label>
         <span class="readonly-field">{{
           datasetData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
         }}</span>
       </div>
 
       <div class="form-group">
-        <label for="replaces">{{ 'replaces' | translate }}</label>
+        <label class="dataset-label" for="replaces">{{ 'replaces' | translate }}</label>
         <input id="replaces" formControlName="replaces" (blur)="saveTempData()" />
         <div
           class="input-clear"
@@ -98,7 +109,7 @@
         ></div>
       </div>
       <div class="form-group">
-        <label for="replaced-by">{{ 'replacedby' | translate }}</label>
+        <label class="dataset-label" for="replaced-by">{{ 'replacedby' | translate }}</label>
         <input id="replaced-by" formControlName="replacedBy" (blur)="saveTempData()" />
         <div
           class="input-clear"
@@ -107,8 +118,13 @@
         ></div>
       </div>
       <div class="form-group">
-        <label for="country">{{ 'country' | translate }}</label>
-        <select id="country" formControlName="country" (blur)="saveTempData()">
+        <label class="dataset-label" for="country">{{ 'country' | translate }}</label>
+        <select
+          class="dataset-input"
+          id="country"
+          formControlName="country"
+          (blur)="saveTempData()"
+        >
           <option *ngIf="isNew" value=""></option>
           <option *ngFor="let c of countryOptions" [ngValue]="c">{{ c.name }}</option>
         </select>
@@ -120,8 +136,13 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="language">{{ 'language' | translate }}</label>
-        <select id="language" formControlName="language" (blur)="saveTempData()">
+        <label class="dataset-label" for="language">{{ 'language' | translate }}</label>
+        <select
+          class="dataset-input"
+          id="language"
+          formControlName="language"
+          (blur)="saveTempData()"
+        >
           <option *ngIf="isNew" value=""></option>
           <option *ngFor="let l of languageOptions" [ngValue]="l">{{ l.name }}</option>
         </select>
@@ -133,15 +154,17 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="description">{{ 'description' | translate }}</label>
+        <label class="dataset-label" for="description">{{ 'description' | translate }}</label>
         <textarea id="description" formControlName="description" (blur)="saveTempData()"></textarea>
       </div>
       <div class="form-group">
-        <label for="notes">{{ 'notes' | translate }}</label>
+        <label class="dataset-label" for="notes">{{ 'notes' | translate }}</label>
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
       <div class="form-group">
-        <label for="unfitForPublication">{{ 'datasetunpublishable-label' | translate }}</label>
+        <label class="dataset-label" for="unfitForPublication">{{
+          'datasetunpublishable-label' | translate
+        }}</label>
         <input
           id="unfitForPublication"
           type="checkbox"
@@ -151,34 +174,34 @@
         />
       </div>
       <div class="form-group" *ngIf="!isNew">
-        <label>{{ 'createdby' | translate }}</label>
+        <label class="dataset-label">{{ 'createdby' | translate }}</label>
         <span class="readonly-field">{{ datasetData.createdByUserId }}</span>
       </div>
       <div *ngIf="!isNew && harvestPublicationData">
         <div class="form-group">
-          <label>{{ 'firstpublished' | translate }}</label>
+          <label class="dataset-label">{{ 'firstpublished' | translate }}</label>
           <span class="readonly-field">{{
             harvestPublicationData.firstPublishedDate | date: 'dd/MM/yyyy - HH:mm'
           }}</span>
         </div>
         <div class="form-group">
-          <label>{{ 'lastpublished' | translate }}</label>
+          <label class="dataset-label">{{ 'lastpublished' | translate }}</label>
           <span class="readonly-field">{{
             harvestPublicationData.lastPublishedDate | date: 'dd/MM/yyyy - HH:mm'
           }}</span>
         </div>
         <div class="form-group">
-          <label>{{ 'numberpublished' | translate }}</label>
+          <label class="dataset-label">{{ 'numberpublished' | translate }}</label>
           <span class="readonly-field">{{ harvestPublicationData.lastPublishedRecords }}</span>
         </div>
         <div class="form-group">
-          <label>{{ 'lastharvest' | translate }}</label>
+          <label class="dataset-label">{{ 'lastharvest' | translate }}</label>
           <span class="readonly-field">{{
             harvestPublicationData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm'
           }}</span>
         </div>
         <div class="form-group">
-          <label>{{ 'numberharvested' | translate }}</label>
+          <label class="dataset-label">{{ 'numberharvested' | translate }}</label>
           <span class="readonly-field">{{ harvestPublicationData.lastHarvestedRecords }}</span>
         </div>
       </div>

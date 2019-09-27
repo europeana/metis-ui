@@ -1,0 +1,60 @@
+<ng-template #gridDataTemplate>
+  <ng-template #empty_date><span class="date-and-time"></span></ng-template>
+
+  <span class="table-grid-row-start">
+    <span
+      class="orb-status labelled status-{{ plugin.pluginStatus.toLowerCase() }} {{
+        plugin.pluginType.toLowerCase()
+      }}"
+      (dblclick)="copyInformation('plugin', plugin.id, plugin.externalTaskId)"
+      title="{{ plugin.pluginType.toLowerCase() }} ({{ 'doubleclicktocopy' | translate }})"
+    ></span>
+    <span class="plugin-name desktop">{{ plugin.pluginType | renameWorkflow }}</span>
+  </span>
+  <span class="totals">
+    <span *ngIf="plugin.executionProgress">
+      {{ plugin.executionProgress.processedRecords - plugin.executionProgress.errors }}
+      <span class="errors" *ngIf="plugin.executionProgress.errors > 0"
+        >({{ plugin.executionProgress.errors }})</span
+      >
+      /
+      {{
+        plugin.executionProgress.expectedRecords >= 0
+          ? plugin.executionProgress.expectedRecords
+          : ('unknown' | translate)
+      }}
+    </span>
+    <span class="plugin-name mobile">{{ plugin.pluginType | renameWorkflow }}</span>
+  </span>
+
+  <span class="date-and-time" *ngIf="plugin.startedDate; else empty_date">
+    <span class="date">{{ plugin.startedDate | date: 'dd/MM/yyyy' }}</span>
+    <span class="time"> {{ plugin.startedDate | date: 'HH:mm' }}</span>
+  </span>
+
+  <span class="date-and-time" *ngIf="plugin.finishedDate; else empty_date">
+    <span class="date">{{ plugin.finishedDate | date: 'dd/MM/yyyy' }}</span>
+    <span class="time"> {{ plugin.finishedDate | date: 'HH:mm' }}</span>
+  </span>
+  <span class="buttonplaceholder">
+    <a
+      *ngIf="plugin.failMessage || plugin.hasReport"
+      class="table-btn svg-icon-report"
+      (click)="
+        openFailReport(
+          plugin.hasReport ? plugin.topologyName : undefined,
+          plugin.hasReport ? plugin.externalTaskId : undefined,
+          plugin.failMessage
+        )
+      "
+    >
+      {{ 'report' | translate }}
+    </a>
+
+    <ng-container *ngIf="wpe && hasPreview(plugin)">
+      <a class="table-btn" (click)="goToPreview(wpe.execution, plugin)"
+        ><span class="xml-icon">&#8249;&#8250;</span> XML</a
+      >
+    </ng-container>
+  </span>
+</ng-template>

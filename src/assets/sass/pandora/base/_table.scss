@@ -153,7 +153,6 @@
   color: $gray-med;
   display: flex;
   justify-content: center;
-  padding: 0.25rem 0.5rem;
   width: auto;
 
   &:hover {
@@ -170,13 +169,8 @@
     white-space: nowrap;
   }
 
-  @media (max-width: $bp-xxl) {
-    &.svg-icon-report {
-      padding-left: 0.5rem;
-    }
-    &.svg-icon-report::before {
-      display: none;
-    }
+  &.svg-icon-report {
+    padding: 0 0.5em;
   }
 }
 

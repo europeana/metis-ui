@@ -7,7 +7,6 @@ import {
   PluginExecution,
   Report,
   SimpleReportRequest,
-  TopologyName,
   WorkflowExecution
 } from '../../_models';
 
@@ -42,8 +41,8 @@ export class LastExecutionComponent {
     el.scrollIntoView({ behavior: 'smooth' });
   }
 
-  openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
-    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
+  openFailReport(req: SimpleReportRequest): void {
+    this.setReportMsg.emit(req);
   }
 
   // after double clicking, copy the execution and task id to the clipboard

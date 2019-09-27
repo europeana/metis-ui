@@ -1,6 +1,21 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+$width-orb: 3em;
+
+.head-prefix {
+  display: none;
+  &::after {
+    content: ': ';
+  }
+}
+
+@media all and (min-width: $bp-med) {
+  .head-prefix {
+    display: inline-block;
+  }
+}
+
 .table-in-tab tr:nth-child(even) {
   background-color: $white;
 }
@@ -28,19 +43,14 @@
   }
 
   .head-right {
+    color: $white;
     position: absolute;
     right: 0;
-    top: 1.5rem;
-    color: $white;
+    top: 0;
     padding: 0.5rem;
   }
 }
 
 .tooltip {
   display: inline-block;
-}
-
-.xml-icon {
-  font-size: 130%;
-  line-height: 1rem;
 }
