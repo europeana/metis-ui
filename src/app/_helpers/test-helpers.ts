@@ -1,7 +1,6 @@
 import { HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { QueryList } from '@angular/core';
 import { CodemirrorComponent } from 'ng2-codemirror';
-// import { of, Observable } from 'rxjs';
 import { Observable } from 'rxjs';
 import { reduce } from 'rxjs/operators';
 
