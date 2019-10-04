@@ -45,7 +45,7 @@ describe('LoginComponent', () => {
     component.loginForm.controls.email.setValue('mocked@mocked.com');
     component.loginForm.controls.password.setValue('mocked123');
 
-    spyOn(router, 'navigate').and.callFake(() => {});
+    spyOn(router, 'navigate');
     tick(50);
 
     component.onSubmit();

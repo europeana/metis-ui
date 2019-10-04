@@ -29,7 +29,7 @@ describe('AuthUserGuard', () => {
   });
 
   it('should not allow an non-authenticated user', () => {
-    spyOn(authenticationService, 'validatedUser').and.returnValue(undefined);
+    spyOn(authenticationService, 'validatedUser').and.returnValue(false);
     spyOn(redirect, 'set');
     spyOn(router, 'navigate');
 

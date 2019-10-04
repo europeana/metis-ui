@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AppComponent } from '.';
@@ -46,18 +46,22 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const fn = spy.calls.first().args[0];
 
-    fn({});
-    expect(app.bodyClass).toBeFalsy();
+    expect(fn).toBeTruthy();
 
-    fn({ url: '/' });
-    expect(app.bodyClass).toBe('home');
-    expect(app.loggedIn).toBe(true);
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+    if (fn) {
+      fn({} as RouterEvent);
+      expect(app.bodyClass).toBeFalsy();
 
-    fn({ url: '/home' });
-    expect(app.bodyClass).toBe('home');
-    fn({ url: '/dataset' });
-    expect(app.bodyClass).toBe('dataset');
+      fn({ url: '/' } as RouterEvent);
+      expect(app.bodyClass).toBe('home');
+      expect(app.loggedIn).toBe(true);
+      expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+
+      fn({ url: '/home' } as RouterEvent);
+      expect(app.bodyClass).toBe('home');
+      fn({ url: '/dataset' } as RouterEvent);
+      expect(app.bodyClass).toBe('dataset');
+    }
   });
 
   it('should show a prompt', () => {
