@@ -6,8 +6,8 @@
 
 To run the Metis UI you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
 
-    cp src/environments/apisettings-example.ts src/environments/apisettings.ts 
- 
+    cp src/environments/apisettings-example.ts src/environments/apisettings.ts
+
 If you are working at Europeana, just ask Andy MacLean or Mirjam Verloop for the right `apisettings.ts` file.
 
 Make sure you have `node` version 8, 10 or 11 and `npm` version 6.x:
@@ -56,7 +56,7 @@ You can also run the tools separately:
 To run the full test suite:
 
     npm test
-    
+
 This is the same command that Travis and jenkins run to test our code.
 
 ### Unit tests (development)
@@ -64,14 +64,23 @@ This is the same command that Travis and jenkins run to test our code.
 To run the unit tests in development (watch mode):
 
     npm run test:dev
-    
+
 You can also use Wallaby (heartily recommended!) by using the included `wallaby.js` file.
 
 ### E2E tests (development)
 
+To run the cypress tests:
+
+    npm run test:e2e
+
+
 To run the cypress tests in development (watch mode), start the dev server in one terminal window:
 
     npm run start:ci
+
+...start the dev data server in another terminal window:
+
+    npm run start:ci-data
 
 ...and then run cypress in another window:
 

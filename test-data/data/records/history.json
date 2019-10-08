@@ -1,0 +1,24 @@
+{
+  "evolutionSteps": [
+    {
+      "workflowId": 1,
+      "pluginType": "OAIPMH_HARVEST"
+    },
+    {
+      "workflowId": 1,
+      "pluginType": "VALIDATION_EXTERNAL"
+    },
+    {
+      "workflowId": 1,
+      "pluginType": "TRANSFORMATION"
+    },
+    {
+      "workflowId": 1,
+      "pluginType": "VALIDATION_INTERNAL"
+    },
+    {
+      "workflowId": 1,
+      "pluginType": "NORMALIZATION"
+    }
+  ]
+}
