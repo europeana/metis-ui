@@ -10,7 +10,7 @@ To run the Metis UI you need to provide a backend server to connect to. Copy `ap
 
 If you are working at Europeana, just ask Andy MacLean or Mirjam Verloop for the right `apisettings.ts` file.
 
-Make sure you have `node` version 8, 10 or 11 and `npm` version 6.x:
+Make sure you have `node` version 12 and `npm` version 6.x:
 
     node --version
     npm --version

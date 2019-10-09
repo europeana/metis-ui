@@ -18,6 +18,12 @@ export function setupUser(): void {
   });
 }
 
+export function cleanupUser(): void {
+  cy.window().then((w) => {
+    w.localStorage.removeItem('currentUser');
+  });
+}
+
 export function setEmptyDataResult(url: string): void {
   url = Cypress.env('dataServer') + url + 'METIS_UI_EMPTY';
   cy.request(url);

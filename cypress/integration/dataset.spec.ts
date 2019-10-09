@@ -1,4 +1,4 @@
-import { checkAHref, setupUser } from '../support/helpers';
+import { checkAHref, cleanupUser, setupUser } from '../support/helpers';
 
 function setupDatasetPage(name: string, index: number): void {
   cy.server();
@@ -32,6 +32,10 @@ function checkPluginStatus(name: string, enabled: boolean): void {
 
 context('metis-ui', () => {
   describe('dataset page', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       setupDatasetPage('edit', 0);
     });
@@ -71,6 +75,10 @@ context('metis-ui', () => {
   });
 
   describe('dataset information', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       setupDatasetPage('edit', 0);
     });
@@ -90,6 +98,10 @@ context('metis-ui', () => {
   });
 
   describe('dataset workflow', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
     });
@@ -112,6 +124,10 @@ context('metis-ui', () => {
 
   // TODO: preview
   describe('dataset log', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       setupDatasetPage('log', 2);
     });

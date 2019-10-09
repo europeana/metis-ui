@@ -1,7 +1,11 @@
-import { setupUser } from '../support/helpers';
+import { cleanupUser, setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
   describe('home (not logged in)', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       cy.server();
       cy.visit('/home');
@@ -21,6 +25,10 @@ context('metis-ui', () => {
   });
 
   describe('home (logged in)', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       cy.server();
       setupUser();

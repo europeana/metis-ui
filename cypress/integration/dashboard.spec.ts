@@ -1,5 +1,5 @@
 import { urlManipulation } from '../../test-data/_models/test-models';
-import { checkAHref, setEmptyDataResult, setupUser } from '../support/helpers';
+import { checkAHref, cleanupUser, setEmptyDataResult, setupUser } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
   return cy.get('.ongoing-executions .status');
@@ -11,6 +11,10 @@ function runningByIndex(index: number): Cypress.Chainable {
 
 context('metis-ui', () => {
   describe('dashboard no ongoing', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       cy.server();
       setupUser();
@@ -28,6 +32,10 @@ context('metis-ui', () => {
   });
 
   describe('dashboard no filter results', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       cy.server();
       setupUser();
@@ -53,6 +61,10 @@ context('metis-ui', () => {
   });
 
   describe('dashboard', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
       cy.server();
       setupUser();
