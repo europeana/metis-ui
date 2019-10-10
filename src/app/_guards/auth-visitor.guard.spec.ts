@@ -23,7 +23,7 @@ describe('AuthVisitorGuard', () => {
   }));
 
   it('should allow an non-authenticated user', () => {
-    spyOn(authenticationService, 'validatedUser').and.returnValue(undefined);
+    spyOn(authenticationService, 'validatedUser').and.returnValue(false);
     expect(guard.canActivate()).toBe(true);
   });
 

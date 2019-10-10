@@ -90,7 +90,7 @@ describe('MappingComponent', () => {
   });
 
   it('should try out the xslt', fakeAsync((): void => {
-    spyOn(router, 'navigate').and.callFake(() => {});
+    spyOn(router, 'navigate');
     tick();
 
     component.tryOutXSLT('default');

@@ -1,59 +1,32 @@
-import {
-  countries,
-  dataset,
-  datasetOverview,
-  harvestData,
-  languages,
-  records,
-  report,
-  runningExecutions,
-  statistics,
-  user,
-  workflow,
-  workflowExecutions,
-  xslt
-} from '../fixtures';
+import { User } from '../../src/app/_models/user';
 
 export function setupUser(): void {
   cy.window().then((w) => {
-    w.localStorage.setItem(
-      'currentUser',
-      JSON.stringify({
-        user,
-        email: user.email,
-        token: user.metisUserAccessToken.accessToken
-      })
+    cy.request('POST', Cypress.env('dataServer') + '/users/data/authenticate.json').then(
+      (response) => {
+        const user = response.body as User;
+        w.localStorage.setItem(
+          'currentUser',
+          JSON.stringify({
+            user,
+            email: user.email,
+            token: user.metisUserAccessToken.accessToken
+          })
+        );
+      }
     );
   });
 }
 
-export function setupWorkflowRoutes(): void {
-  cy.route('GET', /\/datasets\/\d+/, dataset).as('getDataset');
-  cy.route('PUT', '/datasets', '').as('updateDataset');
-  cy.route('GET', '/datasets/countries', countries).as('getCountries');
-  cy.route('GET', '/datasets/languages', languages).as('getLanguages');
-  cy.route('GET', '/datasets/xslt/*', xslt).as('getXslt');
+export function cleanupUser(): void {
+  cy.window().then((w) => {
+    w.localStorage.removeItem('currentUser');
+  });
+}
 
-  cy.route('GET', /\/orchestrator\/workflows\/\d+/, workflow).as('getWorkflow');
-  cy.route('GET', '/orchestrator/workflows/executions/*RUNNING*', runningExecutions).as(
-    'getRunningExecutions'
-  );
-  cy.route('GET', '/orchestrator/workflows/executions/overview*', datasetOverview).as(
-    'getOverview'
-  );
-  cy.route('DELETE', '/orchestrator/workflows/executions/*', {}).as('deleteExecution');
-  cy.route(
-    'GET',
-    '/orchestrator/workflows/executions/dataset/*?*orderField*',
-    workflowExecutions
-  ).as('getWorkflowExecutions');
-  cy.route('GET', '/orchestrator/workflows/executions/dataset/*/information', harvestData).as(
-    'getHarvestData'
-  );
-
-  cy.route('GET', '/orchestrator/proxies/*/task/*/report?*', report).as('getReport');
-  cy.route('GET', '/orchestrator/proxies/records?*', records);
-  cy.route('GET', '/orchestrator/proxies/validation/task/*/statistic', statistics);
+export function setEmptyDataResult(url: string): void {
+  url = Cypress.env('dataServer') + url + 'METIS_UI_EMPTY';
+  cy.request(url);
 }
 
 export function checkAHref(subject: Cypress.Chainable, href: string): void {

@@ -103,9 +103,7 @@ export class WorkflowService {
 
   // get data about publication and harvest
   getPublishedHarvestedData(id: string): Observable<HarvestData> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/dataset/${id}/information`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;
     return this.http.get<HarvestData>(url).pipe(this.errors.handleRetry());
   }
 
@@ -128,9 +126,7 @@ export class WorkflowService {
     const priority = 0;
     const enforce = '';
 
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;
     return this.http.post<WorkflowExecution>(url, {}).pipe(this.errors.handleRetry());
   }
 
@@ -141,24 +137,18 @@ export class WorkflowService {
     start?: number,
     finish?: number
   ): Observable<SubTaskInfo[]> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/proxies/${topologyName}/task/${taskId}/logs?from=${start}&to=${finish}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/logs?from=${start}&to=${finish}`;
 
     return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
   }
 
   getReportAvailable(taskId: string, topologyName: TopologyName): Observable<ReportAvailability> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/proxies/${topologyName}/task/${taskId}/report/exists`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report/exists`;
     return this.http.get<ReportAvailability>(url).pipe(this.errors.handleRetry());
   }
 
   getReport(taskId: string, topologyName: TopologyName): Observable<Report> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
     return this.http.get<Report>(url).pipe(this.errors.handleRetry());
   }
 
@@ -210,9 +200,7 @@ export class WorkflowService {
 
   //  get history of executions for specific datasetid, every status
   getDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
@@ -233,9 +221,7 @@ export class WorkflowService {
 
   //  get most recent execution for specific datasetid
   getLastDatasetExecution(id: string): Observable<WorkflowExecution | undefined> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false`;
     return this.http
       .get<Results<WorkflowExecution>>(url)
       .pipe(
@@ -251,9 +237,7 @@ export class WorkflowService {
     page: number,
     ongoing?: boolean
   ): Observable<Results<WorkflowExecution>> {
-    let url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
+    let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     if (ongoing) {
       url += '&workflowStatus=INQUEUE&workflowStatus=RUNNING';
     } else {
@@ -364,9 +348,7 @@ export class WorkflowService {
 
   // return samples based on executionid and plugintype
   getWorkflowSamples(executionId: string, pluginType: PluginType): Observable<XmlSample[]> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;
     return this.http
       .get<{ records: XmlSample[] }>(url)
       .pipe(
@@ -383,9 +365,7 @@ export class WorkflowService {
     pluginType: PluginType,
     ids: Array<string>
   ): Observable<XmlSample[]> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/proxies/recordsbyids?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/recordsbyids?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
     return this.http
       .post<{ records: XmlSample[] }>(url, { ids })
       .pipe(
@@ -398,9 +378,7 @@ export class WorkflowService {
 
   // return available transformation histories
   getVersionHistory(executionId: string, pluginType: PluginType): Observable<HistoryVersion[]> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/workflows/evolution/${executionId}/${pluginType}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/evolution/${executionId}/${pluginType}`;
     return this.http
       .get<HistoryVersions>(url)
       .pipe(
@@ -413,9 +391,7 @@ export class WorkflowService {
 
   //  get statistics for a certain dataset
   getStatistics(topologyName: TopologyName, taskId: string): Observable<Statistics> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
     return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
   }
 
@@ -424,9 +400,7 @@ export class WorkflowService {
     taskId: string,
     xPath: string
   ): Observable<NodePathStatistics> {
-    const url = `${
-      apiSettings.apiHostCore
-    }/orchestrator/proxies/${topologyName}/task/${taskId}/nodestatistics?nodePath=${xPath}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/nodestatistics?nodePath=${xPath}`;
     return this.http.get<NodePathStatistics>(url).pipe(this.errors.handleRetry());
   }
 

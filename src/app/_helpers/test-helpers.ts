@@ -13,7 +13,11 @@ export function gatherValues<Value>(observable: Observable<Value>): Value[] {
 }
 
 export function gatherValuesAsync<Value>(observable: Observable<Value>): Observable<Value[]> {
-  return observable.pipe(reduce<Value>((acc, value) => acc.concat(value), []));
+  return observable.pipe(
+    reduce((acc: Array<Value>, value) => {
+      return acc.concat(value);
+    }, [])
+  );
 }
 
 // tslint:disable-next-line: no-any

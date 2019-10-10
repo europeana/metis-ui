@@ -11,9 +11,7 @@ export class SingleCache<Value> {
       return this.observable;
     }
     const observable = (this.observable = this.sourceFn().pipe(
-      tap(undefined, () => {
-        this.clear();
-      }),
+      tap((_) => {}, (_) => this.clear(), () => {}),
       publishLast()
     ));
     (observable as ConnectableObservable<Value>).connect();
@@ -40,9 +38,7 @@ export class KeyedCache<Value> {
       return o;
     }
     const observable = (this.observableByKey[key] = this.sourceFn(key).pipe(
-      tap(undefined, () => {
-        this.clear(key);
-      }),
+      tap((_) => {}, (_) => this.clear(key), () => {}),
       publishLast()
     ));
     (observable as ConnectableObservable<Value>).connect();

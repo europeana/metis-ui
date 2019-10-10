@@ -32,7 +32,7 @@
       >
         <span class="head-prefix">{{ 'workflowcreated' | translate }}</span>
         {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}
-        <div class="head-right" *ngIf="(getCancelledBy(execution) | async) as canceller">
+        <div class="head-right" *ngIf="getCancelledBy(execution) | async as canceller">
           <span class="head-prefix">{{ 'cancelled-by' | translate }}</span>
           {{ canceller }}
         </div>

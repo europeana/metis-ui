@@ -56,8 +56,7 @@ describe('DatasetformComponent', () => {
   it('should submit form and create the dataset', fakeAsync((): void => {
     component.isNew = true;
     fixture.detectChanges();
-
-    spyOn(router, 'navigate').and.callFake(() => {});
+    spyOn(router, 'navigate');
     component.onSubmit();
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
