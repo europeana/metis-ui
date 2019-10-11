@@ -12,12 +12,14 @@ import {
   DatasetOverview,
   DatasetOverviewExecution,
   ExecutionProgress,
+  PluginAvailabilityList,
   PluginExecution,
   PluginExecutionOverview,
   PluginStatus,
   PluginType,
   TopologyName,
   WorkflowExecution,
+  WorkflowExecutionHistory,
   WorkflowStatus
 } from '../../src/app/_models/workflow-execution';
 
@@ -541,6 +543,54 @@ export function running(): ResultList {
     }
   });
   return getListWrapper(res);
+}
+
+/** executionsHistory
+/* @param {string} datasetId
+/* return dataset's workflow's WorkflowExecutionHistory
+*/
+export function executionsHistory(datasetId: string): Array<WorkflowExecutionHistory> {
+  let res: Array<WorkflowExecutionHistory> = [];
+
+  [dataset(datasetId)].forEach((datsetX: DatasetX | undefined) => {
+    if (datsetX && datsetX.workflows) {
+      datsetX.workflows.forEach((w) => {
+        if (w && w.executions) {
+          w.executions.forEach((e) => {
+            res.push({
+              workflowExecutionId: e.id,
+              startedDate: e.startedDate
+            });
+          });
+        }
+      });
+    }
+  });
+  return res;
+}
+
+export function pluginsAvailable(executionId: string): PluginAvailabilityList {
+  let res: PluginAvailabilityList = { plugins: [] };
+
+  datsetXs.forEach((datsetX: DatasetX) => {
+    if (datsetX && datsetX.workflows) {
+      datsetX.workflows.forEach((w) => {
+        if (w && w.executions) {
+          w.executions.forEach((we: WorkflowExecution) => {
+            if (we && we.id === executionId) {
+              we.metisPlugins.forEach((p) => {
+                res.plugins.push({
+                  pluginType: p.pluginType,
+                  hasSuccessfulData: true
+                });
+              });
+            }
+          });
+        }
+      });
+    }
+  });
+  return res;
 }
 
 /** executionsByDatasetId

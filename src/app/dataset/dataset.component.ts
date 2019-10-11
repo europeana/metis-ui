@@ -12,7 +12,7 @@ import {
   isWorkflowCompleted,
   Notification,
   PluginExecution,
-  PluginType,
+  PreviewFilters,
   SimpleReportRequest,
   successNotification,
   Workflow,
@@ -23,11 +23,6 @@ import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } 
 
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
-
-export interface PreviewFilters {
-  execution?: WorkflowExecution;
-  plugin?: PluginType;
-}
 
 @Component({
   selector: 'app-dataset',

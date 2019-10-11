@@ -3,9 +3,9 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   PluginExecution,
+  PreviewFilters,
   SimpleReportRequest,
   TopologyName,
-  WorkflowAndPluginExecution,
   WorkflowExecution,
   WorkflowOrPluginExecution
 } from '../../_models';
@@ -20,7 +20,7 @@ export class ExecutionsDataGridComponent {
 
   @Input() plugin: PluginExecution;
   @Input() wpe?: WorkflowOrPluginExecution;
-  @Output() openPreview: EventEmitter<WorkflowAndPluginExecution> = new EventEmitter();
+  @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
   @ViewChild('gridDataTemplate') gridDataTemplate: TemplateRef<HTMLElement>;
 
@@ -41,7 +41,11 @@ export class ExecutionsDataGridComponent {
   }
 
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
-    this.openPreview.emit({ execution, pluginExecution } as WorkflowAndPluginExecution);
+    this.openPreview.emit({
+      executionId: execution.id,
+      plugin: pluginExecution.pluginType,
+      startedDate: execution.startedDate
+    } as PreviewFilters);
   }
 
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {

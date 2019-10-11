@@ -99,6 +99,26 @@ export enum WorkflowStatus {
   FAILED = 'FAILED'
 }
 
+export interface WorkflowExecutionHistory {
+  workflowExecutionId: string;
+  startedDate: string;
+}
+
+export interface PreviewFilters {
+  executionId?: string;
+  pluginType?: PluginType;
+  startedDate?: string;
+}
+
+export interface PluginAvailability {
+  pluginType: PluginType;
+  hasSuccessfulData: boolean;
+}
+
+export interface PluginAvailabilityList {
+  plugins: Array<PluginAvailability>;
+}
+
 export interface WorkflowExecution {
   id: string;
   datasetId: string;
@@ -121,11 +141,6 @@ export interface WorkflowExecution {
 export interface WorkflowOrPluginExecution {
   execution: WorkflowExecution;
   pluginExecution?: PluginExecution;
-}
-
-export interface WorkflowAndPluginExecution {
-  execution: WorkflowExecution;
-  pluginExecution: PluginExecution;
 }
 
 export interface DatasetOverviewExecution {

@@ -7,6 +7,7 @@ import {
   HistoryVersion,
   MoreResults,
   NodePathStatistics,
+  PluginAvailabilityList,
   PluginExecution,
   PluginStatus,
   PluginType,
@@ -18,6 +19,7 @@ import {
   TaskState,
   Workflow,
   WorkflowExecution,
+  WorkflowExecutionHistory,
   WorkflowStatus,
   XmlSample
 } from '../_models';
@@ -268,6 +270,11 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
   ],
   listSize: 5,
   nextPage: -1
+};
+
+export const mockWorkflowExecutionHistory: WorkflowExecutionHistory = {
+  workflowExecutionId: '253453453',
+  startedDate: '2018-11-05T15:38:18.450Z'
 };
 
 export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
@@ -576,8 +583,36 @@ export class MockWorkflowService {
     return observableOf(mockWorkflowExecutionResults);
   }
 
-  getDatasetExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
-    return observableOf(mockWorkflowExecutionResults.results);
+  getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistory[]> {
+    console.log(datasetId);
+    return observableOf(
+      mockWorkflowExecutionResults.results
+        .filter((we: WorkflowExecution) => {
+          return {
+            workflowExecutionId: we.id,
+            startedDate: we.startedDate
+          };
+        })
+        .map((we: WorkflowExecution) => {
+          return {
+            workflowExecutionId: we.id,
+            startedDate: we.startedDate
+          };
+        })
+    );
+  }
+
+  getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {
+    console.log(id);
+    return observableOf({
+      plugins: [
+        { pluginType: PluginType.HTTP_HARVEST, hasSuccessfulData: true },
+        { pluginType: PluginType.VALIDATION_EXTERNAL, hasSuccessfulData: true },
+        { pluginType: PluginType.TRANSFORMATION, hasSuccessfulData: true },
+        { pluginType: PluginType.VALIDATION_INTERNAL, hasSuccessfulData: true },
+        { pluginType: PluginType.NORMALIZATION, hasSuccessfulData: true }
+      ]
+    });
   }
 
   promptCancelThisWorkflow(): void {}

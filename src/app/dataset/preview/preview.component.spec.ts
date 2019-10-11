@@ -10,13 +10,12 @@ import {
   MockErrorService,
   mockHistoryVersions,
   MockTranslateService,
-  mockWorkflowExecution,
+  mockWorkflowExecutionHistory,
   MockWorkflowService
 } from '../../_mocked';
-import { PluginType, XmlSample } from '../../_models';
+import { PluginType, PreviewFilters, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-import { PreviewFilters } from '../dataset.component';
 
 import { PreviewComponent } from '.';
 
@@ -25,13 +24,9 @@ describe('PreviewComponent', () => {
   let fixture: ComponentFixture<PreviewComponent>;
 
   const previewFilterData = {
-    execution: mockWorkflowExecution,
-    plugin: 'NORMALIZATION',
+    executionId: mockWorkflowExecutionHistory.workflowExecutionId,
+    pluginType: PluginType.NORMALIZATION,
     startedDate: '111111'
-  } as PreviewFilters;
-
-  const previewFilterDataBasic = {
-    execution: mockWorkflowExecution
   } as PreviewFilters;
 
   beforeEach(async(() => {
@@ -83,14 +78,10 @@ describe('PreviewComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeFalsy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
 
-    component.previewFilters = previewFilterDataBasic;
-    component.prefillFilters();
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();
-    expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
-
+    component.previewFilters = previewFilterData;
     component.historyVersions = mockHistoryVersions;
+    component.prefillFilters();
+
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();

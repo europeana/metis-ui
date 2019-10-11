@@ -16,6 +16,7 @@ import {
   isPluginCompleted,
   MoreResults,
   NodePathStatistics,
+  PluginAvailabilityList,
   PluginType,
   Report,
   ReportAvailability,
@@ -25,6 +26,7 @@ import {
   TopologyName,
   Workflow,
   WorkflowExecution,
+  WorkflowExecutionHistory,
   WorkflowStatus,
   XmlSample
 } from '../_models';
@@ -204,11 +206,16 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
-  getDatasetExecutionsCollectingPages(id: string): Observable<WorkflowExecution[]> {
-    const getResults = (page: number) => this.getDatasetExecutions(id, page);
-    return this.collectAllResults(getResults, 0).pipe(
-      switchMap((executions) => this.addDatasetNameAndCurrentPlugin(executions))
-    );
+  // get history of execution date data
+  getDatasetHistory(id: string): Observable<WorkflowExecutionHistory[]> {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/history`;
+    return this.http.get<WorkflowExecutionHistory[]>(url).pipe(this.errors.handleRetry());
+  }
+
+  // get history of plugin successes
+  getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}/plugins/data-availability`;
+    return this.http.get<PluginAvailabilityList>(url).pipe(this.errors.handleRetry());
   }
 
   //  get history of finished executions for specific datasetid

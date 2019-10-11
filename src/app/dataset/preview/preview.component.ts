@@ -30,12 +30,13 @@ import {
   httpErrorNotification,
   Notification,
   PluginType,
+  PreviewFilters,
   WorkflowExecution,
+  WorkflowExecutionHistory,
   XmlSample
 } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-import { PreviewFilters } from '../dataset.component';
 
 @Component({
   selector: 'app-preview',
@@ -61,7 +62,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
-  allWorkflowExecutions: Array<WorkflowExecution> = [];
+  allWorkflowExecutions: Array<WorkflowExecutionHistory> = [];
   allPlugins: Array<{ type: PluginType; error: boolean }> = [];
   allSamples: Array<XmlSample> = [];
   allSampleComparisons: Array<XmlSample> = [];
@@ -72,12 +73,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
   filterPluginOpen = false;
   historyVersions: Array<HistoryVersion>;
   selectedDate: string;
-  selectedPlugin?: string;
+  selectedPlugin?: PluginType;
   selectedComparison?: string;
   expandedSample?: number;
   nosample: string;
   notification?: Notification;
-  execution: WorkflowExecution;
+  filtered_execution_id: string;
   isLoading = true;
   loadingTransformSamples = false;
   timeout?: number;
@@ -105,7 +106,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   // populate a filter with executions based on selected workflow
   addExecutionsFilter(): void {
-    this.workflows.getDatasetExecutionsCollectingPages(this.datasetData.datasetId).subscribe(
+    this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
       (result) => {
         this.allWorkflowExecutions = result;
         this.isLoading = false;
@@ -118,44 +119,35 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   // populate a filter with plugins based on selected execution
-  addPluginsFilter(execution: WorkflowExecution): void {
+  addPluginsFilter(executionHistory: WorkflowExecutionHistory): void {
+    this.isLoading = true;
     this.filterDateOpen = false;
     this.selectedPlugin = undefined;
     this.allPlugins = [];
     this.historyVersions = [];
     this.allSamples = [];
     this.allSampleComparisons = [];
-    this.execution = execution;
-    this.selectedDate = execution.startedDate;
+    this.filtered_execution_id = executionHistory.workflowExecutionId;
+    this.selectedDate = executionHistory.startedDate;
     this.selectedComparison = undefined;
-    this.previewFilters.execution = execution;
-    this.setPreviewFilters.emit(this.previewFilters);
+    this.previewFilters.executionId = executionHistory.workflowExecutionId;
 
-    execution.metisPlugins
-      .filter((pi) => ['REINDEX_TO_PREVIEW', 'REINDEX_TO_PUBLISH'].indexOf(pi.pluginType) === -1)
-      .forEach((pi) => {
-        if (pi.pluginStatus === 'FINISHED') {
+    this.workflows.getExecutionPlugins(this.filtered_execution_id).subscribe(
+      (result) => {
+        this.isLoading = false;
+        result.plugins.forEach((pa) => {
           this.allPlugins.push({
-            type: pi.pluginType,
-            error: false
+            type: pa.pluginType,
+            error: !pa.hasSuccessfulData
           });
-        } else {
-          if (
-            pi.executionProgress !== undefined &&
-            pi.executionProgress.processedRecords > pi.executionProgress.errors
-          ) {
-            this.allPlugins.push({
-              type: pi.pluginType,
-              error: false
-            });
-          } else {
-            this.allPlugins.push({
-              type: pi.pluginType,
-              error: true
-            });
-          }
-        }
-      });
+        });
+      },
+      (err: HttpErrorResponse) => {
+        console.log(err);
+        this.isLoading = false;
+        this.errors.handleError(err);
+      }
+    );
   }
 
   getComparePlugins(): Array<{ type: PluginType; error: boolean }> {
@@ -193,9 +185,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.onClickedOutside();
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
     this.selectedPlugin = plugin;
-    this.previewFilters.plugin = plugin;
+    this.previewFilters.pluginType = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
-    this.workflows.getWorkflowSamples(this.execution.id, plugin).subscribe((result) => {
+
+    this.workflows.getWorkflowSamples(this.filtered_execution_id, plugin).subscribe((result) => {
       this.allSamples = this.undoNewLines(result);
 
       if (this.allSamples.length === 1) {
@@ -211,7 +204,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       });
     }, this.errorHandling);
 
-    this.workflows.getVersionHistory(this.execution.id, plugin).subscribe((result) => {
+    this.workflows.getVersionHistory(this.filtered_execution_id, plugin).subscribe((result) => {
       loadingHistories = false;
       if (!loadingSamples) {
         this.isLoading = false;
@@ -253,16 +246,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   // prefill filters, when temporarily saved options are available
   prefillFilters(): void {
-    const execution = this.previewFilters.execution;
-    if (execution) {
-      this.selectedDate = execution.startedDate;
-      this.addPluginsFilter(execution);
+    if (this.previewFilters && this.previewFilters.startedDate && this.previewFilters.executionId) {
+      this.selectedDate = this.previewFilters.startedDate;
+      this.addPluginsFilter({
+        workflowExecutionId: this.previewFilters.executionId,
+        startedDate: this.previewFilters.startedDate
+      });
     }
-
-    const plugin = this.previewFilters.plugin;
-    if (plugin) {
-      this.selectedPlugin = plugin;
-      this.getXMLSamples(plugin);
+    const pluginType = this.previewFilters.pluginType;
+    if (pluginType) {
+      this.selectedPlugin = pluginType;
+      this.getXMLSamples(pluginType);
     }
   }
 

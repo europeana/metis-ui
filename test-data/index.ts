@@ -3,9 +3,11 @@ import {
   dataset,
   errorReport,
   evolution,
+  executionsHistory,
   executionsByDatasetIdAsList,
   information,
   overview,
+  pluginsAvailable,
   reportExists,
   running,
   workflow,
@@ -198,6 +200,20 @@ function routeToFile(response: ServerResponse, route: string): boolean {
     return true;
   }
 
+  regRes = route.match(/orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/history/);
+
+  if (regRes) {
+    response.end(JSON.stringify(executionsHistory(regRes[1])));
+    return true;
+  }
+
+  regRes = route.match(/orchestrator\/workflows\/executions\/-?(\d+)\/plugins\/data-availability/);
+
+  if (regRes) {
+    response.end(JSON.stringify(pluginsAvailable(regRes[1])));
+    return true;
+  }
+
   regRes = route.match(/orchestrator\/workflows\/executions\/dataset\/-?(\d+)/);
 
   if (regRes) {
@@ -287,7 +303,16 @@ function routeToFile(response: ServerResponse, route: string): boolean {
   );
 
   if (regRes) {
-    response.end(JSON.stringify(evolution(regRes[1], regRes[2])));
+    response.end(
+      JSON.stringify({
+        records: [
+          {
+            ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
+            xmlRecord: ''
+          }
+        ]
+      })
+    );
     return true;
   }
 
