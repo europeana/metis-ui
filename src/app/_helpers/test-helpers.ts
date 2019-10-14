@@ -79,9 +79,9 @@ export class MockHttpRequest {
 }
 
 export class MockHttp {
-  private openRequests: MockHttpRequest[] = [];
+  private readonly openRequests: MockHttpRequest[] = [];
 
-  constructor(private controller: HttpTestingController, private prefix: string = '') {}
+  constructor(private readonly controller: HttpTestingController, private readonly prefix = '') {}
 
   public expect(method: string, url: string): MockHttpRequest {
     const req = this.controller.expectOne(this.prefix + url);

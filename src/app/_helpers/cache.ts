@@ -4,9 +4,9 @@ import { publishLast, tap } from 'rxjs/operators';
 export class SingleCache<Value> {
   private observable?: Observable<Value>;
 
-  constructor(private sourceFn: () => Observable<Value>) {}
+  constructor(private readonly sourceFn: () => Observable<Value>) {}
 
-  public get(refresh: boolean = false): Observable<Value> {
+  public get(refresh = false): Observable<Value> {
     if (this.observable && !refresh) {
       return this.observable;
     }
@@ -28,11 +28,11 @@ export class SingleCache<Value> {
 }
 
 export class KeyedCache<Value> {
-  private observableByKey: { [key: string]: Observable<Value> | undefined } = {};
+  private readonly observableByKey: { [key: string]: Observable<Value> | undefined } = {};
 
-  constructor(private sourceFn: (key: string) => Observable<Value>) {}
+  constructor(private readonly sourceFn: (key: string) => Observable<Value>) {}
 
-  public get(key: string, refresh: boolean = false): Observable<Value> {
+  public get(key: string, refresh = false): Observable<Value> {
     const o = this.observableByKey[key];
     if (o && !refresh) {
       return o;
