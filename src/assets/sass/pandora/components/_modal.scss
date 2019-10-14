@@ -53,6 +53,7 @@
   }
 
   .modal .content {
+    max-height: 80vh;
     overflow: scroll;
     padding: 1rem;
 
@@ -95,9 +96,5 @@
 
   .modal-big {
     width: 90vw;
-
-    .content {
-      height: 80vh;
-    }
   }
 }
