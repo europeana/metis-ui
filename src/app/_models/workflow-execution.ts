@@ -104,7 +104,7 @@ export interface WorkflowExecutionHistory {
   startedDate: string;
 }
 
-export interface WorkflowExecutionHistoryData {
+export interface WorkflowExecutionHistoryList {
   executions: Array<WorkflowExecutionHistory>;
 }
 

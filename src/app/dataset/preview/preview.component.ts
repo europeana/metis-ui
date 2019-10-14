@@ -78,7 +78,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   expandedSample?: number;
   nosample: string;
   notification?: Notification;
-  filtered_execution_id: string;
+  filteredExecutionId: string;
   isLoading = true;
   loadingTransformSamples = false;
   timeout?: number;
@@ -127,12 +127,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.historyVersions = [];
     this.allSamples = [];
     this.allSampleComparisons = [];
-    this.filtered_execution_id = executionHistory.workflowExecutionId;
+    this.filteredExecutionId = executionHistory.workflowExecutionId;
     this.selectedDate = executionHistory.startedDate;
     this.selectedComparison = undefined;
     this.previewFilters.executionId = executionHistory.workflowExecutionId;
 
-    this.workflows.getExecutionPlugins(this.filtered_execution_id).subscribe(
+    this.workflows.getExecutionPlugins(this.filteredExecutionId).subscribe(
       (result) => {
         this.isLoading = false;
         result.plugins.forEach((pa) => {
@@ -188,7 +188,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.previewFilters.pluginType = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
 
-    this.workflows.getWorkflowSamples(this.filtered_execution_id, plugin).subscribe((result) => {
+    this.workflows.getWorkflowSamples(this.filteredExecutionId, plugin).subscribe((result) => {
       this.allSamples = this.undoNewLines(result);
 
       if (this.allSamples.length === 1) {
@@ -204,7 +204,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       });
     }, this.errorHandling);
 
-    this.workflows.getVersionHistory(this.filtered_execution_id, plugin).subscribe((result) => {
+    this.workflows.getVersionHistory(this.filteredExecutionId, plugin).subscribe((result) => {
       loadingHistories = false;
       if (!loadingSamples) {
         this.isLoading = false;

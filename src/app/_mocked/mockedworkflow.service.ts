@@ -19,7 +19,7 @@ import {
   TaskState,
   Workflow,
   WorkflowExecution,
-  WorkflowExecutionHistoryData,
+  WorkflowExecutionHistoryList,
   WorkflowStatus,
   XmlSample
 } from '../_models';
@@ -272,7 +272,7 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
   nextPage: -1
 };
 
-export const mockWorkflowExecutionHistoryData: WorkflowExecutionHistoryData = {
+export const mockWorkflowExecutionHistoryList: WorkflowExecutionHistoryList = {
   executions: [
     {
       workflowExecutionId: '253453453',
@@ -587,7 +587,7 @@ export class MockWorkflowService {
     return observableOf(mockWorkflowExecutionResults);
   }
 
-  getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryData> {
+  getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryList> {
     console.log(datasetId);
     return observableOf({
       executions: mockWorkflowExecutionResults.results
