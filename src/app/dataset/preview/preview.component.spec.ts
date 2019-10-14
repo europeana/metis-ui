@@ -10,7 +10,7 @@ import {
   MockErrorService,
   mockHistoryVersions,
   MockTranslateService,
-  mockWorkflowExecutionHistory,
+  mockWorkflowExecutionHistoryData,
   MockWorkflowService
 } from '../../_mocked';
 import { PluginType, PreviewFilters, XmlSample } from '../../_models';
@@ -24,7 +24,7 @@ describe('PreviewComponent', () => {
   let fixture: ComponentFixture<PreviewComponent>;
 
   const previewFilterData = {
-    executionId: mockWorkflowExecutionHistory.workflowExecutionId,
+    executionId: mockWorkflowExecutionHistoryData.executions[0].workflowExecutionId,
     pluginType: PluginType.NORMALIZATION,
     startedDate: '111111'
   } as PreviewFilters;

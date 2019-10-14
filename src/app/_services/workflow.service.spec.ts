@@ -18,7 +18,7 @@ import {
   MockTranslateService,
   mockWorkflow,
   mockWorkflowExecution,
-  mockWorkflowExecutionHistory,
+  mockWorkflowExecutionHistoryData,
   mockWorkflowExecutionResults,
   mockXmlSamples
 } from '../_mocked';
@@ -250,11 +250,11 @@ describe('workflow service', () => {
 
   it('should get all executions for a dataset', () => {
     service.getDatasetHistory('879').subscribe((results) => {
-      expect(results).toEqual([mockWorkflowExecutionHistory]);
+      expect(results).toEqual(mockWorkflowExecutionHistoryData);
     });
     mockHttp
       .expect('GET', '/orchestrator/workflows/executions/dataset/879/history')
-      .send([mockWorkflowExecutionHistory]);
+      .send(mockWorkflowExecutionHistoryData);
   });
 
   it('should get all plugins for an execution history', () => {

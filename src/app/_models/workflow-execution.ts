@@ -104,6 +104,10 @@ export interface WorkflowExecutionHistory {
   startedDate: string;
 }
 
+export interface WorkflowExecutionHistoryData {
+  executions: Array<WorkflowExecutionHistory>;
+}
+
 export interface PreviewFilters {
   executionId?: string;
   pluginType?: PluginType;

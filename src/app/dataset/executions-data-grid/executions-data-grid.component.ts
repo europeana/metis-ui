@@ -41,11 +41,12 @@ export class ExecutionsDataGridComponent {
   }
 
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
-    this.openPreview.emit({
+    const previewFilters: PreviewFilters = {
       executionId: execution.id,
-      plugin: pluginExecution.pluginType,
+      pluginType: pluginExecution.pluginType,
       startedDate: execution.startedDate
-    } as PreviewFilters);
+    };
+    this.openPreview.emit(previewFilters);
   }
 
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {

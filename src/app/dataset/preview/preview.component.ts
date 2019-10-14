@@ -108,7 +108,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   addExecutionsFilter(): void {
     this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
       (result) => {
-        this.allWorkflowExecutions = result;
+        this.allWorkflowExecutions = result.executions;
         this.isLoading = false;
       },
       (err: HttpErrorResponse) => {

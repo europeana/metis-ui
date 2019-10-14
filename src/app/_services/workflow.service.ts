@@ -26,7 +26,7 @@ import {
   TopologyName,
   Workflow,
   WorkflowExecution,
-  WorkflowExecutionHistory,
+  WorkflowExecutionHistoryData,
   WorkflowStatus,
   XmlSample
 } from '../_models';
@@ -207,9 +207,9 @@ export class WorkflowService {
   }
 
   // get history of execution date data
-  getDatasetHistory(id: string): Observable<WorkflowExecutionHistory[]> {
+  getDatasetHistory(id: string): Observable<WorkflowExecutionHistoryData> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/history`;
-    return this.http.get<WorkflowExecutionHistory[]>(url).pipe(this.errors.handleRetry());
+    return this.http.get<WorkflowExecutionHistoryData>(url).pipe(this.errors.handleRetry());
   }
 
   // get history of plugin successes

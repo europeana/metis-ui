@@ -19,7 +19,7 @@ import {
   TaskState,
   Workflow,
   WorkflowExecution,
-  WorkflowExecutionHistory,
+  WorkflowExecutionHistoryData,
   WorkflowStatus,
   XmlSample
 } from '../_models';
@@ -272,9 +272,13 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
   nextPage: -1
 };
 
-export const mockWorkflowExecutionHistory: WorkflowExecutionHistory = {
-  workflowExecutionId: '253453453',
-  startedDate: '2018-11-05T15:38:18.450Z'
+export const mockWorkflowExecutionHistoryData: WorkflowExecutionHistoryData = {
+  executions: [
+    {
+      workflowExecutionId: '253453453',
+      startedDate: '2018-11-05T15:38:18.450Z'
+    }
+  ]
 };
 
 export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
@@ -583,10 +587,10 @@ export class MockWorkflowService {
     return observableOf(mockWorkflowExecutionResults);
   }
 
-  getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistory[]> {
+  getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryData> {
     console.log(datasetId);
-    return observableOf(
-      mockWorkflowExecutionResults.results
+    return observableOf({
+      executions: mockWorkflowExecutionResults.results
         .filter((we: WorkflowExecution) => {
           return {
             workflowExecutionId: we.id,
@@ -599,7 +603,7 @@ export class MockWorkflowService {
             startedDate: we.startedDate
           };
         })
-    );
+    });
   }
 
   getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {

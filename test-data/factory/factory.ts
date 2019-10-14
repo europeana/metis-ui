@@ -549,7 +549,9 @@ export function running(): ResultList {
 /* @param {string} datasetId
 /* return dataset's workflow's WorkflowExecutionHistory
 */
-export function executionsHistory(datasetId: string): Array<WorkflowExecutionHistory> {
+export function executionsHistory(
+  datasetId: string
+): { executions: Array<WorkflowExecutionHistory> } {
   let res: Array<WorkflowExecutionHistory> = [];
 
   [dataset(datasetId)].forEach((datsetX: DatasetX | undefined) => {
@@ -566,7 +568,7 @@ export function executionsHistory(datasetId: string): Array<WorkflowExecutionHis
       });
     }
   });
-  return res;
+  return { executions: res };
 }
 
 export function pluginsAvailable(executionId: string): PluginAvailabilityList {
