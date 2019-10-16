@@ -75,9 +75,6 @@
     "prettier": "^1.16.1",
     "tar": "^4.4.8",
     "ts-loader": "^5.3.3",
-    "tslint": "^5.20.0",
-    "tslint-angular": "^1.1.2",
-    "tslint-loader": "^3.5.4",
     "typescript": "^3.2.4",
     "wallaby-webpack": "^3.9.13",
     "webpack": "^4.29.0"
