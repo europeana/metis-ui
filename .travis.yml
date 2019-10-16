@@ -3,10 +3,10 @@ language: node_js
 node_js:
 - 10.8
 
-cache:
-  directories:
-  - ~/.npm
-  - ~/.cache
+#cache:
+#  directories:
+#  - ~/.npm
+#  - ~/.cache
 
 addons:
   apt:
