@@ -10,7 +10,7 @@ import { ExecutionsgridComponent } from '.';
 import { GridrowComponent } from './gridrow';
 
 function setRows(component: ExecutionsgridComponent): void {
-  // tslint:disable: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component.rows = ([{ expanded: true }, { expanded: true }] as any) as QueryList<GridrowComponent>;
 }
 

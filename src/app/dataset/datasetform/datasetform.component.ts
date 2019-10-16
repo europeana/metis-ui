@@ -51,12 +51,12 @@ export class DatasetformComponent implements OnInit {
   }
 
   constructor(
-    private countries: CountriesService,
-    private datasets: DatasetsService,
-    private router: Router,
-    private fb: FormBuilder,
-    private errors: ErrorService,
-    private translate: TranslateService
+    private readonly countries: CountriesService,
+    private readonly datasets: DatasetsService,
+    private readonly router: Router,
+    private readonly fb: FormBuilder,
+    private readonly errors: ErrorService,
+    private readonly translate: TranslateService
   ) {}
 
   private updateFormEnabled(): void {
@@ -96,12 +96,10 @@ export class DatasetformComponent implements OnInit {
     this.countries.getCountries().subscribe(
       (result) => {
         this.countryOptions = result;
-        if (this.datasetData && this.countryOptions) {
-          if (this.datasetData.country) {
-            for (let i = 0; i < this.countryOptions.length; i++) {
-              if (this.countryOptions[i].enum === this.datasetData.country.enum) {
-                this.selectedCountry = this.countryOptions[i];
-              }
+        if (this.datasetData && this.countryOptions && this.datasetData.country) {
+          for (let i = 0; i < this.countryOptions.length; i++) {
+            if (this.countryOptions[i].enum === this.datasetData.country.enum) {
+              this.selectedCountry = this.countryOptions[i];
             }
           }
         }
@@ -176,7 +174,7 @@ export class DatasetformComponent implements OnInit {
       return;
     }
 
-    const handleError = (err: HttpErrorResponse) => {
+    const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
 

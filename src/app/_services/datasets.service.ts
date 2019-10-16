@@ -16,7 +16,7 @@ export class DatasetsService {
   datasetCache = new KeyedCache((id) => this.requestDataset(id));
   favoriteIds: string[];
 
-  constructor(private http: HttpClient, private errors: ErrorService) {
+  constructor(private readonly http: HttpClient, private readonly errors: ErrorService) {
     this.favoriteIds = JSON.parse(localStorage.getItem(FAVORITE_DATASET_IDS) || '[]');
   }
 
@@ -29,13 +29,13 @@ export class DatasetsService {
     return this.datasetCache.get(id, refresh);
   }
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.post<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
   }
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateDataset(datasetFormValues: { dataset: any }): Observable<void> {
     const url = `${apiSettings.apiHostCore}/datasets`;
     return this.http.put<void>(url, datasetFormValues).pipe(
@@ -48,7 +48,7 @@ export class DatasetsService {
 
   getXSLT(type: string, id?: string): Observable<string> {
     let url = `${apiSettings.apiHostCore}/datasets/xslt/default`;
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let options: { responseType: any } | undefined = { responseType: 'text' };
     if (type === 'custom') {
       url = `${apiSettings.apiHostCore}/datasets/${id}/xslt`;
@@ -57,7 +57,7 @@ export class DatasetsService {
 
     return (
       this.http
-        // tslint:disable-next-line: no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .get<any>(url, options)
         .pipe(
           map((data) => {
@@ -125,9 +125,11 @@ export class DatasetsService {
       return of([]);
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getDatasetOrUndefined = (id: string) =>
       this.getDataset(id).pipe(catchError(() => of(undefined)));
 
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const filterDatasets = (datasets: Array<Dataset | undefined>) =>
       datasets.filter((dataset) => dataset) as Dataset[];
 

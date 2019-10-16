@@ -6,7 +6,7 @@ import { TranslateService } from './translate.service';
   name: 'translate'
 })
 export class TranslatePipe implements PipeTransform {
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
 
   transform(value: string): string | undefined {
     if (!value) {

@@ -1,7 +1,5 @@
 import { XmlSample } from '../../src/app/_models/xml-sample';
 
-// tslint:disable: max-line-length
-
 export const records: { records: XmlSample[] } = {
   records: [
     {

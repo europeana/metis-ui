@@ -11,7 +11,7 @@ import { TranslateService } from '../../_translate';
 export class ReportSimpleComponent {
   constructor(private translate: TranslateService) {}
   isVisible: boolean;
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: any;
   message: string;
   notification?: Notification;
@@ -28,7 +28,7 @@ export class ReportSimpleComponent {
     }
   }
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() set reportErrors(errors: any) {
     if (errors) {
       this.isVisible = true;
@@ -69,7 +69,7 @@ export class ReportSimpleComponent {
     return o ? Object.keys(o) : [];
   }
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   isObject(val: any): boolean {
     return typeof val === 'object';
   }

@@ -37,6 +37,7 @@ export class MockAuthenticationService {
     return observableOf(true);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   logout(): void {}
 
   register(): Observable<boolean> {

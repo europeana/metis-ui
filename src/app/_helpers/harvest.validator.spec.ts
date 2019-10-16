@@ -3,7 +3,7 @@ import { AbstractControl } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
 
 function makeControl(value: string): AbstractControl {
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return ({ value } as any) as AbstractControl;
 }
 

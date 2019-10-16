@@ -13,8 +13,6 @@ export class GridrowComponent {
   @Input() expanded: boolean;
   @Output() closeExpanded: EventEmitter<string> = new EventEmitter();
 
-  constructor() {}
-
   getPluginStatusClass(plugin: PluginExecutionOverview): string {
     return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
   }

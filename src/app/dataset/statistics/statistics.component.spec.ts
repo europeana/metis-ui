@@ -21,7 +21,7 @@ import { StatisticsComponent } from '.';
 function setServiceError(
   mockService: WorkflowService,
   serviceName: 'getStatistics' | 'getFinishedDatasetExecutions' | 'getStatisticsDetail'
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
   return spyOn(mockService, serviceName).and.returnValue(
     throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))

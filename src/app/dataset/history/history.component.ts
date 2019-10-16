@@ -24,9 +24,9 @@ import { ErrorService, WorkflowService } from '../../_services';
 })
 export class HistoryComponent implements OnInit, OnDestroy {
   constructor(
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private router: Router
+    private readonly workflows: WorkflowService,
+    private readonly errors: ErrorService,
+    private readonly router: Router
   ) {}
 
   @Input() datasetData: Dataset;
@@ -46,10 +46,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   @Input()
   set lastExecutionData(execution: WorkflowExecution | undefined) {
-    if (execution) {
-      if (isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
-        this.returnAllExecutions();
-      }
+    if (execution && isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
+      this.returnAllExecutions();
     }
   }
 

@@ -11,7 +11,7 @@ describe('WorkflowHeaderComponent', () => {
   let component: WorkflowHeaderComponent;
   let fixture: ComponentFixture<WorkflowHeaderComponent>;
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let formGroupConf = {} as any;
 
   beforeEach(async(() => {
@@ -40,7 +40,6 @@ describe('WorkflowHeaderComponent', () => {
         dragType: DragType.dragNone
       }
     ];
-    // tslint:disable-next-line: no-any
     formGroupConf = {
       pluginType: 'HARVEST',
       pluginVALIDATION_EXTERNAL: true,
@@ -167,7 +166,6 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   function getEvent(): { dragDT: DragDT; eventDragDT: EventDragDT } {
-    // tslint:disable: no-any
     const dragDT = ({
       setData(s: string, v: string): void {
         console.log(s, v);
@@ -175,9 +173,10 @@ describe('WorkflowHeaderComponent', () => {
       setDragImage(el: HTMLElement, left: number, top: number): void {
         console.log(el, left, top);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any) as DragDT;
 
-    // tslint:disable: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const eventDragDT = ({ dataTransfer: dragDT } as any) as EventDragDT;
     return { dragDT, eventDragDT };
   }
@@ -229,7 +228,7 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should add a class to the orbs when the link-checking element is dragged over them', () => {
     const el = fixture.nativeElement.querySelector('.orb-status');
-    // tslint:disable: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ev = ({ target: el, preventDefault: () => {} } as any) as Event;
 
     spyOn(ev, 'preventDefault');
@@ -250,22 +249,22 @@ describe('WorkflowHeaderComponent', () => {
   it('should fire an event when the link-checking element is dropped', () => {
     spyOn(component.setLinkCheck, 'emit');
     component.isDragging = false;
-    // tslint:disable: no-any
     component.drop(
       ({
         target: fixture.nativeElement.querySelector('.orb-status'),
         preventDefault: () => {}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any) as Event,
       0
     );
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
 
     component.isDragging = true;
-    // tslint:disable: no-any
     component.drop(
       ({
         target: fixture.nativeElement.querySelector('.orb-status'),
         preventDefault: () => {}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any) as Event,
       0
     );
@@ -274,11 +273,11 @@ describe('WorkflowHeaderComponent', () => {
 
   it('should not fire an event if no drag was started', () => {
     spyOn(component.setLinkCheck, 'emit');
-    // tslint:disable: no-any
     component.drop(
       ({
         target: fixture.nativeElement.querySelector('.orb-status'),
         preventDefault: () => {}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any) as Event,
       0
     );

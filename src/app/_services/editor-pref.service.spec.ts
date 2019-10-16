@@ -34,7 +34,7 @@ describe('editor pref service', () => {
 
   it('can toggle the current theme', () => {
     expect(service.getEditorPref()).toEqual('default');
-    // tslint:disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const editors: any = getCodeMirrorEditors();
     service.toggleTheme(editors);
     expect(service.getEditorPref()).not.toEqual('default');

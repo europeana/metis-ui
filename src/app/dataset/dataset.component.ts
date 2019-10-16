@@ -31,12 +31,12 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
 })
 export class DatasetComponent implements OnInit, OnDestroy {
   constructor(
-    private datasets: DatasetsService,
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private documentTitleService: DocumentTitleService
+    private readonly datasets: DatasetsService,
+    private readonly workflows: WorkflowService,
+    private readonly errors: ErrorService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
   fieldConf = workflowFormFieldConf;
@@ -65,7 +65,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reportErrors: any;
   reportMsg?: string;
   reportLoading: boolean;

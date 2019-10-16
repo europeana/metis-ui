@@ -28,7 +28,6 @@ describe('WorkflowComponent', () => {
   let fixture: ComponentFixture<WorkflowComponent>;
 
   const getTestEl = function(top: number, bottom?: number): HTMLElement {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       getBoundingClientRect(): any {
@@ -37,6 +36,7 @@ describe('WorkflowComponent', () => {
           top
         };
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any) as HTMLElement;
   };
 
@@ -209,7 +209,6 @@ describe('WorkflowComponent', () => {
   });
 
   it('should detect gaps in the workflow sequence', () => {
-    // tslint:disable:no-any
     const fakeInputs = [
       {
         conf: {
@@ -235,10 +234,11 @@ describe('WorkflowComponent', () => {
           error: false
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ] as any;
 
-    // tslint:disable:no-any
     expect(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       fakeInputs.filter((item: any) => {
         return item.conf.error;
       }).length
@@ -246,8 +246,8 @@ describe('WorkflowComponent', () => {
 
     component.workflowForm.get('pluginHARVEST')!.setValue(true);
     component.workflowStepAllowed(fakeInputs);
-    // tslint:disable:no-any
     expect(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       fakeInputs.filter((item: any) => {
         return item.conf.error;
       }).length

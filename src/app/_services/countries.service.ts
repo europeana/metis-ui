@@ -10,10 +10,10 @@ import { ErrorService } from './error.service';
 
 @Injectable({ providedIn: 'root' })
 export class CountriesService {
-  constructor(private http: HttpClient, private errors: ErrorService) {}
+  constructor(private readonly http: HttpClient, private readonly errors: ErrorService) {}
 
-  private countries = new SingleCache(() => this.requestCountries());
-  private languages = new SingleCache(() => this.requestLanguages());
+  private readonly countries = new SingleCache(() => this.requestCountries());
+  private readonly languages = new SingleCache(() => this.requestLanguages());
 
   private requestCountries(): Observable<Country[]> {
     const url = `${apiSettings.apiHostCore}/datasets/countries`;

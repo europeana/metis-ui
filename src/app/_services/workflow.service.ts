@@ -187,7 +187,7 @@ export class WorkflowService {
   //  get history of finished, failed or canceled executions for specific datasetid
   getCompletedDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
-    // tslint:disable-next-line: max-line-length
+    // eslint-disable-next-line max-len
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
@@ -196,12 +196,14 @@ export class WorkflowService {
     id: string,
     endPage: number
   ): Observable<MoreResults<WorkflowExecution>> {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getResults = (page: number) => this.getCompletedDatasetExecutions(id, page);
     return this.collectResultsUptoPage(getResults, endPage);
   }
 
   //  get history of executions for specific datasetid, every status
   getDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
+    // eslint-disable-next-line max-len
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
@@ -273,6 +275,7 @@ export class WorkflowService {
     endPage: number,
     params?: string
   ): Observable<MoreResults<DatasetOverview>> {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getResults = (page: number) => this.getCompletedDatasetSummaries(page, params);
     return this.collectAllResultsUptoPage(getResults, endPage);
   }
@@ -300,6 +303,7 @@ export class WorkflowService {
   }
 
   getAllExecutionsCollectingPages(ongoing: boolean): Observable<WorkflowExecution[]> {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectAllResults(getResults, 0).pipe(
       switchMap((executions) => this.addDatasetNameAndCurrentPlugin(executions))
@@ -310,6 +314,7 @@ export class WorkflowService {
     endPage: number,
     ongoing: boolean
   ): Observable<MoreResults<WorkflowExecution>> {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getResults = (page: number) => this.getAllExecutions(page, ongoing);
     return this.collectResultsUptoPage(getResults, endPage).pipe(
       switchMap(({ results, more }) =>
@@ -355,6 +360,7 @@ export class WorkflowService {
 
   // return samples based on executionid and plugintype
   getWorkflowSamples(executionId: string, pluginType: PluginType): Observable<XmlSample[]> {
+    // eslint-disable-next-line max-len
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;
     return this.http
       .get<{ records: XmlSample[] }>(url)

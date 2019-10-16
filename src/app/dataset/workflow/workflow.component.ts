@@ -40,10 +40,10 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
 })
 export class WorkflowComponent implements OnInit {
   constructor(
-    private workflows: WorkflowService,
-    private fb: FormBuilder,
-    private errors: ErrorService,
-    private translate: TranslateService
+    private readonly workflows: WorkflowService,
+    private readonly fb: FormBuilder,
+    private readonly errors: ErrorService,
+    private readonly translate: TranslateService
   ) {}
 
   @Input() datasetData: Dataset;
@@ -151,14 +151,16 @@ export class WorkflowComponent implements OnInit {
     const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
     let scorePositive = false;
 
-    const sorted = fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
-      const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
-      const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
-      if (!scorePositive && scoreA + scoreB > 0) {
-        scorePositive = true;
+    const sorted = [...fields].sort(
+      (a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
+        const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
+        const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
+        if (!scorePositive && scoreA + scoreB > 0) {
+          scorePositive = true;
+        }
+        return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
       }
-      return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
-    });
+    );
     sorted.forEach((item: WorkflowFormFieldComponent, i) => {
       item.conf.currentlyViewed = i === 0 && scorePositive;
     });
@@ -336,9 +338,7 @@ export class WorkflowComponent implements OnInit {
       this.workflowForm.get(field.name)!.setValue(false);
     });
 
-    for (let w = 0; w < workflow.metisPluginsMetadata.length; w++) {
-      const thisWorkflow = workflow.metisPluginsMetadata[w];
-
+    for (const thisWorkflow of workflow.metisPluginsMetadata) {
       // parameter values are recovered even if not enabled
       if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
