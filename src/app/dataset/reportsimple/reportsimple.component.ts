@@ -65,7 +65,8 @@ export class ReportSimpleComponent {
     this.notification = successNotification('The report has been copied');
   }
 
-  reportKeys(o: Object): string[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reportKeys(o: Record<string, any>): string[] {
     return o ? Object.keys(o) : [];
   }
 
