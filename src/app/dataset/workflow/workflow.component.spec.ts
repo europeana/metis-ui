@@ -28,9 +28,9 @@ describe('WorkflowComponent', () => {
   let fixture: ComponentFixture<WorkflowComponent>;
 
   const getTestEl = function(top: number, bottom?: number): HTMLElement {
-    // tslint:disable:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return ({
-      // tslint:disable:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       getBoundingClientRect(): any {
         return {
           bottom: bottom ? bottom : top + 20,

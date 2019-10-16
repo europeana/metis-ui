@@ -366,7 +366,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     return item.id;
   }
 
-  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group: string = ''): SafeUrl {
+  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group = ''): SafeUrl {
     const key = `${group}:${ecloudId}`;
     let url = this.downloadUrlCache[key];
     if (!url) {

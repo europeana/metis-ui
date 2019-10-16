@@ -25,7 +25,7 @@ export class DatasetsService {
     return this.http.get<Dataset>(url).pipe(this.errors.handleRetry());
   }
 
-  getDataset(id: string, refresh: boolean = false): Observable<Dataset> {
+  getDataset(id: string, refresh = false): Observable<Dataset> {
     return this.datasetCache.get(id, refresh);
   }
 
