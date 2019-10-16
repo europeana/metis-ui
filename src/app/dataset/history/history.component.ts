@@ -9,14 +9,13 @@ import {
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
+  PreviewFilters,
   Report,
   SimpleReportRequest,
-  WorkflowAndPluginExecution,
   WorkflowExecution,
   WorkflowOrPluginExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { PreviewFilters } from '../dataset.component';
 
 @Component({
   selector: 'app-history',
@@ -109,11 +108,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
   }
 
-  goToPreview(previewData: WorkflowAndPluginExecution): void {
-    const execution = previewData.execution;
-    const pluginExecution = previewData.pluginExecution;
-
-    this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
+  goToPreview(previewData: PreviewFilters): void {
+    this.setPreviewFilters.emit(previewData);
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 
