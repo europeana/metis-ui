@@ -4,6 +4,7 @@
 
 /coverage
 /dist
-/node_modules
+node_modules/
+test-data/
 /src/environments/apisettings.ts
 /tmp
