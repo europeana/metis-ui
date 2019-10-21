@@ -1,7 +1,7 @@
 const path = require('path');
 module.exports = {
   root: true,
-  env: {
+  envXXX: {
     node: true
   },
   parser: '@typescript-eslint/parser',
