@@ -15,7 +15,7 @@
     "template-check": "ng build --progress=false --output-path=tmp/template-check --aot",
     "tsc": "tsc",
     "prettier:ci": "prettier --list-different '{src,cypress}/**/*.{ts,js,json,scss,html}' '*.{js,json}'",
-    "lint:ci": "eslint --ext .ts src/app",
+    "lint:ci": "eslint --ext .ts src/app --ignore-path .gitignore .",
     "test:ci": "ng test --progress=false --watch=false --code-coverage --source-map=false",
     "cypress:ci": "run-p --race start:ci cypress:run",
     "start:ci": "ng serve --progress=false --port 4280 --live-reload=false --configuration=e2e",
