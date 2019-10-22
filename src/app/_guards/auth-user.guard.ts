@@ -7,10 +7,10 @@ import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 @Injectable({ providedIn: 'root' })
 export class AuthUserGuard implements CanActivate {
   constructor(
-    private authentication: AuthenticationService,
-    private router: Router,
-    @Inject(DOCUMENT) private document: Document,
-    private redirectPreviousUrl: RedirectPreviousUrl
+    private readonly authentication: AuthenticationService,
+    private readonly router: Router,
+    @Inject(DOCUMENT) private readonly document: Document,
+    private readonly redirectPreviousUrl: RedirectPreviousUrl
   ) {}
 
   canActivate(): boolean {

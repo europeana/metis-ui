@@ -46,7 +46,7 @@ export class MockHttpRequest {
   private hasBody = false;
   public isClosed = false;
 
-  constructor(private req: TestRequest, public url: string) {}
+  constructor(private readonly req: TestRequest, public url: string) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public body(body: any): MockHttpRequest {
