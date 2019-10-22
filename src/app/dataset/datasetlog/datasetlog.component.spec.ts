@@ -2,6 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import {
+  createMockPipe,
   MockErrorService,
   mockPluginExecution,
   MockTranslateService,
@@ -18,7 +19,7 @@ describe('DatasetlogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DatasetlogComponent],
+      declarations: [DatasetlogComponent, createMockPipe('translate')],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: ErrorService, useClass: MockErrorService },
