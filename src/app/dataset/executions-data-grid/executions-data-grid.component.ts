@@ -26,9 +26,7 @@ export class ExecutionsDataGridComponent {
 
   contentCopied = false;
 
-  constructor() {}
-
-  copyInformation(type: string, id: string, extId: string = ''): void {
+  copyInformation(type: string, id: string, extId = ''): void {
     copyExecutionAndTaskId(type, extId, id);
     this.contentCopied = true;
   }

@@ -8,7 +8,10 @@ import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable({ providedIn: 'root' })
 export class ErrorService {
-  constructor(private router: Router, private redirectPreviousUrl: RedirectPreviousUrl) {}
+  constructor(
+    private readonly router: Router,
+    private readonly redirectPreviousUrl: RedirectPreviousUrl
+  ) {}
 
   numberOfRetries = 5;
   retryDelay = 1000;

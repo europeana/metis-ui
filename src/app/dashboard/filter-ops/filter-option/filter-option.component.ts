@@ -28,7 +28,6 @@ export class FilterOptionComponent implements CanHaveError {
   @ViewChild('input') input: ElementRef;
 
   hasError = false;
-  constructor() {}
 
   valueIndex(name: FilterParamType, value: string, inputRef?: number): number {
     let res = -1;

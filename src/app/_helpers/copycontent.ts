@@ -12,9 +12,9 @@ export function copyExecutionAndTaskId(type: string, id1: string, id2: string): 
   selBox.style.top = '0';
   selBox.style.opacity = '0';
   if (type === 'plugin') {
-    selBox.value = 'externalTaskId: ' + id1 + ', id: ' + id2;
+    selBox.value = `externalTaskId: ${id1}, id: ${id2}`;
   } else {
-    selBox.value = 'id: ' + id1 + ', ecloudDatasetId: ' + id2;
+    selBox.value = `id: ${id1}, ecloudDatasetId: ${id2}`;
   }
 
   document.body.appendChild(selBox);

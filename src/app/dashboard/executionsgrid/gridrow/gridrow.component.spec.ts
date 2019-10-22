@@ -8,10 +8,10 @@ import { TranslateService } from '../../../_translate';
 import { GridrowComponent } from '.';
 
 function makePluginExecutionOverview(status: string): PluginExecutionOverview {
-  // tslint:disable: no-any
   return ({
     pluginStatus: status,
     progress: { errors: 0 }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as PluginExecutionOverview;
 }
 

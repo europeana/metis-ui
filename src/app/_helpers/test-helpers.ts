@@ -20,7 +20,7 @@ export function gatherValuesAsync<Value>(observable: Observable<Value>): Observa
   );
 }
 
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function gatherError<Value>(observable: Observable<Value>): any {
   let error;
   observable.subscribe({
@@ -38,7 +38,7 @@ export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
         setOption: jasmine.createSpy('setEditorOption')
       }
     }
-    // tslint:disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ] as any) as QueryList<CodemirrorComponent>;
 }
 
@@ -48,7 +48,7 @@ export class MockHttpRequest {
 
   constructor(private req: TestRequest, public url: string) {}
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public body(body: any): MockHttpRequest {
     expect(this.req.request.body).toEqual(body);
     this.hasBody = true;
@@ -64,7 +64,7 @@ export class MockHttpRequest {
     return this.header('Authorization', 'Basic ' + value);
   }
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public send(data: any): void {
     if (!this.hasBody) {
       if (this.req.request.body) {
@@ -79,9 +79,9 @@ export class MockHttpRequest {
 }
 
 export class MockHttp {
-  private openRequests: MockHttpRequest[] = [];
+  private readonly openRequests: MockHttpRequest[] = [];
 
-  constructor(private controller: HttpTestingController, private prefix: string = '') {}
+  constructor(private readonly controller: HttpTestingController, private readonly prefix = '') {}
 
   public expect(method: string, url: string): MockHttpRequest {
     const req = this.controller.expectOne(this.prefix + url);

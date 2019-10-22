@@ -14,13 +14,13 @@ const CURRENT_LANG = 'currentLang';
 
 @Injectable({ providedIn: 'root' })
 export class TranslateService {
-  private _currentLang: string;
+  private readonly _currentLang: string;
 
   public get currentLang(): string {
     return this._currentLang;
   }
 
-  constructor(@Inject(TRANSLATIONS) private _translations: Translations) {
+  constructor(@Inject(TRANSLATIONS) private readonly _translations: Translations) {
     this._currentLang = localStorage.getItem(CURRENT_LANG) || 'en';
   }
 

@@ -40,14 +40,14 @@ Make a pull request in GitHub for code review and merging.
 
 ## Linting and code formatting
 
-We use `prettier` and `tslint` to check and fix the code. Just run this command after making changes or before committing:
+We use `prettier` and `eslint` to check and fix the code. Just run this command after making changes or before committing:
 
     npm run fix
 
 You can also run the tools separately:
 
     npm run prettier
-    npm run tslint
+    npm run lint
 
 ## Test
 

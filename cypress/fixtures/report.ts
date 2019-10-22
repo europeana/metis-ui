@@ -1,7 +1,5 @@
 import { Report } from '../../src/app/_models/report';
 
-// tslint:disable: max-line-length quotemark
-
 export const report: Report = {
   id: -3184946032335434000,
   errors: [

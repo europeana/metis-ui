@@ -1,15 +1,17 @@
 // Java name: AbstractMetisPluginMetadata
 
+type pluginTypes =
+  | 'VALIDATION_EXTERNAL'
+  | 'VALIDATION_INTERNAL'
+  | 'NORMALIZATION'
+  | 'ENRICHMENT'
+  | 'MEDIA_PROCESS'
+  | 'PREVIEW'
+  | 'PUBLISH'
+  | 'LINK_CHECKING';
+
 export interface BasicPluginMetadata {
-  pluginType:
-    | 'VALIDATION_EXTERNAL'
-    | 'VALIDATION_INTERNAL'
-    | 'NORMALIZATION'
-    | 'ENRICHMENT'
-    | 'MEDIA_PROCESS'
-    | 'PREVIEW'
-    | 'PUBLISH'
-    | 'LINK_CHECKING';
+  pluginType: pluginTypes;
   mocked?: boolean;
   enabled?: boolean;
   performSampling?: boolean;

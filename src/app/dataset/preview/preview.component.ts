@@ -215,7 +215,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   // transform samples on the fly based on temp saved XSLT
   transformSamples(type: string): void {
-    const handleError = (err: HttpErrorResponse) => {
+    const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
       this.loadingTransformSamples = false;
@@ -366,7 +366,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     return item.id;
   }
 
-  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group: string = ''): SafeUrl {
+  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group = ''): SafeUrl {
     const key = `${group}:${ecloudId}`;
     let url = this.downloadUrlCache[key];
     if (!url) {
