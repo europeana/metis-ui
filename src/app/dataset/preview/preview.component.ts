@@ -149,6 +149,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       this.workflows.getExecutionPlugins(this.filteredExecutionId).subscribe(
         (result) => {
           this.isLoading = false;
+          this.allPlugins.length = 0;
           result.plugins.forEach((pa) => {
             this.allPlugins.push({
               type: pa.pluginType,
