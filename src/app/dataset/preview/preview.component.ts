@@ -21,9 +21,10 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from 'ng2-codemirror';
+import { Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import * as beautify from 'vkbeautify';
-
+import { environment } from '../../../environments/environment';
 import {
   Dataset,
   HistoryVersion,
@@ -83,11 +84,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
   loadingTransformSamples = false;
   timeout?: number;
   downloadUrlCache: { [key: string]: string } = {};
+  executionsFilterTimer: Subscription;
+  pluginsFilterTimer: Subscription;
 
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
     this.nosample = this.translate.instant('nosample');
-    this.addExecutionsFilter();
+
+    this.executionsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
+      this.addExecutionsFilter();
+    });
+
     this.prefillFilters();
 
     if (this.tempXSLT) {
@@ -102,6 +109,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
       const url = this.downloadUrlCache[key];
       URL.revokeObjectURL(url);
     });
+
+    if (this.pluginsFilterTimer) {
+      this.pluginsFilterTimer.unsubscribe();
+    }
+    if (this.executionsFilterTimer) {
+      this.executionsFilterTimer.unsubscribe();
+    }
   }
 
   // populate a filter with executions based on selected workflow
@@ -131,23 +145,24 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedDate = executionHistory.startedDate;
     this.selectedComparison = undefined;
     this.previewFilters.executionId = executionHistory.workflowExecutionId;
-
-    this.workflows.getExecutionPlugins(this.filteredExecutionId).subscribe(
-      (result) => {
-        this.isLoading = false;
-        result.plugins.forEach((pa) => {
-          this.allPlugins.push({
-            type: pa.pluginType,
-            error: !pa.hasSuccessfulData
+    this.pluginsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
+      this.workflows.getExecutionPlugins(this.filteredExecutionId).subscribe(
+        (result) => {
+          this.isLoading = false;
+          result.plugins.forEach((pa) => {
+            this.allPlugins.push({
+              type: pa.pluginType,
+              error: !pa.hasSuccessfulData
+            });
           });
-        });
-      },
-      (err: HttpErrorResponse) => {
-        console.log(err);
-        this.isLoading = false;
-        this.errors.handleError(err);
-      }
-    );
+        },
+        (err: HttpErrorResponse) => {
+          console.log(err);
+          this.isLoading = false;
+          this.errors.handleError(err);
+        }
+      );
+    });
   }
 
   getComparePlugins(): Array<{ type: PluginType; error: boolean }> {
@@ -267,9 +282,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     const samples = this.undoNewLines(this.allSamples);
     this.allSamples[index].xmlRecord = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
-    this.timeout = window.setTimeout(() => {
-      samples[index].xmlRecord = sample;
-    }, 1);
+    samples[index].xmlRecord = sample;
   }
 
   onThemeSet(toDefault: boolean): void {
