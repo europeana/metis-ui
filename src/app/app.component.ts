@@ -18,10 +18,10 @@ export class AppComponent implements OnInit {
   public loggedIn = false;
 
   constructor(
-    private workflows: WorkflowService,
-    private authentication: AuthenticationService,
-    private errors: ErrorService,
-    private router: Router
+    private readonly workflows: WorkflowService,
+    private readonly authentication: AuthenticationService,
+    private readonly errors: ErrorService,
+    private readonly router: Router
   ) {}
 
   /** ngOnInit

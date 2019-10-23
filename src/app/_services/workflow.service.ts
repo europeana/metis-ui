@@ -39,11 +39,11 @@ import { ErrorService } from './error.service';
 @Injectable({ providedIn: 'root' })
 export class WorkflowService {
   constructor(
-    private http: HttpClient,
-    private datasetsService: DatasetsService,
-    private errors: ErrorService,
-    private authenticationServer: AuthenticationService,
-    private translate: TranslateService
+    private readonly http: HttpClient,
+    private readonly datasetsService: DatasetsService,
+    private readonly errors: ErrorService,
+    private readonly authenticationServer: AuthenticationService,
+    private readonly translate: TranslateService
   ) {}
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();

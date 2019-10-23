@@ -18,20 +18,20 @@ import {
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer: number | undefined;
+  runningTimer?: number;
   runningIsLoading = true;
   runningIsFirstLoading = true;
 
-  selectedExecutionDsId: string | undefined;
+  selectedExecutionDsId?: string;
   showPluginLog?: PluginExecution;
   favoriteDatasets?: Dataset[];
 
   constructor(
-    private authentication: AuthenticationService,
-    private datasets: DatasetsService,
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private documentTitleService: DocumentTitleService
+    private readonly authentication: AuthenticationService,
+    private readonly datasets: DatasetsService,
+    private readonly workflows: WorkflowService,
+    private readonly errors: ErrorService,
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
   ngOnInit(): void {

@@ -6,7 +6,7 @@ import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(private inj: Injector) {}
+  constructor(private readonly inj: Injector) {}
 
   /** intercept
   /* this hooks into all outgoing HTTP requests, and if the user is logged in,

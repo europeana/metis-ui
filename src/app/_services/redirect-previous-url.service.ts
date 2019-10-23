@@ -9,8 +9,8 @@ export class RedirectPreviousUrl {
   }
 
   get(): string | undefined {
-    const previous_url = this.url;
+    const previousUrl = this.url;
     this.url = undefined;
-    return previous_url;
+    return previousUrl;
   }
 }

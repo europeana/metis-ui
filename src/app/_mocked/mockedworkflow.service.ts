@@ -595,19 +595,12 @@ export class MockWorkflowService {
   getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryList> {
     console.log(datasetId);
     return observableOf({
-      executions: mockWorkflowExecutionResults.results
-        .filter((we: WorkflowExecution) => {
-          return {
-            workflowExecutionId: we.id,
-            startedDate: we.startedDate
-          };
-        })
-        .map((we: WorkflowExecution) => {
-          return {
-            workflowExecutionId: we.id,
-            startedDate: we.startedDate
-          };
-        })
+      executions: mockWorkflowExecutionResults.results.map((we: WorkflowExecution) => {
+        return {
+          workflowExecutionId: we.id,
+          startedDate: we.startedDate
+        };
+      })
     });
   }
 

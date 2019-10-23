@@ -115,7 +115,7 @@ export class AuthenticationService {
 
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({
-      Authorization: 'Basic ' + btoa(email + ':' + password)
+      Authorization: `Basic ${btoa([email, password].join(':'))}`
     });
     return this.http
       .post<User>(url, {}, { headers })
