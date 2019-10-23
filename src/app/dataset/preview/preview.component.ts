@@ -81,6 +81,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   notification?: Notification;
   filteredExecutionId: string;
   isLoading = true;
+  isLoadingFilter: boolean;
   loadingTransformSamples = false;
   timeout?: number;
   downloadUrlCache: { [key: string]: string } = {};
@@ -110,12 +111,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
       URL.revokeObjectURL(url);
     });
 
-    if (this.pluginsFilterTimer) {
-      this.pluginsFilterTimer.unsubscribe();
-    }
-    if (this.executionsFilterTimer) {
-      this.executionsFilterTimer.unsubscribe();
-    }
+    this.unsubscribeFilters([this.executionsFilterTimer, this.pluginsFilterTimer]);
+  }
+
+  unsubscribeFilters(filterSubscriptions: Array<Subscription>): void {
+    filterSubscriptions
+      .filter((x) => {
+        return x;
+      })
+      .forEach((fs) => {
+        fs.unsubscribe();
+      });
   }
 
   // populate a filter with executions based on selected workflow
@@ -145,17 +151,32 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedDate = executionHistory.startedDate;
     this.selectedComparison = undefined;
     this.previewFilters.executionId = executionHistory.workflowExecutionId;
+
+    this.unsubscribeFilters([this.pluginsFilterTimer]);
+
     this.pluginsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
+      this.isLoadingFilter = true;
       this.workflows.getExecutionPlugins(this.filteredExecutionId).subscribe(
         (result) => {
+          let pluginsFilterComplete = true;
           this.isLoading = false;
+          this.isLoadingFilter = false;
           this.allPlugins.length = 0;
+
           result.plugins.forEach((pa) => {
+            if (!pa.hasSuccessfulData) {
+              pluginsFilterComplete = false;
+            }
             this.allPlugins.push({
               type: pa.pluginType,
               error: !pa.hasSuccessfulData
             });
           });
+
+          if (pluginsFilterComplete) {
+            // unsubscribe immediately
+            this.pluginsFilterTimer.unsubscribe();
+          }
         },
         (err: HttpErrorResponse) => {
           console.log(err);

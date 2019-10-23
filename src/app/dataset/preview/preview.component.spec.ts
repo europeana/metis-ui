@@ -2,6 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Subscription } from 'rxjs';
 
 import {
   createMockPipe,
@@ -17,6 +18,15 @@ import { PluginType, PreviewFilters, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewComponent } from '.';
+
+function getUnsubscribable(undef?: boolean): Subscription {
+  return (undef
+    ? undefined
+    : ({
+        unsubscribe: jasmine.createSpy('unsubscribe')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)) as Subscription;
+}
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -103,6 +113,23 @@ describe('PreviewComponent', () => {
     component.pluginsFilterTimer.unsubscribe();
     component.executionsFilterTimer.unsubscribe();
   }));
+
+  it('should unsubscribe the filters', (): void => {
+    const s1 = getUnsubscribable();
+    const s2 = getUnsubscribable();
+
+    component.unsubscribeFilters([s1, s2]);
+
+    expect(s1.unsubscribe).toHaveBeenCalled();
+    expect(s2.unsubscribe).toHaveBeenCalled();
+
+    const s3 = getUnsubscribable(true);
+    const s4 = getUnsubscribable();
+    component.unsubscribeFilters([s3, s4]);
+
+    expect(s3).toBeFalsy();
+    expect(s4.unsubscribe).toHaveBeenCalled();
+  });
 
   it('should expand a sample', fakeAsync((): void => {
     tick(0);
