@@ -126,23 +126,33 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     this.updateParameters();
   }
 
+  getDateParamString(
+    paramName: string | undefined,
+    paramNameFallback: string,
+    paramVal: string
+  ): string {
+    let res = '';
+    if (['1', '7', '30'].indexOf(paramVal) > -1) {
+      res += this.getFromToParam(Number(paramVal));
+    } else {
+      if (isValidDate(paramVal)) {
+        const date = new Date(paramVal);
+        if (paramName === 'toDate') {
+          date.setDate(date.getDate() + 1);
+        }
+        res += '&' + (paramName ? paramName : paramNameFallback) + '=' + date.toISOString();
+      }
+    }
+    return res;
+  }
+
   updateParameters(): void {
     let paramString = '';
     Object.entries(this.params).forEach((entry: [string, FilterParamValue[]]) => {
       if (entry[1].length > 0) {
         entry[1].forEach((fpv: FilterParamValue) => {
           if (entry[0] === 'DATE') {
-            if (['1', '7', '30'].indexOf(fpv.value) > -1) {
-              paramString += this.getFromToParam(Number(fpv.value));
-            } else {
-              if (isValidDate(fpv.value)) {
-                const date = new Date(fpv.value);
-                if (fpv.name === 'toDate') {
-                  date.setDate(date.getDate() + 1);
-                }
-                paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + date.toISOString();
-              }
-            }
+            paramString += this.getDateParamString(fpv.name, entry[0], fpv.value);
           } else {
             paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + fpv.value;
           }

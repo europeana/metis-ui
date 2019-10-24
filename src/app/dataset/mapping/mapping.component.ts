@@ -25,7 +25,12 @@ import { Dataset, httpErrorNotification, Notification, successNotification } fro
 import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
-type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
+enum XSLTStatus {
+  LOADING = 'loading',
+  NOCUSTOM = 'no-custom',
+  HASCUSTOM = 'has-custom',
+  NEWCUSTOM = 'new-custom'
+}
 
 @Component({
   selector: 'app-mapping',
@@ -48,7 +53,7 @@ export class MappingComponent implements OnInit {
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
   editorConfig: EditorConfiguration;
-  xsltStatus: XSLTStatus = 'loading';
+  xsltStatus: XSLTStatus = XSLTStatus.LOADING;
   xslt?: string;
   xsltToSave?: string;
   notification?: Notification;
@@ -61,7 +66,7 @@ export class MappingComponent implements OnInit {
   }
 
   private handleXSLTError(err: HttpErrorResponse): void {
-    this.xsltStatus = 'no-custom';
+    this.xsltStatus = XSLTStatus.NOCUSTOM;
     const error = this.errors.handleError(err);
     this.notification = httpErrorNotification(error);
     this.xsltToSave = this.xslt = '';
@@ -69,15 +74,15 @@ export class MappingComponent implements OnInit {
 
   loadCustomXSLT(): void {
     if (!this.datasetData.xsltId) {
-      this.xsltStatus = 'no-custom';
+      this.xsltStatus = XSLTStatus.NOCUSTOM;
       return;
     }
 
-    this.xsltStatus = 'loading';
+    this.xsltStatus = XSLTStatus.LOADING;
     this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
       (result) => {
         this.xsltToSave = this.xslt = result;
-        this.xsltStatus = 'has-custom';
+        this.xsltStatus = XSLTStatus.HASCUSTOM;
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
@@ -86,12 +91,12 @@ export class MappingComponent implements OnInit {
   }
 
   loadDefaultXSLT(): void {
-    const hasCustom = this.xsltStatus === 'has-custom';
-    this.xsltStatus = 'loading';
+    const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
+    this.xsltStatus = XSLTStatus.LOADING;
     this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
       (result) => {
         this.xsltToSave = this.xslt = result;
-        this.xsltStatus = hasCustom ? 'has-custom' : 'new-custom';
+        this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
@@ -143,8 +148,8 @@ export class MappingComponent implements OnInit {
   }
 
   cancel(): void {
-    if (this.xsltStatus === 'new-custom') {
-      this.xsltStatus = 'no-custom';
+    if (this.xsltStatus === XSLTStatus.NEWCUSTOM) {
+      this.xsltStatus = XSLTStatus.NOCUSTOM;
     }
   }
 }

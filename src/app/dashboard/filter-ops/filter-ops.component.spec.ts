@@ -153,7 +153,7 @@ describe('FilterOpsComponent', () => {
     expect(component.overviewParams.emit).toHaveBeenCalled();
   });
 
-  it('adjusts the toDate paramater by a day', () => {
+  it('adjusts the toDate parameter by a day', () => {
     const toDate = fixture.debugElement.query(By.css('#date-to'));
 
     toDate.nativeElement.value = testDate1;

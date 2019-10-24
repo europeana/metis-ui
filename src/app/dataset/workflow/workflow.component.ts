@@ -26,6 +26,7 @@ import {
   successNotification,
   Workflow,
   WorkflowExecution,
+  WorkflowFieldData,
   WorkflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -151,16 +152,14 @@ export class WorkflowComponent implements OnInit {
     const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
     let scorePositive = false;
 
-    const sorted = [...fields].sort(
-      (a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
-        const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
-        const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
-        if (!scorePositive && scoreA + scoreB > 0) {
-          scorePositive = true;
-        }
-        return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
+    const sorted = fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
+      const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
+      const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
+      if (!scorePositive && scoreA + scoreB > 0) {
+        scorePositive = true;
       }
-    );
+      return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
+    });
     sorted.forEach((item: WorkflowFormFieldComponent, i) => {
       item.conf.currentlyViewed = i === 0 && scorePositive;
     });
@@ -197,45 +196,62 @@ export class WorkflowComponent implements OnInit {
     this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
   }
 
-  rearrange(insertIndex: number, correctForInactive: boolean): void {
-    let removeIndex = -1;
-    let shiftable;
+  addLinkCheck(
+    shiftable: WorkflowFieldData,
+    insertIndex: number,
+    correctForInactive: boolean
+  ): void {
+    this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
 
+    let activeCount = -1;
+    let newInsertIndex = -1;
+
+    if (!correctForInactive) {
+      newInsertIndex = insertIndex;
+    } else {
+      this.inputFields.map((f, index) => {
+        if (!f.isInactive()) {
+          activeCount++;
+        }
+        if (activeCount === insertIndex && newInsertIndex < 0) {
+          newInsertIndex = index;
+        }
+      });
+    }
+    if (newInsertIndex > -1) {
+      this.fieldConf.splice(newInsertIndex + 1, 0, shiftable);
+    }
+  }
+
+  removeLinkCheck(): void {
+    let removeIndex = -1;
     this.fieldConf.forEach((confItem, index) => {
       if (confItem.dragType === DragType.dragCopy) {
         removeIndex = index;
-      } else if (confItem.dragType === DragType.dragSource) {
+      }
+    });
+    if (removeIndex > -1) {
+      // remove any previously-set link-check
+      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(false);
+      this.fieldConf.splice(removeIndex, 1);
+    }
+  }
+
+  rearrange(insertIndex: number, correctForInactive: boolean): void {
+    let shiftable;
+    this.removeLinkCheck();
+    this.fieldConf.forEach((confItem) => {
+      if (confItem.dragType === DragType.dragSource) {
         shiftable = Object.assign({}, confItem);
         shiftable.dragType = DragType.dragCopy;
       }
     });
 
-    if (removeIndex > -1) {
-      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(false);
-      this.fieldConf.splice(removeIndex, 1);
-    }
+    //if (insertIndex > -1) {
     if (shiftable && insertIndex > -1) {
-      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
-
-      let activeCount = -1;
-      let newInsertIndex = -1;
-
-      if (correctForInactive) {
-        this.inputFields.map((f, index) => {
-          if (!f.isInactive()) {
-            activeCount++;
-          }
-          if (activeCount === insertIndex && newInsertIndex < 0) {
-            newInsertIndex = index;
-          }
-        });
-      } else {
-        newInsertIndex = insertIndex;
-      }
-      if (newInsertIndex > -1) {
-        this.fieldConf.splice(newInsertIndex + 1, 0, shiftable);
-      }
+      this.addLinkCheck(shiftable, insertIndex, correctForInactive);
     }
+
     setTimeout(() => {
       this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
       this.workflowForm.updateValueAndValidity();
@@ -348,25 +364,27 @@ export class WorkflowComponent implements OnInit {
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
       }
 
-      if (thisWorkflow.enabled === true) {
-        if (
-          thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
-          thisWorkflow.pluginType === 'HTTP_HARVEST'
-        ) {
-          this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
-          this.workflowForm.controls.pluginHARVEST.setValue(true);
-        } else {
-          this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-          // transformation
-          if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-            this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-          }
-          // link checking
-          if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-            this.workflowForm.controls.performSampling.setValue(
-              thisWorkflow.performSampling ? 'true' : 'false'
-            );
-          }
+      if (!thisWorkflow.enabled) {
+        continue;
+      }
+
+      if (
+        thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
+        thisWorkflow.pluginType === 'HTTP_HARVEST'
+      ) {
+        this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
+        this.workflowForm.controls.pluginHARVEST.setValue(true);
+      } else {
+        this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
+        // transformation
+        if (thisWorkflow.pluginType === 'TRANSFORMATION') {
+          this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+        }
+        // link checking
+        if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+          this.workflowForm.controls.performSampling.setValue(
+            thisWorkflow.performSampling ? 'true' : 'false'
+          );
         }
       }
     }
