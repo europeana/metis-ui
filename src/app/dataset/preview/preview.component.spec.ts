@@ -1,7 +1,8 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Subscription } from 'rxjs';
 
 import {
   createMockPipe,
@@ -16,8 +17,16 @@ import {
 import { PluginType, PreviewFilters, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-
 import { PreviewComponent } from '.';
+
+function getUnsubscribable(undef?: boolean): Subscription {
+  return (undef
+    ? undefined
+    : ({
+        unsubscribe: jasmine.createSpy('unsubscribe')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)) as Subscription;
+}
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -58,22 +67,34 @@ describe('PreviewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show a sample', (): void => {
+  it('should show a sample', fakeAsync((): void => {
+    tick(0);
+    fixture.detectChanges();
+
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeFalsy();
     component.datasetData = mockDataset;
+    fixture.detectChanges();
     component.previewFilters = previewFilterData;
     component.prefillFilters();
+    tick(0);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
-  });
+    component.pluginsFilterTimer.unsubscribe();
+    component.executionsFilterTimer.unsubscribe();
+  }));
 
-  it('should show interdependent filters', (): void => {
+  it('should show interdependent filters', fakeAsync((): void => {
+    tick(0);
+    fixture.detectChanges();
+
     expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeFalsy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeFalsy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
 
     component.datasetData = mockDataset;
+    tick(0);
     fixture.detectChanges();
+
     expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeFalsy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
@@ -82,33 +103,78 @@ describe('PreviewComponent', () => {
     component.historyVersions = mockHistoryVersions;
     component.prefillFilters();
 
+    tick(0);
     fixture.detectChanges();
+
     expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();
     expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeTruthy();
+
+    component.pluginsFilterTimer.unsubscribe();
+    component.executionsFilterTimer.unsubscribe();
+  }));
+
+  it('should unsubscribe the filters', (): void => {
+    const s1 = getUnsubscribable();
+    const s2 = getUnsubscribable();
+
+    component.unsubscribeFilters([s1, s2]);
+
+    expect(s1.unsubscribe).toHaveBeenCalled();
+    expect(s2.unsubscribe).toHaveBeenCalled();
+
+    const s3 = getUnsubscribable(true);
+    const s4 = getUnsubscribable();
+    component.unsubscribeFilters([s3, s4]);
+
+    expect(s3).toBeFalsy();
+    expect(s4.unsubscribe).toHaveBeenCalled();
   });
 
-  it('should expand sample', (): void => {
+  it('should expand a sample', fakeAsync((): void => {
+    tick(0);
+    fixture.detectChanges();
+
     component.datasetData = mockDataset;
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
     component.previewFilters = previewFilterData;
     component.prefillFilters();
+    component.tempXSLT = undefined;
+    tick(1);
+    component.expandedSample = undefined;
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
     component.expandSample(0);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
-  });
+    fixture.detectChanges();
+    component.pluginsFilterTimer.unsubscribe();
+    component.executionsFilterTimer.unsubscribe();
+  }));
 
-  it('should collapse an expanded sample', (): void => {
+  it('should collapse an expanded sample', fakeAsync((): void => {
+    tick(0);
+    fixture.detectChanges();
+
     component.datasetData = mockDataset;
+    fixture.detectChanges();
     component.previewFilters = previewFilterData;
     component.prefillFilters();
+    component.tempXSLT = undefined;
+    tick(1);
+    component.expandedSample = undefined;
+    fixture.detectChanges();
+    expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
     component.expandSample(0);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
     component.expandSample(0);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
-  });
+    component.pluginsFilterTimer.unsubscribe();
+    component.executionsFilterTimer.unsubscribe();
+  }));
 
   it('should show sample comparison', (): void => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(0);
@@ -122,13 +188,19 @@ describe('PreviewComponent', () => {
     component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123');
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
+    component.pluginsFilterTimer.unsubscribe();
   });
 
-  it('should toggle filters', () => {
+  it('should toggle filters', fakeAsync(() => {
+    tick(0);
+    fixture.detectChanges();
+
     expect(
       fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length
     ).toBeFalsy();
     component.datasetData = mockDataset;
+    tick(0);
+    fixture.detectChanges();
     component.toggleFilterDate();
     fixture.detectChanges();
     expect(
@@ -154,7 +226,8 @@ describe('PreviewComponent', () => {
     expect(
       fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length
     ).toBeTruthy();
-  });
+    component.executionsFilterTimer.unsubscribe();
+  }));
 
   it('should get transformed samples', () => {
     component.datasetData = mockDataset;
