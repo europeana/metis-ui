@@ -57,56 +57,58 @@ export class ActionbarComponent {
     this._lastExecutionData = value;
 
     if (value) {
-      this.currentPlugin = getCurrentPlugin(value);
-      this.currentStatus = this.currentPlugin.pluginStatus;
-      this.isCancelling = value.cancelling;
-      this.isCompleted = isWorkflowCompleted(value);
-      this.currentPluginName = this.currentPlugin.pluginType || '-';
-      this.currentExternalTaskId = this.currentPlugin.externalTaskId;
-      this.currentTopology = this.currentPlugin.topologyName;
-      const { executionProgress } = this.currentPlugin;
-
-      if (executionProgress) {
-        this.totalErrors = executionProgress.errors;
-        this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
-        this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
-        this.totalInDataset = executionProgress.expectedRecords;
-      }
-
-      this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
-      this.workflowPercentage = 0;
-
-      if (isWorkflowCompleted(value)) {
-        if (value.workflowStatus === WorkflowStatus.FINISHED) {
-          this.now = value.finishedDate;
-        } else {
-          this.now = value.updatedDate;
-        }
-        this.currentStatus = value.workflowStatus;
-
-        this.subscription = this.workflows
-          .getWorkflowCancelledBy(value)
-          .subscribe((cancelledBy) => {
-            this.cancelledBy = cancelledBy;
-          });
-      } else {
-        if (
-          this.currentPlugin.executionProgress &&
-          this.totalProcessed !== 0 &&
-          this.totalInDataset !== 0
-        ) {
-          this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
-        }
-      }
-
-      if (this.showPluginLog) {
-        this.showLog();
-      }
+      this.assignExecutionData(value);
     }
   }
 
   get lastExecutionData(): WorkflowExecution | undefined {
     return this._lastExecutionData;
+  }
+
+  assignExecutionData(value: WorkflowExecution): void {
+    this.currentPlugin = getCurrentPlugin(value);
+    this.currentStatus = this.currentPlugin.pluginStatus;
+    this.isCancelling = value.cancelling;
+    this.isCompleted = isWorkflowCompleted(value);
+    this.currentPluginName = this.currentPlugin.pluginType || '-';
+    this.currentExternalTaskId = this.currentPlugin.externalTaskId;
+    this.currentTopology = this.currentPlugin.topologyName;
+    const { executionProgress } = this.currentPlugin;
+
+    if (executionProgress) {
+      this.totalErrors = executionProgress.errors;
+      this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
+      this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
+      this.totalInDataset = executionProgress.expectedRecords;
+    }
+
+    this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
+    this.workflowPercentage = 0;
+
+    if (isWorkflowCompleted(value)) {
+      if (value.workflowStatus === WorkflowStatus.FINISHED) {
+        this.now = value.finishedDate;
+      } else {
+        this.now = value.updatedDate;
+      }
+      this.currentStatus = value.workflowStatus;
+
+      this.subscription = this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
+        this.cancelledBy = cancelledBy;
+      });
+    } else {
+      if (
+        this.currentPlugin.executionProgress &&
+        this.totalProcessed !== 0 &&
+        this.totalInDataset !== 0
+      ) {
+        this.workflowPercentage = this.currentPlugin.executionProgress.progressPercentage;
+      }
+    }
+
+    if (this.showPluginLog) {
+      this.showLog();
+    }
   }
 
   beginWorkflow(): void {

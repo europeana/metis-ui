@@ -127,7 +127,7 @@ $border-colour-shortcuts: #dbd9d9;
     }
   }
 
-  &:not(last-of-type) {
+  &:not(:last-of-type) {
     margin-right: 0.75em;
   }
 

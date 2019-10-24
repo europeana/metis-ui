@@ -15,6 +15,7 @@ import {
   PluginMetadata,
   PluginType,
   successNotification,
+  WorkflowFieldData,
   workflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -68,6 +69,40 @@ describe('WorkflowComponent', () => {
     expect(component.workflowForm.dirty).toBeFalsy();
     component.setLinkCheck(1);
     expect(component.workflowForm.dirty).toBeTruthy();
+  });
+
+  it('should add the link checking', () => {
+    component.removeLinkCheck();
+    let indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(-1);
+    component.addLinkCheck(
+      {
+        label: '',
+        name: 'pluginLINK_CHECKING',
+        dragType: DragType.dragCopy
+      } as WorkflowFieldData,
+      1,
+      false
+    );
+    indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBeGreaterThan(-1);
+  });
+
+  it('should remove the link checking', () => {
+    component.rearrange(2, false);
+    let indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(3);
+    component.removeLinkCheck();
+    indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(-1);
   });
 
   it('should rearrange the config', () => {
@@ -157,7 +192,6 @@ describe('WorkflowComponent', () => {
         pluginElement: { nativeElement: getTestEl(500) }
       } as WorkflowFormFieldComponent
     ];
-
     component.setHighlightedField(fields);
     expect(fields[0].conf.currentlyViewed).toBeTruthy();
     expect(fields[1].conf.currentlyViewed).toBeFalsy();
