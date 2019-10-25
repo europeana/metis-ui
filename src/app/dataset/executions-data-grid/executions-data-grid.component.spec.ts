@@ -10,7 +10,7 @@ import { ExecutionsDataGridComponent } from '.';
 describe('ExecutionsDataGridComponent', () => {
   let component: ExecutionsDataGridComponent;
   let fixture: ComponentFixture<ExecutionsDataGridComponent>;
-  let basicPluginExecution: PluginExecution = {
+  const basicPluginExecution: PluginExecution = {
     id: '1',
     pluginStatus: PluginStatus.FINISHED,
     failMessage: 'failed',
@@ -82,7 +82,7 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should calculate if a preview is available', () => {
     expect(component.hasPreview(basicPluginExecution)).toBeFalsy();
-    let progressedExecution = Object.assign(
+    const progressedExecution = Object.assign(
       { executionProgress: { processedRecords: 1, errors: 0 } },
       basicPluginExecution
     );

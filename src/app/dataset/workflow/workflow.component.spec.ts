@@ -84,7 +84,7 @@ describe('WorkflowComponent', () => {
       dragType: DragType.dragCopy
     };
     expect(getIndexCopy()).toBe(-1);
-    let testTargetIndex = 4;
+    const testTargetIndex = 4;
     component.addLinkCheck(pluginData, testTargetIndex, false);
     expect(getIndexCopy()).toEqual(testTargetIndex + 1);
   });

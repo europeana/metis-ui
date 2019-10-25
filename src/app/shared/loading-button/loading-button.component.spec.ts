@@ -23,7 +23,7 @@ describe('LoadingButtonComponent', () => {
   });
 
   it('should cancel if disabled', () => {
-    let testEvent = ({
+    const testEvent = ({
       preventDefault: jasmine.createSpy(),
       stopImmediatePropagation: jasmine.createSpy()
     } as unknown) as Event;

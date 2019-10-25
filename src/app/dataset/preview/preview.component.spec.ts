@@ -283,7 +283,7 @@ describe('PreviewComponent', () => {
     const testMouseEvent = ({
       target: {
         classList: {
-          contains: () => {
+          contains: (): boolean => {
             return true;
           }
         },
