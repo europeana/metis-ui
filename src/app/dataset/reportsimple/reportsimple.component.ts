@@ -9,7 +9,7 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./reportsimple.component.scss']
 })
 export class ReportSimpleComponent {
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
   isVisible: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: any;
@@ -62,7 +62,7 @@ export class ReportSimpleComponent {
     window.getSelection().addRange(range);
     document.execCommand('copy');
     window.getSelection().removeAllRanges();
-    this.notification = successNotification('The report has been copied');
+    this.notification = successNotification(this.translate.instant('reportcopied'));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

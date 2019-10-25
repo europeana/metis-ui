@@ -1,6 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Subscription } from 'rxjs';
 
@@ -31,6 +32,7 @@ function getUnsubscribable(undef?: boolean): Subscription {
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
+  let router: Router;
 
   const previewFilterData = {
     executionId: mockWorkflowExecutionHistoryList.executions[0].workflowExecutionId,
@@ -61,6 +63,7 @@ describe('PreviewComponent', () => {
     fixture = TestBed.createComponent(PreviewComponent);
     component = fixture.componentInstance;
     component.previewFilters = {};
+    router = TestBed.get(Router);
   });
 
   it('should create', () => {
@@ -265,5 +268,29 @@ describe('PreviewComponent', () => {
 
     const res: XmlSample[] = component.undoNewLines(samples);
     expect(res[0].xmlRecord).toEqual('');
+  });
+
+  it('should go to the mapping', () => {
+    spyOn(router, 'navigate');
+    component.datasetData = mockDataset;
+    fixture.detectChanges();
+    component.gotoMapping();
+    expect(router.navigate).toHaveBeenCalled();
+  });
+
+  it('should open links in a new tab', () => {
+    spyOn(window, 'open');
+    const testMouseEvent = ({
+      target: {
+        classList: {
+          contains: () => {
+            return true;
+          }
+        },
+        textContent: '"http://test.link"'
+      }
+    } as unknown) as MouseEvent;
+    component.handleCodeClick(testMouseEvent);
+    expect(window.open).toHaveBeenCalled();
   });
 });

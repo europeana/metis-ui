@@ -115,12 +115,10 @@ export class DatasetformComponent implements OnInit {
     this.countries.getLanguages().subscribe(
       (result) => {
         this.languageOptions = result;
-        if (this.datasetData && this.languageOptions) {
-          if (this.datasetData.language) {
-            for (let i = 0; i < this.languageOptions.length; i++) {
-              if (this.languageOptions[i].enum === this.datasetData.language.enum) {
-                this.selectedLanguage = this.languageOptions[i];
-              }
+        if (this.datasetData && this.languageOptions && this.datasetData.language) {
+          for (let i = 0; i < this.languageOptions.length; i++) {
+            if (this.languageOptions[i].enum === this.datasetData.language.enum) {
+              this.selectedLanguage = this.languageOptions[i];
             }
           }
         }

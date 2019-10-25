@@ -132,6 +132,7 @@ export const LANG_EN_TRANS = {
   replacedby: 'Replaced by',
   replaces: 'Replaces',
   report: 'Report',
+  reportcopied: 'The report has been copied',
   reportempty: 'Report is empty.',
   required: 'Required',
   reset: 'Reset',

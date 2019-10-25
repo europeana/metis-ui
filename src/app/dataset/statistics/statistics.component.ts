@@ -10,7 +10,7 @@ import { ErrorService, WorkflowService } from '../../_services';
   styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
-  constructor(private errors: ErrorService, private workflows: WorkflowService) {}
+  constructor(private readonly errors: ErrorService, private readonly workflows: WorkflowService) {}
 
   @Input() datasetData: Dataset;
 

@@ -39,11 +39,11 @@ enum XSLTStatus {
 })
 export class MappingComponent implements OnInit {
   constructor(
-    private editorPrefs: EditorPrefService,
-    private errors: ErrorService,
-    private datasets: DatasetsService,
-    private translate: TranslateService,
-    private router: Router
+    private readonly editorPrefs: EditorPrefService,
+    private readonly errors: ErrorService,
+    private readonly datasets: DatasetsService,
+    private readonly translate: TranslateService,
+    private readonly router: Router
   ) {}
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;

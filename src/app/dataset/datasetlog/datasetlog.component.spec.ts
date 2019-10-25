@@ -1,6 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import {
   createMockPipe,
   MockErrorService,
@@ -8,6 +7,7 @@ import {
   MockTranslateService,
   MockWorkflowService
 } from '../../_mocked';
+
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -36,14 +36,34 @@ describe('DatasetlogComponent', () => {
     fixture.detectChanges();
   });
 
+  beforeEach(fakeAsync(() => {
+    tick(0);
+    fixture.detectChanges();
+  }));
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should open and close the logs', () => {
+  it('should open the logs', () => {
+    expect(component.logMessages).toBeFalsy();
     component.returnLog();
     expect(component.logMessages).toBeTruthy();
+  });
+
+  it('should show empty logs where there is no progress', () => {
+    expect(component.logMessages).toBeFalsy();
+    let peCopy = Object.assign({}, mockPluginExecution);
+    peCopy = Object.assign(peCopy, { executionProgress: false });
+    component.showPluginLog = Object.assign(peCopy, { executionProgress: false });
+    component.returnLog();
+    expect(component.logMessages).toBeFalsy();
+  });
+
+  it('should close the logs', () => {
+    spyOn(component.closed, 'emit');
     component.closeLog();
+    expect(component.closed.emit).toHaveBeenCalled();
   });
 
   it('should get a from number', () => {

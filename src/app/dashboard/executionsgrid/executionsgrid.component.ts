@@ -33,7 +33,7 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
 
-  constructor(private workflows: WorkflowService, private errors: ErrorService) {}
+  constructor(private readonly workflows: WorkflowService, private readonly errors: ErrorService) {}
 
   ngAfterViewInit(): void {
     this.load();

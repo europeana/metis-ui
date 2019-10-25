@@ -16,7 +16,10 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./ongoingexecutions.component.scss']
 })
 export class OngoingexecutionsComponent implements OnInit {
-  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
+  constructor(
+    private readonly workflows: WorkflowService,
+    private readonly translate: TranslateService
+  ) {}
 
   @Input() showPluginLog: PluginExecution;
   @Input() runningExecutions: WorkflowExecution[];

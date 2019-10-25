@@ -1,9 +1,8 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import { createMockPipe, MockErrorService, MockWorkflowService } from '../../_mocked';
-import { PluginStatus, PluginType } from '../../_models';
+import { PluginExecution, PluginStatus, PluginType } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 import { ExecutionsDataGridComponent } from '.';
@@ -11,6 +10,20 @@ import { ExecutionsDataGridComponent } from '.';
 describe('ExecutionsDataGridComponent', () => {
   let component: ExecutionsDataGridComponent;
   let fixture: ComponentFixture<ExecutionsDataGridComponent>;
+  let basicPluginExecution: PluginExecution = {
+    id: '1',
+    pluginStatus: PluginStatus.FINISHED,
+    failMessage: 'failed',
+    hasReport: true,
+    topologyName: 'validation',
+    pluginMetadata: {
+      pluginType: PluginType.TRANSFORMATION,
+      mocked: false,
+      enabled: true,
+      customXslt: false
+    },
+    pluginType: PluginType.VALIDATION_EXTERNAL
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -61,22 +74,18 @@ describe('ExecutionsDataGridComponent', () => {
   });
 
   it('should copy something to the clipboard', () => {
-    component.plugin = {
-      id: '1',
-      pluginStatus: PluginStatus.FINISHED,
-      failMessage: 'failed',
-      hasReport: true,
-      topologyName: 'validation',
-      pluginMetadata: {
-        pluginType: PluginType.TRANSFORMATION,
-        mocked: false,
-        enabled: true,
-        customXslt: false
-      },
-      pluginType: PluginType.VALIDATION_EXTERNAL
-    }; // as PluginExecution;
+    component.plugin = basicPluginExecution;
     fixture.detectChanges();
     component.copyInformation('plugin', '1', '2');
     expect(component.contentCopied).toBe(true);
+  });
+
+  it('should calculate if a preview is available', () => {
+    expect(component.hasPreview(basicPluginExecution)).toBeFalsy();
+    let progressedExecution = Object.assign(
+      { executionProgress: { processedRecords: 1, errors: 0 } },
+      basicPluginExecution
+    );
+    expect(component.hasPreview(progressedExecution)).toBeTruthy();
   });
 });
