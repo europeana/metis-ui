@@ -53,4 +53,35 @@ describe('LoginComponent', () => {
 
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   }));
+
+  it('should redirect if already logged in', fakeAsync((): void => {
+    component.loginForm.controls.email.setValue('mocked@mocked.com');
+    component.loginForm.controls.password.setValue('mocked123');
+
+    spyOn(router, 'navigate');
+    tick(50);
+    component.checkLogin = true;
+    component.onSubmit();
+    fixture.detectChanges();
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+  }));
+
+  it('should redirect if already logged in on load', fakeAsync((): void => {
+    spyOn(router, 'navigate');
+    tick(50);
+    component.checkLogin = true;
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+  }));
+
+  it('should not login for empty passwords', fakeAsync((): void => {
+    component.loginForm.controls.email.setValue('');
+    component.loginForm.controls.password.setValue('');
+    spyOn(router, 'navigate');
+    tick(50);
+    component.onSubmit();
+    fixture.detectChanges();
+    expect(router.navigate).not.toHaveBeenCalled();
+  }));
 });

@@ -8,6 +8,7 @@ import {
   MockErrorService,
   MockWorkflowService
 } from '../_mocked';
+//import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
 import { PluginStatus, PluginType } from '../_models';
 import {
   AuthenticationService,
@@ -45,6 +46,7 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  // TODO: make this less useless
   it('should open log messages', () => {
     component.showPluginLog = {
       id: 'xx5',
@@ -67,6 +69,39 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
     expect(component.showPluginLog).toBeTruthy();
   });
+
+  /*
+  // what does this even do?
+  //  it checks it's set.
+  //    if so things get looked up by ext id....
+  //      it sets it back...
+  //  all tests pass if it's disabled
+
+  it('checks the update log', () => {
+
+    let showingId = 'xx5';
+
+    component.showPluginLog = {
+      externalTaskId: showingId
+    } as unknown as PluginExecution;
+
+    component.checkUpdateLog([
+      {
+        metisPlugins: [
+          {
+            id: 'fail',
+            externalTaskId: 'no-match'
+          },
+          {
+            id: 'pass',
+            externalTaskId: showingId
+          }
+        ]
+      } as unknown as WorkflowExecution
+    ]);
+    expect(component.showPluginLog).toBe('xxx');
+  });
+  */
 
   it('provides a setter for the selectedExecutionDsId', () => {
     expect(component.selectedExecutionDsId).toBe(undefined);

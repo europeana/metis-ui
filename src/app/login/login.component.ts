@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
 
     // already logged in, then redirect
     if (this.authentication.validatedUser() && this.checkLogin) {
-      this.checkLogin = true;
       this.redirectAfterLogin();
       return;
     }

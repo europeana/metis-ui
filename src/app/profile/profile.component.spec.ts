@@ -45,6 +45,29 @@ describe('ProfileComponent', () => {
     expect(component.notification!.content).toBe('Your profile has been updated');
   });
 
+  it('should check the passwords match', () => {
+    const pwCorrect = 'correct';
+    const pwError = 'incorrect';
+
+    const password = component.profileForm.get('passwords.password');
+    const confirm = component.profileForm.get('passwords.confirm');
+
+    expect(component.confirmPasswordError).toBeFalsy();
+
+    password!.setValue(pwError);
+    confirm!.setValue(pwCorrect);
+
+    component.checkMatchingPasswords();
+
+    expect(component.confirmPasswordError).toBeTruthy();
+
+    password!.setValue(pwCorrect);
+    confirm!.setValue(pwCorrect);
+
+    component.checkMatchingPasswords();
+    expect(component.confirmPasswordError).toBeFalsy();
+  });
+
   it('should submit the form', () => {
     component.editMode = false;
     component.toggleEditMode();

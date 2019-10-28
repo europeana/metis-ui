@@ -87,8 +87,13 @@ describe('StatisticsComponent', () => {
       calls.push(param);
     });
 
+    component.taskId = undefined;
+    component.loadMoreAttrs(xPath);
+    expect(spyLoading).not.toHaveBeenCalled();
     component.taskId = 'abc';
     component.loadMoreAttrs(xPath);
+    expect(spyLoading).toHaveBeenCalled();
+
     stat = component.statistics.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeTruthy();
     expect(spyLoading).toHaveBeenCalledTimes(2);
