@@ -28,16 +28,10 @@ export class StatisticsComponent implements OnInit {
     this.isLoading = loading;
   }
 
-  httpErrorHandler(err: HttpErrorResponse): void {
-    const error = this.errors.handleError(err);
-    this.notification = httpErrorNotification(error);
-    this.setLoading(false);
-  }
-
   // load the data on statistics and display this in a card (=readonly editor)
   loadStatistics(): void {
     this.setLoading(true);
-    const httpErrorHandler = (err: HttpErrorResponse) => {
+    const httpErrorHandler = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
       this.setLoading(false);
