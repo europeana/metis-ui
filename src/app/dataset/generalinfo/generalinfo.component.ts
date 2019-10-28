@@ -50,6 +50,7 @@ export class GeneralinfoComponent {
     }
   }
 
+  // return the harvest publication data
   get harvestPublicationData(): HarvestData {
     return this._harvestPublicationData;
   }

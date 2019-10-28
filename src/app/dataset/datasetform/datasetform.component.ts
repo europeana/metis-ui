@@ -41,11 +41,13 @@ export class DatasetformComponent implements OnInit {
   _isSaving = false;
   invalidNotification: Notification;
 
+  // set the isSaving value and update the formEnabled value
   set isSaving(value: boolean) {
     this._isSaving = value;
     this.updateFormEnabled();
   }
 
+  // get the isSaving value
   get isSaving(): boolean {
     return this._isSaving;
   }
@@ -59,6 +61,7 @@ export class DatasetformComponent implements OnInit {
     private readonly translate: TranslateService
   ) {}
 
+  // enable or disable the form according to if saving
   private updateFormEnabled(): void {
     if (this.datasetForm) {
       if (this.isSaving) {
@@ -69,6 +72,7 @@ export class DatasetformComponent implements OnInit {
     }
   }
 
+  // initialisation: build the form / get the countries and languages
   ngOnInit(): void {
     this.buildForm();
     this.returnCountries();
@@ -87,11 +91,13 @@ export class DatasetformComponent implements OnInit {
     return !!this.datasetForm.controls[fieldName].value;
   }
 
+  // clear the specified field and mark the form as dirty
   clearField(fieldName: keyof Dataset): void {
     this.datasetForm.controls[fieldName].setValue('');
     this.datasetForm.markAsDirty();
   }
 
+  // query the available countries
   returnCountries(): void {
     this.countries.getCountries().subscribe(
       (result) => {
@@ -111,6 +117,7 @@ export class DatasetformComponent implements OnInit {
     );
   }
 
+  // query the available languages
   returnLanguages(): void {
     this.countries.getLanguages().subscribe(
       (result) => {
@@ -130,6 +137,7 @@ export class DatasetformComponent implements OnInit {
     );
   }
 
+  // create a FormGroup
   buildForm(): void {
     this.datasetForm = this.fb.group({
       datasetName: ['', [Validators.required]],
@@ -155,18 +163,21 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.patchValue({ language: this.selectedLanguage });
   }
 
+  // clear the notification, update the form and mark it as pristine
   reset(): void {
     this.notification = undefined;
     this.updateForm();
     this.datasetForm.markAsPristine();
   }
 
+  // save (new) form data to local storage
   saveTempData(): void {
     if (this.isNew) {
       localStorage.setItem(DATASET_TEMP_LSKEY, JSON.stringify(this.datasetForm.value));
     }
   }
 
+  // submit the form if valid
   onSubmit(): void {
     if (!this.datasetForm.valid) {
       return;
@@ -206,11 +217,13 @@ export class DatasetformComponent implements OnInit {
     }
   }
 
+  // remove current form data from local storage and redirect to the dashboard
   cancel(): void {
     localStorage.removeItem(DATASET_TEMP_LSKEY);
     this.router.navigate(['/dashboard']);
   }
 
+  // get the notifaction (unless saving) or an error notification if invalid
   getNotification(): Notification | undefined {
     if (this.isSaving) {
       return undefined;

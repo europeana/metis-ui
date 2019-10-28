@@ -57,16 +57,19 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     return this._showPluginLog;
   }
 
+  // initialisation: prepare translated message
   ngOnInit(): void {
     this.noLogs = this.translate.instant('nologs');
   }
 
+  // destruction: unsubscribe
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
+  // emit the closed event and unsubscribe
   closeLog(): void {
     this.closed.emit();
     if (this.subscription) {
@@ -74,6 +77,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     }
   }
 
+  // poll for logs
   startPolling(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -84,6 +88,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     });
   }
 
+  // subscribe to the logs and show
   returnLog(): void {
     const processed =
       this.showPluginLog.executionProgress && this.showPluginLog.executionProgress.processedRecords;

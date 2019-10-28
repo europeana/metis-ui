@@ -41,6 +41,7 @@ export class LastExecutionComponent {
     el.scrollIntoView({ behavior: 'smooth' });
   }
 
+  // open the fail report
   openFailReport(req: SimpleReportRequest): void {
     this.setReportMsg.emit(req);
   }
@@ -50,10 +51,12 @@ export class LastExecutionComponent {
     copyExecutionAndTaskId(type, id1, id2);
   }
 
+  // calculate which css class to use
   getPluginStatusClass(plugin: PluginExecution): string {
     return statusClassFromPlugin(plugin, this.currentPlugin);
   }
 
+  // retrieve plugin execution by id
   byId(_: number, item: PluginExecution): string {
     return item.id;
   }

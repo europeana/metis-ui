@@ -26,11 +26,13 @@ export class ExecutionsDataGridComponent {
 
   contentCopied = false;
 
+  // copy current execution data to the clipboard
   copyInformation(type: string, id: string, extId = ''): void {
     copyExecutionAndTaskId(type, extId, id);
     this.contentCopied = true;
   }
 
+  // return indication of preview
   hasPreview(plugin: PluginExecution): boolean {
     return (
       plugin.executionProgress !== undefined &&
@@ -38,6 +40,7 @@ export class ExecutionsDataGridComponent {
     );
   }
 
+  // fire the preview event
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
     const previewFilters: PreviewFilters = {
       executionId: execution.id,
@@ -47,6 +50,7 @@ export class ExecutionsDataGridComponent {
     this.openPreview.emit(previewFilters);
   }
 
+  // open the fail report
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
