@@ -65,6 +65,7 @@ export class ActionbarComponent {
     return this._lastExecutionData;
   }
 
+  // extract the model to the component
   assignExecutionData(value: WorkflowExecution): void {
     this.currentPlugin = getCurrentPlugin(value);
     this.currentStatus = this.currentPlugin.pluginStatus;
@@ -111,6 +112,7 @@ export class ActionbarComponent {
     }
   }
 
+  // begin the workflow
   beginWorkflow(): void {
     this.cancelledBy = '';
     if (this.subscription) {
@@ -119,6 +121,7 @@ export class ActionbarComponent {
     this.startWorkflow.emit();
   }
 
+  // cancel the workflow
   cancelWorkflow(): void {
     this.workflows.promptCancelThisWorkflow(
       this.lastExecutionData!.id,
@@ -127,10 +130,12 @@ export class ActionbarComponent {
     );
   }
 
+  // show the log
   showLog(): void {
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
+  // open the fail report
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
