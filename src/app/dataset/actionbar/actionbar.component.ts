@@ -65,7 +65,9 @@ export class ActionbarComponent {
     return this._lastExecutionData;
   }
 
-  // extract the model to the component
+  /** assignExecutionData
+  /* extract the model to the component
+  */
   assignExecutionData(value: WorkflowExecution): void {
     this.currentPlugin = getCurrentPlugin(value);
     this.currentStatus = this.currentPlugin.pluginStatus;
@@ -112,7 +114,9 @@ export class ActionbarComponent {
     }
   }
 
-  // begin the workflow
+  /** beginWorkflow
+  /* clear canceeled by, unsubscribe and emit startWorkflow event
+  */
   beginWorkflow(): void {
     this.cancelledBy = '';
     if (this.subscription) {
@@ -121,7 +125,9 @@ export class ActionbarComponent {
     this.startWorkflow.emit();
   }
 
-  // cancel the workflow
+  /** cancelWorkflow
+  /* cancel the workflow
+  */
   cancelWorkflow(): void {
     this.workflows.promptCancelThisWorkflow(
       this.lastExecutionData!.id,
@@ -130,17 +136,23 @@ export class ActionbarComponent {
     );
   }
 
-  // show the log
+  /** showLog
+  /* show the log
+  */
   showLog(): void {
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
-  // open the fail report
+  /** openFailReport
+  /* open the fail report
+  */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
 
-  // after double clicking, copy the execution and task id to the clipboard
+  /** copyInformation
+  /* after double clicking, copy the execution and task id to the clipboard
+  */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;

@@ -53,23 +53,32 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** showPluginLog
+  /* accessor for private _showPluginLog variable
+  */
   get showPluginLog(): PluginExecution {
     return this._showPluginLog;
   }
 
-  // initialisation: prepare translated message
+  /** ngOnInit
+  /* prepare translated message
+  */
   ngOnInit(): void {
     this.noLogs = this.translate.instant('nologs');
   }
 
-  // destruction: unsubscribe
+  /** ngOnDestroy
+  /* unsubscribe
+  */
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
-  // emit the closed event and unsubscribe
+  /** closeLog
+  /* emit the closed event and unsubscribe
+  */
   closeLog(): void {
     this.closed.emit();
     if (this.subscription) {
@@ -77,7 +86,9 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     }
   }
 
-  // poll for logs
+  /** startPolling
+  /* start polling the log data
+  */
   startPolling(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -88,7 +99,9 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     });
   }
 
-  // subscribe to the logs and show
+  /** returnLog
+  /* subscribe to the logs and show
+  */
   returnLog(): void {
     const processed =
       this.showPluginLog.executionProgress && this.showPluginLog.executionProgress.processedRecords;
@@ -124,8 +137,10 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
       );
   }
 
-  // show correct information in log modal window
-  // this could be a "no logs found" message or the actual log
+  /** showWindowOutput
+  /* show correct information in log modal window
+  /* this could be a "no logs found" message or the actual log
+  */
   showWindowOutput(log: SubTaskInfo[] | undefined): void {
     if (log && log.length === 0) {
       log = undefined;
@@ -134,6 +149,9 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this.logMessages = log;
   }
 
+  /** getLogFrom
+  /* get the log pagination parameter
+  */
   getLogFrom(): number {
     return this.logTo - this.logPerStep >= 1 ? this.logTo - this.logPerStep + 1 : 1;
   }

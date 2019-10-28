@@ -88,6 +88,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
   executionsFilterTimer: Subscription;
   pluginsFilterTimer: Subscription;
 
+  /** ngOnInit
+  /* - load the config
+  *  - prepare translated messages
+  *  - begin timer on available workflow executions
+  *  - prefill the filters
+  *  - transform any set tempXSLT
+  */
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
     this.nosample = this.translate.instant('nosample');

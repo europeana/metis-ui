@@ -51,19 +51,25 @@ export class HistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  // call load function for execution data
+  /** ngOnInit
+  /* call load function for execution data
+  */
   ngOnInit(): void {
     this.returnAllExecutions();
   }
 
-  // unsubscribe from data source
+  /** ngOnDestroy
+  /* unsubscribe from data source
+  */
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
-  // load the execution data
+  /** returnAllExecutions
+  /* load the execution data
+  */
   returnAllExecutions(): void {
     this.workflows
       .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
@@ -91,35 +97,47 @@ export class HistoryComponent implements OnInit, OnDestroy {
       );
   }
 
-  // increment page variable and load execution data
+  /** loadNextPage
+  /* increment page variable and load execution data
+  */
   loadNextPage(): void {
     this.currentPage++;
     this.returnAllExecutions();
   }
 
-  // open the fail report
+  /** openFailReport
+  /* open the fail report
+  */
   openFailReport(req: SimpleReportRequest): void {
     this.setReportMsg.emit(req);
   }
 
-  // copy current execution data to the clipboard
+  /** copyInformation
+  /* copy current execution data to the clipboard
+  */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
 
-  // retrieve plugin execution by id
+  /** byId
+  /* retrieve plugin execution by id
+  */
   byId(_: number, item: WorkflowOrPluginExecution): string {
     return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
   }
 
-  // redirect to the preview
+  /** goToPreview
+  /* redirect to the preview
+  */
   goToPreview(previewData: PreviewFilters): void {
     this.setPreviewFilters.emit(previewData);
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 
-  // get the cancelling user
+  /** getCancelledBy
+  /* get the cancelling user
+  */
   getCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
     return this.workflows.getWorkflowCancelledBy(workflow);
   }
