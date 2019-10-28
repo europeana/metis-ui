@@ -365,6 +365,22 @@ export class WorkflowComponent implements OnInit {
     }
   }
 
+  /** extractPluginParamsExtra
+  /* extract additional parameters for configurable plugins
+  */
+  extractPluginParamsExtra(enabledPluginMetadata: PluginMetadata): void {
+    // parameters for transformation
+    if (enabledPluginMetadata.pluginType === 'TRANSFORMATION') {
+      this.workflowForm.controls.customXslt.setValue(enabledPluginMetadata.customXslt);
+    }
+    // parameters for link-checking
+    if (enabledPluginMetadata.pluginType === 'LINK_CHECKING') {
+      this.workflowForm.controls.performSampling.setValue(
+        enabledPluginMetadata.performSampling ? 'true' : 'false'
+      );
+    }
+  }
+
   /** extractWorkflowParamsEnabled
   /* extract data values to the FormGroup only if the plugin is enabled
   */
@@ -381,16 +397,7 @@ export class WorkflowComponent implements OnInit {
           // non-harvest settings can be set generically
           this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
 
-          // parameters for transformation
-          if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-            this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-          }
-          // parameters for link-checking
-          if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-            this.workflowForm.controls.performSampling.setValue(
-              thisWorkflow.performSampling ? 'true' : 'false'
-            );
-          }
+          this.extractPluginParamsExtra(thisWorkflow);
         }
       }
     }
