@@ -351,7 +351,7 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** extractWorkflowParamsAlways
-  /* extract data values to the FormGroup if the plugin is not enabled
+  /* extract data values to the FormGroup regardless of whether the plugin is enabled
   */
   extractWorkflowParamsAlways(workflow: Workflow): void {
     for (const thisWorkflow of workflow.metisPluginsMetadata) {
