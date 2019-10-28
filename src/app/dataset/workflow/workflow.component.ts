@@ -152,7 +152,7 @@ export class WorkflowComponent implements OnInit {
     const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
     let scorePositive = false;
 
-    const sorted = fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
+    fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
       const scoreA = this.getViewportScore(a.pluginElement.nativeElement, headerHeight);
       const scoreB = this.getViewportScore(b.pluginElement.nativeElement, headerHeight);
       if (!scorePositive && scoreA + scoreB > 0) {
@@ -160,7 +160,7 @@ export class WorkflowComponent implements OnInit {
       }
       return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
     });
-    sorted.forEach((item: WorkflowFormFieldComponent, i) => {
+    fields.forEach((item: WorkflowFormFieldComponent, i) => {
       item.conf.currentlyViewed = i === 0 && scorePositive;
     });
   }
