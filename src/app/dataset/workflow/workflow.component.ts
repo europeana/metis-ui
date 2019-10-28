@@ -247,7 +247,6 @@ export class WorkflowComponent implements OnInit {
       }
     });
 
-    //if (insertIndex > -1) {
     if (shiftable && insertIndex > -1) {
       this.addLinkCheck(shiftable, insertIndex, correctForInactive);
     }
@@ -342,20 +341,20 @@ export class WorkflowComponent implements OnInit {
     }
   }
 
-  getWorkflow(): void {
-    const workflow = this.workflowData;
-    if (!workflow) {
-      return;
-    }
-    this.newWorkflow = false;
-
-    // clear form
+  /** clearForm
+  /* set all values in the FormGroup referenced by the conf fields to false
+  */
+  clearForm(): void {
     this.fieldConf.forEach((field) => {
       this.workflowForm.get(field.name)!.setValue(false);
     });
+  }
 
+  /** extractWorkflowParamsAlways
+  /* extract data values to the FormGroup regardless of whether the plugin is enabled
+  */
+  extractWorkflowParamsAlways(workflow: Workflow): void {
     for (const thisWorkflow of workflow.metisPluginsMetadata) {
-      // parameter values are recovered even if not enabled
       if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
       } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
@@ -363,31 +362,52 @@ export class WorkflowComponent implements OnInit {
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
       }
+    }
+  }
 
-      if (!thisWorkflow.enabled) {
-        continue;
-      }
+  /** extractWorkflowParamsEnabled
+  /* extract data values to the FormGroup only if the plugin is enabled
+  */
+  extractWorkflowParamsEnabled(workflow: Workflow): void {
+    for (const thisWorkflow of workflow.metisPluginsMetadata) {
+      if (thisWorkflow.enabled) {
+        if (
+          thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
+          thisWorkflow.pluginType === 'HTTP_HARVEST'
+        ) {
+          this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
+          this.workflowForm.controls.pluginHARVEST.setValue(true);
+        } else {
+          // non-harvest settings can be set generically
+          this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
 
-      if (
-        thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
-        thisWorkflow.pluginType === 'HTTP_HARVEST'
-      ) {
-        this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
-        this.workflowForm.controls.pluginHARVEST.setValue(true);
-      } else {
-        this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-        // transformation
-        if (thisWorkflow.pluginType === 'TRANSFORMATION') {
-          this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
-        }
-        // link checking
-        if (thisWorkflow.pluginType === 'LINK_CHECKING') {
-          this.workflowForm.controls.performSampling.setValue(
-            thisWorkflow.performSampling ? 'true' : 'false'
-          );
+          // parameters for transformation
+          if (thisWorkflow.pluginType === 'TRANSFORMATION') {
+            this.workflowForm.controls.customXslt.setValue(thisWorkflow.customXslt);
+          }
+          // parameters for link-checking
+          if (thisWorkflow.pluginType === 'LINK_CHECKING') {
+            this.workflowForm.controls.performSampling.setValue(
+              thisWorkflow.performSampling ? 'true' : 'false'
+            );
+          }
         }
       }
     }
+  }
+
+  /** getWorkflow
+  /* load workflow and extract data to the FormGroup
+  */
+  getWorkflow(): void {
+    const workflow = this.workflowData;
+    if (!workflow) {
+      return;
+    }
+    this.newWorkflow = false;
+    this.clearForm();
+    this.extractWorkflowParamsAlways(workflow);
+    this.extractWorkflowParamsEnabled(workflow);
   }
 
   reset(): void {

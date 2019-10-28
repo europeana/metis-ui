@@ -90,12 +90,8 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   restoreGroup(group: string, callerIndex: number): void {
     this.getInputGroup(group).forEach((item) => {
-      if (item.index !== callerIndex) {
-        if (!item.valueIsSet()) {
-          if (item.getVal().length > 0) {
-            item.addParam();
-          }
-        }
+      if (item.index !== callerIndex && !item.valueIsSet() && item.getVal().length > 0) {
+        item.addParam();
       }
     });
   }

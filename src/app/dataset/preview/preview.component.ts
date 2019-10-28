@@ -46,13 +46,13 @@ import { TranslateService } from '../../_translate';
 })
 export class PreviewComponent implements OnInit, OnDestroy {
   constructor(
-    private workflows: WorkflowService,
-    private translate: TranslateService,
-    private editorPrefs: EditorPrefService,
-    private errors: ErrorService,
-    private datasets: DatasetsService,
-    private router: Router,
-    private sanitizer: DomSanitizer
+    private readonly workflows: WorkflowService,
+    private readonly translate: TranslateService,
+    private readonly editorPrefs: EditorPrefService,
+    private readonly errors: ErrorService,
+    private readonly datasets: DatasetsService,
+    private readonly router: Router,
+    private readonly sanitizer: DomSanitizer
   ) {}
 
   @Input() datasetData: Dataset;
@@ -185,10 +185,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
         }
       );
     });
-  }
-
-  getComparePlugins(): Array<{ type: PluginType; error: boolean }> {
-    return this.allPlugins;
   }
 
   errorHandling(err: HttpErrorResponse): void {

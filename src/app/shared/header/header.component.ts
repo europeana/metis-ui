@@ -10,9 +10,9 @@ import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 })
 export class HeaderComponent {
   constructor(
-    private authentication: AuthenticationService,
-    private router: Router,
-    private redirectPreviousUrl: RedirectPreviousUrl
+    private readonly authentication: AuthenticationService,
+    private readonly router: Router,
+    private readonly redirectPreviousUrl: RedirectPreviousUrl
   ) {}
 
   openSignIn = false;

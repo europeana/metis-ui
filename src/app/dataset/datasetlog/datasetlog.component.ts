@@ -13,9 +13,9 @@ import { TranslateService } from '../../_translate';
 })
 export class DatasetlogComponent implements OnInit, OnDestroy {
   constructor(
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private translate: TranslateService
+    private readonly workflows: WorkflowService,
+    private readonly errors: ErrorService,
+    private readonly translate: TranslateService
   ) {}
 
   @Output() closed = new EventEmitter<void>();
@@ -90,10 +90,8 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
 
     this.logTo = processed || 0;
 
-    if (processed && isPluginCompleted(this.showPluginLog)) {
-      if (this.subscription) {
-        this.subscription.unsubscribe();
-      }
+    if (processed && isPluginCompleted(this.showPluginLog) && this.subscription) {
+      this.subscription.unsubscribe();
     }
 
     if (this.logTo <= 1) {

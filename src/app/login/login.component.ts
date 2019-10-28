@@ -21,12 +21,12 @@ export class LoginComponent implements OnInit {
   checkLogin = true;
 
   constructor(
-    private router: Router,
-    private authentication: AuthenticationService,
-    private redirectPreviousUrl: RedirectPreviousUrl,
-    private fb: FormBuilder,
-    private translate: TranslateService,
-    private documentTitleService: DocumentTitleService
+    private readonly router: Router,
+    private readonly authentication: AuthenticationService,
+    private readonly redirectPreviousUrl: RedirectPreviousUrl,
+    private readonly fb: FormBuilder,
+    private readonly translate: TranslateService,
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
   /** ngOnInit
@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
 
     // already logged in, then redirect
     if (this.authentication.validatedUser() && this.checkLogin) {
-      this.checkLogin = true;
       this.redirectAfterLogin();
       return;
     }

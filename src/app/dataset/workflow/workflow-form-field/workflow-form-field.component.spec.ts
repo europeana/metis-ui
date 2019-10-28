@@ -59,4 +59,11 @@ describe('WorkflowFormFieldComponent', () => {
     fixture.detectChanges();
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
   });
+
+  it('should emit events when the field changes', () => {
+    const fName = 'name';
+    spyOn(component.fieldChanged, 'emit');
+    component.onFieldChanged(fName);
+    expect(component.fieldChanged.emit).toHaveBeenCalledWith(fName);
+  });
 });

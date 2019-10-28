@@ -69,6 +69,14 @@ export class MockDatasetsService {
     return false;
   }
 
+  addFavorite(dataset: Dataset): void {
+    console.log(`addFavorite ${dataset}`);
+  }
+
+  removeFavorite(dataset: Dataset): void {
+    console.log(`removeFavorite ${dataset}`);
+  }
+
   getFavorites(): Observable<Dataset[]> {
     return observableOf([mockDataset]);
   }

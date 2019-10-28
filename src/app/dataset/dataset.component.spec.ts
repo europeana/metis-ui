@@ -112,6 +112,24 @@ describe('DatasetComponent', () => {
     expect(component.reportMsg).toBeTruthy();
   });
 
+  it('should clear the report message', () => {
+    expect(component.reportMsg).toBeFalsy();
+    component.setReportMsg({
+      message: 'message'
+    } as SimpleReportRequest);
+    expect(component.reportMsg).toBeTruthy();
+    component.clearReport();
+    expect(component.reportMsg).toBeFalsy();
+  });
+
+  it('should toggle isFavorite', () => {
+    expect(component.isFavorite).toBeFalsy();
+    component.toggleFavorite();
+    expect(component.isFavorite).toBeTruthy();
+    component.toggleFavorite();
+    expect(component.isFavorite).toBeFalsy();
+  });
+
   it('should start a workflow', () => {
     spyOn(workflows, 'startWorkflow').and.callThrough();
     component.datasetId = '65';

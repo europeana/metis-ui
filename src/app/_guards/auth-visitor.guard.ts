@@ -6,7 +6,10 @@ import { AuthenticationService } from '../_services';
 
 @Injectable({ providedIn: 'root' })
 export class AuthVisitorGuard implements CanActivate {
-  constructor(private router: Router, private authentication: AuthenticationService) {}
+  constructor(
+    private readonly router: Router,
+    private readonly authentication: AuthenticationService
+  ) {}
 
   canActivate(): boolean {
     if (!this.authentication.validatedUser()) {

@@ -49,6 +49,18 @@ describe('ExecutionsgridComponent', () => {
     expect(component.currentPage).toEqual(0);
   });
 
+  it('should load on init', () => {
+    spyOn(component, 'load');
+    component.ngAfterViewInit();
+    expect(component.load).toHaveBeenCalled();
+  });
+
+  it('should call load when the params are set', () => {
+    spyOn(component, 'load');
+    component.setOverviewParams('param-string');
+    expect(component.load).toHaveBeenCalled();
+  });
+
   it('should load the next page', () => {
     component.load();
     expect(component.currentPage).toEqual(0);

@@ -20,7 +20,7 @@ import { WorkflowService } from '../../_services';
   styleUrls: ['./actionbar.component.scss']
 })
 export class ActionbarComponent {
-  constructor(private workflows: WorkflowService) {}
+  constructor(private readonly workflows: WorkflowService) {}
 
   private _lastExecutionData?: WorkflowExecution;
   private subscription?: Subscription;

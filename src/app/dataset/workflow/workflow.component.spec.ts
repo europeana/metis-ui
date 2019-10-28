@@ -73,23 +73,20 @@ describe('WorkflowComponent', () => {
 
   it('should add the link checking', () => {
     component.removeLinkCheck();
-    let indexCopy = component.fieldConf.findIndex((c) => {
-      return c.dragType === DragType.dragCopy;
-    });
-    expect(indexCopy).toBe(-1);
-    component.addLinkCheck(
-      {
-        label: '',
-        name: 'pluginLINK_CHECKING',
-        dragType: DragType.dragCopy
-      } as WorkflowFieldData,
-      1,
-      false
-    );
-    indexCopy = component.fieldConf.findIndex((c) => {
-      return c.dragType === DragType.dragCopy;
-    });
-    expect(indexCopy).toBeGreaterThan(-1);
+    const getIndexCopy = (): number => {
+      return component.fieldConf.findIndex((c) => {
+        return c.dragType === DragType.dragCopy;
+      });
+    };
+    const pluginData: WorkflowFieldData = {
+      label: '',
+      name: 'pluginLINK_CHECKING',
+      dragType: DragType.dragCopy
+    };
+    expect(getIndexCopy()).toBe(-1);
+    const testTargetIndex = 4;
+    component.addLinkCheck(pluginData, testTargetIndex, false);
+    expect(getIndexCopy()).toEqual(testTargetIndex + 1);
   });
 
   it('should remove the link checking', () => {

@@ -2,8 +2,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import { createMockPipe, MockAuthenticationService, MockTranslateService } from '../_mocked';
+import { NotificationType } from '../_models';
 import { AuthenticationService } from '../_services';
 import { TranslateService } from '../_translate';
 
@@ -36,6 +36,13 @@ describe('RegisterComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('updates the password on key-up', () => {
+    expect(component.password).toBeFalsy();
+    component.registerForm.get('passwords.password')!.setValue('password');
+    component.onKeyupPassword();
+    expect(component.password).toBeTruthy();
+  });
+
   it('should contain a form', () => {
     expect(fixture.nativeElement.querySelector('.metis-register-form') === null).toBe(false);
   });
@@ -57,5 +64,18 @@ describe('RegisterComponent', () => {
     component.onSubmit();
     fixture.detectChanges();
     expect(submitBtn.disabled).toBe(false);
+  });
+
+  it('should reject weak password', () => {
+    submitBtn = fixture.nativeElement.querySelector('app-loading-button');
+    component.registerForm.controls.email.setValue('test@mocked.com');
+    (component.registerForm.controls.passwords as FormGroup).controls.password.setValue('');
+    (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue('');
+    component.onSubmit();
+    fixture.detectChanges();
+    expect(component.notification).toBeTruthy();
+    if (component.notification) {
+      expect(component.notification.type).toEqual(NotificationType.ERROR);
+    }
   });
 });
