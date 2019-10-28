@@ -244,7 +244,7 @@ export class WorkflowService {
   //  get all executions for the user's organisation, either ongoing or finished/failed
   protected getAllExecutions(
     page: number,
-    ongoing?: boolean
+    ongoing = false
   ): Observable<Results<WorkflowExecution>> {
     let url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
     if (ongoing) {
@@ -256,6 +256,7 @@ export class WorkflowService {
     return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
   }
 
+  // get summary / overview for all executions
   getCompletedDatasetSummaries(
     page?: number,
     params?: string

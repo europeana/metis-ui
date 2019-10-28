@@ -14,7 +14,7 @@ export class WorkflowFormFieldHarvestComponent {
   @Input() workflowForm: FormGroup;
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
 
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
 
   onFieldChanged(fieldName: string): void {
     this.fieldChanged.emit(fieldName);

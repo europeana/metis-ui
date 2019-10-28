@@ -28,11 +28,24 @@ export class StatisticsComponent implements OnInit {
     this.isLoading = loading;
   }
 
+  httpErrorHandler(err: HttpErrorResponse): void {
+    const error = this.errors.handleError(err);
+    this.notification = httpErrorNotification(error);
+    this.setLoading(false);
+  }
+
   // load the data on statistics and display this in a card (=readonly editor)
   loadStatistics(): void {
     this.setLoading(true);
-    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
-      (result) => {
+    const httpErrorHandler = (err: HttpErrorResponse) => {
+      const error = this.errors.handleError(err);
+      this.notification = httpErrorNotification(error);
+      this.setLoading(false);
+    };
+
+    this.workflows
+      .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
+      .subscribe((result) => {
         if (result.results.length > 0) {
           // find validation in the latest run, and if available, find taskid
           for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
@@ -45,25 +58,12 @@ export class StatisticsComponent implements OnInit {
           this.setLoading(false);
           return;
         }
-        this.workflows.getStatistics('validation', this.taskId).subscribe(
-          (resultStatistics) => {
-            const statistics = resultStatistics;
-            this.statistics = statistics;
-            this.setLoading(false);
-          },
-          (err: HttpErrorResponse) => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
-            this.setLoading(false);
-          }
-        );
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.setLoading(false);
-      }
-    );
+        this.workflows.getStatistics('validation', this.taskId).subscribe((resultStatistics) => {
+          const statistics = resultStatistics;
+          this.statistics = statistics;
+          this.setLoading(false);
+        }, httpErrorHandler);
+      }, httpErrorHandler);
   }
 
   loadMoreAttrs(xPath: string): void {
@@ -87,6 +87,7 @@ export class StatisticsComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
+          console.log('Error: ' + error);
           this.notification = httpErrorNotification(error);
           this.setLoading(false);
         }

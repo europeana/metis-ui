@@ -48,7 +48,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     return false;
   }
 
-  getAdjustableLabel(index: number, lowerCase?: boolean): string {
+  getAdjustableLabel(index: number, lowerCase = false): string {
     let res = '';
     if (index === 0 && this.workflowForm && this.workflowForm.value.pluginType) {
       res = this.workflowForm.value.pluginType;
@@ -130,7 +130,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     this.isDraggingOverOrbs = false;
   }
 
-  toggleDragOver(e: Event, tf?: boolean): void {
+  toggleDragOver(e: Event, tf = false): void {
     const el = e.target as HTMLElement;
     const clss = 'drag-over';
     if (tf) {
