@@ -73,6 +73,10 @@ export class WorkflowComponent implements OnInit {
   DragTypeEnum = DragType;
   busy = false;
 
+  /** onHeaderSynchronised
+  * - initialises link-checking / orb header
+  * - binds scroll event
+  */
   onHeaderSynchronised(elHeader?: HTMLElement): void {
     if (this.workflowData) {
       const index = this.workflowData.metisPluginsMetadata
@@ -130,6 +134,9 @@ export class WorkflowComponent implements OnInit {
     });
   }
 
+  /** getViewportScore
+  * converts element display within scrolled viewport to numeric value
+  */
   getViewportScore(el: HTMLElement, headerHeight: number): number {
     const rect = el.getBoundingClientRect();
     const wh = window.innerHeight || document.documentElement.clientHeight;
@@ -148,6 +155,9 @@ export class WorkflowComponent implements OnInit {
       : 0;
   }
 
+  /** setHighlightedField
+  * marks header orb as highlighted if it's the topmost in the viewport
+  */
   setHighlightedField(fields: Array<WorkflowFormFieldComponent>, headerEl?: HTMLElement): void {
     const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
     let scorePositive = false;
@@ -191,11 +201,17 @@ export class WorkflowComponent implements OnInit {
     this.updateRequired();
   }
 
+  /** setLinkCheck
+  * sets the link-checking to the specified index
+  */
   setLinkCheck(linkCheckIndex: number): void {
     this.rearrange(linkCheckIndex, false);
     this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
   }
 
+  /** addLinkCheck
+  * adds the link-check to the specified index
+  */
   addLinkCheck(
     shiftable: WorkflowFieldData,
     insertIndex: number,
@@ -223,6 +239,9 @@ export class WorkflowComponent implements OnInit {
     }
   }
 
+  /** removeLinkCheck
+  * removes the link-check
+  */
   removeLinkCheck(): void {
     let removeIndex = -1;
     this.fieldConf.forEach((confItem, index) => {
@@ -237,6 +256,10 @@ export class WorkflowComponent implements OnInit {
     }
   }
 
+  /** rearrange
+  * - removes the link-check and optionally re-adds it
+  * - updates the form validity
+  */
   rearrange(insertIndex: number, correctForInactive: boolean): void {
     let shiftable;
     this.removeLinkCheck();
@@ -417,12 +440,19 @@ export class WorkflowComponent implements OnInit {
     this.extractWorkflowParamsEnabled(workflow);
   }
 
+  /** reset
+  /* - marks the form as pristine
+  * - clears the notification
+  */
   reset(): void {
     this.getWorkflow();
     this.workflowForm.markAsPristine();
     this.notification = undefined;
   }
 
+  /** formatFormValue
+  /* returns a PluginMetadata object from the parameter and form values
+  */
   formatFormValue(pt: PluginType, params: ParameterField, enabled: boolean): PluginMetadata {
     return Object.assign(
       {
@@ -437,6 +467,9 @@ export class WorkflowComponent implements OnInit {
     ) as PluginMetadata;
   }
 
+  /** formatFormValues
+  /* returns an array of PluginMetadata objects from the form values
+  */
   formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
     const plugins: PluginMetadata[] = [];
 
@@ -523,6 +556,10 @@ export class WorkflowComponent implements OnInit {
       );
   }
 
+  /** start
+  /* - clears the notification
+  * - emits the startWorkflow event
+  */
   start(): void {
     this.notification = undefined;
     this.startWorkflow.emit();
@@ -532,6 +569,9 @@ export class WorkflowComponent implements OnInit {
     return !!this.lastExecution && !isWorkflowCompleted(this.lastExecution);
   }
 
+  /** getSaveNotification
+  /* returns save notification according to workflow state
+  */
   getSaveNotification(): Notification | undefined {
     if (this.isSaving) {
       return undefined;
@@ -548,6 +588,9 @@ export class WorkflowComponent implements OnInit {
     }
   }
 
+  /** getRunNotification
+  /* returns run notification according to workflow state
+  */
   getRunNotification(): Notification | undefined {
     if (this.isStarting) {
       return undefined;

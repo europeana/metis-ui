@@ -20,15 +20,23 @@ export class StatisticsComponent implements OnInit {
   statistics: Statistics;
   taskId?: string;
 
+  /** ngOnInit
+  /* calls statisitics load function
+  */
   ngOnInit(): void {
     this.loadStatistics();
   }
 
+  /** setLoading
+  /* setter for isLoading variable
+  */
   setLoading(loading: boolean): void {
     this.isLoading = loading;
   }
 
-  // load the data on statistics and display this in a card (=readonly editor)
+  /** loadStatistics
+  /* loads statistics for finished datsets / externally validated plugins
+  */
   loadStatistics(): void {
     this.setLoading(true);
 
@@ -61,6 +69,9 @@ export class StatisticsComponent implements OnInit {
       }, httpErrorHandling);
   }
 
+  /** loadMoreAttrs
+  /* loads statistic details
+  */
   loadMoreAttrs(xPath: string): void {
     if (!this.taskId) {
       return;
@@ -89,6 +100,9 @@ export class StatisticsComponent implements OnInit {
       );
   }
 
+  /** toggleStatistics
+  /* toggles the expanded property
+  */
   toggleStatistics(): void {
     this.expandedStatistics = !this.expandedStatistics;
   }
