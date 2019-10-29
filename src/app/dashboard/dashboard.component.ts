@@ -1,5 +1,5 @@
 /** Parent component of the full Metis dashboard
-*/
+ */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
