@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 import { DocumentTitleService } from '../../_services';
 
 @Component({
@@ -10,6 +9,9 @@ import { DocumentTitleService } from '../../_services';
 export class NewDatasetComponent implements OnInit {
   constructor(private readonly documentTitleService: DocumentTitleService) {}
 
+  /** ngOnInit
+  /* set the page title
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('New Dataset');
   }

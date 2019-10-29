@@ -35,7 +35,10 @@ export class StatisticsComponent implements OnInit {
   }
 
   /** loadStatistics
-  /* loads statistics for finished datsets / externally validated plugins
+  /* - loads statistics for finished datsets / externally validated plugins
+  /* - updates the notification variable
+  /* - updates the loading variable
+  /* - updates the statistics variable
   */
   loadStatistics(): void {
     this.setLoading(true);
@@ -58,6 +61,7 @@ export class StatisticsComponent implements OnInit {
           }
         }
         if (!this.taskId) {
+          // return if there's no task id
           this.setLoading(false);
           return;
         }

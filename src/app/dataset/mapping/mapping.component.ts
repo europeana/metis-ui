@@ -47,9 +47,7 @@ export class MappingComponent implements OnInit {
   ) {}
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
-
   @Input() datasetData: Dataset;
-
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
   editorConfig: EditorConfiguration;
@@ -60,7 +58,9 @@ export class MappingComponent implements OnInit {
   msgXSLTSuccess: string;
 
   /** ngOnInit
-  /* initialisation: load the config & xslt / prepare the translated messages
+  /* initialisation:
+  /* - load the config & xslt
+  /* - prepare the translated messages
   */
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
@@ -69,7 +69,8 @@ export class MappingComponent implements OnInit {
   }
 
   /** handleXSLTError
-  /* create a notification for errors
+  /* - create a notification for errors
+  /* - set notification variable
   */
   private handleXSLTError(err: HttpErrorResponse): void {
     this.xsltStatus = XSLTStatus.NOCUSTOM;
@@ -79,14 +80,14 @@ export class MappingComponent implements OnInit {
   }
 
   /** loadCustomXSLT
-  /* load the custom xslt
+  /* - check xsltId property available
+  /* - load the custom xslt
   */
   loadCustomXSLT(): void {
     if (!this.datasetData.xsltId) {
       this.xsltStatus = XSLTStatus.NOCUSTOM;
       return;
     }
-
     this.xsltStatus = XSLTStatus.LOADING;
     this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
       (result) => {
@@ -133,7 +134,8 @@ export class MappingComponent implements OnInit {
   }
 
   /** tryOutXSLT
-  /* redirect to preview
+  /* - emit setTempXSLT event
+  /* - redirect to preview
   */
   tryOutXSLT(type: string): void {
     this.setTempXSLT.emit(type);

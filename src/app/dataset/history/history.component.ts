@@ -68,7 +68,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   /** returnAllExecutions
-  /* load the execution data
+  /* - load the execution data
+  /* - update the hasMore variable
   */
   returnAllExecutions(): void {
     this.workflows
@@ -98,7 +99,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   /** loadNextPage
-  /* increment page variable and load execution data
+  /* - increment page variable
+  /* - load execution data
   */
   loadNextPage(): void {
     this.currentPage++;
@@ -106,14 +108,15 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   /** openFailReport
-  /* open the fail report
+  /* emit the setReportMsg event
   */
   openFailReport(req: SimpleReportRequest): void {
     this.setReportMsg.emit(req);
   }
 
   /** copyInformation
-  /* copy current execution data to the clipboard
+  /* - copy current execution data to the clipboard
+  /* - update the contentCopied variable
   */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
@@ -121,14 +124,15 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   /** byId
-  /* retrieve plugin execution by id
+  /* retrieve plugin execution or the execution id
   */
   byId(_: number, item: WorkflowOrPluginExecution): string {
     return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
   }
 
   /** goToPreview
-  /* redirect to the preview
+  /* - emit the setPreviewFilters event
+  /* - redirect to the preview
   */
   goToPreview(previewData: PreviewFilters): void {
     this.setPreviewFilters.emit(previewData);

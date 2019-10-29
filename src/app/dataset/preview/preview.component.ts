@@ -132,6 +132,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   unsubscribeFilters(filterSubscriptions: Array<Subscription>): void {
     filterSubscriptions
       .filter((x) => {
+        // remove any nulls
         return x;
       })
       .forEach((fs) => {
@@ -140,7 +141,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   /** addExecutionsFilter
-  /* populate a filter with executions based on the selected workflow
+  /* - populate a filter with executions based on the selected workflow
+  /* - update load-tracking variable
   */
   addExecutionsFilter(): void {
     this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
@@ -172,6 +174,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedComparison = undefined;
     this.previewFilters.executionId = executionHistory.workflowExecutionId;
 
+    // unsubscribe from any previous subscription
     this.unsubscribeFilters([this.pluginsFilterTimer]);
 
     this.pluginsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
@@ -208,7 +211,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   /** errorHandling
-  /* generic http error handler
+  /* generic http error handler:
+  /* - update load-tracking variable
+  /* - set notification variable to new http error notification based on specified error
   */
   errorHandling(err: HttpErrorResponse): void {
     const error = this.errors.handleError(err);
@@ -227,6 +232,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.workflows
       .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
       .subscribe((result) => {
+        // strip "new lines"
         this.allSampleComparisons = this.undoNewLines(result);
         this.isLoading = false;
         this.selectedComparison = plugin;

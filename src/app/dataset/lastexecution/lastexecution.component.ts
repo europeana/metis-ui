@@ -30,7 +30,6 @@ export class LastExecutionComponent {
       } else {
         this.currentPlugin = getCurrentPlugin(value);
       }
-
       this.pluginExecutions = value.metisPlugins.slice();
       this.pluginExecutions.reverse();
     }
