@@ -70,7 +70,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   /** ngOnDestroy
-  /* unsubscribe
+  /* unsubscribe from subscription
   */
   ngOnDestroy(): void {
     if (this.subscription) {
@@ -90,7 +90,8 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   /** startPolling
-  /* start polling the log data
+  /* - unsubscribe from previous subscription
+  /* - start polling the log data
   */
   startPolling(): void {
     if (this.subscription) {
@@ -103,7 +104,8 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   /** returnLog
-  /* subscribe to the logs and show
+  /* - subscribe to the logs
+  /* - show
   */
   returnLog(): void {
     const processed =

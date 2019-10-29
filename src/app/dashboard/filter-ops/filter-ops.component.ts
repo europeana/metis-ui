@@ -1,5 +1,21 @@
-import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+/** A filter menu for the dashboard executions overview data.
+/*  3 fields can be filtered on:
+/*  - dates
+/*  - plugin type
+/*  - plugin status
+/*
+/* Behaviour:
+/*  - the filter is applied automatically when the menu is closed
+/*  - a bold font on the menu-opener indicates that a filter is being applied
+/*  - applied filter names are concatenated into a tooltip
+/*
+/* Notes:
+/*  - a filter can use AND logic (status, type)
+/*  - a filter can use OR logic (preset-date ranges)
+/*  - manual date ranges are constrained to dates in the past
+*/
 
+import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { isValidDate } from '../../_helpers/date-helpers';
 import {
   FilterExecutionConf,

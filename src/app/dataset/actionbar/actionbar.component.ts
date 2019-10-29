@@ -69,7 +69,8 @@ export class ActionbarComponent {
   }
 
   /** assignExecutionData
-  /* extract the model to the component
+  /* - extract the model to the component
+  /* - optionally show the log
   */
   assignExecutionData(value: WorkflowExecution): void {
     this.currentPlugin = getCurrentPlugin(value);

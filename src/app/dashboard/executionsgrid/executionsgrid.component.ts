@@ -1,3 +1,8 @@
+/** Overview of the dashboard executions
+/*  - polls data source for updates
+/*  - handles pagination
+/*  - handles selection
+*/
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,

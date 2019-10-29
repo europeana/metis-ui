@@ -24,11 +24,18 @@ export class TranslateService {
     this._currentLang = localStorage.getItem(CURRENT_LANG) || 'en';
   }
 
+  /** changeLang
+  /* stores the specified language in local storage
+  /* calls reload
+  */
   public changeLang(lang: string): void {
     localStorage.setItem(CURRENT_LANG, lang);
     this.reload();
   }
 
+  /** reload
+  /* reloads the page
+  */
   reload(): void {
     window.location.reload();
   }

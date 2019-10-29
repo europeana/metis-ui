@@ -64,7 +64,8 @@ export class DatasetformComponent implements OnInit {
   ) {}
 
   /** updateFormEnabled
-  /* enable or disable the form according to if saving
+  /* disable the form if saving
+  /* enable the form according if not saving
   */
   private updateFormEnabled(): void {
     if (this.datasetForm) {
@@ -213,18 +214,22 @@ export class DatasetformComponent implements OnInit {
   /** onSubmit
   /* - submit the form if valid
   /* - redirect to new page if dataset is new
+  /* - manage save-tracking variable
   /* - emit updated event if existing
   /* - show success notification if existing
   */
   onSubmit(): void {
+    // return if invalid
     if (!this.datasetForm.valid) {
       return;
     }
+    // declare local error-handler funciton
     const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
       this.isSaving = false;
     };
+    // clear notification variable
     this.notification = undefined;
     this.isSaving = true;
     if (this.isNew) {

@@ -1,3 +1,9 @@
+/** Component to display executions history
+/* - handles pagination
+/* - handles report events
+/* - handles task information copying
+/* - handles redirects to the preview tab
+*/
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';

@@ -1,3 +1,6 @@
+/** Single row of the overview of the dashboard executions
+/*  - handles expansion to show full plugin breakdown
+*/
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';

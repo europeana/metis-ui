@@ -1,3 +1,5 @@
+/** Component to display currently running executions
+*/
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { calcProgress, copyExecutionAndTaskId } from '../../_helpers';

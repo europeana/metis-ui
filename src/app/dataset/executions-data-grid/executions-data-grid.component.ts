@@ -1,3 +1,5 @@
+/** Component to display workflow executions
+*/
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
