@@ -74,7 +74,7 @@ export class WorkflowComponent implements OnInit {
   busy = false;
 
   /** onHeaderSynchronised
-  * - initialises link-checking / orb header
+  /* - initialises link-checking / orb header
   * - binds scroll event
   */
   onHeaderSynchronised(elHeader?: HTMLElement): void {
@@ -107,10 +107,10 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** ngOnInit
-  /* init for this component
-  /* set translations
-  /* build the workflow form
-  /* get workflow for this dataset, could be empty if none is created yet
+  /* - init for this component
+  *  - set translations
+  *  - build the workflow form
+  *  - get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit(): void {
     this.buildForm();
@@ -135,8 +135,8 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** getViewportScore
-  * converts element display within scrolled viewport to numeric value
-  */
+   * converts element display within scrolled viewport to numeric value
+   */
   getViewportScore(el: HTMLElement, headerHeight: number): number {
     const rect = el.getBoundingClientRect();
     const wh = window.innerHeight || document.documentElement.clientHeight;
@@ -156,8 +156,8 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** setHighlightedField
-  * marks header orb as highlighted if it's the topmost in the viewport
-  */
+   * marks header orb as highlighted if it's the topmost in the viewport
+   */
   setHighlightedField(fields: Array<WorkflowFormFieldComponent>, headerEl?: HTMLElement): void {
     const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
     let scorePositive = false;
@@ -202,16 +202,16 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** setLinkCheck
-  * sets the link-checking to the specified index
-  */
+   * sets the link-checking to the specified index
+   */
   setLinkCheck(linkCheckIndex: number): void {
     this.rearrange(linkCheckIndex, false);
     this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
   }
 
   /** addLinkCheck
-  * adds the link-check to the specified index
-  */
+   * adds the link-check to the specified index
+   */
   addLinkCheck(
     shiftable: WorkflowFieldData,
     insertIndex: number,
@@ -240,7 +240,7 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** removeLinkCheck
-  * removes the link-check
+  /* removes the link-check
   */
   removeLinkCheck(): void {
     let removeIndex = -1;
@@ -257,9 +257,9 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** rearrange
-  * - removes the link-check and optionally re-adds it
-  * - updates the form validity
-  */
+  /* - removes the link-check and optionally re-adds it
+   * - updates the form validity
+   */
   rearrange(insertIndex: number, correctForInactive: boolean): void {
     let shiftable;
     this.removeLinkCheck();

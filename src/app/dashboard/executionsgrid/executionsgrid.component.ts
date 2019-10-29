@@ -67,7 +67,7 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   *  - re-initiate the load
   */
   loadNextPage(): void {
-    this.currentPage ++;
+    this.currentPage++;
     this.isLoadingMore = true;
     clearTimeout(this.finishedTimer);
     this.load();
