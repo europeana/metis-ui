@@ -61,6 +61,9 @@ export class ActionbarComponent {
     }
   }
 
+  /** lastExecutionData
+  /* accessor for _lastExecutionData variable
+  */
   get lastExecutionData(): WorkflowExecution | undefined {
     return this._lastExecutionData;
   }
@@ -79,6 +82,7 @@ export class ActionbarComponent {
     const { executionProgress } = this.currentPlugin;
 
     if (executionProgress) {
+      // extract progress-tracking variables
       this.totalErrors = executionProgress.errors;
       this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
       this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
@@ -96,6 +100,7 @@ export class ActionbarComponent {
       }
       this.currentStatus = value.workflowStatus;
 
+      // subscribe to cancelledBy service
       this.subscription = this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
         this.cancelledBy = cancelledBy;
       });

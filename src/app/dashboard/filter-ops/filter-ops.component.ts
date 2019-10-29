@@ -124,6 +124,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
 
   /** getFromToParam
   /* formats the date-range paramter string
+  /* (dates formatted as ISO strings)
   */
   getFromToParam(val: number): string {
     const now =
@@ -139,7 +140,8 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   }
 
   /** hide
-  /* hides the filter menu and updates the search paramter string
+  /* - hides the filter menu
+  /* - updates the search paramter string
   */
   hide(): void {
     this.showing = false;
@@ -147,7 +149,8 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   }
 
   /** getDateParamString
-  /* formats the date parameter string
+  /* - formats the pre-set date-range parameter string
+  /* - checks the validity of the date (and formats) for manually-picked dates
   */
   getDateParamString(
     paramName: string | undefined,
@@ -170,7 +173,8 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   }
 
   /** updateParameters
-  /* build parameter string from the selected filters and emit the paramter changed event
+  /* - build parameter string from the selected filters
+  /* - emit the paramter changed event
   */
   updateParameters(): void {
     let paramString = '';
@@ -189,7 +193,8 @@ export class FilterOpsComponent implements FilterExecutionProvider {
   }
 
   /** toggle
-  /* toggle the showing variable and update the paramter string if set to not showing
+  /* - toggle the showing variable
+  /* - update the paramter string if set to not showing
   */
   toggle(): void {
     this.showing = !this.showing;

@@ -77,7 +77,8 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** ngOnInit
-  /* build the form / get the countries and languages
+  /* - build the form / get the countries and languages
+  /* - pre-translate the error notification message
   */
   ngOnInit(): void {
     this.buildForm();
@@ -112,7 +113,8 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** returnCountries
-  /* query the available countries
+  /* - query the available countries
+  /* - update the form
   */
   returnCountries(): void {
     this.countries.getCountries().subscribe(
@@ -134,7 +136,8 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** returnLanguages
-  /* query the available languages
+  /* - query the available languages
+  /* - update the form
   */
   returnLanguages(): void {
     this.countries.getLanguages().subscribe(
@@ -156,7 +159,8 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** buildForm
-  /* create a FormGroup
+  /* - create a FormGroup
+  /* - update the form
   */
   buildForm(): void {
     this.datasetForm = this.fb.group({
@@ -187,7 +191,9 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** reset
-  /* clear the notification, update the form and mark it as pristine
+  /* - clear the notification
+  /* - update the form
+  /* - mark it as pristine
   */
   reset(): void {
     this.notification = undefined;
@@ -205,26 +211,25 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** onSubmit
-  /* submit the form if valid
+  /* - submit the form if valid
+  /* - redirect to new page if dataset is new
+  /* - emit updated event if existing
+  /* - show success notification if existing
   */
   onSubmit(): void {
     if (!this.datasetForm.valid) {
       return;
     }
-
     const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
-
       this.isSaving = false;
     };
-
     this.notification = undefined;
     this.isSaving = true;
     if (this.isNew) {
       this.datasets.createDataset(this.datasetForm.value).subscribe((result) => {
         localStorage.removeItem(DATASET_TEMP_LSKEY);
-
         this.router.navigate(['/dataset/new/' + result.datasetId]);
       }, handleError);
     } else {
@@ -247,7 +252,8 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** cancel
-  /* remove current form data from local storage and redirect to the dashboard
+  /* - remove current form data from local storage
+  /* - redirect to the dashboard
   */
   cancel(): void {
     localStorage.removeItem(DATASET_TEMP_LSKEY);
@@ -255,7 +261,8 @@ export class DatasetformComponent implements OnInit {
   }
 
   /** getNotification
-  /* get the notifaction (unless saving) or an error notification if invalid
+  /* - return the notifiction (unless saving)
+  /* - return invalid notification if invalid
   */
   getNotification(): Notification | undefined {
     if (this.isSaving) {

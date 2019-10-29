@@ -78,7 +78,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /** getRunningExecutions
-  /* get all running executions and start polling again
+  /* - get all running executions
+  /* - manage load-tracking variables
+  /* - recommnece polling before returning
   */
   getRunningExecutions(): void {
     this.runningIsLoading = true;

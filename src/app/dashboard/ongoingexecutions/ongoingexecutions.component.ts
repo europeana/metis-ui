@@ -75,6 +75,9 @@ export class OngoingexecutionsComponent implements OnInit {
     this.contentCopied = true;
   }
 
+  /** byId
+  /* return the item id
+  */
   byId(_: number, item: WorkflowExecution): string {
     return item.id;
   }

@@ -40,6 +40,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
         value.executionProgress !== undefined &&
         old.executionProgress !== undefined &&
         value.executionProgress.processedRecords !== old.executionProgress.processedRecords;
+      // compare old and new for changes
       changed =
         value.externalTaskId !== old.externalTaskId ||
         value.pluginStatus !== old.pluginStatus ||
@@ -49,6 +50,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this._showPluginLog = value;
 
     if (changed) {
+      // re-commence polling if data changed
       this.startPolling();
     }
   }
@@ -77,7 +79,8 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   }
 
   /** closeLog
-  /* emit the closed event and unsubscribe
+  /* emit the closed event
+  /* unsubscribe from data source
   */
   closeLog(): void {
     this.closed.emit();
@@ -109,6 +112,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this.logTo = processed || 0;
 
     if (processed && isPluginCompleted(this.showPluginLog) && this.subscription) {
+      // unsubscribe if done
       this.subscription.unsubscribe();
     }
 
