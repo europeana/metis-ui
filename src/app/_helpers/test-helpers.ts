@@ -4,6 +4,9 @@ import { CodemirrorComponent } from 'ng2-codemirror';
 import { Observable } from 'rxjs';
 import { reduce } from 'rxjs/operators';
 
+/** gatherValues
+/* export function for deriving array of values from an observable
+*/
 export function gatherValues<Value>(observable: Observable<Value>): Value[] {
   const values: Value[] = [];
   observable.subscribe((value) => {
@@ -12,6 +15,9 @@ export function gatherValues<Value>(observable: Observable<Value>): Value[] {
   return values;
 }
 
+/** gatherValuesAsync
+/* export function for deriving array of values from an observable asychronously
+*/
 export function gatherValuesAsync<Value>(observable: Observable<Value>): Observable<Value[]> {
   return observable.pipe(
     reduce((acc: Array<Value>, value) => {
@@ -20,6 +26,9 @@ export function gatherValuesAsync<Value>(observable: Observable<Value>): Observa
   );
 }
 
+/** gatherError
+/* export function for getting the error from an observable
+*/
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function gatherError<Value>(observable: Observable<Value>): any {
   let error;
@@ -31,6 +40,9 @@ export function gatherError<Value>(observable: Observable<Value>): any {
   return error;
 }
 
+/** getCodeMirrorEditors
+/* export function for generating a representation of CodeMirror components
+*/
 export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
   return ([
     {
@@ -42,6 +54,9 @@ export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
   ] as any) as QueryList<CodemirrorComponent>;
 }
 
+/** MockHttpRequest
+/* class to imitate http requests
+*/
 export class MockHttpRequest {
   private hasBody = false;
   public isClosed = false;

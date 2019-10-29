@@ -13,6 +13,10 @@ export class AuthUserGuard implements CanActivate {
     private readonly redirectPreviousUrl: RedirectPreviousUrl
   ) {}
 
+  /** canActivate
+  /* - return true if user is logged in
+  /* - redirect to signin page if user is not logged in
+  */
   canActivate(): boolean {
     if (this.authentication.validatedUser()) {
       // logged in so return true

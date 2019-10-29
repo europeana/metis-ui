@@ -1,5 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+/** StringifyHttpError
+/* export function for stringifying http error responses
+*/
 export function StringifyHttpError(err: HttpErrorResponse | false): string {
   let errmsg;
   if (err === false) {

@@ -11,6 +11,10 @@ export class AuthVisitorGuard implements CanActivate {
     private readonly authentication: AuthenticationService
   ) {}
 
+  /** canActivate
+  /* - return true if user is not logged in
+  /* - redirect to environment-specified page if not logged in
+  */
   canActivate(): boolean {
     if (!this.authentication.validatedUser()) {
       return true;
