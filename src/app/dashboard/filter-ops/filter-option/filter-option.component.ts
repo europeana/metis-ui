@@ -1,3 +1,6 @@
+/** FilterOptionComponent
+/* a single filter for the dashboard executions overview data.
+*/
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 
 import {

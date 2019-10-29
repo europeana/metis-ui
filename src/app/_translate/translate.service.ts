@@ -40,6 +40,10 @@ export class TranslateService {
     window.location.reload();
   }
 
+  /** instant
+  /* retrieves the translated string from the _translations hash according to the specified key
+  /* returns the key if no translation is found
+  */
   public instant(key: string): string {
     const translation = key;
     if (this._translations[this.currentLang] && this._translations[this.currentLang]![key]) {

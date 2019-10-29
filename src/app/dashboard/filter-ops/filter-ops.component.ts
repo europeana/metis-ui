@@ -1,4 +1,7 @@
-/** A filter menu for the dashboard executions overview data.
+/** FilterOpsComponent
+/*  a filter menu for the dashboard executions overview data.
+/*
+/*  3 fields can be filtered on:
 /*  3 fields can be filtered on:
 /*  - dates
 /*  - plugin type

@@ -1,3 +1,9 @@
+/** ThemeSelectorComponent
+/*
+/* a component for altering the theme of the CodeMirror XML editor
+/* the theme can be the default or an alternative
+/* the theme is set with a menu drop-down component
+*/
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
