@@ -34,6 +34,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private readonly documentTitleService: DocumentTitleService
   ) {}
 
+  /** ngOnInit
+  /* - set the document title
+  /* - load the running executions
+  /* - normalise / set the usernName variable
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
 
@@ -49,11 +54,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** ngOnDestroy
+  /* clear the timeout
+  */
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
     this.runningTimer = undefined;
   }
 
+  /** checkUpdateLog
+  /* set the showPluginLog variable
+  */
   checkUpdateLog(executions: WorkflowExecution[]): void {
     if (this.showPluginLog) {
       const showingId = this.showPluginLog.externalTaskId;
@@ -66,7 +77,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  //  get all running executions and start polling again
+  /** getRunningExecutions
+  /* get all running executions and start polling again
+  */
   getRunningExecutions(): void {
     this.runningIsLoading = true;
     this.workflows.getAllExecutionsCollectingPages(true).subscribe(
@@ -89,6 +102,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** setSelectedExecutionDsId
+  /* set the selectedExecutionDsId variable to the specified id
+  */
   setSelectedExecutionDsId(id: string): void {
     this.selectedExecutionDsId = id;
   }

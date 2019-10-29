@@ -103,9 +103,6 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     });
   }
 
-  /** restoreGroup
-  /* 
-  */
   restoreGroup(group: string, callerIndex: number): void {
     this.getInputGroup(group).forEach((item) => {
       if (item.index !== callerIndex && !item.valueIsSet() && item.getVal().length > 0) {
@@ -114,6 +111,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     });
   }
 
+  /** reset
+  /* clear parameters and update the service parameter string
+  */
   reset(): void {
     this.optionComponents.forEach((item) => {
       item.clearParam();
@@ -122,6 +122,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     this.updateParameters();
   }
 
+  /** getFromToParam
+  /* formats the date-range paramter string
+  */
   getFromToParam(val: number): string {
     const now =
       val === 1
@@ -135,11 +138,17 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     return '&fromDate=' + then.toISOString() + '&toDate=' + now.toISOString();
   }
 
+  /** hide
+  /* hides the filter menu and updates the search paramter string
+  */
   hide(): void {
     this.showing = false;
     this.updateParameters();
   }
 
+  /** getDateParamString
+  /* formats the date parameter string
+  */
   getDateParamString(
     paramName: string | undefined,
     paramNameFallback: string,
@@ -160,6 +169,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     return res;
   }
 
+  /** updateParameters
+  /* build parameter string from the selected filters and emit the paramter changed event
+  */
   updateParameters(): void {
     let paramString = '';
     Object.entries(this.params).forEach((entry: [string, FilterParamValue[]]) => {
@@ -176,6 +188,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     this.overviewParams.emit(paramString);
   }
 
+  /** toggle
+  /* toggle the showing variable and update the paramter string if set to not showing
+  */
   toggle(): void {
     this.showing = !this.showing;
     if (!this.showing) {
