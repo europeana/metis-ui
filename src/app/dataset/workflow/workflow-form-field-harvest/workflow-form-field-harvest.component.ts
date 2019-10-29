@@ -16,14 +16,23 @@ export class WorkflowFormFieldHarvestComponent {
 
   constructor(private readonly translate: TranslateService) {}
 
+  /** onFieldChanged
+  /* emit fieldChanged event
+  */
   onFieldChanged(fieldName: string): void {
     this.fieldChanged.emit(fieldName);
   }
 
+  /** isProtocolHTTP
+  /* return true if protocol is http
+  */
   isProtocolHTTP(): boolean {
     return this.workflowForm!.value.pluginType === PluginType.HTTP_HARVEST;
   }
 
+  /** getImportSummary
+  /* returns markup representation of import parameters
+  */
   getImportSummary(): string {
     let res = this.translate.instant('harvesturl') + ': ';
 

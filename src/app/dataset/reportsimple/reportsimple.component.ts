@@ -46,6 +46,12 @@ export class ReportSimpleComponent {
     }
   }
 
+  /** closeReport
+  /* - clears errors
+  *  - clears message
+  *  - clears notification
+  *  - emits close event
+  */
   closeReport(): void {
     this.errors = null;
     this.message = '';
@@ -54,6 +60,10 @@ export class ReportSimpleComponent {
     this.closeReportSimple.emit();
   }
 
+  /** copyReport
+  /* - copies report to clipboard
+  *  - clears notification
+  */
   copyReport(): void {
     const element = this.contentRef.nativeElement;
     window.getSelection().removeAllRanges();

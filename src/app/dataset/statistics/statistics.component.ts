@@ -31,7 +31,8 @@ export class StatisticsComponent implements OnInit {
   // load the data on statistics and display this in a card (=readonly editor)
   loadStatistics(): void {
     this.setLoading(true);
-    const httpErrorHandler = (err: HttpErrorResponse): void => {
+
+    const httpErrorHandling = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
       this.setLoading(false);
@@ -56,8 +57,8 @@ export class StatisticsComponent implements OnInit {
           const statistics = resultStatistics;
           this.statistics = statistics;
           this.setLoading(false);
-        }, httpErrorHandler);
-      }, httpErrorHandler);
+        }, httpErrorHandling);
+      }, httpErrorHandling);
   }
 
   loadMoreAttrs(xPath: string): void {
