@@ -14,6 +14,9 @@ export class PageNotFoundComponent implements OnInit {
     this.badurl = router.url;
   }
 
+  /** ngOnInit
+  /* set the document title
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Page Not Found');
   }

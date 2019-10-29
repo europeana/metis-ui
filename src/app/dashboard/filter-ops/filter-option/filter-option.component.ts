@@ -29,6 +29,9 @@ export class FilterOptionComponent implements CanHaveError {
 
   hasError = false;
 
+  /** valueIndex
+  /* return the index of the specified parameter within the params array
+  */
   valueIndex(name: FilterParamType, value: string, inputRef?: number): number {
     let res = -1;
     this.params[name].forEach((item: FilterParamValue, i: number) => {
@@ -38,6 +41,10 @@ export class FilterOptionComponent implements CanHaveError {
     });
     return res;
   }
+
+  /** valueIsSet
+  /* indicate if the value is set
+  */
   valueIsSet(): boolean {
     return this.valueIndex(this.filterName, this.getVal(), this.index) > -1;
   }

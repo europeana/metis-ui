@@ -31,6 +31,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     this.params = Object.assign({}, ...this.conf.map((s) => ({ [s.name]: [] })));
   }
 
+  /** anyValueSet
+  /* indicate if any parameter is set
+  */
   anyValueSet(): boolean {
     let res = false;
     Object.entries(this.params).forEach(([name, val]) => {
@@ -41,6 +44,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     return res;
   }
 
+  /** anyErrors
+  /* indicate if any optionComponents has an error
+  */
   anyErrors(): boolean {
     let res = false;
     if (this.optionComponents) {
@@ -53,6 +59,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     return res;
   }
 
+  /** getSetSummary
+  /* return a comma-separated summary of parameters if component isn't showing
+  */
   getSetSummary(): string {
     if (this.showing) {
       return '';
@@ -72,6 +81,9 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     return res.join(', ');
   }
 
+  /** getInputGroup
+  /* return array of filterOption components belonging to the specified group
+  */
   getInputGroup(group: string): FilterOptionComponent[] {
     const res: FilterOptionComponent[] = [];
     this.optionComponents.toArray().forEach((item) => {
@@ -82,12 +94,18 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     return res;
   }
 
+  /** getInputGroupElements
+  /* return array of native html elements belonging to the specified group
+  */
   getInputGroupElements(group: string): HTMLElement[] {
     return this.getInputGroup(group).map((item) => {
       return item.input.nativeElement;
     });
   }
 
+  /** restoreGroup
+  /* 
+  */
   restoreGroup(group: string, callerIndex: number): void {
     this.getInputGroup(group).forEach((item) => {
       if (item.index !== callerIndex && !item.valueIsSet() && item.getVal().length > 0) {

@@ -13,10 +13,16 @@ export class GridrowComponent {
   @Input() expanded: boolean;
   @Output() closeExpanded: EventEmitter<string> = new EventEmitter();
 
+  /** getPluginStatusClass
+  /* return a css class based on the plugin status
+  */
   getPluginStatusClass(plugin: PluginExecutionOverview): string {
     return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
   }
 
+  /** toggleExpand
+  /* emit the close-expanded event unless the click target was a link
+  */
   toggleExpand(e: { target: HTMLInputElement }): void {
     if (e.target.nodeName === 'A') {
       return;

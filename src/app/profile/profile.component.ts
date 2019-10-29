@@ -34,7 +34,6 @@ export class ProfileComponent implements OnInit {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Profile');
-
     this.createForm();
   }
 

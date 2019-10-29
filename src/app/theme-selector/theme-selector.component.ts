@@ -13,9 +13,17 @@ export class ThemeSelectorComponent {
     this.themeSet.emit(defaultTheme);
     this.showing = false;
   }
+
+  /** hide
+  /* set the showing variable to false
+  */
   hide(): void {
     this.showing = false;
   }
+
+  /** show
+  /* set the showing variable to true
+  */
   show(): void {
     this.showing = true;
   }

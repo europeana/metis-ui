@@ -35,26 +35,47 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
 
   constructor(private readonly workflows: WorkflowService, private readonly errors: ErrorService) {}
 
+  /** ngAfterViewInit
+  /* load the data
+  */
   ngAfterViewInit(): void {
     this.load();
   }
 
+  /** ngOnDestroy
+  /* clear the timer
+  */
   ngOnDestroy(): void {
     clearTimeout(this.finishedTimer);
   }
 
+  /** setOverviewParams
+  /* - clear the timer
+  *  - set the parameter string
+  *  - re-initiate the load
+  */
   setOverviewParams(overviewParams: string): void {
     clearTimeout(this.finishedTimer);
     this.overviewParams = overviewParams;
     this.load();
   }
 
+  /** loadNextPage
+  /* - increment the currentPage variable
+  *  - set the isLoadingMore variable to true
+  *  - clear the timeout
+  *  - re-initiate the load
+  */
   loadNextPage(): void {
-    this.currentPage++;
+    this.currentPage ++;
     this.isLoadingMore = true;
     clearTimeout(this.finishedTimer);
     this.load();
   }
+
+  /** load
+  /* subscribe to the dataset overview data
+  */
   load(): void {
     this.workflows
       .getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams)
@@ -77,6 +98,9 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
       );
   }
 
+  /** setSelectedDsId
+  /* set the selected dataset id
+  */
   setSelectedDsId(selectedDsId: string): void {
     this.selectedDsId = selectedDsId;
     this.rows.forEach((r) => {

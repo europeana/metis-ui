@@ -66,6 +66,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.msgAlreadyRegistered = this.translate.instant('registrationalready');
   }
 
+  /** ngOnDestroy
+  /* clear the timeout
+  */
   ngOnDestroy(): void {
     clearTimeout(this.timeout);
   }
