@@ -86,6 +86,12 @@ export class DatasetComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** ngOnInit
+  /* - set the document title
+  *  - re-route the page to the edit page if creating a new dataset
+  *  - set the active tab
+  *  - load the dataset data
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
 
@@ -108,6 +114,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** setReportMsg
+  /* sets the message for the reportMsg
+  */
   setReportMsg(req: SimpleReportRequest): void {
     if (req.message) {
       this.reportMsg = req.message;
@@ -132,19 +141,32 @@ export class DatasetComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** clearReport
+  /* - clear the report message
+  *  - clear the report errors
+  */
   clearReport(): void {
     this.reportMsg = '';
     this.reportErrors = undefined;
   }
 
+  /** returnToTop
+  /* call native scrollIntoView method on the page anchor
+  */
   returnToTop(): void {
     this.scrollToTopAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
+  /** setLinkCheck
+  /* call setLinkCheck on the workflow form reference
+  */
   setLinkCheck(linkCheckIndex: number): void {
     this.workflowFormRef.setLinkCheck(linkCheckIndex);
   }
 
+  /** ngOnDestroy
+  /* unsubscribe from subscriptions
+  */
   ngOnDestroy(): void {
     if (this.harvestSubscription) {
       this.harvestSubscription.unsubscribe();
@@ -157,6 +179,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** loadData
+  /* subscribe to data services
+  */
   loadData(): void {
     this.datasets.getDataset(this.datasetId, true).subscribe(
       (result) => {
@@ -202,10 +227,16 @@ export class DatasetComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** datasetUpdated
+  /* invoke load-data function
+  */
   datasetUpdated(): void {
     this.loadData();
   }
 
+  /** loadHarvestData
+  /* invoke load-harvest-data function
+  */
   loadHarvestData(): void {
     this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(
       (resultHarvest) => {
@@ -221,6 +252,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** loadHarvestData
+  /* invoke load-workflow-data function
+  */
   loadWorkflow(): void {
     this.workflows.getWorkflowForDataset(this.datasetId).subscribe(
       (workflow) => {
@@ -236,6 +270,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** loadLastExecution
+  /* invoke load-last-execution function
+  */
   loadLastExecution(): void {
     this.workflows.getLastDatasetExecution(this.datasetId).subscribe(
       (execution) => {
@@ -259,6 +296,10 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** startWorkflow
+  /* - send request to start workflow
+  *  - subscribe to harvest and execution data
+  */
   startWorkflow(): void {
     this.isStarting = true;
     this.workflows.startWorkflow(this.datasetId).subscribe(
@@ -276,6 +317,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** toggleFavorite
+  /* adds or removes datasetData from favourites
+  */
   toggleFavorite(): void {
     this.isFavorite = !this.isFavorite;
     if (this.isFavorite) {

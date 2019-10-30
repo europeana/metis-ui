@@ -1,3 +1,7 @@
+/** LANG_EN
+/*
+/* list of translatable copy 
+*/
 export const LANG_EN_NAME = 'en';
 
 export const LANG_EN_TRANS = {

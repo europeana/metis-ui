@@ -17,6 +17,7 @@ describe('PasswordCheckComponent', () => {
     pcc = fixture.debugElement.componentInstance;
   });
 
+  // check the component password strength thresholds
   it('should have the right strength', () => {
     pcc.passwordToCheck = '!abc';
     expect(pcc.getStrength()).toBe('Very bad');
@@ -28,6 +29,7 @@ describe('PasswordCheckComponent', () => {
     expect(pcc.getStrength()).toBe('Strong');
   });
 
+  // check the component colour scheme
   it('should show the right colors', () => {
     pcc.passwordToCheck = 'abcd1234!';
     expect(pcc.getBarColor(0)).toBe('#9F0');
@@ -37,6 +39,7 @@ describe('PasswordCheckComponent', () => {
     expect(pcc.getBarColor(4)).toBe('#ddd');
   });
 
+  // check the component toggle function
   it('should toggle the info', () => {
     expect(pcc.info).toBe(false);
     pcc.toggleInfo();

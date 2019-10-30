@@ -21,6 +21,11 @@ export class ReportSimpleComponent {
 
   @Output() closeReportSimple = new EventEmitter<void>();
 
+  /** reportMsg
+  /* setter for the report message:
+  /* - checks if the specified message is non-blank
+  /* - updates the isVisible variable
+  */
   @Input() set reportMsg(msg: string) {
     if (msg && msg.length > 0) {
       this.isVisible = true;
@@ -28,6 +33,12 @@ export class ReportSimpleComponent {
     }
   }
 
+  /** reportErrors
+  /* setter for the report errors:
+  /* - checks if the specified errors is non-empty
+  /* - updates the isVisible variable
+  /* - updates the notification variable
+  */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() set reportErrors(errors: any) {
     if (errors) {
@@ -39,6 +50,11 @@ export class ReportSimpleComponent {
     }
   }
 
+  /** reportLoading
+  /* setter for the report loading variable:
+  /* - updates the loading variable
+  /* - updates the isVisible variable
+  */
   @Input() set reportLoading(loading: boolean) {
     this.loading = loading;
     if (loading) {
@@ -46,6 +62,12 @@ export class ReportSimpleComponent {
     }
   }
 
+  /** closeReport
+  /* - clears errors
+  *  - clears message
+  *  - clears notification
+  *  - emits close event
+  */
   closeReport(): void {
     this.errors = null;
     this.message = '';
@@ -54,6 +76,10 @@ export class ReportSimpleComponent {
     this.closeReportSimple.emit();
   }
 
+  /** copyReport
+  /* - copies report to clipboard
+  *  - clears notification
+  */
   copyReport(): void {
     const element = this.contentRef.nativeElement;
     window.getSelection().removeAllRanges();

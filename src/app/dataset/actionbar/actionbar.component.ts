@@ -61,10 +61,17 @@ export class ActionbarComponent {
     }
   }
 
+  /** lastExecutionData
+  /* accessor for _lastExecutionData variable
+  */
   get lastExecutionData(): WorkflowExecution | undefined {
     return this._lastExecutionData;
   }
 
+  /** assignExecutionData
+  /* - extract the model to the component
+  /* - optionally show the log
+  */
   assignExecutionData(value: WorkflowExecution): void {
     this.currentPlugin = getCurrentPlugin(value);
     this.currentStatus = this.currentPlugin.pluginStatus;
@@ -76,6 +83,7 @@ export class ActionbarComponent {
     const { executionProgress } = this.currentPlugin;
 
     if (executionProgress) {
+      // extract progress-tracking variables
       this.totalErrors = executionProgress.errors;
       this.hasReport = this.totalErrors > 0 || !!this.currentPlugin.hasReport;
       this.totalProcessed = executionProgress.processedRecords - this.totalErrors;
@@ -93,6 +101,7 @@ export class ActionbarComponent {
       }
       this.currentStatus = value.workflowStatus;
 
+      // subscribe to cancelledBy service
       this.subscription = this.workflows.getWorkflowCancelledBy(value).subscribe((cancelledBy) => {
         this.cancelledBy = cancelledBy;
       });
@@ -111,6 +120,9 @@ export class ActionbarComponent {
     }
   }
 
+  /** beginWorkflow
+  /* clear canceeled by, unsubscribe and emit startWorkflow event
+  */
   beginWorkflow(): void {
     this.cancelledBy = '';
     if (this.subscription) {
@@ -119,6 +131,9 @@ export class ActionbarComponent {
     this.startWorkflow.emit();
   }
 
+  /** cancelWorkflow
+  /* cancel the workflow
+  */
   cancelWorkflow(): void {
     this.workflows.promptCancelThisWorkflow(
       this.lastExecutionData!.id,
@@ -127,15 +142,23 @@ export class ActionbarComponent {
     );
   }
 
+  /** showLog
+  /* show the log
+  */
   showLog(): void {
     this.setShowPluginLog.emit(this.currentPlugin);
   }
 
+  /** openFailReport
+  /* open the fail report
+  */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }
 
-  // after double clicking, copy the execution and task id to the clipboard
+  /** copyInformation
+  /* after double clicking, copy the execution and task id to the clipboard
+  */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;

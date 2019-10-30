@@ -32,19 +32,33 @@ export class NotificationComponent implements OnDestroy {
     }
   }
 
+  /** notification
+  /* getter for notification
+  */
   get notification(): Notification | undefined {
     return this._notification;
   }
 
+  /** reset
+  /* - clear the timeout
+  *  - set hidden variable to false
+  */
   reset(): void {
     clearTimeout(this.timeout);
     this.hidden = false;
   }
 
+  /** ngOnDestroy
+  /* call the rest function
+  */
   ngOnDestroy(): void {
     this.reset();
   }
 
+  /** close
+  /* - emit the closed event if there's a non-sticky notification
+  *  - call the reset function if there's a non-sticky notification
+  */
   close(): void {
     if (this.notification && !this.notification.sticky) {
       this.closed.emit();

@@ -16,14 +16,23 @@ export class WorkflowFormFieldComponent {
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 
+  /** ctrlSetLinkCheck
+  /* emit link check event
+  */
   ctrlSetLinkCheck(index: number): void {
     this.setLinkCheck.emit(index);
   }
 
+  /** scrollToInput
+  /* calls scrollIntoView event of native element
+  */
   scrollToInput(): void {
     this.pluginElement.nativeElement.scrollIntoView(false);
   }
 
+  /** isInactive
+  /* returns whether field is inactive
+  */
   isInactive(): boolean {
     if (this.conf.name === 'pluginLINK_CHECKING') {
       return false;
@@ -31,6 +40,9 @@ export class WorkflowFormFieldComponent {
     return !this.workflowForm.get(this.conf.name)!.value;
   }
 
+  /** onFieldChanged
+  /* emits fieldChanged event
+  */
   onFieldChanged(fieldName: string): void {
     this.fieldChanged.emit(fieldName);
   }

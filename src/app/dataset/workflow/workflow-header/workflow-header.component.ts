@@ -30,6 +30,10 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   isStuck: boolean;
   DragTypeEnum = DragType;
 
+  /** togglePlugin
+  /* - toggles the field form value
+  *  - marks form as dirty
+  */
   togglePlugin(plugin: string): void {
     if (plugin !== 'pluginLINK_CHECKING') {
       this.workflowForm.get(plugin)!.setValue(!this.workflowForm.get(plugin)!.value);
@@ -37,10 +41,16 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     }
   }
 
+  /** setWorkflowForm
+  /* setter for the workflowForm
+  */
   setWorkflowForm(workflowForm: FormGroup): void {
     this.workflowForm = workflowForm;
   }
 
+  /** isActive
+  /* returns true if specified plugin value is set
+  */
   isActive(plugin: WorkflowFieldDataName): boolean {
     if (this.workflowForm) {
       return this.workflowForm.value[plugin];
@@ -48,7 +58,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     return false;
   }
 
-  getAdjustableLabel(index: number, lowerCase?: boolean): string {
+  /** getAdjustableLabel
+  /* - returns the label of the plugin at the specified index
+   * - optionally formats the result as lower case
+  */
+  getAdjustableLabel(index: number, lowerCase = false): string {
     let res = '';
     if (index === 0 && this.workflowForm && this.workflowForm.value.pluginType) {
       res = this.workflowForm.value.pluginType;
@@ -58,6 +72,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     return lowerCase ? res.toLowerCase() : res;
   }
 
+  /** clearAll
+  /* - sets all form values to false
+  *  - marks form as dirty
+  *  - invokes removeLinkCheck
+  */
   clearAll(): void {
     const hasSelected = Object.values(this.workflowForm.value).indexOf(true) > -1;
     this.conf.forEach((plugin) => {
@@ -69,6 +88,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     this.removeLinkCheck();
   }
 
+  /** selectAll
+  /* - enables all form values
+  *  - sets all form values to true
+  *  - marks the form as dirty if anything changed
+  */
   selectAll(): void {
     const hasUnselected = Object.values(this.workflowForm.value).indexOf(false) > -1;
     this.conf.forEach((plugin) => {
@@ -80,6 +104,9 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     }
   }
 
+  /** dropIndexAdjust
+  /* returns @index with 1 deducted if it's greater than the link-checking index
+  */
   dropIndexAdjust(index: number): number {
     return index >
       this.conf.findIndex((plugin) => {
@@ -89,24 +116,39 @@ export class WorkflowHeaderComponent implements AfterViewInit {
       : index;
   }
 
+  /** linkCheckingEnabled
+  /* returns true if link-checking is enabled
+  */
   linkCheckingEnabled(): boolean {
     return this.conf.filter((plugin) => plugin.dragType === DragType.dragCopy).length > 0;
   }
 
+  /** scrollToTop
+  /* emit the returnToTop event
+  */
   scrollToTop(): void {
     this.returnToTop.emit();
   }
 
+  /** stepsDragOver
+  /* drag event handling: indicate if dragging over an orb
+  */
   stepsDragOver(e: Event): void {
     this.isDraggingOverOrbs = true;
     e.preventDefault();
   }
 
+  /** stepsDragOver
+  /* drag event handling: indicate if not dragging over an orb
+  */
   stepsDragLeave(e: Event): void {
     this.isDraggingOverOrbs = false;
     e.preventDefault();
   }
 
+  /** dragStart
+  /* set ghost image on drag
+  */
   dragStart(e: EventDragDT): void {
     if (e.dataTransfer) {
       this.isDragging = true;
@@ -125,12 +167,18 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     }
   }
 
+  /** dragEnd
+  /* reset drag-handling variables
+  */
   dragEnd(): void {
     this.isDragging = false;
     this.isDraggingOverOrbs = false;
   }
 
-  toggleDragOver(e: Event, tf?: boolean): void {
+  /** toggleDragOver
+  /* removes or adds a css class to the specified element
+  */
+  toggleDragOver(e: Event, tf = false): void {
     const el = e.target as HTMLElement;
     const clss = 'drag-over';
     if (tf) {
@@ -141,6 +189,10 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     e.preventDefault();
   }
 
+  /** drop
+  /* - handle drop event
+   * - emit link-check event
+  */
   drop(e: EventDragDT, pluginIndex: number): void {
     if (this.isDragging) {
       this.isDragging = false;
@@ -150,10 +202,16 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     }
   }
 
+  /** removeLinkCheck
+  /* emit link-check event (with negative parameter)
+  */
   removeLinkCheck(): void {
     this.setLinkCheck.emit(-1);
   }
 
+  /** ngAfterViewInit
+  /* bind scroll event for orb display
+  */
   ngAfterViewInit(): void {
     const el = this.elRef.nativeElement;
     window.addEventListener('scroll', () => {

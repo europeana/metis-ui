@@ -1,3 +1,5 @@
+/** Component to display workflow executions
+ */
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
@@ -26,11 +28,17 @@ export class ExecutionsDataGridComponent {
 
   contentCopied = false;
 
+  /** copyInformation
+  /* copy current execution data to the clipboard
+  */
   copyInformation(type: string, id: string, extId = ''): void {
     copyExecutionAndTaskId(type, extId, id);
     this.contentCopied = true;
   }
 
+  /** hasPreview
+  /* returns indication of preview
+  */
   hasPreview(plugin: PluginExecution): boolean {
     return (
       plugin.executionProgress !== undefined &&
@@ -38,6 +46,9 @@ export class ExecutionsDataGridComponent {
     );
   }
 
+  /** goToPreview
+  /* fire the preview event
+  */
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
     const previewFilters: PreviewFilters = {
       executionId: execution.id,
@@ -47,6 +58,9 @@ export class ExecutionsDataGridComponent {
     this.openPreview.emit(previewFilters);
   }
 
+  /** openFailReport
+  /* open the fail report
+  */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }

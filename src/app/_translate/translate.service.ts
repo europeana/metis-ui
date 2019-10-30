@@ -24,15 +24,26 @@ export class TranslateService {
     this._currentLang = localStorage.getItem(CURRENT_LANG) || 'en';
   }
 
+  /** changeLang
+  /* stores the specified language in local storage
+  /* calls reload
+  */
   public changeLang(lang: string): void {
     localStorage.setItem(CURRENT_LANG, lang);
     this.reload();
   }
 
+  /** reload
+  /* reloads the page
+  */
   reload(): void {
     window.location.reload();
   }
 
+  /** instant
+  /* retrieves the translated string from the _translations hash according to the specified key
+  /* returns the key if no translation is found
+  */
   public instant(key: string): string {
     const translation = key;
     if (this._translations[this.currentLang] && this._translations[this.currentLang]![key]) {

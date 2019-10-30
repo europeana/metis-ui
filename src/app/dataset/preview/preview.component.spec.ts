@@ -179,7 +179,7 @@ describe('PreviewComponent', () => {
     component.executionsFilterTimer.unsubscribe();
   }));
 
-  it('should show sample comparison', (): void => {
+  it('should show sample comparison', () => {
     expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(0);
     component.datasetData = mockDataset;
     component.previewFilters = previewFilterData;

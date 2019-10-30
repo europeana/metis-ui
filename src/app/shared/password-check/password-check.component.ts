@@ -30,6 +30,9 @@ export class PasswordCheckComponent {
     }
   }
 
+  /** getBarColor
+  /* maps the specified numeric parameter to a colour
+  */
   getBarColor(i: number): string {
     if (i <= this.index) {
       return COLORS[this.index];
@@ -38,10 +41,16 @@ export class PasswordCheckComponent {
     }
   }
 
+  /** getStrength
+  /* return the text for this index
+  */
   getStrength(): string {
     return TEXTS[this.index];
   }
 
+  /** toggleInfo
+  /* toggles the value of the info variable
+  */
   toggleInfo(): void {
     this.info = !this.info;
   }

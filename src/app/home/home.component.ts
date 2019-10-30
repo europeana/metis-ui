@@ -31,6 +31,9 @@ export class HomeComponent implements OnInit {
     this.bannerlinktext = 'Register to Metis here';
   }
 
+  /** ngOnInit
+  /* set the document title
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Welcome');
   }

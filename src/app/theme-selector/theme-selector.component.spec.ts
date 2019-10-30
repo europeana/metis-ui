@@ -21,10 +21,12 @@ describe('ThemeSelectorComponent', () => {
     fixture.detectChanges();
   });
 
+  // check component is created
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
+  // check component hides
   it('should hide', () => {
     component.showing = true;
     expect(component.showing).toBeTruthy();
@@ -32,12 +34,14 @@ describe('ThemeSelectorComponent', () => {
     expect(component.showing).toBeFalsy();
   });
 
+  // check component shows
   it('should show', () => {
     expect(component.showing).toBeFalsy();
     component.show();
     expect(component.showing).toBeTruthy();
   });
 
+  // check component hides when the theme is set
   it('should hide when the theme is set', () => {
     component.showing = true;
     expect(component.showing).toBeTruthy();

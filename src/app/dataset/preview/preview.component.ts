@@ -88,6 +88,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
   executionsFilterTimer: Subscription;
   pluginsFilterTimer: Subscription;
 
+  /** ngOnInit
+  /* - load the config
+  *  - prepare translated messages
+  *  - begin timer on available workflow executions
+  *  - prefill the filters
+  *  - transform any set tempXSLT
+  */
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
     this.nosample = this.translate.instant('nosample');
@@ -103,6 +110,11 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** ngOnDestroy
+  /* - clear the timeout
+  *  - revoke created urls
+  *  - unsubscrube from the filters
+  */
   ngOnDestroy(): void {
     clearTimeout(this.timeout);
 
@@ -114,9 +126,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.unsubscribeFilters([this.executionsFilterTimer, this.pluginsFilterTimer]);
   }
 
+  /** unsubscribeFilters
+  /* unsubscrube from the specified filters
+  */
   unsubscribeFilters(filterSubscriptions: Array<Subscription>): void {
     filterSubscriptions
       .filter((x) => {
+        // remove any nulls
         return x;
       })
       .forEach((fs) => {
@@ -124,7 +140,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
       });
   }
 
-  // populate a filter with executions based on selected workflow
+  /** addExecutionsFilter
+  /* - populate a filter with executions based on the selected workflow
+  /* - update load-tracking variable
+  */
   addExecutionsFilter(): void {
     this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
       (result) => {
@@ -138,7 +157,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     );
   }
 
-  // populate a filter with plugins based on selected execution
+  /** addPluginsFilter
+  /* - populate a filter with plugins based on selected execution
+  *  - unsubscribe immediately if all plugins have completed
+  */
   addPluginsFilter(executionHistory: WorkflowExecutionHistory): void {
     this.isLoading = true;
     this.filterDateOpen = false;
@@ -152,6 +174,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedComparison = undefined;
     this.previewFilters.executionId = executionHistory.workflowExecutionId;
 
+    // unsubscribe from any previous subscription
     this.unsubscribeFilters([this.pluginsFilterTimer]);
 
     this.pluginsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
@@ -187,12 +210,21 @@ export class PreviewComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** errorHandling
+  /* generic http error handler:
+  /* - update load-tracking variable
+  /* - set notification variable to new http error notification based on specified error
+  */
   errorHandling(err: HttpErrorResponse): void {
     const error = this.errors.handleError(err);
     this.notification = httpErrorNotification(error);
     this.isLoading = false;
   }
 
+  /** addPluginsFilter
+  /* - populate a filter with plugins based on selected execution
+  *  - unsubscribe immediately if all plugins have completed
+  */
   getXMLSamplesCompare(plugin: PluginType, workflowExecutionId: string): void {
     this.filterCompareOpen = false;
     this.isLoading = true;
@@ -200,13 +232,18 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.workflows
       .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
       .subscribe((result) => {
+        // strip "new lines"
         this.allSampleComparisons = this.undoNewLines(result);
         this.isLoading = false;
         this.selectedComparison = plugin;
       }, this.errorHandling);
   }
 
-  // get and show samples based on plugin
+  /** getXMLSamples
+  /* - closes open dropdowns
+  *  - get and show samples based on plugin
+  *  - loads historyVersions based on plugin
+  */
   getXMLSamples(plugin: PluginType): void {
     let loadingSamples = true;
     let loadingHistories = true;
@@ -246,7 +283,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }, this.errorHandling);
   }
 
-  // transform samples on the fly based on temp saved XSLT
+  /** transformSamples
+  /* - transform samples on the fly based on temp saved XSLT
+  */
   transformSamples(type: string): void {
     const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
@@ -277,7 +316,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
       }, handleError);
   }
 
-  // prefill filters, when temporarily saved options are available
+  /** prefillFilters
+  /* prefill the filters when temporarily saved options are available
+  */
   prefillFilters(): void {
     if (this.previewFilters && this.previewFilters.startedDate && this.previewFilters.executionId) {
       this.selectedDate = this.previewFilters.startedDate;
@@ -293,8 +334,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  // expand the editor, so you can view more lines of code
-  // only one sample can be expanded
+  /** expandSample
+  /* - expand the editor, so you can view more lines of code
+  *  - only one sample can be expanded at any given moment
+  */
   expandSample(index: number): void {
     const sample = this.allSamples[index].xmlRecord;
     const samples = this.undoNewLines(this.allSamples);
@@ -303,6 +346,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
     samples[index].xmlRecord = sample;
   }
 
+  /** onThemeSet
+  /* sets the theme to the default or the alternative
+  */
   onThemeSet(toDefault: boolean): void {
     const isDef = this.editorPrefs.currentThemeIsDefault();
     if (toDefault) {
@@ -316,6 +362,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** undoNewLines
+  /* clears new-line markers in the specified samples
+  */
   undoNewLines(samples: XmlSample[]): XmlSample[] {
     const clearSamples = samples;
     for (let i = 0; i < samples.length; i++) {
@@ -324,32 +373,49 @@ export class PreviewComponent implements OnInit, OnDestroy {
     return clearSamples;
   }
 
+  /** gotoMapping
+  /* redirects to the mapping
+  */
   gotoMapping(): void {
     this.router.navigate(['/dataset/mapping/' + this.datasetData.datasetId]);
   }
 
+  /** toggleFilterDate
+  /* toggles the date filter open state
+  */
   toggleFilterDate(): void {
     this.onClickedOutside();
     this.filterDateOpen = !this.filterDateOpen;
   }
 
+  /** toggleFilterPlugin
+  /* toggles the plugin filter open state
+  */
   toggleFilterPlugin(): void {
     this.onClickedOutside();
     this.filterPluginOpen = !this.filterPluginOpen;
   }
 
+  /** toggleFilterCompare
+  /* toggles the compare filter open state
+  */
   toggleFilterCompare(): void {
     this.onClickedOutside();
     this.filterCompareOpen = !this.filterCompareOpen;
   }
 
-  // close all open filters when click outside the filters
+  /** onClickedOutside
+  /* close all open filters
+  */
   onClickedOutside(): void {
     this.filterDateOpen = false;
     this.filterPluginOpen = false;
     this.filterCompareOpen = false;
   }
 
+  /** extractLinkFromElement
+  /* uses regex to get link from markup
+  */
   private extractLinkFromElement(element: Element): string | undefined {
     if (element && element.classList.contains('cm-string')) {
       const text = element.textContent || '';
@@ -361,7 +427,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
     return undefined;
   }
 
-  // if the click is on a http(s) link, open the link in a new tab
+  /** handleCodeClick
+  /* if the click is on a http(s) link, open the link in a new tab
+  */
   handleCodeClick(event: MouseEvent): void {
     const target = event.target as Element;
     const link = this.extractLinkFromElement(target);
@@ -370,12 +438,18 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** clearLinkActive
+  /* removes css class from elements within specified element
+  */
   private clearLinkActive(element: Element): void {
     Array.from(element.querySelectorAll('.link-active')).forEach((link) => {
       link.classList.remove('link-active');
     });
   }
 
+  /** handleMouseOver
+  /* adds css class to target element of specified element if link present
+  */
   handleMouseOver(event: MouseEvent): void {
     const target = event.target as Element;
     const link = this.extractLinkFromElement(target);
@@ -385,6 +459,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** handleMouseOut
+  /* clears the active css class from hovered element containing link
+  */
   handleMouseOut(event: MouseEvent): void {
     const target = event.target as Element;
     const link = this.extractLinkFromElement(target);
@@ -393,10 +470,16 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** byId
+  /* returns item by id
+  */
   byId(_: number, item: WorkflowExecution): string {
     return item.id;
   }
 
+  /** downloadUrl
+  /* returns the download url
+  */
   downloadUrl({ ecloudId, xmlRecord }: XmlSample, group = ''): SafeUrl {
     const key = `${group}:${ecloudId}`;
     let url = this.downloadUrlCache[key];

@@ -50,11 +50,16 @@ export class GeneralinfoComponent {
     }
   }
 
+  /** harvestPublicationData
+  /* return the harvest publication data
+  */
   get harvestPublicationData(): HarvestData {
     return this._harvestPublicationData;
   }
 
-  // format urls to link and preview
+  /** escapeSolr
+  /* format urls to link and preview
+  */
   escapeSolr(url: string): string {
     const pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
     return url.replace(pattern, '\\$1');

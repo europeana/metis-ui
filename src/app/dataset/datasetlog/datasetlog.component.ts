@@ -40,6 +40,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
         value.executionProgress !== undefined &&
         old.executionProgress !== undefined &&
         value.executionProgress.processedRecords !== old.executionProgress.processedRecords;
+      // compare old and new for changes
       changed =
         value.externalTaskId !== old.externalTaskId ||
         value.pluginStatus !== old.pluginStatus ||
@@ -49,24 +50,38 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this._showPluginLog = value;
 
     if (changed) {
+      // re-commence polling if data changed
       this.startPolling();
     }
   }
 
+  /** showPluginLog
+  /* accessor for private _showPluginLog variable
+  */
   get showPluginLog(): PluginExecution {
     return this._showPluginLog;
   }
 
+  /** ngOnInit
+  /* prepare translated message
+  */
   ngOnInit(): void {
     this.noLogs = this.translate.instant('nologs');
   }
 
+  /** ngOnDestroy
+  /* unsubscribe from subscription
+  */
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
+  /** closeLog
+  /* emit the closed event
+  /* unsubscribe from data source
+  */
   closeLog(): void {
     this.closed.emit();
     if (this.subscription) {
@@ -74,6 +89,10 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** startPolling
+  /* - unsubscribe from previous subscription
+  /* - start polling the log data
+  */
   startPolling(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -84,6 +103,10 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** returnLog
+  /* - subscribe to the logs
+  /* - show
+  */
   returnLog(): void {
     const processed =
       this.showPluginLog.executionProgress && this.showPluginLog.executionProgress.processedRecords;
@@ -91,6 +114,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this.logTo = processed || 0;
 
     if (processed && isPluginCompleted(this.showPluginLog) && this.subscription) {
+      // unsubscribe if done
       this.subscription.unsubscribe();
     }
 
@@ -119,8 +143,10 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
       );
   }
 
-  // show correct information in log modal window
-  // this could be a "no logs found" message or the actual log
+  /** showWindowOutput
+  /* show correct information in log modal window
+  /* this could be a "no logs found" message or the actual log
+  */
   showWindowOutput(log: SubTaskInfo[] | undefined): void {
     if (log && log.length === 0) {
       log = undefined;
@@ -129,6 +155,9 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this.logMessages = log;
   }
 
+  /** getLogFrom
+  /* get the log pagination parameter
+  */
   getLogFrom(): number {
     return this.logTo - this.logPerStep >= 1 ? this.logTo - this.logPerStep + 1 : 1;
   }

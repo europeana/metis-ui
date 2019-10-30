@@ -47,9 +47,7 @@ export class MappingComponent implements OnInit {
   ) {}
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
-
   @Input() datasetData: Dataset;
-
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
   editorConfig: EditorConfiguration;
@@ -59,12 +57,21 @@ export class MappingComponent implements OnInit {
   notification?: Notification;
   msgXSLTSuccess: string;
 
+  /** ngOnInit
+  /* initialisation:
+  /* - load the config & xslt
+  /* - prepare the translated messages
+  */
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
     this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     this.loadCustomXSLT();
   }
 
+  /** handleXSLTError
+  /* - create a notification for errors
+  /* - set notification variable
+  */
   private handleXSLTError(err: HttpErrorResponse): void {
     this.xsltStatus = XSLTStatus.NOCUSTOM;
     const error = this.errors.handleError(err);
@@ -72,12 +79,15 @@ export class MappingComponent implements OnInit {
     this.xsltToSave = this.xslt = '';
   }
 
+  /** loadCustomXSLT
+  /* - check xsltId property available
+  /* - load the custom xslt
+  */
   loadCustomXSLT(): void {
     if (!this.datasetData.xsltId) {
       this.xsltStatus = XSLTStatus.NOCUSTOM;
       return;
     }
-
     this.xsltStatus = XSLTStatus.LOADING;
     this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
       (result) => {
@@ -90,6 +100,9 @@ export class MappingComponent implements OnInit {
     );
   }
 
+  /** loadDefaultXSLT
+  /* load the default xslt
+  */
   loadDefaultXSLT(): void {
     const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
     this.xsltStatus = XSLTStatus.LOADING;
@@ -104,6 +117,9 @@ export class MappingComponent implements OnInit {
     );
   }
 
+  /** onThemeSet
+  /* set the editor theme
+  */
   onThemeSet(toDefault: boolean): void {
     const isDef = this.editorPrefs.currentThemeIsDefault();
     if (toDefault) {
@@ -117,11 +133,18 @@ export class MappingComponent implements OnInit {
     }
   }
 
+  /** tryOutXSLT
+  /* - emit setTempXSLT event
+  /* - redirect to preview
+  */
   tryOutXSLT(type: string): void {
     this.setTempXSLT.emit(type);
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 
+  /** saveCustomXSLT
+  /* saves the custom xslt and (optionally) previews it
+  */
   saveCustomXSLT(tryout: boolean): void {
     const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
     this.datasets
@@ -147,6 +170,9 @@ export class MappingComponent implements OnInit {
       );
   }
 
+  /** cancel
+  /* switches the xslt status
+  */
   cancel(): void {
     if (this.xsltStatus === XSLTStatus.NEWCUSTOM) {
       this.xsltStatus = XSLTStatus.NOCUSTOM;

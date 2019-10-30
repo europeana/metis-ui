@@ -14,16 +14,25 @@ export class WorkflowFormFieldHarvestComponent {
   @Input() workflowForm: FormGroup;
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
 
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
 
+  /** onFieldChanged
+  /* emit fieldChanged event
+  */
   onFieldChanged(fieldName: string): void {
     this.fieldChanged.emit(fieldName);
   }
 
+  /** isProtocolHTTP
+  /* return true if protocol is http
+  */
   isProtocolHTTP(): boolean {
     return this.workflowForm!.value.pluginType === PluginType.HTTP_HARVEST;
   }
 
+  /** getImportSummary
+  /* returns markup representation of import parameters
+  */
   getImportSummary(): string {
     let res = this.translate.instant('harvesturl') + ': ';
 
