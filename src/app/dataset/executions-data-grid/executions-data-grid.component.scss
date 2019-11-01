@@ -3,6 +3,12 @@
 
 $width-orb: 3em;
 
+.buttonplaceholder {
+  &:empty {
+    display: none;
+  }
+}
+
 .orb-status {
   cursor: pointer;
   margin: 0;
@@ -20,6 +26,13 @@ $width-orb: 3em;
 
 .table-btn {
   align-items: center;
+  margin-left: auto;
+  width: 8em;
+}
+
+.table-grid-row-start {
+  display: inline-block;
+  width: $width-orb;
 }
 
 .time:not(.br) {
@@ -30,46 +43,47 @@ $width-orb: 3em;
   }
 }
 
-@media all and (max-width: $bp-med) {
+.totals {
+  align-self: center;
+  display: flex;
+  float: right;
+  position: relative;
+  width: calc(100% - #{$width-orb});
+}
+
+// reversal is here
+@media all and (min-width: $bp-med) {
   .buttonplaceholder {
-    text-align: right;
+    justify-content: center;
     &:empty {
-      display: none;
+      display: flex;
     }
   }
 
+  .head-prefix {
+    display: inline-block;
+  }
+
   .table-btn {
-    margin-left: auto;
-    width: 8em;
+    margin-left: 0;
+    width: auto;
   }
 
   .table-grid-row-start {
-    display: inline-block;
-    width: $width-orb;
+    //display: inline-block;
+    width: auto; // $width-orb;
   }
 
   .totals {
-    align-self: center;
-    display: flex;
-    float: right;
-    position: relative;
-    width: calc(100% - #{$width-orb});
-  }
-}
-
-@media all and (min-width: $bp-med) {
-  .head-prefix {
     display: inline-block;
+    float: none;
+    width: auto;
   }
 }
 
 .status,
 .svg-icon {
   margin: 0 0.7em;
-}
-
-.buttonplaceholder {
-  justify-content: center;
 }
 
 .xml-icon {

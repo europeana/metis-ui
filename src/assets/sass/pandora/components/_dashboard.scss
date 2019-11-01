@@ -12,12 +12,12 @@ $space-overflow-selected: 0.25em;
 
 .grid-cell,
 .grid-sub {
+  align-items: center;
+  display: flex;
   padding: 1em 0;
-  @media (max-width: $bp-med) {
-    display: flex;
-    align-items: center;
-  }
+
   @media (min-width: $bp-med) {
+    display: inline-block;
     line-height: 2.25em;
   }
 }
@@ -126,11 +126,13 @@ $space-overflow-selected: 0.25em;
 }
 
 /* side edges */
-.row-end,
-.row-start {
-  &::after {
-    height: $grid-size-massive;
-    top: 0;
-    z-index: 3;
+@media (min-width: $bp-med) {
+  .row-end,
+  .row-start {
+    &::after {
+      height: $grid-size-massive;
+      top: 0;
+      z-index: 3;
+    }
   }
 }
