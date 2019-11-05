@@ -53,8 +53,10 @@ import {
   LoadingButtonComponent,
   NotificationComponent,
   PasswordCheckComponent,
+  SearchComponent,
   TextWithLinksComponent
 } from './shared';
+import { SearchResultsComponent } from './search-results';
 import { ThemeSelectorComponent } from './theme-selector';
 
 @NgModule({
@@ -76,6 +78,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     FilterOpsComponent,
     FilterOptionComponent,
     PasswordCheckComponent,
+    SearchComponent,
     TextWithLinksComponent,
     GeneralinfoComponent,
     DashboardactionsComponent,
@@ -95,6 +98,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     DatasetlogComponent,
     OngoingexecutionsComponent,
     ReportSimpleComponent,
+    SearchResultsComponent,
     StatisticsComponent,
     ThemeSelectorComponent,
     TranslatePipe,

@@ -1,0 +1,10 @@
+<span class="search-form" *ngIf="isAuthenticated()">
+  <input
+    type="text"
+    (keypress)="submitOnEnter($event)"
+    [(ngModel)]="q"
+    name="q"
+    placeholder="Search for provider and dataset"
+  />
+  <span class="search" (click)="executeSearch()"></span>
+</span>
