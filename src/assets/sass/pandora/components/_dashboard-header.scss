@@ -1,8 +1,12 @@
 @import '../settings/metis-variables';
 
 .header-wrapper header {
-  height: $fixed-header-height;
+  height: $fixed-header-height-mobile;
   min-height: auto;
+
+  @media all and (min-width: $bp-small-3) {
+    height: $fixed-header-height;
+  }
 
   .header-container {
     align-items: center;
@@ -132,7 +136,6 @@
 
     .dashboard-header-links {
       padding-right: 1rem;
-      width: 15rem;
 
       a.signup {
         color: $gray-med;

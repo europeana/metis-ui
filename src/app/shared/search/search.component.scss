@@ -1,27 +1,35 @@
 @import '../../../assets/sass/scss/generic/variables';
 
 $dimension-button: 40px;
-// to centre: remove width: 15rem from .header-wrapper header .header-container .dashboard-header-links
 
 [name='q'] {
   margin-right: 0.5em;
+  transition: width 0.5s;
+  width: 100%;
+
+  @media (min-width: $bp-small-3) {
+    width: 16.5em;
+  }
 
   @media (min-width: $bp-med) {
-    min-width: 18em;
+    width: 22em;
+  }
+
+  @media (min-width: $bp-xl) {
+    width: 600px;
   }
 }
 
 .search-form {
   align-items: center;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   left: 1em;
   position: absolute;
   right: 1em;
-  top: 6em;
-  z-index: 1;
+  top: 5em;
 
-  @media (min-width: $bp-med) {
+  @media (min-width: $bp-small-3) {
     left: auto;
     position: relative;
     right: auto;

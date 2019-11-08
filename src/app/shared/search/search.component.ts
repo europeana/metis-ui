@@ -22,18 +22,13 @@ export class SearchComponent {
     private readonly router: Router
   ) {}
 
-  /** isAuthenticated
-  /*  return if the user is logged in or not
-  */
-  isAuthenticated(): boolean {
-    return this.authentication.validatedUser();
-  }
-
   /** executeSearch
   /*  redirect to the search results page with the search term as a query paramter on click
   */
   executeSearch(): void {
-    this.router.navigate([`/search`], { queryParams: { q: this.q } });
+    if (this.authentication.validatedUser()) {
+      this.router.navigate([`/search`], { queryParams: { q: this.q } });
+    }
   }
 
   /** submitOnEnter

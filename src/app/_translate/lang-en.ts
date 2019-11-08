@@ -1,6 +1,6 @@
 /** LANG_EN
 /*
-/* list of translatable copy 
+/* list of translatable copy
 */
 export const LANG_EN_NAME = 'en';
 
@@ -147,6 +147,7 @@ export const LANG_EN_TRANS = {
   save: 'Save',
   saving: 'Saving',
   search: 'Search',
+  'search-placeholder': 'Search for provider and dataset',
   setspec: 'Setspec',
   signin: 'Sign in',
   signintometis: 'Sign in to Metis',

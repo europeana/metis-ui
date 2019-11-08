@@ -1,3 +1,5 @@
+@import '../settings/metis-variables';
+
 .lc {
   margin: 0 auto;
   max-width: 80rem;
@@ -5,8 +7,12 @@
 
 /* metis main content */
 .metis-main-content {
-  margin: 4.8rem 0;
+  margin: $fixed-header-height-mobile 0;
   min-height: calc(100vh - 55rem);
+
+  @media (min-width: $bp-small-3) {
+    margin: $fixed-header-height 0;
+  }
 }
 
 /* dashboard wrapper */
