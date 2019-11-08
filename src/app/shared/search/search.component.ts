@@ -17,10 +17,7 @@ export class SearchComponent {
   /*  - set the authentication service
   /*  - set the router
   */
-  constructor(
-    private readonly authentication: AuthenticationService,
-    private readonly router: Router
-  ) {}
+  constructor(readonly authentication: AuthenticationService, private readonly router: Router) {}
 
   /** executeSearch
   /*  redirect to the search results page with the search term as a query paramter on click
