@@ -1,18 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
-
-class MockActivatedRoute extends ActivatedRoute {
-  public queryParams = of({});
-  setParams(paramsHash: { q: string }): void {
-    this.queryParams = of(paramsHash);
-  }
-}
+import { MockActivatedRoute } from '../_mocked';
 
 describe('SearchResultsComponent', () => {
   describe('with query param:', () => {
     let fixture: ComponentFixture<SearchResultsComponent>;
+
     beforeEach(async(() => {
       const mar = new MockActivatedRoute();
       mar.setParams({ q: '123' });

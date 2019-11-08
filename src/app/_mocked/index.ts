@@ -1,3 +1,4 @@
+export * from './mockedactivatedroute';
 export * from './mockedauthentication.service';
 export * from './mockedcountries.service';
 export * from './mockeddatasets.service';
