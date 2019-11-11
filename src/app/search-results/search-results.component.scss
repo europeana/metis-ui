@@ -1,0 +1,30 @@
+@import '../../assets/sass/scss/generic/variables';
+@import '../../assets/sass/pandora/settings/metis-variables';
+
+.search-results-content {
+  margin: 1rem;
+  @media (min-width: $bp-small-3) {
+    margin: 1rem 2.2rem;
+  }
+}
+
+.search-results-header {
+  padding: 2em 0 1em 0;
+}
+
+.search-results-grid {
+  padding: 1em;
+
+  @media (min-width: $bp-med) {
+    display: grid;
+    column-gap: 1.75em;
+    grid-template-columns: minmax(8em, 2fr) auto auto auto;
+  }
+
+  .grid-header {
+    display: none;
+    @media (min-width: $bp-med) {
+      display: block;
+    }
+  }
+}

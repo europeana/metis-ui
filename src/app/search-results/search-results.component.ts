@@ -29,7 +29,7 @@ export class SearchResultsComponent implements OnInit {
       this.documentTitleService.setTitle('Search Results');
       const q = params.q;
       if (q) {
-        this.query = q;
+        this.query = decodeURIComponent(q);
       }
       this.documentTitleService.setTitle(
         ['Search Results', q]

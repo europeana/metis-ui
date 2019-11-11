@@ -1,6 +1,43 @@
-<div>
-  <strong>Search Results</strong>
-</div>
-<div>
-  q = <em>{{ query }}</em>
+<div class="search-results-content">
+  <div class="search-results-header">
+    <strong>{{ query?.length }} search results for "{{ query }}"</strong>
+  </div>
+  <div class="search-results-grid">
+    <span
+      *ngFor="
+        let headerTitle of [
+          'search-header-dataset-id',
+          'search-header-provider-name',
+          'search-header-operator',
+          'search-header-last-execution'
+        ]
+      "
+      class="grid-header"
+      >{{ headerTitle | translate }}</span
+    >
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+    <span class="grid-cell">
+      {{ query }}
+    </span>
+  </div>
 </div>

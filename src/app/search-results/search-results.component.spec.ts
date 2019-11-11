@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
-import { MockActivatedRoute } from '../_mocked';
+import { createMockPipe, MockActivatedRoute } from '../_mocked';
 
 describe('SearchResultsComponent', () => {
   describe('with query param:', () => {
@@ -11,7 +11,7 @@ describe('SearchResultsComponent', () => {
       const mar = new MockActivatedRoute();
       mar.setParams({ q: '123' });
       TestBed.configureTestingModule({
-        declarations: [SearchResultsComponent],
+        declarations: [SearchResultsComponent, createMockPipe('translate')],
         providers: [{ provide: ActivatedRoute, useValue: mar }]
       }).compileComponents();
     }));
@@ -31,16 +31,17 @@ describe('SearchResultsComponent', () => {
     let component: SearchResultsComponent;
 
     beforeEach(async(() => {
+      const mar = new MockActivatedRoute();
       TestBed.configureTestingModule({
-        declarations: [SearchResultsComponent],
-        providers: [{ provide: ActivatedRoute, useValue: new MockActivatedRoute() }]
+        declarations: [SearchResultsComponent, createMockPipe('translate')],
+        providers: [{ provide: ActivatedRoute, useValue: mar }]
       }).compileComponents();
     }));
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SearchResultsComponent);
-      component = fixture.componentInstance;
       fixture.detectChanges();
+      component = fixture.componentInstance;
     });
 
     it('should create', () => {
@@ -48,7 +49,6 @@ describe('SearchResultsComponent', () => {
     });
 
     it('should set the document title', () => {
-      fixture.detectChanges();
       expect(document.title).not.toContain('Search Results | 123');
       expect(document.title).toContain('Search Results');
     });

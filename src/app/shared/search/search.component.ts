@@ -30,7 +30,7 @@ export class SearchComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       const q = params.q;
       if (q) {
-        this.q = q;
+        this.q = decodeURIComponent(q);
       }
     });
   }
@@ -40,7 +40,7 @@ export class SearchComponent implements OnInit {
   */
   executeSearch(): void {
     if (this.authentication.validatedUser()) {
-      this.router.navigate([`/search`], { queryParams: { q: this.q } });
+      this.router.navigate([`/search`], { queryParams: { q: encodeURIComponent(this.q) } });
     }
   }
 
