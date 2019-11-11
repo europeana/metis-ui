@@ -25,11 +25,12 @@ export class SearchComponent implements OnInit {
 
   /** ngOnInit
   /* - set the q variable
+  /* - ignore if 'undefined'
+  /* - set q variable to URI-decoded query parameter
   */
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const q = params.q;
-      // prevent 'undefined' appearing as a search parameter
       if (q !== undefined) {
         this.q = decodeURIComponent(q);
       }
@@ -37,7 +38,8 @@ export class SearchComponent implements OnInit {
   }
 
   /** executeSearch
-  /*  redirect to the search results page with the search term as a query paramter on click
+  /*  redirect to the search results page
+  /*  set the query parameter to the URI-encoded q variable
   */
   executeSearch(): void {
     if (this.authentication.validatedUser()) {

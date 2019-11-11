@@ -20,6 +20,7 @@ export class SearchResultsComponent implements OnInit {
   ) {}
 
   /** ngOnInit
+  /* - URI-decode the query parameter
   /* - set the query variable
   /* - set the document title
   /*  - includes the query variable if available
