@@ -29,7 +29,7 @@ export class SearchComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const q = params.q;
-      if (q) {
+      if(q !== undefined) {
         this.q = decodeURIComponent(q);
       }
     });
