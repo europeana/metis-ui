@@ -29,6 +29,7 @@ export class SearchComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const q = params.q;
+      // prevent 'undefined' appearing as a search parameter
       if (q !== undefined) {
         this.q = decodeURIComponent(q);
       }
