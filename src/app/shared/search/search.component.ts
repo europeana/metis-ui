@@ -38,12 +38,15 @@ export class SearchComponent implements OnInit {
   }
 
   /** executeSearch
-  /*  redirect to the search results page
-  /*  set the query parameter to the URI-encoded q variable
+  /*  if the user is logged in
+  /*  then redirect to the search results page
+  /*  setting the query parameter to the URI-encoded q variable
   */
   executeSearch(): void {
     if (this.authentication.validatedUser()) {
-      this.router.navigate([`/search`], { queryParams: { q: encodeURIComponent(this.q) } });
+      this.router.navigate([`/search`], {
+        queryParams: { q: encodeURIComponent(this.q ? this.q : '') }
+      });
     }
   }
 
