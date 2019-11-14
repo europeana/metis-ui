@@ -631,6 +631,28 @@ export function information(informationId?: string): HarvestData {
   }
 }
 
+/** search
+/* @param {string} term - the search term
+/* return ResultList of matching dataset data
+*/
+export function search(term?: string): ResultList {
+  return getListWrapper(
+    datsetXs
+      .filter((datsetX: DatasetX) => {
+        return datsetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase());
+      })
+      .map((datsetX: DatasetX) => {
+        let lastExec = datsetX.workflows![0]!.executions![0]!.finishedDate;
+
+        return {
+          datasetId: datsetX.datasetName,
+          providerName: datsetX.provider,
+          lastExecutionDate: lastExec ? lastExec : ''
+        };
+      })
+  );
+}
+
 // localhost:3000/orchestrator/workflows/0
 export function workflow(datasetId: string): Workflow | undefined {
   let dsx = dataset(datasetId);

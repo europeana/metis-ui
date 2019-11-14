@@ -10,6 +10,7 @@ import {
   pluginsAvailable,
   reportExists,
   running,
+  search,
   workflow,
   xslt
 } from './factory/factory';
@@ -267,6 +268,13 @@ function routeToFile(response: ServerResponse, route: string): boolean {
 
   if (regRes) {
     response.end(JSON.stringify(xslt(regRes[1])));
+    return true;
+  }
+
+  regRes = route.match(/datasets\/search\?q=(.+)/);
+
+  if (regRes) {
+    response.end(JSON.stringify(search(regRes[1])));
     return true;
   }
 

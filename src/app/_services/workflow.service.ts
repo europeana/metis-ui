@@ -35,6 +35,7 @@ import { TranslateService } from '../_translate';
 import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';
+import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
 @Injectable({ providedIn: 'root' })
 export class WorkflowService {
@@ -67,33 +68,8 @@ export class WorkflowService {
     );
   }
 
-  private paginatedResult<T>(observables: Observable<Results<T>>[]): Observable<MoreResults<T>> {
-    return forkJoin(observables).pipe(
-      map((resultList) => {
-        const results = ([] as T[]).concat(...resultList.map((r) => r.results));
-        const lastResult = resultList[resultList.length - 1];
-        const more = lastResult.nextPage >= 0;
-        return { results, more };
-      })
-    );
-  }
-
-  /** collectResultsUptoPage
-  /* generic paginiation utility
-  */
-  private collectResultsUptoPage<T>(
-    getResults: (page: number) => Observable<Results<T>>,
-    endPage: number
-  ): Observable<MoreResults<T>> {
-    const observables: Observable<Results<T>>[] = [];
-    for (let i = 0; i <= endPage; i++) {
-      observables.push(getResults(i));
-    }
-    return this.paginatedResult(observables);
-  }
-
   /** collectAllResultsUptoPage
-  /* generic paginiation utility
+  /* generic pagination utility
   */
   private collectAllResultsUptoPage<T>(
     getResults: (page: number) => Observable<Results<T>>,
@@ -101,7 +77,7 @@ export class WorkflowService {
   ): Observable<MoreResults<T>> {
     const observables: Observable<Results<T>>[] = [];
     observables.push(getResults(endPage));
-    return this.paginatedResult(observables);
+    return paginatedResult(observables);
   }
 
   /** getWorkflowForDataset
@@ -226,7 +202,7 @@ export class WorkflowService {
   ): Observable<MoreResults<WorkflowExecution>> {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getResults = (page: number) => this.getCompletedDatasetExecutions(id, page);
-    return this.collectResultsUptoPage(getResults, endPage);
+    return collectResultsUptoPage(getResults, endPage);
   }
 
   /** getDatasetExecutions
@@ -359,7 +335,7 @@ export class WorkflowService {
   ): Observable<MoreResults<WorkflowExecution>> {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getResults = (page: number) => this.getAllExecutions(page, ongoing);
-    return this.collectResultsUptoPage(getResults, endPage).pipe(
+    return collectResultsUptoPage(getResults, endPage).pipe(
       switchMap(({ results, more }) =>
         this.addDatasetNameAndCurrentPlugin(results).pipe(map((r2) => ({ results: r2, more })))
       )

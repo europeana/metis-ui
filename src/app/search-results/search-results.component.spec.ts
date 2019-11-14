@@ -1,55 +1,84 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
-import { createMockPipe, MockActivatedRoute } from '../_mocked';
+import {
+  createMockPipe,
+  MockActivatedRoute,
+  MockDatasetsService,
+  MockDatasetsServiceErr
+} from '../_mocked';
+import { DatasetsService } from '../_services';
 
 describe('SearchResultsComponent', () => {
-  describe('with query param:', () => {
-    let fixture: ComponentFixture<SearchResultsComponent>;
+  let fixture: ComponentFixture<SearchResultsComponent>;
+  let component: SearchResultsComponent;
+  const searchTerm = '123';
 
+  const configureTestbed = (searchErr = false, qParam?: string): void => {
+    const mar = new MockActivatedRoute();
+    if (qParam) {
+      mar.setParams({ q: qParam });
+    }
+    TestBed.configureTestingModule({
+      declarations: [SearchResultsComponent, createMockPipe('translate')],
+      providers: [
+        { provide: ActivatedRoute, useValue: mar },
+        {
+          provide: DatasetsService,
+          useClass: searchErr ? MockDatasetsServiceErr : MockDatasetsService
+        }
+      ]
+    }).compileComponents();
+  };
+
+  const b4Each = (): void => {
+    fixture = TestBed.createComponent(SearchResultsComponent);
+    fixture.detectChanges();
+    component = fixture.componentInstance;
+  };
+
+  describe('Error handling', () => {
     beforeEach(async(() => {
-      const mar = new MockActivatedRoute();
-      mar.setParams({ q: '123' });
-      TestBed.configureTestingModule({
-        declarations: [SearchResultsComponent, createMockPipe('translate')],
-        providers: [{ provide: ActivatedRoute, useValue: mar }]
-      }).compileComponents();
+      configureTestbed(true, searchTerm);
     }));
 
-    beforeEach(() => {
-      fixture = TestBed.createComponent(SearchResultsComponent);
-      fixture.detectChanges();
+    beforeEach(b4Each);
+
+    it('should not have results', () => {
+      expect(component.results).toBeFalsy();
     });
 
+    it('should not be loading', () => {
+      expect(component.isLoading).toBeFalsy();
+    });
+  });
+
+  describe('with query param:', () => {
+    beforeEach(async(() => {
+      configureTestbed(false, searchTerm);
+    }));
+
+    beforeEach(b4Each);
+
     it('should set the document title to the search result', () => {
-      expect(document.title).toContain('Search Results | 123');
+      expect(document.title).toContain(`Search Results | ${searchTerm}`);
+    });
+
+    it('should have results', () => {
+      expect(component.results).toBeTruthy();
     });
   });
 
   describe('without query param:', () => {
-    let fixture: ComponentFixture<SearchResultsComponent>;
-    let component: SearchResultsComponent;
-
-    beforeEach(async(() => {
-      const mar = new MockActivatedRoute();
-      TestBed.configureTestingModule({
-        declarations: [SearchResultsComponent, createMockPipe('translate')],
-        providers: [{ provide: ActivatedRoute, useValue: mar }]
-      }).compileComponents();
-    }));
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(SearchResultsComponent);
-      fixture.detectChanges();
-      component = fixture.componentInstance;
-    });
+    beforeEach(async(configureTestbed));
+    beforeEach(b4Each);
 
     it('should create', () => {
       expect(component).toBeTruthy();
     });
 
     it('should set the document title', () => {
-      expect(document.title).not.toContain('Search Results | 123');
+      expect(document.title).not.toContain(`Search Results | ${searchTerm}`);
       expect(document.title).toContain('Search Results');
     });
   });

@@ -5,8 +5,9 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
-import { Dataset, XmlSample } from '../_models';
+import { Dataset, DatasetSearchResult, MoreResults, Results, XmlSample } from '../_models';
 
+import { collectResultsUptoPage } from './service-utils';
 import { ErrorService } from './error.service';
 
 const FAVORITE_DATASET_IDS = 'favoriteDatasetIds';
@@ -134,5 +135,25 @@ export class DatasetsService {
       datasets.filter((dataset) => dataset) as Dataset[];
 
     return forkJoin(this.favoriteIds.map(getDatasetOrUndefined)).pipe(map(filterDatasets));
+  }
+
+  /** search
+  /*  retrieve dataset information with names matching the term
+  /*  @param {string} term - the search term
+  /*  @param {number} page - the pagination target
+  */
+  search(term: string, page: number): Observable<Results<DatasetSearchResult>> {
+    console.log(page);
+    const url = `${apiSettings.apiHostCore}/datasets/search?q=${term}`;
+    return this.http.get<Results<DatasetSearchResult>>(url).pipe(this.errors.handleRetry());
+  }
+
+  getSearchResultsUptoPage(
+    term: string,
+    endPage: number
+  ): Observable<MoreResults<DatasetSearchResult>> {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const getResults = (page: number) => this.search(term, page);
+    return collectResultsUptoPage(getResults, endPage);
   }
 }

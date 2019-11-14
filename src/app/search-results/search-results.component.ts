@@ -2,9 +2,11 @@
 /* - component for viewing search results
 /* - subscribes to ActivatedRoute instance for live query / result data
 */
-import { ActivatedRoute } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { DocumentTitleService } from '../_services';
+import { ActivatedRoute } from '@angular/router';
+import { DatasetSearchResult } from '../_models';
+import { DatasetsService, DocumentTitleService } from '../_services';
 
 @Component({
   selector: 'search-results',
@@ -12,10 +14,15 @@ import { DocumentTitleService } from '../_services';
   styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnInit {
+  currentPage: 0;
+  isLoading = false;
+  hasMore = false;
   query: string;
+  results: DatasetSearchResult[];
 
   constructor(
     private readonly documentTitleService: DocumentTitleService,
+    private readonly datasets: DatasetsService,
     private route: ActivatedRoute
   ) {}
 
@@ -27,10 +34,22 @@ export class SearchResultsComponent implements OnInit {
   */
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      this.documentTitleService.setTitle('Search Results');
       const q = params.q;
+
       if (q) {
         this.query = decodeURIComponent(q);
+        this.isLoading = true;
+        this.datasets.getSearchResultsUptoPage(q, 0).subscribe(
+          ({ results, more }) => {
+            this.results = results;
+            this.isLoading = false;
+            this.hasMore = more;
+          },
+          (err: HttpErrorResponse) => {
+            console.log(err);
+            this.isLoading = false;
+          }
+        );
       }
       this.documentTitleService.setTitle(
         ['Search Results', q]

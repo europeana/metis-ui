@@ -150,7 +150,6 @@ export const LANG_EN_TRANS = {
   'search-placeholder': 'Search for provider and dataset',
   'search-header-dataset-id': 'Dataset ID',
   'search-header-provider-name': 'Provider Name',
-  'search-header-operator': 'Operator Name',
   'search-header-last-execution': 'Last Execution',
   setspec: 'Setspec',
   signin: 'Sign in',
