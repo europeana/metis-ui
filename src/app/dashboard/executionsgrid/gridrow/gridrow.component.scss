@@ -92,6 +92,70 @@ $row-border-height-min: 3px;
   }
 }
 
+.grid-cell {
+  margin-bottom: 0.5em;
+  padding: 0.5em 1em 0.5em 1em;
+  justify-content: space-between;
+
+  .orb-status:last-of-type {
+    margin-right: 0;
+  }
+
+  /* pull process stats over to right */
+  &:nth-of-type(5n + 3) {
+    position: absolute;
+    right: 2em;
+  }
+
+  /* put dates side by side */
+  &:nth-of-type(5n + 4),
+  &:nth-of-type(5n + 5) {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+.grid-sub {
+  align-items: center;
+  display: flex;
+  flex-direction: row-reverse;
+  margin-left: 2em;
+  margin-right: 1em;
+  justify-content: flex-end;
+
+  &:empty {
+    padding: 0;
+  }
+
+  &.start {
+    grid-column-start: sub-start;
+  }
+
+  &.filler {
+    padding: 0;
+  }
+
+  &.dates {
+    grid-column-start: sub-date-start;
+    grid-column-end: sub-date-end;
+  }
+
+  /* set animations */
+  .orb-status {
+    margin-left: 0.75em;
+
+    &.status-inqueue {
+      animation: pulseInqueue 4000ms infinite;
+    }
+    &.status-pending {
+      animation: pulsePending 3000ms infinite;
+    }
+    &.status-running {
+      animation: glowing 2000ms infinite;
+    }
+  }
+}
+
 /* hover edges */
 .row-end,
 .row-start,
@@ -105,7 +169,13 @@ $row-border-height-min: 3px;
   }
 }
 
+.row-divider::before,
+.row-end::after {
+  display: none;
+}
+
 .row-start {
+  border-top: 1px solid $offwhite;
   grid-column-start: start;
 }
 
@@ -128,12 +198,12 @@ $row-border-height-min: 3px;
 
 .row-end,
 .row-steps {
-  /* maintain hover events */
+  // maintain hover events
   pointer-events: none;
 }
 
 .row-start.active + .row-steps {
-  /* underline the open item */
+  // underline the open item
   &::after {
     background: $grid-h-line-item-color;
     height: 2px;
@@ -144,74 +214,40 @@ $row-border-height-min: 3px;
   }
 }
 
-@media (max-width: $bp-med) {
+.row-end .time.empty {
+  display: block;
+  height: 2em;
+}
+
+@media (min-width: $bp-med) {
   .grid-cell {
-    margin-bottom: 0.5em;
-    padding: 0.5em 1em 0.5em 1em;
-    justify-content: space-between;
+    margin-bottom: 0;
+    padding: 1em 0;
 
-    /* pull process stats over to right */
     &:nth-of-type(5n + 3) {
-      position: absolute;
-      right: 2em;
-    }
-
-    /* put dates side by side */
-    &:nth-of-type(5n + 4),
-    &:nth-of-type(5n + 5) {
-      display: inline-block;
-    }
-
-    .orb-status:last-of-type {
-      margin-right: 0;
-    }
-  }
-
-  .grid-sub {
-    flex-direction: row-reverse;
-    margin-left: 2em;
-    margin-right: 1em;
-    justify-content: flex-end;
-
-    .orb-status {
-      margin-left: 0.75em;
-      margin-right: 0;
+      position: relative;
+      right: 0;
     }
   }
 
   .row-start:not(:nth-child(7)) {
-    border-top: 1px solid $offwhite;
+    border-top: none;
   }
 
   .row-divider::before,
   .row-end::after {
-    display: none;
-  }
-}
-
-.grid-sub {
-  align-items: center;
-  display: flex;
-
-  &.start {
-    grid-column-start: sub-start;
+    display: block;
   }
 
-  &.dates {
-    grid-column-start: sub-date-start;
-    grid-column-end: sub-date-end;
-  }
+  .grid-sub {
+    flex-direction: row;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1em;
+    justify-content: flex-start;
 
-  /* set animations */
-  .orb-status {
-    &.status-inqueue {
-      animation: pulseInqueue 4000ms infinite;
-    }
-    &.status-pending {
-      animation: pulsePending 3000ms infinite;
-    }
-    &.status-running {
-      animation: glowing 2000ms infinite;
+    .orb-status {
+      margin-left: 0;
     }
   }
 }

@@ -10,7 +10,7 @@ import { ErrorService, WorkflowService } from '../../_services';
   styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent implements OnInit {
-  constructor(private errors: ErrorService, private workflows: WorkflowService) {}
+  constructor(private readonly errors: ErrorService, private readonly workflows: WorkflowService) {}
 
   @Input() datasetData: Dataset;
 
@@ -20,19 +20,38 @@ export class StatisticsComponent implements OnInit {
   statistics: Statistics;
   taskId?: string;
 
+  /** ngOnInit
+  /* calls statisitics load function
+  */
   ngOnInit(): void {
     this.loadStatistics();
   }
 
+  /** setLoading
+  /* setter for isLoading variable
+  */
   setLoading(loading: boolean): void {
     this.isLoading = loading;
   }
 
-  // load the data on statistics and display this in a card (=readonly editor)
+  /** loadStatistics
+  /* - loads statistics for finished datsets / externally validated plugins
+  /* - updates the notification variable
+  /* - updates the loading variable
+  /* - updates the statistics variable
+  */
   loadStatistics(): void {
     this.setLoading(true);
-    this.workflows.getFinishedDatasetExecutions(this.datasetData.datasetId, 0).subscribe(
-      (result) => {
+
+    const httpErrorHandling = (err: HttpErrorResponse): void => {
+      const error = this.errors.handleError(err);
+      this.notification = httpErrorNotification(error);
+      this.setLoading(false);
+    };
+
+    this.workflows
+      .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
+      .subscribe((result) => {
         if (result.results.length > 0) {
           // find validation in the latest run, and if available, find taskid
           for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
@@ -42,30 +61,21 @@ export class StatisticsComponent implements OnInit {
           }
         }
         if (!this.taskId) {
+          // return if there's no task id
           this.setLoading(false);
           return;
         }
-        this.workflows.getStatistics('validation', this.taskId).subscribe(
-          (resultStatistics) => {
-            const statistics = resultStatistics;
-            this.statistics = statistics;
-            this.setLoading(false);
-          },
-          (err: HttpErrorResponse) => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
-            this.setLoading(false);
-          }
-        );
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.setLoading(false);
-      }
-    );
+        this.workflows.getStatistics('validation', this.taskId).subscribe((resultStatistics) => {
+          const statistics = resultStatistics;
+          this.statistics = statistics;
+          this.setLoading(false);
+        }, httpErrorHandling);
+      }, httpErrorHandling);
   }
 
+  /** loadMoreAttrs
+  /* loads statistic details
+  */
   loadMoreAttrs(xPath: string): void {
     if (!this.taskId) {
       return;
@@ -87,12 +97,16 @@ export class StatisticsComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
+          console.log('Error: ' + error);
           this.notification = httpErrorNotification(error);
           this.setLoading(false);
         }
       );
   }
 
+  /** toggleStatistics
+  /* toggles the expanded property
+  */
   toggleStatistics(): void {
     this.expandedStatistics = !this.expandedStatistics;
   }

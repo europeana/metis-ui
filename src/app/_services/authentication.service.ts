@@ -21,10 +21,10 @@ export class AuthenticationService {
   userCache = new KeyedCache((key) => this.requestUserByUserId(key));
 
   constructor(
-    private http: HttpClient,
-    private router: Router,
-    private errors: ErrorService,
-    private redirectPreviousUrl: RedirectPreviousUrl
+    private readonly http: HttpClient,
+    private readonly router: Router,
+    private readonly errors: ErrorService,
+    private readonly redirectPreviousUrl: RedirectPreviousUrl
   ) {
     // set currentUser and token if already saved in local storage
     const value = localStorage.getItem(this.key);
@@ -82,7 +82,7 @@ export class AuthenticationService {
   register(email: string, password: string): Observable<boolean> {
     const url = `${apiSettings.apiHostAuth}/authentication/register`;
     const headers = new HttpHeaders({
-      Authorization: 'Basic ' + btoa(email + ':' + password)
+      Authorization: `Basic ${btoa([email, password].join(':'))}`
     });
     return this.http
       .post(url, {}, { headers })
@@ -115,7 +115,7 @@ export class AuthenticationService {
 
     const url = `${apiSettings.apiHostAuth}/authentication/login`;
     const headers = new HttpHeaders({
-      Authorization: 'Basic ' + btoa(email + ':' + password)
+      Authorization: `Basic ${btoa([email, password].join(':'))}`
     });
     return this.http
       .post<User>(url, {}, { headers })

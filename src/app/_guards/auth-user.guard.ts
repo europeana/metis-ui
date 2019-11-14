@@ -7,12 +7,16 @@ import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 @Injectable({ providedIn: 'root' })
 export class AuthUserGuard implements CanActivate {
   constructor(
-    private authentication: AuthenticationService,
-    private router: Router,
-    @Inject(DOCUMENT) private document: Document,
-    private redirectPreviousUrl: RedirectPreviousUrl
+    private readonly authentication: AuthenticationService,
+    private readonly router: Router,
+    @Inject(DOCUMENT) private readonly document: Document,
+    private readonly redirectPreviousUrl: RedirectPreviousUrl
   ) {}
 
+  /** canActivate
+  /* - return true if user is logged in
+  /* - redirect to signin page if user is not logged in
+  */
   canActivate(): boolean {
     if (this.authentication.validatedUser()) {
       // logged in so return true

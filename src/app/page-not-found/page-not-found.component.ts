@@ -10,10 +10,13 @@ import { DocumentTitleService } from '../_services';
 export class PageNotFoundComponent implements OnInit {
   public badurl: string;
 
-  constructor(router: Router, private documentTitleService: DocumentTitleService) {
+  constructor(router: Router, private readonly documentTitleService: DocumentTitleService) {
     this.badurl = router.url;
   }
 
+  /** ngOnInit
+  /* set the document title
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Page Not Found');
   }

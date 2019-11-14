@@ -1,12 +1,9 @@
-import { checkAHref, setupUser, setupWorkflowRoutes } from '../support/helpers';
+import { checkAHref, cleanupUser, setupUser } from '../support/helpers';
 
-function setupDatasetPage(name: string): void {
-  cy.server({ force404: true });
+function setupDatasetPage(name: string, index: number): void {
+  cy.server();
   setupUser();
-  setupWorkflowRoutes();
-
-  cy.visit(`/dataset/${name}/64`);
-  cy.wait(['@getDataset', '@getWorkflow', '@getHarvestData']);
+  cy.visit(`/dataset/${name}/${index}`);
 }
 
 function getHistoryRow(index: number): Cypress.Chainable {
@@ -24,7 +21,6 @@ function checkStaticField(name: string, value: string): void {
   const input = label.closest('.form-group').find('span');
   input.contains(value);
 }
-
 function checkPluginStatus(name: string, enabled: boolean): void {
   const input = cy
     .get('.plugin')
@@ -36,73 +32,88 @@ function checkPluginStatus(name: string, enabled: boolean): void {
 
 context('metis-ui', () => {
   describe('dataset page', () => {
-    beforeEach(() => {
-      setupDatasetPage('edit');
-      cy.wait(['@getCountries', '@getLanguages']);
+    afterEach(() => {
+      cleanupUser();
     });
 
+    beforeEach(() => {
+      setupDatasetPage('edit', 0);
+    });
+
+    const expectedId = '0';
+    const lastPublished = '19/02/2019 - 08:49';
+
     it('should show the dataset, general info, status, history', () => {
-      cy.get('.dataset-name').contains('datasetName');
+      cy.get('.dataset-name').contains('Dataset 1');
 
       cy.get('.metis-dataset-info-block dd').as('dd');
       cy.get('@dd').contains('Europeana');
-      cy.get('@dd').contains('760');
-      cy.get('@dd').contains('06/11/2018 - 10:27');
+      cy.get('@dd').contains('865');
+      cy.get('@dd').contains(lastPublished);
 
       cy.get('.dataset-actionbar .status').as('status');
-      cy.get('@status').contains('Preview');
-      cy.get('@status').contains('FAILED');
+      cy.get('@status').contains('FINISHED');
 
-      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 8);
-      getHistoryRow(0).contains('Preview');
-      getHistoryRow(1).contains('Process Media');
-      getHistoryRow(7).contains('Import OAI-PMH');
+      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 10);
+      getHistoryRow(0).contains('Check Links');
+      getHistoryRow(1).contains('Publish');
+      getHistoryRow(2).contains('Preview');
+      getHistoryRow(3).contains('Process Media');
     });
 
     it('should show the tabs', () => {
       cy.get('.tabs .tab-title').as('tabTitle');
-      checkAHref(cy.get('@tabTitle').contains('Dataset Information'), '/dataset/edit/64');
-      checkAHref(cy.get('@tabTitle').contains('Workflow'), '/dataset/workflow/64');
-      checkAHref(cy.get('@tabTitle').contains('Mapping'), '/dataset/mapping/64');
-      checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/64');
-      checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/64');
+      checkAHref(
+        cy.get('@tabTitle').contains('Dataset Information'),
+        '/dataset/edit/' + expectedId
+      );
+      checkAHref(cy.get('@tabTitle').contains('Workflow'), '/dataset/workflow/' + expectedId);
+      checkAHref(cy.get('@tabTitle').contains('Mapping'), '/dataset/mapping/' + expectedId);
+      checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/' + expectedId);
+      checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/' + expectedId);
     });
   });
 
   describe('dataset information', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
-      setupDatasetPage('edit');
-      cy.wait(['@getCountries', '@getLanguages']);
+      setupDatasetPage('edit', 0);
     });
 
     it('should show the fields', () => {
-      checkFormField('Dataset Name', 'datasetName');
-      checkFormField('Provider', 'Europeana');
-      checkStaticField('Date Created', '06/09/2018 - 09:29');
-      checkStaticField('Created by', '1482250000003948017');
-      checkStaticField('First published', '05/11/2018 - 16:38');
-      checkStaticField('Last published', '06/11/2018 - 10:27');
-      checkStaticField('Number of items published', '760');
-      checkStaticField('Last date of harvest', '19/11/2018 - 10:10');
-      checkStaticField('Number of items harvested', '760');
+      checkFormField('Dataset Name', 'Dataset 1');
+      checkFormField('Provider', 'Europeana Provider');
+      checkStaticField('Date Created', '19/02/2019 - 08:36');
+      checkStaticField('Created by', '123');
+      checkStaticField('Last published', '19/02/2019 - 08:49');
+      checkStaticField('Number of items published', '865');
+      checkStaticField('Last date of harvest', '19/02/2019 - 08:41');
+      checkStaticField('Number of items harvested', '879');
     });
 
     // TODO: edit
   });
 
   describe('dataset workflow', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
-      setupDatasetPage('workflow');
+      setupDatasetPage('workflow', 1);
     });
 
     it('should show the workflow', () => {
       checkPluginStatus('Import', true);
-      checkPluginStatus('Validate (EDM external)', false);
+      checkPluginStatus('Validate (EDM external)', true);
       checkPluginStatus('Transform', true);
-      checkPluginStatus('Validate (EDM internal)', false);
-      checkPluginStatus('Normalise', false);
+      checkPluginStatus('Validate (EDM internal)', true);
+      checkPluginStatus('Normalise', true);
       checkPluginStatus('Enrich', false);
-      checkPluginStatus('Process Media', true);
+      checkPluginStatus('Process Media', false);
       checkPluginStatus('Preview', false);
       checkPluginStatus('Publish', false);
     });
@@ -112,53 +123,46 @@ context('metis-ui', () => {
   // TODO: mapping
 
   // TODO: preview
-
   describe('dataset log', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
     beforeEach(() => {
-      setupDatasetPage('log');
+      setupDatasetPage('log', 2);
     });
 
     it('should show the error bullets', () => {
       cy.get('.table-grid.history .table-grid-row-start .orb-status')
         .eq(5)
-        .should('have.class', 'status-failed');
+        .should('have.class', 'status-finished');
     });
 
     it('should show the log', () => {
       cy.get('.table-grid.history .plugin-name.desktop')
         .eq(0)
-        .contains('Preview');
-      cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(1)
         .contains('Process Media');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(2)
+        .eq(1)
         .contains('Enrich');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(3)
+        .eq(2)
         .contains('Normalise');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(4)
+        .eq(3)
         .contains('Validate (EDM internal)');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(5)
+        .eq(4)
         .contains('Transform');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(6)
+        .eq(5)
         .contains('Validate (EDM external)');
       cy.get('.table-grid.history .plugin-name.desktop')
-        .eq(7)
-        .contains('Import OAI-PMH');
+        .eq(6)
+        .contains('Import HTTP');
     });
 
     it('should show the user who cancelled an execution', () => {
-      cy.route({
-        method: 'POST',
-        url: '/authentication/user_by_user_id',
-        status: 200,
-        response: { firstName: 'Valentine', lastName: 'Charles' }
-      });
-
       cy.get('.table-grid.history .head-right')
         .eq(0)
         .contains('Valentine');

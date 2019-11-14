@@ -11,12 +11,13 @@ import { Dataset, HarvestData } from '../../_models';
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;
 
+  disabledBtnClass = 'btn-disabled';
   lastPublishedRecords?: number;
   lastPublishedDate?: string;
   viewPreview?: string;
-  buttonClassPreview = 'btn-disabled';
+  buttonClassPreview = this.disabledBtnClass;
   viewCollections?: string;
-  buttonClassCollections = 'btn-disabled';
+  buttonClassCollections = this.disabledBtnClass;
 
   private _harvestPublicationData: HarvestData;
 
@@ -35,7 +36,7 @@ export class GeneralinfoComponent {
         this.buttonClassPreview = '';
       } else {
         this.viewPreview = undefined;
-        this.buttonClassPreview = 'btn-disabled';
+        this.buttonClassPreview = this.disabledBtnClass;
       }
       if (value.lastPublishedRecordsReadyForViewing) {
         this.viewCollections =
@@ -44,16 +45,21 @@ export class GeneralinfoComponent {
         this.buttonClassCollections = '';
       } else {
         this.viewCollections = undefined;
-        this.buttonClassCollections = 'btn-disabled';
+        this.buttonClassCollections = this.disabledBtnClass;
       }
     }
   }
 
+  /** harvestPublicationData
+  /* return the harvest publication data
+  */
   get harvestPublicationData(): HarvestData {
     return this._harvestPublicationData;
   }
 
-  // format urls to link and preview
+  /** escapeSolr
+  /* format urls to link and preview
+  */
   escapeSolr(url: string): string {
     const pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
     return url.replace(pattern, '\\$1');

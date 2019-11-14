@@ -27,6 +27,7 @@
                   [params]="params"
                   [isRowEnd]="i + 1 === filter.options.length"
                   [rowIndex]="i"
+                  style="display: none;"
                 ></app-filter-option>
                 <ng-container [ngTemplateOutlet]="wrapper.filterOptionTemplate"></ng-container>
               </ng-container>

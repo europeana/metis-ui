@@ -1,5 +1,8 @@
 import { WorkflowExecution } from '../_models';
 
+/** calcProgress
+/* calculates the completed percentage of a workflow execution
+*/
 export function calcProgress(ongoing: WorkflowExecution): number {
   const currIndex: number = ongoing.currentPluginIndex ? ongoing.currentPluginIndex : 0;
 

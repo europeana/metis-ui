@@ -15,6 +15,7 @@
         '' | uppercase
     }}
   </div>
+  <!-- show progress bar -->
   <div class="progress">
     <div class="progress-status" *ngIf="!isCompleted">
       <span class="progress-statusnumbers"
@@ -36,11 +37,13 @@
       ></div>
     </div>
   </div>
+  <!-- show date and time -->
   <div class="datetime">
     <span class="date">{{ now | date: 'dd/MM/yyyy' }}</span>
     <span class="datedivider" *ngIf="now">-</span>
     <span class="time">{{ now | date: 'HH:mm' }}</span>
   </div>
+  <!-- show cancel button, log button, report button and run button -->
   <nav>
     <ul class="nav-ctrls">
       <li class="nav-ctrl" *ngIf="!isCompleted && currentPluginName !== 'PUBLISH'">
@@ -77,6 +80,7 @@
   </nav>
 </div>
 
+<!-- show run button unless cancelling -->
 <div
   class="metis-dataset-info-block dataset-actionbar"
   *ngIf="!lastExecutionData && !isStarting && !isCancelling"
@@ -86,7 +90,7 @@
   <nav>
     <ul>
       <li>
-        <a *ngIf="workflowData" class="newaction-btn" (click)="beginWorkflow()">
+        <a *ngIf="workflowData" class="nav-btn newaction-btn" (click)="beginWorkflow()">
           <span>{{ 'run workflow' | translate }}</span>
         </a>
         <a
@@ -101,10 +105,12 @@
   </nav>
 </div>
 
+<!-- show "starting" indicator -->
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf="isStarting">
   <div class="status status-new">{{ 'startingworkflow' | translate }}</div>
 </div>
 
+<!-- show "cancelling" indicator -->
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf="isCancelling">
   <div class="status status-new">{{ 'cancelling' | translate }}...</div>
 </div>

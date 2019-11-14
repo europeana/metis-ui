@@ -1,11 +1,13 @@
+/** Component to display workflow executions
+ */
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   PluginExecution,
+  PreviewFilters,
   SimpleReportRequest,
   TopologyName,
-  WorkflowAndPluginExecution,
   WorkflowExecution,
   WorkflowOrPluginExecution
 } from '../../_models';
@@ -20,19 +22,23 @@ export class ExecutionsDataGridComponent {
 
   @Input() plugin: PluginExecution;
   @Input() wpe?: WorkflowOrPluginExecution;
-  @Output() openPreview: EventEmitter<WorkflowAndPluginExecution> = new EventEmitter();
+  @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
   @ViewChild('gridDataTemplate') gridDataTemplate: TemplateRef<HTMLElement>;
 
   contentCopied = false;
 
-  constructor() {}
-
-  copyInformation(type: string, id: string, extId: string = ''): void {
+  /** copyInformation
+  /* copy current execution data to the clipboard
+  */
+  copyInformation(type: string, id: string, extId = ''): void {
     copyExecutionAndTaskId(type, extId, id);
     this.contentCopied = true;
   }
 
+  /** hasPreview
+  /* returns indication of preview
+  */
   hasPreview(plugin: PluginExecution): boolean {
     return (
       plugin.executionProgress !== undefined &&
@@ -40,10 +46,21 @@ export class ExecutionsDataGridComponent {
     );
   }
 
+  /** goToPreview
+  /* fire the preview event
+  */
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
-    this.openPreview.emit({ execution, pluginExecution } as WorkflowAndPluginExecution);
+    const previewFilters: PreviewFilters = {
+      executionId: execution.id,
+      pluginType: pluginExecution.pluginType,
+      startedDate: execution.startedDate
+    };
+    this.openPreview.emit(previewFilters);
   }
 
+  /** openFailReport
+  /* open the fail report
+  */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     this.setReportMsg.emit({ topology, taskId, message: errorMsg });
   }

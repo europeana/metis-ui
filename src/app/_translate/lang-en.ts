@@ -1,3 +1,7 @@
+/** LANG_EN
+/*
+/* list of translatable copy 
+*/
 export const LANG_EN_NAME = 'en';
 
 export const LANG_EN_TRANS = {
@@ -132,6 +136,7 @@ export const LANG_EN_TRANS = {
   replacedby: 'Replaced by',
   replaces: 'Replaces',
   report: 'Report',
+  reportcopied: 'The report has been copied',
   reportempty: 'Report is empty.',
   required: 'Required',
   reset: 'Reset',

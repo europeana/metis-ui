@@ -21,10 +21,10 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
 
   constructor(
-    private authentication: AuthenticationService,
-    private fb: FormBuilder,
-    private errors: ErrorService,
-    private documentTitleService: DocumentTitleService
+    private readonly authentication: AuthenticationService,
+    private readonly fb: FormBuilder,
+    private readonly errors: ErrorService,
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
   /** ngOnInit
@@ -34,7 +34,6 @@ export class ProfileComponent implements OnInit {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Profile');
-
     this.createForm();
   }
 

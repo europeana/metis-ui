@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
   bannertext: string;
   bannerlinktext: string;
 
-  constructor(private documentTitleService: DocumentTitleService) {
+  constructor(private readonly documentTitleService: DocumentTitleService) {
     this.heroimage = 'url(/assets/images/hero_metis_1600x650_jade.png)';
     this.attributiontext = 'Cyclopides metis L., Cyclopides qua... Museum Fur Naturkunde Berlin';
     this.attributionlink = 'https://www.europeana.eu/portal/';
@@ -31,6 +31,9 @@ export class HomeComponent implements OnInit {
     this.bannerlinktext = 'Register to Metis here';
   }
 
+  /** ngOnInit
+  /* set the document title
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Welcome');
   }

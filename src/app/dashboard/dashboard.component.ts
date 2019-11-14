@@ -1,3 +1,5 @@
+/** Parent component of the full Metis dashboard
+ */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
@@ -18,22 +20,27 @@ import {
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer: number | undefined;
+  runningTimer?: number;
   runningIsLoading = true;
   runningIsFirstLoading = true;
 
-  selectedExecutionDsId: string | undefined;
+  selectedExecutionDsId?: string;
   showPluginLog?: PluginExecution;
   favoriteDatasets?: Dataset[];
 
   constructor(
-    private authentication: AuthenticationService,
-    private datasets: DatasetsService,
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private documentTitleService: DocumentTitleService
+    private readonly authentication: AuthenticationService,
+    private readonly datasets: DatasetsService,
+    private readonly workflows: WorkflowService,
+    private readonly errors: ErrorService,
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
+  /** ngOnInit
+  /* - set the document title
+  /* - load the running executions
+  /* - normalise / set the usernName variable
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
 
@@ -49,11 +56,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** ngOnDestroy
+  /* clear the timeout
+  */
   ngOnDestroy(): void {
     clearTimeout(this.runningTimer);
     this.runningTimer = undefined;
   }
 
+  /** checkUpdateLog
+  /* set the showPluginLog variable
+  */
   checkUpdateLog(executions: WorkflowExecution[]): void {
     if (this.showPluginLog) {
       const showingId = this.showPluginLog.externalTaskId;
@@ -66,7 +79,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  //  get all running executions and start polling again
+  /** getRunningExecutions
+  /* - get all running executions
+  /* - manage load-tracking variables
+  /* - recommnece polling before returning
+  */
   getRunningExecutions(): void {
     this.runningIsLoading = true;
     this.workflows.getAllExecutionsCollectingPages(true).subscribe(
@@ -89,6 +106,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** setSelectedExecutionDsId
+  /* set the selectedExecutionDsId variable to the specified id
+  */
   setSelectedExecutionDsId(id: string): void {
     this.selectedExecutionDsId = id;
   }

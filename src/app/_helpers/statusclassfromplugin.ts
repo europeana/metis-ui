@@ -1,5 +1,8 @@
 import { PluginExecution, PluginStatus } from '../_models';
 
+/** statusClassFromPlugin
+/* export function for calculating css classes based on the plugin status
+*/
 export function statusClassFromPlugin(
   plugin: PluginExecution,
   currentPlugin?: PluginExecution

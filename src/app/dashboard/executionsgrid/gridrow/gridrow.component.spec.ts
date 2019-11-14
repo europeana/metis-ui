@@ -8,10 +8,10 @@ import { TranslateService } from '../../../_translate';
 import { GridrowComponent } from '.';
 
 function makePluginExecutionOverview(status: string): PluginExecutionOverview {
-  // tslint:disable: no-any
   return ({
     pluginStatus: status,
     progress: { errors: 0 }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as PluginExecutionOverview;
 }
 
@@ -50,7 +50,14 @@ describe('GridrowComponent', () => {
   it('should expand when clicked', () => {
     spyOn(component.closeExpanded, 'emit');
     component.toggleExpand({ target: { nodeName: 'SPAN' } as HTMLInputElement });
-    expect(component.closeExpanded.emit).toHaveBeenCalled();
+    expect(component.closeExpanded.emit).toHaveBeenCalledWith('execution-id-1');
+  });
+
+  it('should not expand when clicked again', () => {
+    spyOn(component.closeExpanded, 'emit');
+    component.expanded = true;
+    component.toggleExpand({ target: { nodeName: 'SPAN' } as HTMLInputElement });
+    expect(component.closeExpanded.emit).toHaveBeenCalledWith('');
   });
 
   it('should not expand when clicked by a link', () => {

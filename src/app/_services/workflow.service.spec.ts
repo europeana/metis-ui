@@ -18,10 +18,16 @@ import {
   MockTranslateService,
   mockWorkflow,
   mockWorkflowExecution,
+  mockWorkflowExecutionHistoryList,
   mockWorkflowExecutionResults,
   mockXmlSamples
 } from '../_mocked';
-import { PluginType, ReportAvailability, WorkflowExecution } from '../_models';
+import {
+  PluginAvailabilityList,
+  PluginType,
+  ReportAvailability,
+  WorkflowExecution
+} from '../_models';
 import { TranslateService } from '../_translate';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
@@ -243,23 +249,24 @@ describe('workflow service', () => {
   });
 
   it('should get all executions for a dataset', () => {
-    service.getDatasetExecutionsCollectingPages('879').subscribe((results) => {
-      expect(results).toEqual(
-        mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results)
-      );
+    service.getDatasetHistory('879').subscribe((results) => {
+      expect(results).toEqual(mockWorkflowExecutionHistoryList);
     });
     mockHttp
-      .expect(
-        'GET',
-        '/orchestrator/workflows/executions/dataset/879?orderField=CREATED_DATE&ascending=false&nextPage=0'
-      )
-      .send(mockFirstPageResults);
+      .expect('GET', '/orchestrator/workflows/executions/dataset/879/history')
+      .send(mockWorkflowExecutionHistoryList);
+  });
+
+  it('should get all plugins for an execution history', () => {
+    const pal: PluginAvailabilityList = {
+      plugins: [{ pluginType: PluginType.HTTP_HARVEST, hasSuccessfulData: true }]
+    };
+    service.getExecutionPlugins('123').subscribe((results) => {
+      expect(results).toEqual(pal);
+    });
     mockHttp
-      .expect(
-        'GET',
-        '/orchestrator/workflows/executions/dataset/879?orderField=CREATED_DATE&ascending=false&nextPage=1'
-      )
-      .send(mockWorkflowExecutionResults);
+      .expect('GET', '/orchestrator/workflows/executions/123/plugins/data-availability')
+      .send(pal);
   });
 
   it('should get all finished executions for a dataset', () => {

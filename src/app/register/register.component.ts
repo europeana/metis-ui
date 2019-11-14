@@ -32,11 +32,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   public password?: string;
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private authentication: AuthenticationService,
-    private translate: TranslateService,
-    private documentTitleService: DocumentTitleService
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly authentication: AuthenticationService,
+    private readonly translate: TranslateService,
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
   /** ngOnInit
@@ -66,6 +66,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.msgAlreadyRegistered = this.translate.instant('registrationalready');
   }
 
+  /** ngOnDestroy
+  /* clear the timeout
+  */
   ngOnDestroy(): void {
     clearTimeout(this.timeout);
   }

@@ -1,3 +1,6 @@
+/** FilterOptionComponent
+/* a single filter for the dashboard executions overview data.
+*/
 import { Component, ElementRef, Input, TemplateRef, ViewChild } from '@angular/core';
 
 import {
@@ -28,8 +31,10 @@ export class FilterOptionComponent implements CanHaveError {
   @ViewChild('input') input: ElementRef;
 
   hasError = false;
-  constructor() {}
 
+  /** valueIndex
+  /* return the index of the specified parameter within the params array
+  */
   valueIndex(name: FilterParamType, value: string, inputRef?: number): number {
     let res = -1;
     this.params[name].forEach((item: FilterParamValue, i: number) => {
@@ -39,10 +44,17 @@ export class FilterOptionComponent implements CanHaveError {
     });
     return res;
   }
+
+  /** valueIsSet
+  /* indicate if the value is set
+  */
   valueIsSet(): boolean {
     return this.valueIndex(this.filterName, this.getVal(), this.index) > -1;
   }
 
+  /** toggleParamValue
+  /*
+  */
   toggleParamValue(): void {
     const val = this.getVal();
     if (this.index) {
@@ -57,6 +69,9 @@ export class FilterOptionComponent implements CanHaveError {
     this.addParam();
   }
 
+  /** clearParamValuesByInputRef
+  /* removes this instance's value from the parameter hash based on index
+  */
   clearParamValuesByInputRef(): void {
     this.params[this.filterName] = this.params[this.filterName].filter(
       (param: FilterParamValue) => {
@@ -65,6 +80,9 @@ export class FilterOptionComponent implements CanHaveError {
     );
   }
 
+  /** clearParamValue
+  /* removes this instance's value from the parameter hash based on value
+  */
   clearParamValue(value: string): void {
     const index = this.valueIndex(this.filterName, value, this.index);
     if (index > -1) {
@@ -72,6 +90,9 @@ export class FilterOptionComponent implements CanHaveError {
     }
   }
 
+  /** clearParam
+  /* removes this instance's value from the parameter hash
+  */
   clearParam(): void {
     if (this.config.group) {
       this.params[this.filterName] = this.params[this.filterName].filter(
@@ -84,6 +105,9 @@ export class FilterOptionComponent implements CanHaveError {
     }
   }
 
+  /** addParam
+  /* adds this instance's value to the parameter hash
+  */
   addParam(): void {
     if (this.multi === undefined || !this.multi) {
       this.clearParam();
@@ -96,10 +120,16 @@ export class FilterOptionComponent implements CanHaveError {
     });
   }
 
+  /** getVal
+  /* return this instance's value from the native html element or from the config
+  */
   getVal(): string {
     return this.input ? this.input.nativeElement.value : this.config.value;
   }
 
+  /** handleFocus
+  /* - enable group (i.e. date picker pair) on recieving focus
+  */
   handleFocus(): void {
     if (this.config.group) {
       this.parentCmp.restoreGroup(this.config.group, this.index);
@@ -107,6 +137,10 @@ export class FilterOptionComponent implements CanHaveError {
     this.handleChange();
   }
 
+  /** handleChange
+  /* - toggle value change
+  /* - invoke attached callback function
+  */
   handleChange(): void {
     if (this.config.input) {
       this.toggleParamValue();
@@ -120,10 +154,17 @@ export class FilterOptionComponent implements CanHaveError {
     }
   }
 
+  /** handleClick
+  /* toggle value change
+  */
   handleClick(): void {
     this.toggleParamValue();
   }
 
+  /** clear
+  /* - clear html input value
+  /* - invoke attached callback function
+  */
   clear(): void {
     if (this.config.input) {
       this.input.nativeElement.value = '';
@@ -133,6 +174,9 @@ export class FilterOptionComponent implements CanHaveError {
     }
   }
 
+  /** setHasError
+  /* update the instance's hasError value
+  */
   setHasError(val: boolean): void {
     this.hasError = val;
   }

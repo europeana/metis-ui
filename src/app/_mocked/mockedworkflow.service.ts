@@ -7,6 +7,7 @@ import {
   HistoryVersion,
   MoreResults,
   NodePathStatistics,
+  PluginAvailabilityList,
   PluginExecution,
   PluginStatus,
   PluginType,
@@ -18,9 +19,15 @@ import {
   TaskState,
   Workflow,
   WorkflowExecution,
+  WorkflowExecutionHistoryList,
   WorkflowStatus,
   XmlSample
 } from '../_models';
+
+const novemberNineteenthFinish = '2019-11-19T13:07:70.844Z';
+const novemberNineteenthStart = '2019-11-19T12:47:10.844Z';
+const novemberFifth = '2018-11-05T15:38:18.450Z';
+const xPathProvider = '//rdf:RDF/edm:ProvidedCHO/@rdf:about';
 
 export const mockHistoryVersions: Array<HistoryVersion> = [
   {
@@ -97,8 +104,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 0
             },
 
-            finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z'
+            finishedDate: novemberNineteenthFinish,
+            startedDate: novemberNineteenthStart
           },
           {
             pluginType: PluginType.HTTP_HARVEST,
@@ -111,8 +118,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 20
             },
 
-            finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z'
+            finishedDate: novemberNineteenthFinish,
+            startedDate: novemberNineteenthStart
           },
           {
             pluginType: PluginType.TRANSFORMATION,
@@ -125,8 +132,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 12
             },
 
-            finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z'
+            finishedDate: novemberNineteenthFinish,
+            startedDate: novemberNineteenthStart
           }
         ]
       }
@@ -161,8 +168,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 12
             },
 
-            finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z'
+            finishedDate: novemberNineteenthFinish,
+            startedDate: novemberNineteenthStart
           },
           {
             pluginType: PluginType.HTTP_HARVEST,
@@ -175,8 +182,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 10
             },
 
-            finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z'
+            finishedDate: novemberNineteenthFinish,
+            startedDate: novemberNineteenthStart
           },
           {
             pluginType: PluginType.TRANSFORMATION,
@@ -189,8 +196,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 10
             },
 
-            finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z'
+            finishedDate: novemberNineteenthFinish,
+            startedDate: novemberNineteenthStart
           },
           {
             pluginType: PluginType.LINK_CHECKING,
@@ -203,8 +210,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 10
             },
 
-            finishedDate: '2019-11-19T13:07:70.844Z',
-            startedDate: '2019-11-19T12:47:10.844Z'
+            finishedDate: novemberNineteenthFinish,
+            startedDate: novemberNineteenthStart
           },
           {
             pluginType: PluginType.ENRICHMENT,
@@ -217,8 +224,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 10
             },
 
-            startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z'
+            startedDate: novemberNineteenthStart,
+            finishedDate: novemberNineteenthFinish
           },
           {
             pluginType: PluginType.MEDIA_PROCESS,
@@ -231,8 +238,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 10
             },
 
-            startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z'
+            startedDate: novemberNineteenthStart,
+            finishedDate: novemberNineteenthFinish
           },
           {
             pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -245,8 +252,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 10
             },
 
-            startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z'
+            startedDate: novemberNineteenthStart,
+            finishedDate: novemberNineteenthFinish
           },
           {
             pluginType: PluginType.VALIDATION_INTERNAL,
@@ -259,8 +266,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               errors: 10
             },
 
-            startedDate: '2019-11-19T12:47:10.844Z',
-            finishedDate: '2019-11-19T13:07:70.844Z'
+            startedDate: novemberNineteenthStart,
+            finishedDate: novemberNineteenthFinish
           }
         ]
       }
@@ -270,21 +277,30 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
   nextPage: -1
 };
 
+export const mockWorkflowExecutionHistoryList: WorkflowExecutionHistoryList = {
+  executions: [
+    {
+      workflowExecutionId: '253453453',
+      startedDate: novemberFifth
+    }
+  ]
+};
+
 export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
   results: [
     {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.INQUEUE,
-      createdDate: '2018-11-05T15:38:18.450Z',
+      createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
       metisPlugins: [
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
           id: '432552345',
-          startedDate: '2018-11-05T15:38:18.450Z',
-          updatedDate: '2018-11-05T15:38:18.450Z',
+          startedDate: novemberFifth,
+          updatedDate: novemberFifth,
           pluginMetadata: {
             pluginType: PluginType.VALIDATION_EXTERNAL,
             mocked: true,
@@ -307,15 +323,15 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.RUNNING,
-      createdDate: '2018-11-05T15:38:18.450Z',
+      createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
           id: '432552345',
-          startedDate: '2018-11-05T15:38:18.450Z',
-          updatedDate: '2018-11-05T15:38:18.450Z',
+          startedDate: novemberFifth,
+          updatedDate: novemberFifth,
           pluginMetadata: {
             pluginType: PluginType.NORMALIZATION,
             mocked: true,
@@ -338,15 +354,15 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.FAILED,
-      createdDate: '2018-11-05T15:38:18.450Z',
+      createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
           id: '432552345',
-          startedDate: '2018-11-05T15:38:18.450Z',
-          updatedDate: '2018-11-05T15:38:18.450Z',
+          startedDate: novemberFifth,
+          updatedDate: novemberFifth,
           pluginMetadata: {
             pluginType: PluginType.NORMALIZATION,
             mocked: true,
@@ -369,15 +385,15 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.CANCELLED,
-      createdDate: '2018-11-05T15:38:18.450Z',
+      createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
           id: '432552345',
-          startedDate: '2018-11-05T15:38:18.450Z',
-          updatedDate: '2018-11-05T15:38:18.450Z',
+          startedDate: novemberFifth,
+          updatedDate: novemberFifth,
           pluginMetadata: {
             pluginType: 'NORMALIZATION',
             mocked: true,
@@ -400,15 +416,15 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.FINISHED,
-      createdDate: '2018-11-05T15:38:18.450Z',
+      createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
           id: '432552345',
-          startedDate: '2018-11-05T15:38:18.450Z',
-          updatedDate: '2018-11-05T15:38:18.450Z',
+          startedDate: novemberFifth,
+          updatedDate: novemberFifth,
           pluginMetadata: {
             pluginType: PluginType.NORMALIZATION,
             mocked: true,
@@ -479,22 +495,22 @@ export const mockStatisticsDetail: NodePathStatistics = {
       occurrences: 876,
       attributeStatistics: [
         {
-          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          xPath: xPathProvider,
           value: 'new value 1',
           occurrences: 9
         },
         {
-          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          xPath: xPathProvider,
           value: 'new value 2',
           occurrences: 8
         },
         {
-          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          xPath: xPathProvider,
           value: 'new value 3',
           occurrences: 7
         },
         {
-          xPath: '//rdf:RDF/edm:ProvidedCHO/@rdf:about',
+          xPath: xPathProvider,
           value: 'new value 4',
           occurrences: 6
         }
@@ -576,12 +592,35 @@ export class MockWorkflowService {
     return observableOf(mockWorkflowExecutionResults);
   }
 
-  getDatasetExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
-    return observableOf(mockWorkflowExecutionResults.results);
+  getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryList> {
+    console.log(datasetId);
+    return observableOf({
+      executions: mockWorkflowExecutionResults.results.map((we: WorkflowExecution) => {
+        return {
+          workflowExecutionId: we.id,
+          startedDate: we.startedDate
+        };
+      })
+    });
   }
 
+  getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {
+    console.log(id);
+    return observableOf({
+      plugins: [
+        { pluginType: PluginType.HTTP_HARVEST, hasSuccessfulData: true },
+        { pluginType: PluginType.VALIDATION_EXTERNAL, hasSuccessfulData: true },
+        { pluginType: PluginType.TRANSFORMATION, hasSuccessfulData: true },
+        { pluginType: PluginType.VALIDATION_INTERNAL, hasSuccessfulData: true },
+        { pluginType: PluginType.NORMALIZATION, hasSuccessfulData: true }
+      ]
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   promptCancelThisWorkflow(): void {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   getReportsForExecution(): void {}
 
   getWorkflowSamples(): Observable<XmlSample[]> {

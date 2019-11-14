@@ -77,8 +77,8 @@ describe('ActionbarComponent', () => {
     fixture.detectChanges();
     expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(
       '253453453',
-      undefined,
-      undefined
+      (undefined as unknown) as string,
+      (undefined as unknown) as string
     );
   });
 

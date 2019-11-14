@@ -26,6 +26,7 @@ describe('TextWithLinksComponent', () => {
     expect(component.parts).toEqual(parts);
   }
 
+  // check component href normalise utilty
   it('removes trailing dots and commas from link urls', () => {
     const href = 'http://abc.com';
     const hrefWithComma = href + ',';
@@ -35,6 +36,7 @@ describe('TextWithLinksComponent', () => {
     expect(component.normaliseHref(href)).toEqual(href);
   });
 
+  // check component string-split utilty
   it('should split strings', () => {
     checkParts('', []);
     checkParts('fvvfdvd', [{ content: 'fvvfdvd' }]);

@@ -53,6 +53,12 @@ describe('ReportSimpleComponent', () => {
     expect(component.isVisible).toBeFalsy();
   });
 
+  it('should show if loading', () => {
+    expect(component.isVisible).toBeFalsy();
+    component.reportLoading = true;
+    expect(component.isVisible).toBeTruthy();
+  });
+
   it('should warn if the provided errors array is empty', () => {
     expect(component.isVisible).toBeFalsy();
     expect(component.notification).toBeFalsy();
@@ -80,5 +86,12 @@ describe('ReportSimpleComponent', () => {
     expect(component.isObject('665')).toBe(false);
     expect(component.isObject(() => {})).toBe(false);
     expect(component.isObject(undefined)).toBe(false);
+  });
+
+  it('should copy the report', () => {
+    component.reportErrors = ['Error'];
+    fixture.detectChanges();
+    component.copyReport();
+    expect(component.notification!.content).toBe('en:reportcopied');
   });
 });

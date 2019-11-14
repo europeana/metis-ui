@@ -1,3 +1,5 @@
+/** Component to display currently running executions
+ */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { calcProgress, copyExecutionAndTaskId } from '../../_helpers';
@@ -16,7 +18,10 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./ongoingexecutions.component.scss']
 })
 export class OngoingexecutionsComponent implements OnInit {
-  constructor(private workflows: WorkflowService, private translate: TranslateService) {}
+  constructor(
+    private readonly workflows: WorkflowService,
+    private readonly translate: TranslateService
+  ) {}
 
   @Input() showPluginLog: PluginExecution;
   @Input() runningExecutions: WorkflowExecution[];
@@ -26,14 +31,23 @@ export class OngoingexecutionsComponent implements OnInit {
   cancelling: string;
   contentCopied = false;
 
+  /** ngOnInit
+  /* pre-translate the cancelling message
+  */
   ngOnInit(): void {
     this.cancelling = this.translate.instant('cancelling');
   }
 
+  /** getPluginStatusClass
+  /* convert the pluginStatus to a css class string
+  */
   getPluginStatusClass(plugin: PluginExecutionOverview): string {
     return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
   }
 
+  /** cancelWorkflow
+  /* cancel the workflow for the id, dataset id and dataset name sepcified
+  */
   cancelWorkflow(id: string, datasetId: string, datasetName: string): void {
     if (!id) {
       return;
@@ -41,19 +55,31 @@ export class OngoingexecutionsComponent implements OnInit {
     this.workflows.promptCancelThisWorkflow(id, datasetId, datasetName);
   }
 
+  /** showLog
+  /* emit the showPluginLog event for the specified workflow
+  */
   showLog(workflow: WorkflowExecution): void {
     this.setShowPluginLog.emit(getCurrentPlugin(workflow));
   }
 
+  /** calcProgress
+  /* invoke the progress-calculation utility
+  */
   calcProgress(ongoing: WorkflowExecution): number {
     return calcProgress(ongoing);
   }
 
+  /** copyInformation
+  /* copy the execution information to the clipboard
+  */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
 
+  /** byId
+  /* return the item id
+  */
   byId(_: number, item: WorkflowExecution): string {
     return item.id;
   }

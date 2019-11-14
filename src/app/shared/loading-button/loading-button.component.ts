@@ -21,6 +21,9 @@ export class LoadingButtonComponent {
   @Input() title: string;
   @Input() loadingTitle?: string;
 
+  /** cancelIfDisabled
+  /* stop event propagation if disabled
+  */
   cancelIfDisabled(event: Event): void {
     if (this.disabled) {
       event.preventDefault();

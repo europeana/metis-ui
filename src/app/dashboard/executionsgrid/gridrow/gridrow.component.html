@@ -91,24 +91,21 @@
       </span>
 
       <span class="grid-sub">
-        <span class="inline-block">
-          <span *ngIf="pi.progress && pi.progress.expectedRecords < 0">
+        <span class="inline-block" *ngIf="pi.progress && pi.progress.expectedRecords !== 0">
+          <span *ngIf="pi.progress.expectedRecords < 0">
             {{ 'unknown' | translate }}
           </span>
-          <span *ngIf="pi.progress && pi.progress.expectedRecords > 0">
+          <span *ngIf="pi.progress.expectedRecords > 0">
             {{ pi.progress.processedRecords }} / {{ pi.progress.expectedRecords }}
           </span>
-          <span
-            *ngIf="pi.progress && pi.progress.errors && pi.progress.errors > 0"
-            class="error-count"
-          >
+          <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="error-count">
             {{ pi.progress.errors }}
           </span>
         </span>
       </span>
 
       <span [ngClass]="{ 'group-end': isLastsub }" class="grid-sub dates">
-        <span *ngIf="pi.startedDate; else empty_date" class="inline-block">
+        <span *ngIf="pi.startedDate" class="inline-block">
           {{ pi.startedDate | date: 'dd/MM/yyyy' }}
           <span class="time">
             {{ pi.startedDate | date: 'HH:mm' }}
@@ -121,6 +118,8 @@
           </span>
         </span>
       </span>
+      <span class="grid-sub filler"></span>
+      <span class="grid-sub filler"></span>
     </ng-container>
   </ng-container>
 </ng-template>

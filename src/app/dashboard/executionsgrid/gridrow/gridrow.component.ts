@@ -1,3 +1,6 @@
+/** Single row of the overview of the dashboard executions
+/*  - handles expansion to show full plugin breakdown
+*/
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 
 import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
@@ -13,12 +16,16 @@ export class GridrowComponent {
   @Input() expanded: boolean;
   @Output() closeExpanded: EventEmitter<string> = new EventEmitter();
 
-  constructor() {}
-
+  /** getPluginStatusClass
+  /* return a css class based on the plugin status
+  */
   getPluginStatusClass(plugin: PluginExecutionOverview): string {
     return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
   }
 
+  /** toggleExpand
+  /* emit the close-expanded event unless the click target was a link
+  */
   toggleExpand(e: { target: HTMLInputElement }): void {
     if (e.target.nodeName === 'A') {
       return;

@@ -1,3 +1,9 @@
+/** Component to display executions history
+/* - handles pagination
+/* - handles report events
+/* - handles task information copying
+/* - handles redirects to the preview tab
+*/
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
@@ -9,14 +15,13 @@ import {
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
+  PreviewFilters,
   Report,
   SimpleReportRequest,
-  WorkflowAndPluginExecution,
   WorkflowExecution,
   WorkflowOrPluginExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { PreviewFilters } from '../dataset.component';
 
 @Component({
   selector: 'app-history',
@@ -25,9 +30,9 @@ import { PreviewFilters } from '../dataset.component';
 })
 export class HistoryComponent implements OnInit, OnDestroy {
   constructor(
-    private workflows: WorkflowService,
-    private errors: ErrorService,
-    private router: Router
+    private readonly workflows: WorkflowService,
+    private readonly errors: ErrorService,
+    private readonly router: Router
   ) {}
 
   @Input() datasetData: Dataset;
@@ -47,23 +52,31 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   @Input()
   set lastExecutionData(execution: WorkflowExecution | undefined) {
-    if (execution) {
-      if (isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
-        this.returnAllExecutions();
-      }
+    if (execution && isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
+      this.returnAllExecutions();
     }
   }
 
+  /** ngOnInit
+  /* call load function for execution data
+  */
   ngOnInit(): void {
     this.returnAllExecutions();
   }
 
+  /** ngOnDestroy
+  /* unsubscribe from data source
+  */
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
+  /** returnAllExecutions
+  /* - load the execution data
+  /* - update the hasMore variable
+  */
   returnAllExecutions(): void {
     this.workflows
       .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
@@ -91,32 +104,50 @@ export class HistoryComponent implements OnInit, OnDestroy {
       );
   }
 
+  /** loadNextPage
+  /* - increment page variable
+  /* - load execution data
+  */
   loadNextPage(): void {
     this.currentPage++;
     this.returnAllExecutions();
   }
 
+  /** openFailReport
+  /* emit the setReportMsg event
+  */
   openFailReport(req: SimpleReportRequest): void {
     this.setReportMsg.emit(req);
   }
 
+  /** copyInformation
+  /* - copy current execution data to the clipboard
+  /* - update the contentCopied variable
+  */
   copyInformation(type: string, id1: string, id2: string): void {
     copyExecutionAndTaskId(type, id1, id2);
     this.contentCopied = true;
   }
 
+  /** byId
+  /* retrieve plugin execution or the execution id
+  */
   byId(_: number, item: WorkflowOrPluginExecution): string {
     return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
   }
 
-  goToPreview(previewData: WorkflowAndPluginExecution): void {
-    const execution = previewData.execution;
-    const pluginExecution = previewData.pluginExecution;
-
-    this.setPreviewFilters.emit({ execution, plugin: pluginExecution.pluginType });
+  /** goToPreview
+  /* - emit the setPreviewFilters event
+  /* - redirect to the preview
+  */
+  goToPreview(previewData: PreviewFilters): void {
+    this.setPreviewFilters.emit(previewData);
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 
+  /** getCancelledBy
+  /* get the cancelling user
+  */
   getCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
     return this.workflows.getWorkflowCancelledBy(workflow);
   }

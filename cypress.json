@@ -6,5 +6,8 @@
   "video": false,
   "videosFolder": "tmp/cypress-videos/",
   "viewportHeight": 768,
-  "viewportWidth": 1024
+  "viewportWidth": 1024,
+  "env": {
+    "dataServer": "http://127.0.0.1:3000"
+  }
 }

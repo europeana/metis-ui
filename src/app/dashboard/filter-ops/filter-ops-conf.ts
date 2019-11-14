@@ -1,3 +1,5 @@
+/** Defines which filters are available for the dashboard executions overview
+ */
 import { isDateSupported, isValidDate } from '../../_helpers/date-helpers';
 import {
   CanHaveError,

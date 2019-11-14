@@ -4,55 +4,69 @@ import { publishLast, tap } from 'rxjs/operators';
 export class SingleCache<Value> {
   private observable?: Observable<Value>;
 
-  constructor(private sourceFn: () => Observable<Value>) {}
+  constructor(private readonly sourceFn: () => Observable<Value>) {}
 
-  public get(refresh: boolean = false): Observable<Value> {
+  /** get
+  /* accessor for the observable variable
+  */
+  public get(refresh = false): Observable<Value> {
     if (this.observable && !refresh) {
       return this.observable;
     }
     const observable = (this.observable = this.sourceFn().pipe(
-      tap(undefined, () => {
-        this.clear();
-      }),
+      tap((_) => {}, (_) => this.clear(), () => {}),
       publishLast()
     ));
     (observable as ConnectableObservable<Value>).connect();
     return observable;
   }
 
+  /** peek
+  /* return the observable or undefined as an observable
+  */
   public peek(): Observable<Value | undefined> {
     return this.observable || of(undefined);
   }
 
+  /** clear
+  /* sets the observable to undefined
+  */
   public clear(): void {
     this.observable = undefined;
   }
 }
 
 export class KeyedCache<Value> {
-  private observableByKey: { [key: string]: Observable<Value> | undefined } = {};
+  private readonly observableByKey: { [key: string]: Observable<Value> | undefined } = {};
 
-  constructor(private sourceFn: (key: string) => Observable<Value>) {}
+  constructor(private readonly sourceFn: (key: string) => Observable<Value>) {}
 
-  public get(key: string, refresh: boolean = false): Observable<Value> {
+  /** get
+  /* accessor for the observable variable
+  */
+  public get(key: string, refresh = false): Observable<Value> {
     const o = this.observableByKey[key];
     if (o && !refresh) {
       return o;
     }
     const observable = (this.observableByKey[key] = this.sourceFn(key).pipe(
-      tap(undefined, () => {
-        this.clear(key);
-      }),
+      tap((_) => {}, (_) => this.clear(key), () => {}),
       publishLast()
     ));
     (observable as ConnectableObservable<Value>).connect();
     return observable;
   }
 
+  /** peek
+  /* return the observable or undefined as an observable
+  */
   public peek(key: string): Observable<Value | undefined> {
     return this.observableByKey[key] || of(undefined);
   }
 
+  /** clear
+  /* sets the observable to undefined
+  */
   public clear(key: string): void {
     delete this.observableByKey[key];
   }

@@ -6,7 +6,7 @@ import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(private inj: Injector) {}
+  constructor(private readonly inj: Injector) {}
 
   /** intercept
   /* this hooks into all outgoing HTTP requests, and if the user is logged in,
@@ -19,10 +19,10 @@ export class TokenInterceptor implements HttpInterceptor {
   /* @param {httphandler} next
   */
   intercept(
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     request: HttpRequest<any>,
     next: HttpHandler
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Observable<HttpEvent<any>> {
     if (!request.url.match(/signin|register/)) {
       const auth = this.inj.get<AuthenticationService>(AuthenticationService);

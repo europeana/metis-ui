@@ -89,13 +89,31 @@ describe('MappingComponent', () => {
     expect(component.notification!.content).toBe('en:xsltsuccessful');
   });
 
+  it('should try out saved xslt', () => {
+    spyOn(component, 'tryOutXSLT');
+    component.loadDefaultXSLT();
+    component.saveCustomXSLT(true);
+    expect(component.tryOutXSLT).toHaveBeenCalled();
+  });
+
   it('should try out the xslt', fakeAsync((): void => {
-    spyOn(router, 'navigate').and.callFake(() => {});
+    spyOn(router, 'navigate');
     tick();
 
     component.tryOutXSLT('default');
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
   }));
+
+  it('should change the xslt status on cancel', (): void => {
+    fixture.detectChanges();
+    expect(component.xsltStatus).toBe('no-custom');
+    component.loadDefaultXSLT();
+    fixture.detectChanges();
+    expect(component.xsltStatus).toBe('new-custom');
+    component.cancel();
+    fixture.detectChanges();
+    expect(component.xsltStatus).toBe('no-custom');
+  });
 
   it('toggles the editor theme', () => {
     fixture.detectChanges();

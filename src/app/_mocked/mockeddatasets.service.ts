@@ -56,7 +56,7 @@ export class MockDatasetsService {
     return observableOf(undefined);
   }
 
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createDataset(_: { dataset: any }): Observable<Dataset> {
     return observableOf(mockDataset);
   }
@@ -67,6 +67,14 @@ export class MockDatasetsService {
 
   isFavorite(): boolean {
     return false;
+  }
+
+  addFavorite(dataset: Dataset): void {
+    console.log(`addFavorite ${dataset}`);
+  }
+
+  removeFavorite(dataset: Dataset): void {
+    console.log(`removeFavorite ${dataset}`);
   }
 
   getFavorites(): Observable<Dataset[]> {

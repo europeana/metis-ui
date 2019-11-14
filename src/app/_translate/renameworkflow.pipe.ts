@@ -1,3 +1,8 @@
+/** RenameWorkflowPipe
+/*
+/* a translation utility for html files
+/* supplies human-readable labels for plugin types
+*/
 import { Pipe, PipeTransform } from '@angular/core';
 
 const workflowNames: { [key: string]: string } = {

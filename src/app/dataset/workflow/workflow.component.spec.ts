@@ -15,6 +15,7 @@ import {
   PluginMetadata,
   PluginType,
   successNotification,
+  WorkflowFieldData,
   workflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -28,15 +29,15 @@ describe('WorkflowComponent', () => {
   let fixture: ComponentFixture<WorkflowComponent>;
 
   const getTestEl = function(top: number, bottom?: number): HTMLElement {
-    // tslint:disable:no-any
     return ({
-      // tslint:disable:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       getBoundingClientRect(): any {
         return {
           bottom: bottom ? bottom : top + 20,
           top
         };
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any) as HTMLElement;
   };
 
@@ -68,6 +69,37 @@ describe('WorkflowComponent', () => {
     expect(component.workflowForm.dirty).toBeFalsy();
     component.setLinkCheck(1);
     expect(component.workflowForm.dirty).toBeTruthy();
+  });
+
+  it('should add the link checking', () => {
+    component.removeLinkCheck();
+    const getIndexCopy = (): number => {
+      return component.fieldConf.findIndex((c) => {
+        return c.dragType === DragType.dragCopy;
+      });
+    };
+    const pluginData: WorkflowFieldData = {
+      label: '',
+      name: 'pluginLINK_CHECKING',
+      dragType: DragType.dragCopy
+    };
+    expect(getIndexCopy()).toBe(-1);
+    const testTargetIndex = 4;
+    component.addLinkCheck(pluginData, testTargetIndex, false);
+    expect(getIndexCopy()).toEqual(testTargetIndex + 1);
+  });
+
+  it('should remove the link checking', () => {
+    component.rearrange(2, false);
+    let indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(3);
+    component.removeLinkCheck();
+    indexCopy = component.fieldConf.findIndex((c) => {
+      return c.dragType === DragType.dragCopy;
+    });
+    expect(indexCopy).toBe(-1);
   });
 
   it('should rearrange the config', () => {
@@ -157,7 +189,6 @@ describe('WorkflowComponent', () => {
         pluginElement: { nativeElement: getTestEl(500) }
       } as WorkflowFormFieldComponent
     ];
-
     component.setHighlightedField(fields);
     expect(fields[0].conf.currentlyViewed).toBeTruthy();
     expect(fields[1].conf.currentlyViewed).toBeFalsy();
@@ -209,7 +240,6 @@ describe('WorkflowComponent', () => {
   });
 
   it('should detect gaps in the workflow sequence', () => {
-    // tslint:disable:no-any
     const fakeInputs = [
       {
         conf: {
@@ -235,10 +265,11 @@ describe('WorkflowComponent', () => {
           error: false
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ] as any;
 
-    // tslint:disable:no-any
     expect(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       fakeInputs.filter((item: any) => {
         return item.conf.error;
       }).length
@@ -246,8 +277,8 @@ describe('WorkflowComponent', () => {
 
     component.workflowForm.get('pluginHARVEST')!.setValue(true);
     component.workflowStepAllowed(fakeInputs);
-    // tslint:disable:no-any
     expect(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       fakeInputs.filter((item: any) => {
         return item.conf.error;
       }).length

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 import { DocumentTitleService } from '../../_services';
 
 @Component({
@@ -8,8 +7,11 @@ import { DocumentTitleService } from '../../_services';
   styleUrls: ['./newdataset.component.scss']
 })
 export class NewDatasetComponent implements OnInit {
-  constructor(private documentTitleService: DocumentTitleService) {}
+  constructor(private readonly documentTitleService: DocumentTitleService) {}
 
+  /** ngOnInit
+  /* set the page title
+  */
   ngOnInit(): void {
     this.documentTitleService.setTitle('New Dataset');
   }

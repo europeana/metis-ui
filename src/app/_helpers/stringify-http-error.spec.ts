@@ -4,7 +4,7 @@ import { StringifyHttpError } from './stringify-http-error';
 
 function checkError(
   init: {
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     error?: any;
     status?: number;
     statusText?: string;

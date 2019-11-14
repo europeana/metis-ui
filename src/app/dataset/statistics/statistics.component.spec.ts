@@ -21,7 +21,7 @@ import { StatisticsComponent } from '.';
 function setServiceError(
   mockService: WorkflowService,
   serviceName: 'getStatistics' | 'getFinishedDatasetExecutions' | 'getStatisticsDetail'
-  // tslint:disable-next-line: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
   return spyOn(mockService, serviceName).and.returnValue(
     throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
@@ -87,8 +87,13 @@ describe('StatisticsComponent', () => {
       calls.push(param);
     });
 
+    component.taskId = undefined;
+    component.loadMoreAttrs(xPath);
+    expect(spyLoading).not.toHaveBeenCalled();
     component.taskId = 'abc';
     component.loadMoreAttrs(xPath);
+    expect(spyLoading).toHaveBeenCalled();
+
     stat = component.statistics.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeTruthy();
     expect(spyLoading).toHaveBeenCalledTimes(2);

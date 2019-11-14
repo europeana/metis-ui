@@ -31,6 +31,9 @@ export class TextWithLinksComponent {
     this.parts = parts;
   }
 
+  /** normaliseHref
+  /* removes dots and commas from the specified href string
+  */
   public normaliseHref(href: string): string {
     return href.replace(/[\.,]$/, '');
   }

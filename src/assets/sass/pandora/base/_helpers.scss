@@ -190,8 +190,10 @@ body {
     background: $white;
     box-shadow: rgba(77, 77, 77, 0.3) 0 1px 4px;
     left: 1rem;
+    max-height: 10rem;
     min-width: 10rem;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: 0.5rem 0;
     position: absolute;
     top: 3rem;

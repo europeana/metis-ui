@@ -3,10 +3,6 @@
 
 $speech-bubble-offset: 6.7em;
 
-app-filter-option {
-  display: none;
-}
-
 .dropdown.arrow-right .dropdown-wrapper::before {
   right: $speech-bubble-offset;
   transform: translateX(2px);
@@ -17,6 +13,10 @@ app-filter-option {
 
 .dropdown > a:last-of-type::after {
   display: none;
+}
+
+.dropdown .dropdown-content {
+  max-height: none;
 }
 
 .dropdown-wrapper.hidden {

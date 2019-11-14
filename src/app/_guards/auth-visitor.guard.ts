@@ -6,8 +6,15 @@ import { AuthenticationService } from '../_services';
 
 @Injectable({ providedIn: 'root' })
 export class AuthVisitorGuard implements CanActivate {
-  constructor(private router: Router, private authentication: AuthenticationService) {}
+  constructor(
+    private readonly router: Router,
+    private readonly authentication: AuthenticationService
+  ) {}
 
+  /** canActivate
+  /* - return true if user is not logged in
+  /* - redirect to environment-specified page if not logged in
+  */
   canActivate(): boolean {
     if (!this.authentication.validatedUser()) {
       return true;

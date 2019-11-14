@@ -25,7 +25,12 @@ import { Dataset, httpErrorNotification, Notification, successNotification } fro
 import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
-type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
+enum XSLTStatus {
+  LOADING = 'loading',
+  NOCUSTOM = 'no-custom',
+  HASCUSTOM = 'has-custom',
+  NEWCUSTOM = 'new-custom'
+}
 
 @Component({
   selector: 'app-mapping',
@@ -34,50 +39,60 @@ type XSLTStatus = 'loading' | 'no-custom' | 'has-custom' | 'new-custom';
 })
 export class MappingComponent implements OnInit {
   constructor(
-    private editorPrefs: EditorPrefService,
-    private errors: ErrorService,
-    private datasets: DatasetsService,
-    private translate: TranslateService,
-    private router: Router
+    private readonly editorPrefs: EditorPrefService,
+    private readonly errors: ErrorService,
+    private readonly datasets: DatasetsService,
+    private readonly translate: TranslateService,
+    private readonly router: Router
   ) {}
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
-
   @Input() datasetData: Dataset;
-
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
   editorConfig: EditorConfiguration;
-  xsltStatus: XSLTStatus = 'loading';
+  xsltStatus: XSLTStatus = XSLTStatus.LOADING;
   xslt?: string;
   xsltToSave?: string;
   notification?: Notification;
   msgXSLTSuccess: string;
 
+  /** ngOnInit
+  /* initialisation:
+  /* - load the config & xslt
+  /* - prepare the translated messages
+  */
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
     this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
     this.loadCustomXSLT();
   }
 
+  /** handleXSLTError
+  /* - create a notification for errors
+  /* - set notification variable
+  */
   private handleXSLTError(err: HttpErrorResponse): void {
-    this.xsltStatus = 'no-custom';
+    this.xsltStatus = XSLTStatus.NOCUSTOM;
     const error = this.errors.handleError(err);
     this.notification = httpErrorNotification(error);
     this.xsltToSave = this.xslt = '';
   }
 
+  /** loadCustomXSLT
+  /* - check xsltId property available
+  /* - load the custom xslt
+  */
   loadCustomXSLT(): void {
     if (!this.datasetData.xsltId) {
-      this.xsltStatus = 'no-custom';
+      this.xsltStatus = XSLTStatus.NOCUSTOM;
       return;
     }
-
-    this.xsltStatus = 'loading';
+    this.xsltStatus = XSLTStatus.LOADING;
     this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
       (result) => {
         this.xsltToSave = this.xslt = result;
-        this.xsltStatus = 'has-custom';
+        this.xsltStatus = XSLTStatus.HASCUSTOM;
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
@@ -85,13 +100,16 @@ export class MappingComponent implements OnInit {
     );
   }
 
+  /** loadDefaultXSLT
+  /* load the default xslt
+  */
   loadDefaultXSLT(): void {
-    const hasCustom = this.xsltStatus === 'has-custom';
-    this.xsltStatus = 'loading';
+    const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
+    this.xsltStatus = XSLTStatus.LOADING;
     this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
       (result) => {
         this.xsltToSave = this.xslt = result;
-        this.xsltStatus = hasCustom ? 'has-custom' : 'new-custom';
+        this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
@@ -99,6 +117,9 @@ export class MappingComponent implements OnInit {
     );
   }
 
+  /** onThemeSet
+  /* set the editor theme
+  */
   onThemeSet(toDefault: boolean): void {
     const isDef = this.editorPrefs.currentThemeIsDefault();
     if (toDefault) {
@@ -112,11 +133,18 @@ export class MappingComponent implements OnInit {
     }
   }
 
+  /** tryOutXSLT
+  /* - emit setTempXSLT event
+  /* - redirect to preview
+  */
   tryOutXSLT(type: string): void {
     this.setTempXSLT.emit(type);
     this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
   }
 
+  /** saveCustomXSLT
+  /* saves the custom xslt and (optionally) previews it
+  */
   saveCustomXSLT(tryout: boolean): void {
     const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
     this.datasets
@@ -142,9 +170,12 @@ export class MappingComponent implements OnInit {
       );
   }
 
+  /** cancel
+  /* switches the xslt status
+  */
   cancel(): void {
-    if (this.xsltStatus === 'new-custom') {
-      this.xsltStatus = 'no-custom';
+    if (this.xsltStatus === XSLTStatus.NEWCUSTOM) {
+      this.xsltStatus = XSLTStatus.NOCUSTOM;
     }
   }
 }

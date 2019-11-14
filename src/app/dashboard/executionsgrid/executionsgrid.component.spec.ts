@@ -10,7 +10,7 @@ import { ExecutionsgridComponent } from '.';
 import { GridrowComponent } from './gridrow';
 
 function setRows(component: ExecutionsgridComponent): void {
-  // tslint:disable: no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component.rows = ([{ expanded: true }, { expanded: true }] as any) as QueryList<GridrowComponent>;
 }
 
@@ -47,6 +47,18 @@ describe('ExecutionsgridComponent', () => {
     expect(component.isLoading).toBe(false);
     expect(component.isLoadingMore).toBe(false);
     expect(component.currentPage).toEqual(0);
+  });
+
+  it('should load on init', () => {
+    spyOn(component, 'load');
+    component.ngAfterViewInit();
+    expect(component.load).toHaveBeenCalled();
+  });
+
+  it('should call load when the params are set', () => {
+    spyOn(component, 'load');
+    component.setOverviewParams('param-string');
+    expect(component.load).toHaveBeenCalled();
   });
 
   it('should load the next page', () => {
