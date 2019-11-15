@@ -25,9 +25,10 @@ import {
 
 import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
 import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
-import { Workflow } from '../../src/app/_models/workflow';
+import { DatasetSearchResult, Workflow } from '../../src/app/_models';
 
 let baseDate = new Date('2019-02-18T07:36:59.801Z');
+const pageSize = 2;
 
 const fullSequenceTypesOAIPMH = Object.values(PluginType).filter((pType: PluginType) => {
   return pType !== PluginType.HTTP_HARVEST;
@@ -258,12 +259,21 @@ function updateHarvestData(info: HarvestData, pe: PluginExecution): void {
 /** getListResultWrapper
 /* returns a ResultList from the supplied array
 /* @param {array} list - optional
+/* @param {boolean} fromZero - optional - include results from zero
+/* @param {number} page - optional- the page to return
 */
-function getListWrapper(list?: Array<Object>, nextPage?: boolean): ResultList {
+function getListWrapper(
+  list: Array<Object> = [],
+  fromZero: boolean = false,
+  page: number = 0
+): ResultList {
+  const sliceIndex = page * pageSize;
+  const results = list.slice(fromZero ? 0 : sliceIndex, sliceIndex + pageSize);
+  const more = list && list.length > (page + 1) * pageSize;
   return {
-    results: list ? list : [],
-    listSize: list ? list.length : 0,
-    nextPage: nextPage ? 0 : -1
+    results: results,
+    listSize: results.length,
+    nextPage: more ? 0 : -1
   };
 }
 
@@ -487,7 +497,7 @@ function getMostRecentExecutionByDatasetId(datasetId: string): Array<WorkflowExe
  */
 const datsetXs = generateDatasetX();
 
-export function overview(): ResultList {
+export function overview(page: number = 0): ResultList {
   let res: Array<DatasetOverview> = [];
 
   datsetXs.forEach((datsetX) => {
@@ -505,8 +515,8 @@ export function overview(): ResultList {
       });
     }
   });
-
-  return getListWrapper(res, true);
+  // page parameter based on 1 in this case so deduct 1
+  return getListWrapper(res, true, page > 0 ? page - 1 : page);
 }
 
 export function dataset(datasetId: string): DatasetX | undefined {
@@ -520,7 +530,7 @@ export function dataset(datasetId: string): DatasetX | undefined {
   return undefined;
 }
 
-export function running(): ResultList {
+export function running(page: number = 0): ResultList {
   let res: Array<WorkflowExecution> = [];
 
   datsetXs.forEach((datsetX) => {
@@ -542,7 +552,7 @@ export function running(): ResultList {
       });
     }
   });
-  return getListWrapper(res);
+  return getListWrapper(res, false, page);
 }
 
 /** executionsHistory
@@ -595,12 +605,13 @@ export function pluginsAvailable(executionId: string): PluginAvailabilityList {
   return res;
 }
 
-/** executionsByDatasetId
+/** executionsByDatasetIdAsList
 /* @param {string} datasetId
+/* @param {number} page
 /* return dataset's executions
 */
-export function executionsByDatasetIdAsList(datasetId: string): ResultList {
-  return getListWrapper(getMostRecentExecutionByDatasetId(datasetId));
+export function executionsByDatasetIdAsList(datasetId: string, page: number = 0): ResultList {
+  return getListWrapper(getMostRecentExecutionByDatasetId(datasetId), true, page);
 }
 
 /** information
@@ -632,25 +643,27 @@ export function information(informationId?: string): HarvestData {
 }
 
 /** search
+/* return ResultList of DatasetSearchResult
 /* @param {string} term - the search term
-/* return ResultList of matching dataset data
+/* @param {page} term - the page
 */
-export function search(term?: string): ResultList {
-  return getListWrapper(
-    datsetXs
-      .filter((datsetX: DatasetX) => {
-        return datsetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase());
-      })
-      .map((datsetX: DatasetX) => {
-        let lastExec = datsetX.workflows![0]!.executions![0]!.finishedDate;
+export function search(term: string, page: number = 0): ResultList {
+  const allResults = datsetXs
+    .filter((datsetX: DatasetX) => {
+      return datsetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase());
+    })
+    .map((datsetX: DatasetX) => {
+      let lastExec = datsetX.workflows![0]!.executions![0]!.finishedDate;
 
-        return {
-          datasetId: datsetX.datasetName,
-          providerName: datsetX.provider,
-          lastExecutionDate: lastExec ? lastExec : ''
-        };
-      })
-  );
+      return {
+        datasetId: datsetX.datasetId,
+        datasetName: datsetX.datasetName,
+        provider: datsetX.provider,
+        dataProvider: datsetX.dataProvider,
+        lastExecutionDate: lastExec ? lastExec : ''
+      } as DatasetSearchResult;
+    });
+  return getListWrapper(allResults, false, page);
 }
 
 // localhost:3000/orchestrator/workflows/0

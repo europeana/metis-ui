@@ -72,7 +72,7 @@ context('metis-ui', () => {
       cy.visit('/dashboard');
     });
 
-    const expectedRowCount = 5;
+    const expectedRowCount = 2;
     const expectedHeaderCount = 5;
 
     it('should show the search form', () => {

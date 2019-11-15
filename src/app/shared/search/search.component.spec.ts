@@ -22,11 +22,11 @@ describe('SearchComponent', () => {
   };
 
   describe('with query param:', () => {
-    const qParam = '123';
+    const searchString = '123';
 
     beforeEach(async(() => {
       const mar = new MockActivatedRoute();
-      mar.setParams({ q: qParam });
+      mar.setParams({ searchString: searchString });
       TestBed.configureTestingModule({
         imports: [RouterTestingModule],
         declarations: [SearchComponent, createMockPipe('translate')],
@@ -41,7 +41,22 @@ describe('SearchComponent', () => {
     beforeEach(beforeEachInitialisation);
 
     it('should initialise its value on initialisation', () => {
-      expect(component.q).toEqual(qParam);
+      expect(component.searchString).toEqual(searchString);
+    });
+
+    it('should execute a search', () => {
+      spyOn(router, 'navigate');
+      expect(component.searchString).toBeTruthy();
+      component.executeSearch();
+      expect(router.navigate).toHaveBeenCalled();
+    });
+
+    it('should execute a search on return (key event)', () => {
+      spyOn(router, 'navigate');
+      component.submitOnEnter(({ which: 1 } as unknown) as KeyboardEvent);
+      expect(router.navigate).not.toHaveBeenCalled();
+      component.submitOnEnter(({ which: 13 } as unknown) as KeyboardEvent);
+      expect(router.navigate).toHaveBeenCalled();
     });
   });
 
@@ -57,10 +72,11 @@ describe('SearchComponent', () => {
 
     beforeEach(beforeEachInitialisation);
 
-    it('should execute a search', () => {
+    it('should not execute a search for empty search terms', () => {
       spyOn(router, 'navigate');
+      expect(component.searchString).toBeFalsy();
       component.executeSearch();
-      expect(router.navigate).toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
     });
 
     it('should not execute a search if not authenticated', () => {
@@ -70,14 +86,6 @@ describe('SearchComponent', () => {
       });
       component.executeSearch();
       expect(router.navigate).not.toHaveBeenCalled();
-    });
-
-    it('should execute a search on return (key event)', () => {
-      spyOn(router, 'navigate');
-      component.submitOnEnter(({ which: 1 } as unknown) as KeyboardEvent);
-      expect(router.navigate).not.toHaveBeenCalled();
-      component.submitOnEnter(({ which: 13 } as unknown) as KeyboardEvent);
-      expect(router.navigate).toHaveBeenCalled();
     });
   });
 });

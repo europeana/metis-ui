@@ -12,7 +12,7 @@ export class MockActivatedRoute extends ActivatedRoute {
   /* set the queryParams variable to an observable of the supplied hash
   /* @param {hash} paramsHash - a hash containing a 'q' key
   */
-  setParams(paramsHash: { q?: string }): void {
+  setParams(paramsHash: { searchString?: string }): void {
     this.queryParams = of(paramsHash);
   }
 }

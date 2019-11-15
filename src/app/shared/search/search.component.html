@@ -1,9 +1,10 @@
 <span class="search-form" *ngIf="authentication.validatedUser()">
   <input
+    class="search-string"
     type="text"
     (keypress)="submitOnEnter($event)"
-    [(ngModel)]="q"
-    name="q"
+    [(ngModel)]="searchString"
+    name="searchString"
     placeholder="{{ 'search-placeholder' | translate }}"
   />
   <span class="search" (click)="executeSearch()"></span>

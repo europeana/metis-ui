@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -17,10 +18,11 @@ describe('SearchResultsComponent', () => {
   const configureTestbed = (searchErr = false, qParam?: string): void => {
     const mar = new MockActivatedRoute();
     if (qParam) {
-      mar.setParams({ q: qParam });
+      mar.setParams({ searchString: qParam });
     }
     TestBed.configureTestingModule({
       declarations: [SearchResultsComponent, createMockPipe('translate')],
+      imports: [RouterTestingModule],
       providers: [
         { provide: ActivatedRoute, useValue: mar },
         {
@@ -66,6 +68,15 @@ describe('SearchResultsComponent', () => {
 
     it('should have results', () => {
       expect(component.results).toBeTruthy();
+    });
+
+    it('should load more', () => {
+      expect(component.currentPage).toBe(0);
+      spyOn(component, 'load');
+      component.isLoading = true;
+      component.loadNextPage();
+      expect(component.load).toHaveBeenCalled();
+      expect(component.currentPage).toBe(1);
     });
   });
 

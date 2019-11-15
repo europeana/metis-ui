@@ -11,7 +11,7 @@ import { AuthenticationService } from '../../_services';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit {
-  q: string;
+  searchString: string;
 
   /** constructor
   /*  - set the authentication service
@@ -24,15 +24,15 @@ export class SearchComponent implements OnInit {
   ) {}
 
   /** ngOnInit
-  /* - set the q variable
+  /* - set the searchString variable
   /* - ignore if 'undefined'
-  /* - set q variable to URI-decoded query parameter
+  /* - set searchString variable to URI-decoded query parameter
   */
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const q = params.q;
+      const q = params.searchString;
       if (q !== undefined) {
-        this.q = decodeURIComponent(q);
+        this.searchString = decodeURIComponent(q.trim());
       }
     });
   }
@@ -43,15 +43,16 @@ export class SearchComponent implements OnInit {
   /*  setting the query parameter to the URI-encoded q variable
   */
   executeSearch(): void {
-    if (this.authentication.validatedUser()) {
+    if (this.searchString && this.authentication.validatedUser()) {
       this.router.navigate([`/search`], {
-        queryParams: { q: encodeURIComponent(this.q ? this.q : '') }
+        queryParams: { searchString: encodeURIComponent(this.searchString.trim()) }
       });
     }
   }
 
   /** submitOnEnter
   /*  redirect to the search results page with the search term as a query paramter on key down
+  /* @param {KeyboardEvent} e - the key event
   */
   submitOnEnter(e: KeyboardEvent): void {
     if (e.which === 13) {

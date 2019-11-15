@@ -18,7 +18,7 @@
   @media (min-width: $bp-med) {
     display: grid;
     column-gap: 1.75em;
-    grid-template-columns: minmax(8em, 2fr) auto auto;
+    grid-template-columns: auto minmax(8em, 2fr) auto auto auto;
   }
 
   .grid-cell:empty,

@@ -3,8 +3,10 @@ import { Language } from './language';
 
 export interface DatasetSearchResult {
   datasetId: string;
-  providerName: string;
-  lastExecutionDate: string;
+  datasetName: string;
+  provider: string;
+  dataProvider: string;
+  lastExecutionDate?: string;
 }
 
 export interface Dataset {

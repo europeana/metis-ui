@@ -143,11 +143,15 @@ export class DatasetsService {
   /*  @param {number} page - the pagination target
   */
   search(term: string, page: number): Observable<Results<DatasetSearchResult>> {
-    console.log(page);
-    const url = `${apiSettings.apiHostCore}/datasets/search?q=${term}`;
+    const url = `${apiSettings.apiHostCore}/datasets/search?searchString=${term}&nextPage=${page}`;
     return this.http.get<Results<DatasetSearchResult>>(url).pipe(this.errors.handleRetry());
   }
 
+  /** getSearchResultsUptoPage
+  /*  search for datasets
+  /*  @param {string} term - the search term
+  /*  @param {number} endPage - the number of pages to fetch
+  */
   getSearchResultsUptoPage(
     term: string,
     endPage: number

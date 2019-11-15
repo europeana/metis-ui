@@ -45,8 +45,17 @@ const mockXmlSamples: XmlSample[] = [
 const mockSearchResults: DatasetSearchResult[] = [
   {
     datasetId: '123',
-    providerName: 'xxx',
+    datasetName: 'Dataset_123',
+    provider: 'Test Provider',
+    dataProvider: 'Test Data Provider',
     lastExecutionDate: '2018-04-03T07:49:42.275Z'
+  },
+  {
+    datasetId: '321',
+    datasetName: 'Dataset_321',
+    provider: 'Test Provider',
+    dataProvider: 'Test Data Provider',
+    lastExecutionDate: '2018-05-03T07:49:42.275Z'
   }
 ];
 

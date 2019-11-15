@@ -11,6 +11,16 @@
   width: 9em;
 }
 
+.grid-footer {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  .svg-icon-spin {
+    margin-left: 0.25em;
+    transform: scale(0.7);
+  }
+}
+
 @media (min-width: $bp-small-3) {
   .time:not(.br) {
     margin-right: 1em;

@@ -17,6 +17,7 @@ import {
 import { urlManipulation } from './_models/test-models';
 
 const port = 3000;
+const url = require('url');
 
 let switchedOff: { [key: string]: string } = {};
 
@@ -190,7 +191,10 @@ function routeToFile(response: ServerResponse, route: string): boolean {
   regRes = route.match(/orchestrator\/workflows\/executions\/overview/);
 
   if (regRes) {
-    response.end(JSON.stringify(overview()));
+    const params = url.parse(route, true).query;
+    response.end(
+      JSON.stringify(overview(params.pageCount ? parseInt(params.pageCount) : undefined))
+    );
     return true;
   }
 
@@ -218,14 +222,23 @@ function routeToFile(response: ServerResponse, route: string): boolean {
   regRes = route.match(/orchestrator\/workflows\/executions\/dataset\/-?(\d+)/);
 
   if (regRes) {
-    response.end(JSON.stringify(executionsByDatasetIdAsList(regRes[1])));
+    const params = url.parse(route, true).query;
+    response.end(
+      JSON.stringify(
+        executionsByDatasetIdAsList(
+          regRes[1],
+          params.nextPage ? parseInt(params.nextPage) : undefined
+        )
+      )
+    );
     return true;
   }
 
   regRes = route.match(/orchestrator\/workflows\/executions\/\?\S+INQUEUE\S+RUNNING/);
 
   if (regRes) {
-    response.end(JSON.stringify(running()));
+    const params = url.parse(route, true).query;
+    response.end(JSON.stringify(running(params.nextPage ? parseInt(params.nextPage) : undefined)));
     return true;
   }
 
@@ -271,10 +284,15 @@ function routeToFile(response: ServerResponse, route: string): boolean {
     return true;
   }
 
-  regRes = route.match(/datasets\/search\?q=(.+)/);
+  regRes = route.match(/datasets\/search\?searchString=/);
 
   if (regRes) {
-    response.end(JSON.stringify(search(regRes[1])));
+    const params = url.parse(route, true).query;
+    response.end(
+      JSON.stringify(
+        search(params.searchString, params.nextPage ? parseInt(params.nextPage) : undefined)
+      )
+    );
     return true;
   }
 

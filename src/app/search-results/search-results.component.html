@@ -1,26 +1,40 @@
 <div class="search-results-content">
   <div class="search-results-header">
-    <strong>{{ query?.length }} search results for "{{ query }}"</strong>
+    <strong>{{ results?.length }} search results for "{{ query }}"</strong>
   </div>
   <div class="search-results-grid">
     <span
       *ngFor="
         let headerTitle of [
           'search-header-dataset-id',
-          'search-header-provider-name',
+          'search-header-dataset-name',
+          'search-header-provider',
+          'search-header-data-provider',
           'search-header-last-execution'
         ]
       "
       class="grid-header"
       >{{ headerTitle | translate }}</span
     >
+
     <ng-template #t_search_result let-result="result">
-      <span class="grid-cell">{{ result.datasetId }}</span>
-      <span class="grid-cell">{{ result.providerName }}</span>
+      <span class="grid-cell">
+        <a [routerLink]="['/dataset', 'edit', result.datasetId]">{{ result.datasetId }}</a>
+      </span>
+      <span class="grid-cell">{{ result.datasetName }}</span>
+      <span class="grid-cell">{{ result.provider }}</span>
+      <span class="grid-cell">{{ result.dataProvider }}</span>
       <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
     </ng-template>
     <ng-container *ngFor="let result of results">
       <ng-content *ngTemplateOutlet="t_search_result; context: { result: result }"></ng-content>
     </ng-container>
+  </div>
+
+  <div class="grid-footer">
+    <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{
+      'loadmore' | translate
+    }}</a
+    ><span class="svg-icon-spin" [class.showing]="isLoading"></span>
   </div>
 </div>

@@ -14,7 +14,8 @@ import { DatasetsService, DocumentTitleService } from '../_services';
   styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnInit {
-  currentPage: 0;
+  searchString: string;
+  currentPage = 0;
   isLoading = false;
   hasMore = false;
   query: string;
@@ -34,30 +35,50 @@ export class SearchResultsComponent implements OnInit {
   */
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const q = params.q;
-
-      if (q) {
-        this.query = decodeURIComponent(q);
-        this.isLoading = true;
-        this.datasets.getSearchResultsUptoPage(q, 0).subscribe(
-          ({ results, more }) => {
-            this.results = results;
-            this.isLoading = false;
-            this.hasMore = more;
-          },
-          (err: HttpErrorResponse) => {
-            console.log(err);
-            this.isLoading = false;
-          }
-        );
-      }
+      this.searchString = params.searchString;
+      this.load();
       this.documentTitleService.setTitle(
-        ['Search Results', q]
+        ['Search Results', this.searchString]
           .filter((x) => {
             return x;
           })
           .join(' | ')
       );
     });
+  }
+
+  /** loadNextPage
+  /* - increment the page tracking variable
+  /* - call load function
+  */
+  loadNextPage(): void {
+    this.currentPage++;
+    this.load();
+  }
+
+  /** load
+  /* - do nothing if there is no searchString variable set
+  /* - sets the query variable to the decoded searchString variable
+  /* - manages isLoading and hasMore variables
+  /* - invokes dataset search service
+  /* - assigns result to results variable
+  */
+  load(): void {
+    if (this.searchString) {
+      this.query = decodeURIComponent(this.searchString);
+      this.isLoading = true;
+
+      this.datasets.getSearchResultsUptoPage(this.searchString, this.currentPage).subscribe(
+        ({ results, more }) => {
+          this.results = results;
+          this.isLoading = false;
+          this.hasMore = more;
+        },
+        (err: HttpErrorResponse) => {
+          console.log(err);
+          this.isLoading = false;
+        }
+      );
+    }
   }
 }

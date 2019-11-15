@@ -2,6 +2,9 @@ import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MoreResults, Results } from '../_models';
 
+/** paginatedResult
+/* generic pagination utility
+*/
 export function paginatedResult<T>(
   observables: Observable<Results<T>>[]
 ): Observable<MoreResults<T>> {
@@ -16,7 +19,7 @@ export function paginatedResult<T>(
 }
 
 /** collectResultsUptoPage
-/* generic pagination utility
+/* concatenate page results
 */
 export function collectResultsUptoPage<T>(
   getResults: (page: number) => Observable<Results<T>>,
@@ -28,16 +31,3 @@ export function collectResultsUptoPage<T>(
   }
   return paginatedResult(observables);
 }
-
-/*
- collectResultsUptoPage<T>(
-    getResults: (page: number) => Observable<Results<T>>,
-    endPage: number
-  ): Observable<MoreResults<T>> {
-    const observables: Observable<Results<T>>[] = [];
-    for (let i = 0; i <= endPage; i++) {
-      observables.push(getResults(i));
-    }
-    return this.paginatedResult(observables);
-  }
-*/
