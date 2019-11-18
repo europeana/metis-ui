@@ -4,10 +4,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { environment } from '../../environments/environment';
-import { Dataset, getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
+import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import {
   AuthenticationService,
-  DatasetsService,
   DocumentTitleService,
   ErrorService,
   WorkflowService
@@ -26,11 +25,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   selectedExecutionDsId?: string;
   showPluginLog?: PluginExecution;
-  favoriteDatasets?: Dataset[];
 
   constructor(
     private readonly authentication: AuthenticationService,
-    private readonly datasets: DatasetsService,
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
@@ -43,12 +40,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
-
     this.getRunningExecutions();
-    this.datasets.getFavorites().subscribe((datasets) => {
-      datasets.reverse();
-      this.favoriteDatasets = datasets;
-    });
 
     const user = this.authentication.getCurrentUser();
     if (user) {

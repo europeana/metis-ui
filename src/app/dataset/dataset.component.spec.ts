@@ -122,14 +122,6 @@ describe('DatasetComponent', () => {
     expect(component.reportMsg).toBeFalsy();
   });
 
-  it('should toggle isFavorite', () => {
-    expect(component.isFavorite).toBeFalsy();
-    component.toggleFavorite();
-    expect(component.isFavorite).toBeTruthy();
-    component.toggleFavorite();
-    expect(component.isFavorite).toBeFalsy();
-  });
-
   it('should start a workflow', () => {
     spyOn(workflows, 'startWorkflow').and.callThrough();
     component.datasetId = '65';

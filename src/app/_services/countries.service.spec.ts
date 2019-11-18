@@ -12,8 +12,6 @@ describe('dataset service', () => {
   let service: CountriesService;
 
   beforeEach(async(() => {
-    localStorage.setItem('favoriteDatasetIds', '["5", "6736"]');
-
     TestBed.configureTestingModule({
       providers: [CountriesService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule]

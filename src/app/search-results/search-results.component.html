@@ -1,8 +1,11 @@
 <div class="search-results-content">
   <div class="search-results-header">
-    <strong>{{ results?.length }} search results for "{{ query }}"</strong>
+    <strong *ngIf="results?.length > 0"
+      >{{ results.length }} search results for "{{ query }}"</strong
+    >
+    <strong *ngIf="results?.length === 0">{{ 'search-empty' | translate }} "{{ query }}"</strong>
   </div>
-  <div class="search-results-grid">
+  <div *ngIf="query?.length > 0" class="search-results-grid">
     <span
       *ngFor="
         let headerTitle of [

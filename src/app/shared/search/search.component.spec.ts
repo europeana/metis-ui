@@ -50,14 +50,6 @@ describe('SearchComponent', () => {
       component.executeSearch();
       expect(router.navigate).toHaveBeenCalled();
     });
-
-    it('should execute a search on return (key event)', () => {
-      spyOn(router, 'navigate');
-      component.submitOnEnter(({ which: 1 } as unknown) as KeyboardEvent);
-      expect(router.navigate).not.toHaveBeenCalled();
-      component.submitOnEnter(({ which: 13 } as unknown) as KeyboardEvent);
-      expect(router.navigate).toHaveBeenCalled();
-    });
   });
 
   describe('without query param:', () => {
@@ -71,13 +63,6 @@ describe('SearchComponent', () => {
     }));
 
     beforeEach(beforeEachInitialisation);
-
-    it('should not execute a search for empty search terms', () => {
-      spyOn(router, 'navigate');
-      expect(component.searchString).toBeFalsy();
-      component.executeSearch();
-      expect(router.navigate).not.toHaveBeenCalled();
-    });
 
     it('should not execute a search if not authenticated', () => {
       spyOn(router, 'navigate');

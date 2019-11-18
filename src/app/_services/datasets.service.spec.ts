@@ -4,8 +4,6 @@ import { async, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
 import { MockHttp } from '../_helpers/test-helpers';
 import { mockDataset, MockErrorService, mockXmlSamples, mockXslt } from '../_mocked';
-import { Dataset } from '../_models';
-
 import { DatasetsService, ErrorService } from '.';
 
 describe('dataset service', () => {
@@ -13,8 +11,6 @@ describe('dataset service', () => {
   let service: DatasetsService;
 
   beforeEach(async(() => {
-    localStorage.setItem('favoriteDatasetIds', '["5", "6736"]');
-
     TestBed.configureTestingModule({
       providers: [DatasetsService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule]
@@ -25,8 +21,6 @@ describe('dataset service', () => {
 
   afterEach(() => {
     mockHttp.verify();
-
-    localStorage.removeItem('favoriteDatasetIds');
   });
 
   it('should get a dataset (cached)', () => {
@@ -110,43 +104,5 @@ describe('dataset service', () => {
       .expect('POST', '/datasets/9783/xslt/transform/default')
       .body(mockXmlSamples)
       .send(mockXmlSamples);
-  });
-
-  it('should know if a dataset is a favorite', () => {
-    expect(service.isFavorite(mockDataset)).toBe(false);
-    expect(service.isFavorite({ ...mockDataset, datasetId: '5' })).toBe(true);
-  });
-
-  it('should add favorites', () => {
-    service.addFavorite({ ...mockDataset, datasetId: '456' });
-    service.addFavorite({ ...mockDataset, datasetId: '975644' });
-    expect(localStorage.getItem('favoriteDatasetIds')).toBe('["5","456","6736","975644"]');
-  });
-
-  it('should remove favorites', () => {
-    service.removeFavorite({ ...mockDataset, datasetId: '456' });
-    service.removeFavorite({ ...mockDataset, datasetId: '6736' });
-    expect(localStorage.getItem('favoriteDatasetIds')).toBe('["5"]');
-  });
-
-  it('should get favorites', () => {
-    service.getFavorites().subscribe((datasets) => {
-      expect(datasets).toEqual([mockDataset, mockDataset]);
-    });
-    mockHttp.expect('GET', '/datasets/5').send(mockDataset);
-    mockHttp.expect('GET', '/datasets/6736').send(mockDataset);
-  });
-});
-
-it('should not have favorites when the localStorage is empty', () => {
-  localStorage.removeItem('favoriteDatasetIds');
-
-  TestBed.configureTestingModule({
-    providers: [DatasetsService, { provide: ErrorService, useClass: MockErrorService }],
-    imports: [HttpClientTestingModule]
-  }).compileComponents();
-  const service = TestBed.get(DatasetsService);
-  service.getFavorites().subscribe((res: Dataset[]) => {
-    expect(res).toEqual([]);
   });
 });

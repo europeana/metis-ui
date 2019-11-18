@@ -13,7 +13,6 @@ import { AppComponent } from './app.component';
 import {
   DashboardactionsComponent,
   DashboardComponent,
-  DatasetsComponent,
   ExecutionsgridComponent,
   GridrowComponent,
   OngoingexecutionsComponent
@@ -107,8 +106,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     GridrowComponent,
     ExecutionsgridComponent,
     NotificationComponent,
-    LoadingButtonComponent,
-    DatasetsComponent
+    LoadingButtonComponent
   ],
   imports: [
     BrowserModule,

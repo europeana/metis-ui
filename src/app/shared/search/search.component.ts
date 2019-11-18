@@ -43,20 +43,10 @@ export class SearchComponent implements OnInit {
   /*  setting the query parameter to the URI-encoded q variable
   */
   executeSearch(): void {
-    if (this.searchString && this.authentication.validatedUser()) {
+    if (this.authentication.validatedUser()) {
       this.router.navigate([`/search`], {
         queryParams: { searchString: encodeURIComponent(this.searchString.trim()) }
       });
-    }
-  }
-
-  /** submitOnEnter
-  /*  redirect to the search results page with the search term as a query paramter on key down
-  /* @param {KeyboardEvent} e - the key event
-  */
-  submitOnEnter(e: KeyboardEvent): void {
-    if (e.which === 13) {
-      this.executeSearch();
     }
   }
 }

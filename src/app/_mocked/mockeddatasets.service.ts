@@ -81,22 +81,6 @@ export class MockDatasetsService {
     return observableOf(mockXmlSamples);
   }
 
-  isFavorite(): boolean {
-    return false;
-  }
-
-  addFavorite(dataset: Dataset): void {
-    console.log(`addFavorite ${dataset}`);
-  }
-
-  removeFavorite(dataset: Dataset): void {
-    console.log(`removeFavorite ${dataset}`);
-  }
-
-  getFavorites(): Observable<Dataset[]> {
-    return observableOf([mockDataset]);
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchResult>> {
     console.log(`search ${term}`);
