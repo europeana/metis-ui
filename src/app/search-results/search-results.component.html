@@ -7,7 +7,7 @@
       >{{ 'search-empty' | translate }} "{{ query }}"</strong
     >
   </div>
-  <div *ngIf="results?.length > 0" class="search-results-grid">
+  <div *ngIf="results?.length > 0 && query?.length > 0" class="search-results-grid">
     <span
       *ngFor="
         let headerTitle of [

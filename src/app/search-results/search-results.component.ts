@@ -79,6 +79,11 @@ export class SearchResultsComponent implements OnInit {
           this.isLoading = false;
         }
       );
+    } else {
+      this.results = [];
+      this.searchString = '';
+      this.query = '';
+      this.hasMore = false;
     }
   }
 }
