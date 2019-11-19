@@ -51,6 +51,17 @@ describe('SearchComponent', () => {
       component.executeSearch();
       expect(router.navigate).toHaveBeenCalled();
     });
+
+    it('should execute a search on return (key event)', () => {
+      spyOn(router, 'navigate');
+      component.submitOnEnter(({ which: 1 } as unknown) as KeyboardEvent);
+      expect(router.navigate).not.toHaveBeenCalled();
+      component.submitOnEnter(({ which: 13 } as unknown) as KeyboardEvent);
+      expect(router.navigate).toHaveBeenCalledWith(
+        ['/search'],
+        Object({ queryParams: Object({ searchString: '123' }) })
+      );
+    });
   });
 
   describe('without query param:', () => {
@@ -69,7 +80,7 @@ describe('SearchComponent', () => {
       auth.logout();
       spyOn(router, 'navigate');
       component.executeSearch();
-      expect(router.navigate).not.toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/signin']);
     });
   });
 });

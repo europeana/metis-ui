@@ -3,9 +3,15 @@
     <strong *ngIf="results?.length > 0"
       >{{ results.length }} search results for "{{ query }}"</strong
     >
-    <strong class="warning-before" *ngIf="results?.length === 0"
-      >{{ 'search-empty' | translate }} "{{ query }}"</strong
-    >
+    <div *ngIf="results?.length === 0" class="warning-before">
+      <span class="empty-result-header">{{ 'search-empty' | translate }} "{{ query }}" </span>
+      <span class="tip-header">Search tips:</span>
+      <ul class="tips">
+        <li *ngFor="let searchTip of ['search-tip-1', 'search-tip-2', 'search-tip-3']">
+          {{ searchTip | translate }}
+        </li>
+      </ul>
+    </div>
   </div>
   <div *ngIf="results?.length > 0 && query?.length > 0" class="search-results-grid">
     <span

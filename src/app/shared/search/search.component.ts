@@ -37,6 +37,16 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  /** submitOnEnter
+  /*  redirect to the search results page with the search term as a query paramter on key down
+  /* @param {KeyboardEvent} e - the key event
+  */
+  submitOnEnter(e: KeyboardEvent): void {
+    if (e.which === 13) {
+      this.executeSearch();
+    }
+  }
+
   /** executeSearch
   /*  if the user is logged in
   /*  then redirect to the search results page
@@ -47,6 +57,8 @@ export class SearchComponent implements OnInit {
       this.router.navigate([`/search`], {
         queryParams: { searchString: encodeURIComponent(this.searchString.trim()) }
       });
+    } else {
+      this.router.navigate(['/signin']);
     }
   }
 }

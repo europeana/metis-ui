@@ -66,7 +66,7 @@ export class SearchResultsComponent implements OnInit {
     if (this.authentication.validatedUser()) {
       return true;
     }
-    this.router.navigate(['signin']);
+    this.router.navigate(['/signin']);
     return false;
   }
 
@@ -78,7 +78,7 @@ export class SearchResultsComponent implements OnInit {
   /* - assigns result to results variable
   */
   load(): void {
-    if (this.searchString) {
+    if (this.userValidated() && this.searchString) {
       this.query = decodeURIComponent(this.searchString);
       this.isLoading = true;
 
@@ -89,8 +89,8 @@ export class SearchResultsComponent implements OnInit {
           this.hasMore = more;
         },
         (err: HttpErrorResponse) => {
-          console.log(err);
           this.isLoading = false;
+          console.log(err);
         }
       );
     } else {

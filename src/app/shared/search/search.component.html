@@ -2,7 +2,7 @@
   <input
     class="search-string"
     type="text"
-    (keyup)="executeSearch()"
+    (keyup)="submitOnEnter($event)"
     [(ngModel)]="searchString"
     name="searchString"
     placeholder="{{ 'search-placeholder' | translate }}"
