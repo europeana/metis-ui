@@ -14,6 +14,7 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let router: Router;
+  let authenticationService: AuthenticationService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -28,6 +29,7 @@ describe('LoginComponent', () => {
     }).compileComponents();
 
     router = TestBed.get(Router);
+    authenticationService = TestBed.get(AuthenticationService);
   }));
 
   beforeEach(() => {
@@ -35,6 +37,7 @@ describe('LoginComponent', () => {
     component = fixture.componentInstance;
     component.checkLogin = false;
     fixture.detectChanges();
+    authenticationService.login('name', 'pw');
   });
 
   it('should create', () => {

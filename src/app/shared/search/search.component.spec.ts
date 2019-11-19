@@ -18,6 +18,7 @@ describe('SearchComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.get(Router);
     auth = TestBed.get(AuthenticationService);
+    auth.login('name', 'pw');
     fixture.detectChanges();
   };
 
@@ -65,10 +66,8 @@ describe('SearchComponent', () => {
     beforeEach(beforeEachInitialisation);
 
     it('should not execute a search if not authenticated', () => {
+      auth.logout();
       spyOn(router, 'navigate');
-      spyOn(auth, 'validatedUser').and.callFake(() => {
-        return false;
-      });
       component.executeSearch();
       expect(router.navigate).not.toHaveBeenCalled();
     });

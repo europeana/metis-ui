@@ -20,9 +20,10 @@ export const mockUser: User = {
 
 export class MockAuthenticationService {
   currentUser = mockUser;
+  loggedIn = true;
 
   validatedUser(): boolean {
-    return true;
+    return this.loggedIn;
   }
 
   reloadCurrentUser(): Observable<boolean> {
@@ -33,12 +34,15 @@ export class MockAuthenticationService {
     return observableOf(true);
   }
 
-  login(): Observable<boolean> {
-    return observableOf(true);
+  login(email: string, password: string): Observable<boolean> {
+    console.log(`mock login: ${email}/${password}`);
+    this.loggedIn = true;
+    return observableOf(this.loggedIn);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  logout(): void {}
+  logout(): void {
+    this.loggedIn = false;
+  }
 
   register(): Observable<boolean> {
     return observableOf(true);

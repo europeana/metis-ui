@@ -4,9 +4,9 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DatasetSearchResult } from '../_models';
-import { DatasetsService, DocumentTitleService } from '../_services';
+import { AuthenticationService, DatasetsService, DocumentTitleService } from '../_services';
 
 @Component({
   selector: 'search-results',
@@ -22,8 +22,10 @@ export class SearchResultsComponent implements OnInit {
   results: DatasetSearchResult[];
 
   constructor(
+    private readonly authentication: AuthenticationService,
     private readonly documentTitleService: DocumentTitleService,
     private readonly datasets: DatasetsService,
+    private readonly router: Router,
     private route: ActivatedRoute
   ) {}
 
@@ -54,6 +56,18 @@ export class SearchResultsComponent implements OnInit {
   loadNextPage(): void {
     this.currentPage++;
     this.load();
+  }
+
+  /** userValidated
+  /* - checks if user is authenticated
+  /* - redirects to signin page if not authenticated
+  */
+  userValidated(): boolean {
+    if (this.authentication.validatedUser()) {
+      return true;
+    }
+    this.router.navigate(['signin']);
+    return false;
   }
 
   /** load
