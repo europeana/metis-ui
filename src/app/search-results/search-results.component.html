@@ -18,9 +18,9 @@
       *ngFor="
         let headerTitle of [
           'search-header-dataset-id',
-          'search-header-dataset-name',
           'search-header-provider',
           'search-header-data-provider',
+          'search-header-dataset-name',
           'search-header-last-execution'
         ]
       "
@@ -32,9 +32,9 @@
       <span class="grid-cell">
         <a [routerLink]="['/dataset', 'edit', result.datasetId]">{{ result.datasetId }}</a>
       </span>
-      <span class="grid-cell">{{ result.datasetName }}</span>
-      <span class="grid-cell">{{ result.provider }}</span>
       <span class="grid-cell">{{ result.dataProvider }}</span>
+      <span class="grid-cell">{{ result.provider }}</span>
+      <span class="grid-cell">{{ result.datasetName }}</span>
       <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
     </ng-template>
     <ng-container *ngFor="let result of results">
