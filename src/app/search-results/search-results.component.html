@@ -32,8 +32,8 @@
       <span class="grid-cell">
         <a [routerLink]="['/dataset', 'edit', result.datasetId]">{{ result.datasetId }}</a>
       </span>
-      <span class="grid-cell">{{ result.dataProvider }}</span>
       <span class="grid-cell">{{ result.provider }}</span>
+      <span class="grid-cell">{{ result.dataProvider }}</span>
       <span class="grid-cell">{{ result.datasetName }}</span>
       <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
     </ng-template>
