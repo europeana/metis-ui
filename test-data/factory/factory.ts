@@ -25,7 +25,7 @@ import {
 
 import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
 import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
-import { DatasetSearchResult, Workflow } from '../../src/app/_models';
+import { DatasetSearchView, Workflow } from '../../src/app/_models';
 
 let baseDate = new Date('2019-02-18T07:36:59.801Z');
 const pageSize = 2;
@@ -479,8 +479,8 @@ function generateDatasetExecutionProgress(
 }
 
 function getMostRecentExecutionByDatasetId(datasetId: string): Array<WorkflowExecution> {
-  let mostRecentExec = [dataset(datasetId)].map((datsetX: DatasetX | undefined) => {
-    let w = datsetX && datsetX.workflows ? datsetX.workflows.slice(0, 1)[0] : undefined;
+  let mostRecentExec = [dataset(datasetId)].map((datasetX: DatasetX | undefined) => {
+    let w = datasetX && datasetX.workflows ? datasetX.workflows.slice(0, 1)[0] : undefined;
     return w ? w.executions : [];
   });
 
@@ -495,18 +495,18 @@ function getMostRecentExecutionByDatasetId(datasetId: string): Array<WorkflowExe
 
 /** generate data / export query functions
  */
-const datsetXs = generateDatasetX();
+const datasetXs = generateDatasetX();
 
 export function overview(page: number = 0): ResultList {
   let res: Array<DatasetOverview> = [];
 
-  datsetXs.forEach((datsetX) => {
-    if (datsetX && datsetX.workflows) {
-      datsetX.workflows.forEach((w: WorkflowX) => {
+  datasetXs.forEach((datasetX) => {
+    if (datasetX && datasetX.workflows) {
+      datasetX.workflows.forEach((w: WorkflowX) => {
         if (w.executions) {
           w.executions.forEach((we: WorkflowExecution) => {
             res.push({
-              dataset: datsetX,
+              dataset: datasetX,
               executionProgress: generateDatasetExecutionProgress(we.metisPlugins),
               execution: overviewExecutionFromExecution(we)
             } as DatasetOverview);
@@ -520,8 +520,8 @@ export function overview(page: number = 0): ResultList {
 }
 
 export function dataset(datasetId: string): DatasetX | undefined {
-  let matchingDatasets = datsetXs.filter((datsetX: DatasetX) => {
-    return datsetX.datasetId === datasetId;
+  let matchingDatasets = datasetXs.filter((datasetX: DatasetX) => {
+    return datasetX.datasetId === datasetId;
   });
 
   if (matchingDatasets.length > 0) {
@@ -533,9 +533,9 @@ export function dataset(datasetId: string): DatasetX | undefined {
 export function running(page: number = 0): ResultList {
   let res: Array<WorkflowExecution> = [];
 
-  datsetXs.forEach((datsetX) => {
-    if (datsetX.workflows) {
-      datsetX.workflows.forEach((wx: WorkflowX) => {
+  datasetXs.forEach((datasetX) => {
+    if (datasetX.workflows) {
+      datasetX.workflows.forEach((wx: WorkflowX) => {
         if (wx.executions) {
           wx.executions.forEach((we: WorkflowExecution) => {
             let hasRuning = false;
@@ -564,9 +564,9 @@ export function executionsHistory(
 ): { executions: Array<WorkflowExecutionHistory> } {
   let res: Array<WorkflowExecutionHistory> = [];
 
-  [dataset(datasetId)].forEach((datsetX: DatasetX | undefined) => {
-    if (datsetX && datsetX.workflows) {
-      datsetX.workflows.forEach((w) => {
+  [dataset(datasetId)].forEach((datasetX: DatasetX | undefined) => {
+    if (datasetX && datasetX.workflows) {
+      datasetX.workflows.forEach((w) => {
         if (w && w.executions) {
           w.executions.forEach((e) => {
             res.push({
@@ -584,9 +584,9 @@ export function executionsHistory(
 export function pluginsAvailable(executionId: string): PluginAvailabilityList {
   let res: PluginAvailabilityList = { plugins: [] };
 
-  datsetXs.forEach((datsetX: DatasetX) => {
-    if (datsetX && datsetX.workflows) {
-      datsetX.workflows.forEach((w) => {
+  datasetXs.forEach((datasetX: DatasetX) => {
+    if (datasetX && datasetX.workflows) {
+      datasetX.workflows.forEach((w) => {
         if (w && w.executions) {
           w.executions.forEach((we: WorkflowExecution) => {
             if (we && we.id === executionId) {
@@ -643,25 +643,25 @@ export function information(informationId?: string): HarvestData {
 }
 
 /** search
-/* return ResultList of DatasetSearchResult
+/* return ResultList of DatasetSearchView
 /* @param {string} term - the search term
 /* @param {page} term - the page
 */
 export function search(term: string, page: number = 0): ResultList {
-  const allResults = datsetXs
-    .filter((datsetX: DatasetX) => {
-      return datsetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase());
+  const allResults = datasetXs
+    .filter((datasetX: DatasetX) => {
+      return datasetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase());
     })
-    .map((datsetX: DatasetX) => {
-      let lastExec = datsetX.workflows![0]!.executions![0]!.finishedDate;
+    .map((datasetX: DatasetX) => {
+      let lastExec = datasetX.workflows![0]!.executions![0]!.finishedDate;
 
       return {
-        datasetId: datsetX.datasetId,
-        datasetName: datsetX.datasetName,
-        provider: datsetX.provider,
-        dataProvider: datsetX.dataProvider,
+        datasetId: datasetX.datasetId,
+        datasetName: datasetX.datasetName,
+        provider: datasetX.provider,
+        dataProvider: datasetX.dataProvider,
         lastExecutionDate: lastExec ? lastExec : ''
-      } as DatasetSearchResult;
+      } as DatasetSearchView;
     });
   return getListWrapper(allResults, false, page);
 }

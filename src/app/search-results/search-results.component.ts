@@ -5,7 +5,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatasetSearchResult } from '../_models';
+import { DatasetSearchView } from '../_models';
 import { AuthenticationService, DatasetsService, DocumentTitleService } from '../_services';
 
 @Component({
@@ -19,7 +19,7 @@ export class SearchResultsComponent implements OnInit {
   isLoading = false;
   hasMore = false;
   query: string;
-  results: DatasetSearchResult[];
+  results: DatasetSearchView[];
 
   constructor(
     private readonly authentication: AuthenticationService,

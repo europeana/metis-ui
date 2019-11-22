@@ -1,5 +1,5 @@
 import { Observable, of as observableOf, throwError } from 'rxjs';
-import { Dataset, DatasetSearchResult, MoreResults, XmlSample } from '../_models';
+import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
 
 export const mockDataset: Dataset = {
   country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },
@@ -42,7 +42,7 @@ const mockXmlSamples: XmlSample[] = [
   }
 ];
 
-const mockSearchResults: DatasetSearchResult[] = [
+const mockSearchResults: DatasetSearchView[] = [
   {
     datasetId: '123',
     datasetName: 'Dataset_123',
@@ -82,7 +82,7 @@ export class MockDatasetsService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchResult>> {
+  getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
     console.log(`search ${term}`);
     return observableOf({ results: mockSearchResults, more: false });
   }
@@ -90,7 +90,7 @@ export class MockDatasetsService {
 
 export class MockDatasetsServiceErr extends MockDatasetsService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchResult>> {
+  getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
     return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error...`);
   }
 }

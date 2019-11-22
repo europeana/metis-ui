@@ -5,7 +5,7 @@ import { map, tap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
-import { Dataset, DatasetSearchResult, MoreResults, Results, XmlSample } from '../_models';
+import { Dataset, DatasetSearchView, MoreResults, Results, XmlSample } from '../_models';
 
 import { collectResultsUptoPage } from './service-utils';
 import { ErrorService } from './error.service';
@@ -83,9 +83,9 @@ export class DatasetsService {
   /*  @param {string} term - the search term
   /*  @param {number} page - the pagination target
   */
-  search(term: string, page: number): Observable<Results<DatasetSearchResult>> {
+  search(term: string, page: number): Observable<Results<DatasetSearchView>> {
     const url = `${apiSettings.apiHostCore}/datasets/search?searchString=${term}&nextPage=${page}`;
-    return this.http.get<Results<DatasetSearchResult>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<DatasetSearchView>>(url).pipe(this.errors.handleRetry());
   }
 
   /** getSearchResultsUptoPage
@@ -96,7 +96,7 @@ export class DatasetsService {
   getSearchResultsUptoPage(
     term: string,
     endPage: number
-  ): Observable<MoreResults<DatasetSearchResult>> {
+  ): Observable<MoreResults<DatasetSearchView>> {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const getResults = (page: number) => this.search(term, page);
     return collectResultsUptoPage(getResults, endPage);

@@ -1,7 +1,7 @@
 import { Country } from './country';
 import { Language } from './language';
 
-export interface DatasetSearchResult {
+export interface DatasetSearchView {
   datasetId: string;
   datasetName: string;
   provider: string;
