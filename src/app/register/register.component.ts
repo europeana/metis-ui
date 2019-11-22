@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, PasswordStrength } from '../_helpers';
 import {
@@ -19,7 +19,7 @@ import { TranslateService } from '../_translate';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnInit {
   loading = false;
   notification?: Notification;
   msgSuccess: string;
@@ -27,7 +27,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   msgRegistrationFailed: string;
   msgAlreadyRegistered: string;
   registerForm: FormGroup;
-  timeout?: number;
 
   public password?: string;
 
@@ -64,13 +63,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.msgPasswordWeak = this.translate.instant('passwordweakerror');
     this.msgRegistrationFailed = this.translate.instant('registrationfailed');
     this.msgAlreadyRegistered = this.translate.instant('registrationalready');
-  }
-
-  /** ngOnDestroy
-  /* clear the timeout
-  */
-  ngOnDestroy(): void {
-    clearTimeout(this.timeout);
   }
 
   /** onKeyupPassword
@@ -121,8 +113,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
   */
   private onRegistration(msg: string): void {
     this.notification = successNotification(msg);
-    this.timeout = window.setTimeout(() => {
+    const navigateTimer = timer(3000).subscribe(() => {
       this.router.navigate(['/signin']);
-    }, 3000);
+      navigateTimer.unsubscribe();
+    });
   }
 }
