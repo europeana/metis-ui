@@ -9,6 +9,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { timer } from 'rxjs';
 
 import { harvestValidator } from '../../_helpers';
 import {
@@ -99,10 +100,12 @@ export class WorkflowComponent implements OnInit {
       }
       this.busy = true;
       this.setHighlightedField(this.inputFields.toArray(), elHeader);
-      setTimeout(() => {
+
+      const highlightTimer = timer(100).subscribe(() => {
         this.setHighlightedField(this.inputFields.toArray(), elHeader);
         this.busy = false;
-      }, 100);
+        highlightTimer.unsubscribe();
+      });
     });
   }
 
@@ -274,10 +277,11 @@ export class WorkflowComponent implements OnInit {
       this.addLinkCheck(shiftable, insertIndex, correctForInactive);
     }
 
-    setTimeout(() => {
+    const validateTimer = timer(10).subscribe(() => {
       this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
       this.workflowForm.updateValueAndValidity();
-    }, 10);
+      validateTimer.unsubscribe();
+    });
   }
 
   /** updateRequired

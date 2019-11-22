@@ -79,9 +79,10 @@ export class DatasetComponent implements OnInit, OnDestroy {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);
       this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef.nativeElement);
     } else {
-      setTimeout(() => {
+      const initDelayTimer = timer(50).subscribe(() => {
         this.formInitialised(workflowForm);
-      }, 50);
+        initDelayTimer.unsubscribe();
+      });
     }
   }
 

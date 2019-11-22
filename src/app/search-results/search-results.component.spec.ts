@@ -21,7 +21,7 @@ describe('SearchResultsComponent', () => {
   const configureTestbed = (searchErr = false, qParam?: string): void => {
     const mar = new MockActivatedRoute();
     if (qParam) {
-      mar.setParams({ searchString: qParam });
+      mar.setQueryParams({ searchString: qParam });
     }
     TestBed.configureTestingModule({
       declarations: [SearchResultsComponent, createMockPipe('translate')],

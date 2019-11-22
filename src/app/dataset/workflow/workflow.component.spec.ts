@@ -15,8 +15,10 @@ import {
   PluginMetadata,
   PluginType,
   successNotification,
+  WorkflowExecution,
   WorkflowFieldData,
-  workflowFormFieldConf
+  workflowFormFieldConf,
+  WorkflowStatus
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -231,6 +233,22 @@ describe('WorkflowComponent', () => {
 
     component.onSubmit();
     expect(component.getRunNotification()!.content).toBe('en:workflowsaved');
+  });
+
+  it('should get the save notification unless saving', () => {
+    expect(component.getSaveNotification()).toBeTruthy();
+    component.isSaving = true;
+    expect(component.getSaveNotification()).toBeFalsy();
+  });
+
+  it('should get the run notification if running', () => {
+    expect(component.getRunNotification()).toBeFalsy();
+    component.lastExecution = ({
+      workflowStatus: WorkflowStatus.INQUEUE
+    } as unknown) as WorkflowExecution;
+    expect(component.getRunNotification()).toBeTruthy();
+    component.isStarting = true;
+    expect(component.getRunNotification()).toBeFalsy();
   });
 
   it('should start a workflow', () => {
