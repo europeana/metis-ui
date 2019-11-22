@@ -35,7 +35,7 @@ export class StatisticsComponent implements OnInit {
   }
 
   /** loadStatistics
-  /* - loads statistics for finished datsets / externally validated plugins
+  /* - loads statistics for finished datasets / externally validated plugins
   /* - updates the notification variable
   /* - updates the loading variable
   /* - updates the statistics variable

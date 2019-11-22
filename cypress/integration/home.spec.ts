@@ -11,6 +11,10 @@ context('metis-ui', () => {
       cy.visit('/home');
     });
 
+    it('should not show the search form', () => {
+      cy.get('.search-form').should('have.length', 0);
+    });
+
     it('should show the home screen and have a signin button', () => {
       cy.get('h2').contains('What can you do with Metis?');
 
@@ -33,6 +37,10 @@ context('metis-ui', () => {
       cy.server();
       setupUser();
       cy.visit('/home');
+    });
+
+    it('should show the search form', () => {
+      cy.get('.search-form').should('have.length', 1);
     });
 
     it('should show the dashboard screen and have a dashboard and signout button', () => {

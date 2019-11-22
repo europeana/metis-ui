@@ -1,6 +1,6 @@
 /** LANG_EN
 /*
-/* list of translatable copy 
+/* list of translatable copy
 */
 export const LANG_EN_NAME = 'en';
 
@@ -54,7 +54,6 @@ export const LANG_EN_TRANS = {
   errorharvesturl: 'This is not a valid URL',
   expand: 'Expand info',
   FAILED: 'Failed',
-  favoritedatasets: 'Favorite datasets',
   fieldrequired: 'This field is required',
   filter: 'Filter',
   'filter-label-date': 'date',
@@ -147,6 +146,18 @@ export const LANG_EN_TRANS = {
   save: 'Save',
   saving: 'Saving',
   search: 'Search',
+  'search-empty': "Sorry, we couldn't find any matching results for",
+  'search-placeholder': 'Search for your dataset',
+  'search-header-dataset-id': 'Dataset ID',
+  'search-header-dataset-name': 'Dataset Name',
+  'search-header-provider': 'Provider',
+  'search-header-data-provider': 'Data Provider',
+  'search-header-last-execution': 'Last Execution',
+  'search-tip-1':
+    'Use provider name, data provider name, dataset name or dataset ID for your search',
+  'search-tip-2': `If you search for text, make sure your search term has a minimum of three characters.
+   There is no restriction for numerical search.`,
+  'search-tip-3': 'Check your spelling and try again',
   setspec: 'Setspec',
   signin: 'Sign in',
   signintometis: 'Sign in to Metis',

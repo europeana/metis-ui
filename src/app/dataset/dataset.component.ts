@@ -56,7 +56,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
   datasetData: Dataset;
   datasetName: string;
 
-  isFavorite = false;
   workflowData?: Workflow;
   harvestPublicationData?: HarvestData;
   lastExecutionData?: WorkflowExecution;
@@ -187,9 +186,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       (result) => {
         this.datasetData = result;
         this.datasetName = result.datasetName;
-        this.isFavorite = this.datasets.isFavorite(this.datasetData);
         this.datasetIsLoading = false;
-
         this.documentTitleService.setTitle(this.datasetName || 'Dataset');
       },
       (err: HttpErrorResponse) => {
@@ -315,17 +312,5 @@ export class DatasetComponent implements OnInit, OnDestroy {
         window.scrollTo(0, 0);
       }
     );
-  }
-
-  /** toggleFavorite
-  /* adds or removes datasetData from favourites
-  */
-  toggleFavorite(): void {
-    this.isFavorite = !this.isFavorite;
-    if (this.isFavorite) {
-      this.datasets.addFavorite(this.datasetData);
-    } else {
-      this.datasets.removeFavorite(this.datasetData);
-    }
   }
 }

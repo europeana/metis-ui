@@ -1,12 +1,14 @@
+import { cleanupUser } from '../support/helpers';
 import { user } from '../fixtures';
 
 context('metis-ui', () => {
   describe('signin', () => {
-    beforeEach(() => {
-      cy.server();
+    afterEach(() => {
+      cleanupUser();
     });
 
-    before(() => {
+    beforeEach(() => {
+      cy.server();
       cy.visit('/signin');
     });
 
@@ -91,6 +93,22 @@ context('metis-ui', () => {
       cy.get('.login-btn').click();
 
       cy.url().should('contain', '/dashboard');
+    });
+
+    it('should show the search form when logged in', () => {
+      cy.route('POST', '/authentication/login', user);
+      cy.get('#email')
+        .clear()
+        .type('hello@example.com')
+        .blur();
+      cy.get('#password')
+        .clear()
+        .type('x')
+        .blur();
+
+      cy.get('.search-form').should('have.length', 0);
+      cy.get('.login-btn').click();
+      cy.get('.search-form').should('have.length', 1);
     });
   });
 });

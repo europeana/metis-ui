@@ -43,6 +43,10 @@ context('metis-ui', () => {
     const expectedId = '0';
     const lastPublished = '19/02/2019 - 08:49';
 
+    it('should show the search form', () => {
+      cy.get('.search-form').should('have.length', 1);
+    });
+
     it('should show the dataset, general info, status, history', () => {
       cy.get('.dataset-name').contains('Dataset 1');
 

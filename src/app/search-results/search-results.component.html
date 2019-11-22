@@ -1,0 +1,51 @@
+<div *ngIf="userValidated()" class="search-results-content">
+  <div class="search-results-header">
+    <strong *ngIf="results?.length > 0"
+      >{{ results.length }} search results for "{{ query }}"</strong
+    >
+    <div *ngIf="results?.length === 0" class="warning-before">
+      <span class="empty-result-header">{{ 'search-empty' | translate }} "{{ query }}" </span>
+      <span class="tip-header">Search tips:</span>
+      <ul class="tips">
+        <li *ngFor="let searchTip of ['search-tip-1', 'search-tip-2', 'search-tip-3']">
+          {{ searchTip | translate }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div *ngIf="results?.length > 0 && query?.length > 0" class="search-results-grid">
+    <span
+      *ngFor="
+        let headerTitle of [
+          'search-header-dataset-id',
+          'search-header-provider',
+          'search-header-data-provider',
+          'search-header-dataset-name',
+          'search-header-last-execution'
+        ]
+      "
+      class="grid-header"
+      >{{ headerTitle | translate }}</span
+    >
+
+    <ng-template #t_search_result let-result="result">
+      <span class="grid-cell">
+        <a [routerLink]="['/dataset', 'edit', result.datasetId]">{{ result.datasetId }}</a>
+      </span>
+      <span class="grid-cell">{{ result.dataProvider }}</span>
+      <span class="grid-cell">{{ result.provider }}</span>
+      <span class="grid-cell">{{ result.datasetName }}</span>
+      <span class="grid-cell">{{ result.lastExecutionDate | date: 'dd/MM/yyyy - HH:mm' }}</span>
+    </ng-template>
+    <ng-container *ngFor="let result of results">
+      <ng-content *ngTemplateOutlet="t_search_result; context: { result: result }"></ng-content>
+    </ng-container>
+  </div>
+
+  <div class="grid-footer">
+    <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{
+      'loadmore' | translate
+    }}</a
+    ><span class="svg-icon-spin" [class.showing]="isLoading"></span>
+  </div>
+</div>

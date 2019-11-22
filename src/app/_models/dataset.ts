@@ -1,6 +1,14 @@
 import { Country } from './country';
 import { Language } from './language';
 
+export interface DatasetSearchView {
+  datasetId: string;
+  datasetName: string;
+  provider: string;
+  dataProvider: string;
+  lastExecutionDate?: string;
+}
+
 export interface Dataset {
   id: string;
   datasetId: string;

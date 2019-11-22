@@ -1,0 +1,62 @@
+@import '../../../assets/sass/scss/generic/variables';
+
+$dimension-button: 40px;
+
+.search-string {
+  margin-right: 0.5em;
+  transition: width 0.5s;
+  width: 100%;
+
+  &::placeholder {
+    color: $gray-light;
+  }
+
+  @media (min-width: $bp-small-3) {
+    width: 16.5em;
+  }
+
+  @media (min-width: $bp-med) {
+    width: 22em;
+  }
+
+  @media (min-width: $bp-xl) {
+    width: 600px;
+  }
+}
+
+.search-form {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  left: 1em;
+  position: absolute;
+  right: 1em;
+  top: 5em;
+
+  @media (min-width: $bp-small-3) {
+    left: auto;
+    position: relative;
+    right: auto;
+    top: auto;
+  }
+}
+
+.search {
+  background-color: $eu-jade;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23FFFFFF' d='M16.364 1.636q4.061 0 6.939 2.879t2.879 6.939-2.879 6.939-6.939 2.879q-2.879 0-5.242-1.515l-7.394 7.424q-.636.636-1.545.636t-1.545-.636-.636-1.545.636-1.545l7.424-7.394q-1.515-2.364-1.515-5.242 0-4.061 2.879-6.939t6.939-2.879zm0 16.364q2.697 0 4.621-1.924t1.924-4.621-1.924-4.621-4.621-1.924-4.621 1.924-1.924 4.621 1.924 4.621T16.364 18z' class='path1'%3E%3C/path%3E%3C/svg%3E");
+  background-position: 60% 45%;
+  background-repeat: no-repeat;
+  background-size: 70%;
+  border-radius: 5px;
+  cursor: pointer;
+  display: block;
+  height: $dimension-button;
+  min-width: $dimension-button;
+  width: $dimension-button;
+
+  &:hover {
+    background-color: $eu-jade-light;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 30 30' fill='%23197324' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M16.364 1.636q4.061 0 6.939 2.879t2.879 6.939-2.879 6.939-6.939 2.879q-2.879 0-5.242-1.515l-7.394 7.424q-.636.636-1.545.636t-1.545-.636-.636-1.545.636-1.545l7.424-7.394q-1.515-2.364-1.515-5.242 0-4.061 2.879-6.939t6.939-2.879zm0 16.364q2.697 0 4.621-1.924t1.924-4.621-1.924-4.621-4.621-1.924-4.621 1.924-1.924 4.621 1.924 4.621T16.364 18z' class='path1'%3E%3C/path%3E%3C/svg%3E");
+    border: 1px solid $eu-jade-dark;
+  }
+}
