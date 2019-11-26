@@ -13,6 +13,7 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
+import { Subscription, timer } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { DatasetOverview } from '../../_models';
@@ -27,7 +28,7 @@ import { GridrowComponent } from './gridrow';
 })
 export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   dsOverview: DatasetOverview[];
-  finishedTimer: number;
+  finishedTimer: Subscription;
   selectedDsId = '';
   isLoading = true;
   isLoadingMore = false;
@@ -48,19 +49,20 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   }
 
   /** ngOnDestroy
-  /* clear the timer
+  /* unsubscribe from timer
   */
   ngOnDestroy(): void {
-    clearTimeout(this.finishedTimer);
+    if (this.finishedTimer) {
+      this.finishedTimer.unsubscribe();
+    }
   }
 
   /** setOverviewParams
-  /* - clear the timer
+  /* - unsubscribe from timer
   *  - set the parameter string
   *  - re-initiate the load
   */
   setOverviewParams(overviewParams: string): void {
-    clearTimeout(this.finishedTimer);
     this.overviewParams = overviewParams;
     this.load();
   }
@@ -68,39 +70,40 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   /** loadNextPage
   /* - increment the currentPage variable
   *  - set the isLoadingMore variable to true
-  *  - clear the timeout
   *  - re-initiate the load
   */
   loadNextPage(): void {
     this.currentPage++;
     this.isLoadingMore = true;
-    clearTimeout(this.finishedTimer);
     this.load();
   }
 
   /** load
+  /* unsubscribe from any existing
   /* subscribe to the dataset overview data
   */
   load(): void {
-    this.workflows
-      .getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams)
-      .subscribe(
-        ({ results, more }) => {
-          this.hasMore = more;
-          this.dsOverview = results;
-          this.isLoading = false;
-          this.isLoadingMore = false;
-          this.finishedTimer = window.setTimeout(() => {
-            this.isLoadingMore = true;
-            this.load();
-          }, environment.intervalStatusMedium);
-        },
-        (err: HttpErrorResponse) => {
-          this.isLoading = false;
-          this.isLoadingMore = false;
-          this.errors.handleError(err);
-        }
-      );
+    if (this.finishedTimer) {
+      this.finishedTimer.unsubscribe();
+    }
+    this.finishedTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
+      this.isLoadingMore = true;
+      this.workflows
+        .getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams)
+        .subscribe(
+          ({ results, more }) => {
+            this.hasMore = more;
+            this.dsOverview = results;
+            this.isLoading = false;
+            this.isLoadingMore = false;
+          },
+          (err: HttpErrorResponse) => {
+            this.isLoading = false;
+            this.isLoadingMore = false;
+            this.errors.handleError(err);
+          }
+        );
+    });
   }
 
   /** setSelectedDsId

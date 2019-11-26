@@ -1,6 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import {
   createMockPipe,
   MockAuthenticationService,
@@ -8,8 +7,7 @@ import {
   MockErrorService,
   MockWorkflowService
 } from '../_mocked';
-//import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
-import { PluginStatus, PluginType } from '../_models';
+import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
 import {
   AuthenticationService,
   DatasetsService,
@@ -70,38 +68,32 @@ describe('DashboardComponent', () => {
     expect(component.showPluginLog).toBeTruthy();
   });
 
-  /*
-  // what does this even do?
-  //  it checks it's set.
-  //    if so things get looked up by ext id....
-  //      it sets it back...
-  //  all tests pass if it's disabled
-
   it('checks the update log', () => {
+    const showingId = 'xx5';
 
-    let showingId = 'xx5';
-
-    component.showPluginLog = {
+    component.showPluginLog = ({
       externalTaskId: showingId
-    } as unknown as PluginExecution;
+    } as unknown) as PluginExecution;
+
+    const updatedPlugin = ({
+      id: 'pass',
+      externalTaskId: showingId
+    } as unknown) as PluginExecution;
 
     component.checkUpdateLog([
-      {
+      ({
         metisPlugins: [
           {
             id: 'fail',
-            externalTaskId: 'no-match'
+            externalTaskId: 'no-match',
+            pluginStatus: PluginStatus.FINISHED
           },
-          {
-            id: 'pass',
-            externalTaskId: showingId
-          }
+          updatedPlugin
         ]
-      } as unknown as WorkflowExecution
+      } as unknown) as WorkflowExecution
     ]);
-    expect(component.showPluginLog).toBe('xxx');
+    expect(component.showPluginLog).toBe(updatedPlugin);
   });
-  */
 
   it('provides a setter for the selectedExecutionDsId', () => {
     expect(component.selectedExecutionDsId).toBe(undefined);
@@ -110,8 +102,9 @@ describe('DashboardComponent', () => {
   });
 
   it('should clean up', () => {
-    expect(component.runningTimer).not.toBe(undefined);
+    const mockFn = jasmine.createSpy();
+    component.runningTimer!.add(mockFn);
     component.ngOnDestroy();
-    expect(component.runningTimer).toBe(undefined);
+    expect(mockFn).toHaveBeenCalled();
   });
 });
