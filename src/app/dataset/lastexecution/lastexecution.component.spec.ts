@@ -1,8 +1,8 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { createMockPipe } from '../../_mocked';
-import { PluginExecution, PluginStatus } from '../../_models';
+import { createMockPipe, mockWorkflowExecution } from '../../_mocked';
+import { PluginExecution, PluginStatus, WorkflowStatus } from '../../_models';
 
 import { LastExecutionComponent } from '.';
 
@@ -29,6 +29,22 @@ describe('LastExecutionComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should find the last execution in the workflow', () => {
+    expect(component.currentPlugin).toBeFalsy();
+    component.lastExecutionData = mockWorkflowExecution;
+    expect(component.currentPlugin).toBeTruthy();
+  });
+
+  it('should not find the last execution in a completed workflow', () => {
+    const mockWorkflowExecutionFinished = Object.assign(
+      { ...mockWorkflowExecution },
+      { workflowStatus: WorkflowStatus.FINISHED }
+    );
+    expect(component.currentPlugin).toBeFalsy();
+    component.lastExecutionData = mockWorkflowExecutionFinished;
+    expect(component.currentPlugin).toBeFalsy();
   });
 
   it('should scroll', () => {
