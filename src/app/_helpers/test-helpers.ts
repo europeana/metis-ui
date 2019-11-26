@@ -106,17 +106,6 @@ export class MockHttp {
     return mockHttp;
   }
 
-  public expectMulti(method: string, url: string, count: number): MockHttpRequest[] {
-    const reqs = this.controller.match(this.prefix + url);
-    expect(reqs.length).toBe(count);
-    return reqs.map((req) => {
-      expect(req.request.method).toBe(method);
-      const mockHttp = new MockHttpRequest(req, url);
-      this.openRequests.push(mockHttp);
-      return mockHttp;
-    });
-  }
-
   public verify(): void {
     this.openRequests.forEach((r) => {
       if (!r.isClosed) {

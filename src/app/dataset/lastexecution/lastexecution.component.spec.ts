@@ -37,6 +37,12 @@ describe('LastExecutionComponent', () => {
     expect(component.currentPlugin).toBeTruthy();
   });
 
+  it('should not find the last execution in an empty workflow', () => {
+    expect(component.currentPlugin).toBeFalsy();
+    component.lastExecutionData = undefined;
+    expect(component.currentPlugin).toBeFalsy();
+  });
+
   it('should not find the last execution in a completed workflow', () => {
     const mockWorkflowExecutionFinished = Object.assign(
       { ...mockWorkflowExecution },

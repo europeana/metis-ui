@@ -134,4 +134,12 @@ describe('DatasetComponent', () => {
     component.datasetUpdated();
     expect(component.loadData).toHaveBeenCalled();
   });
+
+  it('should return to the top', () => {
+    const mockFn = jasmine.createSpy();
+    const el = ({ scrollIntoView: mockFn } as unknown) as Element;
+    component.scrollToTopAnchor = { nativeElement: el } as ElementRef;
+    component.returnToTop();
+    expect(mockFn).toHaveBeenCalled();
+  });
 });
