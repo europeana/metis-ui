@@ -2,6 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { createMockPipe } from '../../_mocked';
+import { PluginExecution, PluginStatus } from '../../_models';
 
 import { LastExecutionComponent } from '.';
 
@@ -28,6 +29,22 @@ describe('LastExecutionComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should scroll', () => {
+    const mockFn = jasmine.createSpy();
+    const el = ({ scrollIntoView: mockFn } as unknown) as Element;
+    component.scroll(el);
+    expect(mockFn).toHaveBeenCalled();
+  });
+
+  it('should get the plugin status', () => {
+    expect(
+      component.getPluginStatusClass(({
+        pluginStatus: PluginStatus.FINISHED,
+        executionProgress: { errors: 0 }
+      } as unknown) as PluginExecution)
+    ).toEqual('status-finished');
   });
 
   it('should open a simple report', () => {
