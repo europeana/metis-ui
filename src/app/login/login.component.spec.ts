@@ -4,7 +4,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NotificationType } from '../_models';
-import { createMockPipe, MockAuthenticationService, MockRedirectPreviousUrl, MockTranslateService } from '../_mocked';
+import {
+  createMockPipe,
+  MockAuthenticationService,
+  MockRedirectPreviousUrl,
+  MockTranslateService
+} from '../_mocked';
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 import { TranslateService } from '../_translate';
 
