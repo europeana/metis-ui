@@ -1,4 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -276,6 +277,51 @@ describe('PreviewComponent', () => {
     fixture.detectChanges();
     component.gotoMapping();
     expect(router.navigate).toHaveBeenCalled();
+  });
+
+  it('should notify of errors', () => {
+    expect(component.notification).toBeFalsy();
+    component.errorHandling(new HttpErrorResponse({}));
+    expect(component.notification).toBeTruthy();
+  });
+
+  it('should handle mouse events', () => {
+    const classList = ({
+      contains: (_: string): boolean => {
+        return true;
+      },
+      add: (_: string): void => {},
+      remove: (_: string): void => {}
+    } as unknown) as DOMTokenList;
+
+    const element = ({
+      classList: classList,
+      textContent: '"http://test.link"',
+      querySelectorAll: (_: string): Array<Element> => {
+        return [
+          ({
+            classList: classList
+          } as unknown) as Element
+        ];
+      }
+    } as unknown) as Element;
+
+    const mouseEvent = ({
+      target: element,
+      currentTarget: element
+    } as unknown) as MouseEvent;
+
+    spyOn(element.classList, 'add');
+    spyOn(element.classList, 'remove');
+
+    component.handleMouseOut(mouseEvent);
+
+    expect(classList.remove).toHaveBeenCalled();
+    expect(classList.add).not.toHaveBeenCalled();
+
+    component.handleMouseOver(mouseEvent);
+
+    expect(classList.add).toHaveBeenCalled();
   });
 
   it('should open links in a new tab', () => {

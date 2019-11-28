@@ -2,6 +2,7 @@
  */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription, timer } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
@@ -19,7 +20,8 @@ import {
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer?: number;
+  runningTimer?: Subscription;
+
   runningIsLoading = true;
   runningIsFirstLoading = true;
 
@@ -52,8 +54,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /* clear the timeout
   */
   ngOnDestroy(): void {
-    clearTimeout(this.runningTimer);
-    this.runningTimer = undefined;
+    if (this.runningTimer) {
+      this.runningTimer.unsubscribe();
+    }
   }
 
   /** checkUpdateLog
@@ -78,24 +81,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   */
   getRunningExecutions(): void {
     this.runningIsLoading = true;
-    this.workflows.getAllExecutionsCollectingPages(true).subscribe(
-      (executions) => {
-        this.runningExecutions = executions;
-        this.runningIsLoading = false;
-        this.runningIsFirstLoading = false;
-
-        this.checkUpdateLog(executions);
-
-        this.runningTimer = window.setTimeout(() => {
-          this.getRunningExecutions();
-        }, environment.intervalStatus);
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-        this.runningIsLoading = false;
-        this.runningIsFirstLoading = false;
-      }
-    );
+    this.runningTimer = timer(0, environment.intervalStatus).subscribe(() => {
+      this.workflows.getAllExecutionsCollectingPages(true).subscribe(
+        (executions) => {
+          this.runningExecutions = executions;
+          this.runningIsLoading = false;
+          this.runningIsFirstLoading = false;
+          this.checkUpdateLog(executions);
+        },
+        (err: HttpErrorResponse) => {
+          this.errors.handleError(err);
+          this.runningIsLoading = false;
+          this.runningIsFirstLoading = false;
+        }
+      );
+    });
   }
 
   /** setSelectedExecutionDsId

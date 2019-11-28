@@ -83,7 +83,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
   isLoading = true;
   isLoadingFilter: boolean;
   loadingTransformSamples = false;
-  timeout?: number;
   downloadUrlCache: { [key: string]: string } = {};
   executionsFilterTimer: Subscription;
   pluginsFilterTimer: Subscription;
@@ -111,13 +110,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   /** ngOnDestroy
-  /* - clear the timeout
-  *  - revoke created urls
-  *  - unsubscrube from the filters
-  */
+   *  - revoke created urls
+   *  - unsubscrube from the filters
+   */
   ngOnDestroy(): void {
-    clearTimeout(this.timeout);
-
     Object.keys(this.downloadUrlCache).forEach((key) => {
       const url = this.downloadUrlCache[key];
       URL.revokeObjectURL(url);

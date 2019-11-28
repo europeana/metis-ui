@@ -7,12 +7,13 @@ import { of } from 'rxjs';
 
 export class MockActivatedRoute extends ActivatedRoute {
   public queryParams = of({});
+  public params = of({});
 
-  /** setParams
+  /** setQueryParams
   /* set the queryParams variable to an observable of the supplied hash
-  /* @param {hash} paramsHash - a hash containing a 'q' key
+  /* @param {hash} paramsHash
   */
-  setParams(paramsHash: { searchString?: string }): void {
+  setQueryParams(paramsHash: { searchString?: string }): void {
     this.queryParams = of(paramsHash);
   }
 }

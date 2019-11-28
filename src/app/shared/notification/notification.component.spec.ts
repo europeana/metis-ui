@@ -33,6 +33,18 @@ describe('NotificationComponent', () => {
     expect(component.closed.emit).toHaveBeenCalled();
   });
 
+  it('should not emit an event when closed if event is sticky', () => {
+    spyOn(component.closed, 'emit');
+
+    component.notification = {
+      content: 'Test',
+      type: NotificationType.ERROR,
+      sticky: true
+    };
+    component.close();
+    expect(component.closed.emit).not.toHaveBeenCalled();
+  });
+
   it('should auto-close when fading out', fakeAsync(() => {
     spyOn(component.closed, 'emit');
     component.notification = {

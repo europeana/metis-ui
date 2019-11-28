@@ -27,7 +27,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
       const mar = new MockActivatedRoute();
-      mar.setParams({ searchString: searchString });
+      mar.setQueryParams({ searchString: searchString });
       TestBed.configureTestingModule({
         imports: [RouterTestingModule],
         declarations: [SearchComponent, createMockPipe('translate')],

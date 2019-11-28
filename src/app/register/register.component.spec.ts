@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { createMockPipe, MockAuthenticationService, MockTranslateService } from '../_mocked';
@@ -13,6 +14,7 @@ describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   let submitBtn;
+  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -24,6 +26,7 @@ describe('RegisterComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+    router = TestBed.get(Router);
   }));
 
   beforeEach(() => {
@@ -52,7 +55,9 @@ describe('RegisterComponent', () => {
     expect(submitBtn.disabled).toBe(true);
   });
 
-  it('should submit the form', () => {
+  it('should submit the form and redirect', fakeAsync(() => {
+    spyOn(router, 'navigate');
+
     submitBtn = fixture.nativeElement.querySelector('app-loading-button');
     component.registerForm.controls.email.setValue('test@mocked.com');
     (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
@@ -62,9 +67,12 @@ describe('RegisterComponent', () => {
       '!Passw0rd123'
     );
     component.onSubmit();
+    tick(3000);
     fixture.detectChanges();
     expect(submitBtn.disabled).toBe(false);
-  });
+    expect(component.loading).toBe(false);
+    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
+  }));
 
   it('should reject weak password', () => {
     submitBtn = fixture.nativeElement.querySelector('app-loading-button');

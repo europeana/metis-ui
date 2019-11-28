@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA, QueryList } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import { createMockPipe, MockTranslateService, MockWorkflowService } from '../../_mocked';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -39,15 +38,17 @@ describe('ExecutionsgridComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should load', () => {
+  it('should load', fakeAsync(() => {
     expect(component.isLoading).toBe(true);
     expect(component.dsOverview).toBeFalsy();
     component.load();
+    tick();
     expect(component.dsOverview.length).toBeGreaterThan(0);
     expect(component.isLoading).toBe(false);
     expect(component.isLoadingMore).toBe(false);
     expect(component.currentPage).toEqual(0);
-  });
+    component.finishedTimer.unsubscribe();
+  }));
 
   it('should load on init', () => {
     spyOn(component, 'load');
