@@ -238,7 +238,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
   /* invoke load-harvest-data function
   */
   loadHarvestData(): void {
-    console.log('loadHarvestData...');
     this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(
       (resultHarvest) => {
         this.harvestPublicationData = resultHarvest;
