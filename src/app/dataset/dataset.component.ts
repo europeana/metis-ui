@@ -165,18 +165,26 @@ export class DatasetComponent implements OnInit, OnDestroy {
   }
 
   /** ngOnDestroy
-  /* unsubscribe from subscriptions
+  /* invoke unsubscribe
   */
   ngOnDestroy(): void {
-    if (this.harvestSubscription) {
-      this.harvestSubscription.unsubscribe();
-    }
-    if (this.workflowSubscription) {
-      this.workflowSubscription.unsubscribe();
-    }
-    if (this.lastExecutionSubscription) {
-      this.lastExecutionSubscription.unsubscribe();
-    }
+    this.unsubscribe([
+      this.harvestSubscription,
+      this.workflowSubscription,
+      this.lastExecutionSubscription
+    ]);
+  }
+
+  /** unsubscribe
+  /* unsubscribe from subscriptions
+  /* @param {array} subscriptions - array of subscriptions to unsubscribe from
+  */
+  unsubscribe(subscriptions: Array<Subscription>): void {
+    subscriptions
+      .filter((x) => x)
+      .forEach((subscription: Subscription) => {
+        subscription.unsubscribe();
+      });
   }
 
   /** loadData
@@ -198,27 +206,21 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
 
     // check for harvest data every x seconds
-    if (this.harvestSubscription) {
-      this.harvestSubscription.unsubscribe();
-    }
+    this.unsubscribe([this.harvestSubscription]);
     const harvestTimer = timer(0, environment.intervalStatusMedium);
     this.harvestSubscription = harvestTimer.subscribe(() => {
       this.loadHarvestData();
     });
 
     // check workflow for every x seconds
-    if (this.workflowSubscription) {
-      this.workflowSubscription.unsubscribe();
-    }
+    this.unsubscribe([this.workflowSubscription]);
     const workflowTimer = timer(0, environment.intervalStatusMedium);
     this.workflowSubscription = workflowTimer.subscribe(() => {
       this.loadWorkflow();
     });
 
     // check for last execution every x seconds
-    if (this.lastExecutionSubscription) {
-      this.lastExecutionSubscription.unsubscribe();
-    }
+    this.unsubscribe([this.lastExecutionSubscription]);
     const executionsTimer = timer(0, environment.intervalStatus);
     this.lastExecutionSubscription = executionsTimer.subscribe(() => {
       this.loadLastExecution();
@@ -236,6 +238,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
   /* invoke load-harvest-data function
   */
   loadHarvestData(): void {
+    console.log('loadHarvestData...');
     this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(
       (resultHarvest) => {
         this.harvestPublicationData = resultHarvest;
@@ -244,13 +247,13 @@ export class DatasetComponent implements OnInit, OnDestroy {
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
-        this.harvestSubscription.unsubscribe();
         this.harvestIsLoading = false;
+        this.unsubscribe([this.harvestSubscription]);
       }
     );
   }
 
-  /** loadHarvestData
+  /** loadWorkflow
   /* invoke load-workflow-data function
   */
   loadWorkflow(): void {
@@ -262,8 +265,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
-        this.workflowSubscription.unsubscribe();
         this.workflowIsLoading = false;
+        this.unsubscribe([this.workflowSubscription]);
       }
     );
   }
@@ -288,7 +291,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
-        this.lastExecutionSubscription.unsubscribe();
+        this.unsubscribe([this.lastExecutionSubscription]);
         this.lastExecutionIsLoading = false;
       }
     );

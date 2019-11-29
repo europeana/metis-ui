@@ -7,7 +7,7 @@ import {
   MockActivatedRoute,
   MockAuthenticationService,
   MockDatasetsService,
-  MockDatasetsServiceErr
+  MockDatasetsServiceErrors
 } from '../_mocked';
 import { AuthenticationService, DatasetsService } from '../_services';
 
@@ -31,7 +31,7 @@ describe('SearchResultsComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
           provide: DatasetsService,
-          useClass: searchErr ? MockDatasetsServiceErr : MockDatasetsService
+          useClass: searchErr ? MockDatasetsServiceErrors : MockDatasetsService
         }
       ]
     }).compileComponents();

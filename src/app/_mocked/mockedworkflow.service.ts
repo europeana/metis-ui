@@ -1,5 +1,6 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter } from '@angular/core';
-import { Observable, of as observableOf } from 'rxjs';
+import { Observable, of as observableOf, throwError } from 'rxjs';
 
 import {
   DatasetOverview,
@@ -558,10 +559,18 @@ export const mockLogs = [
 ];
 
 export class MockWorkflowService {
+  errorMode = false;
+
   public promptCancelWorkflow: EventEmitter<string> = new EventEmitter();
 
   startWorkflow(): Observable<WorkflowExecution> {
-    return observableOf(mockWorkflowExecution);
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    } else {
+      return observableOf(mockWorkflowExecution);
+    }
   }
 
   cancelThisWorkflow(): Observable<void> {
@@ -569,10 +578,20 @@ export class MockWorkflowService {
   }
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    }
     return observableOf(mockWorkflowExecution);
   }
 
   getAllExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    }
     return observableOf(mockWorkflowExecutionResults.results);
   }
 
@@ -585,6 +604,11 @@ export class MockWorkflowService {
   }
 
   getCompletedDatasetOverviewsUptoPage(): Observable<MoreResults<DatasetOverview>> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    }
     return observableOf({ results: mockDatasetOverviewResults.results, more: false });
   }
 
@@ -628,6 +652,11 @@ export class MockWorkflowService {
   }
 
   getReport(_: string, __: string): Observable<Report> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    }
     return observableOf(mockReport);
   }
 
@@ -648,14 +677,29 @@ export class MockWorkflowService {
   }
 
   getWorkflowForDataset(): Observable<Workflow> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    }
     return observableOf(mockWorkflow);
   }
 
   createWorkflowForDataset(): Observable<Workflow> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    }
     return observableOf(mockWorkflow);
   }
 
   getPublishedHarvestedData(): Observable<HarvestData> {
+    if (this.errorMode) {
+      return throwError(
+        new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' })
+      );
+    }
     return observableOf(mockHarvestData);
   }
 
@@ -666,4 +710,8 @@ export class MockWorkflowService {
   getWorkflowCancelledBy(): Observable<string | undefined> {
     return observableOf(undefined);
   }
+}
+
+export class MockWorkflowServiceErrors extends MockWorkflowService {
+  errorMode = true;
 }

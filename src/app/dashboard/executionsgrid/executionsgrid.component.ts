@@ -14,7 +14,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
-
+import { concatMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -28,7 +28,7 @@ import { GridrowComponent } from './gridrow';
 })
 export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   dsOverview: DatasetOverview[];
-  finishedTimer: Subscription;
+  finishedSubscription: Subscription;
   selectedDsId = '';
   isLoading = true;
   isLoadingMore = false;
@@ -52,15 +52,16 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   /* unsubscribe from timer
   */
   ngOnDestroy(): void {
-    if (this.finishedTimer) {
-      this.finishedTimer.unsubscribe();
+    if (this.finishedSubscription) {
+      this.finishedSubscription.unsubscribe();
     }
   }
 
   /** setOverviewParams
   /* - unsubscribe from timer
-  *  - set the parameter string
-  *  - re-initiate the load
+  /*  - set the parameter string
+  /*  - re-initiate the load
+  /* @param {string} overviewParams - parameters as a string
   */
   setOverviewParams(overviewParams: string): void {
     this.overviewParams = overviewParams;
@@ -83,31 +84,40 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   /* subscribe to the dataset overview data
   */
   load(): void {
-    if (this.finishedTimer) {
-      this.finishedTimer.unsubscribe();
+    if (this.finishedSubscription) {
+      this.finishedSubscription.unsubscribe();
     }
-    this.finishedTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
-      this.isLoadingMore = true;
-      this.workflows
-        .getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams)
-        .subscribe(
-          ({ results, more }) => {
-            this.hasMore = more;
-            this.dsOverview = results;
-            this.isLoading = false;
-            this.isLoadingMore = false;
-          },
-          (err: HttpErrorResponse) => {
-            this.isLoading = false;
-            this.isLoadingMore = false;
-            this.errors.handleError(err);
-          }
+
+    const polledData = timer(0, environment.intervalStatusMedium).pipe(
+      concatMap(() => {
+        this.isLoadingMore = true;
+        return this.workflows.getCompletedDatasetOverviewsUptoPage(
+          this.currentPage,
+          this.overviewParams
         );
-    });
+      })
+    );
+
+    this.finishedSubscription = polledData.subscribe(
+      ({ results, more }) => {
+        this.hasMore = more;
+        this.dsOverview = results;
+        this.isLoading = false;
+        this.isLoadingMore = false;
+      },
+      (err: HttpErrorResponse) => {
+        this.isLoading = false;
+        this.isLoadingMore = false;
+        this.errors.handleError(err);
+      }
+    );
   }
 
   /** setSelectedDsId
+  /* sets 'expanded' to false on all the rows
   /* set the selected dataset id
+  /* emits selectedSet event
+  /* @param {string} selectedDsId - the selected dataset id
   */
   setSelectedDsId(selectedDsId: string): void {
     this.selectedDsId = selectedDsId;

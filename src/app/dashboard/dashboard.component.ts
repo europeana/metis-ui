@@ -3,7 +3,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
-
+import { concatMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import {
@@ -20,7 +20,7 @@ import {
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer?: Subscription;
+  runningSubscription: Subscription;
 
   runningIsLoading = true;
   runningIsFirstLoading = true;
@@ -43,20 +43,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
     this.getRunningExecutions();
-
     const user = this.authentication.getCurrentUser();
-    if (user) {
-      this.userName = user.firstName;
-    }
+    this.userName = user!.firstName;
   }
 
   /** ngOnDestroy
   /* clear the timeout
   */
   ngOnDestroy(): void {
-    if (this.runningTimer) {
-      this.runningTimer.unsubscribe();
-    }
+    this.runningSubscription.unsubscribe();
   }
 
   /** checkUpdateLog
@@ -81,21 +76,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
   */
   getRunningExecutions(): void {
     this.runningIsLoading = true;
-    this.runningTimer = timer(0, environment.intervalStatus).subscribe(() => {
-      this.workflows.getAllExecutionsCollectingPages(true).subscribe(
-        (executions) => {
-          this.runningExecutions = executions;
-          this.runningIsLoading = false;
-          this.runningIsFirstLoading = false;
-          this.checkUpdateLog(executions);
-        },
-        (err: HttpErrorResponse) => {
-          this.errors.handleError(err);
-          this.runningIsLoading = false;
-          this.runningIsFirstLoading = false;
-        }
-      );
-    });
+
+    const polledData = timer(0, environment.intervalStatus).pipe(
+      concatMap(() => {
+        return this.workflows.getAllExecutionsCollectingPages(true);
+      })
+    );
+
+    this.runningSubscription = polledData.subscribe(
+      (executions) => {
+        this.runningExecutions = executions;
+        this.runningIsLoading = false;
+        this.runningIsFirstLoading = false;
+        this.checkUpdateLog(this.runningExecutions);
+      },
+      (err: HttpErrorResponse) => {
+        this.errors.handleError(err);
+        this.runningIsLoading = false;
+        this.runningIsFirstLoading = false;
+      }
+    );
   }
 
   /** setSelectedExecutionDsId

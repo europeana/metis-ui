@@ -60,11 +60,16 @@ const mockSearchResults: DatasetSearchView[] = [
 ];
 
 export class MockDatasetsService {
+  errorMode = false;
+
   getXSLT(): Observable<string> {
     return observableOf(mockXslt);
   }
 
   getDataset(): Observable<Dataset> {
+    if (this.errorMode) {
+      return throwError(`mock getDataset error...`);
+    }
     return observableOf(mockDataset);
   }
 
@@ -83,14 +88,14 @@ export class MockDatasetsService {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
+    if (this.errorMode) {
+      return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error...`);
+    }
     console.log(`search ${term}`);
     return observableOf({ results: mockSearchResults, more: false });
   }
 }
 
-export class MockDatasetsServiceErr extends MockDatasetsService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
-    return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error...`);
-  }
+export class MockDatasetsServiceErrors extends MockDatasetsService {
+  errorMode = true;
 }
