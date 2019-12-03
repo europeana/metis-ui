@@ -5,10 +5,9 @@
 /* - handles redirects to the preview tab
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-
+import { Observable } from 'rxjs';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   Dataset,
@@ -28,7 +27,7 @@ import { ErrorService, WorkflowService } from '../../_services';
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent implements OnInit, OnDestroy {
+export class HistoryComponent implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
@@ -44,7 +43,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
   currentPage = 0;
   allExecutions: Array<WorkflowOrPluginExecution> = [];
   hasMore = false;
-  subscription: Subscription;
   report?: Report;
   contentCopied = false;
 
@@ -62,15 +60,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
   */
   ngOnInit(): void {
     this.returnAllExecutions();
-  }
-
-  /** ngOnDestroy
-  /* unsubscribe from data source
-  */
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
   }
 
   /** returnAllExecutions

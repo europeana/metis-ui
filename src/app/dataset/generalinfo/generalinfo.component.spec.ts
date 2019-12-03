@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { apiSettings } from '../../../environments/apisettings';
 import { createMockPipe, mockDataset, mockHarvestData } from '../../_mocked';
+import { HarvestData } from '../../_models';
 
 import { GeneralinfoComponent } from '.';
 
@@ -36,5 +37,11 @@ describe('GeneralinfoComponent', () => {
     expect(component.buttonClassPreview).toBe('');
     expect(component.viewCollections).toBe(apiSettings.viewCollections + '1_*');
     expect(component.buttonClassCollections).toBe('');
+  });
+
+  it('should set button classes according to data', () => {
+    component.harvestPublicationData = ({} as unknown) as HarvestData;
+    fixture.detectChanges();
+    expect(component.buttonClassPreview).toEqual(component.disabledBtnClass);
   });
 });

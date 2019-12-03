@@ -1,10 +1,9 @@
 import { ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
-import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-
+import { BehaviorSubject, of } from 'rxjs';
 import {
   createMockPipe,
   MockDatasetsService,
@@ -14,7 +13,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
-import { NotificationType, SimpleReportRequest, WorkflowExecution } from '../_models';
+import { Dataset, NotificationType, SimpleReportRequest, WorkflowExecution } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
 import { DatasetComponent } from '.';
@@ -23,14 +22,23 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
 describe('DatasetComponent', () => {
   let component: DatasetComponent;
+  let datasets: DatasetsService;
   let fixture: ComponentFixture<DatasetComponent>;
+  let params: BehaviorSubject<Params>;
+  let router: Router;
   let workflows: WorkflowService;
 
   const configureTestbed = (errorMode = false): void => {
+    params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
+
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: { params: params }
+        },
         {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
@@ -43,6 +51,9 @@ describe('DatasetComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+
+    datasets = TestBed.get(DatasetsService);
+    router = TestBed.get(Router);
     workflows = TestBed.get(WorkflowService);
   };
 
@@ -88,39 +99,55 @@ describe('DatasetComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
+    it('should regulate the polling for data', fakeAsync(() => {
+      spyOn(workflows, 'getPublishedHarvestedData');
+
+      component.beginPolling();
+      tick();
+      component.loadData();
+      tick();
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(1);
+
+      component.pollingRefresh.next(true);
+      tick(1000);
+      fixture.detectChanges();
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(2);
+      component.unsubscribe([
+        component.harvestSubscription,
+        component.workflowSubscription,
+        component.lastExecutionSubscription
+      ]);
+      tick(5000);
+    }));
+
     it('should get dataset info', () => {
+      expect(component.lastExecutionSubscription).toBeFalsy();
+      component.beginPolling();
       component.loadData();
       fixture.detectChanges();
+      expect(component.lastExecutionSubscription).toBeTruthy();
       expect(component.lastExecutionSubscription.closed).toBe(false);
     });
 
+    it('should set isStarting to false if the workflow is completed', () => {
+      component.isStarting = true;
+      component.processLastExecutionData({} as WorkflowExecution);
+      expect(component.isStarting).toBe(false);
+    });
+
     it('should switch tabs', () => {
-      fixture.detectChanges();
+      ['edit', 'log', 'mapping', 'preview', 'workflow'].forEach((tabName) => {
+        params.next({ tab: tabName, id: '123' } as Params);
+        fixture.detectChanges();
+        expect(component.activeTab).toEqual(tabName);
+      });
+    });
 
-      component.activeTab = 'edit';
-      component.datasetIsLoading = false;
-      component.workflowIsLoading = false;
-      component.lastExecutionIsLoading = false;
-      component.harvestIsLoading = false;
-
+    it('should redirect new datasets', () => {
+      spyOn(router, 'navigate');
+      params.next({ tab: 'new' } as Params);
       fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
-      component.activeTab = 'workflow';
-      fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
-      component.activeTab = 'mapping';
-      fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
-      component.activeTab = 'preview';
-      fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
-      component.activeTab = 'log';
-      fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
+      expect(router.navigate).toHaveBeenCalled();
     });
 
     it('should be possible to display a message', () => {
@@ -188,17 +215,50 @@ describe('DatasetComponent', () => {
       expect(component.reportMsg).toBeFalsy();
     });
 
-    it('should start a workflow', () => {
+    it('should start a workflow', fakeAsync(() => {
+      component.beginPolling();
       spyOn(workflows, 'startWorkflow').and.callThrough();
+      spyOn(component.pollingRefresh, 'next');
+      spyOn(window, 'scrollTo');
       component.datasetId = '65';
       component.startWorkflow();
+      tick();
+      expect(component.pollingRefresh.next).toHaveBeenCalled();
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
-    });
+      expect(window.scrollTo).toHaveBeenCalled();
+    }));
 
     it('should update data', () => {
       spyOn(component, 'loadData');
       component.datasetUpdated();
       expect(component.loadData).toHaveBeenCalled();
+    });
+
+    it('should put the datasetName in the document title', () => {
+      fixture.detectChanges();
+      expect(document.title).toContain('mockedName');
+      expect(document.title).not.toContain('x');
+
+      spyOn(datasets, 'getDataset').and.callFake(() => {
+        return of({ datasetName: 'x' } as Dataset);
+      });
+
+      component.loadData();
+      fixture.detectChanges();
+      expect(document.title).not.toContain('mockedName');
+      expect(document.title).toContain('x');
+    });
+
+    it('should provide a default document title', () => {
+      fixture.detectChanges();
+      expect(document.title).toContain('mockedName');
+
+      spyOn(datasets, 'getDataset').and.callFake(() => {
+        return of({} as Dataset);
+      });
+      component.loadData();
+      fixture.detectChanges();
+      expect(document.title).toContain('Dataset');
     });
 
     it('should return to the top', () => {
@@ -217,13 +277,19 @@ describe('DatasetComponent', () => {
     beforeEach(b4Each);
 
     it('should handle load errors', fakeAsync(() => {
+      component.lastExecutionIsLoading = true;
+      component.lastExecutionIsLoading = true;
+
       expect(component.notification).toBeFalsy();
+      component.beginPolling();
       component.loadData();
       tick();
+
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
-
-      component.ngOnDestroy();
+      expect(component.lastExecutionIsLoading).toBeFalsy();
+      expect(component.lastExecutionData).toBeFalsy();
+      expect(component.lastExecutionIsLoading).toBeFalsy();
     }));
 
     it('should handle setReportMsg errors', fakeAsync(() => {
@@ -234,18 +300,6 @@ describe('DatasetComponent', () => {
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.reportLoading).toBeFalsy();
-      component.ngOnDestroy();
-    }));
-
-    it('should handle loadWorkflow errors', fakeAsync(() => {
-      expect(component.notification).toBeFalsy();
-      component.workflowIsLoading = true;
-      component.loadWorkflow();
-      tick();
-      expect(component.notification).toBeTruthy();
-      expect(component.notification!.type).toBe(NotificationType.ERROR);
-      expect(component.workflowIsLoading).toBeFalsy();
-      component.ngOnDestroy();
     }));
 
     it('should handle startWorkflow errors', fakeAsync(() => {
@@ -256,34 +310,6 @@ describe('DatasetComponent', () => {
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
-      component.ngOnDestroy();
-    }));
-
-    it('should handle empty results when loading the last execution', fakeAsync(() => {
-      component.lastExecutionIsLoading = true;
-      component.lastExecutionData = { id: 'test-this-gets-removed' } as WorkflowExecution;
-
-      spyOn(workflows, 'getLastDatasetExecution').and.callFake(() => {
-        return of((undefined as unknown) as WorkflowExecution);
-      });
-
-      expect(component.lastExecutionData).toBeTruthy();
-      component.loadLastExecution();
-      tick();
-      expect(component.notification).toBeFalsy();
-      expect(component.lastExecutionIsLoading).toBeFalsy();
-      expect(component.lastExecutionData).toBeFalsy();
-    }));
-
-    it('should handle errors when loading the last execution', fakeAsync(() => {
-      component.lastExecutionIsLoading = true;
-
-      expect(component.notification).toBeFalsy();
-      component.loadLastExecution();
-      tick();
-      expect(component.lastExecutionIsLoading).toBeFalsy();
-      expect(component.notification).toBeTruthy();
-      expect(component.notification!.type).toBe(NotificationType.ERROR);
     }));
   });
 });

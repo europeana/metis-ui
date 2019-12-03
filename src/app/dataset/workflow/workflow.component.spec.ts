@@ -194,18 +194,20 @@ describe('WorkflowComponent', () => {
       expect(component.getViewportScore(getTestEl(20, 1000), 50)).toEqual(4);
     });
 
-    it('it should throttle scroll events', () => {
-      component.onHeaderSynchronised();
-      expect(component.busy).toBeFalsy();
-      window.dispatchEvent(new Event('scroll'));
-      expect(component.busy).toBeTruthy();
-    });
-
     it('it should respond to scroll events', () => {
       spyOn(component, 'setHighlightedField');
       component.onHeaderSynchronised();
       window.dispatchEvent(new Event('scroll'));
       expect(component.setHighlightedField).toHaveBeenCalled();
+    });
+
+    it('it should throttle scroll events', () => {
+      component.onHeaderSynchronised();
+      spyOn(component, 'setHighlightedField');
+      window.dispatchEvent(new Event('scroll'));
+      window.dispatchEvent(new Event('scroll'));
+      window.dispatchEvent(new Event('scroll'));
+      expect(component.setHighlightedField).toHaveBeenCalledTimes(1);
     });
 
     it('should set the highlighted field', () => {

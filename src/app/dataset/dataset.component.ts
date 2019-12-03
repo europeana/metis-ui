@@ -2,8 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
-
+import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
+import { delay, filter, merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
   Dataset,
@@ -64,6 +64,12 @@ export class DatasetComponent implements OnInit, OnDestroy {
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
 
+  polledHarvestData: Observable<HarvestData>;
+  polledWorkflowData: Observable<Workflow>;
+  polledLastExecutionData: Observable<WorkflowExecution>;
+
+  pollingRefresh: Subject<boolean>;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reportErrors: any;
   reportMsg?: string;
@@ -94,24 +100,117 @@ export class DatasetComponent implements OnInit, OnDestroy {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
-
     this.route.params.subscribe((params) => {
       const { tab, id } = params;
       if (tab === 'new') {
         this.notification = successNotification('New dataset created! Id: ' + id);
         this.router.navigate([`/dataset/edit/${id}`]);
-        return;
+      } else {
+        this.activeTab = tab;
+        this.datasetId = id;
+        if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+          this.tempXSLT = undefined;
+        }
+        this.prevTab = this.activeTab;
+        this.beginPolling();
+        this.loadData();
       }
-
-      this.activeTab = tab;
-      this.datasetId = id;
-      if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
-        this.tempXSLT = undefined;
-      }
-      this.prevTab = this.activeTab;
-
-      this.loadData();
     });
+  }
+
+  /** beginPolling
+  /* sets up reactive polling
+  */
+  beginPolling(): void {
+    let skipNextHarvest = false;
+    let skipNextWorkflow = false;
+
+    // stream for start-workflow click events
+    this.pollingRefresh = new Subject();
+    this.pollingRefresh.subscribe(() => {
+      skipNextHarvest = true;
+      skipNextWorkflow = true;
+    });
+
+    // poll for harvest data every 5 seconds after last result returned
+    // - reset polling when user starts the workflow
+
+    const loadTriggerHarvest = new BehaviorSubject(true);
+    const loadTriggerHarvestDelayed = new Subject();
+
+    loadTriggerHarvestDelayed
+      .pipe(
+        delay(environment.intervalStatusMedium),
+        tap((_) => {
+          if (!skipNextHarvest) {
+            loadTriggerHarvest.next(true);
+          }
+          skipNextHarvest = false;
+        })
+      )
+      .subscribe();
+
+    this.polledHarvestData = loadTriggerHarvest.pipe(
+      merge(this.pollingRefresh), // user event comes into stream here
+      switchMap(() => {
+        return this.workflows.getPublishedHarvestedData(this.datasetId);
+      }),
+      tap((_) => {
+        loadTriggerHarvestDelayed.next(true);
+      })
+    );
+
+    // poll for workflow data every 5 seconds after last result returned
+    // - reset polling when user starts the workflow
+
+    const loadTriggerWorkflow = new BehaviorSubject(true);
+    const loadTriggerWorkflowDelayed = new Subject();
+
+    loadTriggerWorkflowDelayed
+      .pipe(
+        delay(environment.intervalStatusMedium),
+        tap((_) => {
+          if (!skipNextWorkflow) {
+            loadTriggerWorkflow.next(true);
+          }
+          skipNextWorkflow = false;
+        })
+      )
+      .subscribe();
+
+    this.polledWorkflowData = loadTriggerWorkflow.pipe(
+      merge(this.pollingRefresh), // user event comes into stream here
+      switchMap(() => {
+        return this.workflows.getWorkflowForDataset(this.datasetId);
+      }),
+      tap((_) => {
+        loadTriggerWorkflowDelayed.next(true);
+      })
+    );
+
+    // poll for last execution data every 2.5 seconds after last result returned
+
+    const loadTriggerLastExecution = new BehaviorSubject(true);
+    const loadTriggerLastExecutionDelayed = new Subject();
+
+    loadTriggerLastExecutionDelayed
+      .pipe(
+        delay(environment.intervalStatus),
+        tap((_) => {
+          loadTriggerLastExecution.next(true);
+        })
+      )
+      .subscribe();
+
+    this.polledLastExecutionData = loadTriggerLastExecution.pipe(
+      switchMap(() => {
+        return this.workflows.getLastDatasetExecution(this.datasetId);
+      }),
+      tap((_) => {
+        loadTriggerLastExecutionDelayed.next(true);
+      }),
+      filter((execution: WorkflowExecution | undefined) => execution !== undefined)
+    ) as Observable<WorkflowExecution>;
   }
 
   /** setReportMsg
@@ -205,41 +304,16 @@ export class DatasetComponent implements OnInit, OnDestroy {
       }
     );
 
-    // check for harvest data every x seconds
-    this.unsubscribe([this.harvestSubscription]);
-    const harvestTimer = timer(0, environment.intervalStatusMedium);
-    this.harvestSubscription = harvestTimer.subscribe(() => {
-      this.loadHarvestData();
-    });
+    this.unsubscribe([
+      this.harvestSubscription,
+      this.workflowSubscription,
+      this.lastExecutionSubscription
+    ]);
 
-    // check workflow for every x seconds
-    this.unsubscribe([this.workflowSubscription]);
-    const workflowTimer = timer(0, environment.intervalStatusMedium);
-    this.workflowSubscription = workflowTimer.subscribe(() => {
-      this.loadWorkflow();
-    });
+    // subscribe to polledHarvestData
 
-    // check for last execution every x seconds
-    this.unsubscribe([this.lastExecutionSubscription]);
-    const executionsTimer = timer(0, environment.intervalStatus);
-    this.lastExecutionSubscription = executionsTimer.subscribe(() => {
-      this.loadLastExecution();
-    });
-  }
-
-  /** datasetUpdated
-  /* invoke load-data function
-  */
-  datasetUpdated(): void {
-    this.loadData();
-  }
-
-  /** loadHarvestData
-  /* invoke load-harvest-data function
-  */
-  loadHarvestData(): void {
-    this.workflows.getPublishedHarvestedData(this.datasetId).subscribe(
-      (resultHarvest) => {
+    this.harvestSubscription = this.polledHarvestData.subscribe(
+      (resultHarvest: HarvestData) => {
         this.harvestPublicationData = resultHarvest;
         this.harvestIsLoading = false;
       },
@@ -250,14 +324,10 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.unsubscribe([this.harvestSubscription]);
       }
     );
-  }
 
-  /** loadWorkflow
-  /* invoke load-workflow-data function
-  */
-  loadWorkflow(): void {
-    this.workflows.getWorkflowForDataset(this.datasetId).subscribe(
-      (workflow) => {
+    // subscribe to polledWorkflowData
+    this.workflowSubscription = this.polledWorkflowData.subscribe(
+      (workflow: Workflow) => {
         this.workflowData = workflow;
         this.workflowIsLoading = false;
       },
@@ -268,24 +338,11 @@ export class DatasetComponent implements OnInit, OnDestroy {
         this.unsubscribe([this.workflowSubscription]);
       }
     );
-  }
 
-  /** loadLastExecution
-  /* invoke load-last-execution function
-  */
-  loadLastExecution(): void {
-    this.workflows.getLastDatasetExecution(this.datasetId).subscribe(
-      (execution) => {
-        if (execution) {
-          this.workflows.getReportsForExecution(execution);
-        }
-
-        this.lastExecutionData = execution;
-        this.lastExecutionIsLoading = false;
-
-        if (execution && !isWorkflowCompleted(execution)) {
-          this.isStarting = false;
-        }
+    // check for last execution every x seconds
+    this.lastExecutionSubscription = this.polledLastExecutionData.subscribe(
+      (execution: WorkflowExecution) => {
+        this.processLastExecutionData(execution);
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
@@ -296,6 +353,27 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** datasetUpdated
+  /* invoke load-data function
+  */
+  datasetUpdated(): void {
+    this.loadData();
+  }
+
+  /** processLastExecutionData
+  /* invoke load-last-execution function
+  /* @param {WorkflowExecution} execution - loaded data
+  */
+  processLastExecutionData(execution: WorkflowExecution): void {
+    this.workflows.getReportsForExecution(execution);
+    this.lastExecutionData = execution;
+    this.lastExecutionIsLoading = false;
+
+    if (this.isStarting && !isWorkflowCompleted(execution)) {
+      this.isStarting = false;
+    }
+  }
+
   /** startWorkflow
   /* - send request to start workflow
   *  - subscribe to harvest and execution data
@@ -304,8 +382,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.isStarting = true;
     this.workflows.startWorkflow(this.datasetId).subscribe(
       () => {
-        this.loadHarvestData();
-        this.loadLastExecution();
+        this.pollingRefresh.next(true);
         window.scrollTo(0, 0);
       },
       (err: HttpErrorResponse) => {
