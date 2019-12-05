@@ -59,7 +59,7 @@
       background: $offwhite;
       content: ' ';
       display: block;
-      height: 0.2em;
+      height: 4px;
       left: 0;
       position: absolute;
       right: 0;
@@ -85,7 +85,8 @@
     .grid-cell:nth-child(5n + 5) {
       text-align: left;
       &:after {
-        display: none;
+        left: $grid-size-massive-offset;
+        width: $grid-size-massive;
       }
     }
   }
