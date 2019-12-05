@@ -4,6 +4,7 @@ import {
   createMockPipe,
   MockAuthenticationService,
   MockDatasetsService,
+  MockDatasetsServiceErrors,
   MockErrorService,
   MockWorkflowService,
   MockWorkflowServiceErrors
@@ -27,7 +28,10 @@ describe('DashboardComponent', () => {
       declarations: [DashboardComponent, createMockPipe('translate')],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: DatasetsService, useClass: MockDatasetsService },
+        {
+          provide: DatasetsService,
+          useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
+        },
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
@@ -51,14 +55,6 @@ describe('DashboardComponent', () => {
     it('should create', () => {
       expect(component).toBeTruthy();
     });
-
-    it('should get the running executions', fakeAsync(() => {
-      expect(component.runningExecutions).toBeFalsy();
-      component.getRunningExecutions();
-      tick();
-      expect(component.runningExecutions).toBeTruthy();
-      component.ngOnDestroy();
-    }));
 
     it('should open log messages', () => {
       component.showPluginLog = {
@@ -117,10 +113,9 @@ describe('DashboardComponent', () => {
     });
 
     it('should clean up', () => {
-      const mockFn = jasmine.createSpy();
-      component.runningSubscription!.add(mockFn);
+      spyOn(component.polledRunningData, 'unsubscribe');
       component.ngOnDestroy();
-      expect(mockFn).toHaveBeenCalled();
+      expect(component.polledRunningData.unsubscribe).toHaveBeenCalled();
     });
   });
 
@@ -131,11 +126,13 @@ describe('DashboardComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should handle errors getting the running executions', fakeAsync(() => {
+    it('should handle load errors', fakeAsync(() => {
       component.runningIsLoading = true;
+      component.runningIsFirstLoading = true;
       component.getRunningExecutions();
       tick();
       expect(component.runningIsLoading).toBeFalsy();
+      expect(component.runningIsFirstLoading).toBeFalsy();
     }));
   });
 });

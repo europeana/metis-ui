@@ -27,6 +27,7 @@ describe('DatasetComponent', () => {
   let params: BehaviorSubject<Params>;
   let router: Router;
   let workflows: WorkflowService;
+  const interval = 5000;
 
   const configureTestbed = (errorMode = false): void => {
     params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
@@ -63,10 +64,7 @@ describe('DatasetComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(() => {
-      configureTestbed();
-    }));
-
+    beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
     it('responds to form initialisation by setting it in the header', () => {
@@ -98,27 +96,6 @@ describe('DatasetComponent', () => {
       component.setLinkCheck(1);
       expect(spy).toHaveBeenCalled();
     });
-
-    it('should regulate the polling for data', fakeAsync(() => {
-      spyOn(workflows, 'getPublishedHarvestedData');
-
-      component.beginPolling();
-      tick();
-      component.loadData();
-      tick();
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(1);
-
-      component.pollingRefresh.next(true);
-      tick(1000);
-      fixture.detectChanges();
-      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(2);
-      component.unsubscribe([
-        component.harvestSubscription,
-        component.workflowSubscription,
-        component.lastExecutionSubscription
-      ]);
-      tick(5000);
-    }));
 
     it('should get dataset info', () => {
       expect(component.lastExecutionSubscription).toBeFalsy();
@@ -214,25 +191,51 @@ describe('DatasetComponent', () => {
       component.clearReport();
       expect(component.reportMsg).toBeFalsy();
     });
-
     it('should start a workflow', fakeAsync(() => {
-      component.beginPolling();
       spyOn(workflows, 'startWorkflow').and.callThrough();
-      spyOn(component.pollingRefresh, 'next');
       spyOn(window, 'scrollTo');
+
+      component.beginPolling();
+      component.loadData();
       component.datasetId = '65';
       component.startWorkflow();
       tick();
-      expect(component.pollingRefresh.next).toHaveBeenCalled();
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
       expect(window.scrollTo).toHaveBeenCalled();
+      component.unsubscribe([
+        component.harvestSubscription,
+        component.workflowSubscription,
+        component.lastExecutionSubscription
+      ]);
+      tick(interval);
     }));
+    it('should update data periodically and allow polling resets', fakeAsync(() => {
+      spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
 
-    it('should update data', () => {
-      spyOn(component, 'loadData');
-      component.datasetUpdated();
-      expect(component.loadData).toHaveBeenCalled();
-    });
+      component.beginPolling();
+      component.loadData();
+
+      [1, 2, 3, 4, 5].forEach((index) => {
+        expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(index);
+        tick(interval);
+      });
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(6);
+      component.startWorkflow();
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
+
+      tick(interval - 1);
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
+      tick(1);
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(8);
+
+      component.unsubscribe([
+        component.harvestSubscription,
+        component.workflowSubscription,
+        component.lastExecutionSubscription
+      ]);
+      tick(interval);
+    }));
 
     it('should put the datasetName in the document title', () => {
       fixture.detectChanges();
@@ -290,6 +293,13 @@ describe('DatasetComponent', () => {
       expect(component.lastExecutionIsLoading).toBeFalsy();
       expect(component.lastExecutionData).toBeFalsy();
       expect(component.lastExecutionIsLoading).toBeFalsy();
+
+      component.unsubscribe([
+        component.harvestSubscription,
+        component.workflowSubscription,
+        component.lastExecutionSubscription
+      ]);
+      tick(interval);
     }));
 
     it('should handle setReportMsg errors', fakeAsync(() => {

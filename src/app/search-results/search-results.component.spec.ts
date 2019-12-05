@@ -1,21 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchResultsComponent } from '.';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   createMockPipe,
   MockActivatedRoute,
-  MockAuthenticationService,
   MockDatasetsService,
   MockDatasetsServiceErrors
 } from '../_mocked';
-import { AuthenticationService, DatasetsService } from '../_services';
+import { DatasetsService } from '../_services';
 
 describe('SearchResultsComponent', () => {
   let fixture: ComponentFixture<SearchResultsComponent>;
   let component: SearchResultsComponent;
-  let authenticationService: AuthenticationService;
-  let router: Router;
   const searchTerm = '123';
 
   const configureTestbed = (searchErr = false, qParam?: string): void => {
@@ -28,15 +25,12 @@ describe('SearchResultsComponent', () => {
       imports: [RouterTestingModule],
       providers: [
         { provide: ActivatedRoute, useValue: mar },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
           provide: DatasetsService,
           useClass: searchErr ? MockDatasetsServiceErrors : MockDatasetsService
         }
       ]
     }).compileComponents();
-    authenticationService = TestBed.get(AuthenticationService);
-    router = TestBed.get(Router);
   };
 
   const b4Each = (): void => {
@@ -58,14 +52,6 @@ describe('SearchResultsComponent', () => {
 
     it('should not be loading', () => {
       expect(component.isLoading).toBeFalsy();
-    });
-
-    it('should redirect if the user is not validated', () => {
-      expect(component.userValidated).toBeTruthy();
-      spyOn(router, 'navigate');
-      authenticationService.logout();
-      fixture.detectChanges();
-      expect(router.navigate).toHaveBeenCalled();
     });
   });
 

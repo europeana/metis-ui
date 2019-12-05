@@ -353,13 +353,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
-  /** datasetUpdated
-  /* invoke load-data function
-  */
-  datasetUpdated(): void {
-    this.loadData();
-  }
-
   /** processLastExecutionData
   /* invoke load-last-execution function
   /* @param {WorkflowExecution} execution - loaded data

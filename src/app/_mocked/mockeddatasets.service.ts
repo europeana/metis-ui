@@ -68,7 +68,7 @@ export class MockDatasetsService {
 
   getDataset(): Observable<Dataset> {
     if (this.errorMode) {
-      return throwError(`mock getDataset error...`);
+      return throwError('mock getDataset throws error...');
     }
     return observableOf(mockDataset);
   }
@@ -88,10 +88,10 @@ export class MockDatasetsService {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
-    if (this.errorMode) {
-      return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error...`);
-    }
     console.log(`search ${term}`);
+    if (this.errorMode) {
+      return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error`);
+    }
     return observableOf({ results: mockSearchResults, more: false });
   }
 }
