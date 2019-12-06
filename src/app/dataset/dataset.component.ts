@@ -3,7 +3,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
-import { delay, filter, merge, switchMap, tap } from 'rxjs/operators';
+import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
   Dataset,
@@ -122,92 +122,81 @@ export class DatasetComponent implements OnInit, OnDestroy {
   /* sets up reactive polling
   */
   beginPolling(): void {
-    let skipNextHarvest = false;
-    let skipNextWorkflow = false;
+    let skipNextHarvest = 0;
+    let skipNextWorkflow = 0;
 
     // stream for start-workflow click events
     this.pollingRefresh = new Subject();
     this.pollingRefresh.subscribe(() => {
-      skipNextHarvest = true;
-      skipNextWorkflow = true;
+      skipNextHarvest++;
+      skipNextWorkflow++;
     });
+
+    const triggerDelay = new Subject<{ subject: Subject<boolean>; wait: number }>();
+    triggerDelay
+      .pipe(
+        delayWhen((val) => {
+          return timer(val.wait);
+        }),
+        tap((val) => val.subject.next(true))
+      )
+      .subscribe();
 
     // poll for harvest data every 5 seconds after last result returned
     // - reset polling when user starts the workflow
 
     const loadTriggerHarvest = new BehaviorSubject(true);
-    const loadTriggerHarvestDelayed = new Subject();
-
-    loadTriggerHarvestDelayed
-      .pipe(
-        delay(environment.intervalStatusMedium),
-        tap((_) => {
-          if (!skipNextHarvest) {
-            loadTriggerHarvest.next(true);
-          }
-          skipNextHarvest = false;
-        })
-      )
-      .subscribe();
 
     this.polledHarvestData = loadTriggerHarvest.pipe(
+      filter(() => {
+        const res = skipNextHarvest === 0;
+        if (!res) {
+          skipNextHarvest--;
+        }
+        return res;
+      }),
       merge(this.pollingRefresh), // user event comes into stream here
       switchMap(() => {
         return this.workflows.getPublishedHarvestedData(this.datasetId);
       }),
       tap((_) => {
-        loadTriggerHarvestDelayed.next(true);
+        triggerDelay.next({
+          subject: loadTriggerHarvest,
+          wait: environment.intervalStatusMedium
+        });
       })
     );
 
     // poll for workflow data every 5 seconds after last result returned
     // - reset polling when user starts the workflow
-
     const loadTriggerWorkflow = new BehaviorSubject(true);
-    const loadTriggerWorkflowDelayed = new Subject();
-
-    loadTriggerWorkflowDelayed
-      .pipe(
-        delay(environment.intervalStatusMedium),
-        tap((_) => {
-          if (!skipNextWorkflow) {
-            loadTriggerWorkflow.next(true);
-          }
-          skipNextWorkflow = false;
-        })
-      )
-      .subscribe();
-
     this.polledWorkflowData = loadTriggerWorkflow.pipe(
+      filter(() => {
+        const res = skipNextWorkflow === 0;
+        if (!res) {
+          skipNextWorkflow--;
+        }
+        return res;
+      }),
       merge(this.pollingRefresh), // user event comes into stream here
       switchMap(() => {
         return this.workflows.getWorkflowForDataset(this.datasetId);
       }),
       tap((_) => {
-        loadTriggerWorkflowDelayed.next(true);
+        triggerDelay.next({ subject: loadTriggerWorkflow, wait: environment.intervalStatusMedium });
       })
     );
 
     // poll for last execution data every 2.5 seconds after last result returned
 
     const loadTriggerLastExecution = new BehaviorSubject(true);
-    const loadTriggerLastExecutionDelayed = new Subject();
-
-    loadTriggerLastExecutionDelayed
-      .pipe(
-        delay(environment.intervalStatus),
-        tap((_) => {
-          loadTriggerLastExecution.next(true);
-        })
-      )
-      .subscribe();
-
     this.polledLastExecutionData = loadTriggerLastExecution.pipe(
       switchMap(() => {
+        this.lastExecutionIsLoading = false;
         return this.workflows.getLastDatasetExecution(this.datasetId);
       }),
       tap((_) => {
-        loadTriggerLastExecutionDelayed.next(true);
+        triggerDelay.next({ subject: loadTriggerLastExecution, wait: environment.intervalStatus });
       }),
       filter((execution: WorkflowExecution | undefined) => execution !== undefined)
     ) as Observable<WorkflowExecution>;
@@ -348,7 +337,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.unsubscribe([this.lastExecutionSubscription]);
-        this.lastExecutionIsLoading = false;
       }
     );
   }
@@ -360,7 +348,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
   processLastExecutionData(execution: WorkflowExecution): void {
     this.workflows.getReportsForExecution(execution);
     this.lastExecutionData = execution;
-    this.lastExecutionIsLoading = false;
 
     if (this.isStarting && !isWorkflowCompleted(execution)) {
       this.isStarting = false;

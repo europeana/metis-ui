@@ -13,10 +13,10 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { Subscription, timer } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
+import { delayWhen, merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { DatasetOverview } from '../../_models';
+import { DatasetOverview, MoreResults } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 import { GridrowComponent } from './gridrow';
@@ -28,13 +28,15 @@ import { GridrowComponent } from './gridrow';
 })
 export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   dsOverview: DatasetOverview[];
-  finishedSubscription: Subscription;
   selectedDsId = '';
   isLoading = true;
   isLoadingMore = false;
   hasMore = false;
   currentPage = 0;
-  overviewParams: string;
+  overviewParams = '';
+
+  pollingRefresh: Subject<boolean>;
+  overviewSubscription: Subscription;
 
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
@@ -42,63 +44,91 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   constructor(private readonly workflows: WorkflowService, private readonly errors: ErrorService) {}
 
   /** ngAfterViewInit
-  /* load the data
+  /* begin the data-polling the data
   */
   ngAfterViewInit(): void {
-    this.load();
+    this.beginPolling();
   }
 
   /** ngOnDestroy
   /* unsubscribe from timer
   */
   ngOnDestroy(): void {
-    if (this.finishedSubscription) {
-      this.finishedSubscription.unsubscribe();
-    }
+    this.overviewSubscription.unsubscribe();
   }
 
   /** setOverviewParams
   /* - unsubscribe from timer
   /*  - set the parameter string
-  /*  - re-initiate the load
+  /*  - refresh the polling
   /* @param {string} overviewParams - parameters as a string
   */
   setOverviewParams(overviewParams: string): void {
-    this.overviewParams = overviewParams;
-    this.load();
+    if (this.overviewParams != overviewParams) {
+      this.overviewParams = overviewParams;
+      this.pollingRefresh.next(true);
+    }
   }
 
   /** loadNextPage
   /* - increment the currentPage variable
-  *  - set the isLoadingMore variable to true
-  *  - re-initiate the load
+  /*  - set the isLoadingMore variable to true
+  /*  - refresh the polling
   */
   loadNextPage(): void {
     this.currentPage++;
     this.isLoadingMore = true;
-    this.load();
+    this.pollingRefresh.next(true);
   }
 
-  /** load
-  /* unsubscribe from any existing
-  /* subscribe to the dataset overview data
+  /** beginPolling
+  *  - sets up a timed polling mechanism that only ticks when the last data-result has been retrieved
+  *  - subscribes to the poll
+  /* - instantiates a Subject for poll refreshing
   */
-  load(): void {
-    if (this.finishedSubscription) {
-      this.finishedSubscription.unsubscribe();
-    }
+  beginPolling(): void {
+    let skipNextTick = 0;
 
-    const polledData = timer(0, environment.intervalStatusMedium).pipe(
-      concatMap(() => {
-        this.isLoadingMore = true;
+    // stream for apply-filter
+    this.pollingRefresh = new Subject();
+    this.pollingRefresh.subscribe(() => {
+      skipNextTick += 1;
+    });
+
+    const triggerDelay = new Subject<{ subject: Subject<boolean>; wait: number }>();
+    triggerDelay
+      .pipe(
+        delayWhen((val) => {
+          return timer(val.wait);
+        }),
+        tap((val) => {
+          if (skipNextTick > 0) {
+            skipNextTick--;
+          } else {
+            val.subject.next(true);
+          }
+        })
+      )
+      .subscribe();
+
+    const loadTriggerOverview = new BehaviorSubject(true);
+    const polledOverviewData = loadTriggerOverview.pipe(
+      merge(this.pollingRefresh), // user events comes into the stream here
+      switchMap(() => {
         return this.workflows.getCompletedDatasetOverviewsUptoPage(
           this.currentPage,
           this.overviewParams
         );
+      }),
+      tap(() => {
+        triggerDelay.next({
+          subject: loadTriggerOverview,
+          wait: environment.intervalStatusMedium
+        });
       })
-    );
+    ) as Observable<MoreResults<DatasetOverview>>;
 
-    this.finishedSubscription = polledData.subscribe(
+    this.overviewSubscription = polledOverviewData.subscribe(
       ({ results, more }) => {
         this.hasMore = more;
         this.dsOverview = results;

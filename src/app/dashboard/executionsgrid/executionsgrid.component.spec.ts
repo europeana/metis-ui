@@ -21,6 +21,7 @@ function setRows(component: ExecutionsgridComponent): void {
 describe('ExecutionsgridComponent', () => {
   let component: ExecutionsgridComponent;
   let fixture: ComponentFixture<ExecutionsgridComponent>;
+  let workflows: WorkflowService;
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -39,6 +40,7 @@ describe('ExecutionsgridComponent', () => {
         }
       ]
     }).compileComponents();
+    workflows = TestBed.get(WorkflowService);
   };
 
   const b4Each = (): void => {
@@ -46,54 +48,97 @@ describe('ExecutionsgridComponent', () => {
     component = fixture.componentInstance;
   };
 
+  const interval = 5000;
+
   describe('Normal operation', () => {
     beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
-    it('should load', fakeAsync(() => {
-      expect(component.isLoading).toBe(true);
-      expect(component.dsOverview).toBeFalsy();
-      component.load();
+    it('should poll for data on initialisation', fakeAsync(() => {
+      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      component.ngAfterViewInit();
       tick();
-      expect(component.dsOverview.length).toBeGreaterThan(0);
-      expect(component.isLoading).toBe(false);
-      expect(component.isLoadingMore).toBe(false);
-      expect(component.currentPage).toEqual(0);
-      component.finishedSubscription.unsubscribe();
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
+      component.overviewSubscription.unsubscribe();
+      tick(interval);
     }));
 
-    it('should load on init', () => {
-      spyOn(component, 'load');
+    it('should unsubscribe when destroyed', fakeAsync(() => {
       component.ngAfterViewInit();
-      expect(component.load).toHaveBeenCalled();
-    });
+      tick();
+      spyOn(component.overviewSubscription, 'unsubscribe').and.callThrough();
+      component.ngOnDestroy();
+      expect(component.overviewSubscription.unsubscribe).toHaveBeenCalled();
+      tick(interval);
+    }));
 
-    it('should call load when the params are set', () => {
-      spyOn(component, 'load');
+    it('should reload when the parameters are changed', fakeAsync(() => {
+      component.ngAfterViewInit();
+      tick();
+      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      component.setOverviewParams('');
+      tick();
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).not.toHaveBeenCalled();
       component.setOverviewParams('param-string');
-      expect(component.load).toHaveBeenCalled();
-    });
+      tick();
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
+      component.overviewSubscription.unsubscribe();
+      tick(interval);
+    }));
 
-    it('should load the next page', () => {
-      component.load();
+    it('should update data periodically and allow polling resets', fakeAsync(() => {
+      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
+      component.ngAfterViewInit();
+      tick();
+      [1, 2, 3, 4, 5].forEach((index) => {
+        expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(index);
+        tick(interval);
+      });
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(6);
+      component.pollingRefresh.next(true);
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(7);
+      tick(interval - 1);
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(7);
+      tick(1);
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(8);
+
+      component.overviewSubscription.unsubscribe();
+      tick(interval);
+    }));
+
+    it('should load the next page', fakeAsync(() => {
+      component.ngAfterViewInit();
+      tick();
+      spyOn(workflows, 'getCompletedDatasetOverviewsUptoPage').and.callThrough();
       expect(component.currentPage).toEqual(0);
       component.loadNextPage();
+      tick();
       expect(component.currentPage).toEqual(1);
-    });
+      expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
+      component.overviewSubscription.unsubscribe();
+      tick(interval);
+    }));
 
-    it('should set the selected index', () => {
+    it('should set the selected index', fakeAsync(() => {
+      component.ngAfterViewInit();
+      tick();
       setRows(component);
       expect(component.selectedDsId).toEqual('');
       component.setSelectedDsId('3');
       expect(component.selectedDsId).toEqual('3');
-    });
+      component.overviewSubscription.unsubscribe();
+      tick(interval);
+    }));
 
-    it('should relay the row selection to the parent', () => {
+    it('should relay the row selection to the parent', fakeAsync(() => {
+      component.ngAfterViewInit();
       spyOn(component.selectedSet, 'emit');
       setRows(component);
       component.setSelectedDsId('id');
       expect(component.selectedSet.emit).toHaveBeenCalled();
-    });
+      component.overviewSubscription.unsubscribe();
+      tick(interval);
+    }));
   });
 
   describe('Error handling', () => {
@@ -105,10 +150,12 @@ describe('ExecutionsgridComponent', () => {
     it('should handle errors when loading', fakeAsync(() => {
       component.isLoading = true;
       component.isLoadingMore = true;
-      component.load();
+      component.ngAfterViewInit();
       tick();
       expect(component.isLoading).toBeFalsy();
       expect(component.isLoadingMore).toBeFalsy();
+      component.overviewSubscription.unsubscribe();
+      tick(interval);
     }));
   });
 });

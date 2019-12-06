@@ -191,6 +191,7 @@ describe('DatasetComponent', () => {
       component.clearReport();
       expect(component.reportMsg).toBeFalsy();
     });
+
     it('should start a workflow', fakeAsync(() => {
       spyOn(workflows, 'startWorkflow').and.callThrough();
       spyOn(window, 'scrollTo');
@@ -209,25 +210,51 @@ describe('DatasetComponent', () => {
       ]);
       tick(interval);
     }));
+
     it('should update data periodically and allow polling resets', fakeAsync(() => {
       spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
+      spyOn(workflows, 'getWorkflowForDataset').and.callThrough();
 
       component.beginPolling();
       component.loadData();
 
       [1, 2, 3, 4, 5].forEach((index) => {
         expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(index);
+        expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(index);
         tick(interval);
       });
 
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(6);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(6);
       component.startWorkflow();
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
 
       tick(interval - 1);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
       tick(1);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(8);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(8);
+
+      // it shouldn't drain the event queue when hammered
+      component.startWorkflow();
+      tick();
+      component.startWorkflow();
+      tick();
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(10);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(10);
+
+      tick(interval);
+      tick(interval);
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(12);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(12);
+
+      tick(interval);
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(13);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(13);
 
       component.unsubscribe([
         component.harvestSubscription,

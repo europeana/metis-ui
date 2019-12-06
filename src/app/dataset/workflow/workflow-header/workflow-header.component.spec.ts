@@ -207,7 +207,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should handle dragging over orbs', () => {
-    const ev = ({ preventDefault: () => {} } as any) as Event;
+    const ev = ({ preventDefault: () => {} } as unknown) as Event;
     expect(component.isDraggingOverOrbs).toBeFalsy();
     component.stepsDragOver(ev);
     expect(component.isDraggingOverOrbs).toBeTruthy();
