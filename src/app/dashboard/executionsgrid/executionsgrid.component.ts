@@ -13,9 +13,10 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
-import { delayWhen, merge, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { triggerDelay } from '../../_helpers';
 import { DatasetOverview, MoreResults } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -87,34 +88,19 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   /* - instantiates a Subject for poll refreshing
   */
   beginPolling(): void {
-    let skipNextTick = 0;
+    let pushPollOverview = 0;
 
     // stream for apply-filter
     this.pollingRefresh = new Subject();
     this.pollingRefresh.subscribe(() => {
-      skipNextTick += 1;
+      pushPollOverview += 1;
     });
-
-    const triggerDelay = new Subject<{ subject: Subject<boolean>; wait: number }>();
-    triggerDelay
-      .pipe(
-        delayWhen((val) => {
-          return timer(val.wait);
-        }),
-        tap((val) => {
-          if (skipNextTick > 0) {
-            skipNextTick--;
-          } else {
-            val.subject.next(true);
-          }
-        })
-      )
-      .subscribe();
 
     const loadTriggerOverview = new BehaviorSubject(true);
     const polledOverviewData = loadTriggerOverview.pipe(
       merge(this.pollingRefresh), // user events comes into the stream here
       switchMap(() => {
+        this.isLoadingMore = true;
         return this.workflows.getCompletedDatasetOverviewsUptoPage(
           this.currentPage,
           this.overviewParams
@@ -123,7 +109,11 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
       tap(() => {
         triggerDelay.next({
           subject: loadTriggerOverview,
-          wait: environment.intervalStatusMedium
+          wait: environment.intervalStatusMedium,
+          blockIf: () => pushPollOverview > 0,
+          blockThen: () => {
+            pushPollOverview--;
+          }
         });
       })
     ) as Observable<MoreResults<DatasetOverview>>;

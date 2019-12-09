@@ -3,7 +3,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
-import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
+import { filter, merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
   Dataset,
@@ -19,6 +19,8 @@ import {
   WorkflowExecution,
   workflowFormFieldConf
 } from '../_models';
+
+import { triggerDelay } from '../_helpers';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
 
 import { WorkflowComponent } from './workflow';
@@ -122,25 +124,15 @@ export class DatasetComponent implements OnInit, OnDestroy {
   /* sets up reactive polling
   */
   beginPolling(): void {
-    let skipNextHarvest = 0;
-    let skipNextWorkflow = 0;
+    let pushPollHarvest = 0;
+    let pushPollWorkflow = 0;
 
     // stream for start-workflow click events
     this.pollingRefresh = new Subject();
     this.pollingRefresh.subscribe(() => {
-      skipNextHarvest++;
-      skipNextWorkflow++;
+      pushPollHarvest++;
+      pushPollWorkflow++;
     });
-
-    const triggerDelay = new Subject<{ subject: Subject<boolean>; wait: number }>();
-    triggerDelay
-      .pipe(
-        delayWhen((val) => {
-          return timer(val.wait);
-        }),
-        tap((val) => val.subject.next(true))
-      )
-      .subscribe();
 
     // poll for harvest data every 5 seconds after last result returned
     // - reset polling when user starts the workflow
@@ -148,21 +140,18 @@ export class DatasetComponent implements OnInit, OnDestroy {
     const loadTriggerHarvest = new BehaviorSubject(true);
 
     this.polledHarvestData = loadTriggerHarvest.pipe(
-      filter(() => {
-        const res = skipNextHarvest === 0;
-        if (!res) {
-          skipNextHarvest--;
-        }
-        return res;
-      }),
-      merge(this.pollingRefresh), // user event comes into stream here
+      merge(this.pollingRefresh),
       switchMap(() => {
         return this.workflows.getPublishedHarvestedData(this.datasetId);
       }),
       tap((_) => {
         triggerDelay.next({
           subject: loadTriggerHarvest,
-          wait: environment.intervalStatusMedium
+          wait: environment.intervalStatusMedium,
+          blockIf: () => pushPollHarvest > 0,
+          blockThen: () => {
+            return pushPollHarvest--;
+          }
         });
       })
     );
@@ -171,19 +160,19 @@ export class DatasetComponent implements OnInit, OnDestroy {
     // - reset polling when user starts the workflow
     const loadTriggerWorkflow = new BehaviorSubject(true);
     this.polledWorkflowData = loadTriggerWorkflow.pipe(
-      filter(() => {
-        const res = skipNextWorkflow === 0;
-        if (!res) {
-          skipNextWorkflow--;
-        }
-        return res;
-      }),
-      merge(this.pollingRefresh), // user event comes into stream here
+      merge(this.pollingRefresh),
       switchMap(() => {
         return this.workflows.getWorkflowForDataset(this.datasetId);
       }),
       tap((_) => {
-        triggerDelay.next({ subject: loadTriggerWorkflow, wait: environment.intervalStatusMedium });
+        triggerDelay.next({
+          subject: loadTriggerWorkflow,
+          wait: environment.intervalStatusMedium,
+          blockIf: () => pushPollWorkflow > 0,
+          blockThen: () => {
+            pushPollWorkflow--;
+          }
+        });
       })
     );
 

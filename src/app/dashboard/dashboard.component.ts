@@ -2,11 +2,12 @@
  */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
-import { delayWhen, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
+import { triggerDelay } from '../_helpers';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import {
   AuthenticationService,
@@ -78,16 +79,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /* - recommnece polling before returning
   */
   getRunningExecutions(): void {
-    const triggerDelay = new Subject<{ subject: Subject<boolean>; wait: number }>();
-    triggerDelay
-      .pipe(
-        delayWhen((val) => {
-          return timer(val.wait);
-        }),
-        tap((val) => val.subject.next(true))
-      )
-      .subscribe();
-
     const loadTriggerRunningExecutions = new BehaviorSubject(true);
 
     const polledRunningExecutions = loadTriggerRunningExecutions.pipe(
