@@ -88,7 +88,6 @@ export class MockDatasetsService {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
-    console.log(`search ${term}`);
     if (this.errorMode) {
       return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error`);
     }

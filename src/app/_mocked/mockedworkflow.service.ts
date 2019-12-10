@@ -581,16 +581,11 @@ export class MockWorkflowService {
   }
 
   getAllExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
-    console.log('getAllExecutionsCollectingPages >> ' + this.errorMode);
     if (this.errorMode) {
       return throwError('mock getAllExecutionsCollectingPages throws error');
     }
     return observableOf(mockWorkflowExecutionResults.results);
   }
-
-  //getAllExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
-  //  return observableOf({ results: mockWorkflowExecutionResults.results, more: false });
-  //}
 
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
     return observableOf({ results: mockWorkflowExecutionResults.results, more: false });
