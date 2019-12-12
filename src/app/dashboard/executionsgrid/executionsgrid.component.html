@@ -34,6 +34,9 @@
   </span>
 </div>
 
+<div *ngIf="maxResultsReached" class="grid-footer warning">
+  {{ 'max-results-reached' | translate }}
+</div>
 <div class="grid-footer">
   <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{ 'loadmore' | translate }}</a
   ><span class="svg-icon-spin" [class.showing]="isLoadingMore"></span>

@@ -21,6 +21,16 @@
   }
 }
 
+.table-grid-footer,
+.grid-footer {
+  &.warning {
+    color: $eu-red;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 2em;
+  }
+}
+
 @media (min-width: $bp-small-3) {
   .time:not(.br) {
     margin-right: 1em;

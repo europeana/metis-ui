@@ -13,7 +13,8 @@ export function paginatedResult<T>(
       const results = ([] as T[]).concat(...resultList.map((r) => r.results));
       const lastResult = resultList[resultList.length - 1];
       const more = lastResult.nextPage >= 0;
-      return { results, more };
+      const maxResultCountReached = lastResult.maxResultCountReached;
+      return { results, more, maxResultCountReached };
     })
   );
 }

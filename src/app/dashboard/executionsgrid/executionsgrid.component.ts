@@ -34,6 +34,7 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   isLoadingMore = false;
   hasMore = false;
   currentPage = 0;
+  maxResultsReached = false;
   overviewParams = '';
 
   pollingRefresh: Subject<boolean>;
@@ -100,7 +101,7 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
     const polledOverviewData = loadTriggerOverview.pipe(
       merge(this.pollingRefresh), // user events comes into the stream here
       switchMap(() => {
-        this.isLoadingMore = true;
+        this.isLoading = true;
         return this.workflows.getCompletedDatasetOverviewsUptoPage(
           this.currentPage,
           this.overviewParams
@@ -119,11 +120,13 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
     ) as Observable<MoreResults<DatasetOverview>>;
 
     this.overviewSubscription = polledOverviewData.subscribe(
-      ({ results, more }) => {
+      ({ results, more, maxResultCountReached }) => {
         this.hasMore = more;
         this.dsOverview = results;
         this.isLoading = false;
         this.isLoadingMore = false;
+        this.maxResultsReached = !!maxResultCountReached;
+        console.error('maxResultCountReached = ' + maxResultCountReached);
       },
       (err: HttpErrorResponse) => {
         this.isLoading = false;

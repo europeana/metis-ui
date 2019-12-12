@@ -88,6 +88,7 @@ export const LANG_EN_TRANS = {
   loadmore: 'Load more',
   log: 'Log',
   mapping: 'Mapping',
+  'max-results-reached': "You've reached the limit of 200 displayed executions",
   mediaservice: 'Process Media',
   metadataformat: 'Metadata format',
   msgbadcredentials: 'Email or password is incorrect, please try again.',

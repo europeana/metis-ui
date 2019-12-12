@@ -45,7 +45,7 @@ export class HistoryComponent implements OnInit {
   hasMore = false;
   report?: Report;
   contentCopied = false;
-
+  maxResultsReached = false;
   lastWorkflowDoneId?: string;
 
   @Input()
@@ -70,7 +70,7 @@ export class HistoryComponent implements OnInit {
     this.workflows
       .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
       .subscribe(
-        ({ results, more }) => {
+        ({ results, more, maxResultCountReached }) => {
           this.allExecutions = [];
 
           results.forEach((execution) => {
@@ -82,8 +82,8 @@ export class HistoryComponent implements OnInit {
               this.allExecutions.push({ execution, pluginExecution });
             });
           });
-
           this.hasMore = more;
+          this.maxResultsReached = !!maxResultCountReached;
           this.lastWorkflowDoneId = results[0] && results[0].id;
         },
         (err: HttpErrorResponse) => {
