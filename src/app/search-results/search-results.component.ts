@@ -4,9 +4,9 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { DatasetSearchView } from '../_models';
-import { AuthenticationService, DatasetsService, DocumentTitleService } from '../_services';
+import { DatasetsService, DocumentTitleService } from '../_services';
 
 @Component({
   selector: 'search-results',
@@ -22,10 +22,8 @@ export class SearchResultsComponent implements OnInit {
   results: DatasetSearchView[];
 
   constructor(
-    private readonly authentication: AuthenticationService,
     private readonly documentTitleService: DocumentTitleService,
     private readonly datasets: DatasetsService,
-    private readonly router: Router,
     private route: ActivatedRoute
   ) {}
 
@@ -58,18 +56,6 @@ export class SearchResultsComponent implements OnInit {
     this.load();
   }
 
-  /** userValidated
-  /* - checks if user is authenticated
-  /* - redirects to signin page if not authenticated
-  */
-  userValidated(): boolean {
-    if (this.authentication.validatedUser()) {
-      return true;
-    }
-    this.router.navigate(['/signin']);
-    return false;
-  }
-
   /** load
   /* - do nothing if there is no searchString variable set
   /* - sets the query variable to the decoded searchString variable
@@ -78,7 +64,7 @@ export class SearchResultsComponent implements OnInit {
   /* - assigns result to results variable
   */
   load(): void {
-    if (this.userValidated() && this.searchString) {
+    if (this.searchString) {
       this.query = decodeURIComponent(this.searchString);
       this.isLoading = true;
 

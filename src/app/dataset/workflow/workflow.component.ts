@@ -9,7 +9,8 @@ import {
   ViewChildren
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { timer } from 'rxjs';
+import { fromEvent, timer } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 
 import { harvestValidator } from '../../_helpers';
 import {
@@ -72,7 +73,6 @@ export class WorkflowComponent implements OnInit {
   gapInSequenceNotification: Notification;
 
   DragTypeEnum = DragType;
-  busy = false;
 
   /** onHeaderSynchronised
   /* - initialises link-checking / orb header
@@ -94,19 +94,11 @@ export class WorkflowComponent implements OnInit {
       }
     }
 
-    window.addEventListener('scroll', () => {
-      if (this.busy) {
-        return;
-      }
-      this.busy = true;
-      this.setHighlightedField(this.inputFields.toArray(), elHeader);
-
-      const highlightTimer = timer(100).subscribe(() => {
+    fromEvent(window, 'scroll')
+      .pipe(throttleTime(100))
+      .subscribe(() => {
         this.setHighlightedField(this.inputFields.toArray(), elHeader);
-        this.busy = false;
-        highlightTimer.unsubscribe();
       });
-    });
   }
 
   /** ngOnInit
@@ -120,21 +112,28 @@ export class WorkflowComponent implements OnInit {
     this.getWorkflow();
     this.formInitialised.emit(this.workflowForm);
 
-    this.newNotification = successNotification(this.translate.instant('workflowsavenew'), {
-      sticky: true
-    });
-    this.saveNotification = successNotification(this.translate.instant('workflowsave'), {
-      sticky: true
-    });
-    this.runningNotification = successNotification(this.translate.instant('workflowrunning'), {
-      sticky: true
-    });
-    this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
-      sticky: true
-    });
-    this.gapInSequenceNotification = successNotification(this.translate.instant('gaperror'), {
-      sticky: true
-    });
+    const notificationConf = { sticky: true };
+
+    this.newNotification = successNotification(
+      this.translate.instant('workflowsavenew'),
+      notificationConf
+    );
+    this.saveNotification = successNotification(
+      this.translate.instant('workflowsave'),
+      notificationConf
+    );
+    this.runningNotification = successNotification(
+      this.translate.instant('workflowrunning'),
+      notificationConf
+    );
+    this.invalidNotification = errorNotification(
+      this.translate.instant('formerror'),
+      notificationConf
+    );
+    this.gapInSequenceNotification = successNotification(
+      this.translate.instant('gaperror'),
+      notificationConf
+    );
   }
 
   /** getViewportScore
@@ -455,7 +454,10 @@ export class WorkflowComponent implements OnInit {
   }
 
   /** formatFormValue
-  /* returns a PluginMetadata object from the parameter and form values
+  /* returns a new PluginMetadata object from the parameter and form values
+  /* @param {PluginType} pt - the value to use for the 'pluginType' field
+  /* @param {ParameterField} params - the vaules to use if found in the form data
+  /* @param {boolean} enabled - the value to use for the 'enabled' field
   */
   formatFormValue(pt: PluginType, params: ParameterField, enabled: boolean): PluginMetadata {
     return Object.assign(
