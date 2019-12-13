@@ -126,7 +126,6 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
         this.isLoading = false;
         this.isLoadingMore = false;
         this.maxResultsReached = !!maxResultCountReached;
-        console.error('maxResultCountReached = ' + maxResultCountReached);
       },
       (err: HttpErrorResponse) => {
         this.isLoading = false;
