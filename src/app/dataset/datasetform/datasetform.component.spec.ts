@@ -71,4 +71,58 @@ describe('DatasetformComponent', () => {
     expect(localStorage.getItem('tempDatasetData')).not.toBe('');
     localStorage.removeItem('tempDatasetData');
   });
+
+  it('should clear the fields', () => {
+    fixture.detectChanges();
+    const fName = 'datasetName';
+    const field = component.datasetForm.controls[fName];
+
+    expect(component.datasetForm.dirty).toBeFalsy();
+    expect(field.value).toBeTruthy();
+
+    component.clearField(fName);
+
+    expect(component.datasetForm.dirty).toBeTruthy();
+    expect(field.value).toBeFalsy();
+  });
+
+  it('should reset', () => {
+    fixture.detectChanges();
+    const fName = 'datasetName';
+    expect(component.datasetForm.pristine).toBeTruthy();
+    component.clearField(fName);
+    expect(component.datasetForm.pristine).toBeFalsy();
+    component.reset();
+    expect(component.datasetForm.pristine).toBeTruthy();
+  });
+
+  it('should generate redirection ids', () => {
+    fixture.detectChanges();
+    expect(component.redirectionIds.length).toBeFalsy();
+    component.datasetData = Object.assign(component.datasetData, { redirectionIds: '[123, 321]' });
+    fixture.detectChanges();
+    component.updateForm();
+    expect(component.redirectionIds.length).toBeTruthy();
+  });
+
+  it('should add redirection ids', () => {
+    fixture.detectChanges();
+    const testId = 'some_id';
+    component.redirectionIds = [];
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.addRedirectionId(testId);
+    expect(component.redirectionIds.length).toBeTruthy();
+    expect(component.datasetForm.dirty).toBeTruthy();
+  });
+
+  it('should remove redirection ids', () => {
+    const testId = 'some_id';
+    fixture.detectChanges();
+    component.redirectionIds = [testId];
+    expect(component.datasetForm.dirty).toBeFalsy();
+    expect(component.redirectionIds.length).toBeTruthy();
+    component.removeRedirectionId(testId);
+    expect(component.redirectionIds.length).toBeFalsy();
+    expect(component.datasetForm.dirty).toBeTruthy();
+  });
 });

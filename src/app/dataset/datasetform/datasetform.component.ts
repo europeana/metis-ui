@@ -30,6 +30,8 @@ export class DatasetformComponent implements OnInit {
 
   @Output() datasetUpdated = new EventEmitter<void>();
 
+  redirectionIds: Array<string> = [];
+
   notification?: Notification;
   selectedCountry?: Country;
   selectedLanguage?: Language;
@@ -85,10 +87,37 @@ export class DatasetformComponent implements OnInit {
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();
-
     this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
       sticky: true
     });
+  }
+
+  /** addRedirectionId
+  /* - handle addition to the datasetData.redirectionIds array
+  /* - creates the datasetData.redirectionIds array if it doesn't exist
+  /* @param {string} add - the item to remove
+  */
+  addRedirectionId(add: string): void {
+    if (this.redirectionIds.indexOf(add) === -1) {
+      this.redirectionIds.push(add);
+      this.datasetForm.patchValue({ redirectionIds: this.redirectionIds.join(',') });
+      this.datasetForm.markAsDirty();
+    }
+  }
+
+  /** removeRedirectionId
+  /* - handle removal from the redirectionIds array
+  /* @param {string} m - the item to remove
+  */
+  removeRedirectionId(rm: string): void {
+    this.redirectionIds.forEach((oldId: string, index) => {
+      if (oldId === rm) {
+        this.redirectionIds.splice(index, 1);
+        console.log('removed ' + oldId + ', arr now ' + JSON.stringify(this.redirectionIds));
+      }
+    });
+    this.datasetForm.patchValue({ redirectionIds: this.redirectionIds.join(',') });
+    this.datasetForm.markAsDirty();
   }
 
   /** showError
@@ -169,6 +198,7 @@ export class DatasetformComponent implements OnInit {
       dataProvider: [''],
       provider: ['', [Validators.required]],
       intermediateProvider: [''],
+      redirectionIds: [''],
       replaces: [''],
       replacedBy: [''],
       country: ['', [Validators.required]],
@@ -186,6 +216,9 @@ export class DatasetformComponent implements OnInit {
   /* sets the form data, country and language
   */
   updateForm(): void {
+    this.redirectionIds = this.datasetData.redirectionIds
+      ? JSON.parse(this.datasetData.redirectionIds)
+      : [];
     this.datasetForm.patchValue(this.datasetData);
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
@@ -223,7 +256,7 @@ export class DatasetformComponent implements OnInit {
     if (!this.datasetForm.valid) {
       return;
     }
-    // declare local error-handler funciton
+    // declare local error-handler function
     const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
@@ -232,6 +265,7 @@ export class DatasetformComponent implements OnInit {
     // clear notification variable
     this.notification = undefined;
     this.isSaving = true;
+
     if (this.isNew) {
       this.datasets.createDataset(this.datasetForm.value).subscribe((result) => {
         localStorage.removeItem(DATASET_TEMP_LSKEY);

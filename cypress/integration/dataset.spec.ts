@@ -48,7 +48,7 @@ context('metis-ui', () => {
     });
 
     it('should show the dataset, general info, status, history', () => {
-      cy.get('.dataset-name').contains('Dataset 1');
+      cy.get('.dataset-name').contains('Dataset_1');
 
       cy.get('.metis-dataset-info-block dd').as('dd');
       cy.get('@dd').contains('Europeana');
@@ -88,7 +88,7 @@ context('metis-ui', () => {
     });
 
     it('should show the fields', () => {
-      checkFormField('Dataset Name', 'Dataset 1');
+      checkFormField('Dataset Name', 'Dataset_1');
       checkFormField('Provider', 'Europeana Provider');
       checkStaticField('Date Created', '19/02/2019 - 08:36');
       checkStaticField('Created by', '123');

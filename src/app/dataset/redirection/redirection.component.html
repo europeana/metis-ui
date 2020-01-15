@@ -1,0 +1,17 @@
+<span class="redirect">
+  <ng-container *ngIf="!redirectionId">
+    <input
+      class="redirect-entry"
+      [ngClass]="{ invalid: flagIdInvalid }"
+      placeholder="Add new"
+      (keyup)="onKeyupRedirect($event)"
+      [(ngModel)]="newIdString"
+    />
+  </ng-container>
+  <ng-container *ngIf="redirectionId">
+    <span class="redirect-label">
+      {{ redirectionId }}
+    </span>
+    <a class="redirect-remove" (click)="remove()"></a>
+  </ng-container>
+</span>

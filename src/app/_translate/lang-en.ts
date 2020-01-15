@@ -127,6 +127,7 @@ export const LANG_EN_TRANS = {
   provider: 'Provider',
   rawxml: 'Raw XML',
   recordxpath: 'Record XPath',
+  redirectsTo: 'Redirects to',
   refresh: 'Refresh',
   register: 'Register to Metis',
   registererror: "Your account doesn't exist or is not ready yet",

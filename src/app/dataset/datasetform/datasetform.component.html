@@ -100,6 +100,19 @@
       </div>
 
       <div class="form-group">
+        <label class="dataset-label">{{ 'redirectsTo' | translate }}</label>
+        <div>
+          <ng-container *ngFor="let rId of redirectionIds">
+            <app-redirection
+              redirectionId="{{ rId }}"
+              (removeRedirectionId)="removeRedirectionId($event)"
+            ></app-redirection>
+          </ng-container>
+          <app-redirection (addRedirectionId)="addRedirectionId($event)"></app-redirection>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label class="dataset-label" for="replaces">{{ 'replaces' | translate }}</label>
         <input id="replaces" formControlName="replaces" (blur)="saveTempData()" />
         <div
