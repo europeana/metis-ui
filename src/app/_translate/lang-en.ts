@@ -7,6 +7,7 @@ export const LANG_EN_NAME = 'en';
 export const LANG_EN_TRANS = {
   accountrole: 'Account role',
   addworkflow: 'Add workflow info',
+  'add-dataset-id': 'Add dataset id',
   all: 'All',
   allexecutions: 'All executions',
   allworkflows: 'All workflows',
@@ -34,6 +35,7 @@ export const LANG_EN_TRANS = {
   datecreated: 'Date Created',
   dataprovider: 'Data Provider',
   dataset: 'Dataset',
+  'dataset-inexistent': 'Dataset ID doesn’t exist',
   datasetinformation: 'Dataset Information',
   datasetname: 'Dataset Name',
   datasetnamevalidator: 'Only a to z (lower and uppercase), numbers and underscores are allowed.',

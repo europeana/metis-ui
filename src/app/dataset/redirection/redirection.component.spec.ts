@@ -4,16 +4,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { DatasetsService } from '../../_services';
-import { MockDatasetsService, MockDatasetsServiceErrors } from '../../_mocked';
+import { createMockPipe, MockDatasetsService, MockDatasetsServiceErrors } from '../../_mocked';
 import { RedirectionComponent } from '.';
 
 describe('RedirectionComponent', () => {
+
   let component: RedirectionComponent;
   let fixture: ComponentFixture<RedirectionComponent>;
 
+  const getKeyEvent = (which: number, shift?: boolean): KeyboardEvent => {
+    return ({ which: which, shiftKey: shift } as unknown) as KeyboardEvent;
+  };
+
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [RedirectionComponent],
+      declarations: [createMockPipe('translate'), RedirectionComponent],
       imports: [FormsModule, RouterTestingModule],
       providers: [
         {
@@ -60,6 +65,25 @@ describe('RedirectionComponent', () => {
       expect(component.removeRedirectionId.emit).toHaveBeenCalledWith(testId);
     });
 
+    it('should ignore arrows, deletes, shift, ', () => {
+      const workingKey = 65; // letter 'a'
+      component.newIdString = 'SomeId';
+      component.flagIdInvalid = true;
+
+      expect(component.flagIdInvalid).toBeTruthy();
+
+      component.ignoredKeys.forEach((ik) => {
+        component.onKeyupRedirect(getKeyEvent(ik));
+        expect(component.flagIdInvalid).toBeTruthy();
+      });
+
+      component.onKeyupRedirect(getKeyEvent(workingKey, true));
+      expect(component.flagIdInvalid).toBeTruthy();
+
+      component.onKeyupRedirect(getKeyEvent(workingKey));
+      expect(component.flagIdInvalid).toBeFalsy();
+    });
+
     it('should submit on enter', () => {
       const enterKey = 13;
       component.redirectionId = '1';
@@ -67,22 +91,30 @@ describe('RedirectionComponent', () => {
       spyOn(component, 'add');
       expect(component.newIdString).toBeFalsy();
 
-      component.onKeyupRedirect(({ which: enterKey } as unknown) as KeyboardEvent);
+      component.onKeyupRedirect(getKeyEvent(enterKey));
+      expect(component.add).not.toHaveBeenCalled();
+
+      component.newIdString = 'ERROR';
+
+      component.onKeyupRedirect(getKeyEvent(enterKey));
       expect(component.add).not.toHaveBeenCalled();
 
       component.newIdString = '123';
 
-      component.onKeyupRedirect(({ which: 48 } as unknown) as KeyboardEvent);
+      component.onKeyupRedirect(getKeyEvent(48));
       expect(component.add).not.toHaveBeenCalled();
 
-      component.onKeyupRedirect(({ which: enterKey } as unknown) as KeyboardEvent);
+      component.onKeyupRedirect(getKeyEvent(enterKey));
       expect(component.add).toHaveBeenCalled();
     });
 
     it('should validate', () => {
       const fnSuccess = jasmine.createSpy();
       component.validate('123', fnSuccess);
-      expect(fnSuccess).toHaveBeenCalled();
+      expect(fnSuccess).toHaveBeenCalledWith(true);
+
+      component.validate('ERROR', fnSuccess);
+      expect(fnSuccess).toHaveBeenCalledWith(false);
     });
   });
 

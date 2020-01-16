@@ -1,6 +1,18 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+.error {
+  color: $eu-red;
+  display: block;
+  left: 0;
+  position: absolute;
+  transform: translateY(-0.5em);
+
+  &.hidden {
+    display: none;
+  }
+}
+
 .redirect {
   border: $gray-dark;
   display: inline-block;
@@ -10,21 +22,21 @@
 
 .redirect input.redirect-entry {
   padding: 0.25em 0.5em;
-  width: 12em;
+  margin-bottom: 0;
+  width: 15em;
 
   &.invalid {
-    border: 1px solid red;
+    border: 1px solid $eu-red;
+    margin-bottom: 1em;
   }
 }
 
-.redirect-addnew,
 .redirect-entry,
 .redirect-label,
 .redirect-remove {
   display: inline-block;
 }
 
-.redirect-addnew,
 .redirect-remove {
   background-repeat: no-repeat;
   height: 2em;
@@ -35,9 +47,6 @@
   width: 1.7em;
 }
 
-.redirect-addnew {
-  background-color: green;
-}
 .redirect-remove {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='32' viewBox='0 0 23 32'%3E%3Cpath fill='%23333' d='M21.71 19.044q.135.189.135.35t-.135.35l-3.421 3.421q-.189.135-.35.135t-.35-.135l-5.953-5.953-5.953 5.953q-.189.135-.35.135t-.35-.135l-3.421-3.421q-.135-.189-.135-.35t.135-.35l5.953-5.953-5.953-5.953q-.135-.189-.135-.35t.135-.35l3.421-3.421q.189-.135.35-.135t.35.135l5.953 5.953 5.953-5.953q.189-.135.35-.135t.35.135l3.421 3.421q.135.189.135.35t-.135.35l-5.953 5.953z'%3E%3C/path%3E%3C/svg%3E");
 }

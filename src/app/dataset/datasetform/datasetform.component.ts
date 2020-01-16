@@ -113,7 +113,6 @@ export class DatasetformComponent implements OnInit {
     this.redirectionIds.forEach((oldId: string, index) => {
       if (oldId === rm) {
         this.redirectionIds.splice(index, 1);
-        console.log('removed ' + oldId + ', arr now ' + JSON.stringify(this.redirectionIds));
       }
     });
     this.datasetForm.patchValue({ redirectionIds: this.redirectionIds.join(',') });
