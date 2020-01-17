@@ -8,7 +8,6 @@ import { createMockPipe, MockDatasetsService, MockDatasetsServiceErrors } from '
 import { RedirectionComponent } from '.';
 
 describe('RedirectionComponent', () => {
-
   let component: RedirectionComponent;
   let fixture: ComponentFixture<RedirectionComponent>;
 

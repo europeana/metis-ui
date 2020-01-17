@@ -47,8 +47,11 @@ context('metis-ui', () => {
       cy.get('.search-form').should('have.length', 1);
     });
 
-    it('should show the dataset, general info, status, history', () => {
+    it('should show the dataset, general info, status, history and redirection ids', () => {
       cy.get('.dataset-name').contains('Dataset_1');
+
+      cy.get('.redirection-ids').contains('0');
+      cy.get('.redirection-ids').contains('1');
 
       cy.get('.metis-dataset-info-block dd').as('dd');
       cy.get('@dd').contains('Europeana');
