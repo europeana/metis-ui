@@ -14,7 +14,7 @@ export interface Dataset {
   datasetId: string;
   ecloudDatasetId: string;
   datasetName: string;
-  redirectionIds?: string;
+  redirectionIds?: Array<string>;
   organizationId: string;
   organizationName: string;
   provider?: string;

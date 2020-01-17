@@ -102,9 +102,9 @@
       <div class="form-group">
         <label class="dataset-label">{{ 'redirectsTo' | translate }}</label>
         <div class="redirection-ids">
-          <ng-container *ngFor="let rId of redirectionIds">
+          <ng-container *ngFor="let ctrl of redirectionIds.controls">
             <app-redirection
-              redirectionId="{{ rId }}"
+              redirectionId="{{ ctrl.value }}"
               (removeRedirectionId)="removeRedirectionId($event)"
             ></app-redirection>
           </ng-container>

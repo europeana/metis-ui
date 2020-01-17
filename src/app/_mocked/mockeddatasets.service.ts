@@ -17,6 +17,7 @@ export const mockDataset: Dataset = {
   organizationId: '1',
   organizationName: 'mockedOrganization',
   provider: 'mockedProvider',
+  redirectionIds: ['123', '321'],
   replacedBy: 'mocked',
   replaces: 'mocked',
   updatedDate: '2018-04-03T07:49:42.275Z',

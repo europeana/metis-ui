@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import {
@@ -29,8 +29,6 @@ export class DatasetformComponent implements OnInit {
   @Input() isNew: boolean;
 
   @Output() datasetUpdated = new EventEmitter<void>();
-
-  redirectionIds: Array<string> = [];
 
   notification?: Notification;
   selectedCountry?: Country;
@@ -92,15 +90,23 @@ export class DatasetformComponent implements OnInit {
     });
   }
 
-  /** addRedirectionId
-  /* - handle addition to the datasetData.redirectionIds array
-  /* - creates the datasetData.redirectionIds array if it doesn't exist
-  /* @param {string} add - the item to remove
+  /** redirectionIds
+  /* - returns form control as array
+  /* - (necessary for template-check to pass)
   */
-  addRedirectionId(add: string): void {
-    if (this.redirectionIds.indexOf(add) === -1) {
-      this.redirectionIds.push(add);
-      this.datasetForm.patchValue({ redirectionIds: this.redirectionIds.join(',') });
+  get redirectionIds(): FormArray {
+    return this.datasetForm.get('redirectionIds') as FormArray;
+  }
+
+  /** addRedirectionId
+  /* - handle addition to the redirectionIds array
+  /* @param {string} val - the item to add
+  */
+  addRedirectionId(val: string): void {
+    const ids = this.redirectionIds;
+    const existingIndex = ids.value.findIndex((id: string) => id === val);
+    if (existingIndex === -1) {
+      ids.push(this.fb.control(val));
       this.datasetForm.markAsDirty();
     }
   }
@@ -109,14 +115,13 @@ export class DatasetformComponent implements OnInit {
   /* - handle removal from the redirectionIds array
   /* @param {string} m - the item to remove
   */
-  removeRedirectionId(rm: string): void {
-    this.redirectionIds.forEach((oldId: string, index) => {
-      if (oldId === rm) {
-        this.redirectionIds.splice(index, 1);
-      }
-    });
-    this.datasetForm.patchValue({ redirectionIds: this.redirectionIds.join(',') });
-    this.datasetForm.markAsDirty();
+  removeRedirectionId(val: string): void {
+    const ids = this.redirectionIds;
+    const existingIndex = ids.value.findIndex((id: string) => id === val);
+    if (existingIndex > -1) {
+      ids.removeAt(existingIndex);
+      this.datasetForm.markAsDirty();
+    }
   }
 
   /** showError
@@ -197,7 +202,7 @@ export class DatasetformComponent implements OnInit {
       dataProvider: [''],
       provider: ['', [Validators.required]],
       intermediateProvider: [''],
-      redirectionIds: [''],
+      redirectionIds: this.getIdsAsFormArray(),
       replaces: [''],
       replacedBy: [''],
       country: ['', [Validators.required]],
@@ -206,19 +211,25 @@ export class DatasetformComponent implements OnInit {
       notes: [''],
       unfitForPublication: ['']
     });
-
     this.updateForm();
     this.updateFormEnabled();
+  }
+
+  getIdsAsFormArray(): FormArray {
+    const list = this.datasetData.redirectionIds
+      ? this.datasetData.redirectionIds.map((id) => {
+          return this.fb.control(id);
+        })
+      : [];
+    return this.fb.array(list);
   }
 
   /** updateForm
   /* sets the form data, country and language
   */
   updateForm(): void {
-    this.redirectionIds = this.datasetData.redirectionIds
-      ? JSON.parse(this.datasetData.redirectionIds)
-      : [];
     this.datasetForm.patchValue(this.datasetData);
+    this.datasetForm.setControl('redirectionIds', this.getIdsAsFormArray());
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
   }

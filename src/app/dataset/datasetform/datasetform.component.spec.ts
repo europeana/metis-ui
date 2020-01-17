@@ -3,7 +3,6 @@ import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import {
   createMockPipe,
   MockCountriesService,
@@ -96,44 +95,25 @@ describe('DatasetformComponent', () => {
     expect(component.datasetForm.pristine).toBeTruthy();
   });
 
-  it('should generate redirection ids', () => {
-    fixture.detectChanges();
-    expect(component.redirectionIds.length).toBeFalsy();
-    component.datasetData = Object.assign(component.datasetData, { redirectionIds: '[123, 321]' });
-    fixture.detectChanges();
-    component.updateForm();
-    expect(component.redirectionIds.length).toBeTruthy();
-  });
-
   it('should add redirection ids', () => {
     fixture.detectChanges();
-    const testId = 'some_id';
-    component.redirectionIds = [];
-    component.addRedirectionId(testId);
-    expect(component.redirectionIds.length).toBeTruthy();
-  });
-
-  it('should not add redirection ids already present', () => {
-    fixture.detectChanges();
-    const testId1 = 'some_id';
-    const testId2 = 'some_other_id';
-    component.redirectionIds = [testId1];
-    expect(component.redirectionIds.length).toBe(1);
-    component.addRedirectionId(testId1);
-    expect(component.redirectionIds.length).toBe(1);
-    component.addRedirectionId(testId2);
-    expect(component.redirectionIds.length).toBe(2);
+    const existingId = '123';
+    const newId = 'some_id';
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.addRedirectionId(existingId);
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.addRedirectionId(newId);
+    expect(component.datasetForm.dirty).toBeTruthy();
   });
 
   it('should remove redirection ids', () => {
     fixture.detectChanges();
-    const testId1 = 'some_id';
-    const testId2 = 'some_other_id';
-    component.redirectionIds = [testId1];
-    expect(component.redirectionIds.length).toBe(1);
-    component.removeRedirectionId(testId2);
-    expect(component.redirectionIds.length).toBe(1);
-    component.removeRedirectionId(testId1);
-    expect(component.redirectionIds.length).toBe(0);
+    const existingId = '123';
+    const newId = 'some_id';
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.removeRedirectionId(newId);
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.removeRedirectionId(existingId);
+    expect(component.datasetForm.dirty).toBeTruthy();
   });
 });

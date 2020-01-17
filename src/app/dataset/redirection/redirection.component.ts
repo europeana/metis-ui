@@ -56,8 +56,7 @@ export class RedirectionComponent {
             this.flagIdInvalid = true;
           }
         });
-      }
-      else{
+      } else {
         this.flagIdInvalid = false;
       }
     }
