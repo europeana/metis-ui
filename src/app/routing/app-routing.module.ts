@@ -9,6 +9,7 @@ import { LoginComponent } from '../login';
 import { PageNotFoundComponent } from '../page-not-found';
 import { ProfileComponent } from '../profile';
 import { RegisterComponent } from '../register';
+import { SearchResultsComponent } from '../search-results';
 
 // if you add a route, make sure to use the DocumentTitleService in the component to set the title
 // see NewDatasetComponent for an example
@@ -31,6 +32,11 @@ const routes: Routes = [
   },
   { path: 'dataset', redirectTo: '/dataset/new', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  {
+    path: 'search',
+    component: SearchResultsComponent,
+    canActivate: [AuthUserGuard]
+  },
   {
     path: 'signin',
     component: LoginComponent,

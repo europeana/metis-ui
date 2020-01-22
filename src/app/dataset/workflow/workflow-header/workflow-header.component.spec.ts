@@ -14,6 +14,22 @@ describe('WorkflowHeaderComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let formGroupConf = {} as any;
 
+  const getEvent = (): { dragDT: DragDT; eventDragDT: EventDragDT } => {
+    const dragDT = ({
+      setData(s: string, v: string): void {
+        console.log(s, v);
+      },
+      setDragImage(el: HTMLElement, left: number, top: number): void {
+        console.log(el, left, top);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any) as DragDT;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const eventDragDT = ({ dataTransfer: dragDT } as any) as EventDragDT;
+    return { dragDT, eventDragDT };
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -165,22 +181,6 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.linkCheckingEnabled()).toBeTruthy();
   });
 
-  function getEvent(): { dragDT: DragDT; eventDragDT: EventDragDT } {
-    const dragDT = ({
-      setData(s: string, v: string): void {
-        console.log(s, v);
-      },
-      setDragImage(el: HTMLElement, left: number, top: number): void {
-        console.log(el, left, top);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any) as DragDT;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const eventDragDT = ({ dataTransfer: dragDT } as any) as EventDragDT;
-    return { dragDT, eventDragDT };
-  }
-
   it('should indicate if a drag event has started on the link-checking element', () => {
     const { dragDT, eventDragDT } = getEvent();
 
@@ -204,6 +204,15 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isDragging).toBeTruthy();
     component.dragEnd();
     expect(component.isDragging).toBeFalsy();
+  });
+
+  it('should handle dragging over orbs', () => {
+    const ev = ({ preventDefault: () => {} } as unknown) as Event;
+    expect(component.isDraggingOverOrbs).toBeFalsy();
+    component.stepsDragOver(ev);
+    expect(component.isDraggingOverOrbs).toBeTruthy();
+    component.stepsDragLeave(ev);
+    expect(component.isDraggingOverOrbs).toBeFalsy();
   });
 
   it('should adjust the index', () => {

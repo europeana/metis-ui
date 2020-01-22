@@ -1,17 +1,19 @@
 import { ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
-import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { BehaviorSubject, of } from 'rxjs';
 import {
   createMockPipe,
   MockDatasetsService,
+  MockDatasetsServiceErrors,
   MockErrorService,
   mockPluginExecution,
-  MockWorkflowService
+  MockWorkflowService,
+  MockWorkflowServiceErrors
 } from '../_mocked';
-import { SimpleReportRequest } from '../_models';
+import { Dataset, NotificationType, SimpleReportRequest, WorkflowExecution } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
 import { DatasetComponent } from '.';
@@ -20,126 +22,331 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
 describe('DatasetComponent', () => {
   let component: DatasetComponent;
+  let datasets: DatasetsService;
   let fixture: ComponentFixture<DatasetComponent>;
+  let params: BehaviorSubject<Params>;
+  let router: Router;
   let workflows: WorkflowService;
+  const interval = 5000;
 
-  beforeEach(async(() => {
+  const configureTestbed = (errorMode = false): void => {
+    params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
+
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
-        { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: WorkflowService, useClass: MockWorkflowService },
+        {
+          provide: ActivatedRoute,
+          useValue: { params: params }
+        },
+        {
+          provide: DatasetsService,
+          useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
+        },
+        {
+          provide: WorkflowService,
+          useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
+        },
         { provide: ErrorService, useClass: MockErrorService }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
+    datasets = TestBed.get(DatasetsService);
+    router = TestBed.get(Router);
+    workflows = TestBed.get(WorkflowService);
+  };
+
+  const b4Each = (): void => {
     fixture = TestBed.createComponent(DatasetComponent);
     component = fixture.componentInstance;
-    workflows = TestBed.get(WorkflowService);
+  };
+
+  describe('Normal operation', () => {
+    beforeEach(async(configureTestbed));
+    beforeEach(b4Each);
+
+    it('responds to form initialisation by setting it in the header', () => {
+      component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
+      const mockHeader = new WorkflowHeaderComponent();
+      mockHeader.elRef = { nativeElement: {} } as ElementRef;
+      component.workflowHeaderRef = mockHeader;
+      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
+      component.formInitialised({} as FormGroup);
+      expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
+    });
+
+    it('responds to form initialisation by setting it in the header using delays ', fakeAsync(() => {
+      component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
+      const mockHeader = new WorkflowHeaderComponent();
+      spyOn(component.workflowFormRef, 'onHeaderSynchronised');
+      component.formInitialised({} as FormGroup);
+      expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
+      mockHeader.elRef = { nativeElement: {} } as ElementRef;
+      component.workflowHeaderRef = mockHeader;
+      expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
+      tick(50);
+      expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
+    }));
+
+    it('should call setLinkCheck on its workflowFormRef', () => {
+      const spy = jasmine.createSpy();
+      component.workflowFormRef = ({ setLinkCheck: spy } as unknown) as WorkflowComponent;
+      component.setLinkCheck(1);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should get dataset info', () => {
+      expect(component.lastExecutionSubscription).toBeFalsy();
+      component.beginPolling();
+      component.loadData();
+      fixture.detectChanges();
+      expect(component.lastExecutionSubscription).toBeTruthy();
+      expect(component.lastExecutionSubscription.closed).toBe(false);
+    });
+
+    it('should set isStarting to false if the workflow is completed', () => {
+      component.isStarting = true;
+      component.processLastExecutionData({} as WorkflowExecution);
+      expect(component.isStarting).toBe(false);
+    });
+
+    it('should switch tabs', () => {
+      ['edit', 'log', 'mapping', 'preview', 'workflow'].forEach((tabName) => {
+        params.next({ tab: tabName, id: '123' } as Params);
+        fixture.detectChanges();
+        expect(component.activeTab).toEqual(tabName);
+      });
+    });
+
+    it('should redirect new datasets', () => {
+      spyOn(router, 'navigate');
+      params.next({ tab: 'new' } as Params);
+      fixture.detectChanges();
+      expect(router.navigate).toHaveBeenCalled();
+    });
+
+    it('should be possible to display a message', () => {
+      component.showPluginLog = mockPluginExecution;
+      fixture.detectChanges();
+      expect(component.showPluginLog).toBe(mockPluginExecution);
+    });
+
+    it('should set a report from a message request', fakeAsync(() => {
+      expect(component.reportMsg).toBeFalsy();
+      expect(component.reportMsg).toBeFalsy();
+
+      const srrM = {
+        message: 'message'
+      } as SimpleReportRequest;
+
+      component.setReportMsg(srrM);
+      tick();
+
+      expect(component.reportErrors).toBeFalsy();
+      expect(component.reportMsg).toBeTruthy();
+    }));
+
+    it('should set a report from task data', fakeAsync(() => {
+      expect(component.reportMsg).toBeFalsy();
+      expect(component.reportMsg).toBeFalsy();
+
+      const srrE = {
+        topology: 'http_harvest',
+        taskId: 'taskId'
+      } as SimpleReportRequest;
+
+      component.setReportMsg(srrE);
+      tick();
+      expect(component.reportErrors).toBeTruthy();
+      expect(component.reportMsg).toBeFalsy();
+    }));
+
+    it('should handle an empty report', fakeAsync(() => {
+      spyOn(workflows, 'getReport').and.callFake(() => {
+        return of({
+          id: 123,
+          errors: []
+        });
+      });
+      expect(component.reportMsg).toBeFalsy();
+
+      const srrE = {
+        topology: 'http_harvest',
+        taskId: 'taskId'
+      } as SimpleReportRequest;
+
+      component.setReportMsg(srrE);
+      tick();
+      expect(component.reportMsg).toEqual('Report is empty.');
+    }));
+
+    it('should clear the report message', () => {
+      expect(component.reportMsg).toBeFalsy();
+      component.setReportMsg({
+        message: 'message'
+      } as SimpleReportRequest);
+      expect(component.reportMsg).toBeTruthy();
+      component.clearReport();
+      expect(component.reportMsg).toBeFalsy();
+    });
+
+    it('should start a workflow', fakeAsync(() => {
+      spyOn(workflows, 'startWorkflow').and.callThrough();
+      spyOn(window, 'scrollTo');
+
+      component.beginPolling();
+      component.loadData();
+      component.datasetId = '65';
+      component.startWorkflow();
+      tick();
+      expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
+      expect(window.scrollTo).toHaveBeenCalled();
+      component.unsubscribe([
+        component.harvestSubscription,
+        component.workflowSubscription,
+        component.lastExecutionSubscription
+      ]);
+      tick(interval);
+    }));
+
+    it('should update data periodically and allow polling resets', fakeAsync(() => {
+      spyOn(workflows, 'getPublishedHarvestedData').and.callThrough();
+      spyOn(workflows, 'getWorkflowForDataset').and.callThrough();
+
+      component.beginPolling();
+      component.loadData();
+
+      [1, 2, 3, 4, 5].forEach((index) => {
+        expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(index);
+        expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(index);
+        tick(interval);
+      });
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(6);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(6);
+      component.startWorkflow();
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
+
+      tick(interval - 1);
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
+      tick(1);
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(8);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(8);
+
+      // it shouldn't drain the event queue when hammered
+      component.startWorkflow();
+      tick();
+      component.startWorkflow();
+      tick();
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(10);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(10);
+
+      tick(interval);
+      tick(interval);
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(12);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(12);
+
+      tick(interval);
+
+      expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(13);
+      expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(13);
+
+      component.unsubscribe([
+        component.harvestSubscription,
+        component.workflowSubscription,
+        component.lastExecutionSubscription
+      ]);
+      tick(interval);
+    }));
+
+    it('should put the datasetName in the document title', () => {
+      fixture.detectChanges();
+      expect(document.title).toContain('mockedName');
+      expect(document.title).not.toContain('x');
+
+      spyOn(datasets, 'getDataset').and.callFake(() => {
+        return of({ datasetName: 'x' } as Dataset);
+      });
+
+      component.loadData();
+      fixture.detectChanges();
+      expect(document.title).not.toContain('mockedName');
+      expect(document.title).toContain('x');
+    });
+
+    it('should provide a default document title', () => {
+      fixture.detectChanges();
+      expect(document.title).toContain('mockedName');
+
+      spyOn(datasets, 'getDataset').and.callFake(() => {
+        return of({} as Dataset);
+      });
+      component.loadData();
+      fixture.detectChanges();
+      expect(document.title).toContain('Dataset');
+    });
+
+    it('should return to the top', () => {
+      const mockFn = jasmine.createSpy();
+      const el = ({ scrollIntoView: mockFn } as unknown) as Element;
+      component.scrollToTopAnchor = { nativeElement: el } as ElementRef;
+      component.returnToTop();
+      expect(mockFn).toHaveBeenCalled();
+    });
   });
 
-  it('responds to form initialisation by setting it in the header', () => {
-    component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
-    const mockHeader = new WorkflowHeaderComponent();
-    mockHeader.elRef = { nativeElement: {} } as ElementRef;
-    component.workflowHeaderRef = mockHeader;
-    spyOn(component.workflowFormRef, 'onHeaderSynchronised');
-    component.formInitialised({} as FormGroup);
-    expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
-  });
+  describe('Error handling', () => {
+    beforeEach(async(() => {
+      configureTestbed(true);
+    }));
+    beforeEach(b4Each);
 
-  it('should get dataset info', () => {
-    component.loadData();
-    fixture.detectChanges();
-    expect(component.lastExecutionSubscription.closed).toBe(false);
-  });
+    it('should handle load errors', fakeAsync(() => {
+      component.lastExecutionIsLoading = true;
+      component.lastExecutionIsLoading = true;
 
-  it('should switch tabs', () => {
-    fixture.detectChanges();
+      expect(component.notification).toBeFalsy();
+      component.beginPolling();
+      component.loadData();
+      tick();
 
-    component.activeTab = 'edit';
-    component.datasetIsLoading = false;
-    component.workflowIsLoading = false;
-    component.lastExecutionIsLoading = false;
-    component.harvestIsLoading = false;
+      expect(component.notification).toBeTruthy();
+      expect(component.notification!.type).toBe(NotificationType.ERROR);
+      expect(component.lastExecutionIsLoading).toBeFalsy();
+      expect(component.lastExecutionData).toBeFalsy();
+      expect(component.lastExecutionIsLoading).toBeFalsy();
 
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
+      component.unsubscribe([
+        component.harvestSubscription,
+        component.workflowSubscription,
+        component.lastExecutionSubscription
+      ]);
+      tick(interval);
+    }));
 
-    component.activeTab = 'workflow';
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
+    it('should handle setReportMsg errors', fakeAsync(() => {
+      expect(component.notification).toBeFalsy();
+      component.reportLoading = true;
+      component.setReportMsg({ taskId: '123', topology: 'enrichment' });
+      tick();
+      expect(component.notification).toBeTruthy();
+      expect(component.notification!.type).toBe(NotificationType.ERROR);
+      expect(component.reportLoading).toBeFalsy();
+    }));
 
-    component.activeTab = 'mapping';
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
-    component.activeTab = 'preview';
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-
-    component.activeTab = 'log';
-    fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('.tabs .active')).length).toBeTruthy();
-  });
-
-  it('should be possible to display a message', () => {
-    component.showPluginLog = mockPluginExecution;
-    fixture.detectChanges();
-    expect(component.showPluginLog).toBe(mockPluginExecution);
-  });
-
-  it('should set a report message', () => {
-    expect(component.reportMsg).toBeFalsy();
-
-    const srrM = {
-      message: 'message'
-    } as SimpleReportRequest;
-
-    const srrE = {
-      topology: 'http_harvest',
-      taskId: 'taskId'
-    } as SimpleReportRequest;
-
-    component.setReportMsg(srrE);
-    expect(component.reportMsg).toBeFalsy();
-
-    component.setReportMsg(srrM);
-    expect(component.reportMsg).toBeTruthy();
-  });
-
-  it('should clear the report message', () => {
-    expect(component.reportMsg).toBeFalsy();
-    component.setReportMsg({
-      message: 'message'
-    } as SimpleReportRequest);
-    expect(component.reportMsg).toBeTruthy();
-    component.clearReport();
-    expect(component.reportMsg).toBeFalsy();
-  });
-
-  it('should toggle isFavorite', () => {
-    expect(component.isFavorite).toBeFalsy();
-    component.toggleFavorite();
-    expect(component.isFavorite).toBeTruthy();
-    component.toggleFavorite();
-    expect(component.isFavorite).toBeFalsy();
-  });
-
-  it('should start a workflow', () => {
-    spyOn(workflows, 'startWorkflow').and.callThrough();
-    component.datasetId = '65';
-    component.startWorkflow();
-    expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
-  });
-
-  it('should update data', () => {
-    spyOn(component, 'loadData');
-    component.datasetUpdated();
-    expect(component.loadData).toHaveBeenCalled();
+    it('should handle startWorkflow errors', fakeAsync(() => {
+      spyOn(window, 'scrollTo');
+      expect(component.notification).toBeFalsy();
+      component.startWorkflow();
+      tick();
+      expect(component.notification).toBeTruthy();
+      expect(component.notification!.type).toBe(NotificationType.ERROR);
+      expect(window.scrollTo).toHaveBeenCalled();
+    }));
   });
 });

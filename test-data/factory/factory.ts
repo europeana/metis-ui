@@ -25,9 +25,10 @@ import {
 
 import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
 import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
-import { Workflow } from '../../src/app/_models/workflow';
+import { DatasetSearchView, Workflow } from '../../src/app/_models';
 
 let baseDate = new Date('2019-02-18T07:36:59.801Z');
+const pageSize = 2;
 
 const fullSequenceTypesOAIPMH = Object.values(PluginType).filter((pType: PluginType) => {
   return pType !== PluginType.HTTP_HARVEST;
@@ -258,12 +259,21 @@ function updateHarvestData(info: HarvestData, pe: PluginExecution): void {
 /** getListResultWrapper
 /* returns a ResultList from the supplied array
 /* @param {array} list - optional
+/* @param {boolean} fromZero - optional - include results from zero
+/* @param {number} page - optional- the page to return
 */
-function getListWrapper(list?: Array<Object>, nextPage?: boolean): ResultList {
+function getListWrapper(
+  list: Array<Object> = [],
+  fromZero: boolean = false,
+  page: number = 0
+): ResultList {
+  const sliceIndex = page * pageSize;
+  const results = list.slice(fromZero ? 0 : sliceIndex, sliceIndex + pageSize);
+  const more = list && list.length > (page + 1) * pageSize;
   return {
-    results: list ? list : [],
-    listSize: list ? list.length : 0,
-    nextPage: nextPage ? 0 : -1
+    results: results,
+    listSize: results.length,
+    nextPage: more ? 0 : -1
   };
 }
 
@@ -469,8 +479,8 @@ function generateDatasetExecutionProgress(
 }
 
 function getMostRecentExecutionByDatasetId(datasetId: string): Array<WorkflowExecution> {
-  let mostRecentExec = [dataset(datasetId)].map((datsetX: DatasetX | undefined) => {
-    let w = datsetX && datsetX.workflows ? datsetX.workflows.slice(0, 1)[0] : undefined;
+  let mostRecentExec = [dataset(datasetId)].map((datasetX: DatasetX | undefined) => {
+    let w = datasetX && datasetX.workflows ? datasetX.workflows.slice(0, 1)[0] : undefined;
     return w ? w.executions : [];
   });
 
@@ -485,18 +495,18 @@ function getMostRecentExecutionByDatasetId(datasetId: string): Array<WorkflowExe
 
 /** generate data / export query functions
  */
-const datsetXs = generateDatasetX();
+const datasetXs = generateDatasetX();
 
-export function overview(): ResultList {
+export function overview(page: number = 0): ResultList {
   let res: Array<DatasetOverview> = [];
 
-  datsetXs.forEach((datsetX) => {
-    if (datsetX && datsetX.workflows) {
-      datsetX.workflows.forEach((w: WorkflowX) => {
+  datasetXs.forEach((datasetX) => {
+    if (datasetX && datasetX.workflows) {
+      datasetX.workflows.forEach((w: WorkflowX) => {
         if (w.executions) {
           w.executions.forEach((we: WorkflowExecution) => {
             res.push({
-              dataset: datsetX,
+              dataset: datasetX,
               executionProgress: generateDatasetExecutionProgress(we.metisPlugins),
               execution: overviewExecutionFromExecution(we)
             } as DatasetOverview);
@@ -505,13 +515,13 @@ export function overview(): ResultList {
       });
     }
   });
-
-  return getListWrapper(res, true);
+  // page parameter based on 1 in this case so deduct 1
+  return getListWrapper(res, true, page > 0 ? page - 1 : page);
 }
 
 export function dataset(datasetId: string): DatasetX | undefined {
-  let matchingDatasets = datsetXs.filter((datsetX: DatasetX) => {
-    return datsetX.datasetId === datasetId;
+  let matchingDatasets = datasetXs.filter((datasetX: DatasetX) => {
+    return datasetX.datasetId === datasetId;
   });
 
   if (matchingDatasets.length > 0) {
@@ -520,12 +530,12 @@ export function dataset(datasetId: string): DatasetX | undefined {
   return undefined;
 }
 
-export function running(): ResultList {
+export function running(page: number = 0): ResultList {
   let res: Array<WorkflowExecution> = [];
 
-  datsetXs.forEach((datsetX) => {
-    if (datsetX.workflows) {
-      datsetX.workflows.forEach((wx: WorkflowX) => {
+  datasetXs.forEach((datasetX) => {
+    if (datasetX.workflows) {
+      datasetX.workflows.forEach((wx: WorkflowX) => {
         if (wx.executions) {
           wx.executions.forEach((we: WorkflowExecution) => {
             let hasRuning = false;
@@ -542,7 +552,7 @@ export function running(): ResultList {
       });
     }
   });
-  return getListWrapper(res);
+  return getListWrapper(res, false, page);
 }
 
 /** executionsHistory
@@ -554,9 +564,9 @@ export function executionsHistory(
 ): { executions: Array<WorkflowExecutionHistory> } {
   let res: Array<WorkflowExecutionHistory> = [];
 
-  [dataset(datasetId)].forEach((datsetX: DatasetX | undefined) => {
-    if (datsetX && datsetX.workflows) {
-      datsetX.workflows.forEach((w) => {
+  [dataset(datasetId)].forEach((datasetX: DatasetX | undefined) => {
+    if (datasetX && datasetX.workflows) {
+      datasetX.workflows.forEach((w) => {
         if (w && w.executions) {
           w.executions.forEach((e) => {
             res.push({
@@ -574,9 +584,9 @@ export function executionsHistory(
 export function pluginsAvailable(executionId: string): PluginAvailabilityList {
   let res: PluginAvailabilityList = { plugins: [] };
 
-  datsetXs.forEach((datsetX: DatasetX) => {
-    if (datsetX && datsetX.workflows) {
-      datsetX.workflows.forEach((w) => {
+  datasetXs.forEach((datasetX: DatasetX) => {
+    if (datasetX && datasetX.workflows) {
+      datasetX.workflows.forEach((w) => {
         if (w && w.executions) {
           w.executions.forEach((we: WorkflowExecution) => {
             if (we && we.id === executionId) {
@@ -595,12 +605,13 @@ export function pluginsAvailable(executionId: string): PluginAvailabilityList {
   return res;
 }
 
-/** executionsByDatasetId
+/** executionsByDatasetIdAsList
 /* @param {string} datasetId
+/* @param {number} page
 /* return dataset's executions
 */
-export function executionsByDatasetIdAsList(datasetId: string): ResultList {
-  return getListWrapper(getMostRecentExecutionByDatasetId(datasetId));
+export function executionsByDatasetIdAsList(datasetId: string, page: number = 0): ResultList {
+  return getListWrapper(getMostRecentExecutionByDatasetId(datasetId), true, page);
 }
 
 /** information
@@ -629,6 +640,30 @@ export function information(informationId?: string): HarvestData {
       lastHarvestedRecords: 0
     } as HarvestData;
   }
+}
+
+/** search
+/* return ResultList of DatasetSearchView
+/* @param {string} term - the search term
+/* @param {page} term - the page
+*/
+export function search(term: string, page: number = 0): ResultList {
+  const allResults = datasetXs
+    .filter((datasetX: DatasetX) => {
+      return datasetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase());
+    })
+    .map((datasetX: DatasetX) => {
+      let lastExec = datasetX.workflows![0]!.executions![0]!.finishedDate;
+
+      return {
+        datasetId: datasetX.datasetId,
+        datasetName: datasetX.datasetName,
+        provider: datasetX.provider,
+        dataProvider: datasetX.dataProvider,
+        lastExecutionDate: lastExec ? lastExec : ''
+      } as DatasetSearchView;
+    });
+  return getListWrapper(allResults, false, page);
 }
 
 // localhost:3000/orchestrator/workflows/0

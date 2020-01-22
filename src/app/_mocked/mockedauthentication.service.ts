@@ -1,4 +1,4 @@
-import { Observable, of as observableOf } from 'rxjs';
+import { Observable, of as observableOf, throwError } from 'rxjs';
 
 import { AccountRole, User } from '../_models';
 
@@ -18,11 +18,26 @@ export const mockUser: User = {
   userId: '1'
 };
 
+export class MockRedirectPreviousUrl {
+  url = '';
+  set(url: string): void {
+    this.url = url;
+  }
+  get(): string {
+    return this.url;
+  }
+}
+
 export class MockAuthenticationService {
   currentUser = mockUser;
+  loggedIn = true;
+
+  isNumber = (val: string): boolean => {
+    return `${parseInt(val)}` === val;
+  };
 
   validatedUser(): boolean {
-    return true;
+    return this.loggedIn;
   }
 
   reloadCurrentUser(): Observable<boolean> {
@@ -33,12 +48,20 @@ export class MockAuthenticationService {
     return observableOf(true);
   }
 
-  login(): Observable<boolean> {
-    return observableOf(true);
+  login(_: string, password: string): Observable<boolean> {
+    if (this.isNumber(password)) {
+      return throwError({
+        status: parseInt(password),
+        error: { errorMessage: 'Mock Authentication Error' }
+      });
+    }
+    this.loggedIn = password !== 'error';
+    return observableOf(this.loggedIn);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  logout(): void {}
+  logout(): void {
+    this.loggedIn = false;
+  }
 
   register(): Observable<boolean> {
     return observableOf(true);

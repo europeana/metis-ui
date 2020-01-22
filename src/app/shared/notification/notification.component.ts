@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
-
+import { timer } from 'rxjs';
 import { Notification } from '../../_models';
 
 @Component({
@@ -9,26 +9,25 @@ import { Notification } from '../../_models';
 })
 export class NotificationComponent implements OnDestroy {
   @Input() variant = 'medium';
-
   @Output() closed = new EventEmitter<void>();
 
   private _notification?: Notification;
-  private timeout: number;
-
   hidden = false;
 
   @Input() set notification(value: Notification | undefined) {
     this._notification = value;
-
     this.reset();
     if (value && value.fadeTime) {
-      this.timeout = window.setTimeout(() => {
+      // the css transition time
+      const transitionDuration = 400;
+      const timer1 = timer(value.fadeTime).subscribe(() => {
         this.hidden = true;
-        this.timeout = window.setTimeout(() => {
+        const timer2 = timer(transitionDuration).subscribe(() => {
+          timer2.unsubscribe();
           this.closed.emit();
-          this.reset();
-        }, 400); // this is the transition time from the component scss
-      }, value.fadeTime);
+        });
+        timer1.unsubscribe();
+      });
     }
   }
 
@@ -40,11 +39,9 @@ export class NotificationComponent implements OnDestroy {
   }
 
   /** reset
-  /* - clear the timeout
-  *  - set hidden variable to false
-  */
+   *  - set hidden variable to false
+   */
   reset(): void {
-    clearTimeout(this.timeout);
     this.hidden = false;
   }
 

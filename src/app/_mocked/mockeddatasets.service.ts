@@ -1,6 +1,5 @@
-import { Observable, of as observableOf } from 'rxjs';
-
-import { Dataset, XmlSample } from '../_models';
+import { Observable, of as observableOf, throwError } from 'rxjs';
+import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
 
 export const mockDataset: Dataset = {
   country: { enum: 'CHINA', name: 'China', isoCode: 'CN' },
@@ -43,12 +42,34 @@ const mockXmlSamples: XmlSample[] = [
   }
 ];
 
+const mockSearchResults: DatasetSearchView[] = [
+  {
+    datasetId: '123',
+    datasetName: 'Dataset_123',
+    provider: 'Test Provider',
+    dataProvider: 'Test Data Provider',
+    lastExecutionDate: '2018-04-03T07:49:42.275Z'
+  },
+  {
+    datasetId: '321',
+    datasetName: 'Dataset_321',
+    provider: 'Test Provider',
+    dataProvider: 'Test Data Provider',
+    lastExecutionDate: '2018-05-03T07:49:42.275Z'
+  }
+];
+
 export class MockDatasetsService {
+  errorMode = false;
+
   getXSLT(): Observable<string> {
     return observableOf(mockXslt);
   }
 
   getDataset(): Observable<Dataset> {
+    if (this.errorMode) {
+      return throwError('mock getDataset throws error...');
+    }
     return observableOf(mockDataset);
   }
 
@@ -65,19 +86,15 @@ export class MockDatasetsService {
     return observableOf(mockXmlSamples);
   }
 
-  isFavorite(): boolean {
-    return false;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
+    if (this.errorMode) {
+      return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error`);
+    }
+    return observableOf({ results: mockSearchResults, more: false });
   }
+}
 
-  addFavorite(dataset: Dataset): void {
-    console.log(`addFavorite ${dataset}`);
-  }
-
-  removeFavorite(dataset: Dataset): void {
-    console.log(`removeFavorite ${dataset}`);
-  }
-
-  getFavorites(): Observable<Dataset[]> {
-    return observableOf([mockDataset]);
-  }
+export class MockDatasetsServiceErrors extends MockDatasetsService {
+  errorMode = true;
 }

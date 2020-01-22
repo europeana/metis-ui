@@ -2,12 +2,15 @@
  */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
-import { Dataset, getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
+
+import { triggerDelay } from '../_helpers';
+import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import {
   AuthenticationService,
-  DatasetsService,
   DocumentTitleService,
   ErrorService,
   WorkflowService
@@ -20,17 +23,15 @@ import {
 export class DashboardComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  runningTimer?: number;
+  polledRunningData: Subscription;
   runningIsLoading = true;
   runningIsFirstLoading = true;
 
   selectedExecutionDsId?: string;
   showPluginLog?: PluginExecution;
-  favoriteDatasets?: Dataset[];
 
   constructor(
     private readonly authentication: AuthenticationService,
-    private readonly datasets: DatasetsService,
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
@@ -43,25 +44,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dashboard');
-
     this.getRunningExecutions();
-    this.datasets.getFavorites().subscribe((datasets) => {
-      datasets.reverse();
-      this.favoriteDatasets = datasets;
-    });
 
-    const user = this.authentication.getCurrentUser();
-    if (user) {
-      this.userName = user.firstName;
-    }
+    const user = Object.assign({ userName: '' }, this.authentication.getCurrentUser());
+    this.userName = user.firstName;
   }
 
   /** ngOnDestroy
   /* clear the timeout
   */
   ngOnDestroy(): void {
-    clearTimeout(this.runningTimer);
-    this.runningTimer = undefined;
+    this.polledRunningData.unsubscribe();
   }
 
   /** checkUpdateLog
@@ -70,12 +63,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   checkUpdateLog(executions: WorkflowExecution[]): void {
     if (this.showPluginLog) {
       const showingId = this.showPluginLog.externalTaskId;
-      executions.forEach((execution) => {
-        const plugin = execution.metisPlugins.find((p) => p.externalTaskId === showingId);
-        if (plugin) {
+      executions
+        .filter((execution) => {
+          return execution.metisPlugins.find((p) => p.externalTaskId === showingId);
+        })
+        .forEach((execution) => {
           this.showPluginLog = getCurrentPlugin(execution);
-        }
-      });
+        });
     }
   }
 
@@ -85,18 +79,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /* - recommnece polling before returning
   */
   getRunningExecutions(): void {
-    this.runningIsLoading = true;
-    this.workflows.getAllExecutionsCollectingPages(true).subscribe(
+    const loadTriggerRunningExecutions = new BehaviorSubject(true);
+
+    const polledRunningExecutions = loadTriggerRunningExecutions.pipe(
+      switchMap(() => {
+        return this.workflows.getAllExecutionsCollectingPages(true);
+      }),
+      tap(() => {
+        triggerDelay.next({
+          subject: loadTriggerRunningExecutions,
+          wait: environment.intervalStatus
+        });
+      })
+    ) as Observable<WorkflowExecution[]>;
+
+    this.polledRunningData = polledRunningExecutions.subscribe(
       (executions) => {
         this.runningExecutions = executions;
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
-
         this.checkUpdateLog(executions);
-
-        this.runningTimer = window.setTimeout(() => {
-          this.getRunningExecutions();
-        }, environment.intervalStatus);
       },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);

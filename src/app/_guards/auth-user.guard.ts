@@ -24,7 +24,11 @@ export class AuthUserGuard implements CanActivate {
     }
 
     // save original url to be redirected to after signin
-    this.redirectPreviousUrl.set(this.document.location.href.split('/')[3]);
+    const prevUrl = this.document.location.href
+      .split('/')
+      .slice(3)
+      .join('/');
+    this.redirectPreviousUrl.set(prevUrl);
 
     // not logged in so redirect to signin page
     this.router.navigate(['/signin']);

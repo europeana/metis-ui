@@ -114,7 +114,7 @@
         [datasetData]="datasetData"
         [harvestPublicationData]="harvestPublicationData"
         [isNew]="false"
-        (datasetUpdated)="datasetUpdated()"
+        (datasetUpdated)="loadData()"
       ></app-datasetform>
       <app-workflow
         *ngIf="activeTab === 'workflow'"

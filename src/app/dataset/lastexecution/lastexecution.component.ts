@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-import { copyExecutionAndTaskId, statusClassFromPlugin } from '../../_helpers';
+import { statusClassFromPlugin } from '../../_helpers';
 import {
   getCurrentPlugin,
   isWorkflowCompleted,
@@ -49,24 +48,10 @@ export class LastExecutionComponent {
     this.setReportMsg.emit(req);
   }
 
-  /** copyInformation
-  /* copy the execution and task id to the clipboard
-  */
-  copyInformation(type: string, id1: string, id2: string): void {
-    copyExecutionAndTaskId(type, id1, id2);
-  }
-
   /** getPluginStatusClass
   /* calculate which css class to use
   */
   getPluginStatusClass(plugin: PluginExecution): string {
     return statusClassFromPlugin(plugin, this.currentPlugin);
-  }
-
-  /** byId
-  /* retrieve plugin execution by id
-  */
-  byId(_: number, item: PluginExecution): string {
-    return item.id;
   }
 }

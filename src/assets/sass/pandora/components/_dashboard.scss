@@ -61,14 +61,19 @@ $space-overflow-selected: 0.25em;
   text-transform: capitalize;
 }
 
+.search-results-grid,
 .ongoing-executions,
 .executions-grid {
   background: $white;
   color: $gray-light;
   font-size: 0.8125rem;
+  overflow: hidden;
+}
+
+.ongoing-executions,
+.executions-grid {
   margin-bottom: 2em;
   margin-right: -0.5em;
-  overflow: hidden;
 }
 
 .row-divider {

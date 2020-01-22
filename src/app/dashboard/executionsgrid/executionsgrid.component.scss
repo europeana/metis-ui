@@ -17,16 +17,6 @@
   }
 }
 
-.grid-footer {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  .svg-icon-spin {
-    margin-left: 0.25em;
-    transform: scale(0.7);
-  }
-}
-
 .load-more-btn::after {
   top: -0.25em;
 }

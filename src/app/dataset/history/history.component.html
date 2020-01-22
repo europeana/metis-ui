@@ -51,6 +51,10 @@
     </ng-container>
   </ng-container>
 
+  <span *ngIf="maxResultsReached" class="table-grid-footer warning">
+    {{ 'max-results-reached' | translate }}
+  </span>
+
   <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">
     <a class="load-more-btn">{{ 'loadmore' | translate }}</a>
   </span>

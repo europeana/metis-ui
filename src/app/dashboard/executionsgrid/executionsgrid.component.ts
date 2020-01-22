@@ -13,9 +13,11 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { DatasetOverview } from '../../_models';
+import { triggerDelay } from '../../_helpers';
+import { DatasetOverview, MoreResults } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 import { GridrowComponent } from './gridrow';
@@ -27,13 +29,16 @@ import { GridrowComponent } from './gridrow';
 })
 export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   dsOverview: DatasetOverview[];
-  finishedTimer: number;
   selectedDsId = '';
   isLoading = true;
   isLoadingMore = false;
   hasMore = false;
   currentPage = 0;
-  overviewParams: string;
+  maxResultsReached = false;
+  overviewParams = '';
+
+  pollingRefresh: Subject<boolean>;
+  overviewSubscription: Subscription;
 
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
@@ -41,70 +46,100 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   constructor(private readonly workflows: WorkflowService, private readonly errors: ErrorService) {}
 
   /** ngAfterViewInit
-  /* load the data
+  /* begin the data-polling the data
   */
   ngAfterViewInit(): void {
-    this.load();
+    this.beginPolling();
   }
 
   /** ngOnDestroy
-  /* clear the timer
+  /* unsubscribe from timer
   */
   ngOnDestroy(): void {
-    clearTimeout(this.finishedTimer);
+    this.overviewSubscription.unsubscribe();
   }
 
   /** setOverviewParams
-  /* - clear the timer
-  *  - set the parameter string
-  *  - re-initiate the load
+  /* - unsubscribe from timer
+  /*  - set the parameter string
+  /*  - refresh the polling
+  /* @param {string} overviewParams - parameters as a string
   */
   setOverviewParams(overviewParams: string): void {
-    clearTimeout(this.finishedTimer);
-    this.overviewParams = overviewParams;
-    this.load();
+    if (this.overviewParams != overviewParams) {
+      this.overviewParams = overviewParams;
+      this.pollingRefresh.next(true);
+    }
   }
 
   /** loadNextPage
   /* - increment the currentPage variable
-  *  - set the isLoadingMore variable to true
-  *  - clear the timeout
-  *  - re-initiate the load
+  /*  - set the isLoadingMore variable to true
+  /*  - refresh the polling
   */
   loadNextPage(): void {
     this.currentPage++;
     this.isLoadingMore = true;
-    clearTimeout(this.finishedTimer);
-    this.load();
+    this.pollingRefresh.next(true);
   }
 
-  /** load
-  /* subscribe to the dataset overview data
+  /** beginPolling
+  *  - sets up a timed polling mechanism that only ticks when the last data-result has been retrieved
+  *  - subscribes to the poll
+  /* - instantiates a Subject for poll refreshing
   */
-  load(): void {
-    this.workflows
-      .getCompletedDatasetOverviewsUptoPage(this.currentPage, this.overviewParams)
-      .subscribe(
-        ({ results, more }) => {
-          this.hasMore = more;
-          this.dsOverview = results;
-          this.isLoading = false;
-          this.isLoadingMore = false;
-          this.finishedTimer = window.setTimeout(() => {
-            this.isLoadingMore = true;
-            this.load();
-          }, environment.intervalStatusMedium);
-        },
-        (err: HttpErrorResponse) => {
-          this.isLoading = false;
-          this.isLoadingMore = false;
-          this.errors.handleError(err);
-        }
-      );
+  beginPolling(): void {
+    let pushPollOverview = 0;
+
+    // stream for apply-filter
+    this.pollingRefresh = new Subject();
+    this.pollingRefresh.subscribe(() => {
+      pushPollOverview += 1;
+    });
+
+    const loadTriggerOverview = new BehaviorSubject(true);
+    const polledOverviewData = loadTriggerOverview.pipe(
+      merge(this.pollingRefresh), // user events comes into the stream here
+      switchMap(() => {
+        this.isLoading = true;
+        return this.workflows.getCompletedDatasetOverviewsUptoPage(
+          this.currentPage,
+          this.overviewParams
+        );
+      }),
+      tap(() => {
+        triggerDelay.next({
+          subject: loadTriggerOverview,
+          wait: environment.intervalStatusMedium,
+          blockIf: () => pushPollOverview > 0,
+          blockThen: () => {
+            pushPollOverview--;
+          }
+        });
+      })
+    ) as Observable<MoreResults<DatasetOverview>>;
+
+    this.overviewSubscription = polledOverviewData.subscribe(
+      ({ results, more, maxResultCountReached }) => {
+        this.hasMore = more;
+        this.dsOverview = results;
+        this.isLoading = false;
+        this.isLoadingMore = false;
+        this.maxResultsReached = !!maxResultCountReached;
+      },
+      (err: HttpErrorResponse) => {
+        this.isLoading = false;
+        this.isLoadingMore = false;
+        this.errors.handleError(err);
+      }
+    );
   }
 
   /** setSelectedDsId
+  /* sets 'expanded' to false on all the rows
   /* set the selected dataset id
+  /* emits selectedSet event
+  /* @param {string} selectedDsId - the selected dataset id
   */
   setSelectedDsId(selectedDsId: string): void {
     this.selectedDsId = selectedDsId;
