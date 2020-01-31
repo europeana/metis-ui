@@ -103,22 +103,30 @@ export class DatasetformComponent implements OnInit {
   /* @param {string} val - the item to add
   */
   addRedirectionId(val: string): void {
-    const ids = this.redirectionIds;
-    const existingIndex = ids.value.findIndex((id: string) => id === val);
-    if (existingIndex === -1) {
-      ids.push(this.fb.control(val));
-      this.datasetForm.markAsDirty();
-    }
+    this.addOrRemoveRedirectionId(val, true);
   }
 
   /** removeRedirectionId
   /* - handle removal from the redirectionIds array
-  /* @param {string} m - the item to remove
+  /* @param {string} val - the item to remove
   */
   removeRedirectionId(val: string): void {
+    this.addOrRemoveRedirectionId(val, false);
+  }
+
+  /** addOrRemoveRedirectionId
+  /* - handle additions or removals from the redirectionIds array
+  /* @param {string} val - the item to add or remove
+  /* @param {boolean} add - flag addition (removal if false)
+  */
+  addOrRemoveRedirectionId(val: string, add: boolean): void {
     const ids = this.redirectionIds;
     const existingIndex = ids.value.findIndex((id: string) => id === val);
-    if (existingIndex > -1) {
+
+    if (add && existingIndex === -1) {
+      ids.push(this.fb.control(val));
+      this.datasetForm.markAsDirty();
+    } else if (!add && existingIndex > -1) {
       ids.removeAt(existingIndex);
       this.datasetForm.markAsDirty();
     }

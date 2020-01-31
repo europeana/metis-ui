@@ -21,6 +21,9 @@ describe('DatasetformComponent', () => {
   let fixture: ComponentFixture<DatasetformComponent>;
   let router: Router;
 
+  const existingId = '123';
+  const newId = 'some_id';
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, ReactiveFormsModule],
@@ -97,8 +100,6 @@ describe('DatasetformComponent', () => {
 
   it('should add redirection ids', () => {
     fixture.detectChanges();
-    const existingId = '123';
-    const newId = 'some_id';
     expect(component.datasetForm.dirty).toBeFalsy();
     component.addRedirectionId(existingId);
     expect(component.datasetForm.dirty).toBeFalsy();
@@ -108,8 +109,6 @@ describe('DatasetformComponent', () => {
 
   it('should remove redirection ids', () => {
     fixture.detectChanges();
-    const existingId = '123';
-    const newId = 'some_id';
     expect(component.datasetForm.dirty).toBeFalsy();
     component.removeRedirectionId(newId);
     expect(component.datasetForm.dirty).toBeFalsy();

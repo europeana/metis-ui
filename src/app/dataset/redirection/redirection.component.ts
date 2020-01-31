@@ -44,7 +44,6 @@ export class RedirectionComponent {
         return;
       }
       if (e.shiftKey || e.ctrlKey || e.altKey) {
-        console.log('skip modifier');
         return;
       }
       if (e.which === 13) {
