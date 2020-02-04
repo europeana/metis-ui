@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import {
@@ -85,10 +85,51 @@ export class DatasetformComponent implements OnInit {
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();
-
     this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
       sticky: true
     });
+  }
+
+  /** redirectionIds
+  /* - returns form control as array
+  /* - (necessary for template-check to pass)
+  */
+  get redirectionIds(): FormArray {
+    return this.datasetForm.get('redirectionIds') as FormArray;
+  }
+
+  /** addRedirectionId
+  /* - handle addition to the redirectionIds array
+  /* @param {string} val - the item to add
+  */
+  addRedirectionId(val: string): void {
+    this.addOrRemoveRedirectionId(val, true);
+  }
+
+  /** removeRedirectionId
+  /* - handle removal from the redirectionIds array
+  /* @param {string} val - the item to remove
+  */
+  removeRedirectionId(val: string): void {
+    this.addOrRemoveRedirectionId(val, false);
+  }
+
+  /** addOrRemoveRedirectionId
+  /* - handle additions or removals from the redirectionIds array
+  /* @param {string} val - the item to add or remove
+  /* @param {boolean} add - flag addition (removal if false)
+  */
+  addOrRemoveRedirectionId(val: string, add: boolean): void {
+    const ids = this.redirectionIds;
+    const existingIndex = ids.value.findIndex((id: string) => id === val);
+
+    if (add && existingIndex === -1) {
+      ids.push(this.fb.control(val));
+      this.datasetForm.markAsDirty();
+    } else if (!add && existingIndex > -1) {
+      ids.removeAt(existingIndex);
+      this.datasetForm.markAsDirty();
+    }
   }
 
   /** showError
@@ -169,6 +210,7 @@ export class DatasetformComponent implements OnInit {
       dataProvider: [''],
       provider: ['', [Validators.required]],
       intermediateProvider: [''],
+      redirectionIds: this.getIdsAsFormArray(),
       replaces: [''],
       replacedBy: [''],
       country: ['', [Validators.required]],
@@ -177,9 +219,17 @@ export class DatasetformComponent implements OnInit {
       notes: [''],
       unfitForPublication: ['']
     });
-
     this.updateForm();
     this.updateFormEnabled();
+  }
+
+  getIdsAsFormArray(): FormArray {
+    const list = this.datasetData.redirectionIds
+      ? this.datasetData.redirectionIds.map((id) => {
+          return this.fb.control(id);
+        })
+      : [];
+    return this.fb.array(list);
   }
 
   /** updateForm
@@ -187,6 +237,7 @@ export class DatasetformComponent implements OnInit {
   */
   updateForm(): void {
     this.datasetForm.patchValue(this.datasetData);
+    this.datasetForm.setControl('redirectionIds', this.getIdsAsFormArray());
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
   }
@@ -223,7 +274,7 @@ export class DatasetformComponent implements OnInit {
     if (!this.datasetForm.valid) {
       return;
     }
-    // declare local error-handler funciton
+    // declare local error-handler function
     const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
@@ -232,6 +283,7 @@ export class DatasetformComponent implements OnInit {
     // clear notification variable
     this.notification = undefined;
     this.isSaving = true;
+
     if (this.isNew) {
       this.datasets.createDataset(this.datasetForm.value).subscribe((result) => {
         localStorage.removeItem(DATASET_TEMP_LSKEY);

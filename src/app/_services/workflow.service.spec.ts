@@ -175,10 +175,7 @@ describe('workflow service', () => {
 
   it('should get dataset execution summaries per page', () => {
     service.getCompletedDatasetOverviewsUptoPage(0).subscribe((results) => {
-      expect(results).toEqual({
-        results: mockDatasetOverviewResults.results,
-        more: false
-      });
+      expect(results.results).toEqual(mockDatasetOverviewResults.results);
     });
     mockHttp
       .expect('GET', '/orchestrator/workflows/executions/overview' + '?nextPage=0')
@@ -201,10 +198,9 @@ describe('workflow service', () => {
 
   it('should get multiple pages of completed executions for a dataset', () => {
     service.getCompletedDatasetExecutionsUptoPage('543452', 1).subscribe((results) => {
-      expect(results).toEqual({
-        results: mockWorkflowExecutionResults.results.concat(mockWorkflowExecutionResults.results),
-        more: false
-      });
+      expect(results.results).toEqual(
+        mockWorkflowExecutionResults.results.concat(mockWorkflowExecutionResults.results)
+      );
     });
     mockHttp
       .expect(
@@ -224,7 +220,7 @@ describe('workflow service', () => {
       .send(mockWorkflowExecutionResults);
 
     service.getCompletedDatasetExecutionsUptoPage('543452', 0).subscribe((results) => {
-      expect(results).toEqual({ results: mockWorkflowExecutionResults.results, more: true });
+      expect(results.results).toEqual(mockWorkflowExecutionResults.results);
     });
     mockHttp
       .expect(

@@ -264,6 +264,11 @@ function routeToFile(response: ServerResponse, route: string): boolean {
           enum: 'DENMARK',
           name: 'Denmark',
           isoCode: 'DK'
+        },
+        {
+          enum: 'FINLAND',
+          name: 'Finland',
+          isoCode: 'FI'
         }
       ])
     );
@@ -273,7 +278,13 @@ function routeToFile(response: ServerResponse, route: string): boolean {
   regRes = route.match(/datasets\/languages/);
 
   if (regRes) {
-    response.end(JSON.stringify([{ enum: 'CS', name: 'Czech' }, { enum: 'DA', name: 'Danish' }]));
+    response.end(
+      JSON.stringify([
+        { enum: 'CS', name: 'Czech' },
+        { enum: 'DA', name: 'Danish' },
+        { enum: 'GD', name: 'Gaelic (Scottish)' }
+      ])
+    );
     return true;
   }
 

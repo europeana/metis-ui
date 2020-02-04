@@ -64,6 +64,10 @@ $small-margin: 0.82rem;
   margin-left: $small-margin;
 }
 
+.redirection-ids {
+  position: relative;
+}
+
 .readonly-field {
   margin-left: $small-margin;
   word-break: break-all;
