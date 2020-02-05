@@ -14,7 +14,7 @@
         value="true"
         [checked]="workflowForm.value.performSampling === 'true'"
       />
-      {{ 'checksample' | translate }}
+      {{ 'checkSample' | translate }}
     </label>
     <label>
       <input
@@ -24,7 +24,7 @@
         value="false"
         [checked]="workflowForm.value.performSampling !== 'true'"
       />
-      {{ 'checkall' | translate }}
+      {{ 'checkAll' | translate }}
     </label>
   </div>
 </div>
@@ -40,11 +40,11 @@
   <div class="form-group-radios">
     <label>
       <input type="radio" [checked]="workflowForm.value.performSampling === 'true'" disabled="" />
-      {{ 'checksample' | translate }}
+      {{ 'checkSample' | translate }}
     </label>
     <label>
       <input type="radio" [checked]="workflowForm.value.performSampling !== 'true'" disabled="" />
-      {{ 'checkall' | translate }}
+      {{ 'checkAll' | translate }}
     </label>
   </div>
 </div>

@@ -52,7 +52,7 @@ describe('DatasetformComponent', () => {
     fixture.detectChanges();
     component.onSubmit();
     fixture.detectChanges();
-    expect(component.notification!.content).toBe('en:datasetsaved');
+    expect(component.notification!.content).toBe('en:datasetSaved');
   }));
 
   it('should submit form and create the dataset', fakeAsync((): void => {

@@ -4,7 +4,7 @@
   <div *ngIf="profileForm" class="metis-profile-form metis-form metis-form-horizontal">
     <form class="profile-form" [formGroup]="profileForm">
       <div class="form-header">
-        <h2>{{ 'userprofile' | translate }}</h2>
+        <h2>{{ 'userProfile' | translate }}</h2>
       </div>
 
       <app-notification
@@ -24,12 +24,12 @@
         </div>
 
         <div class="form-group">
-          <label for="first-name">{{ 'firstname' | translate }}</label>
+          <label for="first-name">{{ 'firstName' | translate }}</label>
           <input id="first-name" name="first-name" type="text" formControlName="first-name" />
         </div>
 
         <div class="form-group">
-          <label for="last-name">{{ 'lastname' | translate }}</label>
+          <label for="last-name">{{ 'lastName' | translate }}</label>
           <input id="last-name" name="last-name" type="text" formControlName="last-name" />
         </div>
 
@@ -54,7 +54,7 @@
         </div>
 
         <div class="form-group">
-          <label for="network-member">{{ 'networkmember' | translate }}</label>
+          <label for="network-member">{{ 'networkMember' | translate }}</label>
           <input
             id="network-member"
             name="network-member"
@@ -64,7 +64,7 @@
         </div>
 
         <div class="form-group">
-          <label for="account-role">{{ 'accountrole' | translate }}</label>
+          <label for="account-role">{{ 'accountRole' | translate }}</label>
           <input id="account-role" name="account-role" type="text" formControlName="account-role" />
           <span
             *ngIf="profileForm.controls['account-role'].value === 'Unknown'"
@@ -74,7 +74,7 @@
         </div>
         <div class="form-group form-group-btns user-profile-edit-btns">
           <button class="button" type="button" (click)="toggleEditMode()">
-            {{ 'changepassword' | translate }}
+            {{ 'changePassword' | translate }}
           </button>
           <app-loading-button
             id="refresh-btn"
@@ -87,7 +87,7 @@
 
         <div class="profile-form-extra">
           <p>
-            {{ 'updateprofile' | translate }}&nbsp;
+            {{ 'updateProfile' | translate }}
             <a href="mailto:{{ emailInfo }}">{{ emailInfo }}</a
             >.
           </p>
@@ -100,7 +100,7 @@
   <div class="metis-form-bg metis-form" *ngIf="profileForm">
     <form [formGroup]="profileForm">
       <div class="form-header">
-        <h2>{{ 'changepassword' | translate }}</h2>
+        <h2>{{ 'changePassword' | translate }}</h2>
       </div>
 
       <app-notification
@@ -115,14 +115,14 @@
             id="oldpassword"
             type="password"
             formControlName="oldpassword"
-            placeholder="{{ 'passwordold' | translate }}"
+            placeholder="{{ 'passwordOld' | translate }}"
           />
           <input
             id="password"
             type="password"
             formControlName="password"
             (keyup)="onKeyupPassword()"
-            placeholder="{{ 'passwordnew' | translate }}"
+            placeholder="{{ 'passwordNew' | translate }}"
           />
           <app-password-check [passwordToCheck]="password"></app-password-check>
           <div
@@ -132,7 +132,7 @@
               !profileForm.controls['passwords'].get('password')!.valid
             "
           >
-            <div class="error-message">{{ 'passwordolderror' | translate }}</div>
+            <div class="error-message">{{ 'passwordOldError' | translate }}</div>
           </div>
 
           <input
@@ -151,7 +151,7 @@
               confirmPasswordError
             "
           >
-            <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
+            <div class="error-message">{{ 'passwordMatchError' | translate }}</div>
           </div>
         </fieldset>
         <div class="form-group form-group-btns user-profile-edit-btns">

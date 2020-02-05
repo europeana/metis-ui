@@ -34,7 +34,7 @@ export class WorkflowFormFieldHarvestComponent {
   /* returns markup representation of import parameters
   */
   getImportSummary(): string {
-    let res = this.translate.instant('harvesturl') + ': ';
+    let res = this.translate.instant('harvestUrl') + ': ';
 
     if (this.isProtocolHTTP()) {
       res += this.workflowForm.value.url.trim();
@@ -42,14 +42,14 @@ export class WorkflowFormFieldHarvestComponent {
       res +=
         this.workflowForm.value.harvestUrl.trim() +
         '<br/>' +
-        this.translate.instant('setspec') +
+        this.translate.instant('setSpec') +
         ': ' +
         this.workflowForm.value.setSpec;
     }
     if (this.workflowForm.value.metadataFormat) {
       res +=
         '<br/>' +
-        this.translate.instant('metadataformat') +
+        this.translate.instant('metaDataFormat') +
         ': ' +
         this.workflowForm.value.metadataFormat;
     }

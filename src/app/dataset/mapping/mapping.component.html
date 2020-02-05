@@ -6,24 +6,24 @@
 ></app-notification>
 
 <div class="btns-set btns-set-right">
-  <button (click)="tryOutXSLT('default')">{{ 'xslttryoutdefault' | translate }}</button>
+  <button (click)="tryOutXSLT('default')">{{ 'xsltTryOutDefault' | translate }}</button>
 </div>
 
 <div class="messages" *ngIf="xsltStatus === 'loading'">
   <div class="success-message">
-    <span class="svg-icon-spin-inbutton"></span> {{ 'xsltloading' | translate }}
+    <span class="svg-icon-spin-inbutton"></span> {{ 'xsltLoading' | translate }}
   </div>
 </div>
 
 <div class="btns-set btns-set-right" *ngIf="xsltStatus === 'no-custom'">
-  <span>{{ 'xsltaskloaddefault' | translate }}</span>
-  <button (click)="loadDefaultXSLT()">{{ 'xsltinitdefault' | translate }}</button>
+  <span>{{ 'xsltTaskLoadDefault' | translate }}</span>
+  <button (click)="loadDefaultXSLT()">{{ 'xsltInitDefault' | translate }}</button>
 </div>
 
 <div *ngIf="xsltStatus === 'has-custom' || xsltStatus === 'new-custom'">
   <div class="view-sample view-sample-expanded">
     <div class="view-sample-title">
-      <h3>{{ 'xsltcustom' | translate }}</h3>
+      <h3>{{ 'xsltCustom' | translate }}</h3>
       <app-theme-selector
         (themeSet)="onThemeSet($event)"
         [editorIsDefaultTheme]="editorConfig.theme === 'default'"
@@ -44,11 +44,11 @@
     <button (click)="cancel()" *ngIf="xsltStatus === 'new-custom'">
       {{ 'cancel' | translate }}
     </button>
-    <button (click)="loadDefaultXSLT()">{{ 'xsltresetdefault' | translate }}</button>
+    <button (click)="loadDefaultXSLT()">{{ 'xsltResetDefault' | translate }}</button>
     <button (click)="loadCustomXSLT()" *ngIf="xsltStatus === 'has-custom'">
-      {{ 'xsltreloadcustom' | translate }}
+      {{ 'xsltReloadCustom' | translate }}
     </button>
     <button (click)="saveCustomXSLT(false)">{{ 'save' | translate }}</button>
-    <button (click)="saveCustomXSLT(true)">{{ 'xslttryout' | translate }}</button>
+    <button (click)="saveCustomXSLT(true)">{{ 'xsltTryOut' | translate }}</button>
   </div>
 </div>

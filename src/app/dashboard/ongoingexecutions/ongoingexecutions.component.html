@@ -1,15 +1,15 @@
-<h3>{{ 'ongoingexecutions' | translate }}</h3>
+<h3>{{ 'ongoingExecutions' | translate }}</h3>
 <div class="ongoing-executions">
   <span class="grid-header">
     {{ 'workflow' | translate }}
   </span>
   <span class="grid-header">
-    {{ 'overallprogress' | translate }}
+    {{ 'overallProgress' | translate }}
   </span>
 
   <ng-container *ngIf="!runningExecutions || runningExecutions.length === 0">
     <span class="no-content-message">
-      {{ 'noongoing' | translate }}
+      {{ 'noOngoing' | translate }}
     </span>
   </ng-container>
 
@@ -27,7 +27,7 @@
         <span>
           <span
             class="tooltip"
-            title="{{ 'doubleclicktocopy' | translate }}"
+            title="{{ 'doubleClickToCopy' | translate }}"
             (dblclick)="
               copyInformation(
                 'plugin',

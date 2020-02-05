@@ -3,7 +3,7 @@
     <input
       class="redirect-entry"
       [ngClass]="{ invalid: flagIdInvalid }"
-      placeholder="{{ 'add-dataset-id' | translate }}"
+      placeholder="{{ 'addDatasetId' | translate }}"
       (keyup)="onKeyupRedirect($event)"
       [(ngModel)]="newIdString"
     />
@@ -15,6 +15,6 @@
     <a class="redirect-remove" (click)="remove()"></a>
   </ng-container>
   <span class="error" [ngClass]="{ hidden: !flagIdInvalid }">{{
-    'dataset-inexistent' | translate
+    'datasetInexistent' | translate
   }}</span>
 </span>

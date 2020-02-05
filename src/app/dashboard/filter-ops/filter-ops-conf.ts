@@ -28,9 +28,9 @@ export const filterConf: FilterExecutionConf[] = [
     label: 'date',
     name: 'DATE',
     options: [
-      { label: 'last-24-hours', value: '1' },
-      { label: 'last-week', value: '7' },
-      { label: 'last-month', value: '30' },
+      { label: 'last24Hours', value: '1' },
+      { label: 'lastWeek', value: '7' },
+      { label: 'lastMonth', value: '30' },
       {
         label: 'from',
         value: '',

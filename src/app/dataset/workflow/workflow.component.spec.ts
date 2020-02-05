@@ -242,19 +242,19 @@ describe('WorkflowComponent', () => {
 
     it('should notify the user of form errors', () => {
       setSavableChanges();
-      expect(component.getSaveNotification()!.content).toBe('en:workflowsavenew');
+      expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
       component.workflowForm.get('url')!.setValue('');
-      expect(component.getSaveNotification()!.content).toBe('en:formerror');
+      expect(component.getSaveNotification()!.content).toBe('en:formError');
     });
 
     it('should submit the changes', fakeAsync(() => {
       console.log(workflows);
       //spyOn(workflows, 'createWorkflowForDataset');
       setSavableChanges();
-      expect(component.getSaveNotification()!.content).toBe('en:workflowsavenew');
+      expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
       component.onSubmit();
       tick();
-      expect(component.getSaveNotification()!.content).toBe('en:workflowsaved');
+      expect(component.getSaveNotification()!.content).toBe('en:workflowSaved');
       expect(component.getSaveNotification()).toEqual(component.notification);
       //expect(workflows.createWorkflowForDataset).toHaveBeenCalled();
     }));

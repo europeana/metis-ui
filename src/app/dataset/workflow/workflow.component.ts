@@ -115,23 +115,23 @@ export class WorkflowComponent implements OnInit {
     const notificationConf = { sticky: true };
 
     this.newNotification = successNotification(
-      this.translate.instant('workflowsavenew'),
+      this.translate.instant('workflowSaveNew'),
       notificationConf
     );
     this.saveNotification = successNotification(
-      this.translate.instant('workflowsave'),
+      this.translate.instant('workflowSave'),
       notificationConf
     );
     this.runningNotification = successNotification(
-      this.translate.instant('workflowrunning'),
+      this.translate.instant('workflowRunning'),
       notificationConf
     );
     this.invalidNotification = errorNotification(
-      this.translate.instant('formerror'),
+      this.translate.instant('formError'),
       notificationConf
     );
     this.gapInSequenceNotification = successNotification(
-      this.translate.instant('gaperror'),
+      this.translate.instant('gapError'),
       notificationConf
     );
   }
@@ -548,7 +548,7 @@ export class WorkflowComponent implements OnInit {
 
               this.workflowForm.markAsPristine();
               this.isSaving = false;
-              this.notification = successNotification(this.translate.instant('workflowsaved'), {
+              this.notification = successNotification(this.translate.instant('workflowSaved'), {
                 fadeTime: 1500,
                 sticky: true
               });

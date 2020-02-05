@@ -86,7 +86,7 @@ describe('MappingComponent', () => {
 
     component.saveCustomXSLT(false);
     fixture.detectChanges();
-    expect(component.notification!.content).toBe('en:xsltsuccessful');
+    expect(component.notification!.content).toBe('en:xsltSuccessful');
   });
 
   it('should try out saved xslt', () => {
