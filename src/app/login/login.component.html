@@ -7,7 +7,7 @@
     autocomplete="off"
   >
     <div class="form-header">
-      <h2>{{ 'signintometis' | translate }}</h2>
+      <h2>{{ 'signInToMetis' | translate }}</h2>
     </div>
 
     <app-notification
@@ -25,7 +25,7 @@
           class="messages"
           *ngIf="loginForm.controls['email'].touched && !loginForm.controls['email'].valid"
         >
-          <div class="error-message">{{ 'emailerror' | translate }}</div>
+          <div class="error-message">{{ 'emailError' | translate }}</div>
         </div>
 
         <label for="password">{{ 'password' | translate }}:</label>
@@ -34,7 +34,7 @@
           class="messages"
           *ngIf="loginForm.controls['password'].touched && !loginForm.controls['password'].valid"
         >
-          <div class="error-message">{{ 'passworderror' | translate }}</div>
+          <div class="error-message">{{ 'passwordError' | translate }}</div>
         </div>
       </fieldset>
 
@@ -44,7 +44,7 @@
           type="submit"
           [disabled]="!loginForm.valid"
           [isLoading]="loading"
-          [title]="'signin' | translate"
+          [title]="'signIn' | translate"
         ></app-loading-button>
       </div>
     </div>

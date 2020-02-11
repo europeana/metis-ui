@@ -96,7 +96,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   */
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
-    this.nosample = this.translate.instant('nosample');
+    this.nosample = this.translate.instant('noSample');
 
     this.executionsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
       this.addExecutionsFilter();

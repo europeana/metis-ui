@@ -64,7 +64,7 @@ export class MappingComponent implements OnInit {
   */
   ngOnInit(): void {
     this.editorConfig = this.editorPrefs.getEditorConfig(false);
-    this.msgXSLTSuccess = this.translate.instant('xsltsuccessful');
+    this.msgXSLTSuccess = this.translate.instant('xsltSuccessful');
     this.loadCustomXSLT();
   }
 

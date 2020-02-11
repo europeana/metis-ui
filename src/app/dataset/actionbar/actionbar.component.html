@@ -5,12 +5,12 @@
   <div class="status">
     <strong
       class="uppercase tooltip"
-      title="{{ 'doubleclicktocopy' | translate }}"
+      title="{{ 'doubleClickToCopy' | translate }}"
       (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
       >{{ currentPluginName! | renameWorkflow }}</strong
     >
     {{
-      (currentStatus == 'CANCELLED' ? ('cancelled-by' | translate) + ' ' + cancelledBy : '') ||
+      (currentStatus == 'CANCELLED' ? ('cancelledBy' | translate) + ' ' + cancelledBy : '') ||
         currentStatus ||
         '' | uppercase
     }}
@@ -73,7 +73,7 @@
       </li>
       <li class="nav-ctrl" *ngIf="isCompleted">
         <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
-          <span>{{ 'run workflow' | translate }}</span>
+          <span>{{ 'runWorkflow' | translate }}</span>
         </a>
       </li>
     </ul>
@@ -85,20 +85,20 @@
   class="metis-dataset-info-block dataset-actionbar"
   *ngIf="!lastExecutionData && !isStarting && !isCancelling"
 >
-  <div class="status status-new">{{ 'start workflow' | translate }}</div>
+  <div class="status status-new">{{ 'startWorkflow' | translate }}</div>
   <div class="spacer"></div>
   <nav>
     <ul>
       <li>
         <a *ngIf="workflowData" class="nav-btn newaction-btn" (click)="beginWorkflow()">
-          <span>{{ 'run workflow' | translate }}</span>
+          <span>{{ 'runWorkflow' | translate }}</span>
         </a>
         <a
           *ngIf="!workflowData"
           class="newaction-btn"
           routerLink="/dataset/workflow/{{ datasetId }}"
         >
-          <span>{{ 'showworkflow' | translate }}</span>
+          <span>{{ 'showWorkflow' | translate }}</span>
         </a>
       </li>
     </ul>
@@ -107,7 +107,7 @@
 
 <!-- show "starting" indicator -->
 <div class="metis-dataset-info-block dataset-actionbar" *ngIf="isStarting">
-  <div class="status status-new">{{ 'startingworkflow' | translate }}</div>
+  <div class="status status-new">{{ 'startingWorkflow' | translate }}</div>
 </div>
 
 <!-- show "cancelling" indicator -->

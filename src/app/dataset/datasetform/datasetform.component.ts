@@ -85,7 +85,7 @@ export class DatasetformComponent implements OnInit {
     this.buildForm();
     this.returnCountries();
     this.returnLanguages();
-    this.invalidNotification = errorNotification(this.translate.instant('formerror'), {
+    this.invalidNotification = errorNotification(this.translate.instant('formError'), {
       sticky: true
     });
   }
@@ -296,7 +296,7 @@ export class DatasetformComponent implements OnInit {
       };
       this.datasets.updateDataset({ dataset }).subscribe(() => {
         localStorage.removeItem(DATASET_TEMP_LSKEY);
-        this.notification = successNotification(this.translate.instant('datasetsaved'), {
+        this.notification = successNotification(this.translate.instant('datasetSaved'), {
           fadeTime: 1500,
           sticky: true
         });
