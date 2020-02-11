@@ -4,7 +4,7 @@
 */
 export const LANG_EN_NAME = 'en';
 
-export const LANG_EN_STATUS_TYPES = {
+const LANG_EN_STATUS_TYPES = {
   CANCELLED: 'Cancelled',
   FAILED: 'Failed',
   FINISHED: 'Finished',
