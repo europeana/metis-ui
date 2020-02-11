@@ -368,8 +368,7 @@
 
   .form-group:not(.form-group-btns) {
     display: block;
-    margin: 0 auto 1rem auto;
-    width: 75%;
+    margin: 0 auto 1rem 0;
 
     &:last-of-type {
       margin: 0 auto 0rem auto;
@@ -377,6 +376,12 @@
 
     label {
       font-weight: normal;
+    }
+
+    @media (min-width: $bp-small) {
+      background: none;
+      margin: 0 auto 1rem auto;
+      width: 75%;
     }
   }
 

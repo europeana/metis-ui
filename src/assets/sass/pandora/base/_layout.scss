@@ -19,25 +19,33 @@
 .dashboard-wrapper {
   background-color: $offwhite;
   display: inline-block;
-  padding: 0 1.2rem;
   width: 100%;
+}
 
+@media (min-width: $bp-small-3) {
+  padding: 0 1.2rem;
   .metis-dashboard {
     padding: 1rem;
+  }
+}
 
-    @media (min-width: $bp-xl) {
-      display: flex;
-
-      .metis-dashboard-left {
-        flex-grow: 1;
-        margin-right: 1rem;
-        max-width: 40%;
-      }
-
-      .metis-dashboard-right {
-        flex-grow: 2;
-        margin-left: 1rem;
-      }
+@media (min-width: $bp-xl) {
+  .dashboard-wrapper .metis-dashboard {
+    display: flex;
+    .metis-dashboard-left {
+      flex-grow: 1;
+      margin-right: 1rem;
+      max-width: 40%;
     }
+    .metis-dashboard-right {
+      flex-grow: 2;
+      margin-left: 1rem;
+    }
+  }
+}
+
+.redirection-ids :first-child .redirect {
+  @media (min-width: $bp-med) {
+    margin-left: 0.82rem;
   }
 }

@@ -1,4 +1,4 @@
-<span class="redirect">
+<span class="redirect" [ngClass]="{ input: !redirectionId }">
   <ng-container *ngIf="!redirectionId">
     <input
       class="redirect-entry"

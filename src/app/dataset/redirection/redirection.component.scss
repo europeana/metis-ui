@@ -16,15 +16,16 @@
 .redirect {
   border: $gray-dark;
   display: inline-block;
-  margin-left: 0.82rem;
+  transform: translateY(-0.82em);
   white-space: nowrap;
+  &.input {
+    display: block;
+    transform: none;
+  }
 }
 
 .redirect input.redirect-entry {
-  padding: 0.25em 0.5em;
   margin-bottom: 0;
-  width: 15em;
-
   &.invalid {
     border: 1px solid $eu-red;
     margin-bottom: 1em;
@@ -39,11 +40,10 @@
 
 .redirect-remove {
   background-repeat: no-repeat;
-  height: 2em;
-  border-radius: 0.5rem;
   color: $white;
+  height: 2em;
   margin: 0 0.25rem 0 0;
-  transform: scale(0.7) translateY(50%);
+  transform: scale(0.7) translateY(55%);
   width: 1.7em;
 }
 
