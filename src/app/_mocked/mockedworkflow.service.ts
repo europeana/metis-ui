@@ -520,7 +520,7 @@ export const mockStatisticsDetail: NodePathStatistics = {
 };
 
 export const mockReport: Report = {
-  id: 123,
+  id: '123',
   errors: [
     {
       errorType: 'errorType',
