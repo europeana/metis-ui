@@ -166,7 +166,7 @@ function generateDatasetX(): Array<DatasetX> {
         xsltId: datasetId,
         datasetId: datasetId,
         datasetName: 'Dataset_' + (parseInt(datasetId) + 1),
-        redirectionIds: ['0', '1'],
+        datasetIdsToRedirectFrom: ['0', '1'],
         organizationId: 'organisation-id',
         organizationName: 'Europeana Foundation',
         provider: 'Europeana Provider',

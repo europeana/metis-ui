@@ -8,12 +8,14 @@ import { DatasetsService } from '../../_services';
   styleUrls: ['./redirection.component.scss']
 })
 export class RedirectionComponent {
+  @Input() currentId?: String;
   @Input() redirectionId?: String;
   @Output() addRedirectionId = new EventEmitter<String>();
   @Output() removeRedirectionId = new EventEmitter<String>();
 
   newIdString: string;
   flagIdInvalid: boolean;
+  flagInvalidSelfReference: boolean;
   ignoredKeys = [9, 16, 17, 27, 37, 38, 39, 40];
 
   constructor(private readonly datasets: DatasetsService) {}
@@ -47,23 +49,29 @@ export class RedirectionComponent {
         return;
       }
       if (e.which === 13) {
-        this.validate(this.newIdString, (success: boolean) => {
-          if (success) {
-            this.add(this.newIdString);
-            this.newIdString = '';
-          } else {
-            this.flagIdInvalid = true;
-          }
-        });
+        if (this.newIdString === this.currentId) {
+          this.flagInvalidSelfReference = true;
+        } else {
+          this.flagInvalidSelfReference = false;
+          this.validate(this.newIdString, (success: boolean) => {
+            if (success) {
+              this.add(this.newIdString);
+              this.newIdString = '';
+            } else {
+              this.flagIdInvalid = true;
+            }
+          });
+        }
       } else {
         this.flagIdInvalid = false;
+        this.flagInvalidSelfReference = false;
       }
     }
   }
 
   /** validate
   /* check a string corresponds to a dataset id
-  /* @param {string} name - string to check
+  /* @param {string} s - string to check
   */
   validate(s: string, handleResult: (result: boolean) => void): void {
     this.datasets.getSearchResultsUptoPage(s, 1).subscribe(

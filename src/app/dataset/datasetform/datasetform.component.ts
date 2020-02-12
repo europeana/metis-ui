@@ -95,7 +95,7 @@ export class DatasetformComponent implements OnInit {
   /* - (necessary for template-check to pass)
   */
   get redirectionIds(): FormArray {
-    return this.datasetForm.get('redirectionIds') as FormArray;
+    return this.datasetForm.get('datasetIdsToRedirectFrom') as FormArray;
   }
 
   /** addRedirectionId
@@ -210,7 +210,7 @@ export class DatasetformComponent implements OnInit {
       dataProvider: [''],
       provider: ['', [Validators.required]],
       intermediateProvider: [''],
-      redirectionIds: this.getIdsAsFormArray(),
+      datasetIdsToRedirectFrom: this.getIdsAsFormArray(),
       replaces: [''],
       replacedBy: [''],
       country: ['', [Validators.required]],
@@ -224,8 +224,8 @@ export class DatasetformComponent implements OnInit {
   }
 
   getIdsAsFormArray(): FormArray {
-    const list = this.datasetData.redirectionIds
-      ? this.datasetData.redirectionIds.map((id) => {
+    const list = this.datasetData.datasetIdsToRedirectFrom
+      ? this.datasetData.datasetIdsToRedirectFrom.map((id) => {
           return this.fb.control(id);
         })
       : [];
@@ -237,7 +237,7 @@ export class DatasetformComponent implements OnInit {
   */
   updateForm(): void {
     this.datasetForm.patchValue(this.datasetData);
-    this.datasetForm.setControl('redirectionIds', this.getIdsAsFormArray());
+    this.datasetForm.setControl('datasetIdsToRedirectFrom', this.getIdsAsFormArray());
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
   }
