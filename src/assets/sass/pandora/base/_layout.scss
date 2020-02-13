@@ -23,9 +23,11 @@
 }
 
 @media (min-width: $bp-small-3) {
-  padding: 0 1.2rem;
-  .metis-dashboard {
-    padding: 1rem;
+  .dashboard-wrapper {
+    padding: 0 1.2rem;
+    .metis-dashboard {
+      padding: 1rem;
+    }
   }
 }
 
