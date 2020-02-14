@@ -13,7 +13,9 @@ import {
 } from '../../_mocked';
 import {
   DragType,
+  HarvestPluginMetadataBase,
   NotificationType,
+  OAIHarvestPluginMetadata,
   PluginMetadata,
   PluginType,
   successNotification,
@@ -232,6 +234,19 @@ describe('WorkflowComponent', () => {
       component.workflowForm.get('pluginPREVIEW')!.setValue(true);
       result = component.formatFormValues();
       expect(result.metisPluginsMetadata.filter((x) => x.enabled).length).toEqual(1);
+    });
+
+    it('should format missing url parameters as a blank string', () => {
+      let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
+      const httpHarvestConf = result.metisPluginsMetadata.filter(
+        (x) => x.pluginType === 'HTTP_HARVEST'
+      )[0] as HarvestPluginMetadataBase;
+      const oaipmhHarvestConf = result.metisPluginsMetadata.filter(
+        (x) => x.pluginType === 'OAIPMH_HARVEST'
+      )[0] as OAIHarvestPluginMetadata;
+      expect(oaipmhHarvestConf.url).toEqual('');
+      expect(httpHarvestConf.url).toEqual('');
+      result = component.formatFormValues();
     });
 
     it('should reset', () => {

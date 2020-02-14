@@ -466,8 +466,12 @@ export class WorkflowComponent implements OnInit {
         enabled
       },
       ...params.map((pf) => {
+        let valToSave = this.workflowForm.value[pf];
+        if (!valToSave) {
+          valToSave = ['harvestUrl', 'url'].indexOf(pf) > -1 ? '' : false;
+        }
         return {
-          [pf]: this.workflowForm.value[pf] ? this.workflowForm.value[pf] : false
+          [pf]: valToSave
         };
       })
     ) as PluginMetadata;
@@ -545,7 +549,6 @@ export class WorkflowComponent implements OnInit {
             .subscribe((workflowDataset) => {
               this.workflowData = workflowDataset;
               this.getWorkflow();
-
               this.workflowForm.markAsPristine();
               this.isSaving = false;
               this.notification = successNotification(this.translate.instant('workflowSaved'), {
