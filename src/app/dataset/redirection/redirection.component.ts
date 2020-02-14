@@ -58,23 +58,30 @@ export class RedirectionComponent {
         return;
       }
       if (e.key === 'Enter') {
-        if (this.newIdString === this.currentId) {
-          this.flagInvalidSelfReference = true;
-        } else {
-          this.flagInvalidSelfReference = false;
-          this.validate(this.newIdString, (success: boolean) => {
-            if (success) {
-              this.add(this.newIdString);
-              this.newIdString = '';
-            } else {
-              this.flagIdInvalid = true;
-            }
-          });
-        }
+        this.tryNewRedirectionId();
       } else {
         this.flagIdInvalid = false;
         this.flagInvalidSelfReference = false;
       }
+    }
+  }
+
+  /* tryNewRedirectionId
+  /* attempt to set newIdString as a new redirection field
+  */
+  tryNewRedirectionId(): void {
+    if (this.newIdString === this.currentId) {
+      this.flagInvalidSelfReference = true;
+    } else {
+      this.flagInvalidSelfReference = false;
+      this.validate(this.newIdString, (success: boolean) => {
+        if (success) {
+          this.add(this.newIdString);
+          this.newIdString = '';
+        } else {
+          this.flagIdInvalid = true;
+        }
+      });
     }
   }
 

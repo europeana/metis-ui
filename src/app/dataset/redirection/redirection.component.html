@@ -5,7 +5,7 @@
       [ngClass]="{ invalid: flagIdInvalid || flagInvalidSelfReference }"
       placeholder="{{ 'addDatasetId' | translate }}"
       (keyup)="onKeyupRedirect($event)"
-      (blur)="onKeyupRedirect({ key: 'Enter' })"
+      (blur)="tryNewRedirectionId()"
       [(ngModel)]="newIdString"
     />
   </ng-container>
