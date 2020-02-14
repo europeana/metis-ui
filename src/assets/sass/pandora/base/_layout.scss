@@ -46,7 +46,7 @@
   }
 }
 
-.redirection-ids :first-child .redirect {
+.redirection-ids :first-child:not(:last-child) .redirect {
   @media (min-width: $bp-med) {
     margin-left: 0.82rem;
   }
