@@ -468,7 +468,8 @@ export class WorkflowComponent implements OnInit {
       ...params.map((pf) => {
         let valToSave = this.workflowForm.value[pf];
         if (!valToSave) {
-          valToSave = ['harvestUrl', 'url'].indexOf(pf) > -1 ? '' : false;
+          valToSave =
+            ['harvestUrl', 'url', 'setSpec', 'metadataFormat'].indexOf(pf) > -1 ? '' : false;
         }
         return {
           [pf]: valToSave
