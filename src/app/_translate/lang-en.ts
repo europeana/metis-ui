@@ -36,7 +36,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   dateCreated: 'Date Created',
   dataProvider: 'Data Provider',
   dataset: 'Dataset',
-  datasetNoSelfReference: "Dataset ID can't match current ID",
+  datasetNoSelfReference: "The dataset ID entered matches the id of the dataset being edited",
   datasetInexistent: 'Dataset ID doesn’t exist',
   datasetInformation: 'Dataset Information',
   datasetName: 'Dataset Name',
