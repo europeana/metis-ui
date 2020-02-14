@@ -166,7 +166,7 @@ describe('DatasetComponent', () => {
     it('should handle an empty report', fakeAsync(() => {
       spyOn(workflows, 'getReport').and.callFake(() => {
         return of({
-          id: 123,
+          id: '123',
           errors: []
         });
       });

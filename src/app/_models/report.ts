@@ -17,7 +17,7 @@ export interface ReportError {
 // Java name: TaskErrorsInfo
 
 export interface Report {
-  id: number;
+  id: string;
   errors: ReportError[];
 }
 
