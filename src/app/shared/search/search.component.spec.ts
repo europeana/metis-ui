@@ -54,9 +54,9 @@ describe('SearchComponent', () => {
 
     it('should execute a search on return (key event)', () => {
       spyOn(router, 'navigate');
-      component.submitOnEnter(({ which: 1 } as unknown) as KeyboardEvent);
+      component.submitOnEnter(({ key: '1' } as unknown) as KeyboardEvent);
       expect(router.navigate).not.toHaveBeenCalled();
-      component.submitOnEnter(({ which: 13 } as unknown) as KeyboardEvent);
+      component.submitOnEnter(({ key: 'Enter' } as unknown) as KeyboardEvent);
       expect(router.navigate).toHaveBeenCalledWith(
         ['/search'],
         Object({ queryParams: Object({ searchString: '123' }) })

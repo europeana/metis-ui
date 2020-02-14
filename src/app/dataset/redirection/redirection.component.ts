@@ -16,7 +16,16 @@ export class RedirectionComponent {
   newIdString: string;
   flagIdInvalid: boolean;
   flagInvalidSelfReference: boolean;
-  ignoredKeys = [9, 16, 17, 27, 37, 38, 39, 40];
+  ignoredKeys = [
+    'Tab',
+    'Shift',
+    'Control',
+    'Escape',
+    'ArrowRight',
+    'ArrowLeft',
+    'ArrowDown',
+    'ArrowUp'
+  ];
 
   constructor(private readonly datasets: DatasetsService) {}
 
@@ -42,13 +51,13 @@ export class RedirectionComponent {
   */
   onKeyupRedirect(e: KeyboardEvent): void {
     if (this.newIdString && this.newIdString.length > 0) {
-      if (this.ignoredKeys.indexOf(e.which) > -1) {
+      if (this.ignoredKeys.indexOf(e.key) > -1) {
         return;
       }
       if (e.shiftKey || e.ctrlKey || e.altKey) {
         return;
       }
-      if (e.which === 13) {
+      if (e.key === 'Enter') {
         if (this.newIdString === this.currentId) {
           this.flagInvalidSelfReference = true;
         } else {

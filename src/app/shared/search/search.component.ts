@@ -42,7 +42,7 @@ export class SearchComponent implements OnInit {
   /* @param {KeyboardEvent} e - the key event
   */
   submitOnEnter(e: KeyboardEvent): void {
-    if (e.which === 13) {
+    if (e.key === 'Enter') {
       this.executeSearch();
     }
   }
