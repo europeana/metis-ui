@@ -163,7 +163,6 @@ $border-colour-shortcuts: #dbd9d9;
 }
 
 .shortcuts {
-  border-bottom: 1px solid $border-colour-shortcuts;
   display: block;
   margin: 2em 2em 1em;
   order: 1;
@@ -171,23 +170,33 @@ $border-colour-shortcuts: #dbd9d9;
   text-align: center;
 
   .link {
-    display: inline-block;
-    padding: 0 1.25em;
-    width: 50%;
+    display: block;
+    padding: 1.25em 0;
+  }
+}
 
-    &:last-of-type {
-      position: relative;
+@media (min-width: $bp-small) {
+  .shortcuts {
+    border-bottom: 1px solid $border-colour-shortcuts;
+    .link {
+      display: inline-block;
+      padding: 0 1.25em;
+      width: 50%;
 
-      &::after {
-        background: $border-colour-shortcuts;
-        content: ' ';
-        display: block;
-        height: 1.5em;
-        left: 0;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 1px;
+      &:last-of-type {
+        position: relative;
+
+        &::after {
+          background: $border-colour-shortcuts;
+          content: ' ';
+          display: block;
+          height: 1.5em;
+          left: 0;
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1px;
+        }
       }
     }
   }
