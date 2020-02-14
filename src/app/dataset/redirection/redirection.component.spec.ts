@@ -10,6 +10,7 @@ import { RedirectionComponent } from '.';
 describe('RedirectionComponent', () => {
   let component: RedirectionComponent;
   let fixture: ComponentFixture<RedirectionComponent>;
+  const enterKey = 13;
 
   const getKeyEvent = (which: number, shift?: boolean): KeyboardEvent => {
     return ({ which: which, shiftKey: shift } as unknown) as KeyboardEvent;
@@ -83,8 +84,15 @@ describe('RedirectionComponent', () => {
       expect(component.flagIdInvalid).toBeFalsy();
     });
 
+    it('should warn if the current id is referenced', () => {
+      expect(component.flagInvalidSelfReference).toBeFalsy();
+      component.currentId = 'CurrentId';
+      component.newIdString = 'CurrentId';
+      component.onKeyupRedirect(getKeyEvent(enterKey));
+      expect(component.flagInvalidSelfReference).toBeTruthy();
+    });
+
     it('should submit on enter', () => {
-      const enterKey = 13;
       component.redirectionId = '1';
 
       spyOn(component, 'add');
@@ -124,7 +132,7 @@ describe('RedirectionComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should not validate if the service is unavailable', () => {
+    it('should not allow redirects to self', () => {
       const fnSuccess = jasmine.createSpy();
       component.validate('123', fnSuccess);
       expect(fnSuccess).not.toHaveBeenCalled();

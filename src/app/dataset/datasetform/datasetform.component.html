@@ -108,7 +108,10 @@
               (removeRedirectionId)="removeRedirectionId($event)"
             ></app-redirection>
           </ng-container>
-          <app-redirection (addRedirectionId)="addRedirectionId($event)"></app-redirection>
+          <app-redirection
+            currentId="{{ datasetData.datasetId }}"
+            (addRedirectionId)="addRedirectionId($event)"
+          ></app-redirection>
         </div>
       </div>
 
