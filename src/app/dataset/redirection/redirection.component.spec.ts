@@ -10,10 +10,10 @@ import { RedirectionComponent } from '.';
 describe('RedirectionComponent', () => {
   let component: RedirectionComponent;
   let fixture: ComponentFixture<RedirectionComponent>;
-  const enterKey = 13;
+  const enterKey = 'Enter';
 
-  const getKeyEvent = (which: number, shift?: boolean): KeyboardEvent => {
-    return ({ which: which, shiftKey: shift } as unknown) as KeyboardEvent;
+  const getKeyEvent = (key: String, shift?: boolean): KeyboardEvent => {
+    return ({ key: key, shiftKey: shift } as unknown) as KeyboardEvent;
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -66,7 +66,7 @@ describe('RedirectionComponent', () => {
     });
 
     it('should ignore arrows, deletes, shift, ', () => {
-      const workingKey = 65; // letter 'a'
+      const workingKey = 'a';
       component.newIdString = 'SomeId';
       component.flagIdInvalid = true;
 
@@ -108,7 +108,7 @@ describe('RedirectionComponent', () => {
 
       component.newIdString = '123';
 
-      component.onKeyupRedirect(getKeyEvent(48));
+      component.onKeyupRedirect(getKeyEvent('0'));
       expect(component.add).not.toHaveBeenCalled();
 
       component.onKeyupRedirect(getKeyEvent(enterKey));

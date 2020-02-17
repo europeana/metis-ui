@@ -41,6 +41,10 @@ app-workflow-form-field-harvest {
     width: 25rem;
   }
 
+  &.metis-login-form form {
+    max-width: 100%;
+  }
+
   /* formheader */
   .form-header {
     width: auto;
