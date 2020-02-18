@@ -64,6 +64,7 @@ export class RedirectionComponent {
         if (success) {
           this.add(this.newIdString);
           this.newIdString = '';
+          this.flagIdInvalid = false;
         } else {
           this.flagIdInvalid = true;
         }
