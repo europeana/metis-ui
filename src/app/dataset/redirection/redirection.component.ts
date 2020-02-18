@@ -16,16 +16,6 @@ export class RedirectionComponent {
   newIdString: string;
   flagIdInvalid: boolean;
   flagInvalidSelfReference: boolean;
-  ignoredKeys = [
-    'Tab',
-    'Shift',
-    'Control',
-    'Escape',
-    'ArrowRight',
-    'ArrowLeft',
-    'ArrowDown',
-    'ArrowUp'
-  ];
 
   constructor(private readonly datasets: DatasetsService) {}
 
@@ -46,20 +36,15 @@ export class RedirectionComponent {
   }
 
   /* onKeyupRedirect
-  /* event handler for keystrokes on the new redirection field
+  /* event handler for keystrokes on the model fieldVal
+  /* checks presence and length, handles enter, clears invalid flags
   /* @param {KeyboardEvent} e - the key event
   */
   onKeyupRedirect(e: KeyboardEvent): void {
     if (this.newIdString && this.newIdString.length > 0) {
-      if (this.ignoredKeys.indexOf(e.key) > -1) {
-        return;
-      }
-      if (e.shiftKey || e.ctrlKey || e.altKey) {
-        return;
-      }
       if (e.key === 'Enter') {
         this.tryNewRedirectionId();
-      } else {
+      } else if (e.key.length === 1) {
         this.flagIdInvalid = false;
         this.flagInvalidSelfReference = false;
       }
@@ -67,7 +52,8 @@ export class RedirectionComponent {
   }
 
   /* tryNewRedirectionId
-  /* attempt to set newIdString as a new redirection field
+  /* handle self-referencing ids
+  /* handle result of this.validate
   */
   tryNewRedirectionId(): void {
     if (this.newIdString === this.currentId) {
@@ -88,6 +74,7 @@ export class RedirectionComponent {
   /** validate
   /* check a string corresponds to a dataset id
   /* @param {string} s - string to check
+  /* @param {(boolean) => void)} result callback function
   */
   validate(s: string, handleResult: (result: boolean) => void): void {
     this.datasets.getSearchResultsUptoPage(s, 1).subscribe(

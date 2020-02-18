@@ -12,8 +12,8 @@ describe('RedirectionComponent', () => {
   let fixture: ComponentFixture<RedirectionComponent>;
   const enterKey = 'Enter';
 
-  const getKeyEvent = (key: String, shift?: boolean): KeyboardEvent => {
-    return ({ key: key, shiftKey: shift } as unknown) as KeyboardEvent;
+  const getKeyEvent = (key: String): KeyboardEvent => {
+    return ({ key: key } as unknown) as KeyboardEvent;
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -65,20 +65,27 @@ describe('RedirectionComponent', () => {
       expect(component.removeRedirectionId.emit).toHaveBeenCalledWith(testId);
     });
 
-    it('should ignore arrows, deletes, shift, ', () => {
+    it('should ignore arrows, deletes, shift, alt, ', () => {
       const workingKey = 'a';
       component.newIdString = 'SomeId';
       component.flagIdInvalid = true;
 
       expect(component.flagIdInvalid).toBeTruthy();
 
-      component.ignoredKeys.forEach((ik) => {
+      [
+        'Alt',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'Control',
+        'Escape',
+        'Shift',
+        'Tab'
+      ].forEach((ik) => {
         component.onKeyupRedirect(getKeyEvent(ik));
         expect(component.flagIdInvalid).toBeTruthy();
       });
-
-      component.onKeyupRedirect(getKeyEvent(workingKey, true));
-      expect(component.flagIdInvalid).toBeTruthy();
 
       component.onKeyupRedirect(getKeyEvent(workingKey));
       expect(component.flagIdInvalid).toBeFalsy();
