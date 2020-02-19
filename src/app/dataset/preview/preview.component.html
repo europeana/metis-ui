@@ -142,7 +142,7 @@
   <div class="view-sample" *ngIf="!isLoading && allSamples.length === 0">
     <div class="view-sample-title">
       <h3>
-        {{ 'noSample' }}
+        {{ 'noSample' | translate }}
       </h3>
       <app-theme-selector
         (themeSet)="onThemeSet($event)"
