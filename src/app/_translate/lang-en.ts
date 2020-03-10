@@ -14,7 +14,7 @@ const LANG_EN_STATUS_TYPES = {
 
 export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   accountRole: 'Account role',
-  addDatasetId: 'Add dataset id',
+  addDatasetId: 'Add dataset id to redirect from',
   all: 'All',
   allExecutions: 'All executions',
   background: 'background',
@@ -120,7 +120,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   processedRecords: 'Processed / records',
   provider: 'Provider',
   rawXml: 'Raw XML',
-  redirectsTo: 'Redirects to',
+  redirectsFrom: 'Redirects from',
   refresh: 'Refresh',
   register: 'Register to Metis',
   registrationAlready: 'You are already registered, you will be redirected to the sign in page!',
