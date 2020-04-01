@@ -40,12 +40,14 @@
           *ngIf="!nps.moreLoaded && this.taskId"
           class="load-more-btn vertical"
           (click)="loadMoreAttrs(nps.xPath)"
-          title="{{ 'loadmore' | translate }}"
+          title="{{ 'loadMore' | translate }}"
         ></a>
       </li>
     </ul>
   </div>
   <div class="btns-set btns-set-right">
-    <a class="load-more-btn" *ngIf="!expandedStatistics" (click)="toggleStatistics()">expand</a>
+    <a class="load-more-btn" *ngIf="!expandedStatistics" (click)="toggleStatistics()">{{
+      'expand' | translate
+    }}</a>
   </div>
 </div>

@@ -4,10 +4,10 @@
       >{{ results.length }} search results for "{{ query }}"</strong
     >
     <div *ngIf="results?.length === 0" class="warning-before">
-      <span class="empty-result-header">{{ 'search-empty' | translate }} "{{ query }}" </span>
+      <span class="empty-result-header">{{ 'searchEmpty' | translate }} "{{ query }}" </span>
       <span class="tip-header">Search tips:</span>
       <ul class="tips">
-        <li *ngFor="let searchTip of ['search-tip-1', 'search-tip-2', 'search-tip-3']">
+        <li *ngFor="let searchTip of ['searchTip1', 'searchTip2', 'searchTip3']">
           {{ searchTip | translate }}
         </li>
       </ul>
@@ -17,11 +17,11 @@
     <span
       *ngFor="
         let headerTitle of [
-          'search-header-dataset-id',
-          'search-header-provider',
-          'search-header-data-provider',
-          'search-header-dataset-name',
-          'search-header-last-execution'
+          'searchHeaderDatasetId',
+          'searchHeaderProvider',
+          'searchHeaderDataProvider',
+          'searchHeaderDatasetName',
+          'searchHeaderLastExecution'
         ]
       "
       class="grid-header"
@@ -44,7 +44,7 @@
 
   <div class="grid-footer">
     <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{
-      'loadmore' | translate
+      'loadMore' | translate
     }}</a
     ><span class="svg-icon-spin" [class.showing]="isLoading"></span>
   </div>

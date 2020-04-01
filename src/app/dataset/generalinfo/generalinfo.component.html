@@ -5,16 +5,16 @@
   <dl class="dataset-info-fields">
     <dt>{{ 'provider' | translate }}</dt>
     <dd>{{ datasetData.provider }}</dd>
-    <dt *ngIf="datasetData.dataProvider">{{ 'dataprovider' | translate }}</dt>
+    <dt *ngIf="datasetData.dataProvider">{{ 'dataProvider' | translate }}</dt>
     <dd *ngIf="datasetData.dataProvider">{{ datasetData.dataProvider }}</dd>
-    <dt>{{ 'numberpublished' | translate }}</dt>
-    <dd>{{ lastPublishedRecords ? lastPublishedRecords : ('notpublished' | translate) }}</dd>
-    <dt>{{ 'lastpublished' | translate }}</dt>
+    <dt>{{ 'numberPublished' | translate }}</dt>
+    <dd>{{ lastPublishedRecords ? lastPublishedRecords : ('notPublished' | translate) }}</dd>
+    <dt>{{ 'lastPublished' | translate }}</dt>
     <dd>
       {{
         lastPublishedDate
           ? (lastPublishedDate | date: 'dd/MM/yyyy - HH:mm')
-          : ('notpublished' | translate)
+          : ('notPublished' | translate)
       }}
     </dd>
   </dl>
@@ -27,7 +27,7 @@
           target="_blank"
           [ngClass]="buttonClassPreview"
         >
-          {{ 'viewpreview' | translate }}
+          {{ 'viewPreview' | translate }}
         </a>
         <a
           class="btn btn-right"
@@ -35,7 +35,7 @@
           target="_blank"
           [ngClass]="buttonClassCollections"
         >
-          {{ 'viewcollections' | translate }} <span class="right-btn-under-text"></span>
+          {{ 'viewCollections' | translate }} <span class="right-btn-under-text"></span>
         </a>
       </span>
     </div>

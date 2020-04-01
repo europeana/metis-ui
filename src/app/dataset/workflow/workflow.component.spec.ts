@@ -13,7 +13,9 @@ import {
 } from '../../_mocked';
 import {
   DragType,
+  HarvestPluginMetadataBase,
   NotificationType,
+  OAIHarvestPluginMetadata,
   PluginMetadata,
   PluginType,
   successNotification,
@@ -234,6 +236,19 @@ describe('WorkflowComponent', () => {
       expect(result.metisPluginsMetadata.filter((x) => x.enabled).length).toEqual(1);
     });
 
+    it('should format missing url parameters as a blank string', () => {
+      let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
+      const httpHarvestConf = result.metisPluginsMetadata.filter(
+        (x) => x.pluginType === 'HTTP_HARVEST'
+      )[0] as HarvestPluginMetadataBase;
+      const oaipmhHarvestConf = result.metisPluginsMetadata.filter(
+        (x) => x.pluginType === 'OAIPMH_HARVEST'
+      )[0] as OAIHarvestPluginMetadata;
+      expect(oaipmhHarvestConf.url).toEqual('');
+      expect(httpHarvestConf.url).toEqual('');
+      result = component.formatFormValues();
+    });
+
     it('should reset', () => {
       component.notification = successNotification('hoi!');
       component.reset();
@@ -242,19 +257,19 @@ describe('WorkflowComponent', () => {
 
     it('should notify the user of form errors', () => {
       setSavableChanges();
-      expect(component.getSaveNotification()!.content).toBe('en:workflowsavenew');
+      expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
       component.workflowForm.get('url')!.setValue('');
-      expect(component.getSaveNotification()!.content).toBe('en:formerror');
+      expect(component.getSaveNotification()!.content).toBe('en:formError');
     });
 
     it('should submit the changes', fakeAsync(() => {
       console.log(workflows);
       //spyOn(workflows, 'createWorkflowForDataset');
       setSavableChanges();
-      expect(component.getSaveNotification()!.content).toBe('en:workflowsavenew');
+      expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
       component.onSubmit();
       tick();
-      expect(component.getSaveNotification()!.content).toBe('en:workflowsaved');
+      expect(component.getSaveNotification()!.content).toBe('en:workflowSaved');
       expect(component.getSaveNotification()).toEqual(component.notification);
       //expect(workflows.createWorkflowForDataset).toHaveBeenCalled();
     }));

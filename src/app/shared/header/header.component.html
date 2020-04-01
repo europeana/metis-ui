@@ -25,10 +25,10 @@
               ></a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li>
-                  <a (click)="gotoProfile()">{{ 'myprofile' | translate }}</a>
+                  <a (click)="gotoProfile()">{{ 'myProfile' | translate }}</a>
                 </li>
                 <li>
-                  <a (click)="logOut()">{{ 'signout' | translate }}</a>
+                  <a (click)="logOut()">{{ 'signOut' | translate }}</a>
                 </li>
               </ul>
             </div>
@@ -38,11 +38,11 @@
           <ul class="settings-menu cf nav-access">
             <li>
               <a class="signup has-submenu" (click)="toggleSignInMenu()">{{
-                'signin' | translate
+                'signIn' | translate
               }}</a>
               <ul class="menu-sublevel caret" *ngIf="openSignIn">
                 <li>
-                  <a (click)="gotoLogin()">{{ 'signin' | translate }}</a>
+                  <a (click)="gotoLogin()">{{ 'signIn' | translate }}</a>
                 </li>
                 <li>
                   <a (click)="gotoRegister()">{{ 'register' | translate }}</a>

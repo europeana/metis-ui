@@ -440,7 +440,7 @@ export class WorkflowService {
     const cancelledBy = workflow.cancelledBy;
     if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
       if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
-        return of(this.translate.instant('system time-out'));
+        return of(this.translate.instant('systemTimeout'));
       } else {
         return this.authenticationServer.getUserByUserId(cancelledBy).pipe(
           map((user) => {
