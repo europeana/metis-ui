@@ -64,7 +64,7 @@ describe('ReportSimpleComponent', () => {
     expect(component.notification).toBeFalsy();
     component.reportErrors = [];
     expect(component.isVisible).toBeTruthy();
-    expect(component.notification!.content).toEqual('en:reportempty');
+    expect(component.notification!.content).toEqual('en:reportEmpty');
   });
 
   it('should get the keys from an object', () => {
@@ -92,6 +92,6 @@ describe('ReportSimpleComponent', () => {
     component.reportErrors = ['Error'];
     fixture.detectChanges();
     component.copyReport();
-    expect(component.notification!.content).toBe('en:reportcopied');
+    expect(component.notification!.content).toBe('en:reportCopied');
   });
 });

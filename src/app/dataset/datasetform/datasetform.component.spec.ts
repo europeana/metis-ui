@@ -3,7 +3,6 @@ import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import {
   createMockPipe,
   MockCountriesService,
@@ -21,6 +20,9 @@ describe('DatasetformComponent', () => {
   let component: DatasetformComponent;
   let fixture: ComponentFixture<DatasetformComponent>;
   let router: Router;
+
+  const existingId = '123';
+  const newId = 'some_id';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -50,7 +52,7 @@ describe('DatasetformComponent', () => {
     fixture.detectChanges();
     component.onSubmit();
     fixture.detectChanges();
-    expect(component.notification!.content).toBe('en:datasetsaved');
+    expect(component.notification!.content).toBe('en:datasetSaved');
   }));
 
   it('should submit form and create the dataset', fakeAsync((): void => {
@@ -70,5 +72,47 @@ describe('DatasetformComponent', () => {
 
     expect(localStorage.getItem('tempDatasetData')).not.toBe('');
     localStorage.removeItem('tempDatasetData');
+  });
+
+  it('should clear the fields', () => {
+    fixture.detectChanges();
+    const fName = 'datasetName';
+    const field = component.datasetForm.controls[fName];
+
+    expect(component.datasetForm.dirty).toBeFalsy();
+    expect(field.value).toBeTruthy();
+
+    component.clearField(fName);
+
+    expect(component.datasetForm.dirty).toBeTruthy();
+    expect(field.value).toBeFalsy();
+  });
+
+  it('should reset', () => {
+    fixture.detectChanges();
+    const fName = 'datasetName';
+    expect(component.datasetForm.pristine).toBeTruthy();
+    component.clearField(fName);
+    expect(component.datasetForm.pristine).toBeFalsy();
+    component.reset();
+    expect(component.datasetForm.pristine).toBeTruthy();
+  });
+
+  it('should add redirection ids', () => {
+    fixture.detectChanges();
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.addRedirectionId(existingId);
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.addRedirectionId(newId);
+    expect(component.datasetForm.dirty).toBeTruthy();
+  });
+
+  it('should remove redirection ids', () => {
+    fixture.detectChanges();
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.removeRedirectionId(newId);
+    expect(component.datasetForm.dirty).toBeFalsy();
+    component.removeRedirectionId(existingId);
+    expect(component.datasetForm.dirty).toBeTruthy();
   });
 });

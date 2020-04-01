@@ -16,8 +16,6 @@
   .status {
     font-size: 0.75rem;
     text-align: center;
-    white-space: nowrap;
-
     strong,
     &.status-new {
       display: block;
@@ -109,6 +107,12 @@ nav {
       border-color: transparent;
       color: $gray-med;
     }
+  }
+}
+
+@media (min-width: $bp-small) {
+  .dataset-actionbar .status {
+    white-space: nowrap;
   }
 }
 

@@ -15,7 +15,7 @@
         *ngIf="allWorkflowExecutions && allWorkflowExecutions.length > 0"
       >
         <a (click)="toggleFilterDate()"
-          >{{ 'datestarted' | translate
+          >{{ 'dateStarted' | translate
           }}<span *ngIf="selectedDate">: {{ selectedDate | date: 'dd/MM/yyyy - HH:mm' }}</span></a
         >
         <div *ngIf="filterDateOpen" class="dropdown-wrapper">
@@ -132,7 +132,9 @@
         </div>
       </div>
       <div class="btns-set btns-set-right">
-        <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">expand</a>
+        <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">{{
+          'expandInfo' | translate
+        }}</a>
       </div>
     </div>
   </div>
@@ -140,7 +142,7 @@
   <div class="view-sample" *ngIf="!isLoading && allSamples.length === 0">
     <div class="view-sample-title">
       <h3>
-        {{ nosample }}
+        {{ 'noSample' | translate }}
       </h3>
       <app-theme-selector
         (themeSet)="onThemeSet($event)"
@@ -216,7 +218,7 @@
         <div class="preview-controls">
           <div class="preview-controls-left"></div>
           <div class="preview-controls-right">
-            <button (click)="gotoMapping()">{{ 'gotomapping' | translate }}</button>
+            <button (click)="gotoMapping()">{{ 'goToMapping' | translate }}</button>
           </div>
         </div>
       </div>

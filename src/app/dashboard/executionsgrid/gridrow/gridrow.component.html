@@ -29,7 +29,7 @@
 
   <span class="grid-cell row-steps row-divider" *ngIf="dsExecution.executionProgress">
     {{ dsExecution.executionProgress.stepsDone }} / {{ dsExecution.executionProgress.stepsTotal }}
-    {{ 'overviewsteps' | translate }}
+    {{ 'overviewSteps' | translate }}
     <ul
       *ngIf="dsExecution.execution.plugins && dsExecution.execution.plugins.length > 0"
       class="orbs"

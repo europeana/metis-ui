@@ -1,24 +1,24 @@
 <app-filter-ops
-  title="{{ 'allexecutions' | translate }}"
+  title="{{ 'allExecutions' | translate }}"
   [isLoading]="isLoading"
   (overviewParams)="setOverviewParams($event)"
 ></app-filter-ops>
 
 <div *ngIf="dsOverview" class="executions-grid">
   <span class="grid-header">
-    {{ 'datasetname' | translate }}
+    {{ 'datasetName' | translate }}
   </span>
   <span class="grid-header">
     {{ 'workflows' | translate }}
   </span>
   <span class="grid-header">
-    {{ 'processed-records' | translate }}
+    {{ 'processedRecords' | translate }}
   </span>
   <span class="grid-header">
-    {{ 'starttime' | translate }}
+    {{ 'startTime' | translate }}
   </span>
   <span class="grid-header last-header">
-    {{ 'endtime' | translate }}
+    {{ 'endTime' | translate }}
   </span>
   <ng-container *ngFor="let dsExecution of dsOverview">
     <app-gridrow
@@ -30,14 +30,14 @@
     <ng-content *ngTemplateOutlet="wrapper.childComponentTemplate"></ng-content>
   </ng-container>
   <span class="no-content-message" *ngIf="overviewParams && dsOverview.length === 0">
-    {{ 'nofiltermatch' | translate }}
+    {{ 'noFilterMatch' | translate }}
   </span>
 </div>
 
 <div *ngIf="maxResultsReached" class="grid-footer warning">
-  {{ 'max-results-reached' | translate }}
+  {{ 'maxResultsReached' | translate }}
 </div>
 <div class="grid-footer">
-  <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{ 'loadmore' | translate }}</a
+  <a class="load-more-btn" (click)="loadNextPage()" *ngIf="hasMore">{{ 'loadMore' | translate }}</a
   ><span class="svg-icon-spin" [class.showing]="isLoadingMore"></span>
 </div>

@@ -45,7 +45,7 @@ export class ReportSimpleComponent {
       this.isVisible = true;
       this.errors = errors;
       if (this.errors.length === 0) {
-        this.notification = errorNotification(this.translate.instant('reportempty'));
+        this.notification = errorNotification(this.translate.instant('reportEmpty'));
       }
     }
   }
@@ -88,7 +88,7 @@ export class ReportSimpleComponent {
     window.getSelection().addRange(range);
     document.execCommand('copy');
     window.getSelection().removeAllRanges();
-    this.notification = successNotification(this.translate.instant('reportcopied'));
+    this.notification = successNotification(this.translate.instant('reportCopied'));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

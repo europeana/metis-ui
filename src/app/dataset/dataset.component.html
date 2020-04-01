@@ -36,7 +36,7 @@
       </div>
       <div class="metis-dashboard-right">
         <div *ngIf="datasetData.unfitForPublication" class="unfit-to-publish">
-          {{ 'datasetunpublishable-banner' | translate }}
+          {{ 'datasetUnpublishableBanner' | translate }}
         </div>
         <app-actionbar
           [datasetId]="datasetId"
@@ -66,8 +66,8 @@
       <ul class="tabs">
         <li [ngClass]="{ active: activeTab === 'edit' }">
           <a routerLink="/dataset/edit/{{ datasetId }}">
-            <span class="tab-title">{{ 'datasetinformation' | translate }}</span>
-            <span class="tab-subtitle">{{ 'lastharvest' | translate }}</span>
+            <span class="tab-title">{{ 'datasetInformation' | translate }}</span>
+            <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
             <span class="tab-subtitle tab-date" *ngIf="harvestPublicationData">{{
               harvestPublicationData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm'
             }}</span>
@@ -85,13 +85,13 @@
         </li>
         <li [ngClass]="{ active: activeTab === 'preview' }">
           <a routerLink="/dataset/preview/{{ datasetId }}">
-            <span class="tab-title">{{ 'rawxml' | translate }}</span>
+            <span class="tab-title">{{ 'rawXml' | translate }}</span>
           </a>
         </li>
         <li [ngClass]="{ active: activeTab === 'log' }">
           <a routerLink="/dataset/log/{{ datasetId }}">
-            <span class="tab-title">{{ 'processinghistory' | translate }}</span>
-            <span class="tab-subtitle">{{ 'lastmodified' | translate }}</span>
+            <span class="tab-title">{{ 'processingHistory' | translate }}</span>
+            <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
             <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{
               lastExecutionData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
             }}</span>

@@ -1,11 +1,11 @@
 <div class="workflow-header" #workflowheader [ngClass]="{ stuck: isStuck }">
   <div class="full-view">
     <span class="shortcuts">
-      <a class="link" (click)="selectAll()">{{ 'workflow-select-all' | translate }}</a>
-      <a class="link" (click)="clearAll()">{{ 'workflow-clear-all' | translate }}</a>
+      <a class="link" (click)="selectAll()">{{ 'workflowSelectAll' | translate }}</a>
+      <a class="link" (click)="clearAll()">{{ 'workflowClearAll' | translate }}</a>
     </span>
     <span class="instruction">
-      {{ 'workflow-instruction-1' | translate }}
+      {{ 'workflowInstruction' | translate }}
     </span>
     <a
       class="add-link-checking"
@@ -15,8 +15,8 @@
       (dragend)="dragEnd()"
       [ngClass]="{ active: linkCheckingEnabled() }"
     >
-      <span class="text add">{{ 'workflow-add-link-check' | translate }}</span>
-      <span class="text remove">{{ 'workflow-remove-link-check' | translate }}</span>
+      <span class="text add">{{ 'workflowAddLinkCheck' | translate }}</span>
+      <span class="text remove">{{ 'workflowRemoveLinkCheck' | translate }}</span>
       <span class="ghost link_checking orb-status labelled active" #ghost></span>
     </a>
   </div>
@@ -58,6 +58,6 @@
     </ul>
   </div>
   <a class="return" (click)="scrollToTop()">
-    <span class="return-text">{{ 'workflow-go-to-top' | translate }}</span>
+    <span class="return-text">{{ 'workflowGoToTop' | translate }}</span>
   </a>
 </div>

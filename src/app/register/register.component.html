@@ -18,7 +18,7 @@
           class="messages"
           *ngIf="registerForm.controls['email'].touched && !registerForm.controls['email'].valid"
         >
-          <div class="error-message">{{ 'emailerror' | translate }}</div>
+          <div class="error-message">{{ 'emailError' | translate }}</div>
         </div>
       </fieldset>
 
@@ -46,7 +46,7 @@
             !registerForm.controls['passwords'].get('confirm')!.valid
           "
         >
-          <div class="error-message">{{ 'passwordmatcherror' | translate }}</div>
+          <div class="error-message">{{ 'passwordMatchError' | translate }}</div>
         </div>
       </fieldset>
 

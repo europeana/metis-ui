@@ -1,7 +1,7 @@
 import { Report } from '../../src/app/_models/report';
 
 export const report: Report = {
-  id: -3184946032335434000,
+  id: '-3184946032335434000',
   errors: [
     {
       errorType: '030c19d0-ebdb-11e8-b0f8-fa163eab778a',

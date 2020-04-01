@@ -7,16 +7,16 @@
 
 <div class="table-grid history">
   <div class="table-grid-header">
-    {{ 'workflow step' | translate }}
+    {{ 'workflowStep' | translate }}
   </div>
   <div class="table-grid-header">
-    {{ 'processed-records' | translate }}
+    {{ 'processedRecords' | translate }}
   </div>
   <div class="table-grid-header date-header">
-    {{ 'starttime' | translate }}
+    {{ 'startTime' | translate }}
   </div>
   <div class="table-grid-header date-header">
-    {{ 'endtime' | translate }}
+    {{ 'endTime' | translate }}
   </div>
   <div class="table-grid-header"></div>
 
@@ -28,12 +28,12 @@
       <div
         class="head-text"
         (dblclick)="copyInformation('execution', execution.id, execution.ecloudDatasetId)"
-        title="{{ 'doubleclicktocopy' | translate }}"
+        title="{{ 'doubleClickToCopy' | translate }}"
       >
-        <span class="head-prefix">{{ 'workflowcreated' | translate }}</span>
+        <span class="head-prefix">{{ 'workflowCreated' | translate }}</span>
         {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}
         <div class="head-right" *ngIf="getCancelledBy(execution) | async as canceller">
-          <span class="head-prefix">{{ 'cancelled-by' | translate }}</span>
+          <span class="head-prefix">{{ 'cancelledBy' | translate }}</span>
           {{ canceller }}
         </div>
       </div>
@@ -52,10 +52,10 @@
   </ng-container>
 
   <span *ngIf="maxResultsReached" class="table-grid-footer warning">
-    {{ 'max-results-reached' | translate }}
+    {{ 'maxResultsReached' | translate }}
   </span>
 
   <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">
-    <a class="load-more-btn">{{ 'loadmore' | translate }}</a>
+    <a class="load-more-btn">{{ 'loadMore' | translate }}</a>
   </span>
 </div>

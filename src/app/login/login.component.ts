@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required]
     });
 
-    this.msgBadCredentials = this.translate.instant('msgbadcredentials');
+    this.msgBadCredentials = this.translate.instant('msgBadCredentials');
   }
 
   /** onSubmit

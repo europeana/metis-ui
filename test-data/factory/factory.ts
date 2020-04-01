@@ -165,7 +165,8 @@ function generateDatasetX(): Array<DatasetX> {
         ecloudDatasetId: 'e-cloud-dataset-id-' + datasetId,
         xsltId: datasetId,
         datasetId: datasetId,
-        datasetName: 'Dataset ' + (parseInt(datasetId) + 1),
+        datasetName: 'Dataset_' + (parseInt(datasetId) + 1),
+        datasetIdsToRedirectFrom: ['0', '1'],
         organizationId: 'organisation-id',
         organizationName: 'Europeana Foundation',
         provider: 'Europeana Provider',
@@ -650,7 +651,10 @@ export function information(informationId?: string): HarvestData {
 export function search(term: string, page: number = 0): ResultList {
   const allResults = datasetXs
     .filter((datasetX: DatasetX) => {
-      return datasetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase());
+      return (
+        datasetX.datasetName.toUpperCase().includes(`${term}`.toUpperCase()) ||
+        datasetX.datasetId.toUpperCase().includes(`${term}`.toUpperCase())
+      );
     })
     .map((datasetX: DatasetX) => {
       let lastExec = datasetX.workflows![0]!.executions![0]!.finishedDate;
