@@ -25,7 +25,7 @@ import {
 
 import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
 import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
-import { DatasetSearchView, Workflow } from '../../src/app/_models';
+import { DatasetSearchView, PublicationFitness, Workflow } from '../../src/app/_models';
 
 let baseDate = new Date('2019-02-18T07:36:59.801Z');
 const pageSize = 2;
@@ -182,14 +182,15 @@ function generateDatasetX(): Array<DatasetX> {
           enum: 'GD',
           name: 'Gaelic (Scottish)'
         },
-
         description: '',
         intermediateProvider: '',
         notes: '',
         replacedBy: '',
         replaces: '',
-
-        unfitForPublication: false,
+        publicationFitness:
+          parseInt(datasetId) % 3 == 1
+            ? PublicationFitness.PARTIALLY_FIT
+            : PublicationFitness.UNFIT,
         workflows: workflows,
         updatedDate: generateDate(DateBumpType.MINUTE)
       } as DatasetX;

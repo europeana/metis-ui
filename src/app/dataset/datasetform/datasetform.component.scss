@@ -59,7 +59,8 @@ $small-margin: 0.82rem;
   padding-bottom: 0em;
 }
 
-.dataset-label + input[type='checkbox'] {
+.dataset-label + input[type='checkbox'],
+.dataset-label + .radio-group {
   flex: initial;
   margin-left: $small-margin;
 }

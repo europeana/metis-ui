@@ -178,16 +178,20 @@
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
       <div class="form-group">
-        <label class="dataset-label" for="unfitForPublication">{{
-          'datasetUnpublishableLabel' | translate
-        }}</label>
-        <input
-          id="unfitForPublication"
-          type="checkbox"
-          [checked]="datasetData.unfitForPublication"
-          formControlName="unfitForPublication"
-          (blur)="saveTempData()"
-        />
+        <label class="dataset-label">
+          {{ 'datasetPublicationFitness' | translate }}
+        </label>
+        <div class="radio-group">
+          <label *ngFor="let option of publicationFitnessOps">
+            <input
+              type="radio"
+              formControlName="publicationFitness"
+              value="{{ option.val }}"
+              (blur)="saveTempData()"
+            />
+            {{ option.label | translate }}
+          </label>
+        </div>
       </div>
       <div class="form-group" *ngIf="!isNew">
         <label class="dataset-label">{{ 'createdBy' | translate }}</label>

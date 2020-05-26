@@ -9,6 +9,12 @@ export interface DatasetSearchView {
   lastExecutionDate?: string;
 }
 
+export enum PublicationFitness {
+  FIT = 'FIT',
+  PARTIALLY_FIT = 'PARTIALLY_FIT',
+  UNFIT = 'UNFIT'
+}
+
 export interface Dataset {
   id: string;
   datasetId: string;
@@ -31,7 +37,7 @@ export interface Dataset {
 
   description?: string;
   notes?: string;
-  unfitForPublication?: boolean;
 
+  publicationFitness?: PublicationFitness;
   xsltId?: string | null;
 }

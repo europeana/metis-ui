@@ -11,6 +11,7 @@ import {
   httpErrorNotification,
   Language,
   Notification,
+  PublicationFitness,
   successNotification
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
@@ -34,6 +35,7 @@ export class DatasetformComponent implements OnInit {
   selectedCountry?: Country;
   selectedLanguage?: Language;
 
+  publicationFitnessOps: Array<{ label: String; val: string }>;
   datasetForm: FormGroup;
   countryOptions: Country[];
   languageOptions: Language[];
@@ -87,6 +89,24 @@ export class DatasetformComponent implements OnInit {
     this.returnLanguages();
     this.invalidNotification = errorNotification(this.translate.instant('formError'), {
       sticky: true
+    });
+
+    const snakeToCamel = (str: String): string =>
+      str.replace(/([-_][a-z])/g, (group) =>
+        group
+          .toUpperCase()
+          .replace('-', '')
+          .replace('_', '')
+      );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.publicationFitnessOps = Object.keys(PublicationFitness).map((key: any) => {
+      const val = PublicationFitness[key];
+      const camel = snakeToCamel(val.toLowerCase());
+      return {
+        label: 'datasetPublicationFitnessValLabel' + camel.charAt(0).toUpperCase() + camel.slice(1),
+        val: val
+      } as { label: string; val: string };
     });
   }
 
@@ -217,7 +237,7 @@ export class DatasetformComponent implements OnInit {
       language: ['', [Validators.required]],
       description: [''],
       notes: [''],
-      unfitForPublication: ['']
+      publicationFitness: ['']
     });
     this.updateForm();
     this.updateFormEnabled();
