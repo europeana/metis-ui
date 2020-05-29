@@ -1,6 +1,7 @@
 export * from './authentication.service';
 export * from './countries.service';
 export * from './datasets.service';
+export * from './depublication.service';
 export * from './document-title.service';
 export * from './editor-pref.service';
 export * from './error.service';

@@ -1,0 +1,81 @@
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
+
+.dialog-file,
+.dialog-input {
+  form {
+    padding: 1em;
+  }
+}
+
+.dialog-file {
+  min-width: 18em;
+}
+
+.dialog-input {
+  width: 90vw;
+}
+
+.dropdown-options {
+  margin-left: auto;
+}
+
+[name='recordIds'] {
+  resize: none;
+  width: 100%;
+}
+
+.submit-form {
+  background: $eu-jade;
+  color: $white;
+  margin-left: auto;
+
+  &:disabled {
+    background: $white;
+    border: 1px solid $eu-jade;
+    color: $eu-jade;
+    cursor: not-allowed;
+  }
+}
+
+.depublications-grid {
+  background: #fff;
+  display: grid;
+  grid-template-columns: 1fr 4fr 2fr 2fr auto;
+  margin-top: 2em;
+  overflow: hidden;
+
+  .grid-header {
+    background: $white;
+    display: none;
+    font-weight: bold;
+    padding: 0.5em 1em;
+  }
+}
+
+.svg-icon-spin {
+  position: absolute;
+}
+
+@media (min-width: $bp-med) {
+  .form-ctrls {
+    display: flex;
+    justify-content: space-between;
+    margin: 1em 0;
+  }
+
+  .depublication-ctrls {
+    display: flex;
+    justify-content: space-between;
+
+    .search-records {
+      width: auto;
+    }
+  }
+
+  .depublications-grid {
+    .grid-header {
+      display: block;
+    }
+  }
+}

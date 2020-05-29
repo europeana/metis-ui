@@ -23,6 +23,8 @@ import {
   DatasetComponent,
   DatasetformComponent,
   DatasetlogComponent,
+  DepublicationComponent,
+  DepublicationRowComponent,
   ExecutionsDataGridComponent,
   GeneralinfoComponent,
   HistoryComponent,
@@ -40,6 +42,7 @@ import {
   WorkflowFormFieldTransformComponent,
   WorkflowHeaderComponent
 } from './dataset';
+import { FileUploadComponent } from './file-upload';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
 import { LoadTitleComponent } from './load-title';
@@ -61,6 +64,7 @@ import { ThemeSelectorComponent } from './theme-selector';
 
 @NgModule({
   declarations: [
+    ActionbarComponent,
     AppComponent,
     CollapsibleDirective,
     RegisterComponent,
@@ -75,6 +79,8 @@ import { ThemeSelectorComponent } from './theme-selector';
     NewDatasetComponent,
     DashboardComponent,
     DatasetformComponent,
+    DepublicationComponent,
+    DepublicationRowComponent,
     FilterOpsComponent,
     FilterOptionComponent,
     PasswordCheckComponent,
@@ -83,10 +89,9 @@ import { ThemeSelectorComponent } from './theme-selector';
     GeneralinfoComponent,
     DashboardactionsComponent,
     ExecutionsDataGridComponent,
-    ActionbarComponent,
+    FileUploadComponent,
     LastExecutionComponent,
     HistoryComponent,
-    ActionbarComponent,
     WorkflowComponent,
     WorkflowHeaderComponent,
     WorkflowFormFieldComponent,

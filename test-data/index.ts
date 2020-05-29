@@ -5,9 +5,11 @@ import {
   evolution,
   executionsHistory,
   executionsByDatasetIdAsList,
+  getListWrapper,
   information,
   overview,
   pluginsAvailable,
+  publicationInfo,
   reportExists,
   running,
   search,
@@ -15,10 +17,12 @@ import {
   xslt
 } from './factory/factory';
 import { urlManipulation } from './_models/test-models';
+import { PublicationStatus, RecordPublicationInfo } from '../src/app/_models';
 
 const port = 3000;
 const url = require('url');
 
+let depublicationInfoCache: Array<RecordPublicationInfo> = [];
 let switchedOff: { [key: string]: string } = {};
 
 function returnEmpty(response: ServerResponse) {
@@ -171,10 +175,55 @@ function getStatistics(): string {
   });
 }
 
-function routeToFile(response: ServerResponse, route: string): boolean {
+function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
-  let regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
+  let regRes = route.match(/records\/[^\?+]*/);
+
+  if (regRes) {
+    if (request.method === 'POST') {
+      const pushToDepublicationCache = (url: string) => {
+        const time = new Date().toISOString();
+        depublicationInfoCache.push({
+          id: '',
+          recordUrl: url,
+          publicationStatus: PublicationStatus.DEPUBLISHED,
+          depublicationDate: time
+        } as RecordPublicationInfo);
+      };
+
+      const params = url.parse(route, true).query;
+      const fileName = params.clientFilename;
+
+      if (fileName) {
+        pushToDepublicationCache('file/upload/' + fileName);
+        response.end();
+        return true;
+      }
+
+      let body = '';
+
+      request.on('data', function(data) {
+        body += data.toString();
+      });
+      request.on('end', function() {
+        JSON.parse(body)
+          .toDepublish.split(/\s+/)
+          .forEach((recordUrl: string) => pushToDepublicationCache(recordUrl));
+        response.end();
+        return true;
+      });
+    } else {
+      if (depublicationInfoCache.length > 0) {
+        response.end(JSON.stringify(getListWrapper(depublicationInfoCache, true, 100)));
+      } else {
+        response.end(JSON.stringify(publicationInfo(regRes[0].replace(/records\//, ''))));
+      }
+      return true;
+    }
+  }
+
+  regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
 
   if (regRes) {
     response.end(JSON.stringify(reportExists(regRes[1])));
@@ -406,7 +455,7 @@ const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
     return;
   }
 
-  let requestHandled = routeToFile(response, route);
+  let requestHandled = routeToFile(request, response, route);
 
   if (!requestHandled) {
     if (request.method === 'POST') {
