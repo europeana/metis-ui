@@ -363,7 +363,7 @@ describe('DatasetComponent', () => {
     it('should supply the correct publication warnings', fakeAsync(() => {
       const expectedWarning = 'en:datasetUnpublishableBanner';
       const expectedWarningPartial = 'en:datasetPartiallyUnpublishableBanner';
-      expect(component.publicationFitnessWarning(PublicationFitness.FIT)).toBe(undefined);
+      expect(component.publicationFitnessWarning(PublicationFitness.FIT)).toBeFalsy();
       expect(component.publicationFitnessWarning(PublicationFitness.PARTIALLY_FIT)).toEqual(
         expectedWarningPartial
       );
