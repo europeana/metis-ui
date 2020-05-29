@@ -28,7 +28,7 @@ import { DatasetComponent } from '.';
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
-fdescribe('DatasetComponent', () => {
+describe('DatasetComponent', () => {
   let component: DatasetComponent;
   let datasets: DatasetsService;
   let fixture: ComponentFixture<DatasetComponent>;
