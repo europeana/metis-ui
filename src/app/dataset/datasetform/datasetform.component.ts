@@ -90,24 +90,20 @@ export class DatasetformComponent implements OnInit {
     this.invalidNotification = errorNotification(this.translate.instant('formError'), {
       sticky: true
     });
-
-    const snakeToCamel = (str: String): string =>
-      str.replace(/([-_][a-z])/g, (group) =>
-        group
-          .toUpperCase()
-          .replace('-', '')
-          .replace('_', '')
-      );
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.publicationFitnessOps = Object.keys(PublicationFitness).map((key: any) => {
-      const val = PublicationFitness[key];
-      const camel = snakeToCamel(val.toLowerCase());
-      return {
-        label: 'datasetPublicationFitnessValLabel' + camel.charAt(0).toUpperCase() + camel.slice(1),
-        val: val
-      } as { label: string; val: string };
-    });
+    this.publicationFitnessOps = [
+      {
+        label: 'datasetPublicationFitnessValLabelFit',
+        val: PublicationFitness.FIT
+      },
+      {
+        label: 'datasetPublicationFitnessValLabelPartiallyFit',
+        val: PublicationFitness.PARTIALLY_FIT
+      },
+      {
+        label: 'datasetPublicationFitnessValLabelUnfit',
+        val: PublicationFitness.UNFIT
+      }
+    ];
   }
 
   /** redirectionIds

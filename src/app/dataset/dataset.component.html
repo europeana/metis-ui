@@ -35,11 +35,11 @@
         ></app-generalinfo>
       </div>
       <div class="metis-dashboard-right">
-        <div *ngIf="datasetData.publicationFitness === 'UNFIT'" class="unfit-to-publish">
-          {{ 'datasetUnpublishableBanner' | translate }}
-        </div>
-        <div *ngIf="datasetData.publicationFitness === 'PARTIALLY_FIT'" class="unfit-to-publish">
-          {{ 'datasetPartiallyUnpublishableBanner' | translate }}
+        <div
+          *ngIf="publicationFitnessWarning(datasetData.publicationFitness); let warning"
+          class="unfit-to-publish"
+        >
+          {{ warning }}
         </div>
         <app-actionbar
           [datasetId]="datasetId"
