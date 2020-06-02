@@ -42,6 +42,16 @@ export class MockDepublicationService {
     console.log('TODO: eslint-disable no-unused-vars >>> ' + datasetId + ' ' + endPage);
     return observableOf(mockPublicationInfoMoreResults);
   }
+
+  setPublicationFile(datasetId: string, file: File): Observable<boolean> {
+    console.log(`Mock: setPublicationFile ${datasetId}/${file}`);
+    return observableOf(true);
+  }
+
+  setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
+    console.log(`Mock: setPublicationInfo ${datasetId}/${toDepublish}`);
+    return observableOf(true);
+  }
 }
 
 export class MockDepublicationServiceErrors extends MockDepublicationService {

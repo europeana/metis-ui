@@ -15,17 +15,17 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
 })
 export class FileUploadComponent implements ControlValueAccessor {
   onChange: Function;
-  fileName = '';
 
   @Input() acceptedTypes: string;
   @Input() form: FormGroup;
 
-  @HostListener('change', ['$event.target.files']) emitFiles(event: FileList): void {
+  @HostListener('change', ['$event.target.files'])
+  emitFiles(event: FileList): void {
     const file = event && event.item(0);
     this.onChange(file);
-    this.fileName = file ? file.name : '';
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   constructor(private host: ElementRef<HTMLInputElement>) {}
 
   /** writeValue
@@ -33,7 +33,6 @@ export class FileUploadComponent implements ControlValueAccessor {
   */
   writeValue(): void {
     this.host.nativeElement.value = '';
-    this.fileName = '';
   }
 
   /** registerOnChange
@@ -48,9 +47,5 @@ export class FileUploadComponent implements ControlValueAccessor {
   /*  assign touched function to native file input
   /*  @param {Function} fn - the function to bind to
   */
-  registerOnTouched(fn: Function): void {
-    if (!fn) {
-      console.log('no fn');
-    }
-  }
+  registerOnTouched() {}
 }
