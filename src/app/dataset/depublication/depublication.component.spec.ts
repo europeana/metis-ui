@@ -12,7 +12,7 @@ import { SortDirection } from '../../_models';
 import { DepublicationService, ErrorService } from '../../_services';
 import { DepublicationComponent } from '.';
 
-fdescribe('DepublicationComponent', () => {
+describe('DepublicationComponent', () => {
   let component: DepublicationComponent;
   let fixture: ComponentFixture<DepublicationComponent>;
   let depublications: DepublicationService;

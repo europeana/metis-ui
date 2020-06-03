@@ -40,20 +40,24 @@ describe('depublication service', () => {
     service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoResults);
     });
-    mockHttp.expect('GET', '/records/123?nextPage=0').send(mockPublicationInfoResults);
+    mockHttp.expect('GET', '/depublished_records/123?nextPage=0').send(mockPublicationInfoResults);
   });
 
   it('should get the publication info paginated', () => {
     service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
-    mockHttp.expect('GET', '/records/123?nextPage=0').send(mockPublicationInfoMoreResults);
+    mockHttp
+      .expect('GET', '/depublished_records/123?nextPage=0')
+      .send(mockPublicationInfoMoreResults);
   });
 
   it('should set the publication info', () => {
-    service.setPublicationInfo('123', 'http://records/id1 http://records/id2').subscribe((res) => {
-      expect(res).toEqual(true);
-    });
+    service
+      .setPublicationInfo('123', 'http://depublished_records/id1 http://depublished_records/id2')
+      .subscribe((res) => {
+        expect(res).toEqual(true);
+      });
   });
 
   it('should set the publication file', () => {

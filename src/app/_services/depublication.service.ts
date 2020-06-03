@@ -33,7 +33,7 @@ export class DepublicationService {
   /*  @param {File} file - file of record urls
   */
   setPublicationFile(datasetId: string, file: File): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/records/${datasetId}`;
+    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
     const formData = new FormData();
 
     formData.append('depublicationFile', file);
@@ -60,7 +60,7 @@ export class DepublicationService {
   /*  @param {string} toDepublish - depublication record urls
   */
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/records/${datasetId}`;
+    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
     return this.http.post<boolean>(url, { toDepublish }).pipe(this.errors.handleRetry());
   }
 
@@ -84,7 +84,7 @@ export class DepublicationService {
     sort?: SortParameter
   ): Observable<Results<RecordPublicationInfo>> {
     const sortParam = this.parseSortParameter(sort);
-    const url = `${apiSettings.apiHostCore}/records/${datasetId}?nextPage=${page}${sortParam}`;
+    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?nextPage=${page}${sortParam}`;
     return this.http.get<Results<RecordPublicationInfo>>(url).pipe(this.errors.handleRetry());
   }
 

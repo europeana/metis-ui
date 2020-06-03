@@ -177,7 +177,7 @@ function getStatistics(): string {
 function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
-  let regRes = route.match(/records\/[^\?+]*/);
+  let regRes = route.match(/depublished_records\/[^\?+]*/);
 
   if (regRes) {
     const params = url.parse(route, true).query;
