@@ -47,5 +47,7 @@ export class FileUploadComponent implements ControlValueAccessor {
   /*  assign touched function to native file input
   /*  @param {Function} fn - the function to bind to
   */
-  registerOnTouched(): void {}
+  registerOnTouched(fn: Function): void {
+    console.log(!!fn);
+  }
 }
