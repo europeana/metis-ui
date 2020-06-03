@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
-import { MoreResults, RecordPublicationInfo, Results } from '../_models';
+import { MoreResults, RecordPublicationInfo, Results, SortParameter } from '../_models';
 
 import { collectResultsUptoPage } from './service-utils';
 import { ErrorService } from './error.service';
@@ -64,13 +64,27 @@ export class DepublicationService {
     return this.http.post<boolean>(url, { toDepublish }).pipe(this.errors.handleRetry());
   }
 
+  /** parseSortParameter
+  /*  return string representation of a SortParameter or an empty string
+  /*  @param {SortParameter} p - optional
+  */
+  parseSortParameter(p?: SortParameter): string {
+    return p ? `&sortField=${p.field}&sortDirection=${p.direction.toLowerCase()}` : '';
+  }
+
   /** getPublicationInfo
   /*  retrieve publication information
   /*  @param {string} datasetId - the dataset id
   /*  @param {number} page - the pagination target
+  /*  @param {SortParameter} sort - optional - sort parameter
   */
-  getPublicationInfo(datasetId: string, page: number): Observable<Results<RecordPublicationInfo>> {
-    const url = `${apiSettings.apiHostCore}/records/${datasetId}?nextPage=${page}&sort=1`;
+  getPublicationInfo(
+    datasetId: string,
+    page: number,
+    sort?: SortParameter
+  ): Observable<Results<RecordPublicationInfo>> {
+    const sortParam = this.parseSortParameter(sort);
+    const url = `${apiSettings.apiHostCore}/records/${datasetId}?nextPage=${page}${sortParam}`;
     return this.http.get<Results<RecordPublicationInfo>>(url).pipe(this.errors.handleRetry());
   }
 
@@ -78,13 +92,15 @@ export class DepublicationService {
   /*  paginated record publication information
   /*  @param {string} datasetId - the dataset id
   /*  @param {number} endPage - the number of pages to fetch
+  /*  @param {SortParameter} sort - optional - sort parameter
   */
   getPublicationInfoUptoPage(
     datasetId: string,
-    endPage: number
+    endPage: number,
+    sort?: SortParameter
   ): Observable<MoreResults<RecordPublicationInfo>> {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const getResults = (page: number) => this.getPublicationInfo(datasetId, page);
+    const getResults = (page: number) => this.getPublicationInfo(datasetId, page, sort);
     return collectResultsUptoPage(getResults, endPage);
   }
 }

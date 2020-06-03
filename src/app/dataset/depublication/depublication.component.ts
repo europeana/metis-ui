@@ -6,15 +6,15 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnDestroy } from '@angular/core';
-import { triggerDelay } from '../../_helpers';
-
-import { MoreResults, RecordPublicationInfo } from '../../_models';
-import { DepublicationService, ErrorService } from '../../_services';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { merge, switchMap, tap } from 'rxjs/operators';
+
+import { triggerDelay } from '../../_helpers';
+import { MoreResults, RecordPublicationInfo, SortDirection, SortParameter } from '../../_models';
+import { DepublicationService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-depublication',
@@ -25,20 +25,34 @@ export class DepublicationComponent implements OnDestroy {
   _datasetId: string;
   currentPage = 0;
   hasMore = false;
+  dataSortParam: SortParameter | undefined;
   depublicationData: Array<RecordPublicationInfo> = [];
+  depublicationSubscription: Subscription;
+  dialogFileOpen = false;
+  dialogInputOpen = false;
   formRawText: FormGroup;
   formFile: FormGroup;
   isLoading = false;
   isSaving = false;
   optionsOpen = false;
-
-  //dialogFileOpen = false;
-  dialogFileOpen = true;
-  //dialogInputOpen = true;
-  dialogInputOpen = false;
-
   pollingRefresh: Subject<boolean>;
-  depublicationSubscription: Subscription;
+  sortHeaderGroupConf = {
+    cssClass: 'grid-header',
+    items: [
+      {
+        translateKey: 'depublicationColUrl',
+        fieldName: 'recordUrl'
+      },
+      {
+        translateKey: 'depublicationColStatus',
+        fieldName: 'publicationStatus'
+      },
+      {
+        translateKey: 'depublicationColUnpublishedDate',
+        fieldName: 'depublicationDate'
+      }
+    ]
+  };
 
   constructor(
     private readonly depublications: DepublicationService,
@@ -55,6 +69,9 @@ export class DepublicationComponent implements OnDestroy {
     }
   }
 
+  /** datasetId
+  /* getter for private variable (returns shadow variable)
+  */
   get datasetId(): string | undefined {
     return this._datasetId;
   }
@@ -128,10 +145,24 @@ export class DepublicationComponent implements OnDestroy {
     this.dialogFileOpen = false;
   }
 
+  /** setSortParameter
+  /* - update / cancel the data sort parameter
+  /* - trigger polling refresh
+  /*  @param {SortParameter} event - the sort information
+   */
+  setSortParameter(event: SortParameter): void {
+    if (event.direction === SortDirection.UNSET) {
+      this.dataSortParam = undefined;
+    } else {
+      this.dataSortParam = event;
+    }
+    this.pollingRefresh.next(true);
+  }
+
   /** toggleOptions
   /* - toggle the dialog show / hide options
   */
-  toggleOptions(): void {
+  toggleMenuOptions(): void {
     this.optionsOpen = !this.optionsOpen;
   }
 
@@ -194,7 +225,11 @@ export class DepublicationComponent implements OnDestroy {
       merge(this.pollingRefresh), // user events comes into the stream here
       switchMap(() => {
         this.isLoading = true;
-        return this.depublications.getPublicationInfoUptoPage(this._datasetId, this.currentPage);
+        return this.depublications.getPublicationInfoUptoPage(
+          this._datasetId,
+          this.currentPage,
+          this.dataSortParam
+        );
       }),
       tap(() => {
         triggerDelay.next({
@@ -216,7 +251,6 @@ export class DepublicationComponent implements OnDestroy {
       },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);
-        //const error = this.errors.handleError(err);
       }
     );
   }

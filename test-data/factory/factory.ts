@@ -19,8 +19,6 @@ import {
   PluginStatus,
   PluginType,
   PublicationFitness,
-  PublicationStatus,
-  RecordPublicationInfo,
   TopologyName,
   Workflow,
   WorkflowExecution,
@@ -523,24 +521,6 @@ export function overview(page: number = 0): ResultList {
   });
   // page parameter based on 1 in this case so deduct 1
   return getListWrapper(res, true, page > 0 ? page - 1 : page);
-}
-
-export function publicationInfo(datasetId: string, page: number = 0): ResultList {
-  const depublicationData: Array<RecordPublicationInfo> = [
-    {
-      id: datasetId + '1',
-      recordUrl: 'http://123',
-      publicationStatus: PublicationStatus.PUBLISHED,
-      depublicationDate: '2019-02-18T07:36:59.801Z'
-    },
-    {
-      id: '2',
-      recordUrl: 'http://abc/123',
-      publicationStatus: PublicationStatus.DEPUBLISHED,
-      depublicationDate: '2019-02-18T07:36:59.801Z'
-    }
-  ] as Array<RecordPublicationInfo>;
-  return getListWrapper(depublicationData, true, page > 0 ? page - 1 : page);
 }
 
 export function dataset(datasetId: string): DatasetX | undefined {

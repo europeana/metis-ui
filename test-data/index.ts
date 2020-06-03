@@ -9,7 +9,6 @@ import {
   information,
   overview,
   pluginsAvailable,
-  publicationInfo,
   reportExists,
   running,
   search,
@@ -181,6 +180,8 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
   let regRes = route.match(/records\/[^\?+]*/);
 
   if (regRes) {
+    const params = url.parse(route, true).query;
+
     if (request.method === 'POST') {
       const pushToDepublicationCache = (url: string) => {
         const time = new Date().toISOString();
@@ -192,7 +193,6 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         } as RecordPublicationInfo);
       };
 
-      const params = url.parse(route, true).query;
       const fileName = params.clientFilename;
 
       if (fileName) {
@@ -214,11 +214,29 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         return true;
       });
     } else {
-      if (depublicationInfoCache.length > 0) {
-        response.end(JSON.stringify(getListWrapper(depublicationInfoCache, true, 100)));
-      } else {
-        response.end(JSON.stringify(publicationInfo(regRes[0].replace(/records\//, ''))));
+      let result = Array.from(depublicationInfoCache);
+
+      if (result.length > 0 && params.sortDirection && params.sortField) {
+        const sortResult = (res: Array<any>): Array<any> => {
+          let asc = params.sortDirection === 'asc';
+          if (res[0][params.sortField]) {
+            res.sort((a: any, b: any) => {
+              const valA = a[params.sortField];
+              const valB = b[params.sortField];
+              let grtr = valA > valB;
+              if (asc) {
+                grtr = !grtr;
+              }
+              return grtr ? 1 : -1;
+            });
+          } else {
+            console.log(`invalid sort field ${params.sortField}`);
+          }
+          return res;
+        };
+        result = sortResult(result);
       }
+      response.end(JSON.stringify(getListWrapper(result, true, 100)));
       return true;
     }
   }

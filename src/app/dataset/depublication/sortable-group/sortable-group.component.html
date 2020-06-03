@@ -1,0 +1,12 @@
+<ng-template #sortableGroupTemplate>
+  <app-sortable-header
+    (onSet)="onSetHandler($event)"
+    [conf]="{
+      translateKey: item.translateKey,
+      fieldName: item.fieldName,
+      cssClass: conf.cssClass
+    }"
+    *ngFor="let item of conf.items"
+  >
+  </app-sortable-header>
+</ng-template>

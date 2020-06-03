@@ -15,18 +15,6 @@ export enum PublicationFitness {
   UNFIT = 'UNFIT'
 }
 
-export enum PublicationStatus {
-  PUBLISHED = 'PUBLISHED',
-  DEPUBLISHED = 'DEPUBLISHED'
-}
-
-export interface RecordPublicationInfo {
-  id: string;
-  recordUrl: string;
-  publicationStatus: PublicationStatus;
-  depublicationDate?: string;
-}
-
 export interface Dataset {
   id: string;
   datasetId: string;

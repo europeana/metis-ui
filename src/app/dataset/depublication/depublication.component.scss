@@ -1,9 +1,14 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+app-sortable-group {
+  display: none;
+}
+
 .dialog-file,
 .dialog-input {
   form {
+    height: 100%;
     padding: 1em;
   }
 }
@@ -13,7 +18,15 @@
 }
 
 .dialog-input {
+  height: 25em;
+  max-height: 90vh;
   width: 90vw;
+}
+
+.dialog-input,
+.dialog-input form {
+  display: flex;
+  flex-direction: column;
 }
 
 .dropdown-options {
@@ -21,6 +34,7 @@
 }
 
 [name='recordIds'] {
+  height: 100%;
   resize: none;
   width: 100%;
 }
@@ -39,17 +53,18 @@
 }
 
 .depublications-grid {
-  background: #fff;
+  background: $white;
+  column-gap: 1.75em;
   display: grid;
-  grid-template-columns: 1fr 4fr 2fr 2fr auto;
+  grid-template-columns: 4fr 2fr 2fr auto;
   margin-top: 2em;
   overflow: hidden;
+  padding: 0.5em 1em;
 
   .grid-header {
     background: $white;
     display: none;
     font-weight: bold;
-    padding: 0.5em 1em;
   }
 }
 

@@ -1,5 +1,5 @@
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
-import { RecordPublicationInfo } from '../../_models';
+import { RecordPublicationInfo } from '../../../_models';
 
 @Component({
   selector: 'app-depublication-row',

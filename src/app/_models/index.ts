@@ -1,5 +1,6 @@
 export * from './country';
 export * from './dataset';
+export * from './depublication';
 export * from './filterExecution';
 export * from './harvest-data';
 export * from './language';

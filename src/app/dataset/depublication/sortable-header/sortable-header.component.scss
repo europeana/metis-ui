@@ -1,0 +1,33 @@
+@import '../../../../assets/sass/scss/generic/variables';
+
+.grid-header {
+  display: block;
+}
+
+.unset .state-arrow::before {
+  display: none;
+}
+
+.asc .state-arrow::before {
+  transform: rotate(180deg);
+}
+
+.state-arrow {
+  position: relative;
+  &::before {
+    border-left: 0.3rem solid transparent;
+    border-right: 0.3rem solid transparent;
+    border-top: 0.3rem solid $gray-light;
+    content: '';
+    height: 0;
+    margin-top: -0.125rem;
+    position: absolute;
+    right: -1rem;
+    top: 50%;
+    width: 0;
+  }
+
+  &:hover::before {
+    border-top-color: $eu-jade;
+  }
+}

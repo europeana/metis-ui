@@ -8,7 +8,7 @@
       <span class="svg-icon-spin showing"></span>
     </li>
     <li class="dropdown dropdown-options">
-      <a (click)="toggleOptions()">{{ 'depublicationMenuTitle' | translate }}</a>
+      <a (click)="toggleMenuOptions()">{{ 'depublicationMenuTitle' | translate }}</a>
       <div *ngIf="optionsOpen" class="dropdown-wrapper">
         <ul class="dropdown-content">
           <li>
@@ -56,7 +56,7 @@
             type="submit"
             [disabled]="!(formFile.valid && formFile.dirty)"
           >
-            {{ 'Add record(s)' | translate }}
+            {{ 'depublicationSubmitButtonText' | translate }}
           </button>
         </div>
       </form>
@@ -67,7 +67,6 @@
           formControlName="recordIds"
           name="recordIds"
           placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
-          rows="12"
         ></textarea>
         <div class="form-ctrls">
           <div
@@ -95,19 +94,15 @@
 </div>
 
 <div class="depublications-grid">
-  <div class="grid-header"></div>
-
-  <div class="grid-header">
-    {{ 'depublicationColRecordUrl' | translate }}
-  </div>
-
-  <div class="grid-header date-header">
-    {{ 'depublicationColRecordStatus' | translate }}
-  </div>
-
-  <div class="grid-header date-header">
-    {{ 'depublicationColUnpublishedDate' | translate }}
-  </div>
+  <ng-container>
+    <app-sortable-group
+      #dataWrapper
+      [conf]="sortHeaderGroupConf"
+      (onGroupSet)="setSortParameter($event)"
+    >
+    </app-sortable-group>
+    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
+  </ng-container>
 
   <ng-container *ngFor="let record of depublicationData">
     <app-depublication-row #dataWrapper [record]="record"></app-depublication-row>

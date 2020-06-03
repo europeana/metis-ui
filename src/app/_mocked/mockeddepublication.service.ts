@@ -44,11 +44,19 @@ export class MockDepublicationService {
   }
 
   setPublicationFile(datasetId: string, file: File): Observable<boolean> {
+    if (this.errorMode) {
+      console.log('mock setPublicationFile errors...');
+      return observableOf(false);
+    }
     console.log(`Mock: setPublicationFile ${datasetId}/${file}`);
     return observableOf(true);
   }
 
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
+    if (this.errorMode) {
+      console.log('mock setPublicationInfo throws error...');
+      return throwError('mock setPublicationInfo throws error...');
+    }
     console.log(`Mock: setPublicationInfo ${datasetId}/${toDepublish}`);
     return observableOf(true);
   }

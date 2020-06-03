@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
-
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
@@ -34,6 +33,8 @@ import {
   PreviewComponent,
   RedirectionComponent,
   ReportSimpleComponent,
+  SortableGroupComponent,
+  SortableHeaderComponent,
   StatisticsComponent,
   WorkflowComponent,
   WorkflowFormFieldComponent,
@@ -105,6 +106,8 @@ import { ThemeSelectorComponent } from './theme-selector';
     RedirectionComponent,
     ReportSimpleComponent,
     SearchResultsComponent,
+    SortableHeaderComponent,
+    SortableGroupComponent,
     StatisticsComponent,
     ThemeSelectorComponent,
     TranslatePipe,

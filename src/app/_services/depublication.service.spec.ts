@@ -40,14 +40,14 @@ describe('depublication service', () => {
     service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoResults);
     });
-    mockHttp.expect('GET', '/records/123?nextPage=0&sort=1').send(mockPublicationInfoResults);
+    mockHttp.expect('GET', '/records/123?nextPage=0').send(mockPublicationInfoResults);
   });
 
   it('should get the publication info paginated', () => {
     service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
-    mockHttp.expect('GET', '/records/123?nextPage=0&sort=1').send(mockPublicationInfoMoreResults);
+    mockHttp.expect('GET', '/records/123?nextPage=0').send(mockPublicationInfoMoreResults);
   });
 
   it('should set the publication info', () => {
