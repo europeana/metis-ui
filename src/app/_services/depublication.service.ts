@@ -41,7 +41,7 @@ export class DepublicationService {
     return this.http
       .post(url, formData, {
         headers: {
-          'Content-Type': file.type
+          'Content-Type': 'multipart/form-data'
         },
         observe: 'events',
         params: {
@@ -61,7 +61,17 @@ export class DepublicationService {
   */
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
-    return this.http.post<boolean>(url, { toDepublish }).pipe(this.errors.handleRetry());
+    return this.http
+      .post<boolean>(
+        url,
+        { toDepublish },
+        {
+          headers: {
+            'Content-Type': 'text/plain'
+          }
+        }
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** parseSortParameter
@@ -84,7 +94,7 @@ export class DepublicationService {
     sort?: SortParameter
   ): Observable<Results<RecordPublicationInfo>> {
     const sortParam = this.parseSortParameter(sort);
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?nextPage=${page}${sortParam}`;
+    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?page=${page}${sortParam}`;
     return this.http.get<Results<RecordPublicationInfo>>(url).pipe(this.errors.handleRetry());
   }
 

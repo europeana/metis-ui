@@ -4,14 +4,14 @@ import { MoreResults, RecordPublicationInfo, Results } from '../_models';
 export const mockPublicationInfo = [
   {
     id: '1',
-    recordUrl: 'http://123',
-    publicationStatus: 'PUBLISHED',
+    recordId: 'http://123',
+    depublicationStatus: 'PUBLISHED',
     depublicationDate: '2019-02-18T07:36:59.801Z'
   },
   {
     id: '2',
-    recordUrl: 'http://abc/123',
-    publicationStatus: 'DEPUBLISHED',
+    recordId: 'http://abc/123',
+    depublicationStatus: 'DEPUBLISHED',
     depublicationDate: '2019-02-18T07:36:59.801Z'
   }
 ] as Array<RecordPublicationInfo>;

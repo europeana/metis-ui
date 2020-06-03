@@ -41,7 +41,7 @@ export class DepublicationComponent implements OnDestroy {
     items: [
       {
         translateKey: 'depublicationColUrl',
-        fieldName: 'recordUrl'
+        fieldName: 'recordId'
       },
       {
         translateKey: 'depublicationColStatus',

@@ -16,7 +16,7 @@ import {
   xslt
 } from './factory/factory';
 import { urlManipulation } from './_models/test-models';
-import { PublicationStatus, RecordPublicationInfo } from '../src/app/_models';
+import { DepublicationStatus, RecordPublicationInfo } from '../src/app/_models';
 
 const port = 3000;
 const url = require('url');
@@ -187,8 +187,8 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         const time = new Date().toISOString();
         depublicationInfoCache.push({
           id: '',
-          recordUrl: url,
-          publicationStatus: PublicationStatus.DEPUBLISHED,
+          recordId: url,
+          depublicationStatus: DepublicationStatus.DEPUBLISHED,
           depublicationDate: time
         } as RecordPublicationInfo);
       };
@@ -209,7 +209,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
       request.on('end', function() {
         JSON.parse(body)
           .toDepublish.split(/\s+/)
-          .forEach((recordUrl: string) => pushToDepublicationCache(recordUrl));
+          .forEach((recordId: string) => pushToDepublicationCache(recordId));
         response.end();
         return true;
       });

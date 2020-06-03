@@ -9,15 +9,15 @@ export class SortParameter {
   direction: SortDirection;
 }
 
-export enum PublicationStatus {
+export enum DepublicationStatus {
   PUBLISHED = 'PUBLISHED',
   DEPUBLISHED = 'DEPUBLISHED'
 }
 
 export interface RecordPublicationInfo {
   id: string;
-  recordUrl: string;
-  publicationStatus: PublicationStatus;
+  recordId: string;
+  depublicationStatus: DepublicationStatus;
   depublicationDate?: string;
 }
 
