@@ -79,7 +79,7 @@ export class DepublicationService {
   /*  @param {string} p - optional
   */
   parseFilterParameter(p?: string): string {
-    return p ? `&filter=${p}` : '';
+    return p ? `&searchQuery=${p}` : '';
   }
 
   /** parseSortParameter

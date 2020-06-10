@@ -1,17 +1,17 @@
 import { Observable, of as observableOf, throwError } from 'rxjs';
-import { MoreResults, RecordPublicationInfo, Results } from '../_models';
+import { DepublicationStatus, MoreResults, RecordPublicationInfo, Results } from '../_models';
 
 export const mockPublicationInfo = [
   {
     id: '1',
     recordId: 'http://123',
-    depublicationStatus: 'PUBLISHED',
+    depublicationStatus: DepublicationStatus.PENDING,
     depublicationDate: '2019-02-18T07:36:59.801Z'
   },
   {
     id: '2',
     recordId: 'http://abc/123',
-    depublicationStatus: 'DEPUBLISHED',
+    depublicationStatus: DepublicationStatus.DEPUBLISHED,
     depublicationDate: '2019-02-18T07:36:59.801Z'
   }
 ] as Array<RecordPublicationInfo>;

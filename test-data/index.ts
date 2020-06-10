@@ -216,9 +216,9 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
     } else {
       let result = Array.from(depublicationInfoCache);
 
-      if (result.length > 0 && params.filter) {
+      if (result.length > 0 && params.searchQuery) {
         result = result.filter((entry) => {
-          return entry.recordId.toUpperCase().includes(`${params.filter}`.toUpperCase());
+          return entry.recordId.toUpperCase().includes(`${params.searchQuery}`.toUpperCase());
         });
       }
       if (result.length > 0 && params.sortDirection && params.sortField) {

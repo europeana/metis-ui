@@ -10,7 +10,7 @@ export class SortParameter {
 }
 
 export enum DepublicationStatus {
-  PUBLISHED = 'PUBLISHED',
+  PENDING = 'PENDING',
   DEPUBLISHED = 'DEPUBLISHED'
 }
 
