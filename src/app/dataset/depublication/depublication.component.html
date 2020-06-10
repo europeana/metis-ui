@@ -1,8 +1,10 @@
 <div class="depublication-ctrls">
-  <input
-    class="search-records"
-    placeholder="{{ 'depublicationFormPlaceholderSearchRecord' | translate }}"
-  />
+  <app-search
+    (onExecute)="setDataFilterParameter($event)"
+    [placeholderKey]="'depublicationFormPlaceholderSearchRecord'"
+  >
+  </app-search>
+
   <ul class="filter">
     <li *ngIf="isSaving">
       <span class="svg-icon-spin showing"></span>
@@ -98,7 +100,7 @@
     <app-sortable-group
       #dataWrapper
       [conf]="sortHeaderGroupConf"
-      (onGroupSet)="setSortParameter($event)"
+      (onGroupSet)="setDataSortParameter($event)"
     >
     </app-sortable-group>
     <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>

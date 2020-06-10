@@ -2,7 +2,7 @@
 .table-horizontal-layout {
   border: 0;
   color: $gray-light;
-  font-size: 0.8125rem;
+  font-size: $font-size-metis-grid;
 
   tr {
     background: $white;
@@ -29,7 +29,7 @@
 
   th {
     border-bottom: 1px solid $gray-almost-lightest;
-    font-size: 0.8125rem;
+    font-size: $font-size-metis-grid;
     white-space: nowrap;
 
     &.alignleft {

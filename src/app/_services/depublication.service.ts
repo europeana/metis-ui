@@ -74,8 +74,16 @@ export class DepublicationService {
       .pipe(this.errors.handleRetry());
   }
 
+  /** parseFilterParameter
+  /*  return a url parameter representation of a filter string or an empty string
+  /*  @param {string} p - optional
+  */
+  parseFilterParameter(p?: string): string {
+    return p ? `&filter=${p}` : '';
+  }
+
   /** parseSortParameter
-  /*  return string representation of a SortParameter or an empty string
+  /*  return a url parameter representation of a SortParameter or an empty string
   /*  @param {SortParameter} p - optional
   */
   parseSortParameter(p?: SortParameter): string {
@@ -87,14 +95,17 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset id
   /*  @param {number} page - the pagination target
   /*  @param {SortParameter} sort - optional - sort parameter
+  /*  @param {string} filter - optional - sort parameter
   */
   getPublicationInfo(
     datasetId: string,
     page: number,
-    sort?: SortParameter
+    sort?: SortParameter,
+    filter?: string
   ): Observable<Results<RecordPublicationInfo>> {
     const sortParam = this.parseSortParameter(sort);
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?page=${page}${sortParam}`;
+    const filterParam = this.parseFilterParameter(filter);
+    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?page=${page}${sortParam}${filterParam}`;
     return this.http.get<Results<RecordPublicationInfo>>(url).pipe(this.errors.handleRetry());
   }
 
@@ -103,14 +114,16 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset id
   /*  @param {number} endPage - the number of pages to fetch
   /*  @param {SortParameter} sort - optional - sort parameter
+  /*  @param {string} filter - optional - sort parameter
   */
   getPublicationInfoUptoPage(
     datasetId: string,
     endPage: number,
-    sort?: SortParameter
+    sort?: SortParameter,
+    filter?: string
   ): Observable<MoreResults<RecordPublicationInfo>> {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const getResults = (page: number) => this.getPublicationInfo(datasetId, page, sort);
+    const getResults = (page: number) => this.getPublicationInfo(datasetId, page, sort, filter);
     return collectResultsUptoPage(getResults, endPage);
   }
 }

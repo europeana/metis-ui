@@ -26,6 +26,7 @@ export class DepublicationComponent implements OnDestroy {
   currentPage = 0;
   hasMore = false;
   dataSortParam: SortParameter | undefined;
+  dataFilterParam: string | undefined;
   depublicationData: Array<RecordPublicationInfo> = [];
   depublicationSubscription: Subscription;
   dialogFileOpen = false;
@@ -45,7 +46,7 @@ export class DepublicationComponent implements OnDestroy {
       },
       {
         translateKey: 'depublicationColStatus',
-        fieldName: 'publicationStatus'
+        fieldName: 'depublicationStatus'
       },
       {
         translateKey: 'depublicationColUnpublishedDate',
@@ -145,12 +146,28 @@ export class DepublicationComponent implements OnDestroy {
     this.dialogFileOpen = false;
   }
 
-  /** setSortParameter
+  /** setDataFilterParameter
+  /* - update / cancel the data filter parameter
+  /* - trigger polling refresh
+  /*  @param {string} event - the filter information
+   */
+  setDataFilterParameter(event: string): void {
+    console.log('set the search filter ' + event);
+
+    if (event.length === 0) {
+      this.dataFilterParam = undefined;
+    } else {
+      this.dataFilterParam = event;
+    }
+    this.pollingRefresh.next(true);
+  }
+
+  /** setDataSortParameter
   /* - update / cancel the data sort parameter
   /* - trigger polling refresh
   /*  @param {SortParameter} event - the sort information
    */
-  setSortParameter(event: SortParameter): void {
+  setDataSortParameter(event: SortParameter): void {
     if (event.direction === SortDirection.UNSET) {
       this.dataSortParam = undefined;
     } else {
@@ -228,7 +245,8 @@ export class DepublicationComponent implements OnDestroy {
         return this.depublications.getPublicationInfoUptoPage(
           this._datasetId,
           this.currentPage,
-          this.dataSortParam
+          this.dataSortParam,
+          this.dataFilterParam
         );
       }),
       tap(() => {

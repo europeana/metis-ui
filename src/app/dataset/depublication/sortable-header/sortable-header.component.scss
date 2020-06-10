@@ -1,10 +1,44 @@
 @import '../../../../assets/sass/scss/generic/variables';
 
 .grid-header {
+  cursor: pointer;
   display: block;
+
+  &:hover .state-arrow::before {
+    border-top-color: $eu-jade;
+    display: block; /* show unset */
+  }
+
+  &:first-of-type::after {
+    bottom: -0.5em;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.6, 0.6) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1, 1) rotate(180deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(0.6, 0.6) rotate(180deg);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1, 1) rotate(360deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(0.6, 0.6) rotate(360deg);
+  }
 }
 
 .unset .state-arrow::before {
+  animation: rotate 3s ease-in-out infinite;
   display: none;
 }
 
@@ -25,9 +59,5 @@
     right: -1rem;
     top: 50%;
     width: 0;
-  }
-
-  &:hover::before {
-    border-top-color: $eu-jade;
   }
 }

@@ -45,20 +45,29 @@ describe('SearchComponent', () => {
       expect(component.searchString).toEqual(searchString);
     });
 
-    it('should execute a search', () => {
+    it('should execute a search (with endpoint)', () => {
       spyOn(router, 'navigate');
+      component.apiEndpoint = '/signin';
       expect(component.searchString).toBeTruthy();
       component.executeSearch();
       expect(router.navigate).toHaveBeenCalled();
     });
 
+    it('should execute a search (with no endpoint)', () => {
+      spyOn(component.onExecute, 'emit');
+      expect(component.searchString).toBeTruthy();
+      component.executeSearch();
+      expect(component.onExecute.emit).toHaveBeenCalled();
+    });
+
     it('should execute a search on return (key event)', () => {
       spyOn(router, 'navigate');
+      component.apiEndpoint = '/search';
       component.submitOnEnter(({ key: '1' } as unknown) as KeyboardEvent);
       expect(router.navigate).not.toHaveBeenCalled();
       component.submitOnEnter(({ key: 'Enter' } as unknown) as KeyboardEvent);
       expect(router.navigate).toHaveBeenCalledWith(
-        ['/search'],
+        [component.apiEndpoint],
         Object({ queryParams: Object({ searchString: '123' }) })
       );
     });
@@ -79,6 +88,7 @@ describe('SearchComponent', () => {
     it('should not execute a search if not authenticated', () => {
       auth.logout();
       spyOn(router, 'navigate');
+      component.apiEndpoint = '/search';
       component.executeSearch();
       expect(router.navigate).toHaveBeenCalledWith(['/signin']);
     });

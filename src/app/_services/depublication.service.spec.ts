@@ -8,6 +8,7 @@ import {
   mockPublicationInfoMoreResults,
   mockPublicationInfoResults
 } from '../_mocked';
+import { SortDirection } from '../_models';
 import { DepublicationService, ErrorService } from '.';
 
 describe('depublication service', () => {
@@ -48,6 +49,33 @@ describe('depublication service', () => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
     mockHttp.expect('GET', '/depublished_records/123?page=0').send(mockPublicationInfoMoreResults);
+  });
+
+  it('should get the publication info filtered', () => {
+    const filter = 'xxx';
+    const filterParamString = service.parseFilterParameter(filter);
+
+    service.getPublicationInfoUptoPage('123', 0, undefined, filter).subscribe((publicationInfo) => {
+      expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
+    });
+    mockHttp
+      .expect('GET', '/depublished_records/123?page=0' + filterParamString)
+      .send(mockPublicationInfoMoreResults);
+  });
+
+  it('should get the publication info sorted', () => {
+    const sortParam = {
+      field: 'field',
+      direction: SortDirection.ASC
+    };
+    const sortParamString = service.parseSortParameter(sortParam);
+
+    service.getPublicationInfoUptoPage('123', 0, sortParam).subscribe((publicationInfo) => {
+      expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
+    });
+    mockHttp
+      .expect('GET', '/depublished_records/123?page=0' + sortParamString)
+      .send(mockPublicationInfoMoreResults);
   });
 
   it('should set the publication info', () => {

@@ -144,10 +144,24 @@ describe('DepublicationComponent', () => {
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
       component.beginPolling();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
-      component.setSortParameter(sortParam);
+      component.setDataSortParameter(sortParam);
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
       expect(component.dataSortParam).toEqual(sortParam);
-      component.setSortParameter(sortParamNoDir);
+      component.setDataSortParameter(sortParamNoDir);
+      expect(component.dataSortParam).toBeFalsy();
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
+    });
+
+    it('should set the filter parameter', () => {
+      const filterParam = 'xxx';
+      const filterParamEmpty = '';
+      spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
+      component.beginPolling();
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
+      component.setDataFilterParameter(filterParam);
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(2);
+      expect(component.dataFilterParam).toEqual(filterParam);
+      component.setDataFilterParameter(filterParamEmpty);
       expect(component.dataSortParam).toBeFalsy();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
     });

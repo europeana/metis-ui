@@ -216,6 +216,11 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
     } else {
       let result = Array.from(depublicationInfoCache);
 
+      if (result.length > 0 && params.filter) {
+        result = result.filter((entry) => {
+          return entry.recordId.toUpperCase().includes(`${params.filter}`.toUpperCase());
+        });
+      }
       if (result.length > 0 && params.sortDirection && params.sortField) {
         const sortResult = (res: Array<any>): Array<any> => {
           let asc = params.sortDirection === 'asc';
@@ -223,11 +228,12 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
             res.sort((a: any, b: any) => {
               const valA = a[params.sortField];
               const valB = b[params.sortField];
+              let eq = valA === valB;
               let grtr = valA > valB;
               if (asc) {
                 grtr = !grtr;
               }
-              return grtr ? 1 : -1;
+              return eq ? 0 : grtr ? -1 : 1;
             });
           } else {
             console.log(`invalid sort field ${params.sortField}`);

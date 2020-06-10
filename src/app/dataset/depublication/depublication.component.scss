@@ -56,6 +56,7 @@ app-sortable-group {
   background: $white;
   column-gap: 1.75em;
   display: grid;
+  font-size: $font-size-metis-grid;
   grid-template-columns: 4fr 2fr 2fr auto;
   margin-top: 2em;
   overflow: hidden;
@@ -82,10 +83,6 @@ app-sortable-group {
   .depublication-ctrls {
     display: flex;
     justify-content: space-between;
-
-    .search-records {
-      width: auto;
-    }
   }
 
   .depublications-grid {
