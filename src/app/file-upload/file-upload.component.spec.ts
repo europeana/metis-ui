@@ -31,7 +31,6 @@ describe('FileUploadComponent', () => {
     component.registerOnChange(mockFn);
     component.onChange();
     expect(mockFn).toHaveBeenCalled();
-    // TODO: trigger via the host...
   });
 
   it('should implement onTouched', () => {
