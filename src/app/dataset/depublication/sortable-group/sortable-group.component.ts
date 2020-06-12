@@ -20,7 +20,7 @@ export class SortableGroupComponent {
   @ViewChild('sortableGroupTemplate') sortableGroupTemplate: TemplateRef<HTMLElement>;
 
   @Output() onGroupSet: EventEmitter<SortParameter> = new EventEmitter();
-  @Input() conf: SortHeaderGroupConf;
+  @Input() grpConf: SortHeaderGroupConf;
 
   /** onSetHandler
   /* call reset on headers, transmit sort event to parent

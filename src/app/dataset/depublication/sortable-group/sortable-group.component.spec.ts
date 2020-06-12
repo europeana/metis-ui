@@ -19,7 +19,7 @@ describe('SortableGroupComponent', () => {
     fixture = TestBed.createComponent(SortableGroupComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;
-    component.conf = {
+    component.grpConf = {
       cssClass: 'grid-header',
       items: [
         {
