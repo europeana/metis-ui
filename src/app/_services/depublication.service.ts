@@ -1,9 +1,15 @@
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { apiSettings } from '../../environments/apisettings';
-import { MoreResults, RecordPublicationInfo, Results, SortParameter } from '../_models';
+import {HttpClient, HttpEvent, HttpEventType} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {apiSettings} from '../../environments/apisettings';
+import {
+  MoreResults,
+  RecordPublicationInfo,
+  Results,
+  SortDirection,
+  SortParameter
+} from '../_models';
 
 import { collectResultsUptoPage } from './service-utils';
 import { ErrorService } from './error.service';
@@ -87,7 +93,7 @@ export class DepublicationService {
   /*  @param {SortParameter} p - optional
   */
   parseSortParameter(p?: SortParameter): string {
-    return p ? `&sortField=${p.field}&sortDirection=${p.direction.toLowerCase()}` : '';
+    return p ? `&sortField=${p.field}&sortAscending=${p.direction === SortDirection.ASC}` : '';
   }
 
   /** getPublicationInfo

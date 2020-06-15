@@ -42,15 +42,15 @@ export class DepublicationComponent implements OnDestroy {
     items: [
       {
         translateKey: 'depublicationColUrl',
-        fieldName: 'recordId'
+        fieldName: 'RECORD_ID'
       },
       {
         translateKey: 'depublicationColStatus',
-        fieldName: 'depublicationStatus'
+        fieldName: 'DEPUBLICATION_STATE'
       },
       {
         translateKey: 'depublicationColUnpublishedDate',
-        fieldName: 'depublicationDate'
+        fieldName: 'DEPUBLICATION_DATE'
       }
     ]
   };
