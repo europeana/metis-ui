@@ -9,7 +9,7 @@ import { SortDirection, SortHeaderConf, SortParameter } from '../../../_models';
 export class SortableHeaderComponent {
   isLocked = false;
   statuses = Object.values(SortDirection);
-  classes = this.statuses.map((status: string) => status.toLowerCase());
+  classes = this.statuses.map((status: string) => 'sort-' + status.toLowerCase());
   current = 0;
 
   @Input() conf: SortHeaderConf;

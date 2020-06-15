@@ -37,12 +37,12 @@
   }
 }
 
-.unset .state-arrow::before {
+.sort-unset .state-arrow::before {
   animation: rotate 3s ease-in-out infinite;
   display: none;
 }
 
-.asc .state-arrow::before {
+.sort-asc .state-arrow::before {
   transform: rotate(180deg);
 }
 
