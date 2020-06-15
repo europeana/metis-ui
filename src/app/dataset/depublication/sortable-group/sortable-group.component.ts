@@ -26,7 +26,7 @@ export class SortableGroupComponent {
   /* call reset on headers, transmit sort event to parent
   /*  @param {SortParameter} event - the captured sort event
   */
-  onSetHandler(event: SortParameter) {
+  onSetHandler(event: SortParameter): void {
     this.headers.forEach((h) => {
       h.reset();
     });

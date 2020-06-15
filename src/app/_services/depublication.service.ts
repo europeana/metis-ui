@@ -68,15 +68,11 @@ export class DepublicationService {
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
     return this.http
-      .post<boolean>(
-        url,
-        { toDepublish },
-        {
-          headers: {
-            'Content-Type': 'text/plain'
-          }
+      .post<boolean>(url, toDepublish, {
+        headers: {
+          'Content-Type': 'text/plain'
         }
-      )
+      })
       .pipe(this.errors.handleRetry());
   }
 
@@ -85,7 +81,7 @@ export class DepublicationService {
   /*  @param {string} p - optional
   */
   parseFilterParameter(p?: string): string {
-    return p ? `&searchQuery=${p}` : '';
+    return p ? `&searchQuery=${encodeURIComponent(p)}` : '';
   }
 
   /** parseSortParameter
@@ -128,8 +124,8 @@ export class DepublicationService {
     sort?: SortParameter,
     filter?: string
   ): Observable<MoreResults<RecordPublicationInfo>> {
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const getResults = (page: number) => this.getPublicationInfo(datasetId, page, sort, filter);
+    const getResults = (page: number): Observable<Results<RecordPublicationInfo>> =>
+      this.getPublicationInfo(datasetId, page, sort, filter);
     return collectResultsUptoPage(getResults, endPage);
   }
 }

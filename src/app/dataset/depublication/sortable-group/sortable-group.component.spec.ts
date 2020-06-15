@@ -28,7 +28,9 @@ describe('SortableGroupComponent', () => {
         }
       ]
     };
-    component.sortableGroupTemplate = ({ nativeElement: {} } as any) as TemplateRef<HTMLElement>;
+    component.sortableGroupTemplate = ({ nativeElement: {} } as unknown) as TemplateRef<
+      HTMLElement
+    >;
   });
 
   it('should invoke the header reset function when a value is set', () => {
@@ -36,10 +38,10 @@ describe('SortableGroupComponent', () => {
       sortName: 'header_1',
       cssClass: 'dynamic-class',
       text: 'Header 1',
-      reset: () => {}
+      reset: (): void => {}
     };
     spyOn(testHeader, 'reset');
-    component.headers = ([testHeader] as any) as QueryList<SortableHeaderComponent>;
+    component.headers = ([testHeader] as unknown) as QueryList<SortableHeaderComponent>;
 
     component.onSetHandler({ field: 'id', direction: SortDirection.ASC });
     expect(testHeader.reset).toHaveBeenCalled();

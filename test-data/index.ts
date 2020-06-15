@@ -221,13 +221,23 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
           return entry.recordId.toUpperCase().includes(`${params.searchQuery}`.toUpperCase());
         });
       }
-      if (result.length > 0 && params.sortDirection && params.sortField) {
+      if (result.length > 0 && params.sortField) {
+        const snakeToCamel = (str: String): string =>
+          str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
+            group
+              .toUpperCase()
+              .replace('-', '')
+              .replace('_', '')
+          );
+
+        const sortField = snakeToCamel(params.sortField);
+
         const sortResult = (res: Array<any>): Array<any> => {
-          let asc = params.sortDirection === 'asc';
-          if (res[0][params.sortField]) {
+          let asc = params.sortAscending === 'true';
+          if (res[0][sortField]) {
             res.sort((a: any, b: any) => {
-              const valA = a[params.sortField];
-              const valB = b[params.sortField];
+              const valA = a[sortField];
+              const valB = b[sortField];
               let eq = valA === valB;
               let grtr = valA > valB;
               if (asc) {
@@ -236,10 +246,11 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
               return eq ? 0 : grtr ? -1 : 1;
             });
           } else {
-            console.log(`invalid sort field ${params.sortField}`);
+            console.log(`invalid sort field ${params.sortField} (${sortField})`);
           }
           return res;
         };
+
         result = sortResult(result);
       }
       response.end(JSON.stringify(getListWrapper(result, true, 100)));

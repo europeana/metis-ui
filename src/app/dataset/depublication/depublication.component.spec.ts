@@ -21,7 +21,7 @@ describe('DepublicationComponent', () => {
   const interval = 5000;
   const formBuilder: FormBuilder = new FormBuilder();
 
-  const addFormFieldData = () => {
+  const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
   };
 
@@ -61,6 +61,10 @@ describe('DepublicationComponent', () => {
   describe('Normal operations', () => {
     beforeEach(async(configureTestbed));
     beforeEach(b4Each);
+
+    const frmCtrl = (val: string, fileInput?: boolean): FormControl => {
+      return ({ value: fileInput ? { name: val } : val } as unknown) as FormControl;
+    };
 
     it('should set the dataset id', () => {
       expect(component.depublicationData.length).toBeFalsy();
@@ -123,19 +127,13 @@ describe('DepublicationComponent', () => {
     });
 
     it('should validate for no whitespace', () => {
-      const frmCtrl = (val: string) => {
-        return { value: val } as FormControl;
-      };
       expect(component.validateWhitespace(frmCtrl('hello'))).toBeFalsy();
       expect(component.validateWhitespace(frmCtrl(' '))).toBeTruthy();
     });
 
     it('should validate the file extension', () => {
-      const frmCtrl = (val: string) => {
-        return { value: { name: val } } as FormControl;
-      };
-      expect(component.validateFileExtension(frmCtrl('file.txt'))).toBeFalsy();
-      expect(component.validateFileExtension(frmCtrl('file.png'))).toBeTruthy();
+      expect(component.validateFileExtension(frmCtrl('file.txt', true))).toBeFalsy();
+      expect(component.validateFileExtension(frmCtrl('file.png', true))).toBeTruthy();
     });
 
     it('should set the sort parameter', () => {
