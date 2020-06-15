@@ -207,9 +207,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         body += data.toString();
       });
       request.on('end', function() {
-        JSON.parse(body)
-          .toDepublish.split(/\s+/)
-          .forEach((recordId: string) => pushToDepublicationCache(recordId));
+        body.split(/\s+/).forEach((recordId: string) => pushToDepublicationCache(recordId));
         response.end();
         return true;
       });
