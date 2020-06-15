@@ -46,9 +46,6 @@ export class DepublicationService {
 
     return this.http
       .post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
         observe: 'events',
         params: {
           clientFilename: file.name,
