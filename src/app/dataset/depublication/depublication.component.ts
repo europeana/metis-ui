@@ -92,11 +92,41 @@ export class DepublicationComponent implements OnDestroy {
   */
   buildForms(): void {
     this.formRawText = this.fb.group({
-      recordIds: ['', [Validators.required, this.validateWhitespace]]
+      recordIds: [
+        '',
+        [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
+      ]
     });
     this.formFile = this.fb.group({
       depublicationFile: ['', [Validators.required, this.validateFileExtension]]
     });
+  }
+
+  /** validateRecordIds
+  /*  returns an error if the form control value includes invalid record ids
+  /*  @param {FormControl} control - the input control to validate
+  */
+  validateRecordIds(control: FormControl): { [key: string]: boolean } | null {
+    const val = control.value || '';
+    let invalid = false;
+    let misref = false;
+
+    const reg = /(http(s)?:\/\/)?([a-zA-Z]*\/)?([0-9]*\/)?[a-zA-Z\d_]*$/;
+    const reg2 = new RegExp('\\b' + this._datasetId + '\\b');
+
+    val
+      .split(/\r?\n/g)
+      .filter((recId: string) => recId.length > 0)
+      .forEach((recId: string) => {
+        recId = recId.trim();
+        const match = recId.match(reg);
+        if (!(match && match.length && match[0] === recId)) {
+          invalid = true;
+        } else if (recId.indexOf('/') > 0 && !recId.match(reg2)) {
+          misref = true;
+        }
+      });
+    return invalid ? { invalidIdFmt: true } : misref ? { invalidIdRef: true } : null;
   }
 
   /** validateWhitespace
@@ -152,8 +182,6 @@ export class DepublicationComponent implements OnDestroy {
   /*  @param {string} event - the filter information
    */
   setDataFilterParameter(event: string): void {
-    console.log('set the search filter ' + event);
-
     if (event.length === 0) {
       this.dataFilterParam = undefined;
     } else {

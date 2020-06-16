@@ -20,6 +20,7 @@ describe('DepublicationComponent', () => {
 
   const interval = 5000;
   const formBuilder: FormBuilder = new FormBuilder();
+  const recordId = 'BibliographicResource_1000126221328';
 
   const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
@@ -117,13 +118,54 @@ describe('DepublicationComponent', () => {
     });
 
     it('should submit the text', () => {
+      const datasetId = '123';
+      component.datasetId = datasetId;
       component.dialogInputOpen = true;
-      component.datasetId = '123';
+
       component.onSubmitRawText();
       expect(component.dialogInputOpen).toBeTruthy();
-      component.formRawText.patchValue({ recordIds: 'http://record/id' });
+      component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(component.dialogInputOpen).toBeFalsy();
+    });
+
+    it('should validate the record ids', () => {
+      const datasetId = '123';
+      component.datasetId = datasetId;
+
+      expect(component.validateRecordIds(frmCtrl(recordId))).toBeFalsy();
+      expect(component.validateRecordIds(frmCtrl(`/${recordId}`))).toBeFalsy();
+      expect(component.validateRecordIds(frmCtrl(`${datasetId}/${recordId}`))).toBeFalsy();
+      expect(component.validateRecordIds(frmCtrl(`${recordId}/${datasetId}`))).toBeTruthy();
+      expect(component.validateRecordIds(frmCtrl(`${datasetId}/${recordId}`))).toBeFalsy();
+      expect(component.validateRecordIds(frmCtrl(`/${datasetId}/${recordId}`))).toBeFalsy();
+      expect(component.validateRecordIds(frmCtrl(`//${datasetId}/${recordId}`))).toBeTruthy();
+      expect(component.validateRecordIds(frmCtrl(`http://${datasetId}/${recordId}`))).toBeFalsy();
+      expect(
+        component.validateRecordIds(frmCtrl(`http://path/${datasetId}/${recordId}`))
+      ).toBeFalsy();
+      expect(
+        component.validateRecordIds(frmCtrl(`https://path/${datasetId}/${recordId}`))
+      ).toBeFalsy();
+      expect(
+        component.validateRecordIds(frmCtrl(`https://path/${datasetId}/${recordId}/`))
+      ).toBeTruthy();
+      expect(
+        component.validateRecordIds(
+          frmCtrl(`
+        https://path/${datasetId}/${recordId}
+        https://path/${datasetId}/${recordId}
+      `)
+        )
+      ).toBeFalsy();
+      expect(
+        component.validateRecordIds(
+          frmCtrl(`
+        https://path/${datasetId}/${recordId}/
+        https://path/${datasetId}/${recordId}
+      `)
+        )
+      ).toBeTruthy();
     });
 
     it('should validate for no whitespace', () => {
