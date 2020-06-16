@@ -11,6 +11,7 @@ import {
   httpErrorNotification,
   Language,
   Notification,
+  PublicationFitness,
   successNotification
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
@@ -34,6 +35,7 @@ export class DatasetformComponent implements OnInit {
   selectedCountry?: Country;
   selectedLanguage?: Language;
 
+  publicationFitnessOps: Array<{ label: String; val: string }>;
   datasetForm: FormGroup;
   countryOptions: Country[];
   languageOptions: Language[];
@@ -88,6 +90,20 @@ export class DatasetformComponent implements OnInit {
     this.invalidNotification = errorNotification(this.translate.instant('formError'), {
       sticky: true
     });
+    this.publicationFitnessOps = [
+      {
+        label: 'datasetPublicationFitnessValLabelFit',
+        val: PublicationFitness.FIT
+      },
+      {
+        label: 'datasetPublicationFitnessValLabelPartiallyFit',
+        val: PublicationFitness.PARTIALLY_FIT
+      },
+      {
+        label: 'datasetPublicationFitnessValLabelUnfit',
+        val: PublicationFitness.UNFIT
+      }
+    ];
   }
 
   /** redirectionIds
@@ -217,7 +233,7 @@ export class DatasetformComponent implements OnInit {
       language: ['', [Validators.required]],
       description: [''],
       notes: [''],
-      unfitForPublication: ['']
+      publicationFitness: ['']
     });
     this.updateForm();
     this.updateFormEnabled();

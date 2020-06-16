@@ -27,6 +27,29 @@ app-workflow-form-field-harvest {
   }
 }
 
+/* search depublications field */
+
+.tab-content .depublication-ctrls {
+  .search-form {
+    left: 0;
+    margin: 0 0 2em 0;
+    position: relative;
+    right: 0;
+    top: 0;
+
+    .search-string {
+      width: 50em;
+    }
+
+    @media (min-width: $bp-med) {
+      margin: 0;
+      .search-string {
+        width: 300px;
+      }
+    }
+  }
+}
+
 /* the form */
 .metis-form {
   align-items: center;

@@ -22,12 +22,6 @@ $small-margin: 0.82rem;
   .ng-invalid {
     border-color: $eu-red;
   }
-
-  @media (min-width: $bp-med) {
-    input:not([type='checkbox']) {
-      padding-right: 2.5rem;
-    }
-  }
 }
 
 .input-clear {
@@ -59,7 +53,7 @@ $small-margin: 0.82rem;
   padding-bottom: 0em;
 }
 
-.dataset-label + input[type='checkbox'] {
+.dataset-label + .radio-group {
   flex: initial;
   margin-left: $small-margin;
 }
@@ -75,8 +69,7 @@ $small-margin: 0.82rem;
 }
 
 @media (max-width: $bp-med) {
-  .readonly-field,
-  .dataset-label + input[type='checkbox'] {
+  .readonly-field {
     margin-left: 0;
   }
 

@@ -13,6 +13,7 @@ import {
   Notification,
   PluginExecution,
   PreviewFilters,
+  PublicationFitness,
   SimpleReportRequest,
   successNotification,
   Workflow,
@@ -22,6 +23,7 @@ import {
 
 import { triggerDelay } from '../_helpers';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
+import { TranslateService } from '../_translate';
 
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
@@ -38,7 +40,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private readonly errors: ErrorService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly documentTitleService: DocumentTitleService
+    private readonly documentTitleService: DocumentTitleService,
+    private readonly translate: TranslateService
   ) {}
 
   fieldConf = workflowFormFieldConf;
@@ -361,5 +364,18 @@ export class DatasetComponent implements OnInit, OnDestroy {
         window.scrollTo(0, 0);
       }
     );
+  }
+
+  /** publicationFitnessWarning
+  /* - return relevant warning message according to the status
+  /* @param {string} status - the publication status
+  */
+  publicationFitnessWarning(status?: string): string {
+    if (status === PublicationFitness.UNFIT) {
+      return this.translate.instant('datasetUnpublishableBanner');
+    } else if (status === PublicationFitness.PARTIALLY_FIT) {
+      return this.translate.instant('datasetPartiallyUnpublishableBanner');
+    }
+    return '';
   }
 }

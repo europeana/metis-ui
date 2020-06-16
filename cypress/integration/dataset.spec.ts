@@ -60,6 +60,7 @@ context('metis-ui', () => {
 
       cy.get('.dataset-actionbar .status').as('status');
       cy.get('@status').contains('FINISHED');
+      cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
       cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 10);
       getHistoryRow(0).contains('Check Links');

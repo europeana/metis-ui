@@ -35,8 +35,11 @@
         ></app-generalinfo>
       </div>
       <div class="metis-dashboard-right">
-        <div *ngIf="datasetData.unfitForPublication" class="unfit-to-publish">
-          {{ 'datasetUnpublishableBanner' | translate }}
+        <div
+          *ngIf="publicationFitnessWarning(datasetData.publicationFitness); let warning"
+          class="unfit-to-publish"
+        >
+          {{ warning }}
         </div>
         <app-actionbar
           [datasetId]="datasetId"
@@ -76,6 +79,11 @@
         <li [ngClass]="{ active: activeTab === 'workflow' }">
           <a routerLink="/dataset/workflow/{{ datasetId }}">
             <span class="tab-title">{{ 'workflow' | translate }}</span>
+          </a>
+        </li>
+        <li [ngClass]="{ active: activeTab === 'depublication' }">
+          <a routerLink="/dataset/depublication/{{ datasetId }}">
+            <span class="tab-title">{{ 'depublication' | translate }}</span>
           </a>
         </li>
         <li [ngClass]="{ active: activeTab === 'mapping' }">
@@ -126,6 +134,10 @@
         (startWorkflow)="startWorkflow()"
         (formInitialised)="formInitialised($event)"
       ></app-workflow>
+      <app-depublication
+        *ngIf="activeTab === 'depublication'"
+        [datasetId]="datasetId"
+      ></app-depublication>
       <app-mapping
         *ngIf="activeTab === 'mapping'"
         [datasetData]="datasetData"

@@ -1,0 +1,113 @@
+<div class="depublication-ctrls">
+  <app-search
+    (onExecute)="setDataFilterParameter($event)"
+    [placeholderKey]="'depublicationFormPlaceholderSearchRecord'"
+  >
+  </app-search>
+
+  <ul class="filter">
+    <li *ngIf="isSaving">
+      <span class="svg-icon-spin showing"></span>
+    </li>
+    <li class="dropdown dropdown-options">
+      <a (click)="toggleMenuOptions()">{{ 'depublicationMenuTitle' | translate }}</a>
+      <div *ngIf="optionsOpen" class="dropdown-wrapper">
+        <ul class="dropdown-content">
+          <li>
+            <a (click)="openDialogFile()">{{ 'depublicationMenuFromFile' | translate }}</a>
+          </li>
+          <li>
+            <a (click)="openDialogInput()">{{ 'depublicationMenuFromInput' | translate }}</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+<div class="modal-wrapper" *ngIf="dialogInputOpen || dialogFileOpen">
+  <div
+    class="modal"
+    [ngClass]="{
+      'dialog-file': dialogFileOpen,
+      'dialog-input': dialogInputOpen
+    }"
+  >
+    <div class="head">
+      {{ 'depublicationModalTitle' | translate }} <a class="btn-close" (click)="closeDialogs()"></a>
+    </div>
+    <ng-container *ngIf="dialogFileOpen">
+      <form [formGroup]="formFile" (ngSubmit)="onSubmitFormFile()">
+        <app-file-upload
+          formControlName="depublicationFile"
+          [form]="formFile"
+          [acceptedTypes]="'.txt'"
+        ></app-file-upload>
+        <div class="form-ctrls">
+          <div
+            class="errors"
+            *ngIf="
+              formFile.get('depublicationFile')!.errors && formFile.get('depublicationFile')!.dirty
+            "
+          >
+            <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+              {{ 'depublicationFormErrorExtension' | translate }}
+            </div>
+          </div>
+          <button
+            class="submit-form"
+            type="submit"
+            [disabled]="!(formFile.valid && formFile.dirty)"
+          >
+            {{ 'depublicationSubmitButtonText' | translate }}
+          </button>
+        </div>
+      </form>
+    </ng-container>
+    <ng-container *ngIf="dialogInputOpen">
+      <form [formGroup]="formRawText" (ngSubmit)="onSubmitRawText()">
+        <textarea
+          formControlName="recordIds"
+          name="recordIds"
+          placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
+        ></textarea>
+        <div class="form-ctrls">
+          <div
+            class="errors"
+            *ngIf="formRawText.get('recordIds')!.errors && formRawText.get('recordIds')!.dirty"
+          >
+            <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+              {{ 'depublicationFormErrorBlank' | translate }}
+            </div>
+            <div *ngIf="formRawText.get('recordIds')!.errors!.whitespace">
+              {{ 'depublicationFormErrorWhitespace' | translate }}
+            </div>
+          </div>
+          <button
+            class="submit-form"
+            type="submit"
+            [disabled]="!(formRawText.valid && formRawText.dirty)"
+          >
+            {{ 'depublicationSubmitButtonText' | translate }}
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>
+
+<div class="depublications-grid">
+  <ng-container>
+    <app-sortable-group
+      #dataWrapper
+      [grpConf]="sortHeaderGroupConf"
+      (onGroupSet)="setDataSortParameter($event)"
+    >
+    </app-sortable-group>
+    <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
+  </ng-container>
+
+  <ng-container *ngFor="let record of depublicationData">
+    <app-depublication-row #dataWrapper [record]="record"></app-depublication-row>
+    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
+  </ng-container>
+</div>

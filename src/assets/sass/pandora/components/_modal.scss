@@ -4,7 +4,7 @@
   left: 0;
   position: fixed;
   top: 0;
-  width: 100vw;
+  width: 100%; // 100vw leaves uneven spacing
   z-index: 11;
 
   .modal {

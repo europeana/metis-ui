@@ -1,3 +1,7 @@
+.table-grid.last-execution {
+  display: none !important;
+}
+
 .date-and-time:empty,
 .status-label,
 .time {
@@ -45,7 +49,7 @@
 .table-grid {
   background: $offwhite;
   color: $gray-light;
-  font-size: 0.8125rem;
+  font-size: $font-size-metis-grid;
 
   .date-and-time {
     width: 50%;
@@ -100,7 +104,9 @@
   .totals + .date-and-time {
     text-align: right;
   }
+}
 
+.table-grid {
   > span {
     align-items: center;
     align-self: center;
@@ -137,10 +143,6 @@
       display: block;
     }
 
-    > span {
-      display: flex;
-    }
-
     .date-header {
       justify-content: space-around;
       text-align: center;
@@ -156,6 +158,13 @@
     }
     .plugin-name.desktop {
       display: inline-block;
+    }
+  }
+
+  .depublications-grid,
+  .table-grid {
+    > span {
+      display: flex;
     }
   }
 }

@@ -5,7 +5,7 @@
     (keyup)="submitOnEnter($event)"
     [(ngModel)]="searchString"
     name="searchString"
-    placeholder="{{ 'searchPlaceholder' | translate }}"
+    placeholder="{{ placeholderKey | translate }}"
   />
   <span class="search" (click)="executeSearch()"></span>
 </span>

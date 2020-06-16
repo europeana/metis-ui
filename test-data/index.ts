@@ -5,6 +5,7 @@ import {
   evolution,
   executionsHistory,
   executionsByDatasetIdAsList,
+  getListWrapper,
   information,
   overview,
   pluginsAvailable,
@@ -15,10 +16,12 @@ import {
   xslt
 } from './factory/factory';
 import { urlManipulation } from './_models/test-models';
+import { DepublicationStatus, RecordPublicationInfo } from '../src/app/_models';
 
 const port = 3000;
 const url = require('url');
 
+let depublicationInfoCache: Array<RecordPublicationInfo> = [];
 let switchedOff: { [key: string]: string } = {};
 
 function returnEmpty(response: ServerResponse) {
@@ -171,10 +174,89 @@ function getStatistics(): string {
   });
 }
 
-function routeToFile(response: ServerResponse, route: string): boolean {
+function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
-  let regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
+  let regRes = route.match(/depublished_records\/[^\?+]*/);
+
+  if (regRes) {
+    const params = url.parse(route, true).query;
+
+    if (request.method === 'POST') {
+      const pushToDepublicationCache = (url: string) => {
+        const time = new Date().toISOString();
+        depublicationInfoCache.push({
+          id: '',
+          recordId: url,
+          depublicationStatus: DepublicationStatus.DEPUBLISHED,
+          depublicationDate: time
+        } as RecordPublicationInfo);
+      };
+
+      const fileName = params.clientFilename;
+
+      if (fileName) {
+        pushToDepublicationCache('file/upload/' + fileName);
+        response.end();
+        return true;
+      }
+
+      let body = '';
+
+      request.on('data', function(data) {
+        body += data.toString();
+      });
+      request.on('end', function() {
+        body.split(/\s+/).forEach((recordId: string) => pushToDepublicationCache(recordId));
+        response.end();
+        return true;
+      });
+    } else {
+      let result = Array.from(depublicationInfoCache);
+
+      if (result.length > 0 && params.searchQuery) {
+        result = result.filter((entry) => {
+          return entry.recordId.toUpperCase().includes(`${params.searchQuery}`.toUpperCase());
+        });
+      }
+      if (result.length > 0 && params.sortField) {
+        const snakeToCamel = (str: String): string =>
+          str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
+            group
+              .toUpperCase()
+              .replace('-', '')
+              .replace('_', '')
+          );
+
+        const sortField = snakeToCamel(params.sortField);
+
+        const sortResult = (res: Array<any>): Array<any> => {
+          let asc = params.sortAscending === 'true';
+          if (res[0][sortField]) {
+            res.sort((a: any, b: any) => {
+              const valA = a[sortField];
+              const valB = b[sortField];
+              let eq = valA === valB;
+              let grtr = valA > valB;
+              if (asc) {
+                grtr = !grtr;
+              }
+              return eq ? 0 : grtr ? -1 : 1;
+            });
+          } else {
+            console.log(`invalid sort field ${params.sortField} (${sortField})`);
+          }
+          return res;
+        };
+
+        result = sortResult(result);
+      }
+      response.end(JSON.stringify(getListWrapper(result, true, 100)));
+      return true;
+    }
+  }
+
+  regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
 
   if (regRes) {
     response.end(JSON.stringify(reportExists(regRes[1])));
@@ -406,7 +488,7 @@ const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
     return;
   }
 
-  let requestHandled = routeToFile(response, route);
+  let requestHandled = routeToFile(request, response, route);
 
   if (!requestHandled) {
     if (request.method === 'POST') {
