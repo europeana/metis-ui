@@ -133,39 +133,45 @@ describe('DepublicationComponent', () => {
       const datasetId = '123';
       component.datasetId = datasetId;
 
-      expect(component.validateRecordIds(frmCtrl(recordId))).toBeFalsy();
-      expect(component.validateRecordIds(frmCtrl(`/${recordId}`))).toBeFalsy();
-      expect(component.validateRecordIds(frmCtrl(`${datasetId}/${recordId}`))).toBeFalsy();
-      expect(component.validateRecordIds(frmCtrl(`${recordId}/${datasetId}`))).toBeTruthy();
-      expect(component.validateRecordIds(frmCtrl(`${datasetId}/${recordId}`))).toBeFalsy();
-      expect(component.validateRecordIds(frmCtrl(`/${datasetId}/${recordId}`))).toBeFalsy();
-      expect(component.validateRecordIds(frmCtrl(`//${datasetId}/${recordId}`))).toBeTruthy();
-      expect(component.validateRecordIds(frmCtrl(`http://${datasetId}/${recordId}`))).toBeFalsy();
-      expect(
-        component.validateRecordIds(frmCtrl(`http://path/${datasetId}/${recordId}`))
-      ).toBeFalsy();
-      expect(
-        component.validateRecordIds(frmCtrl(`https://path/${datasetId}/${recordId}`))
-      ).toBeFalsy();
-      expect(
-        component.validateRecordIds(frmCtrl(`https://path/${datasetId}/${recordId}/`))
-      ).toBeTruthy();
-      expect(
-        component.validateRecordIds(
-          frmCtrl(`
-        https://path/${datasetId}/${recordId}
-        https://path/${datasetId}/${recordId}
-      `)
-        )
-      ).toBeFalsy();
-      expect(
-        component.validateRecordIds(
-          frmCtrl(`
-        https://path/${datasetId}/${recordId}/
-        https://path/${datasetId}/${recordId}
-      `)
-        )
-      ).toBeTruthy();
+      let falsyVals = [
+        recordId,
+        `${datasetId}/${recordId}`,
+        `/${datasetId}/${recordId}`,
+        `path/${datasetId}/${recordId}`,
+        `path/path/${datasetId}/${recordId}`,
+        `http://${datasetId}/${recordId}`,
+        `https://path/${datasetId}/${recordId}`,
+        `http://www.server.com/path1/path2/${datasetId}/${recordId}`,
+        `
+          https://path/${datasetId}/${recordId}
+          https://path/${datasetId}/${recordId}
+        `
+      ];
+
+      let truthyVals = [
+        `${recordId}/${datasetId}`,
+        `//${datasetId}/${recordId}`,
+        `htps://path/${datasetId}/${recordId}`,
+        `http://path/${datasetId}/${recordId}/`,
+        `http://path/${datasetId} ${recordId}`,
+        `/${datasetId}/notTheDataset/${recordId}`,
+        `/${datasetId + 1}/${recordId}`,
+        `
+          https://path/${datasetId}/${recordId}/
+          https://path/${datasetId}/${recordId}
+        `,
+        'https://path/INVALID${datasetId}/${recordId}'
+      ];
+
+      falsyVals.forEach((falsy: string) => {
+        console.log(`test falsy val: ${falsy}`);
+        expect(component.validateRecordIds(frmCtrl(falsy))).toBeFalsy();
+      });
+
+      truthyVals.forEach((truthy: string) => {
+        console.log(`test truthy val: ${truthy}`);
+        expect(component.validateRecordIds(frmCtrl(truthy))).toBeTruthy();
+      });
     });
 
     it('should validate for no whitespace', () => {

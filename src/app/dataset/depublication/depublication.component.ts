@@ -110,20 +110,19 @@ export class DepublicationComponent implements OnDestroy {
     const val = control.value || '';
     let invalid = false;
     let misref = false;
-
-    const reg = /(http(s)?:\/\/)?([a-zA-Z]*\/)?([0-9]*\/)?[a-zA-Z\d_]*$/;
-    const reg2 = new RegExp('\\b' + this._datasetId + '\\b');
-
+    const reg = new RegExp(
+      '(^(http(s)?://([a-zA-Z0-9\\.])*)?(^(\\/))?([^s\\/]+\\/)*(' +
+        this.datasetId +
+        '\\/)+)?[^\\s\\/]*'
+    );
     val
       .split(/\r?\n/g)
+      .map((recId: string) => recId.trim())
       .filter((recId: string) => recId.length > 0)
       .forEach((recId: string) => {
-        recId = recId.trim();
         const match = recId.match(reg);
         if (!(match && match.length && match[0] === recId)) {
           invalid = true;
-        } else if (recId.indexOf('/') > 0 && !recId.match(reg2)) {
-          misref = true;
         }
       });
     return invalid ? { invalidIdFmt: true } : misref ? { invalidIdRef: true } : null;
