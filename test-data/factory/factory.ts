@@ -248,6 +248,7 @@ function updateHarvestData(info: HarvestData, pe: PluginExecution): void {
       if (pe.executionProgress) {
         info.lastPreviewRecords = pe.executionProgress.processedRecords;
         info.lastPublishedRecords = pe.executionProgress.processedRecords;
+        info.lastDepublishedRecords = pe.executionProgress.processedRecords;
       }
     } else if (pluginExecutionIsHarvest(pe)) {
       if (info.lastHarvestedDate.length === 0) {
@@ -638,6 +639,7 @@ export function information(informationId?: string): HarvestData {
       firstPublishedDate: '',
       lastPublishedDate: '',
       lastPublishedRecords: 0,
+      lastDepublishedRecords: 0,
       lastPublishedRecordsReadyForViewing: false,
 
       lastHarvestedDate: '',

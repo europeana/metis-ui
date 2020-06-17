@@ -12,6 +12,8 @@ export class GeneralinfoComponent {
   @Input() datasetData: Dataset;
 
   disabledBtnClass = 'btn-disabled';
+  lastDepublishedDate?: string;
+  lastDepublishedRecords?: number;
   lastPublishedRecords?: number;
   lastPublishedDate?: string;
   viewPreview?: string;
@@ -26,6 +28,8 @@ export class GeneralinfoComponent {
     this._harvestPublicationData = value;
 
     if (value) {
+      this.lastDepublishedDate = value.lastDepublishedDate;
+      this.lastDepublishedRecords = value.lastDepublishedRecords;
       this.lastPublishedRecords = value.lastPublishedRecords;
       this.lastPublishedDate = value.lastPublishedDate;
 

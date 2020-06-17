@@ -6,7 +6,9 @@ export interface HarvestData {
   lastPreviewRecordsReadyForViewing: boolean;
 
   firstPublishedDate: string;
+  lastDepublishedDate?: string;
   lastPublishedDate: string;
+  lastDepublishedRecords?: number;
   lastPublishedRecords: number;
   lastPublishedRecordsReadyForViewing: boolean;
 
