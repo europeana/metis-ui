@@ -110,7 +110,7 @@ export class DepublicationComponent implements OnDestroy {
     const val = control.value || '';
     let invalid = false;
     const reg = new RegExp(
-      '(^(http(s)?://([a-zA-Z0-9\\.\\/])*)?(^(\\/){1})?([^s\\/]+\\/)*(' +
+      '(^(http(s)?://[^\\s]*)?(^(\\/){1})?([^\\s\\/]+\\/)*(' +
         this.datasetId +
         '\\/)+)?[^\\s\\/:\\.]+'
     );
