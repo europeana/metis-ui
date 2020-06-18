@@ -11,6 +11,7 @@ import { Dataset, HarvestData } from '../../_models';
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;
 
+  isCurrentlyDepublished?: boolean;
   disabledBtnClass = 'btn-disabled';
   lastDepublishedDate?: string;
   lastDepublishedRecords?: number;
@@ -28,6 +29,7 @@ export class GeneralinfoComponent {
     this._harvestPublicationData = value;
 
     if (value) {
+      this.isCurrentlyDepublished = value.isCurrentlyDepublished;
       this.lastDepublishedDate = value.lastDepublishedDate;
       this.lastDepublishedRecords = value.lastDepublishedRecords;
       this.lastPublishedRecords = value.lastPublishedRecords;
