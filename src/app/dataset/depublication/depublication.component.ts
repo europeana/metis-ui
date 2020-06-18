@@ -109,11 +109,10 @@ export class DepublicationComponent implements OnDestroy {
   validateRecordIds(control: FormControl): { [key: string]: boolean } | null {
     const val = control.value || '';
     let invalid = false;
-    let misref = false;
     const reg = new RegExp(
-      '(^(http(s)?://([a-zA-Z0-9\\.])*)?(^(\\/))?([^s\\/]+\\/)*(' +
+      '(^(http(s)?://([a-zA-Z0-9\\.\\/])*)?(^(\\/){1})?([^s\\/]+\\/)*(' +
         this.datasetId +
-        '\\/)+)?[^\\s\\/]*'
+        '\\/)+)?[^\\s\\/:\\.]+'
     );
     val
       .split(/\r?\n/g)
@@ -125,7 +124,7 @@ export class DepublicationComponent implements OnDestroy {
           invalid = true;
         }
       });
-    return invalid ? { invalidIdFmt: true } : misref ? { invalidIdRef: true } : null;
+    return invalid ? { invalidIdFmt: true } : null;
   }
 
   /** validateWhitespace

@@ -133,7 +133,7 @@ describe('DepublicationComponent', () => {
       const datasetId = '123';
       component.datasetId = datasetId;
 
-      let falsyVals = [
+      const falsyVals = [
         recordId,
         `${datasetId}/${recordId}`,
         `/${datasetId}/${recordId}`,
@@ -142,15 +142,21 @@ describe('DepublicationComponent', () => {
         `http://${datasetId}/${recordId}`,
         `https://path/${datasetId}/${recordId}`,
         `http://www.server.com/path1/path2/${datasetId}/${recordId}`,
+        `http://www.server.com//path1/path2/${datasetId}/${recordId}`,
         `
           https://path/${datasetId}/${recordId}
           https://path/${datasetId}/${recordId}
         `
       ];
 
-      let truthyVals = [
+      const truthyVals = [
+        `.`,
+        `${recordId}/`,
         `${recordId}/${datasetId}`,
         `//${datasetId}/${recordId}`,
+        `http:`,
+        `http://`,
+        `http://path`,
         `htps://path/${datasetId}/${recordId}`,
         `http://path/${datasetId}/${recordId}/`,
         `http://path/${datasetId} ${recordId}`,
