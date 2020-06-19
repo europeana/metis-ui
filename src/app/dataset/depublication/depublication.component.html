@@ -84,6 +84,9 @@
             <div *ngIf="formRawText.get('recordIds')!.errors!.whitespace">
               {{ 'depublicationFormErrorWhitespace' | translate }}
             </div>
+            <div *ngIf="formRawText.get('recordIds')!.errors!.invalidIdFmt">
+              {{ 'depublicationFormErrorInvalidFmt' | translate }}
+            </div>
           </div>
           <button
             class="submit-form"

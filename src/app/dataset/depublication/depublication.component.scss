@@ -42,7 +42,8 @@ app-sortable-group {
 .submit-form {
   background: $eu-jade;
   color: $white;
-  margin-left: auto;
+  display: block;
+  margin: 1em 0 0 auto;
 
   &:disabled {
     background: $white;
