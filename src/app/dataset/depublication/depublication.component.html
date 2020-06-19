@@ -10,7 +10,7 @@
       <span class="svg-icon-spin showing"></span>
     </li>
     <li>
-      <a (click)="onDepublishDataset()">DEPUBLISH_ALL</a>
+      <a (click)="onDepublishDataset()">{{ 'depublishDataset' | translate }}</a>
     </li>
     <li class="dropdown dropdown-options">
       <a (click)="toggleMenuOptions()">{{ 'depublicationMenuTitle' | translate }}</a>
@@ -111,6 +111,12 @@
     </app-sortable-group>
     <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
   </ng-container>
+
+  <span *ngIf="depublicationComplete" class="depublication-complete-message">
+    {{ 'depublicationComplete' | translate }}
+    {{ _totalRecordCount }}
+    ({{ 'depublicationCompleteCountSuffix' | translate }})
+  </span>
 
   <ng-container *ngFor="let record of depublicationData">
     <app-depublication-row #dataWrapper [record]="record"></app-depublication-row>

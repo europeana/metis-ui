@@ -5,6 +5,10 @@ app-sortable-group {
   display: none;
 }
 
+.depublication-complete-message {
+  grid-column: 1/4;
+}
+
 .dialog-file,
 .dialog-input {
   form {
