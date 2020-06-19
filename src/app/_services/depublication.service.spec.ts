@@ -24,6 +24,12 @@ describe('depublication service', () => {
     service = TestBed.get(DepublicationService);
   }));
 
+  it('should depublish a dataset', () => {
+    service.depublishDataset('123').subscribe((res) => {
+      expect(res).toEqual(true);
+    });
+  });
+
   it('should handle upload events', () => {
     const resProgess = service.handleUploadEvents({
       type: HttpEventType.UploadProgress,

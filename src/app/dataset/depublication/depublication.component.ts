@@ -203,6 +203,10 @@ export class DepublicationComponent implements OnDestroy {
     }
   }
 
+  onDepublishDataset(): void {
+    alert('depublish ' + this.datasetId);
+  }
+
   /** onSubmitRawText
   /* - submit the formRawText form data if validation has passed
   /* - trigger a reload of the displayed depublication data

@@ -9,6 +9,9 @@
     <li *ngIf="isSaving">
       <span class="svg-icon-spin showing"></span>
     </li>
+    <li>
+      <a (click)="onDepublishDataset()">DEPUBLISH_ALL</a>
+    </li>
     <li class="dropdown dropdown-options">
       <a (click)="toggleMenuOptions()">{{ 'depublicationMenuTitle' | translate }}</a>
       <div *ngIf="optionsOpen" class="dropdown-wrapper">

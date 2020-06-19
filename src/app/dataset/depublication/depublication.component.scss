@@ -29,7 +29,7 @@ app-sortable-group {
   flex-direction: column;
 }
 
-.dropdown-options {
+.filter :first-child:visible {
   margin-left: auto;
 }
 
