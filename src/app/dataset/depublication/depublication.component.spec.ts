@@ -20,6 +20,7 @@ describe('DepublicationComponent', () => {
 
   const interval = 5000;
   const formBuilder: FormBuilder = new FormBuilder();
+  const recordId = 'BibliographicResource_1000126221328';
 
   const addFormFieldData = (): void => {
     component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
@@ -117,13 +118,71 @@ describe('DepublicationComponent', () => {
     });
 
     it('should submit the text', () => {
+      const datasetId = '123';
+      component.datasetId = datasetId;
       component.dialogInputOpen = true;
-      component.datasetId = '123';
+
       component.onSubmitRawText();
       expect(component.dialogInputOpen).toBeTruthy();
-      component.formRawText.patchValue({ recordIds: 'http://record/id' });
+      component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(component.dialogInputOpen).toBeFalsy();
+    });
+
+    it('should validate the record ids', () => {
+      const datasetId = '123';
+      component.datasetId = datasetId;
+
+      const falsyVals = [
+        recordId,
+        `${datasetId}/${recordId}`,
+        `/${datasetId}/${recordId}`,
+        `path/${datasetId}/${recordId}`,
+        `path/path/${datasetId}/${recordId}`,
+        `http://${datasetId}/${recordId}`,
+        `https://path/${datasetId}/${recordId}`,
+        `http://www.server.com/path1/path2/${datasetId}/${recordId}`,
+        `
+          https://path/${datasetId}/${recordId}
+          https://path/${datasetId}/${recordId}
+        `
+      ];
+
+      const truthyVals = [
+        `.`,
+        'a-_$&#%@)}[*!@#',
+        `${recordId}/`,
+        `${recordId}/${datasetId}`,
+        `//${datasetId}/${recordId}`,
+        `http:`,
+        `http://`,
+        `http://path`,
+        `https:/a/${datasetId}/${recordId}`,
+        `htps://path/${datasetId}/${recordId}`,
+        `http://path/${datasetId}/${recordId}/`,
+        `http://path/${datasetId} ${recordId}`,
+        'https://path/INVALID${datasetId}/${recordId}',
+        `http://www.server.com//path1/path2/${datasetId}/${recordId}`,
+        `http://www.server.com/path1/path2${datasetId}/${recordId}`,
+        `/${datasetId}/notTheDataset/${recordId}`,
+        `/${datasetId + 1}/${recordId}`,
+        `
+          https://path/${datasetId}/${recordId}/
+          https://path/${datasetId}/${recordId}
+        `,
+        `https:///////path//////3/asd`,
+        `https:///path/3/asd`
+      ];
+
+      falsyVals.forEach((falsy: string) => {
+        console.log(`test falsy val: ${falsy}`);
+        expect(component.validateRecordIds(frmCtrl(falsy))).toBeFalsy();
+      });
+
+      truthyVals.forEach((truthy: string) => {
+        console.log(`test truthy val: ${truthy}`);
+        expect(component.validateRecordIds(frmCtrl(truthy))).toBeTruthy();
+      });
     });
 
     it('should validate for no whitespace', () => {

@@ -92,11 +92,38 @@ export class DepublicationComponent implements OnDestroy {
   */
   buildForms(): void {
     this.formRawText = this.fb.group({
-      recordIds: ['', [Validators.required, this.validateWhitespace]]
+      recordIds: [
+        '',
+        [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
+      ]
     });
     this.formFile = this.fb.group({
       depublicationFile: ['', [Validators.required, this.validateFileExtension]]
     });
+  }
+
+  /** validateRecordIds
+  /*  returns an error if the form control value includes invalid record ids
+  /*  @param {FormControl} control - the input control to validate
+  */
+  validateRecordIds(control: FormControl): { [key: string]: boolean } | null {
+    const val = control.value || '';
+    let invalid = false;
+    const reg = new RegExp(
+      '^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(' + this.datasetId + '\\/)+)?[A-Za-z0-9_]+$'
+    );
+
+    val
+      .split(/\r?\n/g)
+      .map((recId: string) => recId.trim())
+      .filter((recId: string) => recId.length > 0)
+      .forEach((recId: string) => {
+        const match = recId.match(reg);
+        if (!(match && match.length && match[0] === recId)) {
+          invalid = true;
+        }
+      });
+    return invalid ? { invalidIdFmt: true } : null;
   }
 
   /** validateWhitespace
@@ -152,8 +179,6 @@ export class DepublicationComponent implements OnDestroy {
   /*  @param {string} event - the filter information
    */
   setDataFilterParameter(event: string): void {
-    console.log('set the search filter ' + event);
-
     if (event.length === 0) {
       this.dataFilterParam = undefined;
     } else {
