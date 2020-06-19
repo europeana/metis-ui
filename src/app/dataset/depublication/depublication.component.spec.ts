@@ -142,7 +142,6 @@ describe('DepublicationComponent', () => {
         `http://${datasetId}/${recordId}`,
         `https://path/${datasetId}/${recordId}`,
         `http://www.server.com/path1/path2/${datasetId}/${recordId}`,
-        `http://www.server.com//path1/path2/${datasetId}/${recordId}`,
         `
           https://path/${datasetId}/${recordId}
           https://path/${datasetId}/${recordId}
@@ -151,22 +150,28 @@ describe('DepublicationComponent', () => {
 
       const truthyVals = [
         `.`,
+        'a-_$&#%@)}[*!@#',
         `${recordId}/`,
         `${recordId}/${datasetId}`,
         `//${datasetId}/${recordId}`,
         `http:`,
         `http://`,
         `http://path`,
+        `https:/a/${datasetId}/${recordId}`,
         `htps://path/${datasetId}/${recordId}`,
         `http://path/${datasetId}/${recordId}/`,
         `http://path/${datasetId} ${recordId}`,
+        'https://path/INVALID${datasetId}/${recordId}',
+        `http://www.server.com//path1/path2/${datasetId}/${recordId}`,
+        `http://www.server.com/path1/path2${datasetId}/${recordId}`,
         `/${datasetId}/notTheDataset/${recordId}`,
         `/${datasetId + 1}/${recordId}`,
         `
           https://path/${datasetId}/${recordId}/
           https://path/${datasetId}/${recordId}
         `,
-        'https://path/INVALID${datasetId}/${recordId}'
+        `https:///////path//////3/asd`,
+        `https:///path/3/asd`
       ];
 
       falsyVals.forEach((falsy: string) => {
