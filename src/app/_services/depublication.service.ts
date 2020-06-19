@@ -23,10 +23,7 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset to depublish
   */
   depublishDataset(datasetId: string): Observable<boolean> {
-    console.log('call depublish API ' + datasetId);
-
     const url = `${apiSettings.apiHostCore}/depublished_dataset`;
-
     return this.http
       .post<boolean>(url, datasetId, {
         reportProgress: true
