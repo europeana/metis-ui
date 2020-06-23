@@ -1,8 +1,8 @@
 <div class="metis-dataset-info-block" *ngIf="datasetData">
   <div class="dataset-name">
     <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
-    <span *ngIf="isCurrentlyDepublished" class="mark-depublished">{{
-      'depublished' | translate
+    <span *ngIf="currentDepublicationStatusMessage" class="depublication-status">{{
+      currentDepublicationStatusMessage | translate
     }}</span>
   </div>
   <dl class="dataset-info-fields">

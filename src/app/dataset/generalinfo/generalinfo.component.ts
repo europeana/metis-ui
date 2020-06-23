@@ -11,7 +11,7 @@ import { CurrentDepublicationStatus, Dataset, HarvestData } from '../../_models'
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;
 
-  isCurrentlyDepublished = false;
+  currentDepublicationStatusMessage?: string;
   disabledBtnClass = 'btn-disabled';
   lastDepublishedDate?: string;
   lastDepublishedRecords?: number;
@@ -29,8 +29,12 @@ export class GeneralinfoComponent {
     this._harvestPublicationData = value;
 
     if (value) {
-      this.isCurrentlyDepublished =
-        value.currentDepublicationStatus === CurrentDepublicationStatus.DEPUBLISHED;
+      this.currentDepublicationStatusMessage =
+        value.currentDepublicationStatus === CurrentDepublicationStatus.DEPUBLISHED
+          ? 'depublished'
+          : value.currentDepublicationStatus === CurrentDepublicationStatus.PUBLISHED
+          ? 'published'
+          : undefined;
       this.lastDepublishedDate = value.lastDepublishedDate;
       this.lastDepublishedRecords = value.lastDepublishedRecords;
       this.lastPublishedRecords = value.lastPublishedRecords;

@@ -142,6 +142,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   processingHistory: 'Processing history',
   processedRecords: 'Processed / records',
   provider: 'Provider',
+  published: 'Published',
   rawXml: 'Raw XML',
   redirectsFrom: 'Redirects from',
   refresh: 'Refresh',
