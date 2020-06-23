@@ -6,7 +6,7 @@ import {
   WorkflowX,
   WorkflowXRunConf
 } from '../_models/test-models';
-import { HarvestData } from '../../src/app/_models/harvest-data';
+import { CurrentDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
@@ -249,7 +249,7 @@ function updateHarvestData(info: HarvestData, pe: PluginExecution): void {
         info.lastPreviewRecords = pe.executionProgress.processedRecords;
         info.lastPublishedRecords = pe.executionProgress.processedRecords;
         info.lastDepublishedRecords = pe.executionProgress.processedRecords;
-        info.isCurrentlyDepublished = true;
+        info.currentDepublicationStatus = CurrentDepublicationStatus.DEPUBLISHED;
       }
     } else if (pluginExecutionIsHarvest(pe)) {
       if (info.lastHarvestedDate.length === 0) {
@@ -637,7 +637,7 @@ export function information(informationId?: string): HarvestData {
       lastPreviewRecords: 0,
       lastPreviewRecordsReadyForViewing: false,
       firstPublishedDate: '',
-      isCurrentlyDepublished: false,
+      currentDepublicationStatus: CurrentDepublicationStatus.PUBLISHED,
       lastPublishedDate: '',
       lastPublishedRecords: 0,
       lastDepublishedRecords: 0,
