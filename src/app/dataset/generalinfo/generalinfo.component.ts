@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
-import { Dataset, HarvestData } from '../../_models';
+import { CurrentDepublicationStatus, Dataset, HarvestData } from '../../_models';
 
 @Component({
   selector: 'app-generalinfo',
@@ -11,7 +11,10 @@ import { Dataset, HarvestData } from '../../_models';
 export class GeneralinfoComponent {
   @Input() datasetData: Dataset;
 
+  currentDepublicationStatusMessage?: string;
   disabledBtnClass = 'btn-disabled';
+  lastDepublishedDate?: string;
+  lastDepublishedRecords?: number;
   lastPublishedRecords?: number;
   lastPublishedDate?: string;
   viewPreview?: string;
@@ -26,6 +29,14 @@ export class GeneralinfoComponent {
     this._harvestPublicationData = value;
 
     if (value) {
+      this.currentDepublicationStatusMessage =
+        value.currentDepublicationStatus === CurrentDepublicationStatus.DEPUBLISHED
+          ? 'depublished'
+          : value.currentDepublicationStatus === CurrentDepublicationStatus.PUBLISHED
+          ? 'published'
+          : undefined;
+      this.lastDepublishedDate = value.lastDepublishedDate;
+      this.lastDepublishedRecords = value.lastDepublishedRecords;
       this.lastPublishedRecords = value.lastPublishedRecords;
       this.lastPublishedDate = value.lastPublishedDate;
 

@@ -1,6 +1,9 @@
 <div class="metis-dataset-info-block" *ngIf="datasetData">
   <div class="dataset-name">
     <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
+    <span *ngIf="currentDepublicationStatusMessage" class="depublication-status">{{
+      currentDepublicationStatusMessage | translate
+    }}</span>
   </div>
   <dl class="dataset-info-fields">
     <dt>{{ 'provider' | translate }}</dt>
@@ -15,6 +18,16 @@
         lastPublishedDate
           ? (lastPublishedDate | date: 'dd/MM/yyyy - HH:mm')
           : ('notPublished' | translate)
+      }}
+    </dd>
+    <dt>{{ 'numberDepublished' | translate }}</dt>
+    <dd>{{ lastDepublishedRecords ? lastDepublishedRecords : ('notDepublished' | translate) }}</dd>
+    <dt>{{ 'lastDepublished' | translate }}</dt>
+    <dd>
+      {{
+        lastDepublishedDate
+          ? (lastDepublishedDate | date: 'dd/MM/yyyy - HH:mm')
+          : ('notDepublished' | translate)
       }}
     </dd>
   </dl>

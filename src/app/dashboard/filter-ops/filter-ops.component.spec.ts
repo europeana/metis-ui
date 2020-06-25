@@ -71,8 +71,8 @@ describe('FilterOpsComponent', () => {
   });
 
   it('manages single parameters', () => {
-    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(14) a'));
-    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(15) a'));
+    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(16) a'));
+    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(17) a'));
     testEl1.nativeElement.click();
     expect(component.params.DATE[0].value).toEqual('1');
     testEl2.nativeElement.click();
@@ -176,7 +176,7 @@ describe('FilterOpsComponent', () => {
   });
 
   it('calculates date ranges for parameters', () => {
-    fixture.debugElement.query(By.css('.filter-cell:nth-of-type(14) a')).nativeElement.click();
+    fixture.debugElement.query(By.css('.filter-cell:nth-of-type(16) a')).nativeElement.click();
 
     const paramEvtSpy = spyOn(component.overviewParams, 'emit');
     expect(component.overviewParams.emit).not.toHaveBeenCalled();

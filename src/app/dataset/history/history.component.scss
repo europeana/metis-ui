@@ -16,19 +16,6 @@ $width-orb: 3em;
   }
 }
 
-.table-in-tab tr:nth-child(even) {
-  background-color: $white;
-}
-
-.table-in-tab tr:hover td:first-child::before {
-  display: none;
-}
-
-.table-in-tab tr:not(.loadmore) .workflow-head {
-  background-color: $offwhite;
-  padding: 0;
-}
-
 .workflow-head {
   position: relative;
 

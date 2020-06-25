@@ -38,8 +38,6 @@ export enum PluginStatus {
   FAILED = 'FAILED'
 }
 
-// Java name: AbstractMetisPlugin
-
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
   OAIPMH_HARVEST = 'OAIPMH_HARVEST',
@@ -51,7 +49,9 @@ export enum PluginType {
   MEDIA_PROCESS = 'MEDIA_PROCESS',
   PREVIEW = 'PREVIEW',
   PUBLISH = 'PUBLISH',
-  LINK_CHECKING = 'LINK_CHECKING'
+  LINK_CHECKING = 'LINK_CHECKING',
+  DEPUBLISH_DATASET = 'DEPUBLISH_DATASET',
+  DEPUBLISH_RECORDS = 'DEPUBLISH_RECORDS'
 }
 
 // See Topology.java

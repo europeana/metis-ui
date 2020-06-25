@@ -72,6 +72,14 @@ $orb-size-small-half: 0.75em;
       width: 100%;
     }
 
+    &.depublish_dataset:after {
+      content: 'Dd';
+    }
+
+    &.depublish_records:after {
+      content: 'Dr';
+    }
+
     &.harvest:after {
       content: 'H';
     }
