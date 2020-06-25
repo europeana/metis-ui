@@ -66,46 +66,13 @@
     </div>
 
     <div class="tabbed-content" #scrollToTopAnchor>
-      <ul class="tabs">
-        <li [ngClass]="{ active: activeTab === 'edit' }">
-          <a routerLink="/dataset/edit/{{ datasetId }}">
-            <span class="tab-title">{{ 'datasetInformation' | translate }}</span>
-            <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
-            <span class="tab-subtitle tab-date" *ngIf="harvestPublicationData">{{
-              harvestPublicationData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm'
-            }}</span>
-          </a>
-        </li>
-        <li [ngClass]="{ active: activeTab === 'workflow' }">
-          <a routerLink="/dataset/workflow/{{ datasetId }}">
-            <span class="tab-title">{{ 'workflow' | translate }}</span>
-          </a>
-        </li>
-        <li [ngClass]="{ active: activeTab === 'depublication' }">
-          <a routerLink="/dataset/depublication/{{ datasetId }}">
-            <span class="tab-title">{{ 'depublication' | translate }}</span>
-          </a>
-        </li>
-        <li [ngClass]="{ active: activeTab === 'mapping' }">
-          <a routerLink="/dataset/mapping/{{ datasetId }}">
-            <span class="tab-title">{{ 'mapping' | translate }}</span>
-          </a>
-        </li>
-        <li [ngClass]="{ active: activeTab === 'preview' }">
-          <a routerLink="/dataset/preview/{{ datasetId }}">
-            <span class="tab-title">{{ 'rawXml' | translate }}</span>
-          </a>
-        </li>
-        <li [ngClass]="{ active: activeTab === 'log' }">
-          <a routerLink="/dataset/log/{{ datasetId }}">
-            <span class="tab-title">{{ 'processingHistory' | translate }}</span>
-            <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
-            <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{
-              lastExecutionData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
-            }}</span>
-          </a>
-        </li>
-      </ul>
+      <app-tab-headers
+        [datasetId]="datasetId"
+        [active]="activeTab"
+        [harvestData]="harvestPublicationData"
+        [lastExecution]="lastExecutionData"
+      >
+      </app-tab-headers>
     </div>
 
     <app-workflow-header
