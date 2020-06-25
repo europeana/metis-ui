@@ -9,7 +9,7 @@ describe('TabHeadersComponent', () => {
   let component: TabHeadersComponent;
   let fixture: ComponentFixture<TabHeadersComponent>;
   let router: Router;
-  let params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
+  const params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
