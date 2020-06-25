@@ -5,6 +5,10 @@ app-sortable-group {
   display: none;
 }
 
+.depublication-complete-message {
+  grid-column: 1/4;
+}
+
 .dialog-file,
 .dialog-input {
   form {
@@ -29,7 +33,7 @@ app-sortable-group {
   flex-direction: column;
 }
 
-.dropdown-options {
+.filter :first-child:visible {
   margin-left: auto;
 }
 
@@ -42,7 +46,8 @@ app-sortable-group {
 .submit-form {
   background: $eu-jade;
   color: $white;
-  margin-left: auto;
+  display: block;
+  margin: 1em 0 0 auto;
 
   &:disabled {
     background: $white;
