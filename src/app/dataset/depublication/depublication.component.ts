@@ -54,6 +54,8 @@ export class DepublicationComponent implements OnDestroy {
       }
     ]
   };
+  _totalRecordCount?: number;
+  depublicationComplete = false;
 
   constructor(
     private readonly depublications: DepublicationService,
@@ -61,6 +63,21 @@ export class DepublicationComponent implements OnDestroy {
     private readonly fb: FormBuilder
   ) {}
 
+  /** totalRecordCount
+  /* setter for private variable _totalRecordCount
+  */
+  @Input()
+  set totalRecordCount(count: number | undefined) {
+    if (count) {
+      this._totalRecordCount = count;
+    }
+  }
+
+  /** datasetId
+  /* setter for private variable _datasetId
+  /* * calls buildForms if defined
+  /* * calls beginPolling if defined
+  */
   @Input()
   set datasetId(id: string | undefined) {
     if (id) {
@@ -71,7 +88,7 @@ export class DepublicationComponent implements OnDestroy {
   }
 
   /** datasetId
-  /* getter for private variable (returns shadow variable)
+  /* getter for private variable _datasetId (returns shadow variable)
   */
   get datasetId(): string | undefined {
     return this._datasetId;
@@ -226,6 +243,15 @@ export class DepublicationComponent implements OnDestroy {
           }
         });
     }
+  }
+
+  onDepublishDataset(): void {
+    this.depublications.depublishDataset(this._datasetId).subscribe((success: boolean) => {
+      if (success) {
+        this.depublicationComplete = true;
+        this.pollingRefresh.next(true);
+      }
+    });
   }
 
   /** onSubmitRawText

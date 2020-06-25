@@ -5,6 +5,10 @@ app-sortable-group {
   display: none;
 }
 
+.depublication-complete-message {
+  grid-column: 1/4;
+}
+
 .dialog-file,
 .dialog-input {
   form {
@@ -29,7 +33,7 @@ app-sortable-group {
   flex-direction: column;
 }
 
-.dropdown-options {
+.filter :first-child:visible {
   margin-left: auto;
 }
 

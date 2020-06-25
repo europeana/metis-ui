@@ -18,6 +18,19 @@ import { ErrorService } from './error.service';
 export class DepublicationService {
   constructor(private readonly http: HttpClient, private readonly errors: ErrorService) {}
 
+  /** depublishDataset
+  /*  depublish entire dataset
+  /*  @param {string} datasetId - the dataset to depublish
+  */
+  depublishDataset(datasetId: string): Observable<boolean> {
+    const url = `${apiSettings.apiHostCore}/depublished_dataset`;
+    return this.http
+      .post<boolean>(url, datasetId, {
+        reportProgress: true
+      })
+      .pipe(this.errors.handleRetry());
+  }
+
   /** handleUploadEvents
   /*  record upload events
   /*  @param {HttpEvent} event - event from the server
