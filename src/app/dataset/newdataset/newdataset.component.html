@@ -1,32 +1,6 @@
 <div class="dashboard-wrapper">
   <div class="metis-dashboard">
-    <ul class="tabs">
-      <li class="active">
-        <a
-          ><span class="tab-title">{{ 'datasetInformation' | translate }}</span></a
-        >
-      </li>
-      <li class="disabled">
-        <a
-          ><span class="tab-title">{{ 'workflow' | translate }}</span></a
-        >
-      </li>
-      <li class="disabled">
-        <a
-          ><span class="tab-title">{{ 'mapping' | translate }}</span></a
-        >
-      </li>
-      <li class="disabled">
-        <a
-          ><span class="tab-title">{{ 'rawXml' | translate }}</span></a
-        >
-      </li>
-      <li class="disabled">
-        <a
-          ><span class="tab-title">{{ 'processingHistory' | translate }}</span></a
-        >
-      </li>
-    </ul>
+    <app-tab-headers [disabled]="true"> </app-tab-headers>
   </div>
   <div class="tab-content">
     <app-datasetform [datasetData]="{}" [isNew]="true"></app-datasetform>

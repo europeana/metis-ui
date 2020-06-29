@@ -16,4 +16,5 @@ export * from './preview/';
 export * from './redirection/';
 export * from './reportsimple/';
 export * from './statistics/';
+export * from './tabheader/';
 export * from './workflow/';
