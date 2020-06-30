@@ -1,4 +1,5 @@
 <div class="depublication-ctrls">
+  <button>{{ 'depublicationDeleteButtonText' | translate }}</button>
   <app-search
     (onExecute)="setDataFilterParameter($event)"
     [placeholderKey]="'depublicationFormPlaceholderSearchRecord'"
@@ -107,6 +108,7 @@
       #dataWrapper
       [grpConf]="sortHeaderGroupConf"
       (onGroupSet)="setDataSortParameter($event)"
+      (onSelectAll)="setSelection($event)"
     >
     </app-sortable-group>
     <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
@@ -119,7 +121,11 @@
   </span>
 
   <ng-container *ngFor="let record of depublicationData">
-    <app-depublication-row #dataWrapper [record]="record"></app-depublication-row>
+    <app-depublication-row
+      #dataWrapper
+      [record]="record"
+      (checkEvents)="processCheckEvent($event)"
+    ></app-depublication-row>
     <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
   </ng-container>
 </div>

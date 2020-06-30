@@ -55,6 +55,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   depublicationColUnpublishedDate: 'Unpublished Date',
   depublicationComplete: 'The entire dataset was depublished',
   depublicationCompleteCountSuffix: 'records depublished',
+  depublicationDeleteButtonText: 'Delete record(s) from list',
   depublicationFormErrorBlank: 'Record ids cannot be blank',
   depublicationFormErrorExtension: 'A file with the .txt extension is required',
   depublicationFormErrorInvalidFmt: 'Invalid record id(s)',

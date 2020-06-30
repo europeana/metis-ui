@@ -5,16 +5,24 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { merge, switchMap, tap } from 'rxjs/operators';
 
 import { triggerDelay } from '../../_helpers';
-import { MoreResults, RecordPublicationInfo, SortDirection, SortParameter } from '../../_models';
+import {
+  DepublicationDeletionInfo,
+  MoreResults,
+  RecordDepublicationInfo,
+  RecordDepublicationInfoDeletable,
+  SortDirection,
+  SortParameter
+} from '../../_models';
 import { DepublicationService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { DepublicationRowComponent } from './depublication-row';
 
 @Component({
   selector: 'app-depublication',
@@ -22,12 +30,15 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./depublication.component.scss']
 })
 export class DepublicationComponent implements OnDestroy {
+  @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
+
   _datasetId: string;
   currentPage = 0;
   hasMore = false;
   dataSortParam: SortParameter | undefined;
   dataFilterParam: string | undefined;
-  depublicationData: Array<RecordPublicationInfo> = [];
+  depublicationData: Array<RecordDepublicationInfoDeletable> = [];
+  depublicationDeletions: Array<string> = [];
   depublicationSubscription: Subscription;
   dialogFileOpen = false;
   dialogInputOpen = false;
@@ -40,6 +51,7 @@ export class DepublicationComponent implements OnDestroy {
   sortHeaderGroupConf = {
     cssClass: 'grid-header',
     items: [
+      {},
       {
         translateKey: 'depublicationColUrl',
         fieldName: 'RECORD_ID'
@@ -84,6 +96,30 @@ export class DepublicationComponent implements OnDestroy {
       this._datasetId = id;
       this.buildForms();
       this.beginPolling();
+    }
+  }
+
+  /** setSelection
+  /*  select or deselect all the depublication row checkboxes
+  /*  @param {boolean} val - flag to select or deselect
+  */
+  setSelection(val: boolean): void {
+    this.depublicationRows.forEach((row) => {
+      row.onChange(val);
+    });
+  }
+
+  /** processCheckEvent
+  /*  append to / remove from the depublicationDeletions array
+  /*  @param {DepublicationDeletionInfo} deletionInfo - reference to add / remove from the depublicationDeletions array
+  */
+  processCheckEvent(deletionInfo: DepublicationDeletionInfo): void {
+    if (deletionInfo.deletion) {
+      this.depublicationDeletions.push(deletionInfo.recordId);
+    } else {
+      this.depublicationDeletions = this.depublicationDeletions.filter((recId: string) => {
+        return deletionInfo.recordId !== recId;
+      });
     }
   }
 
@@ -310,11 +346,14 @@ export class DepublicationComponent implements OnDestroy {
           }
         });
       })
-    ) as Observable<MoreResults<RecordPublicationInfo>>;
+    ) as Observable<MoreResults<RecordDepublicationInfo>>;
 
     this.depublicationSubscription = polledDepublicationData.subscribe(
       ({ results, more }) => {
-        this.depublicationData = results;
+        this.depublicationData = results.map((entry: RecordDepublicationInfoDeletable) => {
+          entry.deletion = this.depublicationDeletions.indexOf(entry.recordId) > -1;
+          return entry as RecordDepublicationInfoDeletable;
+        });
         this.hasMore = more;
         this.isLoading = false;
       },

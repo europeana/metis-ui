@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import {
   MoreResults,
-  RecordPublicationInfo,
+  RecordDepublicationInfo,
   Results,
   SortDirection,
   SortParameter
@@ -114,11 +114,11 @@ export class DepublicationService {
     page: number,
     sort?: SortParameter,
     filter?: string
-  ): Observable<Results<RecordPublicationInfo>> {
+  ): Observable<Results<RecordDepublicationInfo>> {
     const sortParam = this.parseSortParameter(sort);
     const filterParam = this.parseFilterParameter(filter);
     const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?page=${page}${sortParam}${filterParam}`;
-    return this.http.get<Results<RecordPublicationInfo>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<RecordDepublicationInfo>>(url).pipe(this.errors.handleRetry());
   }
 
   /** getPublicationInfoUptoPage
@@ -133,8 +133,8 @@ export class DepublicationService {
     endPage: number,
     sort?: SortParameter,
     filter?: string
-  ): Observable<MoreResults<RecordPublicationInfo>> {
-    const getResults = (page: number): Observable<Results<RecordPublicationInfo>> =>
+  ): Observable<MoreResults<RecordDepublicationInfo>> {
+    const getResults = (page: number): Observable<Results<RecordDepublicationInfo>> =>
       this.getPublicationInfo(datasetId, page, sort, filter);
     return collectResultsUptoPage(getResults, endPage);
   }

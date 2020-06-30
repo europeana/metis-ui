@@ -16,12 +16,12 @@ import {
   xslt
 } from './factory/factory';
 import { urlManipulation } from './_models/test-models';
-import { DepublicationStatus, RecordPublicationInfo } from '../src/app/_models';
+import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models';
 
 const port = 3000;
 const url = require('url');
 
-let depublicationInfoCache: Array<RecordPublicationInfo> = [];
+let depublicationInfoCache: Array<RecordDepublicationInfo> = [];
 let switchedOff: { [key: string]: string } = {};
 
 function returnEmpty(response: ServerResponse) {
@@ -190,7 +190,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
           recordId: url,
           depublicationStatus: DepublicationStatus.DEPUBLISHED,
           depublicationDate: time
-        } as RecordPublicationInfo);
+        } as RecordDepublicationInfo);
       };
 
       const fileName = params.clientFilename;
