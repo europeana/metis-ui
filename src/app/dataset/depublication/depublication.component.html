@@ -1,5 +1,7 @@
 <div class="depublication-ctrls">
-  <button>{{ 'depublicationDeleteButtonText' | translate }}</button>
+  <button (click)="deleteDepublications()">
+    {{ 'depublicationDeleteButtonText' | translate }}
+  </button>
   <app-search
     (onExecute)="setDataFilterParameter($event)"
     [placeholderKey]="'depublicationFormPlaceholderSearchRecord'"

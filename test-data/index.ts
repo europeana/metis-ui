@@ -132,7 +132,6 @@ function getStatistics(): string {
       },
       {
         xPath: '//rdf:RDF/edm:Agent',
-
         nodeValueStatistics: [
           {
             value: 'originally loaded B 1',
@@ -176,12 +175,28 @@ function getStatistics(): string {
 
 function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
+  if (request.method === 'DELETE' && route.match(/depublished_records/)) {
+    const params = url.parse(route, true).query.recordIds;
+    const removeEntry = (recordId: string) => {
+      depublicationInfoCache = depublicationInfoCache.filter((entry) => {
+        return entry.recordId != recordId;
+      });
+    };
+    if (typeof params === 'string') {
+      removeEntry(params);
+    } else {
+      params.forEach((id: string) => {
+        removeEntry(id);
+      });
+    }
+    response.end();
+    return true;
+  }
 
   let regRes = route.match(/depublished_records\/[^\?+]*/);
 
   if (regRes) {
     const params = url.parse(route, true).query;
-
     if (request.method === 'POST') {
       const pushToDepublicationCache = (url: string) => {
         const time = new Date().toISOString();

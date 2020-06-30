@@ -163,7 +163,7 @@ export class DepublicationComponent implements OnDestroy {
     const val = control.value || '';
     let invalid = false;
     const reg = new RegExp(
-      '^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(' + this.datasetId + '\\/)+)?[A-Za-z0-9_]+$'
+      `^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(${this._datasetId}\\/)+)?[A-Za-z0-9_]+$`
     );
 
     val
@@ -288,6 +288,17 @@ export class DepublicationComponent implements OnDestroy {
         this.pollingRefresh.next(true);
       }
     });
+  }
+
+  deleteDepublications(): void {
+    this.depublications
+      .deleteDepublications(this.depublicationDeletions)
+      .subscribe((success: boolean) => {
+        if (success) {
+          this.depublicationComplete = true;
+          this.pollingRefresh.next(true);
+        }
+      });
   }
 
   /** onSubmitRawText

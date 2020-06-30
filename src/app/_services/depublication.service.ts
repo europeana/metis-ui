@@ -70,6 +70,22 @@ export class DepublicationService {
       .pipe(this.errors.handleRetry());
   }
 
+  /** deleteDepublications
+  /*  post deletion information
+  /*  @param {Array<string>} recordIds - the recordIds to send
+  */
+  deleteDepublications(recordIds: Array<string>): Observable<boolean> {
+    const url = `${apiSettings.apiHostCore}/depublished_records`;
+    return this.http
+      .delete<boolean>(url, {
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        params: { recordIds: recordIds }
+      })
+      .pipe(this.errors.handleRetry());
+  }
+
   /** setPublicationInfo
   /*  post publication information
   /*  @param {string} datasetId - the dataset id
