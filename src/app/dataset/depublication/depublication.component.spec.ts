@@ -273,6 +273,7 @@ describe('DepublicationComponent', () => {
 
     it('should set the selection', () => {
       const spy = jasmine.createSpy();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       component.depublicationRows = ([{ onChange: spy }] as any) as QueryList<
         DepublicationRowComponent
       >;

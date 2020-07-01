@@ -32,11 +32,11 @@ import { DepublicationRowComponent } from './depublication-row';
 export class DepublicationComponent implements OnDestroy {
   @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
 
-  _datasetId: string;
   currentPage = 0;
   hasMore = false;
   dataSortParam: SortParameter | undefined;
   dataFilterParam: string | undefined;
+  depublicationComplete = false;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationDeletions: Array<string> = [];
   depublicationSubscription: Subscription;
@@ -66,8 +66,8 @@ export class DepublicationComponent implements OnDestroy {
       }
     ]
   };
+  _datasetId: string;
   _totalRecordCount?: number;
-  depublicationComplete = false;
 
   constructor(
     private readonly depublications: DepublicationService,
@@ -99,6 +99,13 @@ export class DepublicationComponent implements OnDestroy {
     }
   }
 
+  /** datasetId
+  /* getter for private variable _datasetId (returns shadow variable)
+  */
+  get datasetId(): string | undefined {
+    return this._datasetId;
+  }
+
   /** setSelection
   /*  select or deselect all the depublication row checkboxes
   /*  @param {boolean} val - flag to select or deselect
@@ -121,13 +128,6 @@ export class DepublicationComponent implements OnDestroy {
         return deletionInfo.recordId !== recId;
       });
     }
-  }
-
-  /** datasetId
-  /* getter for private variable _datasetId (returns shadow variable)
-  */
-  get datasetId(): string | undefined {
-    return this._datasetId;
   }
 
   /** ngOnDestroy
