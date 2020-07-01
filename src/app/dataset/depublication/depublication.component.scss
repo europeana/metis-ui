@@ -1,8 +1,20 @@
 @import '../../../assets/sass/scss/generic/variables';
 @import '../../../assets/sass/pandora/settings/metis-variables';
 
+app-loading-button {
+  align-self: center;
+}
+
+app-search {
+  margin-right: auto;
+}
+
 app-sortable-group {
   display: none;
+}
+
+.btn-delete {
+  margin-left: 0;
 }
 
 .depublication-complete-message {

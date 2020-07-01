@@ -43,6 +43,24 @@ export class MockDepublicationService {
     return observableOf(mockPublicationInfoMoreResults);
   }
 
+  deleteDepublications(datasetId: string): Observable<boolean> {
+    if (this.errorMode) {
+      console.log('mock deleteDepublications errors...');
+      return observableOf(false);
+    }
+    console.log(`Mock: deleteDepublications ${datasetId}`);
+    return observableOf(true);
+  }
+
+  depublishDataset(datasetId: string): Observable<boolean> {
+    if (this.errorMode) {
+      console.log('mock depublishDataset errors...');
+      return observableOf(false);
+    }
+    console.log(`Mock: depublishDataset ${datasetId}`);
+    return observableOf(true);
+  }
+
   setPublicationFile(datasetId: string, file: File): Observable<boolean> {
     if (this.errorMode) {
       console.log('mock setPublicationFile errors...');

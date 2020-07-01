@@ -74,10 +74,10 @@ export class DepublicationService {
   /*  post deletion information
   /*  @param {Array<string>} recordIds - the recordIds to send
   */
-  deleteDepublications(recordIds: Array<string>): Observable<boolean> {
+  deleteDepublications(recordIds: Array<string>): Observable<void> {
     const url = `${apiSettings.apiHostCore}/depublished_records`;
     return this.http
-      .delete<boolean>(url, {
+      .delete<void>(url, {
         headers: {
           'Content-Type': 'text/plain'
         },

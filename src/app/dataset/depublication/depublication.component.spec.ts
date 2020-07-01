@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, QueryList } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -10,6 +10,7 @@ import {
 
 import { SortDirection } from '../../_models';
 import { DepublicationService, ErrorService } from '../../_services';
+import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 
 describe('DepublicationComponent', () => {
@@ -233,8 +234,6 @@ describe('DepublicationComponent', () => {
     it('should update data periodically and allow polling resets', fakeAsync(() => {
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
       component.beginPolling();
-      //component.loadData();
-
       [1, 2, 3, 4, 5].forEach((index) => {
         expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(index);
         tick(interval);
@@ -247,6 +246,52 @@ describe('DepublicationComponent', () => {
       component.depublicationSubscription.unsubscribe();
       tick(interval);
     }));
+
+    it('should set the total record count shadow variable', fakeAsync(() => {
+      const testVal = 10;
+      expect(component._totalRecordCount).toBeFalsy();
+      component.totalRecordCount = 0;
+      expect(component._totalRecordCount).toBeFalsy();
+      component.totalRecordCount = testVal;
+      tick();
+      expect(component._totalRecordCount).toEqual(testVal);
+    }));
+
+    it('should process check events', () => {
+      expect(component.depublicationDeletions.length).toBeFalsy();
+      component.processCheckEvent({
+        recordId: 'X',
+        deletion: true
+      });
+      expect(component.depublicationDeletions.length).toBeTruthy();
+      component.processCheckEvent({
+        recordId: 'X',
+        deletion: false
+      });
+      expect(component.depublicationDeletions.length).toBeFalsy();
+    });
+
+    it('should set the selection', () => {
+      const spy = jasmine.createSpy();
+      component.depublicationRows = ([{ onChange: spy }] as any) as QueryList<
+        DepublicationRowComponent
+      >;
+      component.setSelection(true);
+      expect(spy).toHaveBeenCalledWith(true);
+    });
+
+    it('should handle dataset depublication', () => {
+      spyOn(depublications, 'depublishDataset').and.callThrough();
+      component.onDepublishDataset();
+      expect(depublications.depublishDataset).toHaveBeenCalled();
+    });
+
+    it('should delete depublications', () => {
+      component.depublicationDeletions = ['xxx', 'yyy', 'zzz'];
+      expect(component.depublicationDeletions.length).toBeTruthy();
+      component.deleteDepublications();
+      expect(component.depublicationDeletions.length).toBeFalsy();
+    });
   });
 
   describe('Error handling', () => {
@@ -272,6 +317,12 @@ describe('DepublicationComponent', () => {
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       expect(component.dialogFileOpen).toBeTruthy();
+    });
+
+    it('should not handle dataset depublication', () => {
+      spyOn(depublications, 'depublishDataset').and.callThrough();
+      component.onDepublishDataset();
+      expect(depublications.depublishDataset).toHaveBeenCalled();
     });
   });
 });

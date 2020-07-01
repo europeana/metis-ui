@@ -76,7 +76,7 @@ export class DepublicationComponent implements OnDestroy {
   ) {}
 
   /** totalRecordCount
-  /* setter for private variable _totalRecordCount
+  /* setter for shadow variable _totalRecordCount
   */
   @Input()
   set totalRecordCount(count: number | undefined) {
@@ -291,14 +291,11 @@ export class DepublicationComponent implements OnDestroy {
   }
 
   deleteDepublications(): void {
-    this.depublications
-      .deleteDepublications(this.depublicationDeletions)
-      .subscribe((success: boolean) => {
-        if (success) {
-          this.depublicationComplete = true;
-          this.pollingRefresh.next(true);
-        }
-      });
+    this.isSaving = true;
+    this.depublications.deleteDepublications(this.depublicationDeletions).subscribe(() => {
+      this.depublicationDeletions = [];
+      this.pollingRefresh.next(true);
+    });
   }
 
   /** onSubmitRawText
