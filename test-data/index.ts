@@ -201,7 +201,6 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
       const pushToDepublicationCache = (url: string) => {
         const time = new Date().toISOString();
         depublicationInfoCache.push({
-          id: '',
           recordId: url,
           depublicationStatus: DepublicationStatus.DEPUBLISHED,
           depublicationDate: time

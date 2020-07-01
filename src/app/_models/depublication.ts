@@ -15,7 +15,6 @@ export enum DepublicationStatus {
 }
 
 export interface RecordDepublicationInfo {
-  id: string;
   recordId: string;
   depublicationStatus: DepublicationStatus;
   depublicationDate?: string;

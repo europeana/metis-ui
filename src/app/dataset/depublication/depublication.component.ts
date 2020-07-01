@@ -295,6 +295,7 @@ export class DepublicationComponent implements OnDestroy {
     this.depublications.deleteDepublications(this.depublicationDeletions).subscribe(() => {
       this.depublicationDeletions = [];
       this.pollingRefresh.next(true);
+      this.isSaving = false;
     });
   }
 

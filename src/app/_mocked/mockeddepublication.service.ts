@@ -3,13 +3,11 @@ import { DepublicationStatus, MoreResults, RecordDepublicationInfo, Results } fr
 
 export const mockPublicationInfo = [
   {
-    id: '1',
     recordId: 'http://123',
     depublicationStatus: DepublicationStatus.PENDING,
     depublicationDate: '2019-02-18T07:36:59.801Z'
   },
   {
-    id: '2',
     recordId: 'http://abc/123',
     depublicationStatus: DepublicationStatus.DEPUBLISHED,
     depublicationDate: '2019-02-18T07:36:59.801Z'
