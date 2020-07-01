@@ -420,10 +420,12 @@ export class WorkflowComponent implements OnInit {
           this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
           this.workflowForm.controls.pluginHARVEST.setValue(true);
         } else {
-          // non-harvest settings can be set generically
-          this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
-
-          this.extractPluginParamsExtra(thisWorkflow);
+          const ctrl = this.workflowForm.controls['plugin' + thisWorkflow.pluginType];
+          if (ctrl) {
+            // non-harvest settings can be set generically
+            ctrl.setValue(true);
+            this.extractPluginParamsExtra(thisWorkflow);
+          }
         }
       }
     }
