@@ -423,7 +423,6 @@ export class WorkflowComponent implements OnInit {
           const ctrl = this.workflowForm.controls['plugin' + thisWorkflow.pluginType];
           if (ctrl) {
             // non-harvest settings can be set generically
-            this.workflowForm.controls['plugin' + thisWorkflow.pluginType].setValue(true);
             ctrl.setValue(true);
             this.extractPluginParamsExtra(thisWorkflow);
           }
