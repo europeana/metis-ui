@@ -371,7 +371,7 @@ describe('DatasetComponent', () => {
       expect(resultPartial!.warning).toEqual(expectedWarningPartial);
 
       expect(resultUnfit!.warning).toEqual(expectedWarning);
-      expect(resultUnfit!.cssClass).toEqual('');
+      expect(resultUnfit!.cssClass).toEqual('unfit-to-publish');
     }));
   });
 });

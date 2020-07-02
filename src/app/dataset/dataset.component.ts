@@ -378,6 +378,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     let warning = '';
     if (status === PublicationFitness.UNFIT) {
       warning = 'datasetUnpublishableBanner';
+      cssClass = 'unfit-to-publish';
     } else if (status === PublicationFitness.PARTIALLY_FIT) {
       warning = 'datasetPartiallyUnpublishableBanner';
       cssClass = 'partial-fitness';
