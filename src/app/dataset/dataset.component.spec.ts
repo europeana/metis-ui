@@ -10,7 +10,6 @@ import {
   MockDatasetsServiceErrors,
   MockErrorService,
   mockPluginExecution,
-  MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
@@ -22,7 +21,6 @@ import {
   WorkflowExecution
 } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
-import { TranslateService } from '../_translate';
 
 import { DatasetComponent } from '.';
 import { WorkflowComponent } from './workflow';
@@ -51,10 +49,6 @@ describe('DatasetComponent', () => {
         {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
-        },
-        {
-          provide: TranslateService,
-          useClass: MockTranslateService
         },
         {
           provide: WorkflowService,
@@ -362,8 +356,8 @@ describe('DatasetComponent', () => {
     }));
 
     it('should supply the correct publication warnings and classes', fakeAsync(() => {
-      const expectedWarning = 'en:datasetUnpublishableBanner';
-      const expectedWarningPartial = 'en:datasetPartiallyUnpublishableBanner';
+      const expectedWarning = 'datasetUnpublishableBanner';
+      const expectedWarningPartial = 'datasetPartiallyUnpublishableBanner';
 
       const resultFit = component.publicationFitnessWarningAndClass(PublicationFitness.FIT);
       const resultPartial = component.publicationFitnessWarningAndClass(

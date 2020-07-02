@@ -23,7 +23,6 @@ import {
 
 import { triggerDelay } from '../_helpers';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
-import { TranslateService } from '../_translate';
 
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
@@ -40,8 +39,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private readonly errors: ErrorService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly documentTitleService: DocumentTitleService,
-    private readonly translate: TranslateService
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
   fieldConf = workflowFormFieldConf;
@@ -379,9 +377,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
     let cssClass = '';
     let warning = '';
     if (status === PublicationFitness.UNFIT) {
-      warning = this.translate.instant('datasetUnpublishableBanner');
+      warning = 'datasetUnpublishableBanner';
     } else if (status === PublicationFitness.PARTIALLY_FIT) {
-      warning = this.translate.instant('datasetPartiallyUnpublishableBanner');
+      warning = 'datasetPartiallyUnpublishableBanner';
       cssClass = 'partial-fitness';
     }
     return {
