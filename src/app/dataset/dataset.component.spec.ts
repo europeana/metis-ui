@@ -28,7 +28,7 @@ import { DatasetComponent } from '.';
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
-describe('DatasetComponent', () => {
+fdescribe('DatasetComponent', () => {
   let component: DatasetComponent;
   let datasets: DatasetsService;
   let fixture: ComponentFixture<DatasetComponent>;
@@ -360,16 +360,24 @@ describe('DatasetComponent', () => {
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
     }));
-    it('should supply the correct publication warnings', fakeAsync(() => {
+
+    it('should supply the correct publication warnings and classes', fakeAsync(() => {
       const expectedWarning = 'en:datasetUnpublishableBanner';
       const expectedWarningPartial = 'en:datasetPartiallyUnpublishableBanner';
-      expect(component.publicationFitnessWarning(PublicationFitness.FIT)).toBeFalsy();
-      expect(component.publicationFitnessWarning(PublicationFitness.PARTIALLY_FIT)).toEqual(
-        expectedWarningPartial
+
+      const resultFit = component.publicationFitnessWarningAndClass(PublicationFitness.FIT);
+      const resultPartial = component.publicationFitnessWarningAndClass(
+        PublicationFitness.PARTIALLY_FIT
       );
-      expect(component.publicationFitnessWarning(PublicationFitness.UNFIT)).toEqual(
-        expectedWarning
-      );
+      const resultUnfit = component.publicationFitnessWarningAndClass(PublicationFitness.UNFIT);
+
+      expect(resultFit).toBeFalsy();
+
+      expect(resultPartial!.cssClass).toEqual('partial-fitness');
+      expect(resultPartial!.warning).toEqual(expectedWarningPartial);
+
+      expect(resultUnfit!.warning).toEqual(expectedWarning);
+      expect(resultUnfit!.cssClass).toEqual('');
     }));
   });
 });

@@ -366,16 +366,27 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
-  /** publicationFitnessWarning
-  /* - return relevant warning message according to the status
+  /** publicationFitnessWarningAndClass
+  /* - return object literal specifying the relevant warning message and css class for the given status
   /* @param {string} status - the publication status
   */
-  publicationFitnessWarning(status?: string): string {
-    if (status === PublicationFitness.UNFIT) {
-      return this.translate.instant('datasetUnpublishableBanner');
-    } else if (status === PublicationFitness.PARTIALLY_FIT) {
-      return this.translate.instant('datasetPartiallyUnpublishableBanner');
+  publicationFitnessWarningAndClass(
+    status?: string
+  ): { warning: string; cssClass: string } | undefined {
+    if (status === PublicationFitness.FIT) {
+      return undefined;
     }
-    return '';
+    let cssClass = '';
+    let warning = '';
+    if (status === PublicationFitness.UNFIT) {
+      warning = this.translate.instant('datasetUnpublishableBanner');
+    } else if (status === PublicationFitness.PARTIALLY_FIT) {
+      warning = this.translate.instant('datasetPartiallyUnpublishableBanner');
+      cssClass = 'partial-fitness';
+    }
+    return {
+      warning: warning,
+      cssClass: cssClass
+    };
   }
 }

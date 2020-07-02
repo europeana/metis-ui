@@ -36,10 +36,13 @@
       </div>
       <div class="metis-dashboard-right">
         <div
-          *ngIf="publicationFitnessWarning(datasetData.publicationFitness); let warning"
-          class="unfit-to-publish"
+          *ngIf="
+            publicationFitnessWarningAndClass(datasetData.publicationFitness);
+            let warningAndClass
+          "
+          class="unfit-to-publish {{ warningAndClass.cssClass }}"
         >
-          {{ warning }}
+          {{ warningAndClass.warning }}
         </div>
         <app-actionbar
           [datasetId]="datasetId"
