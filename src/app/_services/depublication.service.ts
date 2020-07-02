@@ -52,7 +52,7 @@ export class DepublicationService {
   /*  @param {File} file - file of record urls
   */
   setPublicationFile(datasetId: string, file: File): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
     const formData = new FormData();
 
     formData.append('depublicationFile', file);
@@ -75,7 +75,7 @@ export class DepublicationService {
   /*  @param {Array<string>} recordIds - the recordIds to send
   */
   deleteDepublications(recordIds: Array<string>): Observable<void> {
-    const url = `${apiSettings.apiHostCore}/depublished_records`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids`;
     return this.http
       .delete<void>(url, {
         headers: {
@@ -92,7 +92,7 @@ export class DepublicationService {
   /*  @param {string} toDepublish - depublication record urls
   */
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
     return this.http
       .post<boolean>(url, toDepublish, {
         headers: {
@@ -133,7 +133,7 @@ export class DepublicationService {
   ): Observable<Results<RecordDepublicationInfo>> {
     const sortParam = this.parseSortParameter(sort);
     const filterParam = this.parseFilterParameter(filter);
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?page=${page}${sortParam}${filterParam}`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}?page=${page}${sortParam}${filterParam}`;
     return this.http.get<Results<RecordDepublicationInfo>>(url).pipe(this.errors.handleRetry());
   }
 

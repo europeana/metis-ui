@@ -175,7 +175,7 @@ function getStatistics(): string {
 
 function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
-  if (request.method === 'DELETE' && route.match(/depublished_records/)) {
+  if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
     const params = url.parse(route, true).query.recordIds;
     const removeEntry = (recordId: string) => {
       depublicationInfoCache = depublicationInfoCache.filter((entry) => {
@@ -193,7 +193,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
     return true;
   }
 
-  let regRes = route.match(/depublished_records\/[^\?+]*/);
+  let regRes = route.match(/depublish\/record_ids\/[^\?+]*/);
 
   if (regRes) {
     const params = url.parse(route, true).query;
