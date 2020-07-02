@@ -23,8 +23,13 @@ hr {
   padding: 0.6rem 1rem 1rem 1rem;
 }
 
+.partial-fitness,
 .unfit-to-publish {
   color: red;
   font-weight: bold;
   margin: 0 0 1em 0;
+}
+
+.partial-fitness {
+  color: #ff8c00;
 }

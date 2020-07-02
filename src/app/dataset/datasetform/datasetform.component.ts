@@ -84,12 +84,6 @@ export class DatasetformComponent implements OnInit {
   /* - pre-translate the error notification message
   */
   ngOnInit(): void {
-    this.buildForm();
-    this.returnCountries();
-    this.returnLanguages();
-    this.invalidNotification = errorNotification(this.translate.instant('formError'), {
-      sticky: true
-    });
     this.publicationFitnessOps = [
       {
         label: 'datasetPublicationFitnessValLabelFit',
@@ -104,6 +98,12 @@ export class DatasetformComponent implements OnInit {
         val: PublicationFitness.UNFIT
       }
     ];
+    this.buildForm();
+    this.returnCountries();
+    this.returnLanguages();
+    this.invalidNotification = errorNotification(this.translate.instant('formError'), {
+      sticky: true
+    });
   }
 
   /** redirectionIds
@@ -233,7 +233,7 @@ export class DatasetformComponent implements OnInit {
       language: ['', [Validators.required]],
       description: [''],
       notes: [''],
-      publicationFitness: ['']
+      publicationFitness: [PublicationFitness.UNFIT]
     });
     this.updateForm();
     this.updateFormEnabled();
@@ -256,6 +256,9 @@ export class DatasetformComponent implements OnInit {
     this.datasetForm.setControl('datasetIdsToRedirectFrom', this.getIdsAsFormArray());
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
+    if (!this.datasetData.publicationFitness) {
+      this.datasetForm.patchValue({ publicationFitness: PublicationFitness.UNFIT });
+    }
   }
 
   /** reset

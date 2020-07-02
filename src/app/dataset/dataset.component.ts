@@ -23,7 +23,6 @@ import {
 
 import { triggerDelay } from '../_helpers';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
-import { TranslateService } from '../_translate';
 
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
@@ -40,8 +39,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private readonly errors: ErrorService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly documentTitleService: DocumentTitleService,
-    private readonly translate: TranslateService
+    private readonly documentTitleService: DocumentTitleService
   ) {}
 
   fieldConf = workflowFormFieldConf;
@@ -366,16 +364,28 @@ export class DatasetComponent implements OnInit, OnDestroy {
     );
   }
 
-  /** publicationFitnessWarning
-  /* - return relevant warning message according to the status
+  /** publicationFitnessWarningAndClass
+  /* - return object literal specifying the relevant warning message and css class for the given status
   /* @param {string} status - the publication status
   */
-  publicationFitnessWarning(status?: string): string {
-    if (status === PublicationFitness.UNFIT) {
-      return this.translate.instant('datasetUnpublishableBanner');
-    } else if (status === PublicationFitness.PARTIALLY_FIT) {
-      return this.translate.instant('datasetPartiallyUnpublishableBanner');
+  publicationFitnessWarningAndClass(
+    status?: string
+  ): { warning: string; cssClass: string } | undefined {
+    if (status === PublicationFitness.FIT) {
+      return undefined;
     }
-    return '';
+    let cssClass = '';
+    let warning = '';
+    if (status === PublicationFitness.UNFIT) {
+      warning = 'datasetUnpublishableBanner';
+      cssClass = 'unfit-to-publish';
+    } else if (status === PublicationFitness.PARTIALLY_FIT) {
+      warning = 'datasetPartiallyUnpublishableBanner';
+      cssClass = 'partial-fitness';
+    }
+    return {
+      warning: warning,
+      cssClass: cssClass
+    };
   }
 }
