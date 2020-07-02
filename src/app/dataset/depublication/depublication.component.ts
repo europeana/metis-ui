@@ -8,14 +8,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { merge, switchMap, tap } from 'rxjs/operators';
 
 import { triggerDelay } from '../../_helpers';
 import {
   DepublicationDeletionInfo,
-  MoreResults,
-  RecordDepublicationInfo,
   RecordDepublicationInfoDeletable,
   SortDirection,
   SortParameter
@@ -38,7 +36,7 @@ export class DepublicationComponent implements OnDestroy {
   dataFilterParam: string | undefined;
   depublicationComplete = false;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
-  depublicationDeletions: Array<string> = [];
+  depublicationSelections: Array<string> = [];
   depublicationSubscription: Subscription;
   dialogFileOpen = false;
   dialogInputOpen = false;
@@ -117,14 +115,14 @@ export class DepublicationComponent implements OnDestroy {
   }
 
   /** processCheckEvent
-  /*  append to / remove from the depublicationDeletions array
-  /*  @param {DepublicationDeletionInfo} deletionInfo - reference to add / remove from the depublicationDeletions array
+  /*  append to / remove from the depublicationSelections array
+  /*  @param {DepublicationDeletionInfo} deletionInfo - reference to add / remove from the depublicationSelections array
   */
   processCheckEvent(deletionInfo: DepublicationDeletionInfo): void {
     if (deletionInfo.deletion) {
-      this.depublicationDeletions.push(deletionInfo.recordId);
+      this.depublicationSelections.push(deletionInfo.recordId);
     } else {
-      this.depublicationDeletions = this.depublicationDeletions.filter((recId: string) => {
+      this.depublicationSelections = this.depublicationSelections.filter((recId: string) => {
         return deletionInfo.recordId !== recId;
       });
     }
@@ -281,19 +279,41 @@ export class DepublicationComponent implements OnDestroy {
     }
   }
 
+  /** onDepublishDataset
+  /* - handler for depublish dataset button
+  /* - invoke service call
+  /* - flag success / trigger reload
+  */
   onDepublishDataset(): void {
-    this.depublications.depublishDataset(this._datasetId).subscribe((success: boolean) => {
-      if (success) {
-        this.depublicationComplete = true;
-        this.pollingRefresh.next(true);
-      }
+    this.isSaving = true;
+    this.depublications.depublishDataset(this._datasetId).subscribe(() => {
+      this.depublicationComplete = true;
+      this.pollingRefresh.next(true);
+      this.isSaving = false;
+    });
+  }
+
+  /** onDepublishRecordIds
+  /* - handler for depublish record ids button
+  /* - invoke service call
+  /* - flag success / trigger reload / clear selection cache
+  */
+  onDepublishRecordIds(): void {
+    if (this.depublicationSelections.length === 0) {
+      return;
+    }
+    this.isSaving = true;
+    this.depublications.depublishRecordIds(this.depublicationSelections).subscribe(() => {
+      this.depublicationSelections = [];
+      this.pollingRefresh.next(true);
+      this.isSaving = false;
     });
   }
 
   deleteDepublications(): void {
     this.isSaving = true;
-    this.depublications.deleteDepublications(this.depublicationDeletions).subscribe(() => {
-      this.depublicationDeletions = [];
+    this.depublications.deleteDepublications(this.depublicationSelections).subscribe(() => {
+      this.depublicationSelections = [];
       this.pollingRefresh.next(true);
       this.isSaving = false;
     });
@@ -355,13 +375,13 @@ export class DepublicationComponent implements OnDestroy {
           }
         });
       })
-    ) as Observable<MoreResults<RecordDepublicationInfo>>;
+    );
 
     this.depublicationSubscription = polledDepublicationData.subscribe(
       ({ results, more }) => {
         this.depublicationData = results.map((entry: RecordDepublicationInfoDeletable) => {
-          entry.deletion = this.depublicationDeletions.indexOf(entry.recordId) > -1;
-          return entry as RecordDepublicationInfoDeletable;
+          entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
+          return entry;
         });
         this.hasMore = more;
         this.isLoading = false;

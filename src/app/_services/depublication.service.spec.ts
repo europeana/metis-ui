@@ -47,14 +47,14 @@ describe('depublication service', () => {
     service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoResults);
     });
-    mockHttp.expect('GET', '/depublished_records/123?page=0').send(mockPublicationInfoResults);
+    mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoResults);
   });
 
   it('should get the publication info paginated', () => {
     service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
-    mockHttp.expect('GET', '/depublished_records/123?page=0').send(mockPublicationInfoMoreResults);
+    mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoMoreResults);
   });
 
   it('should get the publication info filtered', () => {
@@ -65,7 +65,7 @@ describe('depublication service', () => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
     mockHttp
-      .expect('GET', '/depublished_records/123?page=0' + filterParamString)
+      .expect('GET', '/depublish/record_ids/123?page=0' + filterParamString)
       .send(mockPublicationInfoMoreResults);
   });
 
@@ -80,13 +80,13 @@ describe('depublication service', () => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
     mockHttp
-      .expect('GET', '/depublished_records/123?page=0' + sortParamString)
+      .expect('GET', '/depublish/record_ids/123?page=0' + sortParamString)
       .send(mockPublicationInfoMoreResults);
   });
 
   it('should set the publication info', () => {
     service
-      .setPublicationInfo('123', 'http://depublished_records/id1 http://depublished_records/id2')
+      .setPublicationInfo('123', 'http://depublish/record_ids/id1 http://depublish/record_ids/id2')
       .subscribe((res) => {
         expect(res).toEqual(true);
       });

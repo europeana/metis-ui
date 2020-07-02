@@ -175,25 +175,48 @@ function getStatistics(): string {
 
 function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
+
+  const removeFromDepublicationCache = (recordId: string) => {
+    depublicationInfoCache = depublicationInfoCache.filter((entry) => {
+      return entry.recordId != recordId;
+    });
+  };
+
   if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
     const params = url.parse(route, true).query.recordIds;
-    const removeEntry = (recordId: string) => {
-      depublicationInfoCache = depublicationInfoCache.filter((entry) => {
-        return entry.recordId != recordId;
-      });
-    };
     if (typeof params === 'string') {
-      removeEntry(params);
+      removeFromDepublicationCache(params);
     } else {
       params.forEach((id: string) => {
-        removeEntry(id);
+        removeFromDepublicationCache(id);
       });
     }
     response.end();
     return true;
   }
 
-  let regRes = route.match(/depublish\/record_ids\/[^\?+]*/);
+  let regRes = route.match(/depublish\/execute$/);
+
+  if (regRes && request.method === 'POST') {
+    let body = '';
+    request.on('data', function(data) {
+      body += data.toString();
+    });
+    request.on('end', function() {
+      console.log('completed body ' + body);
+      if (body.indexOf('[') === 0) {
+        JSON.parse(body).forEach((id: string) => {
+          removeFromDepublicationCache(id);
+        });
+      } else {
+        depublicationInfoCache = [];
+      }
+      response.end();
+    });
+    return true;
+  }
+
+  regRes = route.match(/depublish\/record_ids\/[^\?+]*/);
 
   if (regRes) {
     const params = url.parse(route, true).query;

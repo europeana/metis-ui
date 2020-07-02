@@ -258,17 +258,17 @@ describe('DepublicationComponent', () => {
     }));
 
     it('should process check events', () => {
-      expect(component.depublicationDeletions.length).toBeFalsy();
+      expect(component.depublicationSelections.length).toBeFalsy();
       component.processCheckEvent({
         recordId: 'X',
         deletion: true
       });
-      expect(component.depublicationDeletions.length).toBeTruthy();
+      expect(component.depublicationSelections.length).toBeTruthy();
       component.processCheckEvent({
         recordId: 'X',
         deletion: false
       });
-      expect(component.depublicationDeletions.length).toBeFalsy();
+      expect(component.depublicationSelections.length).toBeFalsy();
     });
 
     it('should set the selection', () => {
@@ -288,10 +288,10 @@ describe('DepublicationComponent', () => {
     });
 
     it('should delete depublications', () => {
-      component.depublicationDeletions = ['xxx', 'yyy', 'zzz'];
-      expect(component.depublicationDeletions.length).toBeTruthy();
+      component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
+      expect(component.depublicationSelections.length).toBeTruthy();
       component.deleteDepublications();
-      expect(component.depublicationDeletions.length).toBeFalsy();
+      expect(component.depublicationSelections.length).toBeFalsy();
     });
   });
 

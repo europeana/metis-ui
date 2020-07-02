@@ -1,12 +1,12 @@
 <div class="depublication-ctrls">
   <button
     class="btn-delete"
-    [disabled]="depublicationDeletions.length === 0"
+    [disabled]="depublicationSelections.length === 0"
     (click)="deleteDepublications()"
   >
     {{
-      'depublicationDeleteButtonText' + (depublicationDeletions.length === 1 ? 'Single' : 'Plural')
-        | translate
+      'depublicationDeleteButtonText' +
+        (depublicationSelections.length === 1 ? 'Single' : 'Plural') | translate
     }}
   </button>
 
@@ -19,6 +19,12 @@
   <ul class="filter">
     <li *ngIf="isSaving">
       <span class="svg-icon-spin showing"></span>
+    </li>
+    <li>
+      <a (click)="onDepublishRecordIds()" [attr.disabled]="depublicationSelections.length === 0">{{
+        'depublishRecordsIds' + (depublicationSelections.length === 1 ? 'Single' : 'Plural')
+          | translate
+      }}</a>
     </li>
     <li>
       <a (click)="onDepublishDataset()">{{ 'depublishDataset' | translate }}</a>

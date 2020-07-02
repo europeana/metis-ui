@@ -18,7 +18,7 @@ app-sortable-group {
 }
 
 .depublication-complete-message {
-  grid-column: 1/4;
+  grid-column: 1/5;
 }
 
 .dialog-file,
@@ -47,6 +47,11 @@ app-sortable-group {
 
 .filter :first-child:visible {
   margin-left: auto;
+}
+
+.filter [disabled='true'] {
+  color: $gray-lighter;
+  cursor: not-allowed;
 }
 
 [name='recordIds'] {
