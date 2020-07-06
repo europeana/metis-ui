@@ -303,11 +303,13 @@ export class DepublicationComponent implements OnDestroy {
       return;
     }
     this.isSaving = true;
-    this.depublications.depublishRecordIds(this.depublicationSelections).subscribe(() => {
-      this.depublicationSelections = [];
-      this.pollingRefresh.next(true);
-      this.isSaving = false;
-    });
+    this.depublications
+      .depublishRecordIds(this._datasetId, this.depublicationSelections)
+      .subscribe(() => {
+        this.depublicationSelections = [];
+        this.pollingRefresh.next(true);
+        this.isSaving = false;
+      });
   }
 
   deleteDepublications(): void {

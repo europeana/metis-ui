@@ -195,7 +195,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
     return true;
   }
 
-  let regRes = route.match(/depublish\/execute$/);
+  let regRes = route.match(/depublish\/execute\/(\d+)/);
 
   if (regRes && request.method === 'POST') {
     let body = '';
@@ -203,7 +203,6 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
       body += data.toString();
     });
     request.on('end', function() {
-      console.log('completed body ' + body);
       if (body.indexOf('[') === 0) {
         JSON.parse(body).forEach((id: string) => {
           removeFromDepublicationCache(id);

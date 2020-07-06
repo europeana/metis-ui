@@ -11,7 +11,7 @@ import {
 import { SortDirection } from '../_models';
 import { DepublicationService, ErrorService } from '.';
 
-fdescribe('depublication service', () => {
+describe('depublication service', () => {
   let mockHttp: MockHttp;
   let service: DepublicationService;
 
@@ -106,7 +106,7 @@ fdescribe('depublication service', () => {
   });
 
   it('should depublish the record ids', () => {
-    service.depublishRecordIds(['111', '222']).subscribe((res) => {
+    service.depublishRecordIds('0', ['111', '222']).subscribe((res) => {
       expect(res);
     });
   });
