@@ -11,7 +11,7 @@ import {
 import { SortDirection } from '../_models';
 import { DepublicationService, ErrorService } from '.';
 
-describe('depublication service', () => {
+fdescribe('depublication service', () => {
   let mockHttp: MockHttp;
   let service: DepublicationService;
 
@@ -96,6 +96,18 @@ describe('depublication service', () => {
     service.setPublicationFile('123', { name: 'foo', size: 500001 } as File).subscribe((res) => {
       console.log('res = ' + res);
       expect(res).toEqual(false);
+    });
+  });
+
+  it('should delete the depublications', () => {
+    service.deleteDepublications(['111', '222']).subscribe((res) => {
+      expect(res);
+    });
+  });
+
+  it('should depublish the record ids', () => {
+    service.depublishRecordIds(['111', '222']).subscribe((res) => {
+      expect(res);
     });
   });
 });

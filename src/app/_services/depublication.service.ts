@@ -90,11 +90,11 @@ export class DepublicationService {
   deleteDepublications(recordIds: Array<string>): Observable<void> {
     const url = `${apiSettings.apiHostCore}/depublish/record_ids`;
     return this.http
-      .delete<void>(url, {
+      .request<void>('delete', url, {
         headers: {
-          'Content-Type': 'text/plain'
+          'Content-Type': 'application/json'
         },
-        params: { recordIds: recordIds }
+        body: recordIds
       })
       .pipe(this.errors.handleRetry());
   }
