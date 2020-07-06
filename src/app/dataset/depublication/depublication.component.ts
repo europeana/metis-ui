@@ -42,7 +42,6 @@ export class DepublicationComponent implements OnDestroy {
   dialogInputOpen = false;
   formRawText: FormGroup;
   formFile: FormGroup;
-  isLoading = false;
   isSaving = false;
   optionsOpen = false;
   pollingRefresh: Subject<boolean>;
@@ -259,6 +258,18 @@ export class DepublicationComponent implements OnDestroy {
     this.optionsOpen = !this.optionsOpen;
   }
 
+  /** onError
+  /* - run default error handlere
+  /* - set isSaving to false
+  /* - log the error to the console
+  /*  @param {HttpErrorResponse} err - the fail response
+  */
+  onError(err: HttpErrorResponse): void {
+    this.errors.handleError(err);
+    this.isSaving = false;
+    console.error(`${err.status}: ${err.statusText}`);
+  }
+
   /** onSubmitFormFile
   /* - submit the formFile form data if validation has passed
   /* - trigger a reload of the displayed depublication data
@@ -269,13 +280,16 @@ export class DepublicationComponent implements OnDestroy {
       this.isSaving = true;
       this.depublications
         .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
-        .subscribe((complete) => {
-          if (complete) {
+        .subscribe(
+          () => {
             this.pollingRefresh.next(true);
             this.closeDialogs();
             this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
           }
-        });
+        );
     }
   }
 
@@ -286,11 +300,16 @@ export class DepublicationComponent implements OnDestroy {
   */
   onDepublishDataset(): void {
     this.isSaving = true;
-    this.depublications.depublishDataset(this._datasetId).subscribe(() => {
-      this.depublicationComplete = true;
-      this.pollingRefresh.next(true);
-      this.isSaving = false;
-    });
+    this.depublications.depublishDataset(this._datasetId).subscribe(
+      () => {
+        this.depublicationComplete = true;
+        this.pollingRefresh.next(true);
+        this.isSaving = false;
+      },
+      (err: HttpErrorResponse): void => {
+        this.onError(err);
+      }
+    );
   }
 
   /** onDepublishRecordIds
@@ -303,22 +322,30 @@ export class DepublicationComponent implements OnDestroy {
       return;
     }
     this.isSaving = true;
-    this.depublications
-      .depublishRecordIds(this._datasetId, this.depublicationSelections)
-      .subscribe(() => {
+    this.depublications.depublishRecordIds(this._datasetId, this.depublicationSelections).subscribe(
+      () => {
         this.depublicationSelections = [];
         this.pollingRefresh.next(true);
         this.isSaving = false;
-      });
+      },
+      (err: HttpErrorResponse): void => {
+        this.onError(err);
+      }
+    );
   }
 
   deleteDepublications(): void {
     this.isSaving = true;
-    this.depublications.deleteDepublications(this.depublicationSelections).subscribe(() => {
-      this.depublicationSelections = [];
-      this.pollingRefresh.next(true);
-      this.isSaving = false;
-    });
+    this.depublications.deleteDepublications(this.depublicationSelections).subscribe(
+      () => {
+        this.depublicationSelections = [];
+        this.pollingRefresh.next(true);
+        this.isSaving = false;
+      },
+      (err: HttpErrorResponse): void => {
+        this.onError(err);
+      }
+    );
   }
 
   /** onSubmitRawText
@@ -331,12 +358,17 @@ export class DepublicationComponent implements OnDestroy {
       this.isSaving = true;
       this.depublications
         .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
-        .subscribe(() => {
-          this.pollingRefresh.next(true);
-          form.get('recordIds')!.reset();
-          this.closeDialogs();
-          this.isSaving = false;
-        });
+        .subscribe(
+          () => {
+            this.pollingRefresh.next(true);
+            form.get('recordIds')!.reset();
+            this.closeDialogs();
+            this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
+          }
+        );
     }
   }
 
@@ -359,7 +391,7 @@ export class DepublicationComponent implements OnDestroy {
     const polledDepublicationData = loadTriggerDepublication.pipe(
       merge(this.pollingRefresh), // user events comes into the stream here
       switchMap(() => {
-        this.isLoading = true;
+        this.isSaving = true;
         return this.depublications.getPublicationInfoUptoPage(
           this._datasetId,
           this.currentPage,
@@ -386,7 +418,7 @@ export class DepublicationComponent implements OnDestroy {
           return entry;
         });
         this.hasMore = more;
-        this.isLoading = false;
+        this.isSaving = false;
       },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);

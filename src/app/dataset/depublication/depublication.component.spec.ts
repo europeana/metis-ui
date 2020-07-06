@@ -283,11 +283,23 @@ describe('DepublicationComponent', () => {
 
     it('should handle dataset depublication', () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
+      component.beginPolling();
       component.onDepublishDataset();
       expect(depublications.depublishDataset).toHaveBeenCalled();
     });
 
+    it('should handle record id depublication', () => {
+      spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      component.beginPolling();
+      component.onDepublishRecordIds();
+      expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
+      component.depublicationSelections = ['0'];
+      component.onDepublishRecordIds();
+      expect(depublications.depublishRecordIds).toHaveBeenCalled();
+    });
+
     it('should delete depublications', () => {
+      component.beginPolling();
       component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
       expect(component.depublicationSelections.length).toBeTruthy();
       component.deleteDepublications();
@@ -309,21 +321,52 @@ describe('DepublicationComponent', () => {
       expect(errors.handleError).toHaveBeenCalled();
     });
 
-    it('should not submit the file', () => {
+    it('should handle errors submitting the file', () => {
+      spyOn(component, 'onError').and.callThrough();
       component.dialogFileOpen = true;
-
       component.datasetId = '123';
       addFormFieldData();
-
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       expect(component.dialogFileOpen).toBeTruthy();
+      expect(component.onError).toHaveBeenCalled();
     });
 
-    it('should not handle dataset depublication', () => {
+    it('should handle errors submitting the text', () => {
+      spyOn(component, 'onError').and.callThrough();
+      const datasetId = '123';
+      component.datasetId = datasetId;
+      component.dialogInputOpen = true;
+      component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
+      component.onSubmitRawText();
+      expect(component.onError).toHaveBeenCalled();
+    });
+
+    it('should handle dataset depublication errors', () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
+      spyOn(component, 'onError').and.callThrough();
+      component.beginPolling();
       component.onDepublishDataset();
       expect(depublications.depublishDataset).toHaveBeenCalled();
+      expect(component.isSaving).toBeFalsy();
+      expect(component.onError).toHaveBeenCalled();
+    });
+
+    it('should handle record id depublication errors', () => {
+      spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      spyOn(component, 'onError');
+      component.beginPolling();
+      component.depublicationSelections = ['0'];
+      component.onDepublishRecordIds();
+      expect(component.onError).toHaveBeenCalled();
+    });
+
+    it('should handle errors deleting depublications', () => {
+      spyOn(component, 'onError');
+      component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
+      expect(component.depublicationSelections.length).toBeTruthy();
+      component.deleteDepublications();
+      expect(component.onError).toHaveBeenCalled();
     });
   });
 });

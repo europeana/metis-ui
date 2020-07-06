@@ -31,49 +31,46 @@ export class MockDepublicationService {
 
   getPublicationInfoUptoPage(
     datasetId: string,
-    endPage: number
+    _: number
   ): Observable<MoreResults<RecordDepublicationInfo>> {
     if (this.errorMode) {
-      console.log('mock getPublicationInfoUptoPage throws error...');
-      return throwError('mock getPublicationInfoUptoPage throws error...');
+      return throwError(`mock getPublicationInfoUptoPage(${datasetId}) throws error...`);
     }
-    console.log('TODO: eslint-disable no-unused-vars >>> ' + datasetId + ' ' + endPage);
     return observableOf(mockPublicationInfoMoreResults);
   }
 
   deleteDepublications(datasetId: string): Observable<boolean> {
     if (this.errorMode) {
-      console.log('mock deleteDepublications errors...');
-      return observableOf(false);
+      return throwError(`mock deleteDepublications(${datasetId}) throws error...`);
     }
-    console.log(`Mock: deleteDepublications ${datasetId}`);
     return observableOf(true);
   }
 
   depublishDataset(datasetId: string): Observable<boolean> {
     if (this.errorMode) {
-      console.log('mock depublishDataset errors...');
-      return observableOf(false);
+      return throwError(`mock depublishDataset(${datasetId}) throws error...`);
     }
-    console.log(`Mock: depublishDataset ${datasetId}`);
+    return observableOf(true);
+  }
+
+  depublishRecordIds(datasetId: string, recordIds: Array<string>): Observable<boolean> {
+    if (this.errorMode) {
+      return throwError(`mock depublishRecordIds(${datasetId}, ${recordIds}) throws error...`);
+    }
     return observableOf(true);
   }
 
   setPublicationFile(datasetId: string, file: File): Observable<boolean> {
     if (this.errorMode) {
-      console.log('mock setPublicationFile errors...');
-      return observableOf(false);
+      return throwError(`mock setPublicationFile(${datasetId}, ${file}) throws error...`);
     }
-    console.log(`Mock: setPublicationFile ${datasetId}/${file}`);
     return observableOf(true);
   }
 
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
     if (this.errorMode) {
-      console.log('mock setPublicationInfo throws error...');
-      return throwError('mock setPublicationInfo throws error...');
+      return throwError(`mock setPublicationInfo(${datasetId}, ${toDepublish}) throws error...`);
     }
-    console.log(`Mock: setPublicationInfo ${datasetId}/${toDepublish}`);
     return observableOf(true);
   }
 }
