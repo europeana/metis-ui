@@ -16,12 +16,12 @@ import {
   xslt
 } from './factory/factory';
 import { urlManipulation } from './_models/test-models';
-import { DepublicationStatus, RecordPublicationInfo } from '../src/app/_models';
+import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models';
 
 const port = 3000;
 const url = require('url');
 
-let depublicationInfoCache: Array<RecordPublicationInfo> = [];
+let depublicationInfoCache: Array<RecordDepublicationInfo> = [];
 let switchedOff: { [key: string]: string } = {};
 
 function returnEmpty(response: ServerResponse) {
@@ -132,7 +132,6 @@ function getStatistics(): string {
       },
       {
         xPath: '//rdf:RDF/edm:Agent',
-
         nodeValueStatistics: [
           {
             value: 'originally loaded B 1',
@@ -177,20 +176,57 @@ function getStatistics(): string {
 function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
-  let regRes = route.match(/depublished_records\/[^\?+]*/);
+  const removeFromDepublicationCache = (recordId: string) => {
+    depublicationInfoCache = depublicationInfoCache.filter((entry) => {
+      return entry.recordId != recordId;
+    });
+  };
+
+  if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
+    const params = url.parse(route, true).query.recordIds;
+    if (typeof params === 'string') {
+      removeFromDepublicationCache(params);
+    } else {
+      params.forEach((id: string) => {
+        removeFromDepublicationCache(id);
+      });
+    }
+    response.end();
+    return true;
+  }
+
+  let regRes = route.match(/depublish\/execute\/(\d+)/);
+
+  if (regRes && request.method === 'POST') {
+    let body = '';
+    request.on('data', function(data) {
+      body += data.toString();
+    });
+    request.on('end', function() {
+      if (body.indexOf('[') === 0) {
+        JSON.parse(body).forEach((id: string) => {
+          removeFromDepublicationCache(id);
+        });
+      } else {
+        depublicationInfoCache = [];
+      }
+      response.end();
+    });
+    return true;
+  }
+
+  regRes = route.match(/depublish\/record_ids\/[^\?+]*/);
 
   if (regRes) {
     const params = url.parse(route, true).query;
-
     if (request.method === 'POST') {
       const pushToDepublicationCache = (url: string) => {
         const time = new Date().toISOString();
         depublicationInfoCache.push({
-          id: '',
           recordId: url,
           depublicationStatus: DepublicationStatus.DEPUBLISHED,
           depublicationDate: time
-        } as RecordPublicationInfo);
+        } as RecordDepublicationInfo);
       };
 
       const fileName = params.clientFilename;

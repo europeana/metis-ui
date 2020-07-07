@@ -24,15 +24,15 @@ context('metis-ui', () => {
 
     it('should open and close the menu', () => {
       cy.get(selMenuContent).should('not.be.visible');
-      cy.get(selMenuOpen).click();
+      cy.get(selMenuOpen).click({ force: true });
       cy.get(selMenuContent).should('be.visible');
-      cy.get(selMenuOpen).click();
+      cy.get(selMenuOpen).click({ force: true });
       cy.get(selMenuContent).should('not.be.visible');
     });
 
     it('should open and close the file dialog form', () => {
       cy.get(selDialogFile).should('not.be.visible');
-      cy.get(selMenuOpen).click();
+      cy.get(selMenuOpen).click({ force: true });
       cy.get(selMenuItemFile)
         .scrollIntoView()
         .click({ force: true });
@@ -44,7 +44,7 @@ context('metis-ui', () => {
 
     it('should open and close the input dialog form', () => {
       cy.get(selDialogInput).should('not.be.visible');
-      cy.get(selMenuOpen).click();
+      cy.get(selMenuOpen).click({ force: true });
       cy.get(selMenuItemInput)
         .scrollIntoView()
         .click({ force: true });
@@ -57,18 +57,12 @@ context('metis-ui', () => {
     it('should submit new entries', () => {
       const testTexts = ['Test1', 'Test2', 'Test3'];
 
-      cy.get(selMenuOpen).click();
+      cy.get(selMenuOpen).click({ force: true });
       cy.get(selMenuItemInput)
         .scrollIntoView()
         .click({ force: true });
 
-      testTexts.forEach((txt) => {
-        cy.get('.record-url')
-          .contains(txt)
-          .should('have.length', 0);
-      });
-
-      cy.get('[name=recordIds]').type(testTexts.join(' '));
+      cy.get('[name=recordIds]').type(testTexts.join('\n'));
       cy.get('.submit-form').click();
 
       testTexts.forEach((txt) => {

@@ -11,9 +11,11 @@ export class SortableHeaderComponent {
   statuses = Object.values(SortDirection);
   classes = this.statuses.map((status: string) => 'sort-' + status.toLowerCase());
   current = 0;
+  selectAll = false;
 
   @Input() conf: SortHeaderConf;
   @Output() onSet = new EventEmitter<SortParameter>();
+  @Output() onSelectAll = new EventEmitter<boolean>();
 
   valueBump(): void {
     this.current = this.current + 1;
@@ -24,7 +26,7 @@ export class SortableHeaderComponent {
     this.onSet.emit({
       field: this.conf.fieldName,
       direction: this.statuses[this.current]
-    });
+    } as SortParameter);
     this.isLocked = false;
   }
 
@@ -32,5 +34,10 @@ export class SortableHeaderComponent {
     if (!this.isLocked) {
       this.current = 0;
     }
+  }
+
+  toggleSelectAll(): void {
+    this.selectAll = !this.selectAll;
+    this.onSelectAll.emit(this.selectAll);
   }
 }

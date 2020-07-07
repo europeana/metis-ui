@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import {
   MoreResults,
-  RecordPublicationInfo,
+  RecordDepublicationInfo,
   Results,
   SortDirection,
   SortParameter
@@ -18,12 +18,26 @@ import { ErrorService } from './error.service';
 export class DepublicationService {
   constructor(private readonly http: HttpClient, private readonly errors: ErrorService) {}
 
+  /** depublishRecordIds
+  /*  depublish individual record ids
+  /*  @param {string} datasetId - the dataset to depublish
+  /*  @param {Array<string>} recordIds - the record ids to depublish
+  */
+  depublishRecordIds(datasetId: string, recordIds: Array<string>): Observable<boolean> {
+    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=false`;
+    return this.http
+      .post<boolean>(url, recordIds, {
+        reportProgress: true
+      })
+      .pipe(this.errors.handleRetry());
+  }
+
   /** depublishDataset
   /*  depublish entire dataset
   /*  @param {string} datasetId - the dataset to depublish
   */
   depublishDataset(datasetId: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublished_dataset`;
+    const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=true`;
     return this.http
       .post<boolean>(url, datasetId, {
         reportProgress: true
@@ -52,7 +66,7 @@ export class DepublicationService {
   /*  @param {File} file - file of record urls
   */
   setPublicationFile(datasetId: string, file: File): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
     const formData = new FormData();
 
     formData.append('depublicationFile', file);
@@ -70,13 +84,29 @@ export class DepublicationService {
       .pipe(this.errors.handleRetry());
   }
 
+  /** deleteDepublications
+  /*  post deletion information
+  /*  @param {Array<string>} recordIds - the recordIds to send
+  */
+  deleteDepublications(recordIds: Array<string>): Observable<void> {
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids`;
+    return this.http
+      .request<void>('delete', url, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: recordIds
+      })
+      .pipe(this.errors.handleRetry());
+  }
+
   /** setPublicationInfo
   /*  post publication information
   /*  @param {string} datasetId - the dataset id
   /*  @param {string} toDepublish - depublication record urls
   */
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}`;
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
     return this.http
       .post<boolean>(url, toDepublish, {
         headers: {
@@ -99,7 +129,12 @@ export class DepublicationService {
   /*  @param {SortParameter} p - optional
   */
   parseSortParameter(p?: SortParameter): string {
-    return p ? `&sortField=${p.field}&sortAscending=${p.direction === SortDirection.ASC}` : '';
+    if (p) {
+      const paramField = `&sortField=${p.field}`;
+      const paramAsc = `&sortAscending=${p.direction === SortDirection.ASC}`;
+      return `${paramField}${paramAsc}`;
+    }
+    return '';
   }
 
   /** getPublicationInfo
@@ -114,11 +149,11 @@ export class DepublicationService {
     page: number,
     sort?: SortParameter,
     filter?: string
-  ): Observable<Results<RecordPublicationInfo>> {
+  ): Observable<Results<RecordDepublicationInfo>> {
     const sortParam = this.parseSortParameter(sort);
     const filterParam = this.parseFilterParameter(filter);
-    const url = `${apiSettings.apiHostCore}/depublished_records/${datasetId}?page=${page}${sortParam}${filterParam}`;
-    return this.http.get<Results<RecordPublicationInfo>>(url).pipe(this.errors.handleRetry());
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}?page=${page}${sortParam}${filterParam}`;
+    return this.http.get<Results<RecordDepublicationInfo>>(url).pipe(this.errors.handleRetry());
   }
 
   /** getPublicationInfoUptoPage
@@ -133,8 +168,8 @@ export class DepublicationService {
     endPage: number,
     sort?: SortParameter,
     filter?: string
-  ): Observable<MoreResults<RecordPublicationInfo>> {
-    const getResults = (page: number): Observable<Results<RecordPublicationInfo>> =>
+  ): Observable<MoreResults<RecordDepublicationInfo>> {
+    const getResults = (page: number): Observable<Results<RecordDepublicationInfo>> =>
       this.getPublicationInfo(datasetId, page, sort, filter);
     return collectResultsUptoPage(getResults, endPage);
   }

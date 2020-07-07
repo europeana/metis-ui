@@ -60,4 +60,10 @@ describe('SortableHeaderComponent', () => {
 
     expect(component.current).toEqual(0);
   });
+
+  it('should toggle the select all', () => {
+    component.selectAll = false;
+    component.toggleSelectAll();
+    expect(component.selectAll).toBeTruthy();
+  });
 });

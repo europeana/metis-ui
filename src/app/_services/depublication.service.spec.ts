@@ -47,14 +47,14 @@ describe('depublication service', () => {
     service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoResults);
     });
-    mockHttp.expect('GET', '/depublished_records/123?page=0').send(mockPublicationInfoResults);
+    mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoResults);
   });
 
   it('should get the publication info paginated', () => {
     service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
-    mockHttp.expect('GET', '/depublished_records/123?page=0').send(mockPublicationInfoMoreResults);
+    mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoMoreResults);
   });
 
   it('should get the publication info filtered', () => {
@@ -65,8 +65,17 @@ describe('depublication service', () => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
     mockHttp
-      .expect('GET', '/depublished_records/123?page=0' + filterParamString)
+      .expect('GET', '/depublish/record_ids/123?page=0' + filterParamString)
       .send(mockPublicationInfoMoreResults);
+  });
+
+  it('should parse sort parameters', () => {
+    expect(service.parseSortParameter({ field: 'x', direction: SortDirection.DESC })).toEqual(
+      `&sortField=x&sortAscending=false`
+    );
+    expect(service.parseSortParameter({ field: 'a', direction: SortDirection.ASC })).toEqual(
+      `&sortField=a&sortAscending=true`
+    );
   });
 
   it('should get the publication info sorted', () => {
@@ -80,13 +89,13 @@ describe('depublication service', () => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
     mockHttp
-      .expect('GET', '/depublished_records/123?page=0' + sortParamString)
+      .expect('GET', '/depublish/record_ids/123?page=0' + sortParamString)
       .send(mockPublicationInfoMoreResults);
   });
 
   it('should set the publication info', () => {
     service
-      .setPublicationInfo('123', 'http://depublished_records/id1 http://depublished_records/id2')
+      .setPublicationInfo('123', 'http://depublish/record_ids/id1 http://depublish/record_ids/id2')
       .subscribe((res) => {
         expect(res).toEqual(true);
       });
@@ -96,6 +105,18 @@ describe('depublication service', () => {
     service.setPublicationFile('123', { name: 'foo', size: 500001 } as File).subscribe((res) => {
       console.log('res = ' + res);
       expect(res).toEqual(false);
+    });
+  });
+
+  it('should delete the depublications', () => {
+    service.deleteDepublications(['111', '222']).subscribe((res) => {
+      expect(res);
+    });
+  });
+
+  it('should depublish the record ids', () => {
+    service.depublishRecordIds('0', ['111', '222']).subscribe((res) => {
+      expect(res);
     });
   });
 });

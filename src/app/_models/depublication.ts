@@ -14,16 +14,24 @@ export enum DepublicationStatus {
   DEPUBLISHED = 'DEPUBLISHED'
 }
 
-export interface RecordPublicationInfo {
-  id: string;
+export interface RecordDepublicationInfo {
   recordId: string;
   depublicationStatus: DepublicationStatus;
   depublicationDate?: string;
 }
 
+export interface RecordDepublicationInfoDeletable extends RecordDepublicationInfo {
+  deletion?: boolean;
+}
+
+export interface DepublicationDeletionInfo {
+  recordId: string;
+  deletion: boolean;
+}
+
 export interface SortHeaderConf {
-  fieldName: string;
-  translateKey: string;
+  fieldName?: string;
+  translateKey?: string;
   cssClass?: string;
 }
 

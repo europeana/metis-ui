@@ -1,6 +1,7 @@
 <ng-template #sortableGroupTemplate>
   <app-sortable-header
     (onSet)="onSetHandler($event)"
+    (onSelectAll)="selectAllHandler($event)"
     [conf]="{
       translateKey: item.translateKey,
       fieldName: item.fieldName,

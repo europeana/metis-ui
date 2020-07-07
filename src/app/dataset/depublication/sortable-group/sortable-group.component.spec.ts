@@ -47,9 +47,17 @@ describe('SortableGroupComponent', () => {
     expect(testHeader.reset).toHaveBeenCalled();
   });
 
-  it('should emit events', () => {
+  it('should emit events on set', () => {
     spyOn(component.onGroupSet, 'emit').and.callThrough();
     component.onSetHandler({ field: 'id', direction: SortDirection.ASC });
     expect(component.onGroupSet.emit).toHaveBeenCalled();
+  });
+
+  it('should emit events on select', () => {
+    spyOn(component.onSelectAll, 'emit').and.callThrough();
+    component.selectAllHandler(true);
+    expect(component.onSelectAll.emit).toHaveBeenCalledWith(true);
+    component.selectAllHandler(false);
+    expect(component.onSelectAll.emit).toHaveBeenCalledWith(false);
   });
 });

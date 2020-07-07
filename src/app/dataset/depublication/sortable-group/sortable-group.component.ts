@@ -20,6 +20,7 @@ export class SortableGroupComponent {
   @ViewChild('sortableGroupTemplate') sortableGroupTemplate: TemplateRef<HTMLElement>;
 
   @Output() onGroupSet: EventEmitter<SortParameter> = new EventEmitter();
+  @Output() onSelectAll: EventEmitter<boolean> = new EventEmitter();
   @Input() grpConf: SortHeaderGroupConf;
 
   /** onSetHandler
@@ -31,5 +32,9 @@ export class SortableGroupComponent {
       h.reset();
     });
     this.onGroupSet.emit(event);
+  }
+
+  selectAllHandler(val: boolean): void {
+    this.onSelectAll.emit(val);
   }
 }

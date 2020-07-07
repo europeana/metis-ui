@@ -149,49 +149,6 @@ app-workflow-form-field-harvest {
     }
   }
 
-  /* buttons */
-  .form-group-btns {
-    align-items: flex-start;
-    display: flex;
-    justify-content: center;
-
-    button {
-      background: $eu-jade;
-      border: 1px solid $eu-jade;
-      border-radius: 2px;
-      color: $white;
-      display: inline-block;
-      font-size: 0.875em;
-      font-weight: bold;
-      margin: 0 0.6rem;
-      padding: 0.8rem 3rem;
-      text-transform: uppercase;
-
-      &:disabled {
-        background: $eu-light-jade;
-        cursor: not-allowed;
-      }
-    }
-
-    button.reset-btn {
-      background-color: $white;
-      color: $eu-jade;
-
-      &:disabled {
-        color: $eu-light-jade;
-      }
-    }
-
-    .svg-icon-spin-inbutton {
-      padding-left: 1.25rem;
-      padding-right: 2rem;
-    }
-
-    &.hidden {
-      display: none;
-    }
-  }
-
   /* extra line of text */
   .profile-form-extra,
   .forgot-credentials,
@@ -230,6 +187,55 @@ app-workflow-form-field-harvest {
     li {
       cursor: pointer;
     }
+  }
+}
+
+/* buttons */
+.form-fields .form-group-btns {
+  button {
+    padding: 0.8rem 3rem;
+    text-transform: uppercase;
+  }
+}
+
+.depublication-ctrls,
+.form-fields .form-group-btns {
+  align-items: flex-start;
+  display: flex;
+  justify-content: center;
+
+  button {
+    background: $eu-jade;
+    border: 1px solid $eu-jade;
+    border-radius: 2px;
+    color: $white;
+    display: inline-block;
+    font-size: 0.875em;
+    font-weight: bold;
+    margin: 0 0.6rem;
+
+    &:disabled {
+      background: $eu-light-jade;
+      cursor: not-allowed;
+    }
+  }
+
+  button.reset-btn {
+    background-color: $white;
+    color: $eu-jade;
+
+    &:disabled {
+      color: $eu-light-jade;
+    }
+  }
+
+  .svg-icon-spin-inbutton {
+    padding-left: 1.25rem;
+    padding-right: 2rem;
+  }
+
+  &.hidden {
+    display: none;
   }
 }
 

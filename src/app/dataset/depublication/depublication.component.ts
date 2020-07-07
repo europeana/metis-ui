@@ -5,16 +5,22 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { merge, switchMap, tap } from 'rxjs/operators';
 
 import { triggerDelay } from '../../_helpers';
-import { MoreResults, RecordPublicationInfo, SortDirection, SortParameter } from '../../_models';
+import {
+  DepublicationDeletionInfo,
+  RecordDepublicationInfoDeletable,
+  SortDirection,
+  SortParameter
+} from '../../_models';
 import { DepublicationService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
+import { DepublicationRowComponent } from './depublication-row';
 
 @Component({
   selector: 'app-depublication',
@@ -22,24 +28,27 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./depublication.component.scss']
 })
 export class DepublicationComponent implements OnDestroy {
-  _datasetId: string;
+  @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
+
   currentPage = 0;
   hasMore = false;
   dataSortParam: SortParameter | undefined;
   dataFilterParam: string | undefined;
-  depublicationData: Array<RecordPublicationInfo> = [];
+  depublicationComplete = false;
+  depublicationData: Array<RecordDepublicationInfoDeletable> = [];
+  depublicationSelections: Array<string> = [];
   depublicationSubscription: Subscription;
   dialogFileOpen = false;
   dialogInputOpen = false;
   formRawText: FormGroup;
   formFile: FormGroup;
-  isLoading = false;
   isSaving = false;
   optionsOpen = false;
   pollingRefresh: Subject<boolean>;
   sortHeaderGroupConf = {
     cssClass: 'grid-header',
     items: [
+      {},
       {
         translateKey: 'depublicationColUrl',
         fieldName: 'RECORD_ID'
@@ -54,8 +63,8 @@ export class DepublicationComponent implements OnDestroy {
       }
     ]
   };
+  _datasetId: string;
   _totalRecordCount?: number;
-  depublicationComplete = false;
 
   constructor(
     private readonly depublications: DepublicationService,
@@ -64,7 +73,7 @@ export class DepublicationComponent implements OnDestroy {
   ) {}
 
   /** totalRecordCount
-  /* setter for private variable _totalRecordCount
+  /* setter for shadow variable _totalRecordCount
   */
   @Input()
   set totalRecordCount(count: number | undefined) {
@@ -92,6 +101,30 @@ export class DepublicationComponent implements OnDestroy {
   */
   get datasetId(): string | undefined {
     return this._datasetId;
+  }
+
+  /** setSelection
+  /*  select or deselect all the depublication row checkboxes
+  /*  @param {boolean} val - flag to select or deselect
+  */
+  setSelection(val: boolean): void {
+    this.depublicationRows.forEach((row) => {
+      row.onChange(val);
+    });
+  }
+
+  /** processCheckEvent
+  /*  append to / remove from the depublicationSelections array
+  /*  @param {DepublicationDeletionInfo} deletionInfo - reference to add / remove from the depublicationSelections array
+  */
+  processCheckEvent(deletionInfo: DepublicationDeletionInfo): void {
+    if (deletionInfo.deletion) {
+      this.depublicationSelections.push(deletionInfo.recordId);
+    } else {
+      this.depublicationSelections = this.depublicationSelections.filter((recId: string) => {
+        return deletionInfo.recordId !== recId;
+      });
+    }
   }
 
   /** ngOnDestroy
@@ -127,7 +160,7 @@ export class DepublicationComponent implements OnDestroy {
     const val = control.value || '';
     let invalid = false;
     const reg = new RegExp(
-      '^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(' + this.datasetId + '\\/)+)?[A-Za-z0-9_]+$'
+      `^(((http(s)?:\\/\\/)|\\/)?([^\\s\\/:]+\\/)*(${this._datasetId}\\/)+)?[A-Za-z0-9_]+$`
     );
 
     val
@@ -225,6 +258,18 @@ export class DepublicationComponent implements OnDestroy {
     this.optionsOpen = !this.optionsOpen;
   }
 
+  /** onError
+  /* - run default error handlere
+  /* - set isSaving to false
+  /* - log the error to the console
+  /*  @param {HttpErrorResponse} err - the fail response
+  */
+  onError(err: HttpErrorResponse): void {
+    this.errors.handleError(err);
+    this.isSaving = false;
+    console.error(`${err.status}: ${err.statusText}`);
+  }
+
   /** onSubmitFormFile
   /* - submit the formFile form data if validation has passed
   /* - trigger a reload of the displayed depublication data
@@ -235,23 +280,72 @@ export class DepublicationComponent implements OnDestroy {
       this.isSaving = true;
       this.depublications
         .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
-        .subscribe((complete) => {
-          if (complete) {
+        .subscribe(
+          () => {
             this.pollingRefresh.next(true);
             this.closeDialogs();
             this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
           }
-        });
+        );
     }
   }
 
+  /** onDepublishDataset
+  /* - handler for depublish dataset button
+  /* - invoke service call
+  /* - flag success / trigger reload
+  */
   onDepublishDataset(): void {
-    this.depublications.depublishDataset(this._datasetId).subscribe((success: boolean) => {
-      if (success) {
+    this.isSaving = true;
+    this.depublications.depublishDataset(this._datasetId).subscribe(
+      () => {
         this.depublicationComplete = true;
         this.pollingRefresh.next(true);
+        this.isSaving = false;
+      },
+      (err: HttpErrorResponse): void => {
+        this.onError(err);
       }
-    });
+    );
+  }
+
+  /** onDepublishRecordIds
+  /* - handler for depublish record ids button
+  /* - invoke service call
+  /* - flag success / trigger reload / clear selection cache
+  */
+  onDepublishRecordIds(): void {
+    if (this.depublicationSelections.length === 0) {
+      return;
+    }
+    this.isSaving = true;
+    this.depublications.depublishRecordIds(this._datasetId, this.depublicationSelections).subscribe(
+      () => {
+        this.depublicationSelections = [];
+        this.pollingRefresh.next(true);
+        this.isSaving = false;
+      },
+      (err: HttpErrorResponse): void => {
+        this.onError(err);
+      }
+    );
+  }
+
+  deleteDepublications(): void {
+    this.isSaving = true;
+    this.depublications.deleteDepublications(this.depublicationSelections).subscribe(
+      () => {
+        this.depublicationSelections = [];
+        this.pollingRefresh.next(true);
+        this.isSaving = false;
+      },
+      (err: HttpErrorResponse): void => {
+        this.onError(err);
+      }
+    );
   }
 
   /** onSubmitRawText
@@ -264,12 +358,17 @@ export class DepublicationComponent implements OnDestroy {
       this.isSaving = true;
       this.depublications
         .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
-        .subscribe(() => {
-          this.pollingRefresh.next(true);
-          form.get('recordIds')!.reset();
-          this.closeDialogs();
-          this.isSaving = false;
-        });
+        .subscribe(
+          () => {
+            this.pollingRefresh.next(true);
+            form.get('recordIds')!.reset();
+            this.closeDialogs();
+            this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
+          }
+        );
     }
   }
 
@@ -292,7 +391,7 @@ export class DepublicationComponent implements OnDestroy {
     const polledDepublicationData = loadTriggerDepublication.pipe(
       merge(this.pollingRefresh), // user events comes into the stream here
       switchMap(() => {
-        this.isLoading = true;
+        this.isSaving = true;
         return this.depublications.getPublicationInfoUptoPage(
           this._datasetId,
           this.currentPage,
@@ -310,13 +409,16 @@ export class DepublicationComponent implements OnDestroy {
           }
         });
       })
-    ) as Observable<MoreResults<RecordPublicationInfo>>;
+    );
 
     this.depublicationSubscription = polledDepublicationData.subscribe(
       ({ results, more }) => {
-        this.depublicationData = results;
+        this.depublicationData = results.map((entry: RecordDepublicationInfoDeletable) => {
+          entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
+          return entry;
+        });
         this.hasMore = more;
-        this.isLoading = false;
+        this.isSaving = false;
       },
       (err: HttpErrorResponse) => {
         this.errors.handleError(err);

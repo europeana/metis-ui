@@ -1,4 +1,15 @@
 <div class="depublication-ctrls">
+  <button
+    class="btn-delete"
+    [disabled]="depublicationSelections.length === 0"
+    (click)="deleteDepublications()"
+  >
+    {{
+      'depublicationDeleteButtonText' +
+        (depublicationSelections.length === 1 ? 'Single' : 'Plural') | translate
+    }}
+  </button>
+
   <app-search
     (onExecute)="setDataFilterParameter($event)"
     [placeholderKey]="'depublicationFormPlaceholderSearchRecord'"
@@ -8,6 +19,12 @@
   <ul class="filter">
     <li *ngIf="isSaving">
       <span class="svg-icon-spin showing"></span>
+    </li>
+    <li>
+      <a (click)="onDepublishRecordIds()" [attr.disabled]="depublicationSelections.length === 0">{{
+        'depublishRecordsIds' + (depublicationSelections.length === 1 ? 'Single' : 'Plural')
+          | translate
+      }}</a>
     </li>
     <li>
       <a (click)="onDepublishDataset()">{{ 'depublishDataset' | translate }}</a>
@@ -107,6 +124,7 @@
       #dataWrapper
       [grpConf]="sortHeaderGroupConf"
       (onGroupSet)="setDataSortParameter($event)"
+      (onSelectAll)="setSelection($event)"
     >
     </app-sortable-group>
     <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
@@ -119,7 +137,11 @@
   </span>
 
   <ng-container *ngFor="let record of depublicationData">
-    <app-depublication-row #dataWrapper [record]="record"></app-depublication-row>
+    <app-depublication-row
+      #dataWrapper
+      [record]="record"
+      (checkEvents)="processCheckEvent($event)"
+    ></app-depublication-row>
     <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
   </ng-container>
 </div>

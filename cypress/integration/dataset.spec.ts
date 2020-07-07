@@ -49,7 +49,7 @@ context('metis-ui', () => {
 
     it('should show the dataset, general info, status, history and redirection ids', () => {
       cy.get('.dataset-name').contains('Dataset_1');
-      cy.get('.mark-depublished').should('have.length', 1);
+      cy.get('.depublication-status').should('have.length', 1);
 
       cy.get('.redirection-ids').contains('0');
       cy.get('.redirection-ids').contains('1');

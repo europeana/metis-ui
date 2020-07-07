@@ -9,3 +9,7 @@
 .cf {
   @extend %clearfix;
 }
+
+.errors {
+  color: $eu-red;
+}
