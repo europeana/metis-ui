@@ -69,6 +69,15 @@ describe('depublication service', () => {
       .send(mockPublicationInfoMoreResults);
   });
 
+  it('should parse sort parameters', () => {
+    expect(service.parseSortParameter({ field: 'x', direction: SortDirection.DESC })).toEqual(
+      `&sortField=x&sortAscending=false`
+    );
+    expect(service.parseSortParameter({ field: 'a', direction: SortDirection.ASC })).toEqual(
+      `&sortField=a&sortAscending=true`
+    );
+  });
+
   it('should get the publication info sorted', () => {
     const sortParam = {
       field: 'field',

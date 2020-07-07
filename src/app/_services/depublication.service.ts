@@ -129,7 +129,12 @@ export class DepublicationService {
   /*  @param {SortParameter} p - optional
   */
   parseSortParameter(p?: SortParameter): string {
-    return p ? `&sortField=${p.field}&sortAscending=${p.direction === SortDirection.ASC}` : '';
+    if (p) {
+      const paramField = `&sortField=${p.field}`;
+      const paramAsc = `&sortAscending=${p.direction === SortDirection.ASC}`;
+      return `${paramField}${paramAsc}`;
+    }
+    return '';
   }
 
   /** getPublicationInfo
