@@ -245,7 +245,7 @@ export class DepublicationComponent implements OnDestroy {
   setDataSortParameter(event: SortParameter): void {
     if (event.direction === SortDirection.UNSET) {
       this.dataSortParam = undefined;
-    } else {
+    } else if (event.field){
       this.dataSortParam = event;
     }
     this.pollingRefresh.next(true);

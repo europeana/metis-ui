@@ -3,6 +3,7 @@
     class="btn-delete"
     [disabled]="depublicationSelections.length === 0"
     (click)="deleteDepublications()"
+    [title]="'depublicationDeleteButtonTooltip' | translate"
   >
     {{
       'depublicationDeleteButtonText' +

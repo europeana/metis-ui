@@ -199,6 +199,7 @@ describe('DepublicationComponent', () => {
     it('should set the sort parameter', () => {
       const sortParam = { field: 'id', direction: SortDirection.ASC };
       const sortParamNoDir = { field: 'id', direction: SortDirection.UNSET };
+      const sortParamNoField = ({ direction: SortDirection.ASC } as unknown) as SortParam;
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
       component.beginPolling();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
@@ -208,6 +209,12 @@ describe('DepublicationComponent', () => {
       component.setDataSortParameter(sortParamNoDir);
       expect(component.dataSortParam).toBeFalsy();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
+      component.setDataSortParameter(sortParam);
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(4);
+      expect(component.dataSortParam).toBeTruthy();
+      component.setDataSortParameter(sortParamNoField);
+      expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(5);
+      expect(component.dataSortParam.field).toEqual(sortParam.field);
     });
 
     it('should set the filter parameter', () => {
