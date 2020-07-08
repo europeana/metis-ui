@@ -5,7 +5,7 @@
 /* - handles redirects to the preview tab
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { copyExecutionAndTaskId } from '../../_helpers';
@@ -27,7 +27,7 @@ import { ErrorService, WorkflowService } from '../../_services';
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent implements OnInit {
+export class HistoryComponent {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
@@ -53,13 +53,6 @@ export class HistoryComponent implements OnInit {
     if (execution && isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
       this.returnAllExecutions();
     }
-  }
-
-  /** ngOnInit
-  /* call load function for execution data
-  */
-  ngOnInit(): void {
-    this.returnAllExecutions();
   }
 
   /** returnAllExecutions

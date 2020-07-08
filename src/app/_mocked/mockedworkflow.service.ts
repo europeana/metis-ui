@@ -601,11 +601,16 @@ export class MockWorkflowService {
   }
 
   getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
+    if (this.errorMode) {
+      return throwError(`mock getFinishedDatasetExecutions() throws error`);
+    }
     return observableOf(mockWorkflowExecutionResults);
   }
 
   getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryList> {
-    console.log(datasetId);
+    if (this.errorMode) {
+      return throwError(`mock getDatasetHistory(${datasetId}) throws error`);
+    }
     return observableOf({
       executions: mockWorkflowExecutionResults.results.map((we: WorkflowExecution) => {
         return {
@@ -617,14 +622,16 @@ export class MockWorkflowService {
   }
 
   getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {
-    console.log(id);
+    if (this.errorMode) {
+      return throwError(`mock getExecutionPlugins(${id}) throws error`);
+    }
     return observableOf({
       plugins: [
         { pluginType: PluginType.HTTP_HARVEST, hasSuccessfulData: true },
         { pluginType: PluginType.VALIDATION_EXTERNAL, hasSuccessfulData: true },
         { pluginType: PluginType.TRANSFORMATION, hasSuccessfulData: true },
         { pluginType: PluginType.VALIDATION_INTERNAL, hasSuccessfulData: true },
-        { pluginType: PluginType.NORMALIZATION, hasSuccessfulData: true }
+        { pluginType: PluginType.NORMALIZATION, hasSuccessfulData: false }
       ]
     });
   }

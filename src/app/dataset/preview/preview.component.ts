@@ -21,7 +21,7 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from 'ng2-codemirror';
-import { Subscription, timer } from 'rxjs';
+import { Observable, Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import * as beautify from 'vkbeautify';
 import { environment } from '../../../environments/environment';
@@ -84,8 +84,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
   isLoadingFilter: boolean;
   loadingTransformSamples = false;
   downloadUrlCache: { [key: string]: string } = {};
-  executionsFilterTimer: Subscription;
-  pluginsFilterTimer: Subscription;
+  executionsFilterSubscription: Subscription;
+  serviceTimer: Observable<number>;
+  pluginsFilterSubscription: Subscription;
 
   /** ngOnInit
   /* - load the config
@@ -98,7 +99,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
     this.nosample = this.translate.instant('noSample');
 
-    this.executionsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
+    this.serviceTimer = timer(0, environment.intervalStatusMedium);
+    this.executionsFilterSubscription = timer(0, environment.intervalStatusMedium).subscribe(() => {
       this.addExecutionsFilter();
     });
 
@@ -119,7 +121,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       URL.revokeObjectURL(url);
     });
 
-    this.unsubscribeFilters([this.executionsFilterTimer, this.pluginsFilterTimer]);
+    this.unsubscribeFilters([this.executionsFilterSubscription, this.pluginsFilterSubscription]);
   }
 
   /** unsubscribeFilters
@@ -169,11 +171,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedDate = executionHistory.startedDate;
     this.selectedComparison = undefined;
     this.previewFilters.executionId = executionHistory.workflowExecutionId;
+    this.previewFilters.startedDate = executionHistory.startedDate;
 
     // unsubscribe from any previous subscription
-    this.unsubscribeFilters([this.pluginsFilterTimer]);
+    this.unsubscribeFilters([this.pluginsFilterSubscription]);
 
-    this.pluginsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
+    this.pluginsFilterSubscription = this.serviceTimer.subscribe(() => {
       this.isLoadingFilter = true;
       this.workflows.getExecutionPlugins(this.filteredExecutionId).subscribe(
         (result) => {
@@ -194,7 +197,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
           if (pluginsFilterComplete) {
             // unsubscribe immediately
-            this.pluginsFilterTimer.unsubscribe();
+            this.pluginsFilterSubscription.unsubscribe();
           }
         },
         (err: HttpErrorResponse) => {
@@ -253,7 +256,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedPlugin = plugin;
     this.previewFilters.pluginType = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
-
     this.workflows.getWorkflowSamples(this.filteredExecutionId, plugin).subscribe((result) => {
       this.allSamples = this.undoNewLines(result);
 
