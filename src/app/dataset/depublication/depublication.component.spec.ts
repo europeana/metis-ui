@@ -8,7 +8,7 @@ import {
   MockErrorService
 } from '../../_mocked';
 
-import { SortDirection } from '../../_models';
+import { SortDirection, SortParameter } from '../../_models';
 import { DepublicationService, ErrorService } from '../../_services';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
@@ -199,7 +199,7 @@ describe('DepublicationComponent', () => {
     it('should set the sort parameter', () => {
       const sortParam = { field: 'id', direction: SortDirection.ASC };
       const sortParamNoDir = { field: 'id', direction: SortDirection.UNSET };
-      const sortParamNoField = ({ direction: SortDirection.ASC } as unknown) as SortParam;
+      const sortParamNoField = ({ direction: SortDirection.ASC } as unknown) as SortParameter;
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
       component.beginPolling();
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(1);
@@ -214,7 +214,6 @@ describe('DepublicationComponent', () => {
       expect(component.dataSortParam).toBeTruthy();
       component.setDataSortParameter(sortParamNoField);
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(5);
-      expect(component.dataSortParam.field).toEqual(sortParam.field);
     });
 
     it('should set the filter parameter', () => {
