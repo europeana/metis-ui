@@ -336,16 +336,18 @@ export class DepublicationComponent implements OnDestroy {
 
   deleteDepublications(): void {
     this.isSaving = true;
-    this.depublications.deleteDepublications(this.depublicationSelections).subscribe(
-      () => {
-        this.depublicationSelections = [];
-        this.pollingRefresh.next(true);
-        this.isSaving = false;
-      },
-      (err: HttpErrorResponse): void => {
-        this.onError(err);
-      }
-    );
+    this.depublications
+      .deleteDepublications(this._datasetId, this.depublicationSelections)
+      .subscribe(
+        () => {
+          this.depublicationSelections = [];
+          this.pollingRefresh.next(true);
+          this.isSaving = false;
+        },
+        (err: HttpErrorResponse): void => {
+          this.onError(err);
+        }
+      );
   }
 
   /** onSubmitRawText

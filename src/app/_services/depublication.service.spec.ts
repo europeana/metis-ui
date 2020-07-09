@@ -109,7 +109,7 @@ describe('depublication service', () => {
   });
 
   it('should delete the depublications', () => {
-    service.deleteDepublications(['111', '222']).subscribe((res) => {
+    service.deleteDepublications('0', ['111', '222']).subscribe((res) => {
       expect(res);
     });
   });

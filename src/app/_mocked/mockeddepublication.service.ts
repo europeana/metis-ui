@@ -39,9 +39,9 @@ export class MockDepublicationService {
     return observableOf(mockPublicationInfoMoreResults);
   }
 
-  deleteDepublications(datasetId: string): Observable<boolean> {
+  deleteDepublications(datasetId: string, recordIds: Array<string>): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(`mock deleteDepublications(${datasetId}) throws error...`);
+      return throwError(`mock deleteDepublications(${datasetId}, ${recordIds}) throws error...`);
     }
     return observableOf(true);
   }

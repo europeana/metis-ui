@@ -88,12 +88,12 @@ export class DepublicationService {
   /*  post deletion information
   /*  @param {Array<string>} recordIds - the recordIds to send
   */
-  deleteDepublications(recordIds: Array<string>): Observable<void> {
-    const url = `${apiSettings.apiHostCore}/depublish/record_ids`;
+  deleteDepublications(datasetId: string, recordIds: Array<string>): Observable<void> {
+    const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
     return this.http
       .request<void>('delete', url, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain'
         },
         body: recordIds
       })
