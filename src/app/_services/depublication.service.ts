@@ -26,7 +26,7 @@ export class DepublicationService {
   depublishRecordIds(datasetId: string, recordIds: Array<string>): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=false`;
     return this.http
-      .post<boolean>(url, recordIds, {
+      .post<boolean>(url, recordIds.join('\n'), {
         reportProgress: true
       })
       .pipe(this.errors.handleRetry());
@@ -95,7 +95,7 @@ export class DepublicationService {
         headers: {
           'Content-Type': 'text/plain'
         },
-        body: recordIds
+        body: recordIds.join('\n')
       })
       .pipe(this.errors.handleRetry());
   }
