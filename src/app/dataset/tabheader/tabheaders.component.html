@@ -31,7 +31,7 @@
   <li [ngClass]="{ active: activeTab === 'log', disabled: disabled }">
     <a routerLink="/dataset/log/{{ datasetId }}">
       <span class="tab-title">{{ 'processingHistory' | translate }}</span>
-      <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
+      <span class="tab-subtitle" *ngIf="lastExecutionData">{{ 'lastModified' | translate }}</span>
       <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{
         lastExecutionData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
       }}</span>

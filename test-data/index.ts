@@ -183,36 +183,41 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
   };
 
   if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
-    const params = url.parse(route, true).query.recordIds;
-    if (typeof params === 'string') {
-      removeFromDepublicationCache(params);
-    } else {
-      params.forEach((id: string) => {
-        removeFromDepublicationCache(id);
-      });
-    }
-    response.end();
-    return true;
-  }
-
-  let regRes = route.match(/depublish\/execute\/(\d+)/);
-
-  if (regRes && request.method === 'POST') {
     let body = '';
     request.on('data', function(data) {
       body += data.toString();
     });
     request.on('end', function() {
-      if (body.indexOf('[') === 0) {
-        JSON.parse(body).forEach((id: string) => {
+      body.split('\n').forEach((id: string) => {
+        removeFromDepublicationCache(id);
+      });
+      response.end();
+      return true;
+    });
+  }
+
+  let regRes = route.match(/depublish\/execute\/(\d+)/);
+
+  if (regRes && request.method === 'POST') {
+    const params = url.parse(route, true).query;
+
+    if (params.datasetDepublish === 'true') {
+      depublicationInfoCache = [];
+      response.end();
+      return true;
+    } else {
+      let body = '';
+      request.on('data', function(data) {
+        body += data.toString();
+      });
+      request.on('end', function() {
+        body.split('\n').forEach((id: string) => {
           removeFromDepublicationCache(id);
         });
-      } else {
-        depublicationInfoCache = [];
-      }
-      response.end();
-    });
-    return true;
+        response.end();
+        return true;
+      });
+    }
   }
 
   regRes = route.match(/depublish\/record_ids\/[^\?+]*/);

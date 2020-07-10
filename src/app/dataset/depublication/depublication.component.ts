@@ -245,7 +245,7 @@ export class DepublicationComponent implements OnDestroy {
   setDataSortParameter(event: SortParameter): void {
     if (event.direction === SortDirection.UNSET) {
       this.dataSortParam = undefined;
-    } else {
+    } else if (event.field) {
       this.dataSortParam = event;
     }
     this.pollingRefresh.next(true);
@@ -336,16 +336,18 @@ export class DepublicationComponent implements OnDestroy {
 
   deleteDepublications(): void {
     this.isSaving = true;
-    this.depublications.deleteDepublications(this.depublicationSelections).subscribe(
-      () => {
-        this.depublicationSelections = [];
-        this.pollingRefresh.next(true);
-        this.isSaving = false;
-      },
-      (err: HttpErrorResponse): void => {
-        this.onError(err);
-      }
-    );
+    this.depublications
+      .deleteDepublications(this._datasetId, this.depublicationSelections)
+      .subscribe(
+        () => {
+          this.depublicationSelections = [];
+          this.pollingRefresh.next(true);
+          this.isSaving = false;
+        },
+        (err: HttpErrorResponse): void => {
+          this.onError(err);
+        }
+      );
   }
 
   /** onSubmitRawText
