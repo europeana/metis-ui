@@ -6,6 +6,7 @@
       #inputEl
       (change)="onChange(inputEl.checked)"
       [checked]="record.deletion"
+      [disabled]="record.depublicationStatus === 'PENDING'"
     />
   </span>
   <span class="record-url">

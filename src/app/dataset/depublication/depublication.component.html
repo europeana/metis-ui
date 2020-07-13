@@ -28,7 +28,9 @@
       }}</a>
     </li>
     <li>
-      <a (click)="onDepublishDataset()">{{ 'depublishDataset' | translate }}</a>
+      <a (click)="onDepublishDataset()" [attr.disabled]="depublishDatasetDisabled()">{{
+        'depublishDataset' | translate
+      }}</a>
     </li>
     <li class="dropdown dropdown-options">
       <a (click)="toggleMenuOptions()">{{ 'depublicationMenuTitle' | translate }}</a>
