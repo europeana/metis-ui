@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DepublicationStatus } from '../../../_models';
 import { DepublicationRowComponent } from '.';
 
 describe('DepublicationRowComponent', () => {
@@ -16,9 +17,25 @@ describe('DepublicationRowComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DepublicationRowComponent);
     component = fixture.componentInstance;
+    component.record = {
+      recordId: '1',
+      depublicationStatus: DepublicationStatus.DEPUBLISHED
+    };
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should handle checkbox selections', () => {
+    spyOn(component.checkEvents, 'emit');
+    component.onChange(true);
+    expect(component.checkEvents.emit).toHaveBeenCalled();
+  });
+
+  it('should disable checkboxes', () => {
+    expect(component.checkboxDisabled()).toBeFalsy();
+    component.record.depublicationStatus = DepublicationStatus.PENDING;
+    expect(component.checkboxDisabled()).toBeTruthy();
   });
 });
