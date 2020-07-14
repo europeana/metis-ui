@@ -100,7 +100,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.nosample = this.translate.instant('noSample');
 
     this.serviceTimer = timer(0, environment.intervalStatusMedium);
-    this.executionsFilterSubscription = timer(0, environment.intervalStatusMedium).subscribe(() => {
+    this.executionsFilterSubscription = this.serviceTimer.subscribe(() => {
       this.addExecutionsFilter();
     });
 
