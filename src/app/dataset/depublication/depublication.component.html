@@ -139,14 +139,12 @@
     ({{ 'depublicationCompleteCountSuffix' | translate }})
   </span>
 
-  <ng-container *ngIf="!depublicationComplete">
-    <ng-container *ngFor="let record of depublicationData">
-      <app-depublication-row
-        #dataWrapper
-        [record]="record"
-        (checkEvents)="processCheckEvent($event)"
-      ></app-depublication-row>
-      <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
-    </ng-container>
+  <ng-container *ngFor="let record of depublicationData">
+    <app-depublication-row
+      #dataWrapper
+      [record]="record"
+      (checkEvents)="processCheckEvent($event)"
+    ></app-depublication-row>
+    <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
   </ng-container>
 </div>
