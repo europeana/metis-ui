@@ -63,6 +63,7 @@ export class DepublicationComponent implements OnDestroy {
       }
     ]
   };
+  _datasetHasPublishedRecordsReady: boolean;
   _datasetId: string;
   _totalRecordCount?: number;
 
@@ -71,6 +72,14 @@ export class DepublicationComponent implements OnDestroy {
     private readonly errors: ErrorService,
     private readonly fb: FormBuilder
   ) {}
+
+  /** datasetHasPublishedRecordsReady
+  /* setter for shadow variable _datasetHasPublishedRecordsReady
+  */
+  @Input()
+  set datasetHasPublishedRecordsReady(ready: boolean) {
+    this._datasetHasPublishedRecordsReady = ready;
+  }
 
   /** totalRecordCount
   /* setter for shadow variable _totalRecordCount
@@ -291,6 +300,13 @@ export class DepublicationComponent implements OnDestroy {
           }
         );
     }
+  }
+
+  /** depublishDatasetDisabled
+  /* - disable condition for template
+  */
+  depublishDatasetDisabled(): boolean {
+    return this.depublicationComplete || !this._datasetHasPublishedRecordsReady;
   }
 
   /** onDepublishDataset

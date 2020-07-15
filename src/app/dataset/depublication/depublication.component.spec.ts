@@ -263,6 +263,23 @@ describe('DepublicationComponent', () => {
       expect(component._totalRecordCount).toEqual(testVal);
     }));
 
+    it('should set the total record count shadow variable', fakeAsync(() => {
+      expect(component._datasetHasPublishedRecordsReady).toBeFalsy();
+      component.datasetHasPublishedRecordsReady = true;
+      tick();
+      expect(component._datasetHasPublishedRecordsReady).toBeTruthy();
+    }));
+
+    it('should determine if the disable-dtatast button should be enabled', () => {
+      component.depublicationComplete = true;
+      component.datasetHasPublishedRecordsReady = true;
+      expect(component.depublishDatasetDisabled()).toBeTruthy();
+      component.depublicationComplete = false;
+      expect(component.depublishDatasetDisabled()).toBeFalsy();
+      component.datasetHasPublishedRecordsReady = false;
+      expect(component.depublishDatasetDisabled()).toBeTruthy();
+    });
+
     it('should process check events', () => {
       expect(component.depublicationSelections.length).toBeFalsy();
       component.processCheckEvent({

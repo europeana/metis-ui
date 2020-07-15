@@ -1,5 +1,9 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { DepublicationDeletionInfo, RecordDepublicationInfoDeletable } from '../../../_models';
+import {
+  DepublicationDeletionInfo,
+  DepublicationStatus,
+  RecordDepublicationInfoDeletable
+} from '../../../_models';
 
 @Component({
   selector: 'app-depublication-row',
@@ -10,6 +14,10 @@ export class DepublicationRowComponent {
   @Input() record: RecordDepublicationInfoDeletable;
   @Output() checkEvents: EventEmitter<DepublicationDeletionInfo> = new EventEmitter();
   @ViewChild('depublicationTemplate') depublicationTemplate: TemplateRef<HTMLElement>;
+
+  checkboxDisabled(): boolean {
+    return this.record.depublicationStatus === DepublicationStatus.PENDING;
+  }
 
   onChange(val: boolean): void {
     this.record.deletion = val;

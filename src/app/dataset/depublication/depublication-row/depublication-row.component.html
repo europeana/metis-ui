@@ -6,6 +6,7 @@
       #inputEl
       (change)="onChange(inputEl.checked)"
       [checked]="record.deletion"
+      [disabled]="checkboxDisabled()"
     />
   </span>
   <span class="record-url">
