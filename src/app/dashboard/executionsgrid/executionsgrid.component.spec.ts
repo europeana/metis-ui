@@ -59,16 +59,16 @@ describe('ExecutionsgridComponent', () => {
       component.ngAfterViewInit();
       tick();
       expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
-      component.overviewSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
 
     it('should unsubscribe when destroyed', fakeAsync(() => {
       component.ngAfterViewInit();
       tick();
-      spyOn(component.overviewSubscription, 'unsubscribe').and.callThrough();
+      spyOn(component, 'cleanup').and.callThrough();
       component.ngOnDestroy();
-      expect(component.overviewSubscription.unsubscribe).toHaveBeenCalled();
+      expect(component.cleanup).toHaveBeenCalled();
       tick(interval);
     }));
 
@@ -82,7 +82,7 @@ describe('ExecutionsgridComponent', () => {
       component.setOverviewParams('param-string');
       tick();
       expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
-      component.overviewSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
 
@@ -102,7 +102,7 @@ describe('ExecutionsgridComponent', () => {
       tick(1);
       expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalledTimes(8);
 
-      component.overviewSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
 
@@ -115,7 +115,7 @@ describe('ExecutionsgridComponent', () => {
       tick();
       expect(component.currentPage).toEqual(1);
       expect(workflows.getCompletedDatasetOverviewsUptoPage).toHaveBeenCalled();
-      component.overviewSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
 
@@ -126,7 +126,7 @@ describe('ExecutionsgridComponent', () => {
       expect(component.selectedDsId).toEqual('');
       component.setSelectedDsId('3');
       expect(component.selectedDsId).toEqual('3');
-      component.overviewSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
 
@@ -136,7 +136,7 @@ describe('ExecutionsgridComponent', () => {
       setRows(component);
       component.setSelectedDsId('id');
       expect(component.selectedSet.emit).toHaveBeenCalled();
-      component.overviewSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
   });
@@ -154,7 +154,7 @@ describe('ExecutionsgridComponent', () => {
       tick();
       expect(component.isLoading).toBeFalsy();
       expect(component.isLoadingMore).toBeFalsy();
-      component.overviewSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
   });

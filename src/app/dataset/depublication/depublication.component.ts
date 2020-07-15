@@ -7,17 +7,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { merge, switchMap, tap } from 'rxjs/operators';
-
-import { triggerDelay } from '../../_helpers';
+import { Subject } from 'rxjs';
 import {
   DepublicationDeletionInfo,
   RecordDepublicationInfoDeletable,
+  Results,
   SortDirection,
   SortParameter
 } from '../../_models';
+
+import { DataPollingComponent } from '../../data-polling';
 import { DepublicationService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
@@ -27,7 +26,7 @@ import { DepublicationRowComponent } from './depublication-row';
   templateUrl: './depublication.component.html',
   styleUrls: ['./depublication.component.scss']
 })
-export class DepublicationComponent implements OnDestroy {
+export class DepublicationComponent extends DataPollingComponent implements OnDestroy {
   @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
 
   currentPage = 0;
@@ -37,7 +36,6 @@ export class DepublicationComponent implements OnDestroy {
   depublicationComplete = false;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
-  depublicationSubscription: Subscription;
   dialogFileOpen = false;
   dialogInputOpen = false;
   formRawText: FormGroup;
@@ -71,7 +69,9 @@ export class DepublicationComponent implements OnDestroy {
     private readonly depublications: DepublicationService,
     private readonly errors: ErrorService,
     private readonly fb: FormBuilder
-  ) {}
+  ) {
+    super();
+  }
 
   /** datasetHasPublishedRecordsReady
   /* setter for shadow variable _datasetHasPublishedRecordsReady
@@ -133,15 +133,6 @@ export class DepublicationComponent implements OnDestroy {
       this.depublicationSelections = this.depublicationSelections.filter((recId: string) => {
         return deletionInfo.recordId !== recId;
       });
-    }
-  }
-
-  /** ngOnDestroy
-  /* unsubscribe from timer
-  */
-  ngOnDestroy(): void {
-    if (this.depublicationSubscription) {
-      this.depublicationSubscription.unsubscribe();
     }
   }
 
@@ -391,56 +382,33 @@ export class DepublicationComponent implements OnDestroy {
   }
 
   /** beginPolling
-  *  - sets up a timed polling mechanism that only ticks when the last data-result has been retrieved
-  *  - subscribes to the poll
-  /* - instantiates a Subject for poll refreshing
-  */
+   *  - supply poll/process to superclass.getDataPoller()
+   *  - initialise pollingRefresh
+   */
   beginPolling(): void {
-    let pushPollDepublication = 0;
-
-    // stream for apply-filter
-    this.pollingRefresh = new Subject();
-    this.pollingRefresh.subscribe(() => {
-      pushPollDepublication += 1;
-    });
-
-    const loadTriggerDepublication = new BehaviorSubject(true);
-
-    const polledDepublicationData = loadTriggerDepublication.pipe(
-      merge(this.pollingRefresh), // user events comes into the stream here
-      switchMap(() => {
-        this.isSaving = true;
-        return this.depublications.getPublicationInfoUptoPage(
-          this._datasetId,
-          this.currentPage,
-          this.dataSortParam,
-          this.dataFilterParam
-        );
-      }),
-      tap(() => {
-        triggerDelay.next({
-          subject: loadTriggerDepublication,
-          wait: environment.intervalStatusMedium,
-          blockIf: () => pushPollDepublication > 0,
-          blockThen: () => {
-            pushPollDepublication--;
-          }
-        });
-      })
-    );
-
-    this.depublicationSubscription = polledDepublicationData.subscribe(
-      ({ results, more }) => {
-        this.depublicationData = results.map((entry: RecordDepublicationInfoDeletable) => {
-          entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
-          return entry;
-        });
-        this.hasMore = more;
-        this.isSaving = false;
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-      }
+    const fnDataCall = () => {
+      this.isSaving = true;
+      return this.depublications.getPublicationInfoUptoPage(
+        this._datasetId,
+        this.currentPage,
+        this.dataSortParam,
+        this.dataFilterParam
+      );
+    };
+    const fnDataProcess = (results: Results<RecordDepublicationInfoDeletable>, more: boolean) => {
+      console.log('in fnDataProcess');
+      this.depublicationData = results.results.map((entry: RecordDepublicationInfoDeletable) => {
+        entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
+        return entry;
+      });
+      this.hasMore = more;
+      this.isSaving = false;
+    };
+    this.pollingRefresh = this.getDataPoller(
+      environment.intervalStatusMedium,
+      fnDataCall,
+      fnDataProcess as ((value: {}) => void),
+      this.errors.handleError
     );
   }
 }

@@ -17,6 +17,7 @@ import {
   OngoingexecutionsComponent
 } from './dashboard';
 import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
+import { DataPollingComponent } from './data-polling';
 import {
   ActionbarComponent,
   DatasetComponent,
@@ -67,6 +68,7 @@ import { ThemeSelectorComponent } from './theme-selector';
 @NgModule({
   declarations: [
     ActionbarComponent,
+    DataPollingComponent,
     AppComponent,
     CollapsibleDirective,
     RegisterComponent,

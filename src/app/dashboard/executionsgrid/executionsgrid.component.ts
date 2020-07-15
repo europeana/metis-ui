@@ -13,10 +13,9 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { merge, switchMap, tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { DataPollingComponent } from '../../data-polling';
 import { environment } from '../../../environments/environment';
-import { triggerDelay } from '../../_helpers';
 import { DatasetOverview, MoreResults } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -27,7 +26,8 @@ import { GridrowComponent } from './gridrow';
   templateUrl: './executionsgrid.component.html',
   styleUrls: ['./executionsgrid.component.scss']
 })
-export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
+export class ExecutionsgridComponent extends DataPollingComponent
+  implements AfterViewInit, OnDestroy {
   dsOverview: DatasetOverview[];
   selectedDsId = '';
   isLoading = true;
@@ -36,27 +36,20 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   currentPage = 0;
   maxResultsReached = false;
   overviewParams = '';
-
   pollingRefresh: Subject<boolean>;
-  overviewSubscription: Subscription;
 
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
 
-  constructor(private readonly workflows: WorkflowService, private readonly errors: ErrorService) {}
+  constructor(private readonly workflows: WorkflowService, private readonly errors: ErrorService) {
+    super();
+  }
 
   /** ngAfterViewInit
   /* begin the data-polling the data
   */
   ngAfterViewInit(): void {
     this.beginPolling();
-  }
-
-  /** ngOnDestroy
-  /* unsubscribe from timer
-  */
-  ngOnDestroy(): void {
-    this.overviewSubscription.unsubscribe();
   }
 
   /** setOverviewParams
@@ -89,49 +82,33 @@ export class ExecutionsgridComponent implements AfterViewInit, OnDestroy {
   /* - instantiates a Subject for poll refreshing
   */
   beginPolling(): void {
-    let pushPollOverview = 0;
+    const fnDataCall = (): Observable<MoreResults<DatasetOverview>> => {
+      this.isLoading = true;
+      return this.workflows.getCompletedDatasetOverviewsUptoPage(
+        this.currentPage,
+        this.overviewParams
+      );
+    };
 
-    // stream for apply-filter
-    this.pollingRefresh = new Subject();
-    this.pollingRefresh.subscribe(() => {
-      pushPollOverview += 1;
-    });
+    const fnDataProcess = (res: MoreResults<DatasetOverview>) => {
+      this.hasMore = res.more;
+      this.dsOverview = res.results;
+      this.isLoading = false;
+      this.isLoadingMore = false;
+      this.maxResultsReached = !!res.maxResultCountReached;
+    };
 
-    const loadTriggerOverview = new BehaviorSubject(true);
-    const polledOverviewData = loadTriggerOverview.pipe(
-      merge(this.pollingRefresh), // user events comes into the stream here
-      switchMap(() => {
-        this.isLoading = true;
-        return this.workflows.getCompletedDatasetOverviewsUptoPage(
-          this.currentPage,
-          this.overviewParams
-        );
-      }),
-      tap(() => {
-        triggerDelay.next({
-          subject: loadTriggerOverview,
-          wait: environment.intervalStatusMedium,
-          blockIf: () => pushPollOverview > 0,
-          blockThen: () => {
-            pushPollOverview--;
-          }
-        });
-      })
-    ) as Observable<MoreResults<DatasetOverview>>;
+    const fnError = (err: HttpErrorResponse): false | HttpErrorResponse => {
+      this.isLoading = false;
+      this.isLoadingMore = false;
+      return this.errors.handleError(err);
+    };
 
-    this.overviewSubscription = polledOverviewData.subscribe(
-      ({ results, more, maxResultCountReached }) => {
-        this.hasMore = more;
-        this.dsOverview = results;
-        this.isLoading = false;
-        this.isLoadingMore = false;
-        this.maxResultsReached = !!maxResultCountReached;
-      },
-      (err: HttpErrorResponse) => {
-        this.isLoading = false;
-        this.isLoadingMore = false;
-        this.errors.handleError(err);
-      }
+    this.pollingRefresh = this.getDataPoller(
+      environment.intervalStatusMedium,
+      fnDataCall,
+      fnDataProcess,
+      fnError
     );
   }
 

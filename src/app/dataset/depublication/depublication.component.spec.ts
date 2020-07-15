@@ -54,12 +54,6 @@ describe('DepublicationComponent', () => {
     component = fixture.componentInstance;
   };
 
-  afterEach(() => {
-    if (component.depublicationSubscription) {
-      component.depublicationSubscription.unsubscribe();
-    }
-  });
-
   describe('Normal operations', () => {
     beforeEach(async(configureTestbed));
     beforeEach(b4Each);
@@ -230,13 +224,6 @@ describe('DepublicationComponent', () => {
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(3);
     });
 
-    it('should clean up', () => {
-      component.beginPolling();
-      spyOn(component.depublicationSubscription, 'unsubscribe');
-      component.ngOnDestroy();
-      expect(component.depublicationSubscription.unsubscribe).toHaveBeenCalled();
-    });
-
     it('should update data periodically and allow polling resets', fakeAsync(() => {
       spyOn(depublications, 'getPublicationInfoUptoPage').and.callThrough();
       component.beginPolling();
@@ -244,12 +231,10 @@ describe('DepublicationComponent', () => {
         expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(index);
         tick(interval);
       });
-
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(6);
       component.pollingRefresh.next(true);
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(7);
-
-      component.depublicationSubscription.unsubscribe();
+      component.cleanup();
       tick(interval);
     }));
 
@@ -337,12 +322,14 @@ describe('DepublicationComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should handle load errors', () => {
-      expect(component).toBeTruthy();
+    it('should handle load errors', fakeAsync(() => {
       spyOn(errors, 'handleError');
       component.beginPolling();
+      tick(interval);
       expect(errors.handleError).toHaveBeenCalled();
-    });
+      component.cleanup();
+      tick(interval);
+    }));
 
     it('should handle errors submitting the file', () => {
       spyOn(component, 'onError').and.callThrough();
