@@ -111,12 +111,6 @@ describe('DashboardComponent', () => {
       component.setSelectedExecutionDsId('xxx');
       expect(component.selectedExecutionDsId).toBe('xxx');
     });
-
-    it('should clean up', () => {
-      spyOn(component.polledRunningData, 'unsubscribe');
-      component.ngOnDestroy();
-      expect(component.polledRunningData.unsubscribe).toHaveBeenCalled();
-    });
   });
 
   describe('Error handling', () => {
