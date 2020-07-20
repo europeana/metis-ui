@@ -104,7 +104,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
       return this.errors.handleError(err);
     };
 
-    this.pollingRefresh = this.getDataPoller(
+    this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCall,
       fnDataProcess,

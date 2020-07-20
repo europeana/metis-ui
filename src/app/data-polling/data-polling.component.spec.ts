@@ -28,7 +28,7 @@ describe('DataPollingComponent', () => {
     it('should update data periodically and allow polling resets', fakeAsync(() => {
       const pollFn = jasmine.createSpy().and.callFake(() => of(true));
       const processFn = jasmine.createSpy('process');
-      const subject: Subject<boolean> = component.getDataPoller(
+      const subject: Subject<boolean> = component.createNewDataPoller(
         interval,
         pollFn,
         processFn,
@@ -60,7 +60,7 @@ describe('DataPollingComponent', () => {
       };
       const processFn = jasmine.createSpy('process');
       const errrorFn = jasmine.createSpy('error-handler');
-      component.getDataPoller(interval, pollFn, processFn, errrorFn);
+      component.createNewDataPoller(interval, pollFn, processFn, errrorFn);
       expect(errrorFn).toHaveBeenCalled();
       expect(processFn).not.toHaveBeenCalled();
     }));

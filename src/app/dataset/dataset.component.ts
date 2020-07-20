@@ -130,7 +130,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
       return error;
     };
 
-    const harvestRefresh = this.getDataPoller(
+    const harvestRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCallHarvest,
       fnDataProcessHarvest,
@@ -153,7 +153,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
       return error;
     };
 
-    const workflowRefresh = this.getDataPoller(
+    const workflowRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCallWorkflow,
       fnDataProcessWorkflow,
@@ -174,9 +174,9 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
       this.notification = httpErrorNotification(error);
       return error;
     };
-    this.getDataPoller(
+    this.createNewDataPoller(
       environment.intervalStatus,
-      fnDataCallLastExec,
+      fnDataCallLastExec as () => Observable<WorkflowExecution>,
       fnDataProcessLastExec,
       fnOnErrorLastExec
     );
@@ -263,11 +263,13 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   /* @param {WorkflowExecution} execution - loaded data
   */
   processLastExecutionData(execution: WorkflowExecution): void {
-    this.workflows.getReportsForExecution(execution);
-    this.lastExecutionData = execution;
+    if (execution) {
+      this.workflows.getReportsForExecution(execution);
+      this.lastExecutionData = execution;
 
-    if (this.isStarting && !isWorkflowCompleted(execution)) {
-      this.isStarting = false;
+      if (this.isStarting && !isWorkflowCompleted(execution)) {
+        this.isStarting = false;
+      }
     }
   }
 

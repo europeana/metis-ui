@@ -3,7 +3,7 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { merge, switchMap, tap } from 'rxjs/operators';
 import { triggerDelay } from '../_helpers';
 
@@ -31,15 +31,15 @@ export class DataPollingComponent implements OnDestroy {
     });
   }
 
-  /** getDataPoller
+  /** createNewDataPoller
    *  - sets up a timed polling mechanism
    *  - ticks initiate when last data call returns
    *  - returns a subject to sync polling with user interactions
    */
-  getDataPoller(
+  createNewDataPoller<T>(
     interval: number,
-    fnServiceCall: Function,
-    fnDataProcess: Function,
+    fnServiceCall: () => Observable<T>,
+    fnDataProcess: (result: T) => void,
     fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false
   ): Subject<boolean> {
     let pushPollCount = 0;
@@ -65,7 +65,7 @@ export class DataPollingComponent implements OnDestroy {
           });
         })
       )
-      .subscribe(fnDataProcess as (value: {}) => void, fnOnError);
+      .subscribe(fnDataProcess, fnOnError);
     this.polledDatas.push(polledData);
     return pollRefresh;
   }

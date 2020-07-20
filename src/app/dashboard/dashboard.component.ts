@@ -67,7 +67,7 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   /* - poll running data
   */
   getRunningExecutions(): void {
-    this.getDataPoller(
+    this.createNewDataPoller(
       environment.intervalStatus,
       (): Observable<WorkflowExecution[]> => {
         return this.workflows.getAllExecutionsCollectingPages(true);

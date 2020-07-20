@@ -10,8 +10,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Subject } from 'rxjs';
 import {
   DepublicationDeletionInfo,
+  MoreResults,
   RecordDepublicationInfoDeletable,
-  Results,
   SortDirection,
   SortParameter
 } from '../../_models';
@@ -382,7 +382,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   }
 
   /** beginPolling
-   *  - supply poll/process to superclass.getDataPoller()
+   *  - supply poll/process to superclass.createNewDataPoller()
    *  - initialise pollingRefresh
    */
   beginPolling(): void {
@@ -395,19 +395,18 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
         this.dataFilterParam
       );
     };
-    const fnDataProcess = (results: Results<RecordDepublicationInfoDeletable>, more: boolean) => {
-      console.log('in fnDataProcess');
+    const fnDataProcess = (results: MoreResults<RecordDepublicationInfoDeletable>) => {
       this.depublicationData = results.results.map((entry: RecordDepublicationInfoDeletable) => {
         entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
         return entry;
       });
-      this.hasMore = more;
+      this.hasMore = results.more;
       this.isSaving = false;
     };
-    this.pollingRefresh = this.getDataPoller(
+    this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCall,
-      fnDataProcess as ((value: {}) => void),
+      fnDataProcess,
       this.errors.handleError
     );
   }
