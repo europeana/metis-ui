@@ -103,15 +103,6 @@ describe('DatasetComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should get dataset info', () => {
-      expect(component.lastExecutionSubscription).toBeFalsy();
-      component.beginPolling();
-      component.loadData();
-      fixture.detectChanges();
-      expect(component.lastExecutionSubscription).toBeTruthy();
-      expect(component.lastExecutionSubscription.closed).toBe(false);
-    });
-
     it('should set isStarting to false if the workflow is completed', () => {
       component.isStarting = true;
       component.processLastExecutionData({} as WorkflowExecution);
@@ -209,11 +200,7 @@ describe('DatasetComponent', () => {
       tick();
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
       expect(window.scrollTo).toHaveBeenCalled();
-      component.unsubscribe([
-        component.harvestSubscription,
-        component.workflowSubscription,
-        component.lastExecutionSubscription
-      ]);
+      component.cleanup();
       tick(interval);
     }));
 
@@ -262,11 +249,7 @@ describe('DatasetComponent', () => {
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(13);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(13);
 
-      component.unsubscribe([
-        component.harvestSubscription,
-        component.workflowSubscription,
-        component.lastExecutionSubscription
-      ]);
+      component.cleanup();
       tick(interval);
     }));
 
@@ -327,11 +310,7 @@ describe('DatasetComponent', () => {
       expect(component.lastExecutionData).toBeFalsy();
       expect(component.lastExecutionIsLoading).toBeFalsy();
 
-      component.unsubscribe([
-        component.harvestSubscription,
-        component.workflowSubscription,
-        component.lastExecutionSubscription
-      ]);
+      component.cleanup();
       tick(interval);
     }));
 
