@@ -34,8 +34,8 @@ describe('DepublicationRowComponent', () => {
   });
 
   it('should disable checkboxes', () => {
-    expect(component.checkboxDisabled()).toBeFalsy();
-    component.record.depublicationStatus = DepublicationStatus.PENDING;
     expect(component.checkboxDisabled()).toBeTruthy();
+    component.record.depublicationStatus = DepublicationStatus.PENDING;
+    expect(component.checkboxDisabled()).toBeFalsy();
   });
 });
