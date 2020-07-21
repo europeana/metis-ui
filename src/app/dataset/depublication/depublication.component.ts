@@ -344,6 +344,9 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   /*  @param {boolean} all - optional - flag to send empty (all) or selected
   */
   onDepublishRecordIds(all?: boolean): void {
+    if(!all && this.depublicationSelections.length === 0){
+      return;
+    }
     this.isSaving = true;
     this.depublications
       .depublishRecordIds(this._datasetId, all ? [] : this.depublicationSelections)

@@ -317,6 +317,8 @@ describe('DepublicationComponent', () => {
       const testSelection = ['0'];
       component.datasetId = '123';
       component.beginPolling();
+      component.onDepublishRecordIds();
+      expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
       component.depublicationSelections = testSelection;
       component.onDepublishRecordIds();
       expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
