@@ -118,7 +118,9 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   */
   setSelection(val: boolean): void {
     this.depublicationRows.forEach((row) => {
-      row.onChange(val);
+      if (!val || (val && !row.checkboxDisabled())) {
+        row.onChange(val);
+      }
     });
   }
 
