@@ -22,7 +22,11 @@
       <span class="svg-icon-spin showing"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
-      <a (click)="toggleMenuOptionsDepublish()">Depublish</a>
+      <a
+        (click)="!depublishDatasetDisabled() && toggleMenuOptionsDepublish()"
+        [attr.disabled]="depublishDatasetDisabled()"
+        >{{ 'depublish' | translate }}</a
+      >
       <div *ngIf="optionsOpenDepublish" class="dropdown-wrapper">
         <ul class="dropdown-content depublish">
           <li>
@@ -39,9 +43,7 @@
             <a (click)="onDepublishRecordIds(true)">{{ 'depublishRecordsIdsAll' | translate }}</a>
           </li>
           <li>
-            <a (click)="onDepublishDataset()" [attr.disabled]="depublishDatasetDisabled()">{{
-              'depublishDataset' | translate
-            }}</a>
+            <a (click)="onDepublishDataset()">{{ 'depublishDataset' | translate }}</a>
           </li>
         </ul>
       </div>

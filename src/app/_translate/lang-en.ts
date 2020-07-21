@@ -69,6 +69,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   depublicationMenuTitle: 'Add record ids to depublish',
   depublicationModalTitle: 'Add record ids to depublish',
   depublicationSubmitButtonText: 'Add record(s)',
+  depublish: 'Depublish',
   depublished: 'Depublished',
   depublishDataset: 'Depublish entire dataset',
   depublishRecordsIdsAll: 'Depublish all records',
