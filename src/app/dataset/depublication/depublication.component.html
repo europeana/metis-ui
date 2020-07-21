@@ -21,21 +21,35 @@
     <li *ngIf="isSaving">
       <span class="svg-icon-spin showing"></span>
     </li>
-    <li>
-      <a (click)="onDepublishRecordIds()" [attr.disabled]="depublicationSelections.length === 0">{{
-        'depublishRecordsIds' + (depublicationSelections.length === 1 ? 'Single' : 'Plural')
-          | translate
-      }}</a>
+    <li class="dropdown dropdown-options depublish">
+      <a (click)="toggleMenuOptionsDepublish()">Depublish</a>
+      <div *ngIf="optionsOpenDepublish" class="dropdown-wrapper">
+        <ul class="dropdown-content depublish">
+          <li>
+            <a
+              (click)="onDepublishRecordIds()"
+              [attr.disabled]="depublicationSelections.length === 0"
+              >{{
+                'depublishRecordsIds' +
+                  (depublicationSelections.length === 1 ? 'Single' : 'Plural') | translate
+              }}</a
+            >
+          </li>
+          <li>
+            <a (click)="onDepublishRecordIds()">{{ 'depublishRecordsIdsAll' | translate }}</a>
+          </li>
+          <li>
+            <a (click)="onDepublishDataset()" [attr.disabled]="depublishDatasetDisabled()">{{
+              'depublishDataset' | translate
+            }}</a>
+          </li>
+        </ul>
+      </div>
     </li>
-    <li>
-      <a (click)="onDepublishDataset()" [attr.disabled]="depublishDatasetDisabled()">{{
-        'depublishDataset' | translate
-      }}</a>
-    </li>
-    <li class="dropdown dropdown-options">
-      <a (click)="toggleMenuOptions()">{{ 'depublicationMenuTitle' | translate }}</a>
-      <div *ngIf="optionsOpen" class="dropdown-wrapper">
-        <ul class="dropdown-content">
+    <li class="dropdown dropdown-options add">
+      <a (click)="toggleMenuOptionsAdd()">{{ 'depublicationMenuTitle' | translate }}</a>
+      <div *ngIf="optionsOpenAdd" class="dropdown-wrapper">
+        <ul class="dropdown-content add">
           <li>
             <a (click)="openDialogFile()">{{ 'depublicationMenuFromFile' | translate }}</a>
           </li>

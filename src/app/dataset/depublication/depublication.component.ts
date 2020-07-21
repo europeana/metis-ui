@@ -41,7 +41,8 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   formRawText: FormGroup;
   formFile: FormGroup;
   isSaving = false;
-  optionsOpen = false;
+  optionsOpenAdd = false;
+  optionsOpenDepublish = false;
   pollingRefresh: Subject<boolean>;
   sortHeaderGroupConf = {
     cssClass: 'grid-header',
@@ -203,7 +204,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   */
   openDialogInput(): void {
     this.dialogInputOpen = true;
-    this.optionsOpen = false;
+    this.closeMenus();
   }
 
   /** openDialogFile
@@ -211,7 +212,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   */
   openDialogFile(): void {
     this.dialogFileOpen = true;
-    this.optionsOpen = false;
+    this.closeMenus();
   }
 
   /** closeDialogs
@@ -221,6 +222,14 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   closeDialogs(): void {
     this.dialogInputOpen = false;
     this.dialogFileOpen = false;
+  }
+
+  /** closeMenus
+  /* - close both the menus
+  */
+  closeMenus(): void {
+    this.optionsOpenAdd = false;
+    this.optionsOpenDepublish = false;
   }
 
   /** setDataFilterParameter
@@ -251,11 +260,20 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     this.pollingRefresh.next(true);
   }
 
-  /** toggleOptions
+  /** toggleMenuOptionsAdd
   /* - toggle the dialog show / hide options
   */
-  toggleMenuOptions(): void {
-    this.optionsOpen = !this.optionsOpen;
+  toggleMenuOptionsAdd(): void {
+    this.optionsOpenDepublish = false;
+    this.optionsOpenAdd = !this.optionsOpenAdd;
+  }
+
+  /** toggleMenuOptionsDepublish
+  /* - toggle the depublish menu
+  */
+  toggleMenuOptionsDepublish(): void {
+    this.optionsOpenAdd = false;
+    this.optionsOpenDepublish = !this.optionsOpenDepublish;
   }
 
   /** onError
@@ -323,24 +341,28 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   /* - handler for depublish record ids button
   /* - invoke service call
   /* - flag success / trigger reload / clear selection cache
+  /*  @param {boolean} all - optional - flag to send empty (all) or selected
   */
-  onDepublishRecordIds(): void {
-    if (this.depublicationSelections.length === 0) {
-      return;
-    }
+  onDepublishRecordIds(all?: boolean): void {
     this.isSaving = true;
-    this.depublications.depublishRecordIds(this._datasetId, this.depublicationSelections).subscribe(
-      () => {
-        this.depublicationSelections = [];
-        this.pollingRefresh.next(true);
-        this.isSaving = false;
-      },
-      (err: HttpErrorResponse): void => {
-        this.onError(err);
-      }
-    );
+    this.depublications
+      .depublishRecordIds(this._datasetId, all ? [] : this.depublicationSelections)
+      .subscribe(
+        () => {
+          this.depublicationSelections = [];
+          this.pollingRefresh.next(true);
+          this.isSaving = false;
+        },
+        (err: HttpErrorResponse): void => {
+          this.onError(err);
+        }
+      );
   }
 
+  /** deleteDepublications
+  /* - handler for delete records button
+  /* - invoke service call
+  */
   deleteDepublications(): void {
     this.isSaving = true;
     this.depublications

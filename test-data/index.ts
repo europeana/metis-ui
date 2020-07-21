@@ -211,9 +211,13 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         body += data.toString();
       });
       request.on('end', function() {
-        body.split('\n').forEach((id: string) => {
-          removeFromDepublicationCache(id);
-        });
+        if (body.length === 0) {
+          depublicationInfoCache = [];
+        } else {
+          body.split('\n').forEach((id: string) => {
+            removeFromDepublicationCache(id);
+          });
+        }
         response.end();
         return true;
       });
