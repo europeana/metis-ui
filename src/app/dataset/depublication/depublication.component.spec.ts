@@ -72,26 +72,34 @@ describe('DepublicationComponent', () => {
       expect(component.datasetId).toEqual('0');
     });
 
-    it('should toggle the menu options', () => {
-      expect(component.optionsOpen).toBeFalsy();
-      component.toggleMenuOptions();
-      expect(component.optionsOpen).toBeTruthy();
-      component.toggleMenuOptions();
-      expect(component.optionsOpen).toBeFalsy();
+    it('should toggle the add menu options', () => {
+      expect(component.optionsOpenAdd).toBeFalsy();
+      component.toggleMenuOptionsAdd();
+      expect(component.optionsOpenAdd).toBeTruthy();
+      component.toggleMenuOptionsAdd();
+      expect(component.optionsOpenAdd).toBeFalsy();
+    });
+
+    it('should toggle the depublish menu options', () => {
+      expect(component.optionsOpenDepublish).toBeFalsy();
+      component.toggleMenuOptionsDepublish();
+      expect(component.optionsOpenDepublish).toBeTruthy();
+      component.toggleMenuOptionsDepublish();
+      expect(component.optionsOpenDepublish).toBeFalsy();
     });
 
     it('should open the input dialog', () => {
-      component.toggleMenuOptions();
-      expect(component.optionsOpen).toBeTruthy();
+      component.toggleMenuOptionsAdd();
+      expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogInput();
-      expect(component.optionsOpen).toBeFalsy();
+      expect(component.optionsOpenAdd).toBeFalsy();
     });
 
     it('should open the file dialog', () => {
-      component.toggleMenuOptions();
-      expect(component.optionsOpen).toBeTruthy();
+      component.toggleMenuOptionsAdd();
+      expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogFile();
-      expect(component.optionsOpen).toBeFalsy();
+      expect(component.optionsOpenAdd).toBeFalsy();
     });
 
     it('should close the dialogs', () => {
@@ -100,6 +108,14 @@ describe('DepublicationComponent', () => {
       component.closeDialogs();
       expect(component.dialogInputOpen).toBeFalsy();
       expect(component.dialogFileOpen).toBeFalsy();
+    });
+
+    it('should close the menus', () => {
+      component.optionsOpenAdd = true;
+      component.optionsOpenDepublish = true;
+      component.closeMenus();
+      expect(component.optionsOpenAdd).toBeFalsy();
+      expect(component.optionsOpenDepublish).toBeFalsy();
     });
 
     it('should submit the file', () => {
@@ -298,12 +314,19 @@ describe('DepublicationComponent', () => {
 
     it('should handle record id depublication', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      const testSelection = ['0'];
+      component.datasetId = '123';
       component.beginPolling();
       component.onDepublishRecordIds();
       expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
-      component.depublicationSelections = ['0'];
+      component.depublicationSelections = testSelection;
       component.onDepublishRecordIds();
-      expect(depublications.depublishRecordIds).toHaveBeenCalled();
+      expect(depublications.depublishRecordIds).toHaveBeenCalledWith(
+        component.datasetId,
+        testSelection
+      );
+      component.onDepublishRecordIds(true);
+      expect(depublications.depublishRecordIds).toHaveBeenCalledWith(component.datasetId, []);
     });
 
     it('should delete depublications', () => {
