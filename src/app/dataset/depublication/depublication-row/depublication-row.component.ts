@@ -16,7 +16,7 @@ export class DepublicationRowComponent {
   @ViewChild('depublicationTemplate') depublicationTemplate: TemplateRef<HTMLElement>;
 
   checkboxDisabled(): boolean {
-    return this.record.depublicationStatus === DepublicationStatus.PENDING;
+    return this.record.depublicationStatus !== DepublicationStatus.PENDING;
   }
 
   onChange(val: boolean): void {
