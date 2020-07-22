@@ -18,8 +18,8 @@
   </app-search>
 
   <ul class="filter">
-    <li *ngIf="isSaving">
-      <span class="svg-icon-spin showing"></span>
+    <li>
+      <span class="svg-icon-spin" [ngClass]="{ showing: isSaving }"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
       <a
