@@ -105,9 +105,6 @@ describe('DataPollingComponent', () => {
     it('should resubscribe', fakeAsync(() => {
       const pollFn = jasmine.createSpy('poll').and.callFake(() => of(true));
 
-      //createDataPoller(pollFn);
-      //const subject: Subject<boolean> = createDataPoller(pollFn);
-
       createDataPoller(pollFn);
 
       expect(pollFn).toHaveBeenCalledTimes(1);

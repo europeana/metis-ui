@@ -184,10 +184,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
     // stream for start-workflow click events
     this.pollingRefresh = new Subject();
     this.pollingRefresh.subscribe(() => {
-      // TODO: pairing these exposes the problem of having 'visibilityContext'
-      // as a class instance in DataPoller
-      // - this has to be thread-specific
-      // - also: the multiple arrays need merged into a supertype (first)
       workflowRefresh.next(true);
       harvestRefresh.next(true);
     });

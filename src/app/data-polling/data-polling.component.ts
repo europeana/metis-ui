@@ -16,10 +16,9 @@ export class DataPollingComponent implements OnDestroy {
   polledDatas: Array<Subscription> = [];
   polledRefreshers: Array<Subject<boolean>> = [];
   pollIntervals: Array<number> = [];
-
+  pollContexts: Array<number> = [];
   slowPollInterval = 1000 * 60;
   pollRateDropped = false;
-  visibilityContext = 0;
 
   /** ngOnDestroy
   /* call cleanup
@@ -55,35 +54,51 @@ export class DataPollingComponent implements OnDestroy {
    * - queues delayed events on each loadTrigger subject
    */
   dropPollRate(): void {
-    this.visibilityContext += 1;
+    this.bumpPollContexts();
     this.pollRateDropped = true;
+
     this.loadTriggers.forEach((trigger: BehaviorSubject<boolean>, index: number) => {
       let conf = this.getTriggerDelayConfig(
         trigger,
-        this.visibilityContext,
+        this.pollContexts[index],
+        () => this.pollContexts[index],
         this.pollIntervals[index]
       );
       triggerDelay.next(conf);
     });
   }
 
+  /** bumpPollContexts
+   */
+  bumpPollContexts(): void {
+    this.pollContexts.forEach((i, index) => {
+      // TODO: do this without referencing 'i'
+      console.log('(ignore ' + i + ')');
+      this.pollContexts[index]++;
+    });
+  }
+
   /**
    * restorePollRate
    * - flags that the poll rate is no longer dropped
-   * - bumps visibilityContext to ignore all pending events
+   * - bumps pollContexts to ignore all pending events
    * - fire new events on each pollRefresher subject
    */
   restorePollRate(): void {
     this.pollRateDropped = false;
-    this.visibilityContext += 1;
+    this.bumpPollContexts();
+
     this.polledRefreshers.forEach((subject: Subject<boolean>) => {
       subject.next(true);
     });
   }
 
+  /** getTriggerDelayConfig
+   */
   getTriggerDelayConfig(
     loadTrigger: Subject<boolean>,
     visibilityContextBind: number,
+    getPollContext: () => number,
     interval: number
   ): TriggerDelayConfig {
     const delay = this.pollRateDropped ? this.slowPollInterval : interval;
@@ -91,10 +106,7 @@ export class DataPollingComponent implements OnDestroy {
       subject: loadTrigger,
       wait: delay,
       blockIf: () => {
-        if (visibilityContextBind !== this.visibilityContext) {
-          return true;
-        }
-        return false;
+        return visibilityContextBind !== getPollContext();
       }
     };
   }
@@ -112,8 +124,11 @@ export class DataPollingComponent implements OnDestroy {
   ): Subject<boolean> {
     const pollRefresh = new Subject<boolean>();
 
+    this.pollContexts.push(0);
+    const pollContextIndex = this.pollContexts.length - 1;
+
     pollRefresh.subscribe(() => {
-      this.visibilityContext += 1;
+      this.pollContexts[pollContextIndex]++;
     });
 
     const loadTrigger = new BehaviorSubject(true);
@@ -125,7 +140,12 @@ export class DataPollingComponent implements OnDestroy {
           return fnServiceCall();
         }),
         tap(() => {
-          let conf = this.getTriggerDelayConfig(loadTrigger, this.visibilityContext, interval);
+          let conf = this.getTriggerDelayConfig(
+            loadTrigger,
+            this.pollContexts[pollContextIndex],
+            () => this.pollContexts[pollContextIndex],
+            interval
+          );
           triggerDelay.next(conf);
         })
       )
