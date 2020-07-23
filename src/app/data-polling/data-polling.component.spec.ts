@@ -6,7 +6,7 @@ import { DataPollingComponent } from './';
 
 describe('DataPollingComponent', () => {
   const interval = 5000;
-  const fnEmpty = (err: HttpErrorResponse) => {
+  const fnEmpty = (err: HttpErrorResponse): HttpErrorResponse => {
     return err;
   };
   let component: DataPollingComponent;
@@ -145,7 +145,7 @@ describe('DataPollingComponent', () => {
 
   describe('Error handling', () => {
     it('should invoke the error handling function on error', fakeAsync(() => {
-      const pollFn = () => {
+      const pollFn = <T>(): Observable<T> => {
         return throwError('mock data-poll error...');
       };
       const processFn = jasmine.createSpy('process');

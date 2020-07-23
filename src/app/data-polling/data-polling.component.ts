@@ -31,7 +31,7 @@ export class DataPollingComponent implements OnDestroy {
   /* drop / restore poll rate as per document visibility
   */
   @HostListener('document:visibilitychange', ['$event'])
-  visibilitychange() {
+  visibilitychange(): void {
     if (document.hidden) {
       this.dropPollRate();
     } else {
@@ -58,7 +58,7 @@ export class DataPollingComponent implements OnDestroy {
     this.pollRateDropped = true;
 
     this.loadTriggers.forEach((trigger: BehaviorSubject<boolean>, index: number) => {
-      let conf = this.getTriggerDelayConfig(
+      const conf = this.getTriggerDelayConfig(
         trigger,
         this.pollContexts[index],
         () => this.pollContexts[index],
@@ -105,7 +105,7 @@ export class DataPollingComponent implements OnDestroy {
     return {
       subject: loadTrigger,
       wait: delay,
-      blockIf: () => {
+      blockIf: (): boolean => {
         return visibilityContextBind !== getPollContext();
       }
     };
@@ -140,7 +140,7 @@ export class DataPollingComponent implements OnDestroy {
           return fnServiceCall();
         }),
         tap(() => {
-          let conf = this.getTriggerDelayConfig(
+          const conf = this.getTriggerDelayConfig(
             loadTrigger,
             this.pollContexts[pollContextIndex],
             () => this.pollContexts[pollContextIndex],
