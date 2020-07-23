@@ -24,7 +24,7 @@ describe('DataPollingComponent', () => {
     component = fixture.componentInstance;
   });
 
-  const createDataPoller = (pollFn: () => Observable<{}>): Subject<boolean> => {
+  const createDataPoller = <T>(pollFn: () => Observable<T>): Subject<boolean> => {
     const processFn = jasmine.createSpy('process');
     const subject: Subject<boolean> = component.createNewDataPoller(
       interval,
