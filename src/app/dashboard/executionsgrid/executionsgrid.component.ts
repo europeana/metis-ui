@@ -90,7 +90,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
       );
     };
 
-    const fnDataProcess = (res: MoreResults<DatasetOverview>) => {
+    const fnDataProcess = (res: MoreResults<DatasetOverview>): void => {
       this.hasMore = res.more;
       this.dsOverview = res.results;
       this.isLoading = false;

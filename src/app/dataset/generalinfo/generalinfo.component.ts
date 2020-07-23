@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 import { apiSettings } from '../../../environments/apisettings';
-import { DatasetDepublicationStatus, Dataset, HarvestData } from '../../_models';
+import { Dataset, DatasetDepublicationStatus, HarvestData } from '../../_models';
 
 @Component({
   selector: 'app-generalinfo',
