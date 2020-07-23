@@ -1,6 +1,6 @@
 // Java name: DatasetExecutionInformation
 
-export enum CurrentDepublicationStatus {
+export enum DatasetDepublicationStatus {
   PUBLISHED = 'PUBLISHED',
   DEPUBLISHED = 'DEPUBLISHED'
 }
@@ -10,7 +10,7 @@ export interface HarvestData {
   lastPreviewRecords: number;
   lastPreviewRecordsReadyForViewing: boolean;
   firstPublishedDate: string;
-  currentDepublicationStatus?: CurrentDepublicationStatus;
+  publicationStatus?: DatasetDepublicationStatus;
   lastDepublishedDate?: string;
   lastPublishedDate: string;
   lastDepublishedRecords?: number;
