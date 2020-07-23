@@ -30,7 +30,7 @@ export class DataPollingComponent implements OnDestroy {
   /** visibilitychange
   /* drop / restore poll rate as per document visibility
   */
-  @HostListener('document:visibilitychange', ['$event'])
+  @HostListener('document:visibilitychange', [])
   visibilitychange(): void {
     if (document.hidden) {
       this.dropPollRate();
