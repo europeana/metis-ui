@@ -298,12 +298,12 @@ describe('DepublicationComponent', () => {
     it('should set the selection', () => {
       const spy = jasmine.createSpy();
       let valDisabled = true;
-      const fnCbDisabled = () => {
+      const fnCbDisabled = (): boolean => {
         return valDisabled;
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       component.depublicationRows = ([
         { onChange: spy, checkboxDisabled: fnCbDisabled }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ] as any) as QueryList<DepublicationRowComponent>;
       component.setSelection(true);
       expect(spy).not.toHaveBeenCalled();

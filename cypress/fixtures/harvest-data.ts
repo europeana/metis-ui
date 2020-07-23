@@ -1,7 +1,7 @@
-import { CurrentDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
+import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
 
 export const harvestData: HarvestData = {
-  currentDepublicationStatus: CurrentDepublicationStatus.DEPUBLISHED,
+  publicationStatus: DatasetDepublicationStatus.DEPUBLISHED,
   lastPreviewDate: '2018-09-06T11:45:55.168Z',
   lastPreviewRecords: 760,
   lastPreviewRecordsReadyForViewing: true,
