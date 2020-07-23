@@ -1,12 +1,13 @@
 import { Subject, timer } from 'rxjs';
 import { delayWhen, filter, tap } from 'rxjs/operators';
 
-export const triggerDelay = new Subject<{
+export interface TriggerDelayConfig {
   subject: Subject<boolean>;
   wait: number;
   blockIf?: () => boolean;
-  blockThen?: () => void;
-}>();
+}
+
+export const triggerDelay = new Subject<TriggerDelayConfig>();
 
 triggerDelay
   .pipe(
@@ -14,11 +15,7 @@ triggerDelay
       return timer(val.wait);
     }),
     filter((val) => {
-      const res = val.blockIf ? !val.blockIf() : true;
-      if (!res && val.blockThen) {
-        val.blockThen();
-      }
-      return res;
+      return val.blockIf ? !val.blockIf() : true;
     }),
     tap((val) => val.subject.next(true))
   )
