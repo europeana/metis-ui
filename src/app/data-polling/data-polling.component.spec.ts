@@ -5,12 +5,19 @@ import { RouterModule } from '@angular/router';
 import { DataPollingComponent } from './';
 
 describe('DataPollingComponent', () => {
+  // intervals
   const interval = 5000;
-  const fnEmpty = (err: HttpErrorResponse): HttpErrorResponse => {
-    return err;
-  };
+  const halfTick = interval / 2;
+  const tickMinusOne = interval - 1;
+
+  // fixture data
   let component: DataPollingComponent;
   let fixture: ComponentFixture<DataPollingComponent>;
+
+  // spies
+  let fnProcess: <T>(result: T) => void;
+  let fnPoll: <T>() => Observable<T>;
+  let fnError: (err: HttpErrorResponse) => HttpErrorResponse | false;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -24,135 +31,143 @@ describe('DataPollingComponent', () => {
     component = fixture.componentInstance;
   });
 
-  const createDataPoller = <T>(pollFn: () => Observable<T>): Subject<boolean> => {
-    const processFn = jasmine.createSpy('process');
-    const subject: Subject<boolean> = component.createNewDataPoller(
-      interval,
-      pollFn,
-      processFn,
-      fnEmpty
-    );
-    return subject;
+  // Intantiate poller (needs called from the async context)
+  const initDefaultDataPoller = (errorMode?: boolean): Subject<boolean> => {
+    fnPoll = errorMode
+      ? <T>(): Observable<T> => {
+          return throwError('mock data-poll error...');
+        }
+      : jasmine.createSpy('fnPoll').and.callFake(() => of(true));
+    fnProcess = jasmine.createSpy('fnProcess');
+    fnError = jasmine.createSpy('fnError').and.callFake(() => false);
+    return component.createNewDataPoller(interval, fnPoll, fnProcess, fnError);
+  };
+
+  const runTicks = (from: number, count: number, interval: number): void => {
+    Array.from({ length: count }, (_: number, k: number) => {
+      return k + from;
+    }).forEach((index) => {
+      expect(fnPoll).toHaveBeenCalledTimes(index);
+      tick(interval);
+    });
   };
 
   describe('Normal operations', () => {
     it('should update data periodically', fakeAsync(() => {
-      const pollFn = jasmine.createSpy().and.callFake(() => of(true));
-      createDataPoller(pollFn);
+      initDefaultDataPoller();
+      runTicks(1, 4, interval);
 
-      [1, 2, 3, 4, 5].forEach((index) => {
-        expect(pollFn).toHaveBeenCalledTimes(index);
-        tick(interval);
-      });
+      expect(fnPoll).toHaveBeenCalledTimes(5);
+      tick(halfTick);
+      expect(fnPoll).toHaveBeenCalledTimes(5);
+      tick(halfTick);
+
+      expect(fnPoll).toHaveBeenCalledTimes(6);
+      tick(tickMinusOne);
+      expect(fnPoll).toHaveBeenCalledTimes(6);
+      tick(1);
+      expect(fnPoll).toHaveBeenCalledTimes(7);
 
       component.cleanup();
       tick(interval);
     }));
 
+    it('should update data periodically for multiple data pollers', fakeAsync(() => {
+      initDefaultDataPoller();
+
+      const fnPoll2 = jasmine.createSpy('fnPoll_2').and.callFake(() => of(true));
+      const fnProcess2 = jasmine.createSpy('fnProcess');
+      const fnError2 = jasmine.createSpy('fnError').and.callFake(() => false);
+
+      component.createNewDataPoller(interval * 2, fnPoll2, fnProcess2, fnError2);
+
+      runTicks(1, 4, interval);
+      expect(fnPoll).toHaveBeenCalledTimes(5);
+      expect(fnPoll2).toHaveBeenCalledTimes(3);
+
+      tick(halfTick);
+      expect(fnPoll).toHaveBeenCalledTimes(5);
+      expect(fnPoll2).toHaveBeenCalledTimes(3);
+      tick(halfTick);
+      expect(fnPoll).toHaveBeenCalledTimes(6);
+      expect(fnPoll2).toHaveBeenCalledTimes(3);
+      tick(tickMinusOne);
+      expect(fnPoll).toHaveBeenCalledTimes(6);
+      expect(fnPoll2).toHaveBeenCalledTimes(3);
+      tick(1);
+      expect(fnPoll).toHaveBeenCalledTimes(7);
+      expect(fnPoll2).toHaveBeenCalledTimes(4);
+
+      component.cleanup();
+      tick(interval * 2);
+    }));
+
     it('should allow polling resets', fakeAsync(() => {
-      const pollFn = jasmine.createSpy().and.callFake(() => of(true));
-      const subject: Subject<boolean> = createDataPoller(pollFn);
-
-      [1, 2, 3, 4, 5].forEach((index) => {
-        expect(pollFn).toHaveBeenCalledTimes(index);
-        tick(interval);
-      });
-
-      console.log('\nTESTED GROUP OF 5\n');
-
-      expect(pollFn).toHaveBeenCalledTimes(6);
-
-      console.log('\nTEST HITS NEXT....\n');
-
+      const subject = initDefaultDataPoller();
+      runTicks(1, 5, interval);
+      expect(fnPoll).toHaveBeenCalledTimes(6);
       subject.next(true);
-      expect(pollFn).toHaveBeenCalledTimes(7);
-
-      console.log('\n...TEST NEXT CONFIRMED\n');
-
-      [8, 9, 10].forEach((index) => {
-        tick(interval);
-        expect(pollFn).toHaveBeenCalledTimes(index);
-      });
-
+      expect(fnPoll).toHaveBeenCalledTimes(7);
+      runTicks(7, 3, interval);
       component.cleanup();
       tick(interval);
     }));
 
     it('should pause', fakeAsync(() => {
-      const pollFn = jasmine.createSpy('poll').and.callFake(() => of(true));
-
-      createDataPoller(pollFn);
-
-      [2, 3, 4].forEach((index) => {
-        tick(interval);
-        expect(pollFn).toHaveBeenCalledTimes(index);
-      });
-
+      initDefaultDataPoller();
+      runTicks(1, 3, interval);
       component.dropPollRate();
-      expect(pollFn).toHaveBeenCalledTimes(4);
+      expect(fnPoll).toHaveBeenCalledTimes(4);
       tick(interval);
-      expect(pollFn).toHaveBeenCalledTimes(4);
-
-      [5, 6, 7].forEach((index) => {
-        tick(component.slowPollInterval);
-        expect(pollFn).toHaveBeenCalledTimes(index);
-      });
-
+      expect(fnPoll).toHaveBeenCalledTimes(4);
+      runTicks(4, 3, component.slowPollInterval);
       component.cleanup();
       tick(component.slowPollInterval);
     }));
 
     it('should resubscribe', fakeAsync(() => {
-      const pollFn = jasmine.createSpy('poll').and.callFake(() => of(true));
-
-      createDataPoller(pollFn);
-
-      expect(pollFn).toHaveBeenCalledTimes(1);
+      initDefaultDataPoller();
+      expect(fnPoll).toHaveBeenCalledTimes(1);
       component.dropPollRate();
-
-      [2, 3].forEach((index) => {
-        tick(component.slowPollInterval);
-        expect(pollFn).toHaveBeenCalledTimes(index);
-      });
-
+      runTicks(1, 2, component.slowPollInterval);
       component.restorePollRate();
-
-      expect(pollFn).toHaveBeenCalledTimes(4);
-
-      [5, 6, 7].forEach((index) => {
-        tick(interval);
-        expect(pollFn).toHaveBeenCalledTimes(index);
-      });
-
+      expect(fnPoll).toHaveBeenCalledTimes(4);
+      runTicks(4, 3, interval);
       component.dropPollRate();
-      expect(pollFn).toHaveBeenCalledTimes(7);
-
-      [8, 9, 10, 11, 12].forEach((index) => {
-        tick(component.slowPollInterval);
-        expect(pollFn).toHaveBeenCalledTimes(index);
-      });
-
+      expect(fnPoll).toHaveBeenCalledTimes(7);
+      runTicks(7, 5, component.slowPollInterval);
       component.cleanup();
       tick(component.slowPollInterval);
     }));
 
+    it('should respond to visibility changes', fakeAsync(() => {
+      spyOn(component, 'handleVisibilityChange').and.callThrough();
+      component.visibilitychange();
+      expect(component.handleVisibilityChange).toHaveBeenCalled();
+      spyOn(component, 'restorePollRate').and.callThrough();
+      spyOn(component, 'dropPollRate').and.callThrough();
+      component.handleVisibilityChange(true);
+      expect(component.dropPollRate).toHaveBeenCalled();
+      expect(component.restorePollRate).not.toHaveBeenCalled();
+      component.handleVisibilityChange(false);
+      expect(component.restorePollRate).toHaveBeenCalled();
+      expect(component.dropPollRate).toHaveBeenCalledTimes(1);
+    }));
+
     it('should cleanup on destroy', fakeAsync(() => {
+      initDefaultDataPoller();
       spyOn(component, 'cleanup').and.callThrough();
       component.ngOnDestroy();
       expect(component.cleanup).toHaveBeenCalled();
+      tick(interval);
     }));
   });
 
   describe('Error handling', () => {
     it('should invoke the error handling function on error', fakeAsync(() => {
-      const pollFn = <T>(): Observable<T> => {
-        return throwError('mock data-poll error...');
-      };
-      const processFn = jasmine.createSpy('process');
-      const errrorFn = jasmine.createSpy('error-handler');
-      component.createNewDataPoller(interval, pollFn, processFn, errrorFn);
-      expect(errrorFn).toHaveBeenCalled();
-      expect(processFn).not.toHaveBeenCalled();
+      initDefaultDataPoller(true);
+      expect(fnError).toHaveBeenCalled();
+      expect(fnProcess).not.toHaveBeenCalled();
     }));
   });
 });

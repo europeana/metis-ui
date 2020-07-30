@@ -1,24 +1,53 @@
 /** DataPollingComponent
-/* - superclass for components using resettable polling
-*/
+ * - defines superclass behaviours for components using resettable polling
+ * - binds the polling rate to document visibility
+ **/
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { merge, switchMap, tap } from 'rxjs/operators';
-import { triggerDelay, TriggerDelayConfig } from '../_helpers';
+import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
+import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+
+export interface DataPollerInfo {
+  interval: number;
+  refresher: Subject<boolean>;
+  trigger: Subject<boolean>;
+  pollContext: number;
+  subscription?: Subscription;
+}
+
+export interface TriggerDelayConfig {
+  subject: Subject<boolean>;
+  wait: number;
+  blockIf: () => boolean;
+}
 
 @Component({
   selector: 'app-data-polling',
   template: ``
 })
 export class DataPollingComponent implements OnDestroy {
-  loadTriggers: Array<BehaviorSubject<boolean>> = [];
-  polledDatas: Array<Subscription> = [];
-  polledRefreshers: Array<Subject<boolean>> = [];
-  pollIntervals: Array<number> = [];
-  pollContexts: Array<number> = [];
-  slowPollInterval = 1000 * 60;
+  allPollingInfo: Array<DataPollerInfo> = [];
+  slowPollInterval = environment.intervalStatusMax;
   pollRateDropped = false;
+  triggerDelay = new Subject<TriggerDelayConfig>();
+
+  /** constructor
+  /* attach generic functionality to triggerDelay subject
+  */
+  constructor() {
+    this.triggerDelay
+      .pipe(
+        delayWhen((val) => {
+          return timer(val.wait);
+        }),
+        filter((val) => {
+          return !val.blockIf();
+        }),
+        tap((val) => val.subject.next(true))
+      )
+      .subscribe();
+  }
 
   /** ngOnDestroy
   /* call cleanup
@@ -28,11 +57,19 @@ export class DataPollingComponent implements OnDestroy {
   }
 
   /** visibilitychange
-  /* drop / restore poll rate as per document visibility
+  /* call handleVisibilityChange on document visibility changes
   */
-  @HostListener('document:visibilitychange', [])
+  @HostListener('document:visibilitychange')
   visibilitychange(): void {
-    if (document.hidden) {
+    this.handleVisibilityChange(document.hidden);
+  }
+
+  /** handleVisibilityChange
+  /* drop / restore poll rate as per isHidden
+  /*  @param {boolean} isHidden - document visibility
+  */
+  handleVisibilityChange(isHidden: boolean): void {
+    if (isHidden) {
       this.dropPollRate();
     } else {
       this.restorePollRate();
@@ -40,11 +77,11 @@ export class DataPollingComponent implements OnDestroy {
   }
 
   /** cleanup
-  /* unsubscribe from subs
+  /* unsubscribe from subscriptions
   */
   cleanup(): void {
-    this.polledDatas.forEach((sub: Subscription) => {
-      sub.unsubscribe();
+    this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
+      pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
     });
   }
 
@@ -56,25 +93,18 @@ export class DataPollingComponent implements OnDestroy {
   dropPollRate(): void {
     this.bumpPollContexts();
     this.pollRateDropped = true;
-
-    this.loadTriggers.forEach((trigger: BehaviorSubject<boolean>, index: number) => {
-      const conf = this.getTriggerDelayConfig(
-        trigger,
-        this.pollContexts[index],
-        () => this.pollContexts[index],
-        this.pollIntervals[index]
-      );
-      triggerDelay.next(conf);
+    this.allPollingInfo.forEach((info: DataPollerInfo, index: number) => {
+      const conf = this.getTriggerDelayConfig(info.trigger, info.pollContext, index, info.interval);
+      this.triggerDelay.next(conf);
     });
   }
 
   /** bumpPollContexts
+   * - increments all pollContexts by 1
    */
   bumpPollContexts(): void {
-    this.pollContexts.forEach((i, index) => {
-      // TODO: do this without referencing 'i'
-      console.log('(ignore ' + i + ')');
-      this.pollContexts[index]++;
+    this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
+      pollerData.pollContext = pollerData.pollContext + 1;
     });
   }
 
@@ -87,34 +117,40 @@ export class DataPollingComponent implements OnDestroy {
   restorePollRate(): void {
     this.pollRateDropped = false;
     this.bumpPollContexts();
-
-    this.polledRefreshers.forEach((subject: Subject<boolean>) => {
-      subject.next(true);
+    this.allPollingInfo.forEach((info: DataPollerInfo) => {
+      info.refresher.next(true);
     });
   }
 
   /** getTriggerDelayConfig
+   *  @param {Subject<boolean>} loadTrigger - the Subject to trigger event on
+   *  @param {number} visibilityContextBind - the context at time of invocation / queuing
+   *  @param {number} infoIndex - the index for the context at time of execution
+   *  @param {number} interval - the default delay time for this data source
+   *  binds variables to delayed trigger configuration
+   *  return TriggerDelayConfig with the correct delay
    */
   getTriggerDelayConfig(
     loadTrigger: Subject<boolean>,
     visibilityContextBind: number,
-    getPollContext: () => number,
+    infoIndex: number,
     interval: number
   ): TriggerDelayConfig {
-    const delay = this.pollRateDropped ? this.slowPollInterval : interval;
     return {
       subject: loadTrigger,
-      wait: delay,
-      blockIf: (): boolean => {
-        return visibilityContextBind !== getPollContext();
-      }
+      wait: this.pollRateDropped ? this.slowPollInterval : interval,
+      blockIf: (): boolean => visibilityContextBind !== this.allPollingInfo[infoIndex].pollContext
     };
   }
 
   /** createNewDataPoller
-   *  - sets up a timed polling mechanism
+   *  @param {number} interval - polling interval
+   *  @param {() => Observable<T>} fnServiceCall - the data fetch function
+   *  @param {(result: T) => void} fnDataProcess - the data processing function
+   *  @param {(err: HttpErrorResponse) => HttpErrorResponse | false} fnOnError - function to invoke on error
+   *  - sets up polled data stream
    *  - ticks initiate when last data call returns
-   *  - returns a subject to sync polling with user interactions
+   *  return a subject to sync polling with user interactions
    */
   createNewDataPoller<T>(
     interval: number,
@@ -123,38 +159,37 @@ export class DataPollingComponent implements OnDestroy {
     fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false
   ): Subject<boolean> {
     const pollRefresh = new Subject<boolean>();
-
-    this.pollContexts.push(0);
-    const pollContextIndex = this.pollContexts.length - 1;
+    const loadTrigger = new BehaviorSubject(true);
+    const pollContextIndex = this.allPollingInfo.length;
 
     pollRefresh.subscribe(() => {
-      this.pollContexts[pollContextIndex]++;
+      this.allPollingInfo[pollContextIndex].pollContext++;
     });
 
-    const loadTrigger = new BehaviorSubject(true);
+    this.allPollingInfo.push({
+      interval: interval,
+      refresher: pollRefresh,
+      trigger: loadTrigger,
+      pollContext: 0
+    });
 
-    const polledData = loadTrigger
+    this.allPollingInfo[pollContextIndex].subscription = loadTrigger
       .pipe(
-        merge(pollRefresh), // user events comes into the stream here
+        merge(pollRefresh), // user events come into the stream here
         switchMap(() => {
           return fnServiceCall();
         }),
         tap(() => {
           const conf = this.getTriggerDelayConfig(
             loadTrigger,
-            this.pollContexts[pollContextIndex],
-            () => this.pollContexts[pollContextIndex],
+            this.allPollingInfo[pollContextIndex].pollContext,
+            pollContextIndex,
             interval
           );
-          triggerDelay.next(conf);
+          this.triggerDelay.next(conf); // queue next call in chain
         })
       )
       .subscribe(fnDataProcess, fnOnError);
-
-    this.loadTriggers.push(loadTrigger);
-    this.polledDatas.push(polledData);
-    this.polledRefreshers.push(pollRefresh);
-    this.pollIntervals.push(interval);
     return pollRefresh;
   }
 }
