@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
 import { DataPollingComponent } from '../data-polling';
 import { errorNotification, Notification } from '../_models';
-import { of, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthenticationService, DocumentTitleService, RedirectPreviousUrl } from '../_services';
 import { TranslateService } from '../_translate';
 
