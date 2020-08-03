@@ -2,10 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
+import { DataPollingComponent } from '../data-polling';
 import { errorNotification, Notification } from '../_models';
+import { of, Observable } from 'rxjs';
 import { AuthenticationService, DocumentTitleService, RedirectPreviousUrl } from '../_services';
 import { TranslateService } from '../_translate';
 
@@ -13,12 +14,12 @@ import { TranslateService } from '../_translate';
   selector: 'app-login',
   templateUrl: './login.component.html'
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent extends DataPollingComponent implements OnInit {
   loading = false;
   notification?: Notification;
   loginForm: FormGroup;
   msgBadCredentials: string;
-  checkLogin = true;
+  msgSigninFailed: string;
 
   constructor(
     private readonly router: Router,
@@ -27,32 +28,45 @@ export class LoginComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly translate: TranslateService,
     private readonly documentTitleService: DocumentTitleService
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
-  /* init of this component
-  /* reset login status = logout
+  /* initialise translations
   /* create a login form
-  /* set translation language
+  /* listen for current logins
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Sign In');
-
-    // already logged in, then redirect
-    if (this.authentication.validatedUser() && this.checkLogin) {
-      this.redirectAfterLogin();
-      return;
-    }
-
-    // else make sure the user is logged out properly and show the form
-    this.authentication.logout();
-
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
-    });
-
     this.msgBadCredentials = this.translate.instant('msgBadCredentials');
+    this.msgSigninFailed = this.translate.instant('msgSigninFailed');
+    this.buildForm();
+    this.createNewDataPoller(
+      environment.intervalStatusMedium,
+      (): Observable<boolean> => {
+        return of(!!this.authentication.validatedUser());
+      },
+      (result: boolean): void => {
+        if (result) {
+          this.redirectAfterLogin();
+        } else {
+          this.authentication.logout();
+        }
+      }
+    );
+  }
+
+  /** buildForm
+  /* build the login form
+  */
+  buildForm(): void {
+    if (!this.loginForm) {
+      this.loginForm = this.fb.group({
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', Validators.required]
+      });
+    }
   }
 
   /** onSubmit
@@ -67,13 +81,6 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true;
-
-    // already logged in, then redirect
-    if (this.authentication.validatedUser() && this.checkLogin) {
-      this.checkLogin = true;
-      this.redirectAfterLogin();
-      return;
-    }
 
     this.authentication
       .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
@@ -90,7 +97,7 @@ export class LoginComponent implements OnInit {
           this.notification = errorNotification(
             err.status === 406
               ? this.msgBadCredentials
-              : `Signin failed: ${StringifyHttpError(err)}`
+              : `${this.msgSigninFailed}: ${StringifyHttpError(err)}`
           );
           this.loading = false;
         }
@@ -102,7 +109,6 @@ export class LoginComponent implements OnInit {
   */
   redirectAfterLogin(): void {
     const url = this.redirectPreviousUrl.get();
-
     if (url && url !== '/signin') {
       this.router.navigateByUrl(`/${url}`);
       this.redirectPreviousUrl.set(undefined);

@@ -119,6 +119,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   maxResultsReached: "You've reached the limit of the number of executions that can be displayed.",
   metaDataFormat: 'Metadata format',
   msgBadCredentials: 'Email or password is incorrect, please try again.',
+  msgSigninFailed: 'Signin failed',
   myProfile: 'My profile',
   networkMember: 'Europeana Network Association Member',
   newDataset: 'New dataset',
