@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../environments/environment';
 import { DataPollingComponent } from './';
 
 describe('DataPollingComponent', () => {
@@ -120,24 +121,24 @@ describe('DataPollingComponent', () => {
       expect(fnPoll).toHaveBeenCalledTimes(4);
       tick(interval);
       expect(fnPoll).toHaveBeenCalledTimes(4);
-      runTicks(4, 3, component.slowPollInterval);
+      runTicks(4, 3, environment.intervalStatusMax);
       component.cleanup();
-      tick(component.slowPollInterval);
+      tick(environment.intervalStatusMax);
     }));
 
     it('should resubscribe', fakeAsync(() => {
       initDefaultDataPoller();
       expect(fnPoll).toHaveBeenCalledTimes(1);
       component.dropPollRate();
-      runTicks(1, 2, component.slowPollInterval);
+      runTicks(1, 2, environment.intervalStatusMax);
       component.restorePollRate();
       expect(fnPoll).toHaveBeenCalledTimes(4);
       runTicks(4, 3, interval);
       component.dropPollRate();
       expect(fnPoll).toHaveBeenCalledTimes(7);
-      runTicks(7, 5, component.slowPollInterval);
+      runTicks(7, 5, environment.intervalStatusMax);
       component.cleanup();
-      tick(component.slowPollInterval);
+      tick(environment.intervalStatusMax);
     }));
 
     it('should respond to visibility changes', fakeAsync(() => {

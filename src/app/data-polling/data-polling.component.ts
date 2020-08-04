@@ -28,7 +28,6 @@ export interface TriggerDelayConfig {
 })
 export class DataPollingComponent implements OnDestroy {
   allPollingInfo: Array<DataPollerInfo> = [];
-  slowPollInterval = environment.intervalStatusMax;
   pollRateDropped = false;
   triggerDelay = new Subject<TriggerDelayConfig>();
 
@@ -138,7 +137,7 @@ export class DataPollingComponent implements OnDestroy {
   ): TriggerDelayConfig {
     return {
       subject: loadTrigger,
-      wait: this.pollRateDropped ? this.slowPollInterval : interval,
+      wait: this.pollRateDropped ? environment.intervalStatusMax : interval,
       blockIf: (): boolean => visibilityContextBind !== this.allPollingInfo[infoIndex].pollContext
     };
   }
