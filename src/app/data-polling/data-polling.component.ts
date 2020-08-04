@@ -1,6 +1,10 @@
 /** DataPollingComponent
  * - defines superclass behaviours for components using resettable polling
- * - binds the polling rate to document visibility
+ * - manages multiple polling configurations per instance
+ * - binds the polling rate to the document visibility
+ * - uses chained call-backs so network lags don't shorten the polling interval
+ * - allows manual polling refresh
+ * - queued event-chains superceded by newer ones (through user interaction) are discarded if the pollContext they were bound to has been updated
  **/
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy } from '@angular/core';
