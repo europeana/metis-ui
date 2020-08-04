@@ -326,6 +326,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   /* - flag success / trigger reload
   */
   onDepublishDataset(): void {
+    this.closeMenus();
     this.isSaving = true;
     this.depublications.depublishDataset(this._datasetId).subscribe(
       () => {
@@ -346,6 +347,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   /*  @param {boolean} all - optional - flag to send empty (all) or selected
   */
   onDepublishRecordIds(all?: boolean): void {
+    this.closeMenus();
     if (!all && this.depublicationSelections.length === 0) {
       return;
     }
