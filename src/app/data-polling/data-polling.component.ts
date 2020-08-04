@@ -4,7 +4,7 @@
  * - binds the polling rate to the document visibility
  * - uses chained call-backs so network lags don't shorten the polling interval
  * - allows manual polling refresh
- * - queued event-chains superceded by newer ones (through user interaction) are discarded if the pollContext they were bound to has been updated
+ * - queued event-chains superceded by newer ones (via user interaction) are discarded if the pollContext they were bound to was updated
  **/
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy } from '@angular/core';
