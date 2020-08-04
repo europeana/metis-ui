@@ -118,6 +118,18 @@ describe('DepublicationComponent', () => {
       expect(component.optionsOpenDepublish).toBeFalsy();
     });
 
+    it('should close the menus after invoking menu commands', () => {
+      spyOn(component, 'closeMenus').and.callThrough();
+      component.onDepublishDataset();
+      expect(component.closeMenus).toHaveBeenCalled();
+      component.onDepublishRecordIds(true);
+      expect(component.closeMenus).toHaveBeenCalledTimes(2);
+      component.openDialogInput();
+      expect(component.closeMenus).toHaveBeenCalledTimes(3);
+      component.openDialogFile();
+      expect(component.closeMenus).toHaveBeenCalledTimes(4);
+    });
+
     it('should submit the file', () => {
       component.dialogFileOpen = true;
       component.datasetId = '123';
