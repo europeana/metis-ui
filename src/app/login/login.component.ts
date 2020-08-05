@@ -45,7 +45,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       (): Observable<boolean> => {
-        return of(!!this.authentication.validatedUser());
+        return of(this.authentication.validatedUser());
       },
       (result: boolean): void => {
         if (result) {
