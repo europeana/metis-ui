@@ -164,3 +164,9 @@
     <ng-content *ngTemplateOutlet="dataWrapper.depublicationTemplate"></ng-content>
   </ng-container>
 </div>
+
+<div class="grid-footer">
+  <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">
+    <a class="load-more-btn">{{ 'loadMore' | translate }}</a>
+  </span>
+</div>

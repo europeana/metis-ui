@@ -233,7 +233,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         const time = new Date().toISOString();
         depublicationInfoCache.push({
           recordId: url,
-          depublicationStatus: DepublicationStatus.DEPUBLISHED,
+          depublicationStatus: DepublicationStatus.PENDING,
           depublicationDate: time
         } as RecordDepublicationInfo);
       };
@@ -293,10 +293,9 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
           }
           return res;
         };
-
         result = sortResult(result);
       }
-      response.end(JSON.stringify(getListWrapper(result, true, 100)));
+      response.end(JSON.stringify(getListWrapper(result, false, params.page)));
       return true;
     }
   }
