@@ -17,7 +17,7 @@
   >
   </app-search>
 
-  <ul class="filter">
+  <ul class="filter" (clickOutside)="closeMenus()">
     <li>
       <span class="svg-icon-spin" [ngClass]="{ showing: isSaving }"></span>
     </li>
