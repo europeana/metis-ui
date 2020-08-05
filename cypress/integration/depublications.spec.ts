@@ -65,17 +65,41 @@ context('metis-ui', () => {
     });
 
     it('should submit new entries', () => {
-      const testTexts = ['Test1', 'Test2', 'Test3'];
+      const selLoadMore = '.tab-content .load-more-btn';
+      const testTexts = ['Test1', 'Test2'];
+      const testMore = ['Test3', 'Test4'];
+      const submitEntries = (entries: string): void => {
+        cy.get(selMenuOpenAdd).click({ force: true });
+        cy.get(selMenuItemInput)
+          .scrollIntoView()
+          .click({ force: true });
+        cy.get('[name=recordIds]').type(entries);
+        cy.get('.submit-form').click();
+      };
 
-      cy.get(selMenuOpenAdd).click({ force: true });
-      cy.get(selMenuItemInput)
-        .scrollIntoView()
-        .click({ force: true });
-
-      cy.get('[name=recordIds]').type(testTexts.join('\n'));
-      cy.get('.submit-form').click();
+      submitEntries(testTexts.join('\n'));
 
       testTexts.forEach((txt) => {
+        cy.get('.record-url')
+          .contains(txt)
+          .should('have.length', 1);
+      });
+
+      testMore.forEach((txt) => {
+        cy.get('.record-url')
+          .contains(txt)
+          .should('not.exist');
+      });
+
+      cy.get(selLoadMore).should('not.exist');
+
+      submitEntries(testMore.join('\n'));
+
+      cy.get(selLoadMore).should('exist');
+
+      cy.get(selLoadMore).click();
+
+      testMore.forEach((txt) => {
         cy.get('.record-url')
           .contains(txt)
           .should('have.length', 1);

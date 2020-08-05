@@ -355,6 +355,15 @@ describe('DepublicationComponent', () => {
       component.deleteDepublications();
       expect(component.depublicationSelections.length).toBeFalsy();
     });
+
+    it('should load the next page', () => {
+      component.beginPolling();
+      spyOn(component.pollingRefresh, 'next');
+      expect(component.currentPage).toEqual(0);
+      component.loadNextPage();
+      expect(component.currentPage).toEqual(1);
+      expect(component.pollingRefresh.next).toHaveBeenCalled();
+    });
   });
 
   describe('Error handling', () => {

@@ -234,6 +234,15 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     this.optionsOpenDepublish = false;
   }
 
+  /** loadNextPage
+  /* - increment currentPage variable
+  /* - refresh the polling
+  */
+  loadNextPage(): void {
+    this.currentPage++;
+    this.pollingRefresh.next(true);
+  }
+
   /** setDataFilterParameter
   /* - update / cancel the data filter parameter
   /* - trigger polling refresh
