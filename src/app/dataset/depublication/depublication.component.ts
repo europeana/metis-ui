@@ -9,8 +9,8 @@ import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/c
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import {
+  DatasetDepublicationInfo,
   DepublicationDeletionInfo,
-  MoreResults,
   RecordDepublicationInfoDeletable,
   SortDirection,
   SortParameter
@@ -424,7 +424,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
    *  - initialise pollingRefresh
    */
   beginPolling(): void {
-    const fnDataCall = (): Observable<MoreResults<RecordDepublicationInfoDeletable>> => {
+    const fnDataCall = (): Observable<DatasetDepublicationInfo> => {
       this.isSaving = true;
       return this.depublications.getPublicationInfoUptoPage(
         this._datasetId,
@@ -433,12 +433,16 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
         this.dataFilterParam
       );
     };
-    const fnDataProcess = (results: MoreResults<RecordDepublicationInfoDeletable>): void => {
-      this.depublicationData = results.results.map((entry: RecordDepublicationInfoDeletable) => {
-        entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
-        return entry;
-      });
-      this.hasMore = results.more;
+
+    const fnDataProcess = (info: DatasetDepublicationInfo): void => {
+      const data = info.depublicationRecordIds.results.map(
+        (entry: RecordDepublicationInfoDeletable) => {
+          entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
+          return entry;
+        }
+      );
+      this.depublicationData = data;
+      this.hasMore = info.depublicationRecordIds.nextPage > -1;
       this.isSaving = false;
     };
     this.pollingRefresh = this.createNewDataPoller(

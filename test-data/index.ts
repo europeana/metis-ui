@@ -295,7 +295,14 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         };
         result = sortResult(result);
       }
-      response.end(JSON.stringify(getListWrapper(result, false, params.page)));
+
+      // TODO: depublicationTriggerable
+      response.end(
+        JSON.stringify({
+          depublicationRecordIds: getListWrapper(result, false, parseInt(params.page)),
+          depublicationTriggerable: true
+        })
+      );
       return true;
     }
   }

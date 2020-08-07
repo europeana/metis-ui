@@ -1,18 +1,15 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  MoreResults,
+  DatasetDepublicationInfo,
   RecordDepublicationInfo,
-  Results,
   SortDirection,
   SortParameter
 } from '../_models';
-
-import { collectResultsUptoPage } from './service-utils';
-import { ErrorService } from './error.service';
+  import { ErrorService } from './error.service';
 
 @Injectable({ providedIn: 'root' })
 export class DepublicationService {
@@ -149,11 +146,43 @@ export class DepublicationService {
     page: number,
     sort?: SortParameter,
     filter?: string
-  ): Observable<Results<RecordDepublicationInfo>> {
+  ): Observable<DatasetDepublicationInfo> {
     const sortParam = this.parseSortParameter(sort);
     const filterParam = this.parseFilterParameter(filter);
     const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}?page=${page}${sortParam}${filterParam}`;
-    return this.http.get<Results<RecordDepublicationInfo>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<DatasetDepublicationInfo>(url).pipe(this.errors.handleRetry());
+  }
+
+  /** flattenDatasetDepublicationInfos
+  /*  retrieve publication information
+  /*  @param {function} getResults - the data function
+  /*  @param {number} endPage - the last page to get
+  */
+  flattenDatasetDepublicationInfos(
+    getResults: (page: number) => Observable<DatasetDepublicationInfo>,
+    endPage: number
+  ): Observable<DatasetDepublicationInfo> {
+    const observables: Observable<DatasetDepublicationInfo>[] = [];
+    for (let i = 0; i <= endPage; i++) {
+      observables.push(getResults(i));
+    }
+    return forkJoin(observables).pipe(
+      map((resultList) => {
+        const lastResult = resultList[resultList.length - 1];
+        const allResults = ([] as RecordDepublicationInfo[]).concat(
+          ...resultList.map((item) =>
+            ([] as RecordDepublicationInfo[]).concat(...item.depublicationRecordIds.results)
+          )
+        );
+        return {
+          depublicationRecordIds: {
+            results: allResults,
+            nextPage: lastResult.depublicationRecordIds.nextPage
+          },
+          depublicationTriggerable: true
+        } as DatasetDepublicationInfo;
+      })
+    );
   }
 
   /** getPublicationInfoUptoPage
@@ -168,9 +197,9 @@ export class DepublicationService {
     endPage: number,
     sort?: SortParameter,
     filter?: string
-  ): Observable<MoreResults<RecordDepublicationInfo>> {
-    const getResults = (page: number): Observable<Results<RecordDepublicationInfo>> =>
+  ): Observable<DatasetDepublicationInfo> {
+    const getResults = (page: number): Observable<DatasetDepublicationInfo> =>
       this.getPublicationInfo(datasetId, page, sort, filter);
-    return collectResultsUptoPage(getResults, endPage);
+    return this.flattenDatasetDepublicationInfos(getResults, endPage);
   }
 }

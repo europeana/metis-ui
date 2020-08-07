@@ -278,8 +278,8 @@ export function getListWrapper(
   const more = list && list.length > (page + 1) * pageSize;
   return {
     results: results,
-    listSize: results.length,
-    nextPage: more ? 0 : -1
+    listSize: list.length,
+    nextPage: more ? 1 : -1
   };
 }
 
