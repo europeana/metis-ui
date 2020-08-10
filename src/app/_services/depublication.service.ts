@@ -9,7 +9,7 @@ import {
   SortDirection,
   SortParameter
 } from '../_models';
-  import { ErrorService } from './error.service';
+import { ErrorService } from './error.service';
 
 @Injectable({ providedIn: 'root' })
 export class DepublicationService {
@@ -177,9 +177,10 @@ export class DepublicationService {
         return {
           depublicationRecordIds: {
             results: allResults,
-            nextPage: lastResult.depublicationRecordIds.nextPage
+            nextPage: lastResult.depublicationRecordIds.nextPage,
+            listSize: lastResult.depublicationRecordIds.listSize
           },
-          depublicationTriggerable: true
+          depublicationTriggerable: lastResult.depublicationTriggerable
         } as DatasetDepublicationInfo;
       })
     );

@@ -33,7 +33,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   hasMore = false;
   dataSortParam: SortParameter | undefined;
   dataFilterParam: string | undefined;
-  depublicationComplete = false;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
   dialogFileOpen = false;
@@ -62,7 +61,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
       }
     ]
   };
-  _datasetHasPublishedRecordsReady: boolean;
+  depublicationIsTriggerable: boolean;
   _datasetId: string;
   _totalRecordCount?: number;
 
@@ -72,14 +71,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     private readonly fb: FormBuilder
   ) {
     super();
-  }
-
-  /** datasetHasPublishedRecordsReady
-  /* setter for shadow variable _datasetHasPublishedRecordsReady
-  */
-  @Input()
-  set datasetHasPublishedRecordsReady(ready: boolean) {
-    this._datasetHasPublishedRecordsReady = ready;
   }
 
   /** totalRecordCount
@@ -322,13 +313,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     }
   }
 
-  /** depublishDatasetDisabled
-  /* - disable condition for template
-  */
-  depublishDatasetDisabled(): boolean {
-    return this.depublicationComplete || !this._datasetHasPublishedRecordsReady;
-  }
-
   /** onDepublishDataset
   /* - handler for depublish dataset button
   /* - invoke service call
@@ -339,7 +323,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     this.isSaving = true;
     this.depublications.depublishDataset(this._datasetId).subscribe(
       () => {
-        this.depublicationComplete = true;
         this.pollingRefresh.next(true);
         this.isSaving = false;
       },
@@ -444,6 +427,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
       this.depublicationData = data;
       this.hasMore = info.depublicationRecordIds.nextPage > -1;
       this.isSaving = false;
+      this.depublicationIsTriggerable = info.depublicationTriggerable;
     };
     this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,

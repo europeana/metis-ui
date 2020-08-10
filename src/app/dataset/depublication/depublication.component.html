@@ -22,11 +22,9 @@
       <span class="svg-icon-spin" [ngClass]="{ showing: isSaving }"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
-      <a
-        (click)="!depublishDatasetDisabled() && toggleMenuOptionsDepublish()"
-        [attr.disabled]="depublishDatasetDisabled()"
-        >{{ 'depublish' | translate }}</a
-      >
+      <a (click)="toggleMenuOptionsDepublish()" [attr.disabled]="!depublicationIsTriggerable">{{
+        'depublish' | translate
+      }}</a>
       <div *ngIf="optionsOpenDepublish" class="dropdown-wrapper">
         <ul class="dropdown-content depublish">
           <li>
@@ -148,13 +146,6 @@
     </app-sortable-group>
     <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>
   </ng-container>
-
-  <span *ngIf="depublicationComplete" class="depublication-complete-message">
-    {{ 'depublicationComplete' | translate }}
-    {{ _totalRecordCount }}
-    ({{ 'depublicationCompleteCountSuffix' | translate }})
-  </span>
-
   <ng-container *ngFor="let record of depublicationData">
     <app-depublication-row
       #dataWrapper

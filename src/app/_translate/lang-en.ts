@@ -53,8 +53,6 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   depublicationColStatus: 'Record Status',
   depublicationColUrl: 'Record Id',
   depublicationColUnpublishedDate: 'Unpublished Date',
-  depublicationComplete: 'The entire dataset was depublished',
-  depublicationCompleteCountSuffix: 'records depublished',
   depublicationDeleteButtonTextPlural: 'Delete record ids',
   depublicationDeleteButtonTextSingle: 'Delete record id',
   depublicationDeleteButtonTooltip: 'Remove record ids from the list below',

@@ -296,11 +296,12 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         result = sortResult(result);
       }
 
-      // TODO: depublicationTriggerable
+      const pageParam = parseInt(params.page);
+
       response.end(
         JSON.stringify({
-          depublicationRecordIds: getListWrapper(result, false, parseInt(params.page)),
-          depublicationTriggerable: true
+          depublicationRecordIds: getListWrapper(result, false, pageParam),
+          depublicationTriggerable: pageParam % 2 === 0
         })
       );
       return true;

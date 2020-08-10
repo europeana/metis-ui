@@ -3,12 +3,14 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
 import { MockHttp } from '../_helpers/test-helpers';
+import { of } from 'rxjs';
+
 import {
   MockErrorService,
   mockPublicationInfoMoreResults,
   mockPublicationInfoResults
 } from '../_mocked';
-import { SortDirection } from '../_models';
+import { DatasetDepublicationInfo, SortDirection } from '../_models';
 import { DepublicationService, ErrorService } from '.';
 
 describe('depublication service', () => {
@@ -24,11 +26,11 @@ describe('depublication service', () => {
     service = TestBed.get(DepublicationService);
   }));
 
-  it('should depublish a dataset', () => {
+  it('should depublish a dataset', async(() => {
     service.depublishDataset('123').subscribe((res) => {
       expect(res).toEqual(true);
     });
-  });
+  }));
 
   it('should handle upload events', () => {
     const resProgess = service.handleUploadEvents({
@@ -41,6 +43,20 @@ describe('depublication service', () => {
     } as HttpEvent<Object>);
     expect(resProgess).toBeFalsy();
     expect(resResponse).toBeTruthy();
+  });
+
+  it('should flatten the publication info', () => {
+    const perPage = 2;
+    [0, 1, 2].forEach((endPage: number) => {
+      service
+        .flattenDatasetDepublicationInfos((_: number) => {
+          return of(mockPublicationInfoMoreResults);
+        }, endPage)
+        .subscribe((publicationInfo: DatasetDepublicationInfo) => {
+          const resultIds = publicationInfo.depublicationRecordIds.results;
+          expect(resultIds.length).toEqual((endPage + 1) * perPage);
+        });
+    });
   });
 
   it('should get the publication info', () => {
