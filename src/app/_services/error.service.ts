@@ -5,12 +5,14 @@ import { concat, Observable, of, throwError } from 'rxjs';
 import { delay, flatMap, retryWhen, take } from 'rxjs/operators';
 
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
+import { TranslateService } from '../_translate';
 
 @Injectable({ providedIn: 'root' })
 export class ErrorService {
   constructor(
     private readonly router: Router,
-    private readonly redirectPreviousUrl: RedirectPreviousUrl
+    private readonly redirectPreviousUrl: RedirectPreviousUrl,
+    private readonly translate: TranslateService
   ) {}
 
   numberOfRetries = 5;
@@ -22,7 +24,7 @@ export class ErrorService {
   /* @param {object} err - details of error
   */
   handleError(err: HttpErrorResponse): HttpErrorResponse | false {
-    if (err.status === 401 || err.error.errorMessage === 'Wrong access token') {
+    if (err.status === 400 || err.status === 401) {
       this.expiredToken();
       return false;
     } else {
@@ -31,10 +33,7 @@ export class ErrorService {
   }
 
   private shouldRetry(errorM: HttpErrorResponse): boolean {
-    return (
-      errorM.status === 0 ||
-      errorM.message === 'Http failure response for (unknown url): 0 Unknown Error'
-    );
+    return errorM.status === 0 || errorM.message === this.translate.instant('errorUnknown');
   }
 
   /** handleRetry
@@ -54,7 +53,10 @@ export class ErrorService {
           }),
           take(this.numberOfRetries)
         ),
-        throwError({ status: 0, error: { errorMessage: 'Retry failed' } })
+        throwError({
+          status: 0,
+          error: { errorMessage: this.translate.instant('errorRetryFailed') }
+        })
       )
     );
   }

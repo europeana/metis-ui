@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
+import { MockTranslateService } from '../_mocked';
+import { TranslateService } from '../_translate';
 import { ErrorService, RedirectPreviousUrl } from '.';
 
 describe('ErrorService', () => {
@@ -15,7 +16,12 @@ describe('ErrorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [ErrorService, RedirectPreviousUrl]
+      providers: [
+        ErrorService,
+        RedirectPreviousUrl,
+
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     });
     service = TestBed.get(ErrorService);
     router = TestBed.get(Router);
@@ -28,30 +34,22 @@ describe('ErrorService', () => {
     localStorage.removeItem('currentUser');
   });
 
-  it('should handle a 401', async(() => {
-    redirect.set('test2');
-    localStorage.setItem('currentUser', 'user3');
+  it('should handle a 400 / 401', async(() => {
+    redirect.set('test1');
+    localStorage.setItem('currentUser', 'user1');
     spyOn(router, 'navigate');
 
+    expect(service.handleError(new HttpErrorResponse({ status: 400 }))).toBe(false);
+
+    expect(redirect.get()).toBe('/');
+    expect(localStorage.getItem('currentUser')).toBe(null);
+    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
+    expect(router.navigate).toHaveBeenCalledTimes(1);
+
+    redirect.set('test2');
+    localStorage.setItem('currentUser', 'user2');
     expect(service.handleError(new HttpErrorResponse({ status: 401 }))).toBe(false);
-
-    expect(redirect.get()).toBe('/');
-    expect(localStorage.getItem('currentUser')).toBe(null);
-    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
-  }));
-
-  it('should handle a wrong access token', async(() => {
-    redirect.set('test2');
-    localStorage.setItem('currentUser', 'user3');
-    spyOn(router, 'navigate');
-
-    expect(
-      service.handleError(new HttpErrorResponse({ error: { errorMessage: 'Wrong access token' } }))
-    ).toBe(false);
-
-    expect(redirect.get()).toBe('/');
-    expect(localStorage.getItem('currentUser')).toBe(null);
-    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
+    expect(router.navigate).toHaveBeenCalledTimes(2);
   }));
 
   it('should ignore other errors', async(() => {
