@@ -418,13 +418,12 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     };
 
     const fnDataProcess = (info: DatasetDepublicationInfo): void => {
-      const data = info.depublicationRecordIds.results.map(
+      this.depublicationData = info.depublicationRecordIds.results.map(
         (entry: RecordDepublicationInfoDeletable) => {
           entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
           return entry;
         }
       );
-      this.depublicationData = data;
       this.hasMore = info.depublicationRecordIds.nextPage > -1;
       this.isSaving = false;
       this.depublicationIsTriggerable = info.depublicationTriggerable;
