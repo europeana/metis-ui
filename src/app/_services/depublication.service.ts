@@ -170,7 +170,7 @@ export class DepublicationService {
       map((resultList) => {
         const lastResult = resultList[resultList.length - 1];
         const allResults = ([] as RecordDepublicationInfo[]).concat(
-          ...resultList.map(item => item.depublicationRecordIds.results)
+          ...resultList.map((item) => item.depublicationRecordIds.results)
         );
         return {
           depublicationRecordIds: {
