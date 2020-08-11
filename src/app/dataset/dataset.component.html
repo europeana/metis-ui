@@ -107,9 +107,6 @@
       <app-depublication
         *ngIf="activeTab === 'depublication'"
         [datasetId]="datasetId"
-        [datasetHasPublishedRecordsReady]="
-          harvestPublicationData?.lastPublishedRecordsReadyForViewing
-        "
         [totalRecordCount]="harvestPublicationData?.lastPublishedRecords"
       ></app-depublication>
       <app-mapping

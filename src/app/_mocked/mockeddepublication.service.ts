@@ -1,5 +1,5 @@
 import { Observable, of as observableOf, throwError } from 'rxjs';
-import { DepublicationStatus, MoreResults, RecordDepublicationInfo, Results } from '../_models';
+import { DatasetDepublicationInfo, DepublicationStatus, RecordDepublicationInfo } from '../_models';
 
 export const mockPublicationInfo = [
   {
@@ -14,25 +14,28 @@ export const mockPublicationInfo = [
   }
 ] as Array<RecordDepublicationInfo>;
 
-export const mockPublicationInfoResults: Results<RecordDepublicationInfo> = {
-  results: mockPublicationInfo,
-  listSize: 2,
-  nextPage: -1
+export const mockPublicationInfoResults: DatasetDepublicationInfo = {
+  depublicationRecordIds: {
+    results: mockPublicationInfo,
+    listSize: 2,
+    nextPage: -1
+  },
+  depublicationTriggerable: true
 };
 
-export const mockPublicationInfoMoreResults: MoreResults<RecordDepublicationInfo> = {
-  results: mockPublicationInfo,
-  more: false,
-  maxResultCountReached: true
+export const mockPublicationInfoMoreResults: DatasetDepublicationInfo = {
+  depublicationRecordIds: {
+    results: mockPublicationInfo,
+    listSize: 2,
+    nextPage: -1
+  },
+  depublicationTriggerable: true
 };
 
 export class MockDepublicationService {
   errorMode = false;
 
-  getPublicationInfoUptoPage(
-    datasetId: string,
-    _: number
-  ): Observable<MoreResults<RecordDepublicationInfo>> {
+  getPublicationInfoUptoPage(datasetId: string, _: number): Observable<DatasetDepublicationInfo> {
     if (this.errorMode) {
       return throwError(`mock getPublicationInfoUptoPage(${datasetId}) throws error...`);
     }

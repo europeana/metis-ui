@@ -9,8 +9,8 @@ import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/c
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import {
+  DatasetDepublicationInfo,
   DepublicationDeletionInfo,
-  MoreResults,
   RecordDepublicationInfoDeletable,
   SortDirection,
   SortParameter
@@ -33,7 +33,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   hasMore = false;
   dataSortParam: SortParameter | undefined;
   dataFilterParam: string | undefined;
-  depublicationComplete = false;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
   dialogFileOpen = false;
@@ -62,7 +61,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
       }
     ]
   };
-  _datasetHasPublishedRecordsReady: boolean;
+  depublicationIsTriggerable: boolean;
   _datasetId: string;
   _totalRecordCount?: number;
 
@@ -72,14 +71,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     private readonly fb: FormBuilder
   ) {
     super();
-  }
-
-  /** datasetHasPublishedRecordsReady
-  /* setter for shadow variable _datasetHasPublishedRecordsReady
-  */
-  @Input()
-  set datasetHasPublishedRecordsReady(ready: boolean) {
-    this._datasetHasPublishedRecordsReady = ready;
   }
 
   /** totalRecordCount
@@ -322,13 +313,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     }
   }
 
-  /** depublishDatasetDisabled
-  /* - disable condition for template
-  */
-  depublishDatasetDisabled(): boolean {
-    return this.depublicationComplete || !this._datasetHasPublishedRecordsReady;
-  }
-
   /** onDepublishDataset
   /* - handler for depublish dataset button
   /* - invoke service call
@@ -339,7 +323,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     this.isSaving = true;
     this.depublications.depublishDataset(this._datasetId).subscribe(
       () => {
-        this.depublicationComplete = true;
         this.pollingRefresh.next(true);
         this.isSaving = false;
       },
@@ -424,7 +407,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
    *  - initialise pollingRefresh
    */
   beginPolling(): void {
-    const fnDataCall = (): Observable<MoreResults<RecordDepublicationInfoDeletable>> => {
+    const fnDataCall = (): Observable<DatasetDepublicationInfo> => {
       this.isSaving = true;
       return this.depublications.getPublicationInfoUptoPage(
         this._datasetId,
@@ -433,13 +416,17 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
         this.dataFilterParam
       );
     };
-    const fnDataProcess = (results: MoreResults<RecordDepublicationInfoDeletable>): void => {
-      this.depublicationData = results.results.map((entry: RecordDepublicationInfoDeletable) => {
-        entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
-        return entry;
-      });
-      this.hasMore = results.more;
+
+    const fnDataProcess = (info: DatasetDepublicationInfo): void => {
+      this.depublicationData = info.depublicationRecordIds.results.map(
+        (entry: RecordDepublicationInfoDeletable) => {
+          entry.deletion = this.depublicationSelections.indexOf(entry.recordId) > -1;
+          return entry;
+        }
+      );
+      this.hasMore = info.depublicationRecordIds.nextPage > -1;
       this.isSaving = false;
+      this.depublicationIsTriggerable = info.depublicationTriggerable;
     };
     this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,

@@ -1,3 +1,5 @@
+import { Results } from '.';
+
 export enum SortDirection {
   UNSET = 'UNSET',
   ASC = 'ASC',
@@ -38,4 +40,9 @@ export interface SortHeaderConf {
 export interface SortHeaderGroupConf {
   cssClass: string;
   items: Array<SortHeaderConf>;
+}
+
+export interface DatasetDepublicationInfo {
+  depublicationRecordIds: Results<RecordDepublicationInfo>;
+  depublicationTriggerable: boolean;
 }
