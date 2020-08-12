@@ -86,6 +86,18 @@ describe('DepublicationComponent', () => {
       expect(component.optionsOpenDepublish).toBeFalsy();
     });
 
+    it('should not toggle the depublish menu if disabled', () => {
+      spyOn(component, 'toggleMenuOptionsDepublish');
+      component.depublicationIsTriggerable = true;
+      const link = fixture.nativeElement.querySelector('.depublish > a');
+      link.click();
+      expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
+      component.depublicationIsTriggerable = false;
+      fixture.detectChanges();
+      link.click();
+      expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
+    });
+
     it('should open the input dialog', () => {
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeTruthy();
