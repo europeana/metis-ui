@@ -137,6 +137,7 @@ describe('LoginComponent', () => {
     spyOn(router, 'navigate');
     component.onSubmit();
     tick();
+    fixture.detectChanges();
     expect(component.notification).toBeTruthy();
     expect(component.notification!.type).toBe(NotificationType.ERROR);
     expect(router.navigate).not.toHaveBeenCalled();
@@ -149,6 +150,7 @@ describe('LoginComponent', () => {
     spyOn(router, 'navigate');
     component.onSubmit();
     tick();
+    fixture.detectChanges();
     expect(component.notification).toBeTruthy();
     expect(component.notification!.type).toBe(NotificationType.ERROR);
     expect(router.navigate).not.toHaveBeenCalled();
@@ -161,6 +163,7 @@ describe('LoginComponent', () => {
     spyOn(router, 'navigate');
     component.onSubmit();
     tick();
+    fixture.detectChanges();
     expect(component.notification).toBeTruthy();
     expect(component.notification!.type).toBe(NotificationType.ERROR);
     expect(router.navigate).not.toHaveBeenCalled();

@@ -70,13 +70,13 @@ describe('DepublicationComponent', () => {
       expect(component.depublicationData.length).toBeTruthy();
     });
 
-    it('should toggle the add menu options', () => {
+    it('should toggle the add menu options', fakeAsync(() => {
       expect(component.optionsOpenAdd).toBeFalsy();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeTruthy();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeFalsy();
-    });
+    }));
 
     it('should toggle the depublish menu options', () => {
       expect(component.optionsOpenDepublish).toBeFalsy();

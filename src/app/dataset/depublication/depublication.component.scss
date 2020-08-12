@@ -6,7 +6,9 @@ app-loading-button {
 }
 
 app-search {
-  margin-right: auto;
+  @media (min-width: $bp-large) {
+    margin-right: auto;
+  }
 }
 
 app-sortable-group {
@@ -91,21 +93,17 @@ app-sortable-group {
   position: absolute;
 }
 
-@media (min-width: $bp-med) {
-  .form-ctrls {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 0;
-  }
+.filter .dropdown a {
+  padding-left: 0;
+  padding-right: 1.5rem;
+}
 
-  .depublication-ctrls {
-    display: flex;
-    justify-content: space-between;
-  }
+.form-ctrls {
+  display: flex;
+  justify-content: space-between;
+  margin: 1em 0;
+}
 
-  .depublications-grid {
-    .grid-header {
-      display: block;
-    }
-  }
+.depublications-grid .grid-header {
+  display: block;
 }

@@ -30,22 +30,33 @@ app-workflow-form-field-harvest {
 /* search depublications field */
 
 .tab-content .depublication-ctrls {
+  align-items: flex-end;
+  flex-direction: column;
+
   .search-form {
     left: 0;
-    margin: 0 0 2em 0;
+    margin: 1em 0;
+    margin: 1em 0.6rem 1em 0;
+
     position: relative;
     right: 0;
     top: 0;
+  }
 
-    .search-string {
-      width: 50em;
-    }
-
-    @media (min-width: $bp-med) {
-      margin: 0;
+  @media (min-width: $bp-med) {
+    .search-form {
       .search-string {
         width: 300px;
       }
+    }
+  }
+
+  @media (min-width: $bp-large) {
+    align-items: flex-end;
+    flex-direction: row;
+
+    .search-form {
+      margin: 0;
     }
   }
 }
@@ -200,7 +211,6 @@ app-workflow-form-field-harvest {
 
 .depublication-ctrls,
 .form-fields .form-group-btns {
-  align-items: flex-start;
   display: flex;
   justify-content: center;
 
