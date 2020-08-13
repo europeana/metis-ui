@@ -24,7 +24,7 @@ export class ErrorService {
   /* @param {object} err - details of error
   */
   handleError(err: HttpErrorResponse): HttpErrorResponse | false {
-    if (err.status === 400 || err.status === 401) {
+    if (err.status === 401) {
       this.expiredToken();
       return false;
     } else {

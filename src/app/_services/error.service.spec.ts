@@ -34,22 +34,14 @@ describe('ErrorService', () => {
     localStorage.removeItem('currentUser');
   });
 
-  it('should handle a 400 / 401', async(() => {
+  it('should handle a 401', async(() => {
     redirect.set('test1');
     localStorage.setItem('currentUser', 'user1');
     spyOn(router, 'navigate');
-
-    expect(service.handleError(new HttpErrorResponse({ status: 400 }))).toBe(false);
-
-    expect(redirect.get()).toBe('/');
-    expect(localStorage.getItem('currentUser')).toBe(null);
-    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
-    expect(router.navigate).toHaveBeenCalledTimes(1);
-
     redirect.set('test2');
     localStorage.setItem('currentUser', 'user2');
     expect(service.handleError(new HttpErrorResponse({ status: 401 }))).toBe(false);
-    expect(router.navigate).toHaveBeenCalledTimes(2);
+    expect(router.navigate).toHaveBeenCalled();
   }));
 
   it('should ignore other errors', async(() => {
