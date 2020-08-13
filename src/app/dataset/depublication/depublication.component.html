@@ -22,9 +22,11 @@
       <span class="svg-icon-spin" [ngClass]="{ showing: isSaving }"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
-      <a (click)="toggleMenuOptionsDepublish()" [attr.disabled]="!depublicationIsTriggerable">{{
-        'depublish' | translate
-      }}</a>
+      <a
+        (click)="depublicationIsTriggerable && toggleMenuOptionsDepublish()"
+        [attr.disabled]="!depublicationIsTriggerable"
+        >{{ 'depublish' | translate }}</a
+      >
       <div *ngIf="optionsOpenDepublish" class="dropdown-wrapper">
         <ul class="dropdown-content depublish">
           <li>
