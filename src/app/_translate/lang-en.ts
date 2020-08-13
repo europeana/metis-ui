@@ -84,6 +84,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   enrichment: 'Enrich',
   errorHarvestParameters: 'Parameters are not allowed',
   errorHarvestUrl: 'This is not a valid URL',
+  errorRetryFailed: 'Retry failed',
   expand: 'Expand',
   expandInfo: 'Expand info',
   fieldRequired: 'This field is required',
