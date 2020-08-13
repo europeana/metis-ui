@@ -33,7 +33,10 @@ export class ErrorService {
   }
 
   private shouldRetry(errorM: HttpErrorResponse): boolean {
-    return errorM.status === 0 || errorM.message === this.translate.instant('errorUnknown');
+    return (
+      errorM.status === 0 ||
+      errorM.message === 'Http failure response for (unknown url): 0 Unknown Error'
+    );
   }
 
   /** handleRetry
