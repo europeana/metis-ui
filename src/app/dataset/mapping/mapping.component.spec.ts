@@ -51,20 +51,21 @@ describe('MappingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display xslt', () => {
+  it('should display xslt', fakeAsync(() => {
     expect(component.xslt).toBeFalsy();
     expect(component.xsltStatus).toBe('loading');
     fixture.detectChanges();
     expect(component.xsltStatus).toBe('no-custom');
 
     component.loadDefaultXSLT();
+    tick(1);
     fixture.detectChanges();
     expect(component.xsltStatus).toBe('new-custom');
     expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
     expect(component.xslt).toBeTruthy();
-  });
+  }));
 
-  it('should handle errors displaying the xslt', () => {
+  it('should handle errors displaying the xslt', fakeAsync(() => {
     expect(component.notification).toBeFalsy();
     const cmpDatasetsService = fixture.debugElement.injector.get<DatasetsService>(DatasetsService);
 
@@ -72,48 +73,52 @@ describe('MappingComponent', () => {
       throwError(new HttpErrorResponse({ error: 'err', status: 404, statusText: 'errText' }))
     );
     component.loadDefaultXSLT();
+    tick(1);
     fixture.detectChanges();
     expect(component.notification).toBeTruthy();
-  });
+  }));
 
-  it('should save xslt', () => {
+  it('should save xslt', fakeAsync(() => {
     fixture.detectChanges();
     expect(component.xsltStatus).toBe('no-custom');
-
     component.loadDefaultXSLT();
+    tick(1);
     fixture.detectChanges();
     expect(component.xsltStatus).toBe('new-custom');
-
     component.saveCustomXSLT(false);
+    tick(2);
     fixture.detectChanges();
     expect(component.notification!.content).toBe('en:xsltSuccessful');
-  });
+  }));
 
-  it('should try out saved xslt', () => {
+  it('should try out saved xslt', fakeAsync(() => {
     spyOn(component, 'tryOutXSLT');
     component.loadDefaultXSLT();
+    tick(1);
     component.saveCustomXSLT(true);
+    tick(2);
     expect(component.tryOutXSLT).toHaveBeenCalled();
-  });
+  }));
 
   it('should try out the xslt', fakeAsync((): void => {
     spyOn(router, 'navigate');
-    tick();
-
+    tick(1);
     component.tryOutXSLT('default');
     expect(router.navigate).toHaveBeenCalledWith(['/dataset/preview/1']);
   }));
 
-  it('should change the xslt status on cancel', (): void => {
+  it('should change the xslt status on cancel', fakeAsync((): void => {
     fixture.detectChanges();
     expect(component.xsltStatus).toBe('no-custom');
     component.loadDefaultXSLT();
+    tick(1);
     fixture.detectChanges();
     expect(component.xsltStatus).toBe('new-custom');
     component.cancel();
+    tick(1);
     fixture.detectChanges();
     expect(component.xsltStatus).toBe('no-custom');
-  });
+  }));
 
   it('toggles the editor theme', () => {
     fixture.detectChanges();

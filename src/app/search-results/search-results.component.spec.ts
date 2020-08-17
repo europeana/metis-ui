@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
@@ -33,11 +33,12 @@ describe('SearchResultsComponent', () => {
     }).compileComponents();
   };
 
-  const b4Each = (): void => {
+  const b4Each = fakeAsync((): void => {
     fixture = TestBed.createComponent(SearchResultsComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;
-  };
+    tick(1);
+  });
 
   describe('Error handling', () => {
     beforeEach(async(() => {

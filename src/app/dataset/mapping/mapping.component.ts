@@ -89,13 +89,15 @@ export class MappingComponent implements OnInit {
       return;
     }
     this.xsltStatus = XSLTStatus.LOADING;
-    this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
+    const subXSLT = this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
       (result) => {
         this.xsltToSave = this.xslt = result;
         this.xsltStatus = XSLTStatus.HASCUSTOM;
+        subXSLT.unsubscribe();
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
+        subXSLT.unsubscribe();
       }
     );
   }
@@ -106,13 +108,15 @@ export class MappingComponent implements OnInit {
   loadDefaultXSLT(): void {
     const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
     this.xsltStatus = XSLTStatus.LOADING;
-    this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
+    const subXSLT = this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
       (result) => {
         this.xsltToSave = this.xslt = result;
         this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
+        subXSLT.unsubscribe();
       },
       (err: HttpErrorResponse) => {
         this.handleXSLTError(err);
+        subXSLT.unsubscribe();
       }
     );
   }
@@ -147,7 +151,7 @@ export class MappingComponent implements OnInit {
   */
   saveCustomXSLT(tryout: boolean): void {
     const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
-    this.datasets
+    const subUpdate = this.datasets
       .updateDataset(datasetValues)
       .pipe(
         switchMap(() => {
@@ -162,10 +166,12 @@ export class MappingComponent implements OnInit {
           if (tryout) {
             this.tryOutXSLT('custom');
           }
+          subUpdate.unsubscribe();
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
+          subUpdate.unsubscribe();
         }
       );
   }

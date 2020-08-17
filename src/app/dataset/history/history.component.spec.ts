@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -50,10 +50,11 @@ describe('HistoryComponent', () => {
     expect(component.allExecutions).toBeTruthy();
   });
 
-  it('should display history in tabs', () => {
+  it('should display history in tabs', fakeAsync(() => {
     component.datasetData = mockDataset;
     component.returnAllExecutions();
+    tick(1);
     fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('.table-grid.history')).length).toBeTruthy();
-  });
+  }));
 });

@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { apiSettings } from '../../environments/apisettings';
 import { MockHttp } from '../_helpers/test-helpers';
@@ -55,7 +55,7 @@ describe('dataset service', () => {
       .send(mockDataset);
   });
 
-  it('should update a dataset', () => {
+  it('should update a dataset', fakeAsync(() => {
     service.getDataset('5').subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
@@ -63,6 +63,7 @@ describe('dataset service', () => {
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
     service.updateDataset(formValues).subscribe(() => {});
+    tick(1);
     mockHttp
       .expect('PUT', '/datasets')
       .body(formValues)
@@ -74,7 +75,7 @@ describe('dataset service', () => {
       expect(dataset).toEqual(mockDataset);
     });
     mockHttp.expect('GET', '/datasets/5').send(mockDataset);
-  });
+  }));
 
   it('should get the xslt', () => {
     service.getXSLT('custom', '87').subscribe((xslt) => {

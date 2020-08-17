@@ -34,17 +34,19 @@ export class SearchResultsComponent implements OnInit {
   /*  - includes the query variable if available
   */
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      this.searchString = params.searchString;
-      this.load();
-      this.documentTitleService.setTitle(
-        ['Search Results', this.searchString]
-          .filter((x) => {
-            return x;
-          })
-          .join(' | ')
-      );
-    });
+    this.route.queryParams
+      .subscribe((params) => {
+        this.searchString = params.searchString;
+        this.load();
+        this.documentTitleService.setTitle(
+          ['Search Results', this.searchString]
+            .filter((x) => {
+              return x;
+            })
+            .join(' | ')
+        );
+      })
+      .unsubscribe();
   }
 
   /** loadNextPage
@@ -68,17 +70,21 @@ export class SearchResultsComponent implements OnInit {
       this.query = decodeURIComponent(this.searchString);
       this.isLoading = true;
 
-      this.datasets.getSearchResultsUptoPage(this.searchString, this.currentPage).subscribe(
-        ({ results, more }) => {
-          this.results = results;
-          this.isLoading = false;
-          this.hasMore = more;
-        },
-        (err: HttpErrorResponse) => {
-          this.isLoading = false;
-          console.log(err);
-        }
-      );
+      const subResults = this.datasets
+        .getSearchResultsUptoPage(this.searchString, this.currentPage)
+        .subscribe(
+          ({ results, more }) => {
+            this.results = results;
+            this.isLoading = false;
+            this.hasMore = more;
+            subResults.unsubscribe();
+          },
+          (err: HttpErrorResponse) => {
+            this.isLoading = false;
+            console.log(err);
+            subResults.unsubscribe();
+          }
+        );
     } else {
       this.results = [];
       this.searchString = '';

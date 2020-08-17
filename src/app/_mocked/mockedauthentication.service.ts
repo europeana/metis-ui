@@ -1,4 +1,5 @@
-import { Observable, of as observableOf, throwError } from 'rxjs';
+import { Observable, of as observableOf, throwError, timer } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
 
 import { AccountRole, User } from '../_models';
 
@@ -50,13 +51,17 @@ export class MockAuthenticationService {
 
   login(_: string, password: string): Observable<boolean> {
     if (this.isNumber(password)) {
-      return throwError({
-        status: parseInt(password),
-        error: { errorMessage: 'Mock Authentication Error' }
-      });
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError({
+            status: parseInt(password),
+            error: { errorMessage: 'Mock Authentication Error' }
+          });
+        })
+      );
     }
     this.loggedIn = password !== 'error';
-    return observableOf(this.loggedIn);
+    return observableOf(this.loggedIn).pipe(delay(1));
   }
 
   logout(): void {
@@ -64,7 +69,7 @@ export class MockAuthenticationService {
   }
 
   register(): Observable<boolean> {
-    return observableOf(true);
+    return observableOf(true).pipe(delay(1));
   }
 
   getCurrentUser(): User | null {

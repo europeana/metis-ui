@@ -1,5 +1,6 @@
 import { EventEmitter } from '@angular/core';
-import { Observable, of as observableOf, throwError } from 'rxjs';
+import { Observable, of as observableOf, throwError, timer } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
 
 import {
   DatasetOverview,
@@ -564,9 +565,13 @@ export class MockWorkflowService {
 
   startWorkflow(): Observable<WorkflowExecution> {
     if (this.errorMode) {
-      return throwError('mock startWorkflow throws error');
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError('mock startWorkflow throws error');
+        })
+      );
     }
-    return observableOf(mockWorkflowExecution);
+    return observableOf(mockWorkflowExecution).pipe(delay(1));
   }
 
   cancelThisWorkflow(): Observable<void> {
@@ -588,7 +593,9 @@ export class MockWorkflowService {
   }
 
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
-    return observableOf({ results: mockWorkflowExecutionResults.results, more: false });
+    return observableOf({ results: mockWorkflowExecutionResults.results, more: false }).pipe(
+      delay(1)
+    );
   }
 
   getCompletedDatasetOverviewsUptoPage(): Observable<MoreResults<DatasetOverview>> {
@@ -648,9 +655,13 @@ export class MockWorkflowService {
 
   getReport(_: string, __: string): Observable<Report> {
     if (this.errorMode) {
-      return throwError('mock getReport throws error...');
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError('mock getReport throws error...');
+        })
+      );
     }
-    return observableOf(mockReport);
+    return observableOf(mockReport).pipe(delay(1));
   }
 
   getVersionHistory(): Observable<HistoryVersion[]> {

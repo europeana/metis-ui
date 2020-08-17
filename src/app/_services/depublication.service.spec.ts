@@ -27,9 +27,12 @@ describe('depublication service', () => {
   }));
 
   it('should depublish a dataset', async(() => {
-    service.depublishDataset('123').subscribe((res) => {
-      expect(res).toEqual(true);
-    });
+    service
+      .depublishDataset('123')
+      .subscribe((res) => {
+        expect(res).toEqual(true);
+      })
+      .unsubscribe();
   }));
 
   it('should handle upload events', () => {
@@ -55,7 +58,8 @@ describe('depublication service', () => {
         .subscribe((publicationInfo: DatasetDepublicationInfo) => {
           const resultIds = publicationInfo.depublicationRecordIds.results;
           expect(resultIds.length).toEqual((endPage + 1) * perPage);
-        });
+        })
+        .unsubscribe();
     });
   });
 

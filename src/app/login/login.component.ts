@@ -42,6 +42,8 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.msgBadCredentials = this.translate.instant('msgBadCredentials');
     this.msgSigninFailed = this.translate.instant('msgSigninFailed');
     this.buildForm();
+
+    // eslint-disable-next-line rxjs/no-ignored-observable
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       (): Observable<boolean> => {
@@ -82,7 +84,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
 
     this.loading = true;
 
-    this.authentication
+    const subLogin = this.authentication
       .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
       .subscribe(
         (result) => {
@@ -92,6 +94,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
             this.notification = errorNotification(this.msgBadCredentials);
           }
           this.loading = false;
+          subLogin.unsubscribe();
         },
         (err: HttpErrorResponse) => {
           this.notification = errorNotification(
@@ -100,6 +103,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
               : `${this.msgSigninFailed}: ${StringifyHttpError(err)}`
           );
           this.loading = false;
+          subLogin.unsubscribe();
         }
       );
   }

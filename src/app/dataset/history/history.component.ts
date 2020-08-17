@@ -73,7 +73,7 @@ export class HistoryComponent {
   /* - update the hasMore variable
   */
   returnAllExecutions(): void {
-    this.workflows
+    const subAll = this.workflows
       .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
       .subscribe(
         ({ results, more, maxResultCountReached }) => {
@@ -90,10 +90,12 @@ export class HistoryComponent {
           });
           this.hasMore = more;
           this.maxResultsReached = !!maxResultCountReached;
+          subAll.unsubscribe();
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
+          subAll.unsubscribe();
         }
       );
   }

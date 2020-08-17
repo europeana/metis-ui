@@ -198,7 +198,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
     }
     if (req.taskId && req.topology) {
       this.reportLoading = true;
-      this.workflows.getReport(req.taskId, req.topology).subscribe(
+      const subReport = this.workflows.getReport(req.taskId, req.topology).subscribe(
         (report) => {
           if (report && report.errors && report.errors.length) {
             this.reportErrors = report.errors;
@@ -206,11 +206,13 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
             this.reportMsg = 'Report is empty.';
           }
           this.reportLoading = false;
+          subReport.unsubscribe();
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = httpErrorNotification(error);
           this.reportLoading = false;
+          subReport.unsubscribe();
         }
       );
     }
@@ -243,17 +245,19 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   /* subscribe to data services
   */
   loadData(): void {
-    this.datasets.getDataset(this.datasetId, true).subscribe(
+    const subDataset = this.datasets.getDataset(this.datasetId, true).subscribe(
       (result) => {
         this.datasetData = result;
         this.datasetName = result.datasetName;
         this.datasetIsLoading = false;
         this.documentTitleService.setTitle(this.datasetName || 'Dataset');
+        subDataset.unsubscribe();
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.datasetIsLoading = false;
+        subDataset.unsubscribe();
       }
     );
   }
@@ -279,16 +283,18 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   */
   startWorkflow(): void {
     this.isStarting = true;
-    this.workflows.startWorkflow(this.datasetId).subscribe(
+    const subStart = this.workflows.startWorkflow(this.datasetId).subscribe(
       () => {
         this.pollingRefresh.next(true);
         window.scrollTo(0, 0);
+        subStart.unsubscribe();
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.isStarting = false;
         window.scrollTo(0, 0);
+        subStart.unsubscribe();
       }
     );
   }

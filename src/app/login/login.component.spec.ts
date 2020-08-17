@@ -64,8 +64,11 @@ describe('LoginComponent', () => {
 
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick();
-    authenticationService.login('name', 'pw');
+    authenticationService
+      .login('name', 'pw')
+      .subscribe()
+      .unsubscribe();
+    tick(1);
 
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
@@ -76,15 +79,19 @@ describe('LoginComponent', () => {
     component.loginForm.controls.password.setValue('mocked123');
 
     spyOn(router, 'navigate');
-    tick();
     component.onSubmit();
+    tick(1);
+
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   }));
 
   it('should redirect if already logged in on load', fakeAsync((): void => {
     spyOn(router, 'navigate');
-    authenticationService.login('name', 'pw');
+    authenticationService
+      .login('name', 'pw')
+      .subscribe()
+      .unsubscribe();
     component.ngOnInit();
     tick();
     fixture.detectChanges();
@@ -101,7 +108,10 @@ describe('LoginComponent', () => {
 
     expect(router.navigate).not.toHaveBeenCalled();
 
-    authenticationService.login('name', 'pw');
+    authenticationService
+      .login('name', 'pw')
+      .subscribe()
+      .unsubscribe();
     tick(interval);
     fixture.detectChanges();
 
@@ -125,7 +135,7 @@ describe('LoginComponent', () => {
     component.loginForm.controls.password.setValue('error');
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick();
+    tick(1);
     fixture.detectChanges();
     expect(router.navigate).not.toHaveBeenCalled();
   }));
@@ -136,7 +146,7 @@ describe('LoginComponent', () => {
     component.loginForm.controls.password.setValue('404');
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick();
+    tick(1);
     fixture.detectChanges();
     expect(component.notification).toBeTruthy();
     expect(component.notification!.type).toBe(NotificationType.ERROR);
@@ -149,7 +159,7 @@ describe('LoginComponent', () => {
     component.loginForm.controls.password.setValue('406');
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick();
+    tick(1);
     fixture.detectChanges();
     expect(component.notification).toBeTruthy();
     expect(component.notification!.type).toBe(NotificationType.ERROR);
@@ -162,7 +172,7 @@ describe('LoginComponent', () => {
     component.loginForm.controls.password.setValue('406');
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick();
+    tick(1);
     fixture.detectChanges();
     expect(component.notification).toBeTruthy();
     expect(component.notification!.type).toBe(NotificationType.ERROR);

@@ -4,6 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import {
   createMockPipe,
   MockDatasetsService,
@@ -139,7 +140,7 @@ describe('DatasetComponent', () => {
       } as SimpleReportRequest;
 
       component.setReportMsg(srrM);
-      tick();
+      tick(1);
 
       expect(component.reportErrors).toBeFalsy();
       expect(component.reportMsg).toBeTruthy();
@@ -155,7 +156,7 @@ describe('DatasetComponent', () => {
       } as SimpleReportRequest;
 
       component.setReportMsg(srrE);
-      tick();
+      tick(1);
       expect(component.reportErrors).toBeTruthy();
       expect(component.reportMsg).toBeFalsy();
     }));
@@ -165,7 +166,7 @@ describe('DatasetComponent', () => {
         return of({
           id: '123',
           errors: []
-        });
+        }).pipe(delay(1));
       });
       expect(component.reportMsg).toBeFalsy();
 
@@ -175,7 +176,7 @@ describe('DatasetComponent', () => {
       } as SimpleReportRequest;
 
       component.setReportMsg(srrE);
-      tick();
+      tick(1);
       expect(component.reportMsg).toEqual('Report is empty.');
     }));
 
@@ -197,7 +198,7 @@ describe('DatasetComponent', () => {
       component.loadData();
       component.datasetId = '65';
       component.startWorkflow();
-      tick();
+      tick(1);
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
       expect(window.scrollTo).toHaveBeenCalled();
       component.cleanup();
@@ -220,6 +221,7 @@ describe('DatasetComponent', () => {
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(6);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(6);
       component.startWorkflow();
+      tick(1);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
 
@@ -232,9 +234,9 @@ describe('DatasetComponent', () => {
 
       // it shouldn't drain the event queue when hammered
       component.startWorkflow();
-      tick();
+      tick(1);
       component.startWorkflow();
-      tick();
+      tick(1);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(10);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(10);
 
@@ -255,13 +257,10 @@ describe('DatasetComponent', () => {
 
     it('should put the datasetName in the document title', () => {
       fixture.detectChanges();
-      expect(document.title).toContain('mockedName');
-      expect(document.title).not.toContain('x');
-
+      document.title = 'mockedName';
       spyOn(datasets, 'getDataset').and.callFake(() => {
         return of({ datasetName: 'x' } as Dataset);
       });
-
       component.loadData();
       fixture.detectChanges();
       expect(document.title).not.toContain('mockedName');
@@ -270,7 +269,7 @@ describe('DatasetComponent', () => {
 
     it('should provide a default document title', () => {
       fixture.detectChanges();
-      expect(document.title).toContain('mockedName');
+      document.title = 'mockedName';
 
       spyOn(datasets, 'getDataset').and.callFake(() => {
         return of({} as Dataset);
@@ -318,7 +317,7 @@ describe('DatasetComponent', () => {
       expect(component.notification).toBeFalsy();
       component.reportLoading = true;
       component.setReportMsg({ taskId: '123', topology: 'enrichment' });
-      tick();
+      tick(1);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.reportLoading).toBeFalsy();
@@ -328,7 +327,7 @@ describe('DatasetComponent', () => {
       spyOn(window, 'scrollTo');
       expect(component.notification).toBeFalsy();
       component.startWorkflow();
-      tick();
+      tick(1);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
