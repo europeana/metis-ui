@@ -46,12 +46,25 @@ export class HistoryComponent {
   report?: Report;
   contentCopied = false;
   maxResultsReached = false;
-  lastWorkflowDoneId?: string;
+  lastExecutionId?: string;
+  lastExecutionIsCompleted?: boolean;
 
   @Input()
-  set lastExecutionData(execution: WorkflowExecution | undefined) {
-    if (execution && isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
+  set lastExecutionData(lastExecution: WorkflowExecution | undefined) {
+    // Only if there exists a last execution (i.e. there is a history) we need to retrieve the
+    // history. Given that a last execution exists, we retrieve the history (again) if and only if
+    // one of the following conditions hold:
+    // - We don't have the history yet
+    // - The last execution changed (i.e. a new execution appeared)
+    // - The last execution became completed (i.e. it will now be part of the history)
+    if (
+      lastExecution &&
+      (this.lastExecutionId !== lastExecution.id ||
+        this.lastExecutionIsCompleted !== isWorkflowCompleted(lastExecution))
+    ) {
       this.returnAllExecutions();
+      this.lastExecutionId = lastExecution.id;
+      this.lastExecutionIsCompleted = isWorkflowCompleted(lastExecution);
     }
   }
 
@@ -77,7 +90,6 @@ export class HistoryComponent {
           });
           this.hasMore = more;
           this.maxResultsReached = !!maxResultCountReached;
-          this.lastWorkflowDoneId = results[0] && results[0].id;
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
