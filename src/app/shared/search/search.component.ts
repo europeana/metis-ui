@@ -3,6 +3,7 @@
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthenticationService } from '../../_services';
 
 @Component({
@@ -12,6 +13,7 @@ import { AuthenticationService } from '../../_services';
 })
 export class SearchComponent implements OnInit {
   searchString: string;
+  subParams: Subscription;
 
   @Input() apiEndpoint?: string;
   @Input() placeholderKey: string;
@@ -33,12 +35,19 @@ export class SearchComponent implements OnInit {
   /* - set searchString variable to URI-decoded query parameter
   */
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
+    this.subParams = this.route.queryParams.subscribe((params) => {
       const q = params.searchString;
       if (q !== undefined) {
         this.searchString = decodeURIComponent(q.trim());
       }
     });
+  }
+
+  /** ngOnDestroy
+  /* - unsubscribe from the route parameters
+  */
+  ngOnDestroy(): void {
+    this.subParams.unsubscribe();
   }
 
   /** submitOnEnter

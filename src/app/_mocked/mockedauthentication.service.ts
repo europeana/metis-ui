@@ -32,6 +32,7 @@ export class MockRedirectPreviousUrl {
 export class MockAuthenticationService {
   currentUser = mockUser;
   loggedIn = true;
+  errorMode = false;
 
   isNumber = (val: string): boolean => {
     return `${parseInt(val)}` === val;
@@ -42,11 +43,31 @@ export class MockAuthenticationService {
   }
 
   reloadCurrentUser(): Observable<boolean> {
-    return observableOf(true);
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError({
+            status: 401,
+            error: { errorMessage: 'Mock reloadCurrentUser Error' }
+          });
+        })
+      );
+    }
+    return observableOf(true).pipe(delay(1));
   }
 
-  updatePassword(): Observable<boolean> {
-    return observableOf(true);
+  updatePassword(_: string, __: string): Observable<boolean> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError({
+            status: 401,
+            error: { errorMessage: 'Mock updatePassword Error' }
+          });
+        })
+      );
+    }
+    return observableOf(true).pipe(delay(1));
   }
 
   login(_: string, password: string): Observable<boolean> {
@@ -83,4 +104,8 @@ export class MockAuthenticationService {
   getUserByUserId(): Observable<User> {
     return observableOf(mockUser);
   }
+}
+
+export class MockAuthenticationServiceErrors extends MockAuthenticationService {
+  errorMode = true;
 }

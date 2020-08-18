@@ -73,9 +73,10 @@ describe('PreviewComponent', () => {
 
   describe('Normal operation', () => {
     beforeEach(async(() => {
-      configureTestbed(false);
+      configureTestbed();
     }));
 
+    beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
     it('should create', () => {

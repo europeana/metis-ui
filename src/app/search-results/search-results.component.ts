@@ -3,23 +3,25 @@
 /* - subscribes to ActivatedRoute instance for live query / result data
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'search-results',
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnInit {
+export class SearchResultsComponent implements OnDestroy, OnInit {
   searchString: string;
   currentPage = 0;
   isLoading = false;
   hasMore = false;
   query: string;
   results: DatasetSearchView[];
+  subParams: Subscription;
 
   constructor(
     private readonly documentTitleService: DocumentTitleService,
@@ -34,19 +36,24 @@ export class SearchResultsComponent implements OnInit {
   /*  - includes the query variable if available
   */
   ngOnInit(): void {
-    this.route.queryParams
-      .subscribe((params) => {
-        this.searchString = params.searchString;
-        this.load();
-        this.documentTitleService.setTitle(
-          ['Search Results', this.searchString]
-            .filter((x) => {
-              return x;
-            })
-            .join(' | ')
-        );
-      })
-      .unsubscribe();
+    this.subParams = this.route.queryParams.subscribe((params) => {
+      this.searchString = params.searchString;
+      this.load();
+      this.documentTitleService.setTitle(
+        ['Search Results', this.searchString]
+          .filter((x) => {
+            return x;
+          })
+          .join(' | ')
+      );
+    });
+  }
+
+  /** ngOnDestroy
+  /* - unsubscribe from the route parameters
+  */
+  ngOnDestroy(): void {
+    this.subParams.unsubscribe();
   }
 
   /** loadNextPage

@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -51,6 +51,7 @@ describe('DatasetformComponent', () => {
   it('should submit form and update the dataset', fakeAsync((): void => {
     fixture.detectChanges();
     component.onSubmit();
+    tick(1);
     fixture.detectChanges();
     expect(component.notification!.content).toBe('en:datasetSaved');
   }));

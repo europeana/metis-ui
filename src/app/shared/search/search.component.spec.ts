@@ -18,7 +18,6 @@ describe('SearchComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.get(Router);
     auth = TestBed.get(AuthenticationService);
-    auth.login('name', 'pw');
     fixture.detectChanges();
   };
 

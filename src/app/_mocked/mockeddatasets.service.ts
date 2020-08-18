@@ -65,6 +65,13 @@ export class MockDatasetsService {
   errorMode = false;
 
   getXSLT(): Observable<string> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError('mock getXSLT throws error...');
+        })
+      );
+    }
     return observableOf(mockXslt).pipe(delay(1));
   }
 

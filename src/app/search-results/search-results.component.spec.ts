@@ -79,6 +79,12 @@ describe('SearchResultsComponent', () => {
       expect(component.load).toHaveBeenCalled();
       expect(component.currentPage).toBe(1);
     });
+
+    it('should unsubscribe when destroyed', () => {
+      spyOn(component.subParams, 'unsubscribe');
+      component.ngOnDestroy();
+      expect(component.subParams.unsubscribe).toHaveBeenCalled();
+    });
   });
 
   describe('without query param:', () => {
