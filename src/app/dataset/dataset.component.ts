@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, timer } from 'rxjs';
+import { Observable, Subject, Subscription, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   Dataset,
@@ -61,6 +61,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   lastExecutionData?: WorkflowExecution;
 
   showPluginLog?: PluginExecution;
+  subDataset: Subscription;
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
   pollingRefresh: Subject<boolean>;
@@ -85,6 +86,16 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
         initDelayTimer.unsubscribe();
       });
     }
+  }
+
+  /** ngOnDestroy
+  /* - unsubscribe
+  */
+  ngOnDestroy(): void {
+    if (this.subDataset) {
+      this.subDataset.unsubscribe();
+    }
+    super.ngOnDestroy();
   }
 
   /** ngOnInit
@@ -245,19 +256,17 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   /* subscribe to data services
   */
   loadData(): void {
-    const subDataset = this.datasets.getDataset(this.datasetId, true).subscribe(
+    this.subDataset = this.datasets.getDataset(this.datasetId, true).subscribe(
       (result) => {
         this.datasetData = result;
         this.datasetName = result.datasetName;
         this.datasetIsLoading = false;
         this.documentTitleService.setTitle(this.datasetName || 'Dataset');
-        subDataset.unsubscribe();
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.datasetIsLoading = false;
-        subDataset.unsubscribe();
       }
     );
   }

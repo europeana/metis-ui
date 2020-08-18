@@ -95,8 +95,10 @@ describe('ErrorService', () => {
           catchError((err) => of(`error:${err.status}`))
         )
       )
-    ).subscribe((actualResponses) => {
-      expect(actualResponses).toEqual(expectedResponses);
-    });
+    )
+      .subscribe((actualResponses) => {
+        expect(actualResponses).toEqual(expectedResponses);
+      })
+      .unsubscribe();
   }));
 });

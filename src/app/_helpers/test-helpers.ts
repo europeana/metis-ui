@@ -1,17 +1,30 @@
 import { HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { QueryList } from '@angular/core';
 import { CodemirrorComponent } from 'ng2-codemirror';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { reduce } from 'rxjs/operators';
+
+/** getUnsubscribable
+/* export Subscription utility
+*/
+export function getUnsubscribable(undef?: boolean): Subscription {
+  return (undef
+    ? undefined
+    : ({
+        unsubscribe: jasmine.createSpy('unsubscribe')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)) as Subscription;
+}
 
 /** gatherValues
 /* export function for deriving array of values from an observable
 */
 export function gatherValues<Value>(observable: Observable<Value>): Value[] {
   const values: Value[] = [];
-  observable.subscribe((value) => {
+  const sub = observable.subscribe((value) => {
     values.push(value);
   });
+  sub.unsubscribe();
   return values;
 }
 
@@ -32,11 +45,12 @@ export function gatherValuesAsync<Value>(observable: Observable<Value>): Observa
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function gatherError<Value>(observable: Observable<Value>): any {
   let error;
-  observable.subscribe({
+  const subError = observable.subscribe({
     error: (e) => {
       error = e;
     }
   });
+  subError.unsubscribe();
   return error;
 }
 

@@ -677,7 +677,7 @@ export class MockWorkflowService {
   }
 
   getStatisticsDetail(): Observable<NodePathStatistics> {
-    return observableOf(mockStatisticsDetail);
+    return observableOf(mockStatisticsDetail).pipe(delay(1));
   }
 
   getWorkflowForDataset(): Observable<Workflow> {

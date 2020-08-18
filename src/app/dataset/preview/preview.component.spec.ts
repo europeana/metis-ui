@@ -4,8 +4,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Subscription } from 'rxjs';
-
+import { getUnsubscribable } from '../../_helpers/test-helpers';
 import {
   createMockPipe,
   mockDataset,
@@ -21,15 +20,6 @@ import { PluginType, PreviewFilters, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewComponent } from '.';
-
-function getUnsubscribable(undef?: boolean): Subscription {
-  return (undef
-    ? undefined
-    : ({
-        unsubscribe: jasmine.createSpy('unsubscribe')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)) as Subscription;
-}
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;

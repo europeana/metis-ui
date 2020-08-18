@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
-
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Dataset, httpErrorNotification, Notification, Statistics } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -9,7 +9,7 @@ import { ErrorService, WorkflowService } from '../../_services';
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss']
 })
-export class StatisticsComponent implements OnInit {
+export class StatisticsComponent implements OnDestroy, OnInit {
   constructor(private readonly errors: ErrorService, private readonly workflows: WorkflowService) {}
 
   @Input() datasetData: Dataset;
@@ -19,12 +19,22 @@ export class StatisticsComponent implements OnInit {
   notification?: Notification;
   statistics: Statistics;
   taskId?: string;
+  subDetail: Subscription;
 
   /** ngOnInit
   /* calls statisitics load function
   */
   ngOnInit(): void {
     this.loadStatistics();
+  }
+
+  /** ngOnDestroy
+  /* unsubscribe from subDetail subscription
+  */
+  ngOnDestroy(): void {
+    if (this.subDetail) {
+      this.subDetail.unsubscribe();
+    }
   }
 
   /** setLoading
@@ -81,7 +91,7 @@ export class StatisticsComponent implements OnInit {
       return;
     }
     this.setLoading(true);
-    this.workflows
+    this.subDetail = this.workflows
       .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
       .subscribe(
         (result) => {

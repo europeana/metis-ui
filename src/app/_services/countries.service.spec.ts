@@ -7,7 +7,7 @@ import { mockedCountries, mockedLanguages, MockErrorService } from '../_mocked';
 
 import { CountriesService, ErrorService } from '.';
 
-describe('dataset service', () => {
+describe('countries service', () => {
   let mockHttp: MockHttp;
   let service: CountriesService;
 
@@ -25,22 +25,34 @@ describe('dataset service', () => {
   });
 
   it('should get the countries (cached)', () => {
-    service.getCountries().subscribe((countries) => {
-      expect(countries).toEqual(mockedCountries);
-    });
-    service.getCountries().subscribe((countries) => {
-      expect(countries).toEqual(mockedCountries);
-    });
+    service
+      .getCountries()
+      .subscribe((countries) => {
+        expect(countries).toEqual(mockedCountries);
+      })
+      .unsubscribe();
+    service
+      .getCountries()
+      .subscribe((countries) => {
+        expect(countries).toEqual(mockedCountries);
+      })
+      .unsubscribe();
     mockHttp.expect('GET', '/datasets/countries').send(mockedCountries);
   });
 
   it('should get the languages (cached)', () => {
-    service.getLanguages().subscribe((languages) => {
-      expect(languages).toEqual(mockedLanguages);
-    });
-    service.getLanguages().subscribe((languages) => {
-      expect(languages).toEqual(mockedLanguages);
-    });
+    service
+      .getLanguages()
+      .subscribe((languages) => {
+        expect(languages).toEqual(mockedLanguages);
+      })
+      .unsubscribe();
+    service
+      .getLanguages()
+      .subscribe((languages) => {
+        expect(languages).toEqual(mockedLanguages);
+      })
+      .unsubscribe();
     mockHttp.expect('GET', '/datasets/languages').send(mockedLanguages);
   });
 });

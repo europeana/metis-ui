@@ -24,86 +24,118 @@ describe('dataset service', () => {
   });
 
   it('should get a dataset (cached)', () => {
-    service.getDataset('664').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
-    service.getDataset('664').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
+    service
+      .getDataset('664')
+      .subscribe((dataset) => {
+        expect(dataset).toEqual(mockDataset);
+      })
+      .unsubscribe();
+    service
+      .getDataset('664')
+      .subscribe((dataset) => {
+        expect(dataset).toEqual(mockDataset);
+      })
+      .unsubscribe();
     mockHttp.expect('GET', '/datasets/664').send(mockDataset);
   });
 
   it('should get a dataset (uncached)', () => {
-    service.getDataset('665', true).subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
+    service
+      .getDataset('665', true)
+      .subscribe((dataset) => {
+        expect(dataset).toEqual(mockDataset);
+      })
+      .unsubscribe();
     mockHttp.expect('GET', '/datasets/665').send(mockDataset);
-    service.getDataset('665', true).subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
+    service
+      .getDataset('665', true)
+      .subscribe((dataset) => {
+        expect(dataset).toEqual(mockDataset);
+      })
+      .unsubscribe();
     mockHttp.expect('GET', '/datasets/665').send(mockDataset);
   });
 
-  it('should create a dataset', () => {
+  it('should create a dataset', fakeAsync(() => {
     const formValues = { dataset: { datasetName: 'welcome' } };
-    service.createDataset(formValues).subscribe((dataset) => {
+    const subCreate = service.createDataset(formValues).subscribe((dataset) => {
       expect(dataset).toEqual(mockDataset);
     });
     mockHttp
       .expect('POST', '/datasets')
       .body(formValues)
       .send(mockDataset);
-  });
+    subCreate.unsubscribe();
+  }));
 
   it('should update a dataset', fakeAsync(() => {
-    service.getDataset('5').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
+    service
+      .getDataset('5')
+      .subscribe((dataset) => {
+        expect(dataset).toEqual(mockDataset);
+      })
+      .unsubscribe();
     mockHttp.expect('GET', '/datasets/5').send(mockDataset);
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
-    service.updateDataset(formValues).subscribe(() => {});
+    const subUpdate = service.updateDataset(formValues).subscribe(() => {});
     tick(1);
     mockHttp
       .expect('PUT', '/datasets')
       .body(formValues)
       .send(mockDataset);
+    subUpdate.unsubscribe();
 
     // the cache was cleared for this dataset
     // so retrieving this dataset should cause a new request
-    service.getDataset('5').subscribe((dataset) => {
-      expect(dataset).toEqual(mockDataset);
-    });
+    service
+      .getDataset('5')
+      .subscribe((dataset) => {
+        expect(dataset).toEqual(mockDataset);
+      })
+      .unsubscribe();
     mockHttp.expect('GET', '/datasets/5').send(mockDataset);
   }));
 
-  it('should get the xslt', () => {
-    service.getXSLT('custom', '87').subscribe((xslt) => {
+  it('should get the xslt', fakeAsync(() => {
+    const subXSLT1 = service.getXSLT('custom', '87').subscribe((xslt) => {
       expect(xslt).toBe(mockXslt);
     });
     mockHttp.expect('GET', '/datasets/87/xslt').send({ xslt: mockXslt });
+    tick(1);
+    subXSLT1.unsubscribe();
 
-    service.getXSLT('default').subscribe((xslt) => {
+    const subXSLT2 = service.getXSLT('default').subscribe((xslt) => {
       expect(xslt).toBe(mockXslt);
     });
     mockHttp.expect('GET', '/datasets/xslt/default').send(mockXslt);
-  });
+    tick(1);
+    subXSLT2.unsubscribe();
+  }));
 
-  it('should transform samples', () => {
-    service.getTransform('9783', mockXmlSamples, 'custom').subscribe((samples) => {
-      expect(samples).toEqual(mockXmlSamples);
-    });
+  it('should transform samples', fakeAsync(() => {
+    const subTransform1 = service
+      .getTransform('9783', mockXmlSamples, 'custom')
+      .subscribe((samples) => {
+        expect(samples).toEqual(mockXmlSamples);
+      });
     mockHttp
       .expect('POST', '/datasets/9783/xslt/transform')
       .body(mockXmlSamples)
       .send(mockXmlSamples);
+    tick(1);
+    subTransform1.unsubscribe();
 
-    service.getTransform('9783', mockXmlSamples, 'default').subscribe((samples) => {
-      expect(samples).toEqual(mockXmlSamples);
-    });
+    const subTransform2 = service
+      .getTransform('9783', mockXmlSamples, 'default')
+      .subscribe((samples) => {
+        expect(samples).toEqual(mockXmlSamples);
+      });
     mockHttp
       .expect('POST', '/datasets/9783/xslt/transform/default')
       .body(mockXmlSamples)
       .send(mockXmlSamples);
-  });
+    tick(1);
+    subTransform2.unsubscribe();
+  }));
 });

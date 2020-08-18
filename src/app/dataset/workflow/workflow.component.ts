@@ -3,13 +3,14 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   QueryList,
   ViewChildren
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { fromEvent, timer } from 'rxjs';
+import { fromEvent, Subscription, timer } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 
 import { harvestValidator } from '../../_helpers';
@@ -41,7 +42,7 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   templateUrl: './workflow.component.html',
   styleUrls: ['./workflow.component.scss']
 })
-export class WorkflowComponent implements OnInit {
+export class WorkflowComponent implements OnDestroy, OnInit {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly fb: FormBuilder,
@@ -65,6 +66,7 @@ export class WorkflowComponent implements OnInit {
   workflowForm: FormGroup;
   isSaving = false;
   gapInSequence = false;
+  subUpdate: Subscription;
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -96,9 +98,19 @@ export class WorkflowComponent implements OnInit {
 
     fromEvent(window, 'scroll')
       .pipe(throttleTime(100))
+      // eslint-disable-next-line rxjs/no-ignored-subscription
       .subscribe(() => {
         this.setHighlightedField(this.inputFields.toArray(), elHeader);
       });
+  }
+
+  /** ngOnDestroy
+  /* - unsubscribe from open subscriptions
+  */
+  ngOnDestroy(): void {
+    if (this.subUpdate) {
+      this.subUpdate.unsubscribe();
+    }
   }
 
   /** ngOnInit
@@ -287,7 +299,7 @@ export class WorkflowComponent implements OnInit {
   /* update required fields depending on selection
   */
   updateRequired(): void {
-    this.workflowForm.valueChanges.subscribe(() => {
+    this.subUpdate = this.workflowForm.valueChanges.subscribe(() => {
       this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
 
       if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {

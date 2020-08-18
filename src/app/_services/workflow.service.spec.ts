@@ -28,6 +28,7 @@ import {
   ReportAvailability,
   WorkflowExecution
 } from '../_models';
+import { getUnsubscribable } from '../_helpers/test-helpers';
 import { TranslateService } from '../_translate';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
@@ -493,6 +494,12 @@ describe('workflow service', () => {
         expect(res).toEqual([]);
       })
       .unsubscribe();
+  });
+
+  it('should unsubscribe when destroyed', () => {
+    service.subCached = getUnsubscribable();
+    service.ngOnDestroy();
+    expect(service.subCached.unsubscribe).toHaveBeenCalled();
   });
 
   it('should cancel a workflow', () => {
