@@ -689,9 +689,13 @@ export class MockWorkflowService {
 
   createWorkflowForDataset(): Observable<Workflow> {
     if (this.errorMode) {
-      return throwError('mock getWorkflowForDataset throws error');
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError('mock createWorkflowForDataset throws error');
+        })
+      );
     }
-    return observableOf(mockWorkflow);
+    return observableOf(mockWorkflow).pipe(delay(1));
   }
 
   getPublishedHarvestedData(): Observable<HarvestData> {

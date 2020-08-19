@@ -14,12 +14,18 @@ module.exports = {
   plugins: ['@typescript-eslint', 'rxjs'],
   extends: ['plugin:@typescript-eslint/eslint-recommended'],
   rules: {
-    'rxjs/no-async-subscribe': 'error',
-    'rxjs/no-ignored-observable': 'error',
+
+    // TODO: enable these
+    //'rxjs/no-async-subscribe': 'error',
+    //'rxjs/no-ignored-observable': 'error',
+
     'rxjs/no-ignored-subscription': 'error',
     'rxjs/no-nested-subscribe': 'error',
-    'rxjs/no-unbound-methods': 'error',
-    'rxjs/throw-error': 'error',
+
+    // TODO: enable these
+    //'rxjs/no-unbound-methods': 'error',
+    //'rxjs/throw-error': 'error',
+
     '@typescript-eslint/adjacent-overload-signatures': 'error',
     '@typescript-eslint/ban-ts-ignore': 'error',
     '@typescript-eslint/ban-types': 'off',

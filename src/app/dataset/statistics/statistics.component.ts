@@ -1,6 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs/operators';
+
 import { Dataset, httpErrorNotification, Notification, Statistics } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -19,7 +21,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
   notification?: Notification;
   statistics: Statistics;
   taskId?: string;
-  subDetail: Subscription;
+  subs: Array<Subscription> = [];
 
   /** ngOnInit
   /* calls statisitics load function
@@ -29,12 +31,12 @@ export class StatisticsComponent implements OnDestroy, OnInit {
   }
 
   /** ngOnDestroy
-  /* unsubscribe from subDetail subscription
+  /* unsubscribe from subscriptions
   */
   ngOnDestroy(): void {
-    if (this.subDetail) {
-      this.subDetail.unsubscribe();
-    }
+    this.subs.forEach((sub: Subscription) => {
+      sub.unsubscribe();
+    });
   }
 
   /** setLoading
@@ -59,28 +61,37 @@ export class StatisticsComponent implements OnDestroy, OnInit {
       this.setLoading(false);
     };
 
-    this.workflows
-      .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
-      .subscribe((result) => {
-        if (result.results.length > 0) {
-          // find validation in the latest run, and if available, find taskid
-          for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
-            if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
-              this.taskId = result.results[0].metisPlugins[i].externalTaskId;
+    this.subs.push(
+      this.workflows
+        .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
+        .pipe(
+          tap((result) => {
+            if (result.results.length > 0) {
+              // find validation in the latest run, and if available, find taskid
+              for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
+                if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
+                  this.taskId = result.results[0].metisPlugins[i].externalTaskId;
+                }
+              }
             }
-          }
-        }
-        if (!this.taskId) {
-          // return if there's no task id
-          this.setLoading(false);
-          return;
-        }
-        this.workflows.getStatistics('validation', this.taskId).subscribe((resultStatistics) => {
+          }),
+          filter(() => {
+            if (!this.taskId) {
+              // return if there's no task id
+              this.setLoading(false);
+            }
+            return !!this.taskId;
+          }),
+          switchMap(() => {
+            return this.workflows.getStatistics('validation', `${this.taskId}`);
+          })
+        )
+        .subscribe((resultStatistics) => {
           const statistics = resultStatistics;
           this.statistics = statistics;
           this.setLoading(false);
-        }, httpErrorHandling);
-      }, httpErrorHandling);
+        }, httpErrorHandling)
+    );
   }
 
   /** loadMoreAttrs
@@ -91,27 +102,29 @@ export class StatisticsComponent implements OnDestroy, OnInit {
       return;
     }
     this.setLoading(true);
-    this.subDetail = this.workflows
-      .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
-      .subscribe(
-        (result) => {
-          this.statistics.nodePathStatistics.forEach((stat) => {
-            if (stat.xPath === result.xPath) {
-              stat.moreLoaded = true;
-              stat.nodeValueStatistics = result.nodeValueStatistics;
-              return result;
-            }
-            return stat;
-          });
-          this.setLoading(false);
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          console.log('Error: ' + error);
-          this.notification = httpErrorNotification(error);
-          this.setLoading(false);
-        }
-      );
+    this.subs.push(
+      this.workflows
+        .getStatisticsDetail('validation', this.taskId, encodeURIComponent(xPath))
+        .subscribe(
+          (result) => {
+            this.statistics.nodePathStatistics.forEach((stat) => {
+              if (stat.xPath === result.xPath) {
+                stat.moreLoaded = true;
+                stat.nodeValueStatistics = result.nodeValueStatistics;
+                return result;
+              }
+              return stat;
+            });
+            this.setLoading(false);
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            console.log('Error: ' + error);
+            this.notification = httpErrorNotification(error);
+            this.setLoading(false);
+          }
+        )
+    );
   }
 
   /** toggleStatistics

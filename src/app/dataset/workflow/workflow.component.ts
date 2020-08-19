@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { fromEvent, Subscription, timer } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import { switchMap, throttleTime } from 'rxjs/operators';
 
 import { harvestValidator } from '../../_helpers';
 import {
@@ -551,31 +551,35 @@ export class WorkflowComponent implements OnDestroy, OnInit {
 
     this.notification = undefined;
     this.isSaving = true;
-    this.workflows
+
+    const subCreated = this.workflows
       .createWorkflowForDataset(
         this.datasetData.datasetId,
         this.formatFormValues(),
         this.newWorkflow
       )
+      .pipe(
+        switchMap(() => {
+          return this.workflows.getWorkflowForDataset(this.datasetData.datasetId);
+        })
+      )
       .subscribe(
-        () => {
-          this.workflows
-            .getWorkflowForDataset(this.datasetData.datasetId)
-            .subscribe((workflowDataset) => {
-              this.workflowData = workflowDataset;
-              this.getWorkflow();
-              this.workflowForm.markAsPristine();
-              this.isSaving = false;
-              this.notification = successNotification(this.translate.instant('workflowSaved'), {
-                fadeTime: 1500,
-                sticky: true
-              });
-            });
+        (workflowDataset) => {
+          this.workflowData = workflowDataset;
+          this.getWorkflow();
+          this.workflowForm.markAsPristine();
+          this.isSaving = false;
+          this.notification = successNotification(this.translate.instant('workflowSaved'), {
+            fadeTime: 1500,
+            sticky: true
+          });
+          subCreated.unsubscribe();
         },
         (err: HttpErrorResponse) => {
           const errorSubmit = this.errors.handleError(err);
           this.notification = httpErrorNotification(errorSubmit);
           this.isSaving = false;
+          subCreated.unsubscribe();
         }
       );
   }
