@@ -32,14 +32,16 @@ export interface TriggerDelayConfig {
 })
 export class DataPollingComponent implements OnDestroy {
   allPollingInfo: Array<DataPollerInfo> = [];
+  allRefreshSubs: Array<Subscription> = [];
   pollRateDropped = false;
+  subTrigger: Subscription;
   triggerDelay = new Subject<TriggerDelayConfig>();
 
   /** constructor
   /* attach generic functionality to triggerDelay subject
   */
   constructor() {
-    this.triggerDelay
+    this.subTrigger = this.triggerDelay
       .pipe(
         delayWhen((val) => {
           return timer(val.wait);
@@ -83,8 +85,12 @@ export class DataPollingComponent implements OnDestroy {
   /* unsubscribe from subscriptions
   */
   cleanup(): void {
+    this.subTrigger.unsubscribe();
     this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
       pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
+    });
+    this.allRefreshSubs.forEach((sub: Subscription) => {
+      sub.unsubscribe();
     });
   }
 
@@ -165,9 +171,11 @@ export class DataPollingComponent implements OnDestroy {
     const loadTrigger = new BehaviorSubject(true);
     const pollContextIndex = this.allPollingInfo.length;
 
-    pollRefresh.subscribe(() => {
-      this.allPollingInfo[pollContextIndex].pollContext++;
-    });
+    this.allRefreshSubs.push(
+      pollRefresh.subscribe(() => {
+        this.allPollingInfo[pollContextIndex].pollContext++;
+      })
+    );
 
     this.allPollingInfo.push({
       interval: interval,

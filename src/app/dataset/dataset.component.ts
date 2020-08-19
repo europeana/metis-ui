@@ -62,6 +62,8 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
 
   showPluginLog?: PluginExecution;
   subDataset: Subscription;
+  subParams: Subscription;
+  subPollRefresh: Subscription;
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
   pollingRefresh: Subject<boolean>;
@@ -92,9 +94,13 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   /* - unsubscribe
   */
   ngOnDestroy(): void {
-    if (this.subDataset) {
-      this.subDataset.unsubscribe();
-    }
+    [this.subDataset, this.subParams, this.subPollRefresh].forEach(
+      (sub: Subscription | undefined) => {
+        if (sub) {
+          sub.unsubscribe();
+        }
+      }
+    );
     super.ngOnDestroy();
   }
 
@@ -106,7 +112,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
-    this.route.params.subscribe((params) => {
+    this.subParams = this.route.params.subscribe((params) => {
       const { tab, id } = params;
       if (tab === 'new') {
         this.notification = successNotification('New dataset created! Id: ' + id);
@@ -194,7 +200,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
 
     // stream for start-workflow click events
     this.pollingRefresh = new Subject();
-    this.pollingRefresh.subscribe(() => {
+    this.subPollRefresh = this.pollingRefresh.subscribe(() => {
       workflowRefresh.next(true);
       harvestRefresh.next(true);
     });

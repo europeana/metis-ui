@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { environment } from '../environments/environment';
 
@@ -11,11 +12,14 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnDestroy, OnInit {
   bodyClass: string;
   showWrapper = false;
   cancellationRequest?: CancellationRequest;
   public loggedIn = false;
+  subCancel: Subscription;
+  subPromptCancel: Subscription;
+  subRouter: Subscription;
 
   constructor(
     private readonly workflows: WorkflowService,
@@ -23,6 +27,26 @@ export class AppComponent implements OnInit {
     private readonly errors: ErrorService,
     private readonly router: Router
   ) {}
+
+  /** ngOnDestroy
+  /* call cleanup
+  */
+  public ngOnDestroy(): void {
+    this.cleanup();
+  }
+
+  /** cleanup
+  /* unsubscribe from open subscriptions
+  */
+  public cleanup(): void {
+    [this.subCancel, this.subRouter, this.subPromptCancel].forEach(
+      (sub: Subscription | undefined) => {
+        if (sub) {
+          sub.unsubscribe();
+        }
+      }
+    );
+  }
 
   /** ngOnInit
   /* init for this component
@@ -32,7 +56,7 @@ export class AppComponent implements OnInit {
   /* and margins
   */
   public ngOnInit(): void {
-    this.router.events.subscribe((event: Event) => {
+    this.subRouter = this.router.events.subscribe((event: Event) => {
       const url: string | undefined = (event as RouterEvent).url;
       if (!url) {
         return;
@@ -51,12 +75,14 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
-      this.cancellationRequest = cancellationRequest;
-      if (cancellationRequest.workflowExecutionId) {
-        this.showWrapper = true;
+    this.subPromptCancel = this.workflows.promptCancelWorkflow.subscribe(
+      (cancellationRequest: CancellationRequest) => {
+        this.cancellationRequest = cancellationRequest;
+        if (cancellationRequest.workflowExecutionId) {
+          this.showWrapper = true;
+        }
       }
-    });
+    );
   }
 
   /** closePrompt
@@ -70,13 +96,15 @@ export class AppComponent implements OnInit {
   /*  cancels the workflow using the currentWorkflow id
   */
   cancelWorkflow(): void {
-    this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId).subscribe(
-      () => {
-        this.closePrompt();
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-      }
-    );
+    this.subPromptCancel = this.workflows
+      .cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId)
+      .subscribe(
+        () => {
+          this.closePrompt();
+        },
+        (err: HttpErrorResponse) => {
+          this.errors.handleError(err);
+        }
+      );
   }
 }
