@@ -7,7 +7,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -61,6 +61,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
       }
     ]
   };
+  subs: Array<Subscription> = [];
   depublicationIsTriggerable: boolean;
   _datasetId: string;
   _totalRecordCount?: number;
@@ -102,6 +103,22 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   */
   get datasetId(): string | undefined {
     return this._datasetId;
+  }
+
+  /** ngOnDestroy
+  /* call cleanup
+  */
+  ngOnDestroy(): void {
+    this.cleanup();
+  }
+
+  /** cleanup
+  /* unsubscribe from subscriptions
+  */
+  cleanup(): void {
+    this.subs.forEach((sub: Subscription) => {
+      sub.unsubscribe();
+    });
   }
 
   /** setSelection
@@ -298,18 +315,20 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     const form = this.formFile;
     if (form.valid) {
       this.isSaving = true;
-      this.depublications
-        .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
-        .subscribe(
-          () => {
-            this.pollingRefresh.next(true);
-            this.closeDialogs();
-            this.isSaving = false;
-          },
-          (err: HttpErrorResponse): void => {
-            this.onError(err);
-          }
-        );
+      this.subs.push(
+        this.depublications
+          .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
+          .subscribe(
+            () => {
+              this.pollingRefresh.next(true);
+              this.closeDialogs();
+              this.isSaving = false;
+            },
+            (err: HttpErrorResponse): void => {
+              this.onError(err);
+            }
+          )
+      );
     }
   }
 
@@ -321,14 +340,16 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   onDepublishDataset(): void {
     this.closeMenus();
     this.isSaving = true;
-    this.depublications.depublishDataset(this._datasetId).subscribe(
-      () => {
-        this.pollingRefresh.next(true);
-        this.isSaving = false;
-      },
-      (err: HttpErrorResponse): void => {
-        this.onError(err);
-      }
+    this.subs.push(
+      this.depublications.depublishDataset(this._datasetId).subscribe(
+        () => {
+          this.pollingRefresh.next(true);
+          this.isSaving = false;
+        },
+        (err: HttpErrorResponse): void => {
+          this.onError(err);
+        }
+      )
     );
   }
 
@@ -344,18 +365,20 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
       return;
     }
     this.isSaving = true;
-    this.depublications
-      .depublishRecordIds(this._datasetId, all ? [] : this.depublicationSelections)
-      .subscribe(
-        () => {
-          this.depublicationSelections = [];
-          this.pollingRefresh.next(true);
-          this.isSaving = false;
-        },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
-        }
-      );
+    this.subs.push(
+      this.depublications
+        .depublishRecordIds(this._datasetId, all ? [] : this.depublicationSelections)
+        .subscribe(
+          () => {
+            this.depublicationSelections = [];
+            this.pollingRefresh.next(true);
+            this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
+          }
+        )
+    );
   }
 
   /** deleteDepublications
@@ -364,18 +387,20 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   */
   deleteDepublications(): void {
     this.isSaving = true;
-    this.depublications
-      .deleteDepublications(this._datasetId, this.depublicationSelections)
-      .subscribe(
-        () => {
-          this.depublicationSelections = [];
-          this.pollingRefresh.next(true);
-          this.isSaving = false;
-        },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
-        }
-      );
+    this.subs.push(
+      this.depublications
+        .deleteDepublications(this._datasetId, this.depublicationSelections)
+        .subscribe(
+          () => {
+            this.depublicationSelections = [];
+            this.pollingRefresh.next(true);
+            this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
+          }
+        )
+    );
   }
 
   /** onSubmitRawText
@@ -386,19 +411,21 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     const form = this.formRawText;
     if (form.valid) {
       this.isSaving = true;
-      this.depublications
-        .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
-        .subscribe(
-          () => {
-            this.pollingRefresh.next(true);
-            form.get('recordIds')!.reset();
-            this.closeDialogs();
-            this.isSaving = false;
-          },
-          (err: HttpErrorResponse): void => {
-            this.onError(err);
-          }
-        );
+      this.subs.push(
+        this.depublications
+          .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
+          .subscribe(
+            () => {
+              this.pollingRefresh.next(true);
+              form.get('recordIds')!.reset();
+              this.closeDialogs();
+              this.isSaving = false;
+            },
+            (err: HttpErrorResponse): void => {
+              this.onError(err);
+            }
+          )
+      );
     }
   }
 

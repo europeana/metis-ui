@@ -45,11 +45,12 @@ describe('DatasetlogComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should open the logs', () => {
+  it('should open the logs', fakeAsync(() => {
     expect(component.logMessages).toBeFalsy();
     component.returnLog();
+    tick(1);
     expect(component.logMessages).toBeTruthy();
-  });
+  }));
 
   it('should show empty logs where there is no progress', () => {
     expect(component.logMessages).toBeFalsy();

@@ -1,4 +1,6 @@
-import { Observable, of as observableOf, throwError } from 'rxjs';
+import { Observable, of as observableOf, throwError, timer } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
+
 import { DatasetDepublicationInfo, DepublicationStatus, RecordDepublicationInfo } from '../_models';
 
 export const mockPublicationInfo = [
@@ -65,9 +67,13 @@ export class MockDepublicationService {
 
   setPublicationFile(datasetId: string, file: File): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(`mock setPublicationFile(${datasetId}, ${file}) throws error...`);
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(`mock setPublicationFile(${datasetId}, ${file}) throws error...`);
+        })
+      );
     }
-    return observableOf(true);
+    return observableOf(true).pipe(delay(1));
   }
 
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {

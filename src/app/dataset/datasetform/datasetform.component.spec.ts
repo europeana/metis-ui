@@ -116,4 +116,11 @@ describe('DatasetformComponent', () => {
     component.removeRedirectionId(existingId);
     expect(component.datasetForm.dirty).toBeTruthy();
   });
+
+  it('should cleanup on destroy', () => {
+    fixture.detectChanges();
+    spyOn(component, 'cleanup').and.callThrough();
+    component.ngOnDestroy();
+    expect(component.cleanup).toHaveBeenCalled();
+  });
 });

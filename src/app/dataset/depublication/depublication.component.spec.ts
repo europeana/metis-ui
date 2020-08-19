@@ -1,5 +1,12 @@
 import { NO_ERRORS_SCHEMA, QueryList } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  async,
+  ComponentFixture,
+  discardPeriodicTasks,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   createMockPipe,
@@ -129,6 +136,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should close the menus after invoking menu commands', () => {
+      component.beginPolling();
       spyOn(component, 'closeMenus').and.callThrough();
       component.onDepublishDataset();
       expect(component.closeMenus).toHaveBeenCalled();
@@ -140,15 +148,16 @@ describe('DepublicationComponent', () => {
       expect(component.closeMenus).toHaveBeenCalledTimes(4);
     });
 
-    it('should submit the file', () => {
+    it('should submit the file', fakeAsync(() => {
       component.dialogFileOpen = true;
       component.datasetId = '123';
-      component.onSubmitFormFile();
+      addFormFieldData();
       expect(component.dialogFileOpen).toBeTruthy();
-      component.formFile.patchValue({ depublicationFile: { name: 'foo', size: 500001 } as File });
       component.onSubmitFormFile();
+      tick(1);
       expect(component.dialogFileOpen).toBeFalsy();
-    });
+      discardPeriodicTasks();
+    }));
 
     it('should submit the text', () => {
       const datasetId = '123';
@@ -271,9 +280,10 @@ describe('DepublicationComponent', () => {
       });
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(6);
       component.pollingRefresh.next(true);
+      tick(1);
       expect(depublications.getPublicationInfoUptoPage).toHaveBeenCalledTimes(7);
       component.cleanup();
-      tick(interval);
+      discardPeriodicTasks();
     }));
 
     it('should set the total record count shadow variable', fakeAsync(() => {
@@ -357,6 +367,13 @@ describe('DepublicationComponent', () => {
       expect(component.currentPage).toEqual(1);
       expect(component.pollingRefresh.next).toHaveBeenCalled();
     });
+
+    it('should cleanup on destroy', fakeAsync(() => {
+      spyOn(component, 'cleanup').and.callThrough();
+      component.ngOnDestroy();
+      expect(component.cleanup).toHaveBeenCalled();
+      tick(interval);
+    }));
   });
 
   describe('Error handling', () => {
@@ -375,16 +392,17 @@ describe('DepublicationComponent', () => {
       tick(interval);
     }));
 
-    it('should handle errors submitting the file', () => {
+    it('should handle errors submitting the file', fakeAsync(() => {
       spyOn(component, 'onError').and.callThrough();
       component.dialogFileOpen = true;
       component.datasetId = '123';
       addFormFieldData();
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
+      tick(1);
       expect(component.dialogFileOpen).toBeTruthy();
       expect(component.onError).toHaveBeenCalled();
-    });
+    }));
 
     it('should handle errors submitting the text', () => {
       spyOn(component, 'onError').and.callThrough();

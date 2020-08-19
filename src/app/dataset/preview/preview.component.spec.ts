@@ -76,9 +76,11 @@ describe('PreviewComponent', () => {
     it('should destroy', () => {
       const testUrl = 'http://123.com';
       component.downloadUrlCache = { testUrl: testUrl };
+      spyOn(component, 'cleanup');
       spyOn(URL, 'revokeObjectURL').and.callThrough();
       component.ngOnDestroy();
       expect(URL.revokeObjectURL).toHaveBeenCalled();
+      expect(component.cleanup).toHaveBeenCalled();
     });
 
     it('should add plugins', fakeAsync(() => {

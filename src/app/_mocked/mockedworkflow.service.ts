@@ -702,7 +702,7 @@ export class MockWorkflowService {
   }
 
   getLogs(): Observable<SubTaskInfo[]> {
-    return observableOf(mockLogs);
+    return observableOf(mockLogs).pipe(delay(1));
   }
 
   getWorkflowCancelledBy(): Observable<string | undefined> {
