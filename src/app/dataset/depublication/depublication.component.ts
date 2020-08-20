@@ -345,7 +345,7 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     }
     this.isSaving = true;
     this.depublications
-      .depublishRecordIds(this._datasetId, all ? [] : this.depublicationSelections)
+      .depublishRecordIds(this._datasetId, all ? null : this.depublicationSelections)
       .subscribe(
         () => {
           this.depublicationSelections = [];
