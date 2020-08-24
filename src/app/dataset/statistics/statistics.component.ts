@@ -1,18 +1,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
 
 import { Dataset, httpErrorNotification, Notification, Statistics } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+import { SubscriptionManager } from '../../shared';
 
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss']
 })
-export class StatisticsComponent implements OnDestroy, OnInit {
-  constructor(private readonly errors: ErrorService, private readonly workflows: WorkflowService) {}
+export class StatisticsComponent extends SubscriptionManager implements OnInit {
+  constructor(private readonly errors: ErrorService, private readonly workflows: WorkflowService) {
+    super();
+  }
 
   @Input() datasetData: Dataset;
 
@@ -21,22 +23,12 @@ export class StatisticsComponent implements OnDestroy, OnInit {
   notification?: Notification;
   statistics: Statistics;
   taskId?: string;
-  subs: Array<Subscription> = [];
 
   /** ngOnInit
   /* calls statisitics load function
   */
   ngOnInit(): void {
     this.loadStatistics();
-  }
-
-  /** ngOnDestroy
-  /* unsubscribe from subscriptions
-  */
-  ngOnDestroy(): void {
-    this.subs.forEach((sub: Subscription) => {
-      sub.unsubscribe();
-    });
   }
 
   /** setLoading
@@ -87,8 +79,7 @@ export class StatisticsComponent implements OnDestroy, OnInit {
           })
         )
         .subscribe((resultStatistics) => {
-          const statistics = resultStatistics;
-          this.statistics = statistics;
+          this.statistics = resultStatistics;
           this.setLoading(false);
         }, httpErrorHandling)
     );

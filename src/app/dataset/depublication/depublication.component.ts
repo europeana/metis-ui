@@ -5,9 +5,9 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -26,7 +26,7 @@ import { DepublicationRowComponent } from './depublication-row';
   templateUrl: './depublication.component.html',
   styleUrls: ['./depublication.component.scss']
 })
-export class DepublicationComponent extends DataPollingComponent implements OnDestroy {
+export class DepublicationComponent extends DataPollingComponent {
   @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
 
   currentPage = 0;
@@ -61,7 +61,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
       }
     ]
   };
-  subs: Array<Subscription> = [];
   depublicationIsTriggerable: boolean;
   _datasetId: string;
   _totalRecordCount?: number;
@@ -103,22 +102,6 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   */
   get datasetId(): string | undefined {
     return this._datasetId;
-  }
-
-  /** ngOnDestroy
-  /* call cleanup
-  */
-  ngOnDestroy(): void {
-    this.cleanup();
-  }
-
-  /** cleanup
-  /* unsubscribe from subscriptions
-  */
-  cleanup(): void {
-    this.subs.forEach((sub: Subscription) => {
-      sub.unsubscribe();
-    });
   }
 
   /** setSelection

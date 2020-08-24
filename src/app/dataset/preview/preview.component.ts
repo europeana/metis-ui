@@ -37,6 +37,7 @@ import {
   XmlSample
 } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
+import { SubscriptionManager } from '../../shared';
 import { TranslateService } from '../../_translate';
 
 @Component({
@@ -44,7 +45,7 @@ import { TranslateService } from '../../_translate';
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })
-export class PreviewComponent implements OnInit, OnDestroy {
+export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly translate: TranslateService,
@@ -53,7 +54,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private readonly datasets: DatasetsService,
     private readonly router: Router,
     private readonly sanitizer: DomSanitizer
-  ) {}
+  ) {
+    super();
+  }
 
   @Input() datasetData: Dataset;
   @Input() previewFilters: PreviewFilters;
@@ -84,10 +87,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
   isLoadingFilter: boolean;
   loadingTransformSamples = false;
   downloadUrlCache: { [key: string]: string } = {};
-  executionsFilterSubscription: Subscription;
   serviceTimer: Observable<number>;
   pluginsFilterSubscription: Subscription;
-  miscellaneousSubscriptions: Array<Subscription> = [];
 
   /** ngOnInit
   /* - load the config
@@ -101,9 +102,11 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.nosample = this.translate.instant('noSample');
 
     this.serviceTimer = timer(0, environment.intervalStatusMedium);
-    this.executionsFilterSubscription = this.serviceTimer.subscribe(() => {
-      this.addExecutionsFilter();
-    });
+    this.subs.push(
+      this.serviceTimer.subscribe(() => {
+        this.addExecutionsFilter();
+      })
+    );
 
     this.prefillFilters();
 
@@ -121,28 +124,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
       const url = this.downloadUrlCache[key];
       URL.revokeObjectURL(url);
     });
-    this.unsubscribeFilters([this.executionsFilterSubscription, this.pluginsFilterSubscription]);
+    if (this.pluginsFilterSubscription) {
+      this.pluginsFilterSubscription.unsubscribe();
+    }
+    //this.subs.push(this.pluginsFilterSubscription);
     this.cleanup();
-  }
-
-  /** unsubscribeFilters
-  /* unsubscribe from the specified filters
-  */
-  unsubscribeFilters(filterSubscriptions: Array<Subscription>): void {
-    filterSubscriptions
-      .filter((x) => {
-        // remove any nulls
-        return x;
-      })
-      .forEach((fs) => {
-        fs.unsubscribe();
-      });
-  }
-
-  cleanup(): void {
-    this.miscellaneousSubscriptions.forEach((sub: Subscription) => {
-      sub.unsubscribe();
-    });
+    //super.ngOnDestroy();
   }
 
   /** addExecutionsFilter
@@ -150,7 +137,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   /* - update load-tracking variable
   */
   addExecutionsFilter(): void {
-    this.miscellaneousSubscriptions.push(
+    this.subs.push(
       this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
         (result) => {
           this.allWorkflowExecutions = result.executions;
@@ -183,7 +170,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.previewFilters.startedDate = executionHistory.startedDate;
 
     // unsubscribe from any previous subscription
-    this.unsubscribeFilters([this.pluginsFilterSubscription]);
+    const prevSub = this.pluginsFilterSubscription;
+    if (prevSub) {
+      prevSub.unsubscribe();
+    }
 
     this.pluginsFilterSubscription = this.serviceTimer
       .pipe(
@@ -241,7 +231,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.filterCompareOpen = false;
     this.isLoading = true;
     this.allSampleComparisons = [];
-    this.miscellaneousSubscriptions.push(
+    this.subs.push(
       this.workflows
         .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
         .subscribe((result) => {
@@ -271,7 +261,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedPlugin = plugin;
     this.previewFilters.pluginType = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
-    this.miscellaneousSubscriptions.push(
+    this.subs.push(
       this.workflows.getWorkflowSamples(this.filteredExecutionId, plugin).subscribe((result) => {
         this.allSamples = this.undoNewLines(result);
 
@@ -289,7 +279,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       }, this.errorHandling)
     );
 
-    this.miscellaneousSubscriptions.push(
+    this.subs.push(
       this.workflows.getVersionHistory(this.filteredExecutionId, plugin).subscribe((result) => {
         loadingHistories = false;
         if (!loadingSamples) {
@@ -310,7 +300,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       this.loadingTransformSamples = false;
     };
     this.loadingTransformSamples = true;
-    this.miscellaneousSubscriptions.push(
+    this.subs.push(
       this.workflows
         .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
         .pipe(

@@ -367,13 +367,6 @@ describe('DepublicationComponent', () => {
       expect(component.currentPage).toEqual(1);
       expect(component.pollingRefresh.next).toHaveBeenCalled();
     });
-
-    it('should cleanup on destroy', fakeAsync(() => {
-      spyOn(component, 'cleanup').and.callThrough();
-      component.ngOnDestroy();
-      expect(component.cleanup).toHaveBeenCalled();
-      tick(interval);
-    }));
   });
 
   describe('Error handling', () => {

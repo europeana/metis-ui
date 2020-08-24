@@ -84,28 +84,28 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
 
     this.loading = true;
 
-    const subLogin = this.authentication
-      .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
-      .subscribe(
-        (result) => {
-          if (result) {
-            this.redirectAfterLogin();
-          } else {
-            this.notification = errorNotification(this.msgBadCredentials);
+    this.subs.push(
+      this.authentication
+        .login(this.loginForm.controls.email.value, this.loginForm.controls.password.value)
+        .subscribe(
+          (result) => {
+            if (result) {
+              this.redirectAfterLogin();
+            } else {
+              this.notification = errorNotification(this.msgBadCredentials);
+            }
+            this.loading = false;
+          },
+          (err: HttpErrorResponse) => {
+            this.notification = errorNotification(
+              err.status === 406
+                ? this.msgBadCredentials
+                : `${this.msgSigninFailed}: ${StringifyHttpError(err)}`
+            );
+            this.loading = false;
           }
-          this.loading = false;
-          subLogin.unsubscribe();
-        },
-        (err: HttpErrorResponse) => {
-          this.notification = errorNotification(
-            err.status === 406
-              ? this.msgBadCredentials
-              : `${this.msgSigninFailed}: ${StringifyHttpError(err)}`
-          );
-          this.loading = false;
-          subLogin.unsubscribe();
-        }
-      );
+        )
+    );
   }
 
   /** redirectAfterLogin

@@ -1,9 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-
 import {
   Country,
   Dataset,
@@ -16,6 +14,7 @@ import {
   successNotification
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { SubscriptionManager } from '../../shared';
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
@@ -25,7 +24,7 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss']
 })
-export class DatasetformComponent implements OnDestroy, OnInit {
+export class DatasetformComponent extends SubscriptionManager implements OnInit {
   @Input() datasetData: Partial<Dataset>;
   @Input() harvestPublicationData?: HarvestData;
   @Input() isNew: boolean;
@@ -37,7 +36,6 @@ export class DatasetformComponent implements OnDestroy, OnInit {
   selectedLanguage?: Language;
 
   publicationFitnessOps: Array<{ label: String; val: string }>;
-  subs: Array<Subscription> = [];
   datasetForm: FormGroup;
   countryOptions: Country[];
   languageOptions: Language[];
@@ -65,7 +63,9 @@ export class DatasetformComponent implements OnDestroy, OnInit {
     private readonly fb: FormBuilder,
     private readonly errors: ErrorService,
     private readonly translate: TranslateService
-  ) {}
+  ) {
+    super();
+  }
 
   /** updateFormEnabled
   /* disable the form if saving
@@ -79,22 +79,6 @@ export class DatasetformComponent implements OnDestroy, OnInit {
         this.datasetForm.enable();
       }
     }
-  }
-
-  /** ngOnDestroy
-  /* calls cleanup
-  */
-  ngOnDestroy(): void {
-    this.cleanup();
-  }
-
-  /** cleanup
-  /* unsubscribe from subscriptions
-  */
-  cleanup(): void {
-    this.subs.forEach((sub: Subscription) => {
-      sub.unsubscribe();
-    });
   }
 
   /** ngOnInit

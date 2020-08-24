@@ -11,6 +11,7 @@ import { Component, HostListener, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
 import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { SubscriptionManager } from '../shared';
 
 export interface DataPollerInfo {
   interval: number;
@@ -30,7 +31,7 @@ export interface TriggerDelayConfig {
   selector: 'app-data-polling',
   template: ``
 })
-export class DataPollingComponent implements OnDestroy {
+export class DataPollingComponent extends SubscriptionManager implements OnDestroy {
   allPollingInfo: Array<DataPollerInfo> = [];
   allRefreshSubs: Array<Subscription> = [];
   pollRateDropped = false;
@@ -41,6 +42,7 @@ export class DataPollingComponent implements OnDestroy {
   /* attach generic functionality to triggerDelay subject
   */
   constructor() {
+    super();
     this.subTrigger = this.triggerDelay
       .pipe(
         delayWhen((val) => {
@@ -92,6 +94,7 @@ export class DataPollingComponent implements OnDestroy {
     this.allRefreshSubs.forEach((sub: Subscription) => {
       sub.unsubscribe();
     });
+    super.cleanup();
   }
 
   /** dropPollRate

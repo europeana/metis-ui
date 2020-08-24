@@ -23,6 +23,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
+import { SubscriptionManager } from '../../shared';
 import { TranslateService } from '../../_translate';
 
 enum XSLTStatus {
@@ -37,14 +38,16 @@ enum XSLTStatus {
   templateUrl: './mapping.component.html',
   styleUrls: ['./mapping.component.scss']
 })
-export class MappingComponent implements OnInit {
+export class MappingComponent extends SubscriptionManager implements OnInit {
   constructor(
     private readonly editorPrefs: EditorPrefService,
     private readonly errors: ErrorService,
     private readonly datasets: DatasetsService,
     private readonly translate: TranslateService,
     private readonly router: Router
-  ) {}
+  ) {
+    super();
+  }
 
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
   @Input() datasetData: Dataset;
@@ -89,16 +92,16 @@ export class MappingComponent implements OnInit {
       return;
     }
     this.xsltStatus = XSLTStatus.LOADING;
-    const subXSLT = this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
-      (result) => {
-        this.xsltToSave = this.xslt = result;
-        this.xsltStatus = XSLTStatus.HASCUSTOM;
-        subXSLT.unsubscribe();
-      },
-      (err: HttpErrorResponse) => {
-        this.handleXSLTError(err);
-        subXSLT.unsubscribe();
-      }
+    this.subs.push(
+      this.datasets.getXSLT('custom', this.datasetData.datasetId).subscribe(
+        (result) => {
+          this.xsltToSave = this.xslt = result;
+          this.xsltStatus = XSLTStatus.HASCUSTOM;
+        },
+        (err: HttpErrorResponse) => {
+          this.handleXSLTError(err);
+        }
+      )
     );
   }
 
@@ -108,16 +111,16 @@ export class MappingComponent implements OnInit {
   loadDefaultXSLT(): void {
     const hasCustom = this.xsltStatus === XSLTStatus.HASCUSTOM;
     this.xsltStatus = XSLTStatus.LOADING;
-    const subXSLT = this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
-      (result) => {
-        this.xsltToSave = this.xslt = result;
-        this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
-        subXSLT.unsubscribe();
-      },
-      (err: HttpErrorResponse) => {
-        this.handleXSLTError(err);
-        subXSLT.unsubscribe();
-      }
+    this.subs.push(
+      this.datasets.getXSLT('default', this.datasetData.datasetId).subscribe(
+        (result) => {
+          this.xsltToSave = this.xslt = result;
+          this.xsltStatus = hasCustom ? XSLTStatus.HASCUSTOM : XSLTStatus.NEWCUSTOM;
+        },
+        (err: HttpErrorResponse) => {
+          this.handleXSLTError(err);
+        }
+      )
     );
   }
 
@@ -151,29 +154,29 @@ export class MappingComponent implements OnInit {
   */
   saveCustomXSLT(tryout: boolean): void {
     const datasetValues = { dataset: this.datasetData, xslt: this.xsltToSave };
-    const subUpdate = this.datasets
-      .updateDataset(datasetValues)
-      .pipe(
-        switchMap(() => {
-          return this.datasets.getDataset(this.datasetData.datasetId, true);
-        })
-      )
-      .subscribe(
-        (newDataset) => {
-          this.datasetData.xsltId = newDataset.xsltId;
-          this.loadCustomXSLT();
-          this.notification = successNotification(this.msgXSLTSuccess);
-          if (tryout) {
-            this.tryOutXSLT('custom');
+    this.subs.push(
+      this.datasets
+        .updateDataset(datasetValues)
+        .pipe(
+          switchMap(() => {
+            return this.datasets.getDataset(this.datasetData.datasetId, true);
+          })
+        )
+        .subscribe(
+          (newDataset) => {
+            this.datasetData.xsltId = newDataset.xsltId;
+            this.loadCustomXSLT();
+            this.notification = successNotification(this.msgXSLTSuccess);
+            if (tryout) {
+              this.tryOutXSLT('custom');
+            }
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
           }
-          subUpdate.unsubscribe();
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-          subUpdate.unsubscribe();
-        }
-      );
+        )
+    );
   }
 
   /** cancel

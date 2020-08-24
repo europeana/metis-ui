@@ -23,37 +23,30 @@ describe('dataset service', () => {
     mockHttp.verify();
   });
 
-  it('should get a dataset (cached)', () => {
-    service
-      .getDataset('664')
-      .subscribe((dataset) => {
-        expect(dataset).toEqual(mockDataset);
-      })
-      .unsubscribe();
-    service
-      .getDataset('664')
-      .subscribe((dataset) => {
-        expect(dataset).toEqual(mockDataset);
-      })
-      .unsubscribe();
+  it('should get a dataset (cached)', fakeAsync(() => {
+    const sub1 = service.getDataset('664').subscribe((dataset) => {
+      expect(dataset).toEqual(mockDataset);
+    });
+    const sub2 = service.getDataset('664').subscribe((dataset) => {
+      expect(dataset).toEqual(mockDataset);
+    });
     mockHttp.expect('GET', '/datasets/664').send(mockDataset);
-  });
+    tick(1);
+    sub1.unsubscribe();
+    sub2.unsubscribe();
+  }));
 
   it('should get a dataset (uncached)', () => {
-    service
-      .getDataset('665', true)
-      .subscribe((dataset) => {
-        expect(dataset).toEqual(mockDataset);
-      })
-      .unsubscribe();
+    const sub1 = service.getDataset('665', true).subscribe((dataset) => {
+      expect(dataset).toEqual(mockDataset);
+    });
     mockHttp.expect('GET', '/datasets/665').send(mockDataset);
-    service
-      .getDataset('665', true)
-      .subscribe((dataset) => {
-        expect(dataset).toEqual(mockDataset);
-      })
-      .unsubscribe();
+    const sub2 = service.getDataset('665', true).subscribe((dataset) => {
+      expect(dataset).toEqual(mockDataset);
+    });
     mockHttp.expect('GET', '/datasets/665').send(mockDataset);
+    sub1.unsubscribe();
+    sub2.unsubscribe();
   });
 
   it('should create a dataset', fakeAsync(() => {
@@ -69,13 +62,11 @@ describe('dataset service', () => {
   }));
 
   it('should update a dataset', fakeAsync(() => {
-    service
-      .getDataset('5')
-      .subscribe((dataset) => {
-        expect(dataset).toEqual(mockDataset);
-      })
-      .unsubscribe();
+    const sub1 = service.getDataset('5').subscribe((dataset) => {
+      expect(dataset).toEqual(mockDataset);
+    });
     mockHttp.expect('GET', '/datasets/5').send(mockDataset);
+    sub1.unsubscribe();
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
     const subUpdate = service.updateDataset(formValues).subscribe(() => {});
@@ -88,13 +79,11 @@ describe('dataset service', () => {
 
     // the cache was cleared for this dataset
     // so retrieving this dataset should cause a new request
-    service
-      .getDataset('5')
-      .subscribe((dataset) => {
-        expect(dataset).toEqual(mockDataset);
-      })
-      .unsubscribe();
+    const sub2 = service.getDataset('5').subscribe((dataset) => {
+      expect(dataset).toEqual(mockDataset);
+    });
     mockHttp.expect('GET', '/datasets/5').send(mockDataset);
+    sub2.unsubscribe();
   }));
 
   it('should get the xslt', fakeAsync(() => {

@@ -497,9 +497,10 @@ describe('workflow service', () => {
   });
 
   it('should unsubscribe when destroyed', () => {
-    service.subCached = getUnsubscribable();
+    const sub = getUnsubscribable();
+    service.subs = [sub];
     service.ngOnDestroy();
-    expect(service.subCached.unsubscribe).toHaveBeenCalled();
+    expect(sub.unsubscribe).toHaveBeenCalled();
   });
 
   it('should cancel a workflow', () => {

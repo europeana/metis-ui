@@ -1,10 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
-import { Subscription } from 'rxjs';
-
 import { environment } from '../environments/environment';
-
+import { SubscriptionManager } from './shared';
 import { CancellationRequest } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
@@ -12,40 +10,26 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnDestroy, OnInit {
+export class AppComponent extends SubscriptionManager implements OnDestroy, OnInit {
   bodyClass: string;
   showWrapper = false;
   cancellationRequest?: CancellationRequest;
   public loggedIn = false;
-  subCancel: Subscription;
-  subPromptCancel: Subscription;
-  subRouter: Subscription;
 
   constructor(
     private readonly workflows: WorkflowService,
     private readonly authentication: AuthenticationService,
     private readonly errors: ErrorService,
     private readonly router: Router
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnDestroy
   /* call cleanup
   */
   public ngOnDestroy(): void {
     this.cleanup();
-  }
-
-  /** cleanup
-  /* unsubscribe from open subscriptions
-  */
-  public cleanup(): void {
-    [this.subCancel, this.subRouter, this.subPromptCancel].forEach(
-      (sub: Subscription | undefined) => {
-        if (sub) {
-          sub.unsubscribe();
-        }
-      }
-    );
   }
 
   /** ngOnInit
@@ -56,32 +40,34 @@ export class AppComponent implements OnDestroy, OnInit {
   /* and margins
   */
   public ngOnInit(): void {
-    this.subRouter = this.router.events.subscribe((event: Event) => {
-      const url: string | undefined = (event as RouterEvent).url;
-      if (!url) {
-        return;
-      }
-      if (this.router.isActive(url, false)) {
-        this.loggedIn = this.authentication.validatedUser();
-
-        this.bodyClass = url.split('/')[1];
-        if (url === '/') {
-          this.bodyClass = 'home';
+    this.subs.push(
+      this.router.events.subscribe((event: Event) => {
+        const url: string | undefined = (event as RouterEvent).url;
+        if (!url) {
+          return;
         }
+        if (this.router.isActive(url, false)) {
+          this.loggedIn = this.authentication.validatedUser();
 
-        if ((url === '/' || url === '/home') && this.loggedIn) {
-          this.router.navigate([environment.afterLoginGoto]);
+          this.bodyClass = url.split('/')[1];
+          if (url === '/') {
+            this.bodyClass = 'home';
+          }
+
+          if ((url === '/' || url === '/home') && this.loggedIn) {
+            this.router.navigate([environment.afterLoginGoto]);
+          }
         }
-      }
-    });
+      })
+    );
 
-    this.subPromptCancel = this.workflows.promptCancelWorkflow.subscribe(
-      (cancellationRequest: CancellationRequest) => {
+    this.subs.push(
+      this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
         this.cancellationRequest = cancellationRequest;
         if (cancellationRequest.workflowExecutionId) {
           this.showWrapper = true;
         }
-      }
+      })
     );
   }
 
@@ -96,15 +82,15 @@ export class AppComponent implements OnDestroy, OnInit {
   /*  cancels the workflow using the currentWorkflow id
   */
   cancelWorkflow(): void {
-    this.subPromptCancel = this.workflows
-      .cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId)
-      .subscribe(
+    this.subs.push(
+      this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId).subscribe(
         () => {
           this.closePrompt();
         },
         (err: HttpErrorResponse) => {
           this.errors.handleError(err);
         }
-      );
+      )
+    );
   }
 }

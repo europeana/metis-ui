@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
-import { forkJoin, Observable, of, Subscription } from 'rxjs';
+import { EventEmitter, Injectable } from '@angular/core';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -30,6 +30,8 @@ import {
   WorkflowStatus,
   XmlSample
 } from '../_models';
+
+import { SubscriptionManager } from '../shared';
 import { TranslateService } from '../_translate';
 
 import { AuthenticationService } from './authentication.service';
@@ -38,19 +40,20 @@ import { ErrorService } from './error.service';
 import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
 @Injectable({ providedIn: 'root' })
-export class WorkflowService implements OnDestroy {
+export class WorkflowService extends SubscriptionManager {
   constructor(
     private readonly http: HttpClient,
     private readonly datasetsService: DatasetsService,
     private readonly errors: ErrorService,
     private readonly authenticationServer: AuthenticationService,
     private readonly translate: TranslateService
-  ) {}
+  ) {
+    super();
+  }
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
   hasErrorsCache = new KeyedCache((key) => this.requestHasError(key));
-  subCached: Subscription;
 
   private collectAllResults<T>(
     getResults: (page: number) => Observable<Results<T>>,
@@ -79,15 +82,6 @@ export class WorkflowService implements OnDestroy {
     const observables: Observable<Results<T>>[] = [];
     observables.push(getResults(endPage));
     return paginatedResult(observables);
-  }
-
-  /** ngOnDestroy
-  /* unsubscribe
-  */
-  ngOnDestroy(): void {
-    if (this.subCached) {
-      this.subCached.unsubscribe();
-    }
   }
 
   /** getWorkflowForDataset
@@ -356,17 +350,19 @@ export class WorkflowService implements OnDestroy {
     workflowExecution.metisPlugins.forEach((pluginExecution) => {
       const { externalTaskId, topologyName } = pluginExecution;
       if (externalTaskId && topologyName) {
-        this.subCached = this.getCachedHasErrors(
-          externalTaskId,
-          topologyName,
-          isPluginCompleted(pluginExecution)
-        ).subscribe(
-          (hasErrors) => {
-            pluginExecution.hasReport = hasErrors;
-          },
-          (err: HttpErrorResponse) => {
-            this.errors.handleError(err);
-          }
+        this.subs.push(
+          this.getCachedHasErrors(
+            externalTaskId,
+            topologyName,
+            isPluginCompleted(pluginExecution)
+          ).subscribe(
+            (hasErrors) => {
+              pluginExecution.hasReport = hasErrors;
+            },
+            (err: HttpErrorResponse) => {
+              this.errors.handleError(err);
+            }
+          )
         );
       }
     });
