@@ -35,7 +35,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   selectedCountry?: Country;
   selectedLanguage?: Language;
 
-  publicationFitnessOps: Array<{ label: String; val: string }>;
+  publicationFitnessOps: Array<{ label: string; val: string }>;
   datasetForm: FormGroup;
   countryOptions: Country[];
   languageOptions: Language[];
