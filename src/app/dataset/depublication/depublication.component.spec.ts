@@ -338,7 +338,7 @@ describe('DepublicationComponent', () => {
         testSelection
       );
       component.onDepublishRecordIds(true);
-      expect(depublications.depublishRecordIds).toHaveBeenCalledWith(component.datasetId, []);
+      expect(depublications.depublishRecordIds).toHaveBeenCalledWith(component.datasetId, null);
     });
 
     it('should delete depublications', () => {

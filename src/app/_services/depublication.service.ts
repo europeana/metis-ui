@@ -20,10 +20,10 @@ export class DepublicationService {
   /*  @param {string} datasetId - the dataset to depublish
   /*  @param {Array<string>} recordIds - the record ids to depublish
   */
-  depublishRecordIds(datasetId: string, recordIds: Array<string>): Observable<boolean> {
+  depublishRecordIds(datasetId: string, recordIds: Array<string> | null): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=false`;
     return this.http
-      .post<boolean>(url, recordIds.join('\n'), {
+      .post<boolean>(url, recordIds === null ? ' ' : recordIds.join('\n'), {
         reportProgress: true
       })
       .pipe(this.errors.handleRetry());
@@ -36,7 +36,7 @@ export class DepublicationService {
   depublishDataset(datasetId: string): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=true`;
     return this.http
-      .post<boolean>(url, datasetId, {
+      .post<boolean>(url, ' ', {
         reportProgress: true
       })
       .pipe(this.errors.handleRetry());
