@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { environment } from '../environments/environment';
-import { SubscriptionManager } from './shared';
+import { SubscriptionManager } from './shared/subscription-manager/subscription.manager';
 import { CancellationRequest } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 

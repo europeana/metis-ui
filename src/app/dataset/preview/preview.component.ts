@@ -37,7 +37,7 @@ import {
   XmlSample
 } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
-import { SubscriptionManager } from '../../shared';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../../_translate';
 
 @Component({

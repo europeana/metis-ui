@@ -60,7 +60,6 @@ import {
   NotificationComponent,
   PasswordCheckComponent,
   SearchComponent,
-  SubscriptionManager,
   TextWithLinksComponent
 } from './shared';
 import { SearchResultsComponent } from './search-results';
@@ -90,7 +89,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     FilterOptionComponent,
     PasswordCheckComponent,
     SearchComponent,
-    SubscriptionManager,
     TextWithLinksComponent,
     GeneralinfoComponent,
     DashboardactionsComponent,

@@ -14,7 +14,7 @@ import {
   successNotification
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
-import { SubscriptionManager } from '../../shared';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';

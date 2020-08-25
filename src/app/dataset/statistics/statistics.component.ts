@@ -4,7 +4,7 @@ import { filter, switchMap, tap } from 'rxjs/operators';
 
 import { Dataset, httpErrorNotification, Notification, Statistics } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { SubscriptionManager } from '../../shared';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 
 @Component({
   selector: 'app-statistics',

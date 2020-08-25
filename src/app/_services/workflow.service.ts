@@ -31,7 +31,7 @@ import {
   XmlSample
 } from '../_models';
 
-import { SubscriptionManager } from '../shared';
+import { SubscriptionManager } from '../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../_translate';
 
 import { AuthenticationService } from './authentication.service';

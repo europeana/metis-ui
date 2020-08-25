@@ -23,7 +23,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
-import { SubscriptionManager } from '../../shared';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../../_translate';
 
 enum XSLTStatus {

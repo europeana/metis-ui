@@ -21,7 +21,7 @@ import {
   WorkflowOrPluginExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { SubscriptionManager } from '../../shared';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 
 @Component({
   selector: 'app-history',

@@ -11,7 +11,7 @@ import { Component, HostListener, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
 import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { SubscriptionManager } from '../shared';
+import { SubscriptionManager } from '../shared/subscription-manager/subscription.manager';
 
 export interface DataPollerInfo {
   interval: number;
@@ -35,7 +35,6 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
   allPollingInfo: Array<DataPollerInfo> = [];
   allRefreshSubs: Array<Subscription> = [];
   pollRateDropped = false;
-  subTrigger: Subscription;
   triggerDelay = new Subject<TriggerDelayConfig>();
 
   /** constructor
@@ -43,17 +42,19 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
   */
   constructor() {
     super();
-    this.subTrigger = this.triggerDelay
-      .pipe(
-        delayWhen((val) => {
-          return timer(val.wait);
-        }),
-        filter((val) => {
-          return !val.blockIf();
-        }),
-        tap((val) => val.subject.next(true))
-      )
-      .subscribe();
+    this.subs.push(
+      this.triggerDelay
+        .pipe(
+          delayWhen((val) => {
+            return timer(val.wait);
+          }),
+          filter((val) => {
+            return !val.blockIf();
+          }),
+          tap((val) => val.subject.next(true))
+        )
+        .subscribe()
+    );
   }
 
   /** ngOnDestroy
@@ -87,7 +88,6 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
   /* unsubscribe from subscriptions
   */
   cleanup(): void {
-    this.subTrigger.unsubscribe();
     this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
       pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
     });
