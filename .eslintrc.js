@@ -14,9 +14,8 @@ module.exports = {
   plugins: ['@typescript-eslint', 'rxjs'],
   extends: ['plugin:@typescript-eslint/eslint-recommended'],
   rules: {
-
     // TODO: enable these
-    //'rxjs/no-async-subscribe': 'error',
+    'rxjs/no-async-subscribe': 'error',
     //'rxjs/no-ignored-observable': 'error',
 
     'rxjs/no-ignored-subscription': 'error',
