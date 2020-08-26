@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { environment } from '../environments/environment';
 import { SubscriptionManager } from './shared/subscription-manager/subscription.manager';
@@ -10,7 +10,7 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent extends SubscriptionManager implements OnDestroy, OnInit {
+export class AppComponent extends SubscriptionManager implements OnInit {
   bodyClass: string;
   showWrapper = false;
   cancellationRequest?: CancellationRequest;
@@ -23,13 +23,6 @@ export class AppComponent extends SubscriptionManager implements OnDestroy, OnIn
     private readonly router: Router
   ) {
     super();
-  }
-
-  /** ngOnDestroy
-  /* call cleanup
-  */
-  public ngOnDestroy(): void {
-    this.cleanup();
   }
 
   /** ngOnInit

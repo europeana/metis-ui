@@ -81,9 +81,9 @@ describe('SearchResultsComponent', () => {
     });
 
     it('should unsubscribe when destroyed', () => {
-      spyOn(component.subParams, 'unsubscribe');
+      spyOn(component.subs[0], 'unsubscribe');
       component.ngOnDestroy();
-      expect(component.subParams.unsubscribe).toHaveBeenCalled();
+      expect(component.subs[0].unsubscribe).toHaveBeenCalled();
     });
   });
 

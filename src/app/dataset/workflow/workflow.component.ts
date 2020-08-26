@@ -3,14 +3,13 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   QueryList,
   ViewChildren
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { fromEvent, Subscription, timer } from 'rxjs';
+import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 
 import { harvestValidator } from '../../_helpers';
@@ -33,6 +32,8 @@ import {
   WorkflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+import { SubscriptionManager } from '../../shared/subscription-manager';
+
 import { TranslateService } from '../../_translate';
 
 import { WorkflowFormFieldComponent } from './workflow-form-field';
@@ -42,13 +43,15 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
   templateUrl: './workflow.component.html',
   styleUrls: ['./workflow.component.scss']
 })
-export class WorkflowComponent implements OnDestroy, OnInit {
+export class WorkflowComponent extends SubscriptionManager implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly fb: FormBuilder,
     private readonly errors: ErrorService,
     private readonly translate: TranslateService
-  ) {}
+  ) {
+    super();
+  }
 
   @Input() datasetData: Dataset;
   @Input() workflowData?: Workflow;
@@ -66,7 +69,6 @@ export class WorkflowComponent implements OnDestroy, OnInit {
   workflowForm: FormGroup;
   isSaving = false;
   gapInSequence = false;
-  subUpdate: Subscription;
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -102,15 +104,6 @@ export class WorkflowComponent implements OnDestroy, OnInit {
       .subscribe(() => {
         this.setHighlightedField(this.inputFields.toArray(), elHeader);
       });
-  }
-
-  /** ngOnDestroy
-  /* - unsubscribe from open subscriptions
-  */
-  ngOnDestroy(): void {
-    if (this.subUpdate) {
-      this.subUpdate.unsubscribe();
-    }
   }
 
   /** ngOnInit
@@ -299,35 +292,54 @@ export class WorkflowComponent implements OnDestroy, OnInit {
   /* update required fields depending on selection
   */
   updateRequired(): void {
-    this.subUpdate = this.workflowForm.valueChanges.subscribe(() => {
-      this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
+    this.subs.push(
+      this.workflowForm.valueChanges.subscribe(() => {
+        this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
 
-      if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
-        this.workflowForm.get('pluginLINK_CHECKING')!.setValidators([Validators.required]);
-      }
+        if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
+          this.workflowForm.get('pluginLINK_CHECKING')!.setValidators([Validators.required]);
+        }
 
-      if (this.workflowForm.get('pluginHARVEST')!.value === true) {
-        this.workflowForm.get('pluginType')!.setValidators([Validators.required]);
-        this.workflowForm
-          .get('pluginType')!
-          .updateValueAndValidity({ onlySelf: false, emitEvent: false });
-        if (this.workflowForm.get('pluginType')!.value === 'OAIPMH_HARVEST') {
+        if (this.workflowForm.get('pluginHARVEST')!.value === true) {
+          this.workflowForm.get('pluginType')!.setValidators([Validators.required]);
           this.workflowForm
-            .get('harvestUrl')!
-            .setValidators([Validators.required, harvestValidator]);
-          this.workflowForm
-            .get('harvestUrl')!
+            .get('pluginType')!
             .updateValueAndValidity({ onlySelf: false, emitEvent: false });
-          this.workflowForm.get('metadataFormat')!.setValidators([Validators.required]);
+          if (this.workflowForm.get('pluginType')!.value === 'OAIPMH_HARVEST') {
+            this.workflowForm
+              .get('harvestUrl')!
+              .setValidators([Validators.required, harvestValidator]);
+            this.workflowForm
+              .get('harvestUrl')!
+              .updateValueAndValidity({ onlySelf: false, emitEvent: false });
+            this.workflowForm.get('metadataFormat')!.setValidators([Validators.required]);
+            this.workflowForm
+              .get('metadataFormat')!
+              .updateValueAndValidity({ onlySelf: false, emitEvent: false });
+            this.workflowForm.get('url')!.setValidators(null);
+            this.workflowForm
+              .get('url')!
+              .updateValueAndValidity({ onlySelf: false, emitEvent: false });
+          } else if (this.workflowForm.get('pluginType')!.value === 'HTTP_HARVEST') {
+            this.workflowForm.get('url')!.setValidators([Validators.required, harvestValidator]);
+            this.workflowForm
+              .get('url')!
+              .updateValueAndValidity({ onlySelf: false, emitEvent: false });
+            this.workflowForm.get('harvestUrl')!.setValidators(null);
+            this.workflowForm
+              .get('harvestUrl')!
+              .updateValueAndValidity({ onlySelf: false, emitEvent: false });
+            this.workflowForm.get('metadataFormat')!.setValidators(null);
+            this.workflowForm
+              .get('metadataFormat')!
+              .updateValueAndValidity({ onlySelf: false, emitEvent: false });
+          }
+        } else {
+          this.workflowForm.get('pluginType')!.setValidators(null);
           this.workflowForm
-            .get('metadataFormat')!
+            .get('pluginType')!
             .updateValueAndValidity({ onlySelf: false, emitEvent: false });
           this.workflowForm.get('url')!.setValidators(null);
-          this.workflowForm
-            .get('url')!
-            .updateValueAndValidity({ onlySelf: false, emitEvent: false });
-        } else if (this.workflowForm.get('pluginType')!.value === 'HTTP_HARVEST') {
-          this.workflowForm.get('url')!.setValidators([Validators.required, harvestValidator]);
           this.workflowForm
             .get('url')!
             .updateValueAndValidity({ onlySelf: false, emitEvent: false });
@@ -335,24 +347,9 @@ export class WorkflowComponent implements OnDestroy, OnInit {
           this.workflowForm
             .get('harvestUrl')!
             .updateValueAndValidity({ onlySelf: false, emitEvent: false });
-          this.workflowForm.get('metadataFormat')!.setValidators(null);
-          this.workflowForm
-            .get('metadataFormat')!
-            .updateValueAndValidity({ onlySelf: false, emitEvent: false });
         }
-      } else {
-        this.workflowForm.get('pluginType')!.setValidators(null);
-        this.workflowForm
-          .get('pluginType')!
-          .updateValueAndValidity({ onlySelf: false, emitEvent: false });
-        this.workflowForm.get('url')!.setValidators(null);
-        this.workflowForm.get('url')!.updateValueAndValidity({ onlySelf: false, emitEvent: false });
-        this.workflowForm.get('harvestUrl')!.setValidators(null);
-        this.workflowForm
-          .get('harvestUrl')!
-          .updateValueAndValidity({ onlySelf: false, emitEvent: false });
-      }
-    });
+      })
+    );
   }
 
   /** workflowStepAllowed

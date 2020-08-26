@@ -3,31 +3,32 @@
 /* - subscribes to ActivatedRoute instance for live query / result data
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
-import { Subscription } from 'rxjs';
+import { SubscriptionManager } from '../shared/subscription-manager';
 
 @Component({
   selector: 'search-results',
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnDestroy, OnInit {
+export class SearchResultsComponent extends SubscriptionManager implements OnInit {
   searchString: string;
   currentPage = 0;
   isLoading = false;
   hasMore = false;
   query: string;
   results: DatasetSearchView[];
-  subParams: Subscription;
 
   constructor(
     private readonly documentTitleService: DocumentTitleService,
     private readonly datasets: DatasetsService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
   /* - URI-decode the query parameter
@@ -36,24 +37,19 @@ export class SearchResultsComponent implements OnDestroy, OnInit {
   /*  - includes the query variable if available
   */
   ngOnInit(): void {
-    this.subParams = this.route.queryParams.subscribe((params) => {
-      this.searchString = params.searchString;
-      this.load();
-      this.documentTitleService.setTitle(
-        ['Search Results', this.searchString]
-          .filter((x) => {
-            return x;
-          })
-          .join(' | ')
-      );
-    });
-  }
-
-  /** ngOnDestroy
-  /* - unsubscribe from the route parameters
-  */
-  ngOnDestroy(): void {
-    this.subParams.unsubscribe();
+    this.subs.push(
+      this.route.queryParams.subscribe((params) => {
+        this.searchString = params.searchString;
+        this.load();
+        this.documentTitleService.setTitle(
+          ['Search Results', this.searchString]
+            .filter((x) => {
+              return x;
+            })
+            .join(' | ')
+        );
+      })
+    );
   }
 
   /** loadNextPage

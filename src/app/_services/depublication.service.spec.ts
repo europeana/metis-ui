@@ -1,5 +1,5 @@
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
 import { MockHttp, MockHttpRequest } from '../_helpers/test-helpers';
@@ -145,7 +145,7 @@ describe('depublication service', () => {
     });
     const url = `/depublish/record_ids/${dsId}`;
     const mockRequest = new MockHttpRequest(
-      { flush: () => {}, request: { body: {}, url: url } } as any,
+      ({ flush: () => {}, request: { body: {}, url: url } } as unknown) as TestRequest,
       url
     );
     mockRequest.send({ depublicationFile: file });
