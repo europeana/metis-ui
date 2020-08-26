@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import {
   Country,
   Dataset,
@@ -15,6 +14,7 @@ import {
   successNotification
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
@@ -24,7 +24,7 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   templateUrl: './datasetform.component.html',
   styleUrls: ['./datasetform.component.scss']
 })
-export class DatasetformComponent implements OnInit {
+export class DatasetformComponent extends SubscriptionManager implements OnInit {
   @Input() datasetData: Partial<Dataset>;
   @Input() harvestPublicationData?: HarvestData;
   @Input() isNew: boolean;
@@ -35,7 +35,7 @@ export class DatasetformComponent implements OnInit {
   selectedCountry?: Country;
   selectedLanguage?: Language;
 
-  publicationFitnessOps: Array<{ label: String; val: string }>;
+  publicationFitnessOps: Array<{ label: string; val: string }>;
   datasetForm: FormGroup;
   countryOptions: Country[];
   languageOptions: Language[];
@@ -63,7 +63,9 @@ export class DatasetformComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly errors: ErrorService,
     private readonly translate: TranslateService
-  ) {}
+  ) {
+    super();
+  }
 
   /** updateFormEnabled
   /* disable the form if saving
@@ -175,21 +177,23 @@ export class DatasetformComponent implements OnInit {
   /* - update the form
   */
   returnCountries(): void {
-    this.countries.getCountries().subscribe(
-      (result) => {
-        this.countryOptions = result;
-        if (this.datasetData && this.countryOptions && this.datasetData.country) {
-          for (let i = 0; i < this.countryOptions.length; i++) {
-            if (this.countryOptions[i].enum === this.datasetData.country.enum) {
-              this.selectedCountry = this.countryOptions[i];
+    this.subs.push(
+      this.countries.getCountries().subscribe(
+        (result) => {
+          this.countryOptions = result;
+          if (this.datasetData && this.countryOptions && this.datasetData.country) {
+            for (let i = 0; i < this.countryOptions.length; i++) {
+              if (this.countryOptions[i].enum === this.datasetData.country.enum) {
+                this.selectedCountry = this.countryOptions[i];
+              }
             }
           }
+          this.updateForm();
+        },
+        (err: HttpErrorResponse) => {
+          this.errors.handleError(err);
         }
-        this.updateForm();
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-      }
+      )
     );
   }
 
@@ -198,21 +202,23 @@ export class DatasetformComponent implements OnInit {
   /* - update the form
   */
   returnLanguages(): void {
-    this.countries.getLanguages().subscribe(
-      (result) => {
-        this.languageOptions = result;
-        if (this.datasetData && this.languageOptions && this.datasetData.language) {
-          for (let i = 0; i < this.languageOptions.length; i++) {
-            if (this.languageOptions[i].enum === this.datasetData.language.enum) {
-              this.selectedLanguage = this.languageOptions[i];
+    this.subs.push(
+      this.countries.getLanguages().subscribe(
+        (result) => {
+          this.languageOptions = result;
+          if (this.datasetData && this.languageOptions && this.datasetData.language) {
+            for (let i = 0; i < this.languageOptions.length; i++) {
+              if (this.languageOptions[i].enum === this.datasetData.language.enum) {
+                this.selectedLanguage = this.languageOptions[i];
+              }
             }
           }
+          this.updateForm();
+        },
+        (err: HttpErrorResponse) => {
+          this.errors.handleError(err);
         }
-        this.updateForm();
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-      }
+      )
     );
   }
 
@@ -304,26 +310,30 @@ export class DatasetformComponent implements OnInit {
     this.isSaving = true;
 
     if (this.isNew) {
-      this.datasets.createDataset(this.datasetForm.value).subscribe((result) => {
-        localStorage.removeItem(DATASET_TEMP_LSKEY);
-        this.router.navigate(['/dataset/new/' + result.datasetId]);
-      }, handleError);
+      this.subs.push(
+        this.datasets.createDataset(this.datasetForm.value).subscribe((result) => {
+          localStorage.removeItem(DATASET_TEMP_LSKEY);
+          this.router.navigate(['/dataset/new/' + result.datasetId]);
+        }, handleError)
+      );
     } else {
       const dataset = {
         datasetId: this.datasetData.datasetId,
         ...this.datasetForm.value
       };
-      this.datasets.updateDataset({ dataset }).subscribe(() => {
-        localStorage.removeItem(DATASET_TEMP_LSKEY);
-        this.notification = successNotification(this.translate.instant('datasetSaved'), {
-          fadeTime: 1500,
-          sticky: true
-        });
-        this.datasetUpdated.emit();
+      this.subs.push(
+        this.datasets.updateDataset({ dataset }).subscribe(() => {
+          localStorage.removeItem(DATASET_TEMP_LSKEY);
+          this.notification = successNotification(this.translate.instant('datasetSaved'), {
+            fadeTime: 1500,
+            sticky: true
+          });
+          this.datasetUpdated.emit();
 
-        this.isSaving = false;
-        this.datasetForm.markAsPristine();
-      }, handleError);
+          this.isSaving = false;
+          this.datasetForm.markAsPristine();
+        }, handleError)
+      );
     }
   }
 

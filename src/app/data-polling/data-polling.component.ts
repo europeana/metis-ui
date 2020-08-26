@@ -11,6 +11,7 @@ import { Component, HostListener, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
 import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { SubscriptionManager } from '../shared/subscription-manager/subscription.manager';
 
 export interface DataPollerInfo {
   interval: number;
@@ -30,8 +31,9 @@ export interface TriggerDelayConfig {
   selector: 'app-data-polling',
   template: ``
 })
-export class DataPollingComponent implements OnDestroy {
+export class DataPollingComponent extends SubscriptionManager implements OnDestroy {
   allPollingInfo: Array<DataPollerInfo> = [];
+  allRefreshSubs: Array<Subscription> = [];
   pollRateDropped = false;
   triggerDelay = new Subject<TriggerDelayConfig>();
 
@@ -39,17 +41,20 @@ export class DataPollingComponent implements OnDestroy {
   /* attach generic functionality to triggerDelay subject
   */
   constructor() {
-    this.triggerDelay
-      .pipe(
-        delayWhen((val) => {
-          return timer(val.wait);
-        }),
-        filter((val) => {
-          return !val.blockIf();
-        }),
-        tap((val) => val.subject.next(true))
-      )
-      .subscribe();
+    super();
+    this.subs.push(
+      this.triggerDelay
+        .pipe(
+          delayWhen((val) => {
+            return timer(val.wait);
+          }),
+          filter((val) => {
+            return !val.blockIf();
+          }),
+          tap((val) => val.subject.next(true))
+        )
+        .subscribe()
+    );
   }
 
   /** ngOnDestroy
@@ -86,6 +91,10 @@ export class DataPollingComponent implements OnDestroy {
     this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
       pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
     });
+    this.allRefreshSubs.forEach((sub: Subscription) => {
+      sub.unsubscribe();
+    });
+    super.cleanup();
   }
 
   /** dropPollRate
@@ -165,9 +174,11 @@ export class DataPollingComponent implements OnDestroy {
     const loadTrigger = new BehaviorSubject(true);
     const pollContextIndex = this.allPollingInfo.length;
 
-    pollRefresh.subscribe(() => {
-      this.allPollingInfo[pollContextIndex].pollContext++;
-    });
+    this.allRefreshSubs.push(
+      pollRefresh.subscribe(() => {
+        this.allPollingInfo[pollContextIndex].pollContext++;
+      })
+    );
 
     this.allPollingInfo.push({
       interval: interval,

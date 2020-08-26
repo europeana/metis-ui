@@ -6,6 +6,7 @@ context('metis-ui', () => {
     const selDialogFile = '.dialog-file';
     const selDialogInput = '.dialog-input';
     const selGrid = '.depublications-grid';
+    const selCtrls = '.depublication-ctrls';
     const selMenuContentAdd = '.dropdown-content.add';
     const selMenuContentDepublish = '.dropdown-content.depublish';
     const selMenuOpenAdd = '.dropdown-options.add > a';
@@ -25,6 +26,8 @@ context('metis-ui', () => {
     });
 
     it('should open and close the "add" menu', () => {
+      cy.wait(1000);
+      cy.get(selCtrls).scrollIntoView();
       cy.get(selMenuContentAdd).should('not.be.visible');
       cy.get(selMenuOpenAdd).click({ force: true });
       cy.get(selMenuContentAdd).should('be.visible');
@@ -33,6 +36,8 @@ context('metis-ui', () => {
     });
 
     it('should open and close the "depublish" menu', () => {
+      cy.wait(1000);
+      cy.get(selCtrls).scrollIntoView();
       cy.get(selMenuContentDepublish).should('not.be.visible');
       cy.get(selMenuOpenDepublish).click({ force: true });
       cy.get(selMenuContentDepublish).should('be.visible');

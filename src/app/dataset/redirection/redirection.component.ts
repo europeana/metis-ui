@@ -78,12 +78,14 @@ export class RedirectionComponent {
   /* @param {(boolean) => void)} result callback function
   */
   validate(s: string, handleResult: (result: boolean) => void): void {
-    this.datasets.getSearchResultsUptoPage(s, 1).subscribe(
+    const subResults = this.datasets.getSearchResultsUptoPage(s, 1).subscribe(
       ({ results }) => {
         handleResult(results.filter((ds) => s === ds.datasetId).length > 0);
+        subResults.unsubscribe();
       },
       (err: HttpErrorResponse) => {
         console.log(err);
+        subResults.unsubscribe();
       }
     );
   }

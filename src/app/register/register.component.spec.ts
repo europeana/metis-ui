@@ -68,6 +68,7 @@ describe('RegisterComponent', () => {
     );
     component.onSubmit();
     tick(3000);
+    tick(1);
     fixture.detectChanges();
     expect(submitBtn.disabled).toBe(false);
     expect(component.loading).toBe(false);

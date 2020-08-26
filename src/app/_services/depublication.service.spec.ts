@@ -1,8 +1,8 @@
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
-import { MockHttp } from '../_helpers/test-helpers';
+import { MockHttp, MockHttpRequest } from '../_helpers/test-helpers';
 import { of } from 'rxjs';
 
 import {
@@ -26,11 +26,17 @@ describe('depublication service', () => {
     service = TestBed.get(DepublicationService);
   }));
 
-  it('should depublish a dataset', async(() => {
-    service.depublishDataset('123').subscribe((res) => {
-      expect(res).toEqual(true);
+  it('should depublish a dataset', () => {
+    const id = '123';
+    const sub = service.depublishDataset(id).subscribe((res) => {
+      expect(res).toBeTruthy();
     });
-  }));
+    mockHttp
+      .expect('POST', `/depublish/execute/${id}?datasetDepublish=true`)
+      .body(id)
+      .send({ result: true });
+    sub.unsubscribe();
+  });
 
   it('should handle upload events', () => {
     const resProgess = service.handleUploadEvents({
@@ -55,35 +61,44 @@ describe('depublication service', () => {
         .subscribe((publicationInfo: DatasetDepublicationInfo) => {
           const resultIds = publicationInfo.depublicationRecordIds.results;
           expect(resultIds.length).toEqual((endPage + 1) * perPage);
-        });
+        })
+        .unsubscribe();
     });
   });
 
-  it('should get the publication info', () => {
-    service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
+  it('should get the publication info', fakeAsync(() => {
+    const subPub = service.getPublicationInfo('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoResults);
     });
     mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoResults);
-  });
+    tick(1);
+    subPub.unsubscribe();
+  }));
 
-  it('should get the publication info paginated', () => {
-    service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
+  it('should get the publication info paginated', fakeAsync(() => {
+    const subPub = service.getPublicationInfoUptoPage('123', 0).subscribe((publicationInfo) => {
       expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
     });
     mockHttp.expect('GET', '/depublish/record_ids/123?page=0').send(mockPublicationInfoMoreResults);
-  });
+    tick(1);
+    subPub.unsubscribe();
+  }));
 
-  it('should get the publication info filtered', () => {
+  it('should get the publication info filtered', fakeAsync(() => {
     const filter = 'xxx';
     const filterParamString = service.parseFilterParameter(filter);
 
-    service.getPublicationInfoUptoPage('123', 0, undefined, filter).subscribe((publicationInfo) => {
-      expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
-    });
+    const subPub = service
+      .getPublicationInfoUptoPage('123', 0, undefined, filter)
+      .subscribe((publicationInfo) => {
+        expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
+      });
     mockHttp
       .expect('GET', '/depublish/record_ids/123?page=0' + filterParamString)
       .send(mockPublicationInfoMoreResults);
-  });
+    tick(1);
+    subPub.unsubscribe();
+  }));
 
   it('should parse sort parameters', () => {
     expect(service.parseSortParameter({ field: 'x', direction: SortDirection.DESC })).toEqual(
@@ -94,45 +109,75 @@ describe('depublication service', () => {
     );
   });
 
-  it('should get the publication info sorted', () => {
+  it('should get the publication info sorted', fakeAsync(() => {
     const sortParam = {
       field: 'field',
       direction: SortDirection.ASC
     };
     const sortParamString = service.parseSortParameter(sortParam);
-
-    service.getPublicationInfoUptoPage('123', 0, sortParam).subscribe((publicationInfo) => {
-      expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
-    });
+    const subPub = service
+      .getPublicationInfoUptoPage('123', 0, sortParam)
+      .subscribe((publicationInfo) => {
+        expect(publicationInfo).toEqual(mockPublicationInfoMoreResults);
+      });
     mockHttp
       .expect('GET', '/depublish/record_ids/123?page=0' + sortParamString)
       .send(mockPublicationInfoMoreResults);
-  });
+    tick(1);
+    subPub.unsubscribe();
+  }));
 
   it('should set the publication info', () => {
     service
       .setPublicationInfo('123', 'http://depublish/record_ids/id1 http://depublish/record_ids/id2')
       .subscribe((res) => {
         expect(res).toEqual(true);
-      });
+      })
+      .unsubscribe();
   });
 
   it('should set the publication file', () => {
-    service.setPublicationFile('123', { name: 'foo', size: 500001 } as File).subscribe((res) => {
-      console.log('res = ' + res);
-      expect(res).toEqual(false);
+    spyOn(service, 'handleUploadEvents');
+    const dsId = '123';
+    const file = { name: 'foo', size: 500001 } as File;
+    const sub = service.setPublicationFile(dsId, file).subscribe((res) => {
+      expect(res).toBeFalsy();
     });
+    const url = `/depublish/record_ids/${dsId}`;
+    const mockRequest = new MockHttpRequest(
+      ({ flush: () => {}, request: { body: {}, url: url } } as unknown) as TestRequest,
+      url
+    );
+    mockRequest.send({ depublicationFile: file });
+    expect(service.handleUploadEvents).toHaveBeenCalled();
+    sub.unsubscribe();
   });
 
   it('should delete the depublications', () => {
-    service.deleteDepublications('0', ['111', '222']).subscribe((res) => {
+    const dsId = '0';
+    const ids = ['111', '222'];
+    const sub = service.deleteDepublications(dsId, ids).subscribe((res) => {
       expect(res);
     });
+    const url = `/depublish/record_ids/${dsId}`;
+    mockHttp
+      .expect('DELETE', url)
+      .body(ids.join('\n'))
+      .send({ result: true });
+    sub.unsubscribe();
   });
 
   it('should depublish the record ids', () => {
-    service.depublishRecordIds('0', ['111', '222']).subscribe((res) => {
-      expect(res);
+    const dsId = '0';
+    const ids = ['111', '222'];
+    const sub = service.depublishRecordIds(dsId, ids).subscribe((res) => {
+      expect(res).toBeTruthy();
     });
+    const url = `/depublish/execute/${dsId}?datasetDepublish=false`;
+    mockHttp
+      .expect('POST', url)
+      .body(ids.join('\n'))
+      .send({ result: true });
+    sub.unsubscribe();
   });
 });

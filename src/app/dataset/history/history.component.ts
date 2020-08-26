@@ -21,18 +21,21 @@ import {
   WorkflowOrPluginExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent {
+export class HistoryComponent extends SubscriptionManager {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
     private readonly router: Router
-  ) {}
+  ) {
+    super();
+  }
 
   @Input() datasetData: Dataset;
 
@@ -73,29 +76,31 @@ export class HistoryComponent {
   /* - update the hasMore variable
   */
   returnAllExecutions(): void {
-    this.workflows
-      .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
-      .subscribe(
-        ({ results, more, maxResultCountReached }) => {
-          this.allExecutions = [];
+    this.subs.push(
+      this.workflows
+        .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
+        .subscribe(
+          ({ results, more, maxResultCountReached }) => {
+            this.allExecutions = [];
 
-          results.forEach((execution) => {
-            this.workflows.getReportsForExecution(execution);
-            execution.metisPlugins.reverse();
+            results.forEach((execution) => {
+              this.workflows.getReportsForExecution(execution);
+              execution.metisPlugins.reverse();
 
-            this.allExecutions.push({ execution });
-            execution.metisPlugins.forEach((pluginExecution) => {
-              this.allExecutions.push({ execution, pluginExecution });
+              this.allExecutions.push({ execution });
+              execution.metisPlugins.forEach((pluginExecution) => {
+                this.allExecutions.push({ execution, pluginExecution });
+              });
             });
-          });
-          this.hasMore = more;
-          this.maxResultsReached = !!maxResultCountReached;
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-        }
-      );
+            this.hasMore = more;
+            this.maxResultsReached = !!maxResultCountReached;
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
+          }
+        )
+    );
   }
 
   /** loadNextPage

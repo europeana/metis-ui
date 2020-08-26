@@ -63,6 +63,7 @@
     "codelyzer": "^4.5.0",
     "cypress": "^3.8.3",
     "eslint": "^6.5.1",
+    "eslint-plugin-rxjs": "0.0.2-beta.28",
     "http-server": "^0.11.1",
     "jasmine-core": "^3.3.0",
     "jasmine-spec-reporter": "^4.2.1",

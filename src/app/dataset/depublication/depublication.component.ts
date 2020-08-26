@@ -5,7 +5,7 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import {
@@ -26,7 +26,7 @@ import { DepublicationRowComponent } from './depublication-row';
   templateUrl: './depublication.component.html',
   styleUrls: ['./depublication.component.scss']
 })
-export class DepublicationComponent extends DataPollingComponent implements OnDestroy {
+export class DepublicationComponent extends DataPollingComponent {
   @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
 
   currentPage = 0;
@@ -298,18 +298,20 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     const form = this.formFile;
     if (form.valid) {
       this.isSaving = true;
-      this.depublications
-        .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
-        .subscribe(
-          () => {
-            this.pollingRefresh.next(true);
-            this.closeDialogs();
-            this.isSaving = false;
-          },
-          (err: HttpErrorResponse): void => {
-            this.onError(err);
-          }
-        );
+      this.subs.push(
+        this.depublications
+          .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
+          .subscribe(
+            () => {
+              this.pollingRefresh.next(true);
+              this.closeDialogs();
+              this.isSaving = false;
+            },
+            (err: HttpErrorResponse): void => {
+              this.onError(err);
+            }
+          )
+      );
     }
   }
 
@@ -321,14 +323,16 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   onDepublishDataset(): void {
     this.closeMenus();
     this.isSaving = true;
-    this.depublications.depublishDataset(this._datasetId).subscribe(
-      () => {
-        this.pollingRefresh.next(true);
-        this.isSaving = false;
-      },
-      (err: HttpErrorResponse): void => {
-        this.onError(err);
-      }
+    this.subs.push(
+      this.depublications.depublishDataset(this._datasetId).subscribe(
+        () => {
+          this.pollingRefresh.next(true);
+          this.isSaving = false;
+        },
+        (err: HttpErrorResponse): void => {
+          this.onError(err);
+        }
+      )
     );
   }
 
@@ -344,18 +348,20 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
       return;
     }
     this.isSaving = true;
-    this.depublications
-      .depublishRecordIds(this._datasetId, all ? null : this.depublicationSelections)
-      .subscribe(
-        () => {
-          this.depublicationSelections = [];
-          this.pollingRefresh.next(true);
-          this.isSaving = false;
-        },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
-        }
-      );
+    this.subs.push(
+      this.depublications
+        .depublishRecordIds(this._datasetId, all ? null : this.depublicationSelections)
+        .subscribe(
+          () => {
+            this.depublicationSelections = [];
+            this.pollingRefresh.next(true);
+            this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
+          }
+        )
+    );
   }
 
   /** deleteDepublications
@@ -364,18 +370,20 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
   */
   deleteDepublications(): void {
     this.isSaving = true;
-    this.depublications
-      .deleteDepublications(this._datasetId, this.depublicationSelections)
-      .subscribe(
-        () => {
-          this.depublicationSelections = [];
-          this.pollingRefresh.next(true);
-          this.isSaving = false;
-        },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
-        }
-      );
+    this.subs.push(
+      this.depublications
+        .deleteDepublications(this._datasetId, this.depublicationSelections)
+        .subscribe(
+          () => {
+            this.depublicationSelections = [];
+            this.pollingRefresh.next(true);
+            this.isSaving = false;
+          },
+          (err: HttpErrorResponse): void => {
+            this.onError(err);
+          }
+        )
+    );
   }
 
   /** onSubmitRawText
@@ -386,19 +394,21 @@ export class DepublicationComponent extends DataPollingComponent implements OnDe
     const form = this.formRawText;
     if (form.valid) {
       this.isSaving = true;
-      this.depublications
-        .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
-        .subscribe(
-          () => {
-            this.pollingRefresh.next(true);
-            form.get('recordIds')!.reset();
-            this.closeDialogs();
-            this.isSaving = false;
-          },
-          (err: HttpErrorResponse): void => {
-            this.onError(err);
-          }
-        );
+      this.subs.push(
+        this.depublications
+          .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
+          .subscribe(
+            () => {
+              this.pollingRefresh.next(true);
+              form.get('recordIds')!.reset();
+              this.closeDialogs();
+              this.isSaving = false;
+            },
+            (err: HttpErrorResponse): void => {
+              this.onError(err);
+            }
+          )
+      );
     }
   }
 

@@ -1,4 +1,5 @@
-import { Observable, of as observableOf, throwError } from 'rxjs';
+import { Observable, of as observableOf, throwError, timer } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
 import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
 
 export const mockDataset: Dataset = {
@@ -64,18 +65,29 @@ export class MockDatasetsService {
   errorMode = false;
 
   getXSLT(): Observable<string> {
-    return observableOf(mockXslt);
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError('mock getXSLT throws error...');
+        })
+      );
+    }
+    return observableOf(mockXslt).pipe(delay(1));
   }
 
   getDataset(): Observable<Dataset> {
     if (this.errorMode) {
-      return throwError('mock getDataset throws error...');
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError('mock getDataset throws error...');
+        })
+      );
     }
-    return observableOf(mockDataset);
+    return observableOf(mockDataset).pipe(delay(1));
   }
 
   updateDataset(): Observable<void> {
-    return observableOf(undefined);
+    return observableOf(undefined).pipe(delay(1));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,9 +102,13 @@ export class MockDatasetsService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getSearchResultsUptoPage(term: string, _: number): Observable<MoreResults<DatasetSearchView>> {
     if (this.errorMode) {
-      return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error`);
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error`);
+        })
+      );
     }
-    return observableOf({ results: mockSearchResults, more: false });
+    return observableOf({ results: mockSearchResults, more: false }).pipe(delay(1));
   }
 }
 

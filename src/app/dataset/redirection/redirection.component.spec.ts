@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { DatasetsService } from '../../_services';
@@ -99,7 +99,7 @@ describe('RedirectionComponent', () => {
       expect(component.flagInvalidSelfReference).toBeTruthy();
     });
 
-    it('should submit on enter', () => {
+    it('should submit on enter', fakeAsync(() => {
       component.redirectionId = '1';
 
       spyOn(component, 'add');
@@ -111,25 +111,37 @@ describe('RedirectionComponent', () => {
       component.newIdString = 'ERROR';
 
       component.onKeyupRedirect(getKeyEvent(enterKey));
+      tick(1);
+      fixture.detectChanges();
+
       expect(component.add).not.toHaveBeenCalled();
 
       component.newIdString = '123';
-
       component.onKeyupRedirect(getKeyEvent('0'));
+      tick(1);
+      fixture.detectChanges();
+
       expect(component.add).not.toHaveBeenCalled();
 
       component.onKeyupRedirect(getKeyEvent(enterKey));
-      expect(component.add).toHaveBeenCalled();
-    });
+      tick(1);
+      fixture.detectChanges();
 
-    it('should validate', () => {
+      expect(component.add).toHaveBeenCalled();
+    }));
+
+    it('should validate', fakeAsync(() => {
       const fnSuccess = jasmine.createSpy();
       component.validate('123', fnSuccess);
+      tick(1);
+      fixture.detectChanges();
       expect(fnSuccess).toHaveBeenCalledWith(true);
 
       component.validate('ERROR', fnSuccess);
+      tick(1);
+      fixture.detectChanges();
       expect(fnSuccess).toHaveBeenCalledWith(false);
-    });
+    }));
   });
 
   describe('Error handling', () => {

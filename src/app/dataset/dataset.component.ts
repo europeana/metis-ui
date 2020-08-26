@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, timer } from 'rxjs';
@@ -30,7 +30,7 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss']
 })
-export class DatasetComponent extends DataPollingComponent implements OnInit, OnDestroy {
+export class DatasetComponent extends DataPollingComponent implements OnInit {
   constructor(
     private readonly datasets: DatasetsService,
     private readonly workflows: WorkflowService,
@@ -95,22 +95,24 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
-    this.route.params.subscribe((params) => {
-      const { tab, id } = params;
-      if (tab === 'new') {
-        this.notification = successNotification('New dataset created! Id: ' + id);
-        this.router.navigate([`/dataset/edit/${id}`]);
-      } else {
-        this.activeTab = tab;
-        this.datasetId = id;
-        if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
-          this.tempXSLT = undefined;
+    this.subs.push(
+      this.route.params.subscribe((params) => {
+        const { tab, id } = params;
+        if (tab === 'new') {
+          this.notification = successNotification('New dataset created! Id: ' + id);
+          this.router.navigate([`/dataset/edit/${id}`]);
+        } else {
+          this.activeTab = tab;
+          this.datasetId = id;
+          if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+            this.tempXSLT = undefined;
+          }
+          this.prevTab = this.activeTab;
+          this.beginPolling();
+          this.loadData();
         }
-        this.prevTab = this.activeTab;
-        this.beginPolling();
-        this.loadData();
-      }
-    });
+      })
+    );
   }
 
   beginPolling(): void {
@@ -183,10 +185,12 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
 
     // stream for start-workflow click events
     this.pollingRefresh = new Subject();
-    this.pollingRefresh.subscribe(() => {
-      workflowRefresh.next(true);
-      harvestRefresh.next(true);
-    });
+    this.subs.push(
+      this.pollingRefresh.subscribe(() => {
+        workflowRefresh.next(true);
+        harvestRefresh.next(true);
+      })
+    );
   }
 
   /** setReportMsg
@@ -198,20 +202,22 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
     }
     if (req.taskId && req.topology) {
       this.reportLoading = true;
-      this.workflows.getReport(req.taskId, req.topology).subscribe(
-        (report) => {
-          if (report && report.errors && report.errors.length) {
-            this.reportErrors = report.errors;
-          } else {
-            this.reportMsg = 'Report is empty.';
+      this.subs.push(
+        this.workflows.getReport(req.taskId, req.topology).subscribe(
+          (report) => {
+            if (report && report.errors && report.errors.length) {
+              this.reportErrors = report.errors;
+            } else {
+              this.reportMsg = 'Report is empty.';
+            }
+            this.reportLoading = false;
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
+            this.reportLoading = false;
           }
-          this.reportLoading = false;
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-          this.reportLoading = false;
-        }
+        )
       );
     }
   }
@@ -243,18 +249,20 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   /* subscribe to data services
   */
   loadData(): void {
-    this.datasets.getDataset(this.datasetId, true).subscribe(
-      (result) => {
-        this.datasetData = result;
-        this.datasetName = result.datasetName;
-        this.datasetIsLoading = false;
-        this.documentTitleService.setTitle(this.datasetName || 'Dataset');
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.datasetIsLoading = false;
-      }
+    this.subs.push(
+      this.datasets.getDataset(this.datasetId, true).subscribe(
+        (result) => {
+          this.datasetData = result;
+          this.datasetName = result.datasetName;
+          this.datasetIsLoading = false;
+          this.documentTitleService.setTitle(this.datasetName || 'Dataset');
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.datasetIsLoading = false;
+        }
+      )
     );
   }
 
@@ -279,17 +287,19 @@ export class DatasetComponent extends DataPollingComponent implements OnInit, On
   */
   startWorkflow(): void {
     this.isStarting = true;
-    this.workflows.startWorkflow(this.datasetId).subscribe(
-      () => {
-        this.pollingRefresh.next(true);
-        window.scrollTo(0, 0);
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.isStarting = false;
-        window.scrollTo(0, 0);
-      }
+    this.subs.push(
+      this.workflows.startWorkflow(this.datasetId).subscribe(
+        () => {
+          this.pollingRefresh.next(true);
+          window.scrollTo(0, 0);
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.isStarting = false;
+          window.scrollTo(0, 0);
+        }
+      )
     );
   }
 

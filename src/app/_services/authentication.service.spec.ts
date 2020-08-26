@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
@@ -58,44 +58,50 @@ describe('AuthenticationService', () => {
   });
 
   it('should update the password', () => {
-    service.updatePassword('123', '456').subscribe((result) => {
+    const sub = service.updatePassword('123', '456').subscribe((result) => {
       expect(result).toBe(true);
     });
     mockHttp
       .expect('PUT', '/authentication/update/password')
       .body({ newPassword: '123', oldPassword: '456' })
       .send({});
+    sub.unsubscribe();
   });
 
   it('should register a new user', () => {
-    service.register('jan@example.com', 'safe').subscribe((result) => {
+    const sub = service.register('jan@example.com', 'safe').subscribe((result) => {
       expect(result).toBe(true);
     });
     mockHttp
       .expect('POST', '/authentication/register')
       .basicAuth('amFuQGV4YW1wbGUuY29tOnNhZmU=')
       .send({});
+    sub.unsubscribe();
   });
 
-  it('should redirect on login if already logged in', () => {
+  it('should redirect on login if already logged in', fakeAsync(() => {
     service.currentUser = mockUser;
 
     spyOn(router, 'navigate');
-    service.login('jan@example.com', 'fjgdf').subscribe((result) => {
+    const subLogin1 = service.login('jan@example.com', 'fjgdf').subscribe((result) => {
       expect(result).toBe(true);
     });
+    tick(1);
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+    subLogin1.unsubscribe();
 
     spyOn(router, 'navigateByUrl');
     redirect.set('dash');
-    service.login('jan@example.com', 'fjgdf').subscribe((result) => {
+    const subLogin2 = service.login('jan@example.com', 'fjgdf').subscribe((result) => {
       expect(result).toBe(true);
     });
+    tick(1);
     expect(router.navigateByUrl).toHaveBeenCalledWith('/dash');
-  });
+    subLogin2.unsubscribe();
+  }));
 
-  it('should login and save the user', () => {
-    service.login('jan@example.com', 'safe').subscribe((result) => {
+  it('should login and save the user', fakeAsync(() => {
+    const subLogin1 = service.login('jan@example.com', 'safe').subscribe((result) => {
       expect(result).toBe(true);
       expect(service.getCurrentUser()).toEqual(mockUser);
     });
@@ -103,14 +109,19 @@ describe('AuthenticationService', () => {
       .expect('POST', '/authentication/login')
       .basicAuth('amFuQGV4YW1wbGUuY29tOnNhZmU=')
       .send(mockUser);
+    tick(1);
+    subLogin1.unsubscribe();
 
     service.currentUser = null;
-    service.login('jan@example.com', 'safe').subscribe((result) => {
+
+    const subLogin2 = service.login('jan@example.com', 'safe').subscribe((result) => {
       expect(result).toBe(false);
       expect(service.getCurrentUser()).toEqual(null);
     });
     mockHttp.expect('POST', '/authentication/login').send({});
-  });
+    tick(1);
+    subLogin2.unsubscribe();
+  }));
 
   it('should logout', () => {
     service.setCurrentUser(mockUser);
@@ -125,8 +136,8 @@ describe('AuthenticationService', () => {
     expect(localStorage.getItem('currentUser')).toBeFalsy();
   });
 
-  it('should reload the user', () => {
-    service.reloadCurrentUser('jan@example.com').subscribe((result) => {
+  it('should reload the user', fakeAsync(() => {
+    const subReload1 = service.reloadCurrentUser('jan@example.com').subscribe((result) => {
       expect(result).toBe(true);
       expect(service.getCurrentUser()).toBe(mockUser);
     });
@@ -135,8 +146,11 @@ describe('AuthenticationService', () => {
       .body({ email: 'jan@example.com' })
       .send(mockUser);
 
+    tick(1);
+    subReload1.unsubscribe();
+
     service.currentUser = null;
-    service.reloadCurrentUser('jan@example.com').subscribe((result) => {
+    const subReload2 = service.reloadCurrentUser('jan@example.com').subscribe((result) => {
       expect(result).toBe(false);
       expect(service.getCurrentUser()).toBe(null);
     });
@@ -144,7 +158,10 @@ describe('AuthenticationService', () => {
       .expect('PUT', '/authentication/update')
       .body({ email: 'jan@example.com' })
       .send(null);
-  });
+
+    tick(1);
+    subReload2.unsubscribe();
+  }));
 });
 
 it('should use the user from localstorage', () => {

@@ -1,9 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
-
 import { environment } from '../environments/environment';
-
+import { SubscriptionManager } from './shared/subscription-manager/subscription.manager';
 import { CancellationRequest } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
@@ -11,7 +10,7 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent extends SubscriptionManager implements OnInit {
   bodyClass: string;
   showWrapper = false;
   cancellationRequest?: CancellationRequest;
@@ -22,7 +21,9 @@ export class AppComponent implements OnInit {
     private readonly authentication: AuthenticationService,
     private readonly errors: ErrorService,
     private readonly router: Router
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
   /* init for this component
@@ -32,31 +33,35 @@ export class AppComponent implements OnInit {
   /* and margins
   */
   public ngOnInit(): void {
-    this.router.events.subscribe((event: Event) => {
-      const url: string | undefined = (event as RouterEvent).url;
-      if (!url) {
-        return;
-      }
-      if (this.router.isActive(url, false)) {
-        this.loggedIn = this.authentication.validatedUser();
-
-        this.bodyClass = url.split('/')[1];
-        if (url === '/') {
-          this.bodyClass = 'home';
+    this.subs.push(
+      this.router.events.subscribe((event: Event) => {
+        const url: string | undefined = (event as RouterEvent).url;
+        if (!url) {
+          return;
         }
+        if (this.router.isActive(url, false)) {
+          this.loggedIn = this.authentication.validatedUser();
 
-        if ((url === '/' || url === '/home') && this.loggedIn) {
-          this.router.navigate([environment.afterLoginGoto]);
+          this.bodyClass = url.split('/')[1];
+          if (url === '/') {
+            this.bodyClass = 'home';
+          }
+
+          if ((url === '/' || url === '/home') && this.loggedIn) {
+            this.router.navigate([environment.afterLoginGoto]);
+          }
         }
-      }
-    });
+      })
+    );
 
-    this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
-      this.cancellationRequest = cancellationRequest;
-      if (cancellationRequest.workflowExecutionId) {
-        this.showWrapper = true;
-      }
-    });
+    this.subs.push(
+      this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
+        this.cancellationRequest = cancellationRequest;
+        if (cancellationRequest.workflowExecutionId) {
+          this.showWrapper = true;
+        }
+      })
+    );
   }
 
   /** closePrompt
@@ -70,13 +75,15 @@ export class AppComponent implements OnInit {
   /*  cancels the workflow using the currentWorkflow id
   */
   cancelWorkflow(): void {
-    this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId).subscribe(
-      () => {
-        this.closePrompt();
-      },
-      (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
-      }
+    this.subs.push(
+      this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId).subscribe(
+        () => {
+          this.closePrompt();
+        },
+        (err: HttpErrorResponse) => {
+          this.errors.handleError(err);
+        }
+      )
     );
   }
 }

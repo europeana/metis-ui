@@ -124,7 +124,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.workflows
+    const subLogs = this.workflows
       .getLogs(
         this.showPluginLog.externalTaskId,
         this.showPluginLog.topologyName,
@@ -135,10 +135,12 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
         (result) => {
           this.isFirstLoading = false;
           this.showWindowOutput(result);
+          subLogs.unsubscribe();
         },
         (err: HttpErrorResponse) => {
           this.isFirstLoading = false;
           this.errors.handleError(err);
+          subLogs.unsubscribe();
         }
       );
   }

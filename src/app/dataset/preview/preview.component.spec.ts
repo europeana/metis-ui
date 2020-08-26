@@ -4,8 +4,6 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Subscription } from 'rxjs';
-
 import {
   createMockPipe,
   mockDataset,
@@ -21,15 +19,6 @@ import { PluginType, PreviewFilters, XmlSample } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewComponent } from '.';
-
-function getUnsubscribable(undef?: boolean): Subscription {
-  return (undef
-    ? undefined
-    : ({
-        unsubscribe: jasmine.createSpy('unsubscribe')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)) as Subscription;
-}
 
 describe('PreviewComponent', () => {
   let component: PreviewComponent;
@@ -73,9 +62,10 @@ describe('PreviewComponent', () => {
 
   describe('Normal operation', () => {
     beforeEach(async(() => {
-      configureTestbed(false);
+      configureTestbed();
     }));
 
+    beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
     it('should create', () => {
@@ -85,9 +75,11 @@ describe('PreviewComponent', () => {
     it('should destroy', () => {
       const testUrl = 'http://123.com';
       component.downloadUrlCache = { testUrl: testUrl };
+      spyOn(component, 'cleanup');
       spyOn(URL, 'revokeObjectURL').and.callThrough();
       component.ngOnDestroy();
       expect(URL.revokeObjectURL).toHaveBeenCalled();
+      expect(component.cleanup).toHaveBeenCalled();
     });
 
     it('should add plugins', fakeAsync(() => {
@@ -104,8 +96,7 @@ describe('PreviewComponent', () => {
       expect(component.allPlugins.length).toBeTruthy();
       expect(component.isLoading).toBeFalsy();
 
-      component.executionsFilterSubscription.unsubscribe();
-      component.pluginsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
     }));
 
     it('should show a sample', fakeAsync((): void => {
@@ -120,8 +111,7 @@ describe('PreviewComponent', () => {
       tick(0);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
-      component.pluginsFilterSubscription.unsubscribe();
-      component.executionsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
     }));
 
     it('should show interdependent filters', fakeAsync((): void => {
@@ -151,26 +141,8 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();
       expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeTruthy();
 
-      component.pluginsFilterSubscription.unsubscribe();
-      component.executionsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
     }));
-
-    it('should unsubscribe the filters', (): void => {
-      const s1 = getUnsubscribable();
-      const s2 = getUnsubscribable();
-
-      component.unsubscribeFilters([s1, s2]);
-
-      expect(s1.unsubscribe).toHaveBeenCalled();
-      expect(s2.unsubscribe).toHaveBeenCalled();
-
-      const s3 = getUnsubscribable(true);
-      const s4 = getUnsubscribable();
-      component.unsubscribeFilters([s3, s4]);
-
-      expect(s3).toBeFalsy();
-      expect(s4.unsubscribe).toHaveBeenCalled();
-    });
 
     it('should expand a sample', fakeAsync((): void => {
       tick(0);
@@ -190,8 +162,7 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
       fixture.detectChanges();
-      component.pluginsFilterSubscription.unsubscribe();
-      component.executionsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
     }));
 
     it('should collapse an expanded sample', fakeAsync((): void => {
@@ -213,8 +184,7 @@ describe('PreviewComponent', () => {
       component.expandSample(0);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
-      component.pluginsFilterSubscription.unsubscribe();
-      component.executionsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
     }));
 
     it('should show sample comparison', () => {
@@ -229,7 +199,7 @@ describe('PreviewComponent', () => {
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123');
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
-      component.pluginsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
     });
 
     it('should toggle filters', fakeAsync(() => {
@@ -267,7 +237,7 @@ describe('PreviewComponent', () => {
       expect(
         fixture.debugElement.queryAll(By.css('.dropdown-compare .dropdown-wrapper')).length
       ).toBeTruthy();
-      component.executionsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
     }));
 
     it('should get transformed samples', () => {
@@ -400,8 +370,8 @@ describe('PreviewComponent', () => {
       tick(0);
       fixture.detectChanges();
       expect(component.isLoading).toBeFalsy();
-      component.executionsFilterSubscription.unsubscribe();
-      component.pluginsFilterSubscription.unsubscribe();
+      component.ngOnDestroy();
+      tick(1);
     }));
 
     it('should handle errors transforming the samples', () => {
