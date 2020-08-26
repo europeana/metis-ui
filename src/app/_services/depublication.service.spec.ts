@@ -1,5 +1,9 @@
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+  TestRequest
+} from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { apiSettings } from '../../environments/apisettings';
 import { MockHttp, MockHttpRequest } from '../_helpers/test-helpers';
