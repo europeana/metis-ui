@@ -22,7 +22,10 @@
     "start:ci-data": "tsc && cd test-data && node ../dist/out-tsc/test-data/index.js",
     "cypress:run": "sleep 10 && cypress run",
     "test:e2e": "tsc && ((cd test-data && node ../dist/out-tsc/test-data/index.js test-data-server) & (npm run cypress:ci ; killall -SIGINT test-data-server))",
-    "dist": "ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist"
+    "Xdist": "npm run i18n && ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",
+    "dist": "ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",
+    "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
+    "lite": "lite-server --baseDir=dist"
   },
   "private": true,
   "dependencies": {
@@ -44,7 +47,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.13.8",
-    "@angular/cli": "^7.2.3",
+    "@angular/cli": "^7.3.10",
     "@angular/compiler": "^7.2.2",
     "@angular/compiler-cli": "^7.2.14",
     "@angular/language-service": "^7.2.2",
@@ -72,6 +75,7 @@
     "karma-coverage-istanbul-reporter": "^2.0.4",
     "karma-jasmine": "^2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
+    "lite-server": "^2.5.4",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.16.1",
     "tar": "^4.4.8",

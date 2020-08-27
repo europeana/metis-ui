@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="welcomeMessage" datatype="html">
+        <source>
+      Welcome <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ userName }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>, let&apos;s ingest a world of Culture!
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">welcomes the user by name</note>
+        <note priority="1" from="meaning">welcome message</note>
+      </trans-unit>
+      <trans-unit id="depublicationDeleteButtonText" datatype="html">
+        <source>
+    Delete Record <x id="ICU" equiv-text="{depublicationSelections.length, plural, =1 {...} other {...}}"/>
+  </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">calls delete on the selected record ids</note>
+        <note priority="1" from="meaning">delete button</note>
+      </trans-unit>
+      <trans-unit id="5f4d256bd6e9258f40eba48f9d81f368b1f1868d" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {Id } other {Ids} }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="depublicationDeleteButtonTooltip" datatype="html">
+        <source>Remove record ids from the list below</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <note priority="1" from="description">tooltip</note>
+        <note priority="1" from="meaning">delete button tooltip</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
