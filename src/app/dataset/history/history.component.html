@@ -51,8 +51,12 @@
     </ng-container>
   </ng-container>
 
-  <span *ngIf="maxResultsReached" class="table-grid-footer warning">
-    {{ 'maxResultsReached' | translate }}
+  <span
+    *ngIf="maxResultsReached"
+    class="table-grid-footer warning"
+    i18n="max result reached|max result reached message@@maxResultsReached"
+  >
+    You've reached the limit of the number of executions that can be displayed ({{ maxResults }})
   </span>
 
   <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">

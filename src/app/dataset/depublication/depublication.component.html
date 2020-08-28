@@ -3,12 +3,11 @@
     class="btn-delete"
     [disabled]="depublicationSelections.length === 0"
     (click)="deleteDepublications()"
-    [title]="'depublicationDeleteButtonTooltip' | translate"
+    title="Remove record ids from the list below"
+    i18n-title="delete button tooltip|tooltip@@depublicationDeleteButtonTooltip"
+    i18n="delete button|calls delete on the selected record ids@@depublicationDeleteButtonText"
   >
-    {{
-      'depublicationDeleteButtonText' +
-        (depublicationSelections.length === 1 ? 'Single' : 'Plural') | translate
-    }}
+    Delete Record {depublicationSelections.length, plural, =1 { Id } other {Ids} }
   </button>
 
   <app-search

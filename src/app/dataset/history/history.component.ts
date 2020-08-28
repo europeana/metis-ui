@@ -48,6 +48,7 @@ export class HistoryComponent extends SubscriptionManager {
   hasMore = false;
   report?: Report;
   contentCopied = false;
+  maxResults = 0;
   maxResultsReached = false;
   lastExecutionId?: string;
   lastExecutionIsCompleted?: boolean;
@@ -94,6 +95,7 @@ export class HistoryComponent extends SubscriptionManager {
             });
             this.hasMore = more;
             this.maxResultsReached = !!maxResultCountReached;
+            this.maxResults = results.length;
           },
           (err: HttpErrorResponse) => {
             const error = this.errors.handleError(err);
