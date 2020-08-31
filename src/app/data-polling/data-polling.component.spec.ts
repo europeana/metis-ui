@@ -36,7 +36,7 @@ describe('DataPollingComponent', () => {
   const initDefaultDataPoller = (errorMode?: boolean): Subject<boolean> => {
     fnPoll = errorMode
       ? <T>(): Observable<T> => {
-          return throwError('mock data-poll error...');
+          return throwError(new Error('mock data-poll error...'));
         }
       : jasmine.createSpy('fnPoll').and.callFake(() => of(true));
     fnProcess = jasmine.createSpy('fnProcess');

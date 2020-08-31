@@ -56,6 +56,7 @@ export class ErrorService {
           }),
           take(this.numberOfRetries)
         ),
+        // eslint-disable-next-line rxjs/throw-error
         throwError({
           status: 0,
           error: { errorMessage: this.translate.instant('errorRetryFailed') }

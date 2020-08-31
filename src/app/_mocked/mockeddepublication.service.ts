@@ -39,28 +39,32 @@ export class MockDepublicationService {
 
   getPublicationInfoUptoPage(datasetId: string, _: number): Observable<DatasetDepublicationInfo> {
     if (this.errorMode) {
-      return throwError(`mock getPublicationInfoUptoPage(${datasetId}) throws error...`);
+      return throwError(new Error(`mock getPublicationInfoUptoPage(${datasetId}) throws error...`));
     }
     return observableOf(mockPublicationInfoMoreResults);
   }
 
   deleteDepublications(datasetId: string, recordIds: Array<string>): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(`mock deleteDepublications(${datasetId}, ${recordIds}) throws error...`);
+      return throwError(
+        new Error(`mock deleteDepublications(${datasetId}, ${recordIds}) throws error...`)
+      );
     }
     return observableOf(true);
   }
 
   depublishDataset(datasetId: string): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(`mock depublishDataset(${datasetId}) throws error...`);
+      return throwError(new Error(`mock depublishDataset(${datasetId}) throws error...`));
     }
     return observableOf(true);
   }
 
   depublishRecordIds(datasetId: string, recordIds: Array<string>): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(`mock depublishRecordIds(${datasetId}, ${recordIds}) throws error...`);
+      return throwError(
+        new Error(`mock depublishRecordIds(${datasetId}, ${recordIds}) throws error...`)
+      );
     }
     return observableOf(true);
   }
@@ -69,7 +73,9 @@ export class MockDepublicationService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError(`mock setPublicationFile(${datasetId}, ${file}) throws error...`);
+          return throwError(
+            new Error(`mock setPublicationFile(${datasetId}, ${file}) throws error...`)
+          );
         })
       );
     }
@@ -78,7 +84,9 @@ export class MockDepublicationService {
 
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
     if (this.errorMode) {
-      return throwError(`mock setPublicationInfo(${datasetId}, ${toDepublish}) throws error...`);
+      return throwError(
+        new Error(`mock setPublicationInfo(${datasetId}, ${toDepublish}) throws error...`)
+      );
     }
     return observableOf(true);
   }

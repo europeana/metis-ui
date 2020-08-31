@@ -46,6 +46,7 @@ export class MockAuthenticationService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
+          // eslint-disable-next-line rxjs/throw-error
           return throwError({
             status: 401,
             error: { errorMessage: 'Mock reloadCurrentUser Error' }
@@ -60,6 +61,7 @@ export class MockAuthenticationService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
+          // eslint-disable-next-line rxjs/throw-error
           return throwError({
             status: 401,
             error: { errorMessage: 'Mock updatePassword Error' }
@@ -74,6 +76,7 @@ export class MockAuthenticationService {
     if (this.isNumber(password)) {
       return timer(1).pipe(
         switchMap(() => {
+          // eslint-disable-next-line rxjs/throw-error
           return throwError({
             status: parseInt(password),
             error: { errorMessage: 'Mock Authentication Error' }
