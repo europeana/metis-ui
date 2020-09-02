@@ -709,7 +709,7 @@ export function errorReport(reportId: string, process: string) {
         errorType: '1',
         message: process,
         occurrences: reportId,
-        errorDetails: new Array(3).fill(null).map(() => {
+        errorDetails: [1, 2, 3].forEach(() => {
           return {
             identifier: 'http://test.ecloud.psnc.pl/api/records/' + reportId,
             additionalInfo: 'Error while executing ' + process

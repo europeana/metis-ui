@@ -567,7 +567,7 @@ export class MockWorkflowService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError('mock startWorkflow throws error');
+          return throwError(new Error('mock startWorkflow throws error'));
         })
       );
     }
@@ -580,14 +580,14 @@ export class MockWorkflowService {
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {
     if (this.errorMode) {
-      return throwError('mock getLastDatasetExecution throws error');
+      return throwError(new Error('mock getLastDatasetExecution throws error'));
     }
     return observableOf(mockWorkflowExecution);
   }
 
   getAllExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
     if (this.errorMode) {
-      return throwError('mock getAllExecutionsCollectingPages throws error');
+      return throwError(new Error('mock getAllExecutionsCollectingPages throws error'));
     }
     return observableOf(mockWorkflowExecutionResults.results);
   }
@@ -600,23 +600,21 @@ export class MockWorkflowService {
 
   getCompletedDatasetOverviewsUptoPage(): Observable<MoreResults<DatasetOverview>> {
     if (this.errorMode) {
-      return throwError({
-        error: { errorMessage: 'mock getCompletedDatasetOverviewsUptoPage throws error' }
-      });
+      return throwError(new Error('mock getCompletedDatasetOverviewsUptoPage throws error'));
     }
     return observableOf({ results: mockDatasetOverviewResults.results, more: false });
   }
 
   getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
     if (this.errorMode) {
-      return throwError(`mock getFinishedDatasetExecutions() throws error`);
+      return throwError(new Error(`mock getFinishedDatasetExecutions() throws error`));
     }
     return observableOf(mockWorkflowExecutionResults);
   }
 
   getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryList> {
     if (this.errorMode) {
-      return throwError(`mock getDatasetHistory(${datasetId}) throws error`);
+      return throwError(new Error(`mock getDatasetHistory(${datasetId}) throws error`));
     }
     return observableOf({
       executions: mockWorkflowExecutionResults.results.map((we: WorkflowExecution) => {
@@ -630,7 +628,7 @@ export class MockWorkflowService {
 
   getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {
     if (this.errorMode) {
-      return throwError(`mock getExecutionPlugins(${id}) throws error`);
+      return throwError(new Error(`mock getExecutionPlugins(${id}) throws error`));
     }
     return observableOf({
       plugins: [
@@ -657,7 +655,7 @@ export class MockWorkflowService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError('mock getReport throws error...');
+          return throwError(new Error('mock getReport throws error...'));
         })
       );
     }
@@ -682,7 +680,7 @@ export class MockWorkflowService {
 
   getWorkflowForDataset(): Observable<Workflow> {
     if (this.errorMode) {
-      return throwError('mock getWorkflowForDataset throws error');
+      return throwError(new Error('mock getWorkflowForDataset throws error'));
     }
     return observableOf(mockWorkflow);
   }
@@ -691,7 +689,7 @@ export class MockWorkflowService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError('mock createWorkflowForDataset throws error');
+          return throwError(new Error('mock createWorkflowForDataset throws error'));
         })
       );
     }
@@ -700,7 +698,7 @@ export class MockWorkflowService {
 
   getPublishedHarvestedData(): Observable<HarvestData> {
     if (this.errorMode) {
-      return throwError('mock getPublishedHarvestedData throws error');
+      return throwError(new Error('mock getPublishedHarvestedData throws error'));
     }
     return observableOf(mockHarvestData);
   }

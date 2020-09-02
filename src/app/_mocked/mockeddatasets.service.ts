@@ -68,7 +68,7 @@ export class MockDatasetsService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError('mock getXSLT throws error...');
+          return throwError(new Error('mock getXSLT throws error...'));
         })
       );
     }
@@ -79,7 +79,7 @@ export class MockDatasetsService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError('mock getDataset throws error...');
+          return throwError(new Error('mock getDataset throws error...'));
         })
       );
     }
@@ -104,7 +104,9 @@ export class MockDatasetsService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError(`mock getSearchResultsUptoPage with term "${term}" throws error`);
+          return throwError(
+            new Error(`mock getSearchResultsUptoPage with term "${term}" throws error`)
+          );
         })
       );
     }

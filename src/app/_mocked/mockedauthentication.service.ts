@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of as observableOf, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
@@ -49,7 +50,7 @@ export class MockAuthenticationService {
           return throwError({
             status: 401,
             error: { errorMessage: 'Mock reloadCurrentUser Error' }
-          });
+          } as HttpErrorResponse);
         })
       );
     }
@@ -63,7 +64,7 @@ export class MockAuthenticationService {
           return throwError({
             status: 401,
             error: { errorMessage: 'Mock updatePassword Error' }
-          });
+          } as HttpErrorResponse);
         })
       );
     }
@@ -77,7 +78,7 @@ export class MockAuthenticationService {
           return throwError({
             status: parseInt(password),
             error: { errorMessage: 'Mock Authentication Error' }
-          });
+          } as HttpErrorResponse);
         })
       );
     }

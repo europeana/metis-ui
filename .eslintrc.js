@@ -23,7 +23,7 @@ module.exports = {
 
     // TODO: enable these
     //'rxjs/no-unbound-methods': 'error',
-    //'rxjs/throw-error': 'error',
+    'rxjs/throw-error': 'error',
 
     '@typescript-eslint/adjacent-overload-signatures': 'error',
     '@typescript-eslint/ban-ts-ignore': 'error',

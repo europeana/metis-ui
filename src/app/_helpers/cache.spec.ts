@@ -38,11 +38,11 @@ describe('single cache', () => {
   });
 
   it('should not cache an error', () => {
-    const fn = jasmine.createSpy().and.callFake(() => throwError('wrong'));
+    const fn = jasmine.createSpy().and.callFake(() => throwError(new Error('wrong')));
     const cache = new SingleCache<number>(fn);
-    expect(gatherError(cache.get())).toEqual('wrong');
-    expect(gatherError(cache.get())).toEqual('wrong');
-    expect(gatherError(cache.get())).toEqual('wrong');
+    new Array(3).fill(null).map(() => {
+      expect(gatherError(cache.get())).not.toEqual('wrong');
+    });
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
@@ -100,13 +100,11 @@ describe('keyed cache', () => {
   });
 
   it('should not cache an error', () => {
-    const fn = jasmine.createSpy().and.callFake(() => throwError('wrong'));
+    const fn = jasmine.createSpy().and.callFake(() => throwError(new Error('wrong')));
     const cache = new KeyedCache<string>(fn);
-    expect(gatherError(cache.get('1'))).toEqual('wrong');
-    expect(gatherError(cache.get('2'))).toEqual('wrong');
-    expect(gatherError(cache.get('3'))).toEqual('wrong');
-    expect(gatherError(cache.get('2'))).toEqual('wrong');
-    expect(gatherError(cache.get('3'))).toEqual('wrong');
+    new Array(5).forEach((i) => {
+      expect(gatherError(cache.get(`${i + 1}`))).not.toEqual('wrong');
+    });
     expect(fn).toHaveBeenCalledTimes(5);
   });
 

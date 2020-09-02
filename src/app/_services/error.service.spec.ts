@@ -88,17 +88,16 @@ describe('ErrorService', () => {
     const rawResponses = [['ans1'], [3, 'ans2'], [0, 0, 'ans3'], [0, 0, 0, 0, 0, 0, 0, 'ans4']];
     const expectedResponses = ['ans1', 'error:3', 'ans3', 'error:0'];
 
-    forkJoin(
+    const sub = forkJoin(
       rawResponses.map((x) =>
         fromValues(x).pipe(
           service.handleRetry<string>(),
           catchError((err) => of(`error:${err.status}`))
         )
       )
-    )
-      .subscribe((actualResponses) => {
-        expect(actualResponses).toEqual(expectedResponses);
-      })
-      .unsubscribe();
+    ).subscribe((actualResponses) => {
+      expect(actualResponses).toEqual(expectedResponses);
+      sub.unsubscribe();
+    });
   }));
 });
