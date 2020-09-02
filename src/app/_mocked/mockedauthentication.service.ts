@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of as observableOf, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
@@ -46,11 +47,10 @@ export class MockAuthenticationService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          // eslint-disable-next-line rxjs/throw-error
           return throwError({
             status: 401,
             error: { errorMessage: 'Mock reloadCurrentUser Error' }
-          });
+          } as HttpErrorResponse);
         })
       );
     }
@@ -61,11 +61,10 @@ export class MockAuthenticationService {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          // eslint-disable-next-line rxjs/throw-error
           return throwError({
             status: 401,
             error: { errorMessage: 'Mock updatePassword Error' }
-          });
+          } as HttpErrorResponse);
         })
       );
     }
@@ -76,11 +75,10 @@ export class MockAuthenticationService {
     if (this.isNumber(password)) {
       return timer(1).pipe(
         switchMap(() => {
-          // eslint-disable-next-line rxjs/throw-error
           return throwError({
             status: parseInt(password),
             error: { errorMessage: 'Mock Authentication Error' }
-          });
+          } as HttpErrorResponse);
         })
       );
     }
