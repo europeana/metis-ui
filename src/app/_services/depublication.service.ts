@@ -46,7 +46,7 @@ export class DepublicationService {
   /*  record upload events
   /*  @param {HttpEvent} event - event from the server
   */
-  handleUploadEvents(event: HttpEvent<Object>): boolean {
+  static handleUploadEvents(event: HttpEvent<Object>): boolean {
     if (event.type === HttpEventType.Response) {
       return true;
     } else {
@@ -77,7 +77,7 @@ export class DepublicationService {
         },
         reportProgress: true
       })
-      .pipe(map(this.handleUploadEvents))
+      .pipe(map(DepublicationService.handleUploadEvents))
       .pipe(this.errors.handleRetry());
   }
 

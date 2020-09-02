@@ -22,7 +22,7 @@ module.exports = {
     'rxjs/no-nested-subscribe': 'error',
 
     // TODO: enable these
-    //'rxjs/no-unbound-methods': 'error',
+    'rxjs/no-unbound-methods': 'error',
     'rxjs/throw-error': 'error',
 
     '@typescript-eslint/adjacent-overload-signatures': 'error',

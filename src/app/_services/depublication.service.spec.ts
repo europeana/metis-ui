@@ -45,12 +45,12 @@ describe('depublication service', () => {
   });
 
   it('should handle upload events', () => {
-    const resProgess = service.handleUploadEvents({
+    const resProgess = DepublicationService.handleUploadEvents({
       type: HttpEventType.UploadProgress,
       loaded: 1,
       total: 1
     } as HttpEvent<Object>);
-    const resResponse = service.handleUploadEvents({
+    const resResponse = DepublicationService.handleUploadEvents({
       type: HttpEventType.Response
     } as HttpEvent<Object>);
     expect(resProgess).toBeFalsy();
@@ -148,7 +148,7 @@ describe('depublication service', () => {
   });
 
   it('should set the publication file', () => {
-    spyOn(service, 'handleUploadEvents');
+    spyOn(DepublicationService, 'handleUploadEvents');
     const dsId = '123';
     const file = { name: 'foo', size: 500001 } as File;
     const sub = service.setPublicationFile(dsId, file).subscribe((res) => {
@@ -160,7 +160,7 @@ describe('depublication service', () => {
       url
     );
     mockRequest.send({ depublicationFile: file });
-    expect(service.handleUploadEvents).toHaveBeenCalled();
+    expect(DepublicationService.handleUploadEvents).toHaveBeenCalled();
     sub.unsubscribe();
   });
 
