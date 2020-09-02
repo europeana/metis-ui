@@ -60,7 +60,7 @@ export class ErrorService {
         throwError({
           status: 0,
           error: { errorMessage: this.translate.instant('errorRetryFailed') }
-        })
+        } as HttpErrorResponse)
       )
     );
   }
