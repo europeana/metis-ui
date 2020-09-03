@@ -23,5 +23,6 @@ export class SubscriptionManager implements OnDestroy {
         sub.unsubscribe();
       }
     });
+    this.subs = [];
   }
 }

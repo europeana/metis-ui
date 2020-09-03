@@ -25,5 +25,6 @@ describe('SubscriptionManager', () => {
     clss.cleanup();
     expect(s1.unsubscribe).toHaveBeenCalled();
     expect(s2.unsubscribe).toHaveBeenCalled();
+    expect(clss.subs.length).toEqual(0);
   });
 });
