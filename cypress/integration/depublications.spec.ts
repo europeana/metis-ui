@@ -83,6 +83,7 @@ context('metis-ui', () => {
       };
 
       submitEntries(testTexts.join('\n'));
+      cy.wait(100);
 
       testTexts.forEach((txt) => {
         cy.get('.record-url')

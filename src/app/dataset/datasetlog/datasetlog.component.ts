@@ -1,9 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { timer as observableTimer, Subscription } from 'rxjs';
-
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { of, Subscription } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
+
+import { DataPollingComponent } from '../../data-polling';
+
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -11,19 +14,19 @@ import { TranslateService } from '../../_translate';
   selector: 'app-datasetlog',
   templateUrl: './datasetlog.component.html'
 })
-export class DatasetlogComponent implements OnInit, OnDestroy {
+export class DatasetlogComponent extends DataPollingComponent implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
     private readonly translate: TranslateService
-  ) {}
+  ) {
+    super();
+  }
 
   @Output() closed = new EventEmitter<void>();
 
   logMessages?: SubTaskInfo[];
   logPerStep = 100;
-  logStep = 1;
-  logTo = this.logStep * this.logPerStep;
   subscription: Subscription;
   noLogs: string;
   noLogMessage?: string;
@@ -69,24 +72,13 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
     this.noLogs = this.translate.instant('noLogs');
   }
 
-  /** ngOnDestroy
-  /* unsubscribe from subscription
-  */
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
-
   /** closeLog
   /* emit the closed event
   /* unsubscribe from data source
   */
   closeLog(): void {
     this.closed.emit();
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.cleanup();
   }
 
   /** startPolling
@@ -94,55 +86,53 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   /* - start polling the log data
   */
   startPolling(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    const timer = observableTimer(0, environment.intervalStatusMedium);
-    this.subscription = timer.subscribe(() => {
-      this.returnLog();
-    });
+    this.cleanup();
+
+    this.createNewDataPoller(
+      environment.intervalStatusMedium,
+      () => {
+        return of(this.getProcessedCount()).pipe(
+          map((val) => {
+            if (isPluginCompleted(this.showPluginLog) && this.subs.length > 0) {
+              this.cleanup();
+              return 0;
+            }
+            if (val <= 1) {
+              this.isFirstLoading = false;
+              this.showWindowOutput(undefined);
+              return 0;
+            }
+            return val;
+          }),
+          filter((val) => {
+            return val > 0;
+          }),
+          switchMap((val: number) => {
+            return this.workflows.getLogs(
+              this.showPluginLog.externalTaskId,
+              this.showPluginLog.topologyName,
+              this.getLogFrom(val),
+              val
+            );
+          })
+        );
+      },
+      (result: SubTaskInfo[]) => {
+        this.isFirstLoading = false;
+        this.showWindowOutput(result);
+      },
+      (err: HttpErrorResponse): HttpErrorResponse | false => {
+        this.isFirstLoading = false;
+        this.errors.handleError(err);
+        this.cleanup();
+        return err;
+      }
+    );
   }
 
-  /** returnLog
-  /* - subscribe to the logs
-  /* - show
-  */
-  returnLog(): void {
-    const processed =
-      this.showPluginLog.executionProgress && this.showPluginLog.executionProgress.processedRecords;
-
-    this.logTo = processed || 0;
-
-    if (processed && isPluginCompleted(this.showPluginLog) && this.subscription) {
-      // unsubscribe if done
-      this.subscription.unsubscribe();
-    }
-
-    if (this.logTo <= 1) {
-      this.isFirstLoading = false;
-      this.showWindowOutput(undefined);
-      return;
-    }
-
-    const subLogs = this.workflows
-      .getLogs(
-        this.showPluginLog.externalTaskId,
-        this.showPluginLog.topologyName,
-        this.getLogFrom(),
-        this.logTo
-      )
-      .subscribe(
-        (result) => {
-          this.isFirstLoading = false;
-          this.showWindowOutput(result);
-          subLogs.unsubscribe();
-        },
-        (err: HttpErrorResponse) => {
-          this.isFirstLoading = false;
-          this.errors.handleError(err);
-          subLogs.unsubscribe();
-        }
-      );
+  getProcessedCount(): number {
+    const prg = this.showPluginLog.executionProgress;
+    return prg ? prg.processedRecords : 0;
   }
 
   /** showWindowOutput
@@ -160,7 +150,7 @@ export class DatasetlogComponent implements OnInit, OnDestroy {
   /** getLogFrom
   /* get the log pagination parameter
   */
-  getLogFrom(): number {
-    return this.logTo - this.logPerStep >= 1 ? this.logTo - this.logPerStep + 1 : 1;
+  getLogFrom(logTo: number): number {
+    return logTo - this.logPerStep >= 1 ? logTo - this.logPerStep + 1 : 1;
   }
 }
