@@ -239,7 +239,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           this.allSampleComparisons = this.undoNewLines(result);
           this.isLoading = false;
           this.selectedComparison = plugin;
-        }, this.errorHandling)
+        }, this.errorHandling.bind(this))
     );
   }
 
@@ -276,7 +276,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
         this.allSamples.forEach((sample) => {
           this.sampleRecordIds.push(sample.ecloudId);
         });
-      }, this.errorHandling)
+      }, this.errorHandling.bind(this))
     );
 
     this.subs.push(
@@ -286,7 +286,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           this.isLoading = false;
         }
         this.historyVersions = result;
-      }, this.errorHandling)
+      }, this.errorHandling.bind(this))
     );
   }
 
