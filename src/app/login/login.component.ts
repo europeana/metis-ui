@@ -38,7 +38,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
   /* listen for current logins
   */
   ngOnInit(): void {
-    this.documentTitleService.setTitle('Sign In');
+    this.documentTitleService.setTitle(this.translate.instant('signIn'), true);
     this.msgBadCredentials = this.translate.instant('msgBadCredentials');
     this.msgSigninFailed = this.translate.instant('msgSigninFailed');
     this.buildForm();
