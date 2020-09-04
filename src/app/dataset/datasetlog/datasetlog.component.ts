@@ -27,7 +27,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
 
   logMessages?: SubTaskInfo[];
   logPerStep = 100;
-  logStep = 1;
   subscription: Subscription;
   noLogs: string;
   noLogMessage?: string;
