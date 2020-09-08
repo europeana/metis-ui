@@ -81,9 +81,12 @@ describe('SearchResultsComponent', () => {
     });
 
     it('should unsubscribe when destroyed', () => {
-      spyOn(component.subs[0], 'unsubscribe');
+      let called = false;
+      spyOn(component.subs[0], 'unsubscribe').and.callFake(() => {
+        called = true;
+      });
       component.ngOnDestroy();
-      expect(component.subs[0].unsubscribe).toHaveBeenCalled();
+      expect(called).toBeTruthy();
     });
   });
 

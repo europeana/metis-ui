@@ -443,6 +443,6 @@ export class DepublicationComponent extends DataPollingComponent {
       fnDataCall,
       fnDataProcess,
       this.errors.handleError
-    );
+    ).getPollingSubject();
   }
 }
