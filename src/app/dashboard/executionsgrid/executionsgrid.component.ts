@@ -109,7 +109,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
       fnDataCall,
       fnDataProcess,
       fnError
-    );
+    ).getPollingSubject();
   }
 
   /** setSelectedDsId

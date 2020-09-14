@@ -137,7 +137,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       fnDataCallHarvest,
       fnDataProcessHarvest,
       fnOnErrorHarvest
-    );
+    ).getPollingSubject();
 
     const fnDataCallWorkflow = (): Observable<Workflow> => {
       return this.workflows.getWorkflowForDataset(this.datasetId);
@@ -160,7 +160,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       fnDataCallWorkflow,
       fnDataProcessWorkflow,
       fnOnErrorWorkflow
-    );
+    ).getPollingSubject();
 
     const fnDataCallLastExec = (): Observable<WorkflowExecution | undefined> => {
       this.lastExecutionIsLoading = false;

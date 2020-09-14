@@ -43,7 +43,6 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.msgSigninFailed = this.translate.instant('msgSigninFailed');
     this.buildForm();
 
-    // eslint-disable-next-line rxjs/no-ignored-observable
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       (): Observable<boolean> => {

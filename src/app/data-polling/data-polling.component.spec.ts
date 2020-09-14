@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Observable, of, Subject, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { DataPollingComponent } from './';
+import { DataPollingComponent, PollingSubjectAccesor } from './';
 
 describe('DataPollingComponent', () => {
   // intervals
@@ -33,7 +33,7 @@ describe('DataPollingComponent', () => {
   });
 
   // Intantiate poller (needs called from the async context)
-  const initDefaultDataPoller = (errorMode?: boolean): Subject<boolean> => {
+  const initDefaultDataPoller = (errorMode?: boolean): PollingSubjectAccesor => {
     fnPoll = errorMode
       ? <T>(): Observable<T> => {
           return throwError(new Error('mock data-poll error...'));
@@ -104,7 +104,7 @@ describe('DataPollingComponent', () => {
     }));
 
     it('should allow polling resets', fakeAsync(() => {
-      const subject = initDefaultDataPoller();
+      const subject = initDefaultDataPoller().getPollingSubject();
       runTicks(1, 5, interval);
       expect(fnPoll).toHaveBeenCalledTimes(6);
       subject.next(true);
