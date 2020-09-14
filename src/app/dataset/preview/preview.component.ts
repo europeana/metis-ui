@@ -20,7 +20,7 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
-import { CodemirrorComponent } from 'ng2-codemirror';
+import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 import * as beautify from 'vkbeautify';
