@@ -27,6 +27,10 @@ export interface TriggerDelayConfig {
   blockIf: () => boolean;
 }
 
+export interface PollingSubjectAccesor {
+  getPollingSubject: () => Subject<boolean>;
+}
+
 @Component({
   selector: 'app-data-polling',
   template: ``
@@ -169,7 +173,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     fnServiceCall: () => Observable<T>,
     fnDataProcess: (result: T) => void,
     fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false
-  ): Subject<boolean> {
+  ): PollingSubjectAccesor {
     const pollRefresh = new Subject<boolean>();
     const loadTrigger = new BehaviorSubject(true);
     const pollContextIndex = this.allPollingInfo.length;
@@ -204,6 +208,10 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
         })
       )
       .subscribe(fnDataProcess, fnOnError);
-    return pollRefresh;
+    return {
+      getPollingSubject: (): Subject<boolean> => {
+        return pollRefresh;
+      }
+    };
   }
 }

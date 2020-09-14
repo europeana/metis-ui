@@ -13,8 +13,10 @@ describe('TokenInterceptor', () => {
 
   function checkAuthorizationForUrl(url: string, authorization: string | null): void {
     const handler = { handle: jasmine.createSpy('handle') };
+    // eslint-disable-next-line rxjs/no-ignored-observable
     service.intercept(new HttpRequest('GET', url), handler);
     const request = handler.handle.calls.first().args[0];
+    expect(handler.handle).toHaveBeenCalled();
     expect(request.headers.get('Authorization')).toBe(authorization);
   }
 
