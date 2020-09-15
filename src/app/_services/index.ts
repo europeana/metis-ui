@@ -1,4 +1,5 @@
 export * from './authentication.service';
+export * from './confirm-dialog.service';
 export * from './countries.service';
 export * from './datasets.service';
 export * from './depublication.service';

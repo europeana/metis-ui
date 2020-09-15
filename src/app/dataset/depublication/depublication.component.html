@@ -1,3 +1,14 @@
+<div style="background-color:red; padding: 3em;">
+  <button (click)="confirmDepublishDataset()">Open</button>
+  <!-- REMOVE THIS -->
+</div>
+
+<app-confirm-dialog id="confirm-depublish-dataset" title="depublish">
+  <p i18n="confirm dataset depublish|show modal to get user confirmation@@confirmDatasetDepublish">
+    Are you sure you want to depublish "{{ datasetName }}"?
+  </p>
+</app-confirm-dialog>
+
 <div class="depublication-ctrls">
   <button
     class="btn-delete"

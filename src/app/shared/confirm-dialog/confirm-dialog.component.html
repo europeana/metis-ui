@@ -1,0 +1,14 @@
+<div class="modal-wrapper" *ngIf="show">
+  <div class="modal modal-small">
+    <div class="head">{{ title | translate }} <a class="btn-close" (click)="close(false)"></a></div>
+    <div class="content content-autoscroll">
+      <p>
+        <ng-content></ng-content>
+      </p>
+      <p>
+        <button class="button" type="button" (click)="close(false)">{{ 'no' | translate }}</button>
+        <button class="button" type="button" (click)="close(true)">{{ 'yes' | translate }}</button>
+      </p>
+    </div>
+  </div>
+</div>

@@ -17,7 +17,7 @@ import {
 } from '../../_models';
 
 import { DataPollingComponent } from '../../data-polling';
-import { DepublicationService, ErrorService } from '../../_services';
+import { DepublicationService, ErrorService, ConfirmDialogService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
 
@@ -66,6 +66,7 @@ export class DepublicationComponent extends DataPollingComponent {
   _totalRecordCount?: number;
 
   constructor(
+    private readonly confirmDialogs: ConfirmDialogService,
     private readonly depublications: DepublicationService,
     private readonly errors: ErrorService,
     private readonly fb: FormBuilder
@@ -96,6 +97,8 @@ export class DepublicationComponent extends DataPollingComponent {
       this.beginPolling();
     }
   }
+
+  @Input() datasetName: string;
 
   /** datasetId
   /* getter for private variable _datasetId (returns shadow variable)
@@ -313,6 +316,14 @@ export class DepublicationComponent extends DataPollingComponent {
           )
       );
     }
+  }
+
+  confirmDepublishDataset() {
+    this.confirmDialogs.open('confirm-depublish-dataset').subscribe((response: boolean) => {
+      if (response) {
+        this.onDepublishDataset();
+      }
+    });
   }
 
   /** onDepublishDataset

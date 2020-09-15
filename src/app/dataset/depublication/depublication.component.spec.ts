@@ -14,15 +14,16 @@ import {
   MockDepublicationServiceErrors,
   MockErrorService
 } from '../../_mocked';
-
+import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
-import { DepublicationService, ErrorService } from '../../_services';
+import { ConfirmDialogService, DepublicationService, ErrorService } from '../../_services';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 
 describe('DepublicationComponent', () => {
   let component: DepublicationComponent;
   let fixture: ComponentFixture<DepublicationComponent>;
+  let confirmDialogs: ConfirmDialogService;
   let depublications: DepublicationService;
   let errors: ErrorService;
 
@@ -43,6 +44,7 @@ describe('DepublicationComponent', () => {
         createMockPipe('renameWorkflow')
       ],
       providers: [
+        ConfirmDialogService,
         {
           provide: DepublicationService,
           useClass: errorMode ? MockDepublicationServiceErrors : MockDepublicationService
@@ -52,8 +54,10 @@ describe('DepublicationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+    confirmDialogs = TestBed.get(ConfirmDialogService);
     depublications = TestBed.get(DepublicationService);
     errors = TestBed.get(ErrorService);
+    console.log('confirmDialogs = ' + confirmDialogs);
   };
 
   const b4Each = (): void => {
@@ -325,6 +329,19 @@ describe('DepublicationComponent', () => {
       valDisabled = false;
       component.setSelection(true);
       expect(spy).toHaveBeenCalledWith(true);
+    });
+
+    it('should confirm dataset depublication', () => {
+      let confirmResult = false;
+      spyOn(confirmDialogs, 'open').and.callFake(() => {
+        return of(confirmResult);
+      });
+      spyOn(component, 'onDepublishDataset').and.callThrough();
+      component.confirmDepublishDataset();
+      expect(component.onDepublishDataset).not.toHaveBeenCalled();
+      confirmResult = true;
+      component.confirmDepublishDataset();
+      expect(component.onDepublishDataset).toHaveBeenCalled();
     });
 
     it('should handle dataset depublication', () => {

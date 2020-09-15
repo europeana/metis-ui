@@ -1,3 +1,4 @@
+export * from './confirm-dialog/';
 export * from './header/';
 export * from './loading-button/';
 export * from './notification/';

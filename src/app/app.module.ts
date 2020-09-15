@@ -55,6 +55,7 @@ import { ProfileComponent } from './profile';
 import { RegisterComponent } from './register';
 import { AppRoutingModule } from './routing';
 import {
+  ConfirmDialogComponent,
   HeaderComponent,
   LoadingButtonComponent,
   NotificationComponent,
@@ -71,6 +72,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     DataPollingComponent,
     AppComponent,
     CollapsibleDirective,
+    ConfirmDialogComponent,
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
