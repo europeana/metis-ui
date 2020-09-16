@@ -161,8 +161,11 @@ describe('DepublicationComponent', () => {
     it('should submit the file', fakeAsync(() => {
       component.dialogFileOpen = true;
       component.datasetId = '123';
-      addFormFieldData();
       expect(component.dialogFileOpen).toBeTruthy();
+      component.onSubmitFormFile();
+      tick(1);
+      expect(component.dialogFileOpen).toBeTruthy();
+      addFormFieldData();
       component.onSubmitFormFile();
       tick(1);
       expect(component.dialogFileOpen).toBeFalsy();
@@ -365,12 +368,11 @@ describe('DepublicationComponent', () => {
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
 
-      confirmResult = true;
+      component.depublicationSelections = ['0'];
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
 
-      const testSelection = ['0'];
-      component.depublicationSelections = testSelection;
+      confirmResult = true;
       component.confirmDepublishRecordIds();
       expect(component.onDepublishRecordIds).toHaveBeenCalled();
 
