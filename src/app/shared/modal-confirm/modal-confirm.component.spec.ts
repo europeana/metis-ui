@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ConfirmDialogService } from '../../_services';
+import { ModalConfirmService } from '../../_services';
 import { createMockPipe } from '../../_mocked';
-import { ConfirmDialogComponent } from '.';
+import { ModalConfirmComponent } from '.';
 
-describe('ConfirmDialogComponent', () => {
-  let component: ConfirmDialogComponent;
-  let fixture: ComponentFixture<ConfirmDialogComponent>;
-  let confirmDialogs: ConfirmDialogService;
+describe('ModalConfirmComponent', () => {
+  let component: ModalConfirmComponent;
+  let fixture: ComponentFixture<ModalConfirmComponent>;
+  let modalConfirms: ModalConfirmService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ConfirmDialogComponent, createMockPipe('translate')],
-      providers: [ConfirmDialogService]
+      declarations: [ModalConfirmComponent, createMockPipe('translate')],
+      providers: [ModalConfirmService]
     }).compileComponents();
-    fixture = TestBed.createComponent(ConfirmDialogComponent);
+    fixture = TestBed.createComponent(ModalConfirmComponent);
     component = fixture.componentInstance;
-    confirmDialogs = TestBed.get(ConfirmDialogService);
+    modalConfirms = TestBed.get(ModalConfirmService);
   });
 
   it('should create', () => {
@@ -23,13 +23,14 @@ describe('ConfirmDialogComponent', () => {
   });
 
   it('should register itself on init', () => {
-    spyOn(confirmDialogs, 'add');
+    spyOn(modalConfirms, 'add');
     component.ngOnInit();
-    expect(confirmDialogs.add).toHaveBeenCalled();
+    expect(modalConfirms.add).toHaveBeenCalled();
   });
 
   it('should open', () => {
     expect(component.show).toBeFalsy();
+    // eslint-disable-next-line rxjs/no-ignored-observable
     component.open();
     expect(component.show).toBeTruthy();
   });

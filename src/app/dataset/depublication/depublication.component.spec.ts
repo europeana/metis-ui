@@ -16,14 +16,14 @@ import {
 } from '../../_mocked';
 import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
-import { ConfirmDialogService, DepublicationService, ErrorService } from '../../_services';
+import { DepublicationService, ErrorService, ModalConfirmService } from '../../_services';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 
 describe('DepublicationComponent', () => {
   let component: DepublicationComponent;
   let fixture: ComponentFixture<DepublicationComponent>;
-  let confirmDialogs: ConfirmDialogService;
+  let modalConfirms: ModalConfirmService;
   let depublications: DepublicationService;
   let errors: ErrorService;
 
@@ -44,7 +44,7 @@ describe('DepublicationComponent', () => {
         createMockPipe('renameWorkflow')
       ],
       providers: [
-        ConfirmDialogService,
+        ModalConfirmService,
         {
           provide: DepublicationService,
           useClass: errorMode ? MockDepublicationServiceErrors : MockDepublicationService
@@ -54,10 +54,9 @@ describe('DepublicationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
-    confirmDialogs = TestBed.get(ConfirmDialogService);
+    modalConfirms = TestBed.get(ModalConfirmService);
     depublications = TestBed.get(DepublicationService);
     errors = TestBed.get(ErrorService);
-    console.log('confirmDialogs = ' + confirmDialogs);
   };
 
   const b4Each = (): void => {
@@ -110,6 +109,8 @@ describe('DepublicationComponent', () => {
     });
 
     it('should open the input dialog', () => {
+      component.datasetId = '123';
+      component.beginPolling();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogInput();
@@ -117,6 +118,8 @@ describe('DepublicationComponent', () => {
     });
 
     it('should open the file dialog', () => {
+      component.datasetId = '123';
+      component.beginPolling();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogFile();
@@ -132,6 +135,8 @@ describe('DepublicationComponent', () => {
     });
 
     it('should close the menus', () => {
+      component.datasetId = '123';
+      component.beginPolling();
       component.optionsOpenAdd = true;
       component.optionsOpenDepublish = true;
       component.closeMenus();
@@ -140,6 +145,7 @@ describe('DepublicationComponent', () => {
     });
 
     it('should close the menus after invoking menu commands', () => {
+      component.datasetId = '123';
       component.beginPolling();
       spyOn(component, 'closeMenus').and.callThrough();
       component.onDepublishDataset();
@@ -232,11 +238,15 @@ describe('DepublicationComponent', () => {
     });
 
     it('should validate for no whitespace', () => {
+      component.datasetId = '123';
+      component.beginPolling();
       expect(component.validateWhitespace(frmCtrl('hello'))).toBeFalsy();
       expect(component.validateWhitespace(frmCtrl(' '))).toBeTruthy();
     });
 
     it('should validate the file extension', () => {
+      component.datasetId = '123';
+      component.beginPolling();
       expect(component.validateFileExtension(frmCtrl('file.txt', true))).toBeFalsy();
       expect(component.validateFileExtension(frmCtrl('file.png', true))).toBeTruthy();
     });
@@ -333,7 +343,7 @@ describe('DepublicationComponent', () => {
 
     it('should confirm dataset depublication', () => {
       let confirmResult = false;
-      spyOn(confirmDialogs, 'open').and.callFake(() => {
+      spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(confirmResult);
       });
       spyOn(component, 'onDepublishDataset').and.callThrough();
@@ -344,8 +354,34 @@ describe('DepublicationComponent', () => {
       expect(component.onDepublishDataset).toHaveBeenCalled();
     });
 
+    it('should confirm record id depublication', () => {
+      let confirmResult = false;
+      component.beginPolling();
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        return of(confirmResult);
+      });
+      spyOn(component, 'onDepublishRecordIds').and.callThrough();
+
+      component.confirmDepublishRecordIds();
+      expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
+
+      confirmResult = true;
+      component.confirmDepublishRecordIds();
+      expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
+
+      const testSelection = ['0'];
+      component.depublicationSelections = testSelection;
+      component.confirmDepublishRecordIds();
+      expect(component.onDepublishRecordIds).toHaveBeenCalled();
+
+      component.confirmDepublishRecordIds(true);
+      expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(2);
+    });
+
     it('should handle dataset depublication', () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
+      component.datasetId = '123';
+
       component.beginPolling();
       component.onDepublishDataset();
       expect(depublications.depublishDataset).toHaveBeenCalled();
@@ -353,9 +389,10 @@ describe('DepublicationComponent', () => {
 
     it('should handle record id depublication', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      component.beginPolling();
       const testSelection = ['0'];
       component.datasetId = '123';
-      component.beginPolling();
+      component.depublicationSelections = [];
       component.onDepublishRecordIds();
       expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
       component.depublicationSelections = testSelection;
@@ -406,6 +443,7 @@ describe('DepublicationComponent', () => {
       spyOn(component, 'onError').and.callThrough();
       component.dialogFileOpen = true;
       component.datasetId = '123';
+      component.beginPolling();
       addFormFieldData();
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();

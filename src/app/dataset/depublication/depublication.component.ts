@@ -17,7 +17,7 @@ import {
 } from '../../_models';
 
 import { DataPollingComponent } from '../../data-polling';
-import { DepublicationService, ErrorService, ConfirmDialogService } from '../../_services';
+import { DepublicationService, ErrorService, ModalConfirmService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
 
@@ -66,13 +66,15 @@ export class DepublicationComponent extends DataPollingComponent {
   _totalRecordCount?: number;
 
   constructor(
-    private readonly confirmDialogs: ConfirmDialogService,
+    private readonly modalConfirms: ModalConfirmService,
     private readonly depublications: DepublicationService,
     private readonly errors: ErrorService,
     private readonly fb: FormBuilder
   ) {
     super();
   }
+
+  @Input() datasetName: string;
 
   /** totalRecordCount
   /* setter for shadow variable _totalRecordCount
@@ -97,8 +99,6 @@ export class DepublicationComponent extends DataPollingComponent {
       this.beginPolling();
     }
   }
-
-  @Input() datasetName: string;
 
   /** datasetId
   /* getter for private variable _datasetId (returns shadow variable)
@@ -318,12 +318,18 @@ export class DepublicationComponent extends DataPollingComponent {
     }
   }
 
-  confirmDepublishDataset() {
-    this.confirmDialogs.open('confirm-depublish-dataset').subscribe((response: boolean) => {
-      if (response) {
-        this.onDepublishDataset();
-      }
-    });
+  /** confirmDepublishDataset
+  /* - get user confirmation to call onDepublishDataset
+  */
+  confirmDepublishDataset(): void {
+    const confirmation = this.modalConfirms
+      .open('confirm-depublish-dataset')
+      .subscribe((response: boolean) => {
+        if (response) {
+          this.onDepublishDataset();
+        }
+        confirmation.unsubscribe();
+      });
   }
 
   /** onDepublishDataset
@@ -345,6 +351,23 @@ export class DepublicationComponent extends DataPollingComponent {
         }
       )
     );
+  }
+
+  /** confirmDepublishRecordIds
+  /* - get user confirmation to call onDepublishRecordIds
+  */
+  confirmDepublishRecordIds(all?: boolean): void {
+    if (!all && this.depublicationSelections.length === 0) {
+      return;
+    }
+    const confirmation = this.modalConfirms
+      .open(all ? 'confirm-depublish-all-recordIds' : 'confirm-depublish-recordIds')
+      .subscribe((response: boolean) => {
+        if (response) {
+          this.onDepublishRecordIds(all);
+        }
+        confirmation.unsubscribe();
+      });
   }
 
   /** onDepublishRecordIds

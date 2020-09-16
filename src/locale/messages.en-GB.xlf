@@ -15,14 +15,43 @@
       </trans-unit>
       <trans-unit id="confirmDatasetDepublish" datatype="html">
         <source>
-      Are you sure you want to depublish &quot;<x id="INTERPOLATION" equiv-text="{{datasetName}}"/>&quot;?
-    </source>
+    Are you sure you want to depublish &quot;<x id="INTERPOLATION" equiv-text="{{ datasetName }}"/>&quot;?
+  </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
-          <context context-type="linenumber">4</context>
+          <context context-type="linenumber">2</context>
         </context-group>
         <note priority="1" from="description">show modal to get user confirmation</note>
         <note priority="1" from="meaning">confirm dataset depublish</note>
+      </trans-unit>
+      <trans-unit id="confirmRecordIdsDepublish" datatype="html">
+        <source>
+    Are you sure you want to cancel <x id="ICU" equiv-text="{depublicationSelections.length, plural, =1 {...} other {...}}"/> in &quot;<x id="INTERPOLATION" equiv-text="{{ datasetName }}"/>&quot;?
+  </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">show modal to get user confirmation</note>
+        <note priority="1" from="meaning">confirm record id depublish</note>
+      </trans-unit>
+      <trans-unit id="b858d4e1f7f668c99fe23e752dea2c9800bb22eb" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {this record } other {records } }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="confirmRecordAllIdsDepublish" datatype="html">
+        <source>
+    Are you sure you want to cancel all records in &quot;<x id="INTERPOLATION" equiv-text="{{ datasetName }}"/>&quot;?
+  </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <note priority="1" from="description">show modal to get user confirmation</note>
+        <note priority="1" from="meaning">confirm all record id depublish</note>
       </trans-unit>
       <trans-unit id="depublicationDeleteButtonText" datatype="html">
         <source>
@@ -30,7 +59,7 @@
   </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <note priority="1" from="description">calls delete on the selected record ids</note>
         <note priority="1" from="meaning">delete button</note>
@@ -39,14 +68,14 @@
         <source>{VAR_PLURAL, plural, =1 {Id } other {Ids} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="depublicationDeleteButtonTooltip" datatype="html">
         <source>Remove record ids from the list below</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
-          <context context-type="linenumber">15</context>
+          <context context-type="linenumber">29</context>
         </context-group>
         <note priority="1" from="description">tooltip</note>
         <note priority="1" from="meaning">delete button tooltip</note>

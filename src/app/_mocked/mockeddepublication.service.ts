@@ -1,3 +1,4 @@
+import { HttpEvent } from '@angular/common/http';
 import { Observable, of as observableOf, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
@@ -36,6 +37,11 @@ export const mockPublicationInfoMoreResults: DatasetDepublicationInfo = {
 
 export class MockDepublicationService {
   errorMode = false;
+
+  handleUploadEvents(event: HttpEvent<Object>): boolean {
+    console.log(`mock handleUploadEvents (${event})`);
+    return true;
+  }
 
   getPublicationInfoUptoPage(datasetId: string, _: number): Observable<DatasetDepublicationInfo> {
     if (this.errorMode) {
