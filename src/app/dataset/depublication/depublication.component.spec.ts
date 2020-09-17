@@ -336,7 +336,9 @@ describe('DepublicationComponent', () => {
     it('should confirm dataset depublication', () => {
       let confirmResult = false;
       spyOn(modalConfirms, 'open').and.callFake(() => {
-        return of(confirmResult);
+        const res = of(confirmResult);
+        modalConfirms.add({ open: () => res, close: () => {}, id: '1' });
+        return res;
       });
 
       spyOn(component, 'onDepublishDataset').and.callThrough();
@@ -353,8 +355,11 @@ describe('DepublicationComponent', () => {
       let confirmResult = false;
 
       spyOn(modalConfirms, 'open').and.callFake(() => {
-        return of(confirmResult);
+        const res = of(confirmResult);
+        modalConfirms.add({ open: () => res, close: () => {}, id: '1' });
+        return res;
       });
+
       spyOn(component, 'onDepublishRecordIds').and.callThrough();
 
       component.confirmDepublishRecordIds();
