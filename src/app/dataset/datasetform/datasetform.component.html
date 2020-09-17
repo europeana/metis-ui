@@ -182,8 +182,9 @@
           {{ 'datasetPublicationFitness' | translate }}
         </label>
         <div class="radio-group">
-          <label *ngFor="let option of publicationFitnessOps">
+          <label class="fitness-radio-label" *ngFor="let option of publicationFitnessOps">
             <input
+              class="fitness-radio"
               type="radio"
               formControlName="publicationFitness"
               value="{{ option.val }}"
