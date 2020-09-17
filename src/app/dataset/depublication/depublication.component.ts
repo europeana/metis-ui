@@ -40,6 +40,9 @@ export class DepublicationComponent extends DataPollingComponent {
   formRawText: FormGroup;
   formFile: FormGroup;
   isSaving = false;
+  modalAllRecDepublish = 'confirm-depublish-all-recordIds';
+  modalDatasetDepublish = 'confirm-depublish-dataset';
+  modalRecIdDepublish = 'confirm-depublish-recordIds';
   optionsOpenAdd = false;
   optionsOpenDepublish = false;
   pollingRefresh: Subject<boolean>;
@@ -322,14 +325,13 @@ export class DepublicationComponent extends DataPollingComponent {
   /* - get user confirmation to call onDepublishDataset
   */
   confirmDepublishDataset(): void {
-    const confirmation = this.modalConfirms
-      .open('confirm-depublish-dataset')
-      .subscribe((response: boolean) => {
+    this.subs.push(
+      this.modalConfirms.open(this.modalDatasetDepublish).subscribe((response: boolean) => {
         if (response) {
           this.onDepublishDataset();
         }
-        confirmation.unsubscribe();
-      });
+      })
+    );
   }
 
   /** onDepublishDataset
@@ -360,14 +362,15 @@ export class DepublicationComponent extends DataPollingComponent {
     if (!all && this.depublicationSelections.length === 0) {
       return;
     }
-    const confirmation = this.modalConfirms
-      .open(all ? 'confirm-depublish-all-recordIds' : 'confirm-depublish-recordIds')
-      .subscribe((response: boolean) => {
-        if (response) {
-          this.onDepublishRecordIds(all);
-        }
-        confirmation.unsubscribe();
-      });
+    this.subs.push(
+      this.modalConfirms
+        .open(all ? this.modalAllRecDepublish : this.modalRecIdDepublish)
+        .subscribe((response: boolean) => {
+          if (response) {
+            this.onDepublishRecordIds(all);
+          }
+        })
+    );
   }
 
   /** onDepublishRecordIds

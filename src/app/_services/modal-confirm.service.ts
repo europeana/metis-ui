@@ -29,6 +29,6 @@ export class ModalConfirmService {
   */
   open(id: string): Observable<boolean> {
     const modal: ModalDialog = this.modals.filter((x) => x.id === id)[0];
-    return modal.open(id);
+    return modal.open();
   }
 }

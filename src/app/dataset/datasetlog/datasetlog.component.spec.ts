@@ -60,6 +60,7 @@ describe('DatasetlogComponent', () => {
     component.showPluginLog = Object.assign(peCopy, { executionProgress: false });
     component.startPolling();
     expect(component.logMessages).toBeFalsy();
+    component.cleanup();
   });
 
   it('should close the logs', () => {

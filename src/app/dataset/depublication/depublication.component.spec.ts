@@ -109,8 +109,6 @@ describe('DepublicationComponent', () => {
     });
 
     it('should open the input dialog', () => {
-      component.datasetId = '123';
-      component.beginPolling();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogInput();
@@ -118,8 +116,6 @@ describe('DepublicationComponent', () => {
     });
 
     it('should open the file dialog', () => {
-      component.datasetId = '123';
-      component.beginPolling();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogFile();
@@ -135,8 +131,6 @@ describe('DepublicationComponent', () => {
     });
 
     it('should close the menus', () => {
-      component.datasetId = '123';
-      component.beginPolling();
       component.optionsOpenAdd = true;
       component.optionsOpenDepublish = true;
       component.closeMenus();
@@ -145,7 +139,6 @@ describe('DepublicationComponent', () => {
     });
 
     it('should close the menus after invoking menu commands', () => {
-      component.datasetId = '123';
       component.beginPolling();
       spyOn(component, 'closeMenus').and.callThrough();
       component.onDepublishDataset();
@@ -241,15 +234,11 @@ describe('DepublicationComponent', () => {
     });
 
     it('should validate for no whitespace', () => {
-      component.datasetId = '123';
-      component.beginPolling();
       expect(component.validateWhitespace(frmCtrl('hello'))).toBeFalsy();
       expect(component.validateWhitespace(frmCtrl(' '))).toBeTruthy();
     });
 
     it('should validate the file extension', () => {
-      component.datasetId = '123';
-      component.beginPolling();
       expect(component.validateFileExtension(frmCtrl('file.txt', true))).toBeFalsy();
       expect(component.validateFileExtension(frmCtrl('file.png', true))).toBeTruthy();
     });
@@ -349,17 +338,20 @@ describe('DepublicationComponent', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(confirmResult);
       });
+
       spyOn(component, 'onDepublishDataset').and.callThrough();
       component.confirmDepublishDataset();
       expect(component.onDepublishDataset).not.toHaveBeenCalled();
+
       confirmResult = true;
       component.confirmDepublishDataset();
       expect(component.onDepublishDataset).toHaveBeenCalled();
+      component.cleanup();
     });
 
     it('should confirm record id depublication', () => {
       let confirmResult = false;
-      component.beginPolling();
+
       spyOn(modalConfirms, 'open').and.callFake(() => {
         return of(confirmResult);
       });
@@ -378,12 +370,11 @@ describe('DepublicationComponent', () => {
 
       component.confirmDepublishRecordIds(true);
       expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(2);
+      component.cleanup();
     });
 
     it('should handle dataset depublication', () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
-      component.datasetId = '123';
-
       component.beginPolling();
       component.onDepublishDataset();
       expect(depublications.depublishDataset).toHaveBeenCalled();
