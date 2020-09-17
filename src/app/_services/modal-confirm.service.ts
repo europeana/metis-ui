@@ -4,22 +4,22 @@ import { ModalDialog } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class ModalConfirmService {
-  private modals: ModalDialog[] = [];
+  private allModals: { [key: string]: ModalDialog } = {};
 
   /** add
-  /* add modal to array of active modals
-  /*  @param {string} id - the modal to add
+  /* add modal to managed hashmap
+  /*  @param {ModalDialog} modal - the modal to add
   */
   add(modal: ModalDialog): void {
-    this.modals.push(modal);
+    this.allModals[modal.id] = modal;
   }
 
   /** remove
-  /* remove modal from array of active modals
+  /* remove modal from managed hashmap
   /*  @param {string} id - the modal to remove
   */
   remove(id: string): void {
-    this.modals = this.modals.filter((x) => x.id !== id);
+    delete this.allModals[id];
   }
 
   /** open
@@ -28,7 +28,6 @@ export class ModalConfirmService {
   /*  return the confirm result as an Observable
   */
   open(id: string): Observable<boolean> {
-    const modal: ModalDialog = this.modals.filter((x) => x.id === id)[0];
-    return modal.open();
+    return this.allModals[id].open();
   }
 }
