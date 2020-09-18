@@ -1,3 +1,26 @@
+<app-modal-confirm id="{{ modalDatasetDepublish }}" title="depublish">
+  <p i18n="confirm dataset depublish|show modal to get user confirmation@@confirmDatasetDepublish">
+    Are you sure you want to depublish "{{ datasetName }}"?
+  </p>
+</app-modal-confirm>
+
+<app-modal-confirm id="{{ modalRecIdDepublish }}" title="depublish">
+  <p
+    i18n="confirm record id depublish|show modal to get user confirmation@@confirmRecordIdsDepublish"
+  >
+    Are you sure you want to cancel {depublicationSelections.length, plural, =1 { this record }
+    other { records } } in "{{ datasetName }}"?
+  </p>
+</app-modal-confirm>
+
+<app-modal-confirm id="{{ modalAllRecDepublish }}" title="depublish">
+  <p
+    i18n="confirm all record id depublish|show modal to get user confirmation@@confirmRecordAllIdsDepublish"
+  >
+    Are you sure you want to cancel all records in "{{ datasetName }}"?
+  </p>
+</app-modal-confirm>
+
 <div class="depublication-ctrls">
   <button
     class="btn-delete"
@@ -30,7 +53,7 @@
         <ul class="dropdown-content depublish">
           <li>
             <a
-              (click)="onDepublishRecordIds()"
+              (click)="confirmDepublishRecordIds()"
               [attr.disabled]="depublicationSelections.length === 0"
               >{{
                 'depublishRecordsIds' +
@@ -39,10 +62,12 @@
             >
           </li>
           <li>
-            <a (click)="onDepublishRecordIds(true)">{{ 'depublishRecordsIdsAll' | translate }}</a>
+            <a (click)="confirmDepublishRecordIds(true)">{{
+              'depublishRecordsIdsAll' | translate
+            }}</a>
           </li>
           <li>
-            <a (click)="onDepublishDataset()">{{ 'depublishDataset' | translate }}</a>
+            <a (click)="confirmDepublishDataset()">{{ 'depublishDataset' | translate }}</a>
           </li>
         </ul>
       </div>

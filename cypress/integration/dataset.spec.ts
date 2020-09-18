@@ -63,13 +63,12 @@ context('metis-ui', () => {
       cy.get('@status').contains('FINISHED');
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
-      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 12);
-      getHistoryRow(0).contains('Depublish Records');
-      getHistoryRow(1).contains('Depublish Dataset');
-      getHistoryRow(2).contains('Check Links');
-      getHistoryRow(3).contains('Publish');
-      getHistoryRow(4).contains('Preview');
-      getHistoryRow(5).contains('Process Media');
+      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 11);
+      getHistoryRow(0).contains('Check Links');
+      getHistoryRow(1).contains('Depublish');
+      getHistoryRow(2).contains('Publish');
+      getHistoryRow(3).contains('Preview');
+      getHistoryRow(4).contains('Process Media');
     });
 
     it('should show the tabs', () => {

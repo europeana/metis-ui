@@ -17,7 +17,7 @@ import {
 } from '../../_models';
 
 import { DataPollingComponent } from '../../data-polling';
-import { DepublicationService, ErrorService } from '../../_services';
+import { DepublicationService, ErrorService, ModalConfirmService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
 
@@ -40,6 +40,9 @@ export class DepublicationComponent extends DataPollingComponent {
   formRawText: FormGroup;
   formFile: FormGroup;
   isSaving = false;
+  modalAllRecDepublish = 'confirm-depublish-all-recordIds';
+  modalDatasetDepublish = 'confirm-depublish-dataset';
+  modalRecIdDepublish = 'confirm-depublish-recordIds';
   optionsOpenAdd = false;
   optionsOpenDepublish = false;
   pollingRefresh: Subject<boolean>;
@@ -66,12 +69,15 @@ export class DepublicationComponent extends DataPollingComponent {
   _totalRecordCount?: number;
 
   constructor(
+    private readonly modalConfirms: ModalConfirmService,
     private readonly depublications: DepublicationService,
     private readonly errors: ErrorService,
     private readonly fb: FormBuilder
   ) {
     super();
   }
+
+  @Input() datasetName: string;
 
   /** totalRecordCount
   /* setter for shadow variable _totalRecordCount
@@ -315,6 +321,19 @@ export class DepublicationComponent extends DataPollingComponent {
     }
   }
 
+  /** confirmDepublishDataset
+  /* - get user confirmation to call onDepublishDataset
+  */
+  confirmDepublishDataset(): void {
+    this.subs.push(
+      this.modalConfirms.open(this.modalDatasetDepublish).subscribe((response: boolean) => {
+        if (response) {
+          this.onDepublishDataset();
+        }
+      })
+    );
+  }
+
   /** onDepublishDataset
   /* - handler for depublish dataset button
   /* - invoke service call
@@ -333,6 +352,24 @@ export class DepublicationComponent extends DataPollingComponent {
           this.onError(err);
         }
       )
+    );
+  }
+
+  /** confirmDepublishRecordIds
+  /* - get user confirmation to call onDepublishRecordIds
+  */
+  confirmDepublishRecordIds(all?: boolean): void {
+    if (!all && this.depublicationSelections.length === 0) {
+      return;
+    }
+    this.subs.push(
+      this.modalConfirms
+        .open(all ? this.modalAllRecDepublish : this.modalRecIdDepublish)
+        .subscribe((response: boolean) => {
+          if (response) {
+            this.onDepublishRecordIds(all);
+          }
+        })
     );
   }
 

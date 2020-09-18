@@ -1,3 +1,4 @@
+export * from './modal-confirm/';
 export * from './header/';
 export * from './loading-button/';
 export * from './notification/';

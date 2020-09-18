@@ -14,15 +14,16 @@ import {
   MockDepublicationServiceErrors,
   MockErrorService
 } from '../../_mocked';
-
+import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
-import { DepublicationService, ErrorService } from '../../_services';
+import { DepublicationService, ErrorService, ModalConfirmService } from '../../_services';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 
 describe('DepublicationComponent', () => {
   let component: DepublicationComponent;
   let fixture: ComponentFixture<DepublicationComponent>;
+  let modalConfirms: ModalConfirmService;
   let depublications: DepublicationService;
   let errors: ErrorService;
 
@@ -43,6 +44,7 @@ describe('DepublicationComponent', () => {
         createMockPipe('renameWorkflow')
       ],
       providers: [
+        ModalConfirmService,
         {
           provide: DepublicationService,
           useClass: errorMode ? MockDepublicationServiceErrors : MockDepublicationService
@@ -52,6 +54,7 @@ describe('DepublicationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+    modalConfirms = TestBed.get(ModalConfirmService);
     depublications = TestBed.get(DepublicationService);
     errors = TestBed.get(ErrorService);
   };
@@ -151,8 +154,11 @@ describe('DepublicationComponent', () => {
     it('should submit the file', fakeAsync(() => {
       component.dialogFileOpen = true;
       component.datasetId = '123';
-      addFormFieldData();
       expect(component.dialogFileOpen).toBeTruthy();
+      component.onSubmitFormFile();
+      tick(1);
+      expect(component.dialogFileOpen).toBeTruthy();
+      addFormFieldData();
       component.onSubmitFormFile();
       tick(1);
       expect(component.dialogFileOpen).toBeFalsy();
@@ -327,6 +333,51 @@ describe('DepublicationComponent', () => {
       expect(spy).toHaveBeenCalledWith(true);
     });
 
+    it('should confirm dataset depublication', () => {
+      let confirmResult = false;
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        const res = of(confirmResult);
+        modalConfirms.add({ open: () => res, close: () => {}, id: '1' });
+        return res;
+      });
+
+      spyOn(component, 'onDepublishDataset').and.callThrough();
+      component.confirmDepublishDataset();
+      expect(component.onDepublishDataset).not.toHaveBeenCalled();
+
+      confirmResult = true;
+      component.confirmDepublishDataset();
+      expect(component.onDepublishDataset).toHaveBeenCalled();
+      component.cleanup();
+    });
+
+    it('should confirm record id depublication', () => {
+      let confirmResult = false;
+
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        const res = of(confirmResult);
+        modalConfirms.add({ open: () => res, close: () => {}, id: '1' });
+        return res;
+      });
+
+      spyOn(component, 'onDepublishRecordIds').and.callThrough();
+
+      component.confirmDepublishRecordIds();
+      expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
+
+      component.depublicationSelections = ['0'];
+      component.confirmDepublishRecordIds();
+      expect(component.onDepublishRecordIds).not.toHaveBeenCalled();
+
+      confirmResult = true;
+      component.confirmDepublishRecordIds();
+      expect(component.onDepublishRecordIds).toHaveBeenCalled();
+
+      component.confirmDepublishRecordIds(true);
+      expect(component.onDepublishRecordIds).toHaveBeenCalledTimes(2);
+      component.cleanup();
+    });
+
     it('should handle dataset depublication', () => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
       component.beginPolling();
@@ -336,9 +387,10 @@ describe('DepublicationComponent', () => {
 
     it('should handle record id depublication', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();
+      component.beginPolling();
       const testSelection = ['0'];
       component.datasetId = '123';
-      component.beginPolling();
+      component.depublicationSelections = [];
       component.onDepublishRecordIds();
       expect(depublications.depublishRecordIds).not.toHaveBeenCalled();
       component.depublicationSelections = testSelection;
@@ -389,6 +441,7 @@ describe('DepublicationComponent', () => {
       spyOn(component, 'onError').and.callThrough();
       component.dialogFileOpen = true;
       component.datasetId = '123';
+      component.beginPolling();
       addFormFieldData();
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
