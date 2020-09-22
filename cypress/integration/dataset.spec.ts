@@ -10,17 +10,6 @@ function getHistoryRow(index: number): Cypress.Chainable {
   return cy.get('.table-grid.last-execution .table-grid-row-start').eq(index);
 }
 
-function checkFormField(name: string, value: string): void {
-  const label = cy.get('.form-group label').contains(name);
-  const input = label.closest('.form-group').find('input');
-  input.should('have.value', value);
-}
-
-function checkStaticField(name: string, value: string): void {
-  const label = cy.get('.form-group label').contains(name);
-  const input = label.closest('.form-group').find('span');
-  input.contains(value);
-}
 function checkPluginStatus(name: string, enabled: boolean): void {
   const input = cy
     .get('.plugin')
@@ -82,29 +71,6 @@ context('metis-ui', () => {
       checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/' + expectedId);
       checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/' + expectedId);
     });
-  });
-
-  describe('dataset information', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
-    beforeEach(() => {
-      setupDatasetPage('edit', 0);
-    });
-
-    it('should show the fields', () => {
-      checkFormField('Dataset Name', 'Dataset_1');
-      checkFormField('Provider', 'Europeana Provider');
-      checkStaticField('Date Created', '19/02/2019 - 08:36');
-      checkStaticField('Created by', '123');
-      checkStaticField('Last published', '19/02/2019 - 08:49');
-      checkStaticField('Number of items published', '865');
-      checkStaticField('Last date of harvest', '19/02/2019 - 08:41');
-      checkStaticField('Number of items harvested', '879');
-    });
-
-    // TODO: edit
   });
 
   describe('dataset workflow', () => {

@@ -177,7 +177,7 @@
         <label class="dataset-label" for="notes">{{ 'notes' | translate }}</label>
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
-      <div class="form-group">
+      <div class="form-group" *ngIf="!isNew">
         <label class="dataset-label">
           {{ 'datasetPublicationFitness' | translate }}
         </label>
