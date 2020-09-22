@@ -249,20 +249,23 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   /* subscribe to data services
   */
   loadData(): void {
-    this.subs.push(
-      this.datasets.getDataset(this.datasetId, true).subscribe(
-        (result) => {
-          this.datasetData = result;
-          this.datasetName = result.datasetName;
-          this.datasetIsLoading = false;
-          this.documentTitleService.setTitle(this.datasetName || 'Dataset');
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-          this.datasetIsLoading = false;
-        }
-      )
+    this.createNewDataPoller(
+      environment.intervalStatus,
+      () => {
+        return this.datasets.getDataset(this.datasetId, true);
+      },
+      (result) => {
+        this.datasetData = result;
+        this.datasetName = result.datasetName;
+        this.datasetIsLoading = false;
+        this.documentTitleService.setTitle(this.datasetName || 'Dataset');
+      },
+      (err: HttpErrorResponse) => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.datasetIsLoading = false;
+        return err;
+      }
     );
   }
 

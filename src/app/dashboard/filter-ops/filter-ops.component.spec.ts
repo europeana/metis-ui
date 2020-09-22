@@ -71,8 +71,14 @@ describe('FilterOpsComponent', () => {
   });
 
   it('manages single parameters', () => {
-    const testEl1 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(15) a'));
-    const testEl2 = fixture.debugElement.query(By.css('.filter-cell:nth-of-type(16) a'));
+    const indexFieldDateFrom = 15;
+    const indexFieldDateTo = 16;
+    const testEl1 = fixture.debugElement.query(
+      By.css(`.filter-cell:nth-of-type(${indexFieldDateFrom}) a`)
+    );
+    const testEl2 = fixture.debugElement.query(
+      By.css(`.filter-cell:nth-of-type(${indexFieldDateTo}) a`)
+    );
     testEl1.nativeElement.click();
     expect(component.params.DATE[0].value).toEqual('1');
     testEl2.nativeElement.click();
