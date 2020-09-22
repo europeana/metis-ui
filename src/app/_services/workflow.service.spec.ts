@@ -279,7 +279,7 @@ describe('workflow service', () => {
 
   it('should get all plugins for an execution history', () => {
     const pal: PluginAvailabilityList = {
-      plugins: [{ pluginType: PluginType.HTTP_HARVEST, hasSuccessfulData: true }]
+      plugins: [{ pluginType: PluginType.HTTP_HARVEST, canDisplayRawXml: true }]
     };
     const sub = service.getExecutionPlugins('123').subscribe((results) => {
       expect(results).toEqual(pal);

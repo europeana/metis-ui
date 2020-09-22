@@ -190,12 +190,12 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           this.allPlugins.length = 0;
 
           result.plugins.forEach((pa) => {
-            if (!pa.hasSuccessfulData) {
+            if (!pa.canDisplayRawXml) {
               pluginsFilterComplete = false;
             }
             this.allPlugins.push({
               type: pa.pluginType,
-              error: !pa.hasSuccessfulData
+              error: !pa.canDisplayRawXml
             });
           });
 

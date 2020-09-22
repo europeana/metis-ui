@@ -115,7 +115,7 @@ export interface PreviewFilters {
 
 export interface PluginAvailability {
   pluginType: PluginType;
-  hasSuccessfulData: boolean;
+  canDisplayRawXml: boolean;
 }
 
 export interface PluginAvailabilityList {

@@ -632,11 +632,11 @@ export class MockWorkflowService {
     }
     return observableOf({
       plugins: [
-        { pluginType: PluginType.HTTP_HARVEST, hasSuccessfulData: true },
-        { pluginType: PluginType.VALIDATION_EXTERNAL, hasSuccessfulData: true },
-        { pluginType: PluginType.TRANSFORMATION, hasSuccessfulData: true },
-        { pluginType: PluginType.VALIDATION_INTERNAL, hasSuccessfulData: true },
-        { pluginType: PluginType.NORMALIZATION, hasSuccessfulData: false }
+        { pluginType: PluginType.HTTP_HARVEST, canDisplayRawXml: true },
+        { pluginType: PluginType.VALIDATION_EXTERNAL, canDisplayRawXml: true },
+        { pluginType: PluginType.TRANSFORMATION, canDisplayRawXml: true },
+        { pluginType: PluginType.VALIDATION_INTERNAL, canDisplayRawXml: true },
+        { pluginType: PluginType.NORMALIZATION, canDisplayRawXml: false }
       ]
     });
   }

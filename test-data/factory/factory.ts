@@ -599,7 +599,7 @@ export function pluginsAvailable(executionId: string): PluginAvailabilityList {
               we.metisPlugins.forEach((p) => {
                 res.plugins.push({
                   pluginType: p.pluginType,
-                  hasSuccessfulData: true
+                  canDisplayRawXml: true
                 });
               });
             }
