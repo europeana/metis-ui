@@ -93,6 +93,9 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
   }
 ].concat(
   Object.values(PluginType)
+    .filter((pType: PluginType) => {
+      return PluginType.DEPUBLISH !== pType;
+    })
     .map((pType: PluginType) => {
       return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].indexOf(pType) > -1
         ? {
