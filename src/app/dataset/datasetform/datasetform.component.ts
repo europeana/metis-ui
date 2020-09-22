@@ -239,7 +239,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
       language: ['', [Validators.required]],
       description: [''],
       notes: [''],
-      publicationFitness: [PublicationFitness.UNFIT]
+      publicationFitness: [PublicationFitness.FIT]
     });
     this.updateForm();
     this.updateFormEnabled();
