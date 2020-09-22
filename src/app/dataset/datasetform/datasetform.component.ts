@@ -263,7 +263,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     this.datasetForm.patchValue({ country: this.selectedCountry });
     this.datasetForm.patchValue({ language: this.selectedLanguage });
     if (!this.datasetData.publicationFitness) {
-      this.datasetForm.patchValue({ publicationFitness: PublicationFitness.UNFIT });
+      this.datasetForm.patchValue({ publicationFitness: PublicationFitness.FIT });
     }
   }
 
