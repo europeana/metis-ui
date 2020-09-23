@@ -50,11 +50,10 @@
     >
       {{ 'report' | translate }}
     </a>
-    <a
-      class="table-btn"
-      (click)="goToPreview(wpe.execution, plugin)"
-      *ngIf="true || (wpe && plugin.canDisplayRawXml)"
-      ><span class="xml-icon">&#8249;&#8250;</span> XML</a
-    >
+    <ng-container *ngIf="true || (wpe && plugin.canDisplayRawXml)">
+      <a class="table-btn" (click)="goToPreview(wpe.execution, plugin)"
+        ><span class="xml-icon">&#8249;&#8250;</span> XML</a
+      >
+    </ng-container>
   </span>
 </ng-template>
