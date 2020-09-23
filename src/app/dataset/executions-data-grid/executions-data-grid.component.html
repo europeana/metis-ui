@@ -51,9 +51,7 @@
       {{ 'report' | translate }}
     </a>
     <ng-container *ngIf="wpe && plugin.canDisplayRawXml">
-      <a
-        class="table-btn"
-        (click)="goToPreview(wpe.execution, plugin)"
+      <a class="table-btn" (click)="goToPreview(wpe.execution, plugin)"
         ><span class="xml-icon">&#8249;&#8250;</span> XML</a
       >
     </ng-container>
