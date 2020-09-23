@@ -81,7 +81,7 @@ export interface PluginExecution extends PluginExecutionBasic {
   executionProgress?: ExecutionProgress;
   pluginMetadata: PluginMetadata;
   topologyName: TopologyName;
-
+  canDisplayRawXml?: boolean;
   hasReport?: boolean;
 }
 
