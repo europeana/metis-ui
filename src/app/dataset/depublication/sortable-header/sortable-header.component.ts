@@ -13,6 +13,14 @@ export class SortableHeaderComponent {
   current = 0;
   selectAll = false;
 
+  /** allSelected
+  /* setter for variable selectAll
+  */
+  @Input()
+  set allSelected(selected: boolean) {
+    this.selectAll = selected;
+  }
+
   @Input() conf: SortHeaderConf;
   @Output() onSet = new EventEmitter<SortParameter>();
   @Output() onSelectAll = new EventEmitter<boolean>();

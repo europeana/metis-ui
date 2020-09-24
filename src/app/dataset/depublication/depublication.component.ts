@@ -27,8 +27,16 @@ import { DepublicationRowComponent } from './depublication-row';
   styleUrls: ['./depublication.component.scss']
 })
 export class DepublicationComponent extends DataPollingComponent {
-  @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
+  depublicationRows: QueryList<DepublicationRowComponent>;
 
+  @ViewChildren(DepublicationRowComponent)
+  set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
+    this.depublicationRows = depublicationRows;
+    const fn = () => this.checkAllAreSelected();
+    setTimeout(fn, 1);
+  }
+
+  allSelected = false;
   currentPage = 0;
   hasMore = false;
   dataSortParam: SortParameter | undefined;
@@ -134,6 +142,17 @@ export class DepublicationComponent extends DataPollingComponent {
         return deletionInfo.recordId !== recId;
       });
     }
+    this.checkAllAreSelected();
+  }
+
+  /** checkAllAreSelected
+  /*  sets allSelected variable according to check states
+  */
+  checkAllAreSelected(): void {
+    const hasRows = this.depublicationRows && this.depublicationRows.length > 0;
+    this.allSelected = hasRows
+      ? this.depublicationRows.toArray().every((row) => !!row.record.deletion)
+      : false;
   }
 
   /** buildForm
