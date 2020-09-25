@@ -32,7 +32,7 @@ export class DepublicationComponent extends DataPollingComponent {
   @ViewChildren(DepublicationRowComponent)
   set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
     this.depublicationRows = depublicationRows;
-    const fn = () => this.checkAllAreSelected();
+    const fn = (): void => this.checkAllAreSelected();
     setTimeout(fn, 1);
   }
 
@@ -149,10 +149,13 @@ export class DepublicationComponent extends DataPollingComponent {
   /*  sets allSelected variable according to check states
   */
   checkAllAreSelected(): void {
-    const hasRows = this.depublicationRows && this.depublicationRows.length > 0;
-    this.allSelected = hasRows
-      ? this.depublicationRows.toArray().every((row) => !!row.record.deletion)
-      : false;
+    if (this.depublicationRows) {
+      const enabledRows = this.depublicationRows.toArray().filter((row) => !row.checkboxDisabled());
+      this.allSelected =
+        enabledRows.length > 0 ? enabledRows.every((row) => !!row.record.deletion) : false;
+    } else {
+      this.allSelected = false;
+    }
   }
 
   /** buildForm

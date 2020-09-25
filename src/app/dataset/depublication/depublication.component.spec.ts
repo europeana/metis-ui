@@ -303,17 +303,29 @@ describe('DepublicationComponent', () => {
     }));
 
     it('should process check events', () => {
-      expect(component.depublicationSelections.length).toBeFalsy();
-      component.processCheckEvent({
+      const checkEvent = {
         recordId: 'X',
         deletion: true
-      });
-      expect(component.depublicationSelections.length).toBeTruthy();
-      component.processCheckEvent({
-        recordId: 'X',
-        deletion: false
-      });
+      };
       expect(component.depublicationSelections.length).toBeFalsy();
+      component.processCheckEvent(checkEvent);
+      expect(component.depublicationSelections.length).toBeTruthy();
+      expect(component.allSelected).toBeFalsy();
+
+      checkEvent.deletion = false;
+      component.processCheckEvent(checkEvent);
+      expect(component.depublicationSelections.length).toBeFalsy();
+      expect(component.allSelected).toBeFalsy();
+
+      component.depublicationRows = ({
+        length: 1,
+        toArray: () => [{ record: { deletion: true }, checkboxDisabled: (): boolean => false }]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any) as QueryList<DepublicationRowComponent>;
+
+      checkEvent.deletion = true;
+      component.processCheckEvent(checkEvent);
+      expect(component.allSelected).toBeTruthy();
     });
 
     it('should set the selection', () => {
