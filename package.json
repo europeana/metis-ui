@@ -9,7 +9,7 @@
     "prettier": "prettier --write '{src,cypress,test-data}/**/*.{ts,js,json,scss,html}' '*.{js,json}'",
     "lint": "eslint --ext .js,.ts src/app --fix",
     "fix": "npm run prettier && npm run lint",
-    "test:dev": "ng test",
+    "test:dev": "ng test  --code-coverage",
     "cypress": "cypress open",
     "test": "npm run prettier:ci && npm run lint:ci && npm run template-check && npm run test:e2e",
     "template-check": "ng build --progress=false --output-path=tmp/template-check --aot",
@@ -22,8 +22,7 @@
     "start:ci-data": "tsc && cd test-data && node ../dist/out-tsc/test-data/index.js",
     "cypress:run": "sleep 10 && cypress run",
     "test:e2e": "tsc && ((cd test-data && node ../dist/out-tsc/test-data/index.js test-data-server) & (npm run cypress:ci ; killall -SIGINT test-data-server))",
-    "Xdist": "npm run i18n && ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",
-    "dist": "ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",
+    "dist": "npm run i18n && ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",
     "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
     "lite": "lite-server --baseDir=dist"
   },
