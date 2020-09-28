@@ -35,7 +35,7 @@
       <span class="tab-title">{{ 'processingHistory' | translate }}</span>
       <ng-container *ngIf="lastExecutionData">
         <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
-        <span class="tab-subtitle tab-date" *ngIf="lastExecutionData">{{
+        <span class="tab-subtitle tab-date">{{
           lastExecutionData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
         }}</span>
       </ng-container>
