@@ -5,7 +5,7 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { AfterContentChecked, Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import {
@@ -26,14 +26,14 @@ import { DepublicationRowComponent } from './depublication-row';
   templateUrl: './depublication.component.html',
   styleUrls: ['./depublication.component.scss']
 })
-export class DepublicationComponent extends DataPollingComponent {
-  depublicationRows: QueryList<DepublicationRowComponent>;
+export class DepublicationComponent extends DataPollingComponent implements AfterContentChecked {
+  @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
 
-  @ViewChildren(DepublicationRowComponent)
-  set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
-    this.depublicationRows = depublicationRows;
-    const fn = (): void => this.checkAllAreSelected();
-    setTimeout(fn, 1);
+  /* ngAfterContentChecked
+  /* check selection status once content rendered
+  */
+  ngAfterContentChecked(): void {
+    this.checkAllAreSelected();
   }
 
   allSelected = false;
