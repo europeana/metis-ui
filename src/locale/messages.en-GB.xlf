@@ -26,7 +26,7 @@
       </trans-unit>
       <trans-unit id="confirmRecordIdsDepublish" datatype="html">
         <source>
-    Are you sure you want to cancel record(s) in &quot;<x id="INTERPOLATION" equiv-text="{{ datasetName }}"/>&quot;?
+    Are you sure you want to depublish record(s) in &quot;<x id="INTERPOLATION" equiv-text="{{ datasetName }}"/>&quot;?
   </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
@@ -37,7 +37,7 @@
       </trans-unit>
       <trans-unit id="confirmRecordAllIdsDepublish" datatype="html">
         <source>
-    Are you sure you want to cancel record(s) in &quot;<x id="INTERPOLATION" equiv-text="{{ datasetName }}"/>&quot;?
+    Are you sure you want to depublish record(s) in &quot;<x id="INTERPOLATION" equiv-text="{{ datasetName }}"/>&quot;?
   </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dataset/depublication/depublication.component.html</context>
