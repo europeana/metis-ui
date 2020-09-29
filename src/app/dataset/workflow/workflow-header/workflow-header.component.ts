@@ -154,19 +154,17 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     if (e.dataTransfer) {
       this.isDragging = true;
       e.dataTransfer.setData('metisHeaderOrb', 'true');
-
-      const n = this.ghost.nativeElement.cloneNode();
-      n.style.border = '3px solid #71c07b';
-      n.style.boxSizing = 'border-box';
-      n.style.left = '-10000px';
-      n.style.transform = 'scale(1)';
-      n.style.backgroundSize = 'contain';
-      n.style.height = '40px';
-      n.style.position = 'relative';
-      n.style.width = '40px';
+      this.ghostClone = this.ghost.nativeElement.cloneNode();
+      this.ghostClone.style.border = '3px solid #71c07b';
+      this.ghostClone.style.boxSizing = 'border-box';
+      this.ghostClone.style.left = '-10000px';
+      this.ghostClone.style.transform = 'scale(1)';
+      this.ghostClone.style.backgroundSize = 'contain';
+      this.ghostClone.style.height = '40px';
+      this.ghostClone.style.position = 'relative';
+      this.ghostClone.style.width = '40px';
       document.body.appendChild(n);
       e.dataTransfer.setDragImage(n, 20, 20);
-      this.ghostClone = n;
     }
   }
 
@@ -176,6 +174,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   dragEnd(): void {
     if (this.ghostClone) {
       this.ghostClone.remove();
+      this.ghostClone = null;
     }
     this.isDragging = false;
     this.isDraggingOverOrbs = false;
