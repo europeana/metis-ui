@@ -7,6 +7,8 @@
       fieldName: item.fieldName,
       cssClass: grpConf.cssClass
     }"
+    [allSelected]="allSelected"
+    [selectAllDisabled]="selectAllDisabled"
     *ngFor="let item of grpConf.items"
   >
   </app-sortable-header>

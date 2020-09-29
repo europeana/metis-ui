@@ -11,8 +11,9 @@ export class SortableHeaderComponent {
   statuses = Object.values(SortDirection);
   classes = this.statuses.map((status: string) => 'sort-' + status.toLowerCase());
   current = 0;
-  selectAll = false;
 
+  @Input() allSelected: boolean;
+  @Input() selectAllDisabled: boolean;
   @Input() conf: SortHeaderConf;
   @Output() onSet = new EventEmitter<SortParameter>();
   @Output() onSelectAll = new EventEmitter<boolean>();
@@ -37,7 +38,7 @@ export class SortableHeaderComponent {
   }
 
   toggleSelectAll(): void {
-    this.selectAll = !this.selectAll;
-    this.onSelectAll.emit(this.selectAll);
+    this.allSelected = !this.allSelected;
+    this.onSelectAll.emit(this.allSelected);
   }
 }

@@ -62,8 +62,8 @@ describe('SortableHeaderComponent', () => {
   });
 
   it('should toggle the select all', () => {
-    component.selectAll = false;
+    component.allSelected = false;
     component.toggleSelectAll();
-    expect(component.selectAll).toBeTruthy();
+    expect(component.allSelected).toBeTruthy();
   });
 });

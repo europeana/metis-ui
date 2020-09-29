@@ -27,7 +27,17 @@ import { DepublicationRowComponent } from './depublication-row';
   styleUrls: ['./depublication.component.scss']
 })
 export class DepublicationComponent extends DataPollingComponent {
-  @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
+  depublicationRows: QueryList<DepublicationRowComponent>;
+
+  @ViewChildren(DepublicationRowComponent)
+  set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
+    this.depublicationRows = depublicationRows;
+    const fn = (): void => this.checkAllAreSelected();
+    setTimeout(fn, 1);
+  }
+
+  allSelected = false;
+  selectAllDisabled = false;
 
   currentPage = 0;
   hasMore = false;
@@ -133,6 +143,22 @@ export class DepublicationComponent extends DataPollingComponent {
       this.depublicationSelections = this.depublicationSelections.filter((recId: string) => {
         return deletionInfo.recordId !== recId;
       });
+    }
+    this.checkAllAreSelected();
+  }
+
+  /** checkAllAreSelected
+  /*  sets allSelected variable according to check states
+  */
+  checkAllAreSelected(): void {
+    if (this.depublicationRows) {
+      const enabledRows = this.depublicationRows.toArray().filter((row) => !row.checkboxDisabled());
+      this.selectAllDisabled = enabledRows.length === 0;
+      this.allSelected =
+        enabledRows.length > 0 ? enabledRows.every((row) => !!row.record.deletion) : false;
+    } else {
+      this.selectAllDisabled = true;
+      this.allSelected = false;
     }
   }
 

@@ -167,6 +167,8 @@
       [grpConf]="sortHeaderGroupConf"
       (onGroupSet)="setDataSortParameter($event)"
       (onSelectAll)="setSelection($event)"
+      [allSelected]="allSelected"
+      [selectAllDisabled]="selectAllDisabled"
     >
     </app-sortable-group>
     <ng-content *ngTemplateOutlet="dataWrapper.sortableGroupTemplate"></ng-content>

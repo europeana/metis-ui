@@ -16,12 +16,14 @@ import { SortHeaderGroupConf, SortParameter } from '../../../_models';
   templateUrl: './sortable-group.component.html'
 })
 export class SortableGroupComponent {
+  _allSelected = false;
   @ViewChildren(SortableHeaderComponent) headers: QueryList<SortableHeaderComponent>;
   @ViewChild('sortableGroupTemplate') sortableGroupTemplate: TemplateRef<HTMLElement>;
-
   @Output() onGroupSet: EventEmitter<SortParameter> = new EventEmitter();
   @Output() onSelectAll: EventEmitter<boolean> = new EventEmitter();
   @Input() grpConf: SortHeaderGroupConf;
+  @Input() selectAllDisabled: boolean;
+  @Input() allSelected: boolean;
 
   /** onSetHandler
   /* call reset on headers, transmit sort event to parent
