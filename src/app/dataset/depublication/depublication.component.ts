@@ -152,8 +152,8 @@ export class DepublicationComponent extends DataPollingComponent {
   */
   checkAllAreSelected(): void {
     if (this.depublicationRows) {
-      this.selectAllDisabled = this.depublicationRows.length === 0;
       const enabledRows = this.depublicationRows.toArray().filter((row) => !row.checkboxDisabled());
+      this.selectAllDisabled = enabledRows.length === 0;
       this.allSelected =
         enabledRows.length > 0 ? enabledRows.every((row) => !!row.record.deletion) : false;
     } else {
