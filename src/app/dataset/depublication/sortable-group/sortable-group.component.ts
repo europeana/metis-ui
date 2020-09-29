@@ -22,11 +22,8 @@ export class SortableGroupComponent {
   @Output() onGroupSet: EventEmitter<SortParameter> = new EventEmitter();
   @Output() onSelectAll: EventEmitter<boolean> = new EventEmitter();
   @Input() grpConf: SortHeaderGroupConf;
-
-  @Input()
-  set allSelected(selected: boolean) {
-    this._allSelected = selected;
-  }
+  @Input() selectAllDisabled: boolean;
+  @Input() allSelected: boolean;
 
   /** onSetHandler
   /* call reset on headers, transmit sort event to parent

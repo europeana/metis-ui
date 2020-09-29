@@ -5,7 +5,7 @@
 /* - handles depublishing of individual records in the dataset
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterContentChecked, Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import {
@@ -26,17 +26,19 @@ import { DepublicationRowComponent } from './depublication-row';
   templateUrl: './depublication.component.html',
   styleUrls: ['./depublication.component.scss']
 })
-export class DepublicationComponent extends DataPollingComponent implements AfterContentChecked {
-  @ViewChildren(DepublicationRowComponent) depublicationRows: QueryList<DepublicationRowComponent>;
+export class DepublicationComponent extends DataPollingComponent {
+  depublicationRows: QueryList<DepublicationRowComponent>;
 
-  /* ngAfterContentChecked
-  /* check selection status once content rendered
-  */
-  ngAfterContentChecked(): void {
-    this.checkAllAreSelected();
+  @ViewChildren(DepublicationRowComponent)
+  set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
+    this.depublicationRows = depublicationRows;
+    const fn = (): void => this.checkAllAreSelected();
+    setTimeout(fn, 1);
   }
 
   allSelected = false;
+  selectAllDisabled = false;
+
   currentPage = 0;
   hasMore = false;
   dataSortParam: SortParameter | undefined;
@@ -150,10 +152,12 @@ export class DepublicationComponent extends DataPollingComponent implements Afte
   */
   checkAllAreSelected(): void {
     if (this.depublicationRows) {
+      this.selectAllDisabled = this.depublicationRows.length === 0;
       const enabledRows = this.depublicationRows.toArray().filter((row) => !row.checkboxDisabled());
       this.allSelected =
         enabledRows.length > 0 ? enabledRows.every((row) => !!row.record.deletion) : false;
     } else {
+      this.selectAllDisabled = true;
       this.allSelected = false;
     }
   }
