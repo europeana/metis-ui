@@ -108,8 +108,10 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
             this.tempXSLT = undefined;
           }
           this.prevTab = this.activeTab;
-          this.beginPolling();
-          this.loadData();
+          if(!this.pollingRefresh){
+            this.beginPolling();
+            this.loadData();
+          }
         }
       })
     );
