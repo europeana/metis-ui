@@ -108,7 +108,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
             this.tempXSLT = undefined;
           }
           this.prevTab = this.activeTab;
-          if(!this.pollingRefresh){
+          if (!this.pollingRefresh) {
             this.beginPolling();
             this.loadData();
           }
@@ -187,6 +187,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
     // stream for start-workflow click events
     this.pollingRefresh = new Subject();
+    alert(11);
     this.subs.push(
       this.pollingRefresh.subscribe(() => {
         workflowRefresh.next(true);
