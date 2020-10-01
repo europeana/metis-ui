@@ -108,79 +108,66 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
             this.tempXSLT = undefined;
           }
           this.prevTab = this.activeTab;
-          this.beginPolling();
-          this.loadData();
+          if (!this.pollingRefresh) {
+            this.beginPolling();
+            this.loadData();
+          }
         }
       })
     );
   }
 
   beginPolling(): void {
-    const fnDataCallHarvest = (): Observable<HarvestData> => {
-      return this.workflows.getPublishedHarvestedData(this.datasetId);
-    };
-
-    const fnDataProcessHarvest = (resultHarvest: HarvestData): void => {
-      this.harvestPublicationData = resultHarvest;
-      this.harvestIsLoading = false;
-    };
-
-    const fnOnErrorHarvest = (err: HttpErrorResponse): HttpErrorResponse | false => {
-      const error = this.errors.handleError(err);
-      this.notification = httpErrorNotification(error);
-      this.harvestIsLoading = false;
-      return error;
-    };
-
     const harvestRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
-      fnDataCallHarvest,
-      fnDataProcessHarvest,
-      fnOnErrorHarvest
+      (): Observable<HarvestData> => {
+        return this.workflows.getPublishedHarvestedData(this.datasetId);
+      },
+      (resultHarvest: HarvestData): void => {
+        this.harvestPublicationData = resultHarvest;
+        this.harvestIsLoading = false;
+      },
+      (err: HttpErrorResponse): HttpErrorResponse | false => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.harvestIsLoading = false;
+        return error;
+      }
     ).getPollingSubject();
-
-    const fnDataCallWorkflow = (): Observable<Workflow> => {
-      return this.workflows.getWorkflowForDataset(this.datasetId);
-    };
-
-    const fnDataProcessWorkflow = (workflow: Workflow): void => {
-      this.workflowData = workflow;
-      this.workflowIsLoading = false;
-    };
-
-    const fnOnErrorWorkflow = (err: HttpErrorResponse): HttpErrorResponse | false => {
-      const error = this.errors.handleError(err);
-      this.notification = httpErrorNotification(error);
-      this.workflowIsLoading = false;
-      return error;
-    };
 
     const workflowRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
-      fnDataCallWorkflow,
-      fnDataProcessWorkflow,
-      fnOnErrorWorkflow
+      (): Observable<Workflow> => {
+        return this.workflows.getWorkflowForDataset(this.datasetId);
+      },
+      (workflow: Workflow): void => {
+        this.workflowData = workflow;
+        this.workflowIsLoading = false;
+      },
+      (err: HttpErrorResponse): HttpErrorResponse | false => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.workflowIsLoading = false;
+        return error;
+      }
     ).getPollingSubject();
 
-    const fnDataCallLastExec = (): Observable<WorkflowExecution | undefined> => {
-      this.lastExecutionIsLoading = false;
-      return this.workflows.getLastDatasetExecution(this.datasetId);
-    };
-
-    const fnDataProcessLastExec = (execution: WorkflowExecution): void => {
-      this.processLastExecutionData(execution);
-    };
-
-    const fnOnErrorLastExec = (err: HttpErrorResponse): HttpErrorResponse | false => {
-      const error = this.errors.handleError(err);
-      this.notification = httpErrorNotification(error);
-      return error;
-    };
     this.createNewDataPoller(
       environment.intervalStatus,
-      fnDataCallLastExec as () => Observable<WorkflowExecution>,
-      fnDataProcessLastExec,
-      fnOnErrorLastExec
+      (): Observable<WorkflowExecution> => {
+        this.lastExecutionIsLoading = false;
+        return this.workflows.getLastDatasetExecution(this.datasetId) as Observable<
+          WorkflowExecution
+        >;
+      },
+      (execution: WorkflowExecution): void => {
+        this.processLastExecutionData(execution);
+      },
+      (err: HttpErrorResponse): HttpErrorResponse | false => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        return error;
+      }
     );
 
     // stream for start-workflow click events
