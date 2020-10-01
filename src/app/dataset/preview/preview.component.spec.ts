@@ -1,5 +1,4 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -85,7 +84,7 @@ describe('PreviewComponent', () => {
     it('should add plugins', fakeAsync(() => {
       component.datasetData = mockDataset;
       fixture.detectChanges();
-      component.isLoading = true;
+      component.isLoadingFilter = true;
 
       expect(component.allPlugins.length).toBeFalsy();
 
@@ -94,23 +93,24 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
 
       expect(component.allPlugins.length).toBeTruthy();
-      expect(component.isLoading).toBeFalsy();
+      expect(component.isLoadingFilter).toBeFalsy();
 
       component.ngOnDestroy();
     }));
 
     it('should show a sample', fakeAsync((): void => {
+      const selNonDefaultEditor = '.view-sample:not(.no-sample)';
       tick(0);
       fixture.detectChanges();
-
-      expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeFalsy();
+      expect(component.allSamples.length).toBe(0);
+      expect(fixture.debugElement.queryAll(By.css(selNonDefaultEditor)).length).toBeFalsy();
       component.datasetData = mockDataset;
       fixture.detectChanges();
       component.previewFilters = previewFilterData;
       component.prefillFilters();
       tick(0);
       fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBeTruthy();
+      expect(fixture.debugElement.queryAll(By.css(selNonDefaultEditor)).length).toBeTruthy();
       component.ngOnDestroy();
     }));
 
@@ -196,7 +196,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
 
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
-      component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123');
+      component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', false);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
       component.ngOnDestroy();
@@ -286,12 +286,6 @@ describe('PreviewComponent', () => {
       expect(router.navigate).toHaveBeenCalled();
     });
 
-    it('should notify of errors', () => {
-      expect(component.notification).toBeFalsy();
-      component.errorHandling(new HttpErrorResponse({}));
-      expect(component.notification).toBeTruthy();
-    });
-
     it('should handle mouse events', () => {
       const classList = ({
         contains: (_: string): boolean => {
@@ -357,30 +351,32 @@ describe('PreviewComponent', () => {
 
     it('should handle errors filtering on execution', () => {
       component.datasetData = mockDataset;
-      component.isLoading = true;
+      component.isLoadingFilter = true;
+      expect(component.isLoading()).toBeTruthy();
       component.addExecutionsFilter();
-      expect(component.isLoading).toBeFalsy();
+      expect(component.isLoading()).toBeFalsy();
     });
 
     it('should handle errors filtering on plugins', fakeAsync(() => {
       component.datasetData = mockDataset;
       fixture.detectChanges();
-      component.isLoading = true;
+      component.isLoadingFilter = true;
+      expect(component.isLoading()).toBeTruthy();
       component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
       tick(0);
       fixture.detectChanges();
-      expect(component.isLoading).toBeFalsy();
+      expect(component.isLoading()).toBeFalsy();
       component.ngOnDestroy();
       tick(1);
     }));
 
     it('should handle errors transforming the samples', () => {
       component.datasetData = mockDataset;
-      component.loadingTransformSamples = true;
+      component.isLoadingTransformSamples = true;
       component.transformSamples('default');
       fixture.detectChanges();
       expect(component.allSamples.length).toBe(0);
-      expect(component.loadingTransformSamples).toBeFalsy();
+      expect(component.isLoadingTransformSamples).toBeFalsy();
     });
   });
 });

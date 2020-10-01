@@ -42,14 +42,16 @@
         <div *ngIf="filterPluginOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
             <li *ngFor="let w of allPlugins">
-              <a (click)="getXMLSamples(w.type)" *ngIf="!w.error">{{ w.type | renameWorkflow }}</a>
+              <a (click)="getXMLSamples(w.type, false)" *ngIf="!w.error">{{
+                w.type | renameWorkflow
+              }}</a>
               <span class="notavailable" *ngIf="w.error">{{ w.type | renameWorkflow }}</span>
             </li>
           </ul>
         </div>
       </li>
       <li>
-        <span *ngIf="isLoading || isLoadingFilter" class="svg-icon-spin showing"></span>
+        <span *ngIf="isLoading()" class="svg-icon-spin showing"></span>
       </li>
       <li
         class="dropdown dropdown-compare arrow-right"
@@ -62,7 +64,7 @@
         <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
             <li *ngFor="let h of historyVersions">
-              <a (click)="getXMLSamplesCompare(h.pluginType, h.workflowExecutionId)">{{
+              <a (click)="getXMLSamplesCompare(h.pluginType, h.workflowExecutionId, false)">{{
                 h.pluginType | renameWorkflow
               }}</a>
             </li>
@@ -71,7 +73,6 @@
       </li>
     </ul>
   </div>
-
   <div *ngIf="allSamples">
     <div
       class="view-sample"
@@ -139,7 +140,7 @@
     </div>
   </div>
 
-  <div class="view-sample" *ngIf="!isLoading && allSamples.length === 0">
+  <div class="view-sample no-sample" *ngIf="allSamples.length === 0">
     <div class="view-sample-title">
       <h3>
         {{ 'noSample' | translate }}
@@ -166,7 +167,7 @@
 </div>
 
 <div *ngIf="tempXSLT">
-  <div class="messages" *ngIf="isLoading || loadingTransformSamples">
+  <div class="messages" *ngIf="isLoading()">
     <div class="success-message">
       <span class="svg-icon-spin-inbutton"></span> Loading samples...
     </div>

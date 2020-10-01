@@ -108,6 +108,9 @@ export interface WorkflowExecutionHistoryList {
 }
 
 export interface PreviewFilters {
+  comparisonPluginType?: PluginType;
+  comparisonExecutionId?: string;
+
   executionId?: string;
   pluginType?: PluginType;
   startedDate?: string;
