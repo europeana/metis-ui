@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { SubscriptionManager } from './shared/subscription-manager/subscription.manager';
 import { CancellationRequest } from './_models';
@@ -69,16 +70,23 @@ export class AppComponent extends SubscriptionManager implements OnInit, AfterVi
     );
 
     this.subs.push(
-      this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
-        this.cancellationRequest = cancellationRequest;
-        if (cancellationRequest.workflowExecutionId) {
-          this.modalConfirms.open(this.modalConfirmId).subscribe((response: boolean) => {
-            if (response) {
-              this.cancelWorkflow();
-            }
-          });
-        }
-      })
+      this.workflows.promptCancelWorkflow
+        .pipe(
+          filter((cancellationRequest: CancellationRequest) => {
+            return !!cancellationRequest.workflowExecutionId;
+          }),
+          tap((cancellationRequest: CancellationRequest) => {
+            this.cancellationRequest = cancellationRequest;
+          }),
+          switchMap(() => {
+            return this.modalConfirms.open(this.modalConfirmId);
+          })
+        )
+        .subscribe((response: boolean) => {
+          if (response) {
+            this.cancelWorkflow();
+          }
+        })
     );
   }
 

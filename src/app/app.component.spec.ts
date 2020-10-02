@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { of } from 'rxjs';
 import { AppComponent } from '.';
 import {
   createMockPipe,
@@ -17,6 +17,7 @@ import {
   ModalConfirmService,
   WorkflowService
 } from './_services';
+import { ModalConfirmComponent } from './shared/modal-confirm';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -45,6 +46,11 @@ describe('AppComponent', () => {
     router = TestBed.get(Router);
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.debugElement.componentInstance;
+    app.modalConfirm = ({
+      open: () => of(true),
+      close: () => {},
+      id: app.modalConfirmId
+    } as unknown) as ModalConfirmComponent;
   });
 
   it('should handle url changes', () => {
