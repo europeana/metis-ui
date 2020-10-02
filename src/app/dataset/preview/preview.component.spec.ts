@@ -25,8 +25,10 @@ describe('PreviewComponent', () => {
   let router: Router;
 
   const previewFilterData = {
-    executionId: mockWorkflowExecutionHistoryList.executions[0].workflowExecutionId,
-    pluginType: PluginType.NORMALIZATION,
+    basic: {
+      executionId: mockWorkflowExecutionHistoryList.executions[0].workflowExecutionId,
+      pluginType: PluginType.NORMALIZATION
+    },
     startedDate: '111111'
   } as PreviewFilters;
 
@@ -55,8 +57,37 @@ describe('PreviewComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(PreviewComponent);
     component = fixture.componentInstance;
-    component.previewFilters = {};
+    component.previewFilters = { basic: {}, comparison: {} };
     router = TestBed.get(Router);
+  };
+
+  const getTextElement = (textContent = '"http://test.link"', classMatch = true): Element => {
+    const classList = ({
+      contains: (_: string): boolean => {
+        return classMatch;
+      },
+      add: (_: string): void => {},
+      remove: (_: string): void => {}
+    } as unknown) as DOMTokenList;
+
+    return ({
+      classList: classList,
+      textContent: textContent,
+      querySelectorAll: (_: string): Array<Element> => {
+        return [
+          ({
+            classList: classList
+          } as unknown) as Element
+        ];
+      }
+    } as unknown) as Element;
+  };
+
+  const makeMouseEvent = (el: Element): MouseEvent => {
+    return ({
+      target: el,
+      currentTarget: el
+    } as unknown) as MouseEvent;
   };
 
   describe('Normal operation', () => {
@@ -88,12 +119,15 @@ describe('PreviewComponent', () => {
 
       expect(component.allPlugins.length).toBeFalsy();
 
-      component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
-      tick(0);
-      fixture.detectChanges();
-
-      expect(component.allPlugins.length).toBeTruthy();
-      expect(component.isLoadingFilter).toBeFalsy();
+      const runCheck = (): void => {
+        component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
+        tick(0);
+        fixture.detectChanges();
+        expect(component.allPlugins.length).toBeTruthy();
+        expect(component.isLoadingFilter).toBeFalsy();
+      };
+      runCheck();
+      runCheck();
 
       component.ngOnDestroy();
     }));
@@ -187,20 +221,20 @@ describe('PreviewComponent', () => {
       component.ngOnDestroy();
     }));
 
-    it('should show sample comparison', () => {
+    it('should show sample comparison', fakeAsync(() => {
       expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(0);
       component.datasetData = mockDataset;
       component.previewFilters = previewFilterData;
       component.historyVersions = mockHistoryVersions;
+      tick(0);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
-
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', false);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
       component.ngOnDestroy();
-    });
+    }));
 
     it('should toggle filters', fakeAsync(() => {
       tick(0);
@@ -261,8 +295,14 @@ describe('PreviewComponent', () => {
       expect(component.editorConfig.theme).toEqual('default');
       component.transformSamples('default');
       fixture.detectChanges();
+
       component.onThemeSet(false);
       expect(component.editorConfig.theme).not.toEqual('default');
+      component.onThemeSet(false);
+      expect(component.editorConfig.theme).not.toEqual('default');
+
+      component.onThemeSet(true);
+      expect(component.editorConfig.theme).toEqual('default');
       component.onThemeSet(true);
       expect(component.editorConfig.theme).toEqual('default');
     });
@@ -287,58 +327,53 @@ describe('PreviewComponent', () => {
     });
 
     it('should handle mouse events', () => {
-      const classList = ({
-        contains: (_: string): boolean => {
-          return true;
-        },
-        add: (_: string): void => {},
-        remove: (_: string): void => {}
-      } as unknown) as DOMTokenList;
+      const element = getTextElement();
+      const elementNoText = getTextElement('');
 
-      const element = ({
-        classList: classList,
-        textContent: '"http://test.link"',
-        querySelectorAll: (_: string): Array<Element> => {
-          return [
-            ({
-              classList: classList
-            } as unknown) as Element
-          ];
-        }
-      } as unknown) as Element;
-
-      const mouseEvent = ({
-        target: element,
-        currentTarget: element
-      } as unknown) as MouseEvent;
+      const mouseEvent = makeMouseEvent(element);
+      const mouseEventNoText = makeMouseEvent(elementNoText);
 
       spyOn(element.classList, 'add');
       spyOn(element.classList, 'remove');
 
       component.handleMouseOut(mouseEvent);
 
-      expect(classList.remove).toHaveBeenCalled();
-      expect(classList.add).not.toHaveBeenCalled();
+      expect(element.classList.remove).toHaveBeenCalled();
+      expect(element.classList.add).not.toHaveBeenCalled();
 
       component.handleMouseOver(mouseEvent);
+      expect(element.classList.add).toHaveBeenCalledTimes(1);
 
-      expect(classList.add).toHaveBeenCalled();
+      component.handleMouseOver(mouseEventNoText);
+      expect(element.classList.add).toHaveBeenCalledTimes(1);
     });
 
     it('should open links in a new tab', () => {
       spyOn(window, 'open');
-      const testMouseEvent = ({
-        target: {
-          classList: {
-            contains: (): boolean => {
-              return true;
-            }
-          },
-          textContent: '"http://test.link"'
-        }
-      } as unknown) as MouseEvent;
+      const testMouseEvent = makeMouseEvent(getTextElement());
       component.handleCodeClick(testMouseEvent);
       expect(window.open).toHaveBeenCalled();
+    });
+
+    it('should extract the link from the element', () => {
+      spyOn(window, 'open');
+      const testText = 'https://hello';
+      const el = getTextElement('');
+      const ev = makeMouseEvent(el);
+
+      component.handleCodeClick(ev);
+      expect(window.open).not.toHaveBeenCalled();
+
+      el.textContent = testText;
+      component.handleCodeClick(ev);
+      expect(window.open).not.toHaveBeenCalled();
+
+      el.textContent = `"${testText}"`;
+      component.handleCodeClick(ev);
+      expect(window.open).toHaveBeenCalledTimes(1);
+
+      component.handleCodeClick(makeMouseEvent(getTextElement('', false)));
+      expect(window.open).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -370,6 +405,29 @@ describe('PreviewComponent', () => {
       tick(1);
     }));
 
+    it('should handle errors getting the XML comparisons', () => {
+      component.datasetData = mockDataset;
+      fixture.detectChanges();
+      component.isLoadingSamples = true;
+      component.getXMLSamples(PluginType.NORMALIZATION, false);
+      expect(component.isLoadingSamples).toBeFalsy();
+      expect(component.notification).toBeTruthy();
+    });
+
+    it('should handle errors showing the sample comparison', () => {
+      component.datasetData = mockDataset;
+      component.previewFilters = previewFilterData;
+      component.historyVersions = mockHistoryVersions;
+      component.isLoadingSamples = true;
+      fixture.detectChanges();
+      component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', false);
+      fixture.detectChanges();
+      expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
+      expect(component.notification).toBeTruthy();
+      expect(component.isLoadingSamples).toBeFalsy();
+      component.ngOnDestroy();
+    });
+
     it('should handle errors transforming the samples', () => {
       component.datasetData = mockDataset;
       component.isLoadingTransformSamples = true;
@@ -377,6 +435,7 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
       expect(component.allSamples.length).toBe(0);
       expect(component.isLoadingTransformSamples).toBeFalsy();
+      expect(component.isLoading()).toBeFalsy();
     });
   });
 });

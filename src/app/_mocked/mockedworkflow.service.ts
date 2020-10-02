@@ -648,6 +648,9 @@ export class MockWorkflowService {
   getReportsForExecution(): void {}
 
   getWorkflowSamples(): Observable<XmlSample[]> {
+    if (this.errorMode) {
+      return throwError(new Error('mock getWorkflowSamples throws error...'));
+    }
     return observableOf(mockXmlSamples);
   }
 
@@ -667,6 +670,9 @@ export class MockWorkflowService {
   }
 
   getWorkflowComparisons(): Observable<XmlSample[]> {
+    if (this.errorMode) {
+      return throwError(new Error('mock getWorkflowComparisons throws error...'));
+    }
     return observableOf(mockXmlSamples);
   }
 

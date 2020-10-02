@@ -176,7 +176,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.filteredExecutionId = executionHistory.workflowExecutionId;
     this.selectedDate = executionHistory.startedDate;
     this.selectedComparison = undefined;
-    this.previewFilters.executionId = executionHistory.workflowExecutionId;
+    this.previewFilters.basic.executionId = executionHistory.workflowExecutionId;
     this.previewFilters.startedDate = executionHistory.startedDate;
 
     // unsubscribe from any previous subscription
@@ -231,8 +231,11 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
     if (!prefilling) {
       this.selectedComparison = plugin;
-      this.previewFilters.comparisonPluginType = plugin;
-      this.previewFilters.comparisonExecutionId = workflowExecutionId;
+      this.previewFilters.comparison = {
+        pluginType: plugin,
+        executionId: workflowExecutionId
+      };
+
       this.setPreviewFilters.emit(this.previewFilters);
     }
 
@@ -270,9 +273,8 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
     this.onClickedOutside();
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
-
     this.selectedPlugin = plugin;
-    this.previewFilters.pluginType = plugin;
+    this.previewFilters.basic.pluginType = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
 
     this.subs.push(
@@ -289,10 +291,10 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
             this.sampleRecordIds.push(sample.ecloudId);
           });
 
-          const comparisonPluginType = this.previewFilters.comparisonPluginType;
-          const comparisonExecutionId = this.previewFilters.comparisonExecutionId;
-
-          if (prefilling && comparisonPluginType && comparisonExecutionId) {
+          const prvCmp = this.previewFilters.comparison;
+          if (prefilling && prvCmp && prvCmp.pluginType && prvCmp.executionId) {
+            const comparisonPluginType = prvCmp.pluginType;
+            const comparisonExecutionId = prvCmp.executionId;
             this.selectedComparison = comparisonPluginType;
             this.getXMLSamplesCompare(comparisonPluginType, comparisonExecutionId, prefilling);
             this.isLoadingSamples = false;
@@ -369,15 +371,15 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /* prefill the filters when temporarily saved options are available
   */
   prefillFilters(): void {
-    if (this.previewFilters && this.previewFilters.startedDate && this.previewFilters.executionId) {
+    if (this.previewFilters.startedDate && this.previewFilters.basic.executionId) {
       this.selectedDate = this.previewFilters.startedDate;
       this.addPluginsFilter({
-        workflowExecutionId: this.previewFilters.executionId,
+        workflowExecutionId: this.previewFilters.basic.executionId,
         startedDate: this.previewFilters.startedDate
       });
     }
 
-    const pluginType = this.previewFilters.pluginType;
+    const pluginType = this.previewFilters.basic.pluginType;
 
     if (pluginType) {
       this.selectedPlugin = pluginType;

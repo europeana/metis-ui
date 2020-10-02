@@ -107,12 +107,14 @@ export interface WorkflowExecutionHistoryList {
   executions: Array<WorkflowExecutionHistory>;
 }
 
-export interface PreviewFilters {
-  comparisonPluginType?: PluginType;
-  comparisonExecutionId?: string;
-
+export interface PreviewFilter {
   executionId?: string;
   pluginType?: PluginType;
+}
+
+export interface PreviewFilters {
+  basic: PreviewFilter;
+  comparison?: PreviewFilter;
   startedDate?: string;
 }
 
