@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
@@ -33,11 +33,12 @@ describe('SearchResultsComponent', () => {
     }).compileComponents();
   };
 
-  const b4Each = (): void => {
+  const b4Each = fakeAsync((): void => {
     fixture = TestBed.createComponent(SearchResultsComponent);
     fixture.detectChanges();
     component = fixture.componentInstance;
-  };
+    tick(1);
+  });
 
   describe('Error handling', () => {
     beforeEach(async(() => {
@@ -77,6 +78,15 @@ describe('SearchResultsComponent', () => {
       component.loadNextPage();
       expect(component.load).toHaveBeenCalled();
       expect(component.currentPage).toBe(1);
+    });
+
+    it('should unsubscribe when destroyed', () => {
+      let called = false;
+      spyOn(component.subs[0], 'unsubscribe').and.callFake(() => {
+        called = true;
+      });
+      component.ngOnDestroy();
+      expect(called).toBeTruthy();
     });
   });
 

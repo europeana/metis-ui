@@ -263,15 +263,14 @@ describe('WorkflowComponent', () => {
     });
 
     it('should submit the changes', fakeAsync(() => {
-      console.log(workflows);
-      //spyOn(workflows, 'createWorkflowForDataset');
+      spyOn(workflows, 'createWorkflowForDataset').and.callThrough();
       setSavableChanges();
       expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
       component.onSubmit();
-      tick();
+      tick(1);
       expect(component.getSaveNotification()!.content).toBe('en:workflowSaved');
       expect(component.getSaveNotification()).toEqual(component.notification);
-      //expect(workflows.createWorkflowForDataset).toHaveBeenCalled();
+      expect(workflows.createWorkflowForDataset).toHaveBeenCalled();
     }));
 
     it('should get the save notification unless saving', () => {
@@ -360,7 +359,7 @@ describe('WorkflowComponent', () => {
       setSavableChanges();
       expect(component.notification).toBeFalsy();
       component.onSubmit();
-      tick();
+      tick(1);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
     }));

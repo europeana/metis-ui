@@ -30,6 +30,8 @@ import {
   WorkflowStatus,
   XmlSample
 } from '../_models';
+
+import { SubscriptionManager } from '../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../_translate';
 
 import { AuthenticationService } from './authentication.service';
@@ -38,14 +40,16 @@ import { ErrorService } from './error.service';
 import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
 @Injectable({ providedIn: 'root' })
-export class WorkflowService {
+export class WorkflowService extends SubscriptionManager {
   constructor(
     private readonly http: HttpClient,
     private readonly datasetsService: DatasetsService,
     private readonly errors: ErrorService,
     private readonly authenticationServer: AuthenticationService,
     private readonly translate: TranslateService
-  ) {}
+  ) {
+    super();
+  }
 
   public promptCancelWorkflow: EventEmitter<CancellationRequest> = new EventEmitter();
 
@@ -346,17 +350,19 @@ export class WorkflowService {
     workflowExecution.metisPlugins.forEach((pluginExecution) => {
       const { externalTaskId, topologyName } = pluginExecution;
       if (externalTaskId && topologyName) {
-        this.getCachedHasErrors(
-          externalTaskId,
-          topologyName,
-          isPluginCompleted(pluginExecution)
-        ).subscribe(
-          (hasErrors) => {
-            pluginExecution.hasReport = hasErrors;
-          },
-          (err: HttpErrorResponse) => {
-            this.errors.handleError(err);
-          }
+        this.subs.push(
+          this.getCachedHasErrors(
+            externalTaskId,
+            topologyName,
+            isPluginCompleted(pluginExecution)
+          ).subscribe(
+            (hasErrors) => {
+              pluginExecution.hasReport = hasErrors;
+            },
+            (err: HttpErrorResponse) => {
+              this.errors.handleError(err);
+            }
+          )
         );
       }
     });

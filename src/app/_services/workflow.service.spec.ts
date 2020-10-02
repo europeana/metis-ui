@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { apiSettings } from '../../environments/apisettings';
 import { gatherValuesAsync, MockHttp } from '../_helpers/test-helpers';
@@ -28,6 +28,7 @@ import {
   ReportAvailability,
   WorkflowExecution
 } from '../_models';
+import { getUnsubscribable } from '../_helpers/test-helpers';
 import { TranslateService } from '../_translate';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
@@ -56,91 +57,107 @@ describe('workflow service', () => {
   });
 
   it('should get workflow for the dataset', () => {
-    service.getWorkflowForDataset('664').subscribe((workflow) => {
+    const sub = service.getWorkflowForDataset('664').subscribe((workflow) => {
       expect(workflow).toEqual(mockWorkflow);
     });
     mockHttp.expect('GET', '/orchestrator/workflows/664').send(mockWorkflow);
+    sub.unsubscribe();
   });
 
   it('should get the harvest data', () => {
-    service.getPublishedHarvestedData('663').subscribe((data) => {
+    const sub = service.getPublishedHarvestedData('663').subscribe((data) => {
       expect(data).toEqual(mockHarvestData);
     });
     mockHttp
       .expect('GET', '/orchestrator/workflows/executions/dataset/663/information')
       .send(mockHarvestData);
+    sub.unsubscribe();
   });
 
   it('should update a workflow', () => {
-    service.createWorkflowForDataset('5435', { datasetId: '5435' }, false).subscribe((workflow) => {
-      expect(workflow).toEqual(mockWorkflow);
-    });
+    const sub = service
+      .createWorkflowForDataset('5435', { datasetId: '5435' }, false)
+      .subscribe((workflow) => {
+        expect(workflow).toEqual(mockWorkflow);
+      });
     mockHttp
       .expect('PUT', '/orchestrator/workflows/5435')
       .body({ datasetId: '5435' })
       .send(mockWorkflow);
+    sub.unsubscribe();
   });
 
   it('should create a workflow', () => {
-    service.createWorkflowForDataset('5435', { datasetId: '5435' }, true).subscribe((workflow) => {
-      expect(workflow).toEqual(mockWorkflow);
-    });
+    const sub = service
+      .createWorkflowForDataset('5435', { datasetId: '5435' }, true)
+      .subscribe((workflow) => {
+        expect(workflow).toEqual(mockWorkflow);
+      });
     mockHttp
       .expect('POST', '/orchestrator/workflows/5435')
       .body({ datasetId: '5435' })
       .send(mockWorkflow);
+    sub.unsubscribe();
   });
 
-  it('should start a workflow', () => {
-    service.startWorkflow('6535').subscribe((execution) => {
+  it('should start a workflow', fakeAsync(() => {
+    const sub = service.startWorkflow('6535').subscribe((execution) => {
       expect(execution).toEqual(mockWorkflowExecution);
     });
     mockHttp
       .expect('POST', '/orchestrator/workflows/6535/execute?priority=0&enforcedPluginType=')
       .send(mockWorkflowExecution);
-  });
+    tick(1);
+    sub.unsubscribe();
+  }));
 
   it('should get logs', () => {
-    service.getLogs('43545', 'normalization', 10, 1000).subscribe((logs) => {
+    const sub = service.getLogs('43545', 'normalization', 10, 1000).subscribe((logs) => {
       expect(logs).toEqual(mockLogs);
     });
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/43545/logs?from=10&to=1000')
       .send(mockLogs);
+    sub.unsubscribe();
   });
 
   it('should get a report', () => {
-    service.getReport('56436456', 'normalization').subscribe((report) => {
+    const sub = service.getReport('56436456', 'normalization').subscribe((report) => {
       expect(report).toEqual(mockReport);
     });
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/56436456/report?idsPerError=100')
       .send(mockReport);
+    sub.unsubscribe();
   });
 
   it('should get (cached) task errors for finished tasks', () => {
-    gatherValuesAsync(service.getCachedHasErrors('54353534', 'normalization', true)).subscribe(
-      (res) => {
-        expect(res).toEqual([false]);
-      }
-    );
+    const sub = gatherValuesAsync(
+      service.getCachedHasErrors('54353534', 'normalization', true)
+    ).subscribe((res) => {
+      expect(res).toEqual([false]);
+    });
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/54353534/report/exists')
       .send({ existsExternalTaskReport: false });
 
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', true)).subscribe(
-      (res) => {
-        expect(res).toEqual([true]);
-      }
-    );
-    gatherValuesAsync(service.getCachedHasErrors('7866', 'normalization', true)).subscribe(
-      (res) => {
-        expect(res).toEqual([true]);
-      }
-    );
+    sub.unsubscribe();
+
+    const sub1 = gatherValuesAsync(
+      service.getCachedHasErrors('7866', 'normalization', true)
+    ).subscribe((res) => {
+      expect(res).toEqual([true]);
+    });
+    const sub2 = gatherValuesAsync(
+      service.getCachedHasErrors('7866', 'normalization', true)
+    ).subscribe((res) => {
+      expect(res).toEqual([true]);
+    });
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/7866/report/exists')
       .send(mockReportAvailability);
+    sub1.unsubscribe();
+    sub2.unsubscribe();
   });
 
   it('should get (stale) task report availabilities for unfinished tasks', () => {
@@ -149,7 +166,7 @@ describe('workflow service', () => {
       expectRequest: boolean,
       done: () => void
     ): void {
-      service.getCachedHasErrors('7866', 'normalization', false).subscribe((res) => {
+      const sub = service.getCachedHasErrors('7866', 'normalization', false).subscribe((res) => {
         expect(res).toEqual(true);
       });
 
@@ -158,6 +175,7 @@ describe('workflow service', () => {
           .expect('GET', '/orchestrator/proxies/normalization/task/7866/report/exists')
           .send(reportAvailability);
       }
+      sub.unsubscribe();
       done();
     }
 
@@ -174,16 +192,17 @@ describe('workflow service', () => {
   });
 
   it('should get dataset execution summaries per page', () => {
-    service.getCompletedDatasetOverviewsUptoPage(0).subscribe((results) => {
+    const sub = service.getCompletedDatasetOverviewsUptoPage(0).subscribe((results) => {
       expect(results.results).toEqual(mockDatasetOverviewResults.results);
     });
     mockHttp
       .expect('GET', '/orchestrator/workflows/executions/overview' + '?nextPage=0')
       .send(mockDatasetOverviewResults);
+    sub.unsubscribe();
   });
 
   it('should get completed executions for a dataset per page', () => {
-    service.getCompletedDatasetExecutions('543452', 6).subscribe((results) => {
+    const sub = service.getCompletedDatasetExecutions('543452', 6).subscribe((results) => {
       expect(results).toEqual(mockWorkflowExecutionResults);
     });
     mockHttp
@@ -194,10 +213,11 @@ describe('workflow service', () => {
           '&orderField=CREATED_DATE&ascending=false&nextPage=6'
       )
       .send(mockWorkflowExecutionResults);
+    sub.unsubscribe();
   });
 
   it('should get multiple pages of completed executions for a dataset', () => {
-    service.getCompletedDatasetExecutionsUptoPage('543452', 1).subscribe((results) => {
+    const sub1 = service.getCompletedDatasetExecutionsUptoPage('543452', 1).subscribe((results) => {
       expect(results.results).toEqual(
         mockWorkflowExecutionResults.results.concat(mockWorkflowExecutionResults.results)
       );
@@ -219,7 +239,7 @@ describe('workflow service', () => {
       )
       .send(mockWorkflowExecutionResults);
 
-    service.getCompletedDatasetExecutionsUptoPage('543452', 0).subscribe((results) => {
+    const sub2 = service.getCompletedDatasetExecutionsUptoPage('543452', 0).subscribe((results) => {
       expect(results.results).toEqual(mockWorkflowExecutionResults.results);
     });
     mockHttp
@@ -230,10 +250,12 @@ describe('workflow service', () => {
           '&orderField=CREATED_DATE&ascending=false&nextPage=0'
       )
       .send(mockFirstPageResults);
+    sub1.unsubscribe();
+    sub2.unsubscribe();
   });
 
   it('should get executions for a dataset per page', () => {
-    service.getDatasetExecutions('543341', 7).subscribe((results) => {
+    const sub = service.getDatasetExecutions('543341', 7).subscribe((results) => {
       expect(results).toEqual(mockWorkflowExecutionResults);
     });
     mockHttp
@@ -242,31 +264,34 @@ describe('workflow service', () => {
         '/orchestrator/workflows/executions/dataset/543341?orderField=CREATED_DATE&ascending=false&nextPage=7'
       )
       .send(mockWorkflowExecutionResults);
+    sub.unsubscribe();
   });
 
   it('should get all executions for a dataset', () => {
-    service.getDatasetHistory('879').subscribe((results) => {
+    const sub = service.getDatasetHistory('879').subscribe((results) => {
       expect(results).toEqual(mockWorkflowExecutionHistoryList);
     });
     mockHttp
       .expect('GET', '/orchestrator/workflows/executions/dataset/879/history')
       .send(mockWorkflowExecutionHistoryList);
+    sub.unsubscribe();
   });
 
   it('should get all plugins for an execution history', () => {
     const pal: PluginAvailabilityList = {
-      plugins: [{ pluginType: PluginType.HTTP_HARVEST, hasSuccessfulData: true }]
+      plugins: [{ pluginType: PluginType.HTTP_HARVEST, canDisplayRawXml: true }]
     };
-    service.getExecutionPlugins('123').subscribe((results) => {
+    const sub = service.getExecutionPlugins('123').subscribe((results) => {
       expect(results).toEqual(pal);
     });
     mockHttp
       .expect('GET', '/orchestrator/workflows/executions/123/plugins/data-availability')
       .send(pal);
+    sub.unsubscribe();
   });
 
   it('should get all finished executions for a dataset', () => {
-    service.getFinishedDatasetExecutions('677', 8).subscribe((results) => {
+    const sub = service.getFinishedDatasetExecutions('677', 8).subscribe((results) => {
       expect(results).toEqual(mockWorkflowExecutionResults);
     });
     mockHttp
@@ -276,10 +301,11 @@ describe('workflow service', () => {
           '?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=8'
       )
       .send(mockWorkflowExecutionResults);
+    sub.unsubscribe();
   });
 
   it('should get the last execution for a dataset', () => {
-    service.getLastDatasetExecution('787').subscribe((execution) => {
+    const sub = service.getLastDatasetExecution('787').subscribe((execution) => {
       expect(execution).toEqual(mockWorkflowExecutionResults.results[0]);
     });
     mockHttp
@@ -288,10 +314,11 @@ describe('workflow service', () => {
         '/orchestrator/workflows/executions/dataset/787?orderField=CREATED_DATE&ascending=false'
       )
       .send(mockWorkflowExecutionResults);
+    sub.unsubscribe();
   });
 
   it('should get all executions', () => {
-    service.getAllExecutionsCollectingPages(false).subscribe((results) => {
+    const sub1 = service.getAllExecutionsCollectingPages(false).subscribe((results) => {
       expect(results).toEqual(
         mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results)
       );
@@ -313,7 +340,7 @@ describe('workflow service', () => {
       )
       .send(mockWorkflowExecutionResults);
 
-    service.getAllExecutionsCollectingPages(true).subscribe((results) => {
+    const sub2 = service.getAllExecutionsCollectingPages(true).subscribe((results) => {
       expect(results).toEqual(
         mockFirstPageResults.results.concat(mockWorkflowExecutionResults.results)
       );
@@ -334,10 +361,12 @@ describe('workflow service', () => {
           '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
       .send(mockWorkflowExecutionResults);
+    sub1.unsubscribe();
+    sub2.unsubscribe();
   });
 
   it('should get all executions upto a certain page', () => {
-    service.getAllExecutionsUptoPage(1, false).subscribe((results) => {
+    const sub1 = service.getAllExecutionsUptoPage(1, false).subscribe((results) => {
       expect(results).toEqual({
         results: mockWorkflowExecutionResults.results.concat(mockWorkflowExecutionResults.results),
         more: false
@@ -360,7 +389,7 @@ describe('workflow service', () => {
       )
       .send(mockWorkflowExecutionResults);
 
-    service.getAllExecutionsUptoPage(1, true).subscribe((results) => {
+    const sub2 = service.getAllExecutionsUptoPage(1, true).subscribe((results) => {
       expect(results).toEqual({
         results: mockWorkflowExecutionResults.results.concat(mockFirstPageResults.results),
         more: true
@@ -382,6 +411,8 @@ describe('workflow service', () => {
           '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
       )
       .send(mockFirstPageResults);
+    sub1.unsubscribe();
+    sub2.unsubscribe();
   });
 
   it('should get the report availabilities for an execution', () => {
@@ -397,25 +428,29 @@ describe('workflow service', () => {
   });
 
   it('should cancel a workflow (DELETE)', () => {
-    service.cancelThisWorkflow('565645').subscribe(() => {});
+    const sub = service.cancelThisWorkflow('565645').subscribe(() => {});
     mockHttp.expect('DELETE', '/orchestrator/workflows/executions/565645').send({});
+    sub.unsubscribe();
   });
 
   it('should get samples', () => {
-    service.getWorkflowSamples('5653454353', PluginType.ENRICHMENT).subscribe((samples) => {
-      expect(samples).toEqual(mockXmlSamples);
-    });
+    const sub = service
+      .getWorkflowSamples('5653454353', PluginType.ENRICHMENT)
+      .subscribe((samples) => {
+        expect(samples).toEqual(mockXmlSamples);
+      });
     mockHttp
       .expect(
         'GET',
         '/orchestrator/proxies/records?workflowExecutionId=5653454353&pluginType=ENRICHMENT&nextPage='
       )
       .send({ records: mockXmlSamples });
+    sub.unsubscribe();
   });
 
   it('should get sample comparisons', () => {
     const ids = { ids: ['1', '2'] };
-    service
+    const sub = service
       .getWorkflowComparisons('5653454353', PluginType.ENRICHMENT, ids.ids)
       .subscribe((samples) => {
         expect(samples).toEqual(mockXmlSamples);
@@ -427,30 +462,45 @@ describe('workflow service', () => {
       )
       .body(ids)
       .send({ records: mockXmlSamples });
+    sub.unsubscribe();
   });
 
   it('should get statistics', () => {
-    service.getStatistics('normalization', '-4354').subscribe((statistics) => {
+    const sub = service.getStatistics('normalization', '-4354').subscribe((statistics) => {
       expect(statistics).toEqual(mockStatistics);
     });
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/-4354/statistics')
       .send(mockStatistics);
+    sub.unsubscribe();
   });
 
   it('should get statistics detail', () => {
-    service.getStatisticsDetail('normalization', '-4354', 'abc').subscribe((statistics) => {
-      expect(statistics).toEqual(mockStatisticsDetail);
-    });
+    const sub = service
+      .getStatisticsDetail('normalization', '-4354', 'abc')
+      .subscribe((statistics) => {
+        expect(statistics).toEqual(mockStatisticsDetail);
+      });
     mockHttp
       .expect('GET', '/orchestrator/proxies/normalization/task/-4354/nodestatistics?nodePath=abc')
       .send(mockStatisticsDetail);
+    sub.unsubscribe();
   });
 
   it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {
-    service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
-      expect(res).toEqual([]);
-    });
+    service
+      .addDatasetNameAndCurrentPlugin([])
+      .subscribe((res) => {
+        expect(res).toEqual([]);
+      })
+      .unsubscribe();
+  });
+
+  it('should unsubscribe when destroyed', () => {
+    const sub = getUnsubscribable();
+    service.subs = [sub];
+    service.ngOnDestroy();
+    expect(sub.unsubscribe).toHaveBeenCalled();
   });
 
   it('should cancel a workflow', () => {

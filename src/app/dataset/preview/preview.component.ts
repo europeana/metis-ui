@@ -21,8 +21,8 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from 'ng2-codemirror';
-import { Subscription, timer } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, Subscription, timer } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 import * as beautify from 'vkbeautify';
 import { environment } from '../../../environments/environment';
 import {
@@ -37,6 +37,7 @@ import {
   XmlSample
 } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../../_translate';
 
 @Component({
@@ -44,7 +45,7 @@ import { TranslateService } from '../../_translate';
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })
-export class PreviewComponent implements OnInit, OnDestroy {
+export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly translate: TranslateService,
@@ -53,7 +54,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private readonly datasets: DatasetsService,
     private readonly router: Router,
     private readonly sanitizer: DomSanitizer
-  ) {}
+  ) {
+    super();
+  }
 
   @Input() datasetData: Dataset;
   @Input() previewFilters: PreviewFilters;
@@ -84,8 +87,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
   isLoadingFilter: boolean;
   loadingTransformSamples = false;
   downloadUrlCache: { [key: string]: string } = {};
-  executionsFilterTimer: Subscription;
-  pluginsFilterTimer: Subscription;
+  serviceTimer: Observable<number>;
+  pluginsFilterSubscription: Subscription;
 
   /** ngOnInit
   /* - load the config
@@ -98,9 +101,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
     this.nosample = this.translate.instant('noSample');
 
-    this.executionsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
-      this.addExecutionsFilter();
-    });
+    this.serviceTimer = timer(0, environment.intervalStatusMedium);
+    this.subs.push(
+      this.serviceTimer.subscribe(() => {
+        this.addExecutionsFilter();
+      })
+    );
 
     this.prefillFilters();
 
@@ -118,22 +124,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
       const url = this.downloadUrlCache[key];
       URL.revokeObjectURL(url);
     });
-
-    this.unsubscribeFilters([this.executionsFilterTimer, this.pluginsFilterTimer]);
-  }
-
-  /** unsubscribeFilters
-  /* unsubscrube from the specified filters
-  */
-  unsubscribeFilters(filterSubscriptions: Array<Subscription>): void {
-    filterSubscriptions
-      .filter((x) => {
-        // remove any nulls
-        return x;
-      })
-      .forEach((fs) => {
-        fs.unsubscribe();
-      });
+    if (this.pluginsFilterSubscription) {
+      this.pluginsFilterSubscription.unsubscribe();
+    }
+    //this.subs.push(this.pluginsFilterSubscription);
+    this.cleanup();
+    //super.ngOnDestroy();
   }
 
   /** addExecutionsFilter
@@ -141,15 +137,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
   /* - update load-tracking variable
   */
   addExecutionsFilter(): void {
-    this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
-      (result) => {
-        this.allWorkflowExecutions = result.executions;
-        this.isLoading = false;
-      },
-      (err: HttpErrorResponse) => {
-        this.isLoading = false;
-        this.errors.handleError(err);
-      }
+    this.subs.push(
+      this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
+        (result) => {
+          this.allWorkflowExecutions = result.executions;
+          this.isLoading = false;
+        },
+        (err: HttpErrorResponse) => {
+          this.isLoading = false;
+          this.errors.handleError(err);
+        }
+      )
     );
   }
 
@@ -169,13 +167,22 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedDate = executionHistory.startedDate;
     this.selectedComparison = undefined;
     this.previewFilters.executionId = executionHistory.workflowExecutionId;
+    this.previewFilters.startedDate = executionHistory.startedDate;
 
     // unsubscribe from any previous subscription
-    this.unsubscribeFilters([this.pluginsFilterTimer]);
+    const prevSub = this.pluginsFilterSubscription;
+    if (prevSub) {
+      prevSub.unsubscribe();
+    }
 
-    this.pluginsFilterTimer = timer(0, environment.intervalStatusMedium).subscribe(() => {
-      this.isLoadingFilter = true;
-      this.workflows.getExecutionPlugins(this.filteredExecutionId).subscribe(
+    this.pluginsFilterSubscription = this.serviceTimer
+      .pipe(
+        switchMap(() => {
+          this.isLoadingFilter = true;
+          return this.workflows.getExecutionPlugins(this.filteredExecutionId);
+        })
+      )
+      .subscribe(
         (result) => {
           let pluginsFilterComplete = true;
           this.isLoading = false;
@@ -183,18 +190,18 @@ export class PreviewComponent implements OnInit, OnDestroy {
           this.allPlugins.length = 0;
 
           result.plugins.forEach((pa) => {
-            if (!pa.hasSuccessfulData) {
+            if (!pa.canDisplayRawXml) {
               pluginsFilterComplete = false;
             }
             this.allPlugins.push({
               type: pa.pluginType,
-              error: !pa.hasSuccessfulData
+              error: !pa.canDisplayRawXml
             });
           });
 
           if (pluginsFilterComplete) {
             // unsubscribe immediately
-            this.pluginsFilterTimer.unsubscribe();
+            this.pluginsFilterSubscription.unsubscribe();
           }
         },
         (err: HttpErrorResponse) => {
@@ -203,7 +210,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
           this.errors.handleError(err);
         }
       );
-    });
   }
 
   /** errorHandling
@@ -225,14 +231,16 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.filterCompareOpen = false;
     this.isLoading = true;
     this.allSampleComparisons = [];
-    this.workflows
-      .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
-      .subscribe((result) => {
-        // strip "new lines"
-        this.allSampleComparisons = this.undoNewLines(result);
-        this.isLoading = false;
-        this.selectedComparison = plugin;
-      }, this.errorHandling);
+    this.subs.push(
+      this.workflows
+        .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
+        .subscribe((result) => {
+          // strip "new lines"
+          this.allSampleComparisons = this.undoNewLines(result);
+          this.isLoading = false;
+          this.selectedComparison = plugin;
+        }, this.errorHandling.bind(this))
+    );
   }
 
   /** getXMLSamples
@@ -253,30 +261,33 @@ export class PreviewComponent implements OnInit, OnDestroy {
     this.selectedPlugin = plugin;
     this.previewFilters.pluginType = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
+    this.subs.push(
+      this.workflows.getWorkflowSamples(this.filteredExecutionId, plugin).subscribe((result) => {
+        this.allSamples = this.undoNewLines(result);
 
-    this.workflows.getWorkflowSamples(this.filteredExecutionId, plugin).subscribe((result) => {
-      this.allSamples = this.undoNewLines(result);
+        if (this.allSamples.length === 1) {
+          this.expandedSample = 0;
+        }
+        loadingSamples = false;
+        if (!loadingHistories) {
+          this.isLoading = false;
+        }
+        this.sampleRecordIds = [];
+        this.allSamples.forEach((sample) => {
+          this.sampleRecordIds.push(sample.ecloudId);
+        });
+      }, this.errorHandling.bind(this))
+    );
 
-      if (this.allSamples.length === 1) {
-        this.expandedSample = 0;
-      }
-      loadingSamples = false;
-      if (!loadingHistories) {
-        this.isLoading = false;
-      }
-      this.sampleRecordIds = [];
-      this.allSamples.forEach((sample) => {
-        this.sampleRecordIds.push(sample.ecloudId);
-      });
-    }, this.errorHandling);
-
-    this.workflows.getVersionHistory(this.filteredExecutionId, plugin).subscribe((result) => {
-      loadingHistories = false;
-      if (!loadingSamples) {
-        this.isLoading = false;
-      }
-      this.historyVersions = result;
-    }, this.errorHandling);
+    this.subs.push(
+      this.workflows.getVersionHistory(this.filteredExecutionId, plugin).subscribe((result) => {
+        loadingHistories = false;
+        if (!loadingSamples) {
+          this.isLoading = false;
+        }
+        this.historyVersions = result;
+      }, this.errorHandling.bind(this))
+    );
   }
 
   /** transformSamples
@@ -288,28 +299,37 @@ export class PreviewComponent implements OnInit, OnDestroy {
       this.notification = httpErrorNotification(error);
       this.loadingTransformSamples = false;
     };
-
     this.loadingTransformSamples = true;
-    this.workflows
-      .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
-      .subscribe((result) => {
-        if (!result.results[0]) {
-          this.loadingTransformSamples = false;
-          return;
-        }
-        this.workflows
-          .getWorkflowSamples(result.results[0].id, result.results[0].metisPlugins[0].pluginType)
-          .pipe(
-            switchMap((samples) => {
-              this.allSamples = this.undoNewLines(samples);
-              return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
-            })
-          )
-          .subscribe((transformed) => {
-            this.allTransformedSamples = this.undoNewLines(transformed);
+    this.subs.push(
+      this.workflows
+        .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
+        .pipe(
+          filter((result) => {
+            if (result.results[0]) {
+              return true;
+            }
             this.loadingTransformSamples = false;
-          }, handleError);
-      }, handleError);
+            return false;
+          }),
+          switchMap((result) => {
+            return this.workflows
+              .getWorkflowSamples(
+                result.results[0].id,
+                result.results[0].metisPlugins[0].pluginType
+              )
+              .pipe(
+                switchMap((samples) => {
+                  this.allSamples = this.undoNewLines(samples);
+                  return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
+                })
+              );
+          })
+        )
+        .subscribe((transformed) => {
+          this.allTransformedSamples = this.undoNewLines(transformed);
+          this.loadingTransformSamples = false;
+        }, handleError)
+    );
   }
 
   /** prefillFilters

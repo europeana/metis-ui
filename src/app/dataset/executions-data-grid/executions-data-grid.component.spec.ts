@@ -79,13 +79,4 @@ describe('ExecutionsDataGridComponent', () => {
     component.copyInformation('plugin', '1', '2');
     expect(component.contentCopied).toBe(true);
   });
-
-  it('should calculate if a preview is available', () => {
-    expect(component.hasPreview(basicPluginExecution)).toBeFalsy();
-    const progressedExecution = Object.assign(
-      { executionProgress: { processedRecords: 1, errors: 0 } },
-      basicPluginExecution
-    );
-    expect(component.hasPreview(progressedExecution)).toBeTruthy();
-  });
 });

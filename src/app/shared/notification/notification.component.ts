@@ -22,11 +22,11 @@ export class NotificationComponent implements OnDestroy {
       const transitionDuration = 400;
       const timer1 = timer(value.fadeTime).subscribe(() => {
         this.hidden = true;
-        const timer2 = timer(transitionDuration).subscribe(() => {
-          timer2.unsubscribe();
-          this.closed.emit();
-        });
         timer1.unsubscribe();
+      });
+      const timer2 = timer(value.fadeTime + transitionDuration).subscribe(() => {
+        timer2.unsubscribe();
+        this.closed.emit();
       });
     }
   }

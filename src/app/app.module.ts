@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from 'ng2-codemirror';
 import { ClickOutsideModule } from 'ng4-click-outside';
-
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
@@ -18,11 +17,14 @@ import {
   OngoingexecutionsComponent
 } from './dashboard';
 import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
+import { DataPollingComponent } from './data-polling';
 import {
   ActionbarComponent,
   DatasetComponent,
   DatasetformComponent,
   DatasetlogComponent,
+  DepublicationComponent,
+  DepublicationRowComponent,
   ExecutionsDataGridComponent,
   GeneralinfoComponent,
   HistoryComponent,
@@ -32,7 +34,10 @@ import {
   PreviewComponent,
   RedirectionComponent,
   ReportSimpleComponent,
+  SortableGroupComponent,
+  SortableHeaderComponent,
   StatisticsComponent,
+  TabHeadersComponent,
   WorkflowComponent,
   WorkflowFormFieldComponent,
   WorkflowFormFieldHarvestComponent,
@@ -40,6 +45,7 @@ import {
   WorkflowFormFieldTransformComponent,
   WorkflowHeaderComponent
 } from './dataset';
+import { FileUploadComponent } from './file-upload';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
 import { LoadTitleComponent } from './load-title';
@@ -51,6 +57,7 @@ import { AppRoutingModule } from './routing';
 import {
   HeaderComponent,
   LoadingButtonComponent,
+  ModalConfirmComponent,
   NotificationComponent,
   PasswordCheckComponent,
   SearchComponent,
@@ -61,8 +68,11 @@ import { ThemeSelectorComponent } from './theme-selector';
 
 @NgModule({
   declarations: [
+    ActionbarComponent,
+    DataPollingComponent,
     AppComponent,
     CollapsibleDirective,
+    ModalConfirmComponent,
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
@@ -75,6 +85,8 @@ import { ThemeSelectorComponent } from './theme-selector';
     NewDatasetComponent,
     DashboardComponent,
     DatasetformComponent,
+    DepublicationComponent,
+    DepublicationRowComponent,
     FilterOpsComponent,
     FilterOptionComponent,
     PasswordCheckComponent,
@@ -83,10 +95,9 @@ import { ThemeSelectorComponent } from './theme-selector';
     GeneralinfoComponent,
     DashboardactionsComponent,
     ExecutionsDataGridComponent,
-    ActionbarComponent,
+    FileUploadComponent,
     LastExecutionComponent,
     HistoryComponent,
-    ActionbarComponent,
     WorkflowComponent,
     WorkflowHeaderComponent,
     WorkflowFormFieldComponent,
@@ -100,7 +111,10 @@ import { ThemeSelectorComponent } from './theme-selector';
     RedirectionComponent,
     ReportSimpleComponent,
     SearchResultsComponent,
+    SortableHeaderComponent,
+    SortableGroupComponent,
     StatisticsComponent,
+    TabHeadersComponent,
     ThemeSelectorComponent,
     TranslatePipe,
     XmlPipe,

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { throwError } from 'rxjs';
@@ -76,8 +76,9 @@ describe('StatisticsComponent', () => {
     expect(component.expandedStatistics).toBeTruthy();
   });
 
-  it('allows the loading of extended statistics', () => {
+  it('allows the loading of extended statistics', fakeAsync(() => {
     component.loadStatistics();
+    tick(1);
     fixture.detectChanges();
     let stat = component.statistics.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeFalsy();
@@ -89,16 +90,21 @@ describe('StatisticsComponent', () => {
 
     component.taskId = undefined;
     component.loadMoreAttrs(xPath);
+    tick(1);
+    fixture.detectChanges();
+
     expect(spyLoading).not.toHaveBeenCalled();
     component.taskId = 'abc';
     component.loadMoreAttrs(xPath);
+    tick(1);
+    fixture.detectChanges();
     expect(spyLoading).toHaveBeenCalled();
 
     stat = component.statistics.nodePathStatistics[0];
     expect(stat.moreLoaded).toBeTruthy();
     expect(spyLoading).toHaveBeenCalledTimes(2);
     expect(calls).toEqual([true, false]);
-  });
+  }));
 
   it('shows a notification when loading finished executions fails', () => {
     expect(component.notification).toBeFalsy();
@@ -108,20 +114,22 @@ describe('StatisticsComponent', () => {
     expect(component.notification).toBeTruthy();
   });
 
-  it('shows a notification when loading statistics fails', () => {
+  it('shows a notification when loading statistics fails', fakeAsync(() => {
     expect(component.notification).toBeFalsy();
     const mockCall = setServiceError(cmpWorkflowService, 'getStatistics');
     component.loadStatistics();
+    tick(1);
     expect(mockCall).toHaveBeenCalled();
     expect(component.notification).toBeTruthy();
-  });
+  }));
 
-  it('shows a notification when loading extended statistics fails', () => {
+  it('shows a notification when loading extended statistics fails', fakeAsync(() => {
     component.loadStatistics();
     expect(component.notification).toBeFalsy();
     const mockCall = setServiceError(cmpWorkflowService, 'getStatisticsDetail');
     component.loadMoreAttrs(xPath);
+    tick(1);
     expect(mockCall).toHaveBeenCalled();
     expect(component.notification).toBeTruthy();
-  });
+  }));
 });

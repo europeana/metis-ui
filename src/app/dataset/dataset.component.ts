@@ -1,9 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
-import { filter, merge, switchMap, tap } from 'rxjs/operators';
+import { Observable, Subject, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   Dataset,
@@ -13,6 +12,7 @@ import {
   Notification,
   PluginExecution,
   PreviewFilters,
+  PublicationFitness,
   SimpleReportRequest,
   successNotification,
   Workflow,
@@ -20,9 +20,8 @@ import {
   workflowFormFieldConf
 } from '../_models';
 
-import { triggerDelay } from '../_helpers';
+import { DataPollingComponent } from '../data-polling';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
-
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
@@ -31,7 +30,7 @@ import { WorkflowHeaderComponent } from './workflow/workflow-header';
   templateUrl: './dataset.component.html',
   styleUrls: ['./dataset.component.scss']
 })
-export class DatasetComponent implements OnInit, OnDestroy {
+export class DatasetComponent extends DataPollingComponent implements OnInit {
   constructor(
     private readonly datasets: DatasetsService,
     private readonly workflows: WorkflowService,
@@ -39,7 +38,9 @@ export class DatasetComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly documentTitleService: DocumentTitleService
-  ) {}
+  ) {
+    super();
+  }
 
   fieldConf = workflowFormFieldConf;
   activeTab = 'edit';
@@ -48,11 +49,8 @@ export class DatasetComponent implements OnInit, OnDestroy {
   notification?: Notification;
   datasetIsLoading = true;
   harvestIsLoading = true;
-  harvestSubscription: Subscription;
   workflowIsLoading = true;
-  workflowSubscription: Subscription;
   lastExecutionIsLoading = true;
-  lastExecutionSubscription: Subscription;
   isStarting = false;
 
   datasetData: Dataset;
@@ -65,11 +63,6 @@ export class DatasetComponent implements OnInit, OnDestroy {
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
   previewFilters: PreviewFilters = {};
-
-  polledHarvestData: Observable<HarvestData>;
-  polledWorkflowData: Observable<Workflow>;
-  polledLastExecutionData: Observable<WorkflowExecution>;
-
   pollingRefresh: Subject<boolean>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -102,93 +95,89 @@ export class DatasetComponent implements OnInit, OnDestroy {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Dataset');
-    this.route.params.subscribe((params) => {
-      const { tab, id } = params;
-      if (tab === 'new') {
-        this.notification = successNotification('New dataset created! Id: ' + id);
-        this.router.navigate([`/dataset/edit/${id}`]);
-      } else {
-        this.activeTab = tab;
-        this.datasetId = id;
-        if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
-          this.tempXSLT = undefined;
+    this.subs.push(
+      this.route.params.subscribe((params) => {
+        const { tab, id } = params;
+        if (tab === 'new') {
+          this.notification = successNotification('New dataset created! Id: ' + id);
+          this.router.navigate([`/dataset/edit/${id}`]);
+        } else {
+          this.activeTab = tab;
+          this.datasetId = id;
+          if (this.activeTab !== 'preview' || this.prevTab !== 'mapping') {
+            this.tempXSLT = undefined;
+          }
+          this.prevTab = this.activeTab;
+          if (!this.pollingRefresh) {
+            this.beginPolling();
+            this.loadData();
+          }
         }
-        this.prevTab = this.activeTab;
-        this.beginPolling();
-        this.loadData();
-      }
-    });
+      })
+    );
   }
 
-  /** beginPolling
-  /* sets up reactive polling
-  */
   beginPolling(): void {
-    let pushPollHarvest = 0;
-    let pushPollWorkflow = 0;
+    const harvestRefresh = this.createNewDataPoller(
+      environment.intervalStatusMedium,
+      (): Observable<HarvestData> => {
+        return this.workflows.getPublishedHarvestedData(this.datasetId);
+      },
+      (resultHarvest: HarvestData): void => {
+        this.harvestPublicationData = resultHarvest;
+        this.harvestIsLoading = false;
+      },
+      (err: HttpErrorResponse): HttpErrorResponse | false => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.harvestIsLoading = false;
+        return error;
+      }
+    ).getPollingSubject();
+
+    const workflowRefresh = this.createNewDataPoller(
+      environment.intervalStatusMedium,
+      (): Observable<Workflow> => {
+        return this.workflows.getWorkflowForDataset(this.datasetId);
+      },
+      (workflow: Workflow): void => {
+        this.workflowData = workflow;
+        this.workflowIsLoading = false;
+      },
+      (err: HttpErrorResponse): HttpErrorResponse | false => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        this.workflowIsLoading = false;
+        return error;
+      }
+    ).getPollingSubject();
+
+    this.createNewDataPoller(
+      environment.intervalStatus,
+      (): Observable<WorkflowExecution> => {
+        this.lastExecutionIsLoading = false;
+        return this.workflows.getLastDatasetExecution(this.datasetId) as Observable<
+          WorkflowExecution
+        >;
+      },
+      (execution: WorkflowExecution): void => {
+        this.processLastExecutionData(execution);
+      },
+      (err: HttpErrorResponse): HttpErrorResponse | false => {
+        const error = this.errors.handleError(err);
+        this.notification = httpErrorNotification(error);
+        return error;
+      }
+    );
 
     // stream for start-workflow click events
     this.pollingRefresh = new Subject();
-    this.pollingRefresh.subscribe(() => {
-      pushPollHarvest++;
-      pushPollWorkflow++;
-    });
-
-    // poll for harvest data every 5 seconds after last result returned
-    // - reset polling when user starts the workflow
-
-    const loadTriggerHarvest = new BehaviorSubject(true);
-
-    this.polledHarvestData = loadTriggerHarvest.pipe(
-      merge(this.pollingRefresh),
-      switchMap(() => {
-        return this.workflows.getPublishedHarvestedData(this.datasetId);
-      }),
-      tap((_) => {
-        triggerDelay.next({
-          subject: loadTriggerHarvest,
-          wait: environment.intervalStatusMedium,
-          blockIf: () => pushPollHarvest > 0,
-          blockThen: () => {
-            return pushPollHarvest--;
-          }
-        });
+    this.subs.push(
+      this.pollingRefresh.subscribe(() => {
+        workflowRefresh.next(true);
+        harvestRefresh.next(true);
       })
     );
-
-    // poll for workflow data every 5 seconds after last result returned
-    // - reset polling when user starts the workflow
-    const loadTriggerWorkflow = new BehaviorSubject(true);
-    this.polledWorkflowData = loadTriggerWorkflow.pipe(
-      merge(this.pollingRefresh),
-      switchMap(() => {
-        return this.workflows.getWorkflowForDataset(this.datasetId);
-      }),
-      tap((_) => {
-        triggerDelay.next({
-          subject: loadTriggerWorkflow,
-          wait: environment.intervalStatusMedium,
-          blockIf: () => pushPollWorkflow > 0,
-          blockThen: () => {
-            pushPollWorkflow--;
-          }
-        });
-      })
-    );
-
-    // poll for last execution data every 2.5 seconds after last result returned
-
-    const loadTriggerLastExecution = new BehaviorSubject(true);
-    this.polledLastExecutionData = loadTriggerLastExecution.pipe(
-      switchMap(() => {
-        this.lastExecutionIsLoading = false;
-        return this.workflows.getLastDatasetExecution(this.datasetId);
-      }),
-      tap((_) => {
-        triggerDelay.next({ subject: loadTriggerLastExecution, wait: environment.intervalStatus });
-      }),
-      filter((execution: WorkflowExecution | undefined) => execution !== undefined)
-    ) as Observable<WorkflowExecution>;
   }
 
   /** setReportMsg
@@ -200,20 +189,22 @@ export class DatasetComponent implements OnInit, OnDestroy {
     }
     if (req.taskId && req.topology) {
       this.reportLoading = true;
-      this.workflows.getReport(req.taskId, req.topology).subscribe(
-        (report) => {
-          if (report && report.errors && report.errors.length) {
-            this.reportErrors = report.errors;
-          } else {
-            this.reportMsg = 'Report is empty.';
+      this.subs.push(
+        this.workflows.getReport(req.taskId, req.topology).subscribe(
+          (report) => {
+            if (report && report.errors && report.errors.length) {
+              this.reportErrors = report.errors;
+            } else {
+              this.reportMsg = 'Report is empty.';
+            }
+            this.reportLoading = false;
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
+            this.reportLoading = false;
           }
-          this.reportLoading = false;
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-          this.reportLoading = false;
-        }
+        )
       );
     }
   }
@@ -241,34 +232,15 @@ export class DatasetComponent implements OnInit, OnDestroy {
     this.workflowFormRef.setLinkCheck(linkCheckIndex);
   }
 
-  /** ngOnDestroy
-  /* invoke unsubscribe
-  */
-  ngOnDestroy(): void {
-    this.unsubscribe([
-      this.harvestSubscription,
-      this.workflowSubscription,
-      this.lastExecutionSubscription
-    ]);
-  }
-
-  /** unsubscribe
-  /* unsubscribe from subscriptions
-  /* @param {array} subscriptions - array of subscriptions to unsubscribe from
-  */
-  unsubscribe(subscriptions: Array<Subscription>): void {
-    subscriptions
-      .filter((x) => x)
-      .forEach((subscription: Subscription) => {
-        subscription.unsubscribe();
-      });
-  }
-
   /** loadData
   /* subscribe to data services
   */
   loadData(): void {
-    this.datasets.getDataset(this.datasetId, true).subscribe(
+    this.createNewDataPoller(
+      environment.intervalStatus,
+      () => {
+        return this.datasets.getDataset(this.datasetId, true);
+      },
       (result) => {
         this.datasetData = result;
         this.datasetName = result.datasetName;
@@ -279,53 +251,7 @@ export class DatasetComponent implements OnInit, OnDestroy {
         const error = this.errors.handleError(err);
         this.notification = httpErrorNotification(error);
         this.datasetIsLoading = false;
-      }
-    );
-
-    this.unsubscribe([
-      this.harvestSubscription,
-      this.workflowSubscription,
-      this.lastExecutionSubscription
-    ]);
-
-    // subscribe to polledHarvestData
-
-    this.harvestSubscription = this.polledHarvestData.subscribe(
-      (resultHarvest: HarvestData) => {
-        this.harvestPublicationData = resultHarvest;
-        this.harvestIsLoading = false;
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.harvestIsLoading = false;
-        this.unsubscribe([this.harvestSubscription]);
-      }
-    );
-
-    // subscribe to polledWorkflowData
-    this.workflowSubscription = this.polledWorkflowData.subscribe(
-      (workflow: Workflow) => {
-        this.workflowData = workflow;
-        this.workflowIsLoading = false;
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.workflowIsLoading = false;
-        this.unsubscribe([this.workflowSubscription]);
-      }
-    );
-
-    // check for last execution every x seconds
-    this.lastExecutionSubscription = this.polledLastExecutionData.subscribe(
-      (execution: WorkflowExecution) => {
-        this.processLastExecutionData(execution);
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.unsubscribe([this.lastExecutionSubscription]);
+        return err;
       }
     );
   }
@@ -335,11 +261,13 @@ export class DatasetComponent implements OnInit, OnDestroy {
   /* @param {WorkflowExecution} execution - loaded data
   */
   processLastExecutionData(execution: WorkflowExecution): void {
-    this.workflows.getReportsForExecution(execution);
-    this.lastExecutionData = execution;
+    if (execution) {
+      this.workflows.getReportsForExecution(execution);
+      this.lastExecutionData = execution;
 
-    if (this.isStarting && !isWorkflowCompleted(execution)) {
-      this.isStarting = false;
+      if (this.isStarting && !isWorkflowCompleted(execution)) {
+        this.isStarting = false;
+      }
     }
   }
 
@@ -349,17 +277,44 @@ export class DatasetComponent implements OnInit, OnDestroy {
   */
   startWorkflow(): void {
     this.isStarting = true;
-    this.workflows.startWorkflow(this.datasetId).subscribe(
-      () => {
-        this.pollingRefresh.next(true);
-        window.scrollTo(0, 0);
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        this.isStarting = false;
-        window.scrollTo(0, 0);
-      }
+    this.subs.push(
+      this.workflows.startWorkflow(this.datasetId).subscribe(
+        () => {
+          this.pollingRefresh.next(true);
+          window.scrollTo(0, 0);
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.isStarting = false;
+          window.scrollTo(0, 0);
+        }
+      )
     );
+  }
+
+  /** publicationFitnessWarningAndClass
+  /* - return object literal specifying the relevant warning message and css class for the given status
+  /* @param {string} status - the publication status
+  */
+  publicationFitnessWarningAndClass(
+    status?: string
+  ): { warning: string; cssClass: string } | undefined {
+    if (status === PublicationFitness.FIT) {
+      return undefined;
+    }
+    let cssClass = '';
+    let warning = '';
+    if (status === PublicationFitness.UNFIT) {
+      warning = 'datasetUnpublishableBanner';
+      cssClass = 'unfit-to-publish';
+    } else if (status === PublicationFitness.PARTIALLY_FIT) {
+      warning = 'datasetPartiallyUnpublishableBanner';
+      cssClass = 'partial-fitness';
+    }
+    return {
+      warning: warning,
+      cssClass: cssClass
+    };
   }
 }

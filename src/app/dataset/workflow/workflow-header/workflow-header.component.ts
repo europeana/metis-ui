@@ -24,6 +24,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   @ViewChild('workflowheader') elRef: ElementRef;
   @ViewChild('ghost') ghost: ElementRef;
 
+  ghostClone: Element;
   workflowForm: FormGroup;
   isDragging: boolean;
   isDraggingOverOrbs: boolean;
@@ -153,17 +154,18 @@ export class WorkflowHeaderComponent implements AfterViewInit {
     if (e.dataTransfer) {
       this.isDragging = true;
       e.dataTransfer.setData('metisHeaderOrb', 'true');
-
       const n = this.ghost.nativeElement.cloneNode();
       n.style.border = '3px solid #71c07b';
       n.style.boxSizing = 'border-box';
-      n.style.top = '-1000px';
+      n.style.left = '-10000px';
       n.style.transform = 'scale(1)';
       n.style.backgroundSize = 'contain';
       n.style.height = '40px';
+      n.style.position = 'relative';
       n.style.width = '40px';
       document.body.appendChild(n);
       e.dataTransfer.setDragImage(n, 20, 20);
+      this.ghostClone = n;
     }
   }
 
@@ -171,6 +173,9 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   /* reset drag-handling variables
   */
   dragEnd(): void {
+    if (this.ghostClone) {
+      this.ghostClone.remove();
+    }
     this.isDragging = false;
     this.isDraggingOverOrbs = false;
   }
@@ -195,7 +200,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   */
   drop(e: EventDragDT, pluginIndex: number): void {
     if (this.isDragging) {
-      this.isDragging = false;
+      this.dragEnd();
       this.toggleDragOver(e);
       this.setLinkCheck.emit(this.dropIndexAdjust(pluginIndex));
       e.preventDefault();

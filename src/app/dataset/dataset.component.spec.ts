@@ -4,6 +4,7 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import {
   createMockPipe,
   MockDatasetsService,
@@ -13,14 +14,20 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
-import { Dataset, NotificationType, SimpleReportRequest, WorkflowExecution } from '../_models';
+import {
+  Dataset,
+  NotificationType,
+  PublicationFitness,
+  SimpleReportRequest,
+  WorkflowExecution
+} from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
 
 import { DatasetComponent } from '.';
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
-describe('DatasetComponent', () => {
+describe('Dataset Component', () => {
   let component: DatasetComponent;
   let datasets: DatasetsService;
   let fixture: ComponentFixture<DatasetComponent>;
@@ -97,15 +104,6 @@ describe('DatasetComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should get dataset info', () => {
-      expect(component.lastExecutionSubscription).toBeFalsy();
-      component.beginPolling();
-      component.loadData();
-      fixture.detectChanges();
-      expect(component.lastExecutionSubscription).toBeTruthy();
-      expect(component.lastExecutionSubscription.closed).toBe(false);
-    });
-
     it('should set isStarting to false if the workflow is completed', () => {
       component.isStarting = true;
       component.processLastExecutionData({} as WorkflowExecution);
@@ -142,7 +140,7 @@ describe('DatasetComponent', () => {
       } as SimpleReportRequest;
 
       component.setReportMsg(srrM);
-      tick();
+      tick(1);
 
       expect(component.reportErrors).toBeFalsy();
       expect(component.reportMsg).toBeTruthy();
@@ -158,7 +156,7 @@ describe('DatasetComponent', () => {
       } as SimpleReportRequest;
 
       component.setReportMsg(srrE);
-      tick();
+      tick(1);
       expect(component.reportErrors).toBeTruthy();
       expect(component.reportMsg).toBeFalsy();
     }));
@@ -168,7 +166,7 @@ describe('DatasetComponent', () => {
         return of({
           id: '123',
           errors: []
-        });
+        }).pipe(delay(1));
       });
       expect(component.reportMsg).toBeFalsy();
 
@@ -178,7 +176,7 @@ describe('DatasetComponent', () => {
       } as SimpleReportRequest;
 
       component.setReportMsg(srrE);
-      tick();
+      tick(1);
       expect(component.reportMsg).toEqual('Report is empty.');
     }));
 
@@ -200,14 +198,10 @@ describe('DatasetComponent', () => {
       component.loadData();
       component.datasetId = '65';
       component.startWorkflow();
-      tick();
+      tick(1);
       expect(workflows.startWorkflow).toHaveBeenCalledWith('65');
       expect(window.scrollTo).toHaveBeenCalled();
-      component.unsubscribe([
-        component.harvestSubscription,
-        component.workflowSubscription,
-        component.lastExecutionSubscription
-      ]);
+      component.cleanup();
       tick(interval);
     }));
 
@@ -227,6 +221,7 @@ describe('DatasetComponent', () => {
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(6);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(6);
       component.startWorkflow();
+      tick(1);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(7);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(7);
 
@@ -239,9 +234,9 @@ describe('DatasetComponent', () => {
 
       // it shouldn't drain the event queue when hammered
       component.startWorkflow();
-      tick();
+      tick(1);
       component.startWorkflow();
-      tick();
+      tick(1);
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(10);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(10);
 
@@ -256,23 +251,16 @@ describe('DatasetComponent', () => {
       expect(workflows.getPublishedHarvestedData).toHaveBeenCalledTimes(13);
       expect(workflows.getWorkflowForDataset).toHaveBeenCalledTimes(13);
 
-      component.unsubscribe([
-        component.harvestSubscription,
-        component.workflowSubscription,
-        component.lastExecutionSubscription
-      ]);
+      component.cleanup();
       tick(interval);
     }));
 
     it('should put the datasetName in the document title', () => {
       fixture.detectChanges();
-      expect(document.title).toContain('mockedName');
-      expect(document.title).not.toContain('x');
-
+      document.title = 'mockedName';
       spyOn(datasets, 'getDataset').and.callFake(() => {
         return of({ datasetName: 'x' } as Dataset);
       });
-
       component.loadData();
       fixture.detectChanges();
       expect(document.title).not.toContain('mockedName');
@@ -281,7 +269,7 @@ describe('DatasetComponent', () => {
 
     it('should provide a default document title', () => {
       fixture.detectChanges();
-      expect(document.title).toContain('mockedName');
+      document.title = 'mockedName';
 
       spyOn(datasets, 'getDataset').and.callFake(() => {
         return of({} as Dataset);
@@ -321,11 +309,7 @@ describe('DatasetComponent', () => {
       expect(component.lastExecutionData).toBeFalsy();
       expect(component.lastExecutionIsLoading).toBeFalsy();
 
-      component.unsubscribe([
-        component.harvestSubscription,
-        component.workflowSubscription,
-        component.lastExecutionSubscription
-      ]);
+      component.cleanup();
       tick(interval);
     }));
 
@@ -333,7 +317,7 @@ describe('DatasetComponent', () => {
       expect(component.notification).toBeFalsy();
       component.reportLoading = true;
       component.setReportMsg({ taskId: '123', topology: 'enrichment' });
-      tick();
+      tick(1);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(component.reportLoading).toBeFalsy();
@@ -343,10 +327,29 @@ describe('DatasetComponent', () => {
       spyOn(window, 'scrollTo');
       expect(component.notification).toBeFalsy();
       component.startWorkflow();
-      tick();
+      tick(1);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
       expect(window.scrollTo).toHaveBeenCalled();
+    }));
+
+    it('should supply the correct publication warnings and classes', fakeAsync(() => {
+      const expectedWarning = 'datasetUnpublishableBanner';
+      const expectedWarningPartial = 'datasetPartiallyUnpublishableBanner';
+
+      const resultFit = component.publicationFitnessWarningAndClass(PublicationFitness.FIT);
+      const resultPartial = component.publicationFitnessWarningAndClass(
+        PublicationFitness.PARTIALLY_FIT
+      );
+      const resultUnfit = component.publicationFitnessWarningAndClass(PublicationFitness.UNFIT);
+
+      expect(resultFit).toBeFalsy();
+
+      expect(resultPartial!.cssClass).toEqual('partial-fitness');
+      expect(resultPartial!.warning).toEqual(expectedWarningPartial);
+
+      expect(resultUnfit!.warning).toEqual(expectedWarning);
+      expect(resultUnfit!.cssClass).toEqual('unfit-to-publish');
     }));
   });
 });

@@ -27,6 +27,40 @@ app-workflow-form-field-harvest {
   }
 }
 
+/* search depublications field */
+
+.tab-content .depublication-ctrls {
+  align-items: flex-end;
+  flex-direction: column;
+
+  .search-form {
+    left: 0;
+    margin: 1em 0;
+    margin: 1em 0.6rem 1em 0;
+
+    position: relative;
+    right: 0;
+    top: 0;
+  }
+
+  @media (min-width: $bp-med) {
+    .search-form {
+      .search-string {
+        width: 300px;
+      }
+    }
+  }
+
+  @media (min-width: $bp-large) {
+    align-items: flex-end;
+    flex-direction: row;
+
+    .search-form {
+      margin: 0;
+    }
+  }
+}
+
 /* the form */
 .metis-form {
   align-items: center;
@@ -126,49 +160,6 @@ app-workflow-form-field-harvest {
     }
   }
 
-  /* buttons */
-  .form-group-btns {
-    align-items: flex-start;
-    display: flex;
-    justify-content: center;
-
-    button {
-      background: $eu-jade;
-      border: 1px solid $eu-jade;
-      border-radius: 2px;
-      color: $white;
-      display: inline-block;
-      font-size: 0.875em;
-      font-weight: bold;
-      margin: 0 0.6rem;
-      padding: 0.8rem 3rem;
-      text-transform: uppercase;
-
-      &:disabled {
-        background: $eu-light-jade;
-        cursor: not-allowed;
-      }
-    }
-
-    button.reset-btn {
-      background-color: $white;
-      color: $eu-jade;
-
-      &:disabled {
-        color: $eu-light-jade;
-      }
-    }
-
-    .svg-icon-spin-inbutton {
-      padding-left: 1.25rem;
-      padding-right: 2rem;
-    }
-
-    &.hidden {
-      display: none;
-    }
-  }
-
   /* extra line of text */
   .profile-form-extra,
   .forgot-credentials,
@@ -207,6 +198,54 @@ app-workflow-form-field-harvest {
     li {
       cursor: pointer;
     }
+  }
+}
+
+/* buttons */
+.form-fields .form-group-btns {
+  button {
+    padding: 0.8rem 3rem;
+    text-transform: uppercase;
+  }
+}
+
+.depublication-ctrls,
+.form-fields .form-group-btns {
+  display: flex;
+  justify-content: center;
+
+  button {
+    background: $eu-jade;
+    border: 1px solid $eu-jade;
+    border-radius: 2px;
+    color: $white;
+    display: inline-block;
+    font-size: 0.875em;
+    font-weight: bold;
+    margin: 0 0.6rem;
+
+    &:disabled {
+      background: $eu-light-jade;
+      cursor: not-allowed;
+    }
+  }
+
+  button.reset-btn {
+    background-color: $white;
+    color: $eu-jade;
+
+    &:disabled {
+      color: $eu-light-jade;
+    }
+  }
+
+  .svg-icon-spin-inbutton {
+    padding-left: 1.25rem;
+    padding-right: 2rem;
+  }
+
+  &.hidden {
+    display: none;
   }
 }
 
@@ -341,7 +380,8 @@ app-workflow-form-field-harvest {
   .metis-form-horizontal .form-fields {
     padding: 3rem 4rem;
 
-    .form-group {
+    .form-group,
+    .radio-group {
       label + * {
         flex: 1 0 220px;
       }

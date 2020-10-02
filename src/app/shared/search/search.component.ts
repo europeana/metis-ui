@@ -1,17 +1,22 @@
 /** SearchComponent
 /*  an input and submit button available to logged-in users used to search datasets
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from '../../_services';
+import { SubscriptionManager } from '../../shared/subscription-manager';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent extends SubscriptionManager implements OnInit {
   searchString: string;
+
+  @Input() apiEndpoint?: string;
+  @Input() placeholderKey: string;
+  @Output() onExecute: EventEmitter<string> = new EventEmitter();
 
   /** constructor
   /*  - set the authentication service
@@ -21,7 +26,9 @@ export class SearchComponent implements OnInit {
     readonly authentication: AuthenticationService,
     private readonly router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
   /* - set the searchString variable
@@ -29,12 +36,14 @@ export class SearchComponent implements OnInit {
   /* - set searchString variable to URI-decoded query parameter
   */
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      const q = params.searchString;
-      if (q !== undefined) {
-        this.searchString = decodeURIComponent(q.trim());
-      }
-    });
+    this.subs.push(
+      this.route.queryParams.subscribe((params) => {
+        const q = params.searchString;
+        if (q !== undefined) {
+          this.searchString = decodeURIComponent(q.trim());
+        }
+      })
+    );
   }
 
   /** submitOnEnter
@@ -53,12 +62,17 @@ export class SearchComponent implements OnInit {
   /*  setting the query parameter to the URI-encoded q variable
   */
   executeSearch(): void {
-    if (this.authentication.validatedUser()) {
-      this.router.navigate([`/search`], {
-        queryParams: { searchString: encodeURIComponent(this.searchString.trim()) }
-      });
+    if (this.apiEndpoint) {
+      if (this.authentication.validatedUser()) {
+        this.router.navigate([this.apiEndpoint], {
+          queryParams: { searchString: encodeURIComponent(this.searchString.trim()) }
+        });
+      } else {
+        this.router.navigate(['/signin']);
+      }
     } else {
-      this.router.navigate(['/signin']);
+      const searchTerm = this.searchString.trim();
+      this.onExecute.emit(searchTerm);
     }
   }
 }

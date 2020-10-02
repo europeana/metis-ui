@@ -6,6 +6,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 const workflowNames: { [key: string]: string } = {
+  DEPUBLISH: 'Depublish',
   ENRICHMENT: 'Enrich',
   HARVEST: 'Import',
   HTTP_HARVEST: 'Import HTTP',

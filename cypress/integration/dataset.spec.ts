@@ -10,17 +10,6 @@ function getHistoryRow(index: number): Cypress.Chainable {
   return cy.get('.table-grid.last-execution .table-grid-row-start').eq(index);
 }
 
-function checkFormField(name: string, value: string): void {
-  const label = cy.get('.form-group label').contains(name);
-  const input = label.closest('.form-group').find('input');
-  input.should('have.value', value);
-}
-
-function checkStaticField(name: string, value: string): void {
-  const label = cy.get('.form-group label').contains(name);
-  const input = label.closest('.form-group').find('span');
-  input.contains(value);
-}
 function checkPluginStatus(name: string, enabled: boolean): void {
   const input = cy
     .get('.plugin')
@@ -49,6 +38,7 @@ context('metis-ui', () => {
 
     it('should show the dataset, general info, status, history and redirection ids', () => {
       cy.get('.dataset-name').contains('Dataset_1');
+      cy.get('.depublication-status').should('have.length', 1);
 
       cy.get('.redirection-ids').contains('0');
       cy.get('.redirection-ids').contains('1');
@@ -60,12 +50,14 @@ context('metis-ui', () => {
 
       cy.get('.dataset-actionbar .status').as('status');
       cy.get('@status').contains('FINISHED');
+      cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
-      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 10);
+      cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 11);
       getHistoryRow(0).contains('Check Links');
-      getHistoryRow(1).contains('Publish');
-      getHistoryRow(2).contains('Preview');
-      getHistoryRow(3).contains('Process Media');
+      getHistoryRow(1).contains('Depublish');
+      getHistoryRow(2).contains('Publish');
+      getHistoryRow(3).contains('Preview');
+      getHistoryRow(4).contains('Process Media');
     });
 
     it('should show the tabs', () => {
@@ -79,29 +71,6 @@ context('metis-ui', () => {
       checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/' + expectedId);
       checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/' + expectedId);
     });
-  });
-
-  describe('dataset information', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
-
-    beforeEach(() => {
-      setupDatasetPage('edit', 0);
-    });
-
-    it('should show the fields', () => {
-      checkFormField('Dataset Name', 'Dataset_1');
-      checkFormField('Provider', 'Europeana Provider');
-      checkStaticField('Date Created', '19/02/2019 - 08:36');
-      checkStaticField('Created by', '123');
-      checkStaticField('Last published', '19/02/2019 - 08:49');
-      checkStaticField('Number of items published', '865');
-      checkStaticField('Last date of harvest', '19/02/2019 - 08:41');
-      checkStaticField('Number of items harvested', '879');
-    });
-
-    // TODO: edit
   });
 
   describe('dataset workflow', () => {

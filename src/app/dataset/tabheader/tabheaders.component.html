@@ -1,0 +1,44 @@
+<ul class="tabs">
+  <li [ngClass]="{ active: !activeTab || activeTab === 'edit' }">
+    <a routerLink="/dataset/edit/{{ datasetId }}">
+      <span class="tab-title">{{ 'datasetInformation' | translate }}</span>
+      <ng-container *ngIf="harvestPublicationData">
+        <span class="tab-subtitle">{{ 'lastHarvest' | translate }}</span>
+        <span class="tab-subtitle tab-date"
+          >{{ harvestPublicationData.lastHarvestedDate | date: 'dd/MM/yyyy - HH:mm' }}
+        </span>
+      </ng-container>
+    </a>
+  </li>
+  <li [ngClass]="{ active: activeTab === 'workflow', disabled: disabled }">
+    <a routerLink="/dataset/workflow/{{ datasetId }}">
+      <span class="tab-title">{{ 'workflow' | translate }}</span>
+    </a>
+  </li>
+  <li [ngClass]="{ active: activeTab === 'depublication', disabled: disabled }">
+    <a routerLink="/dataset/depublication/{{ datasetId }}">
+      <span class="tab-title">{{ 'depublication' | translate }}</span>
+    </a>
+  </li>
+  <li [ngClass]="{ active: activeTab === 'mapping', disabled: disabled }">
+    <a routerLink="/dataset/mapping/{{ datasetId }}">
+      <span class="tab-title">{{ 'mapping' | translate }}</span>
+    </a>
+  </li>
+  <li [ngClass]="{ active: activeTab === 'preview', disabled: disabled }">
+    <a routerLink="/dataset/preview/{{ datasetId }}">
+      <span class="tab-title">{{ 'rawXml' | translate }}</span>
+    </a>
+  </li>
+  <li [ngClass]="{ active: activeTab === 'log', disabled: disabled }">
+    <a routerLink="/dataset/log/{{ datasetId }}">
+      <span class="tab-title">{{ 'processingHistory' | translate }}</span>
+      <ng-container *ngIf="lastExecutionData">
+        <span class="tab-subtitle">{{ 'lastModified' | translate }}</span>
+        <span class="tab-subtitle tab-date">{{
+          lastExecutionData.updatedDate | date: 'dd/MM/yyyy - HH:mm'
+        }}</span>
+      </ng-container>
+    </a>
+  </li>
+</ul>

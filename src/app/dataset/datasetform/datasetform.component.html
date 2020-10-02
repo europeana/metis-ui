@@ -177,17 +177,22 @@
         <label class="dataset-label" for="notes">{{ 'notes' | translate }}</label>
         <textarea id="notes" formControlName="notes" (blur)="saveTempData()"></textarea>
       </div>
-      <div class="form-group">
-        <label class="dataset-label" for="unfitForPublication">{{
-          'datasetUnpublishableLabel' | translate
-        }}</label>
-        <input
-          id="unfitForPublication"
-          type="checkbox"
-          [checked]="datasetData.unfitForPublication"
-          formControlName="unfitForPublication"
-          (blur)="saveTempData()"
-        />
+      <div class="form-group" *ngIf="!isNew">
+        <label class="dataset-label">
+          {{ 'datasetPublicationFitness' | translate }}
+        </label>
+        <div class="radio-group">
+          <label class="fitness-radio-label" *ngFor="let option of publicationFitnessOps">
+            <input
+              class="fitness-radio"
+              type="radio"
+              formControlName="publicationFitness"
+              value="{{ option.val }}"
+              (blur)="saveTempData()"
+            />
+            {{ option.label | translate }}
+          </label>
+        </div>
       </div>
       <div class="form-group" *ngIf="!isNew">
         <label class="dataset-label">{{ 'createdBy' | translate }}</label>
@@ -209,6 +214,16 @@
         <div class="form-group">
           <label class="dataset-label">{{ 'numberPublished' | translate }}</label>
           <span class="readonly-field">{{ harvestPublicationData.lastPublishedRecords }}</span>
+        </div>
+        <div class="form-group">
+          <label class="dataset-label">{{ 'lastDepublished' | translate }}</label>
+          <span class="readonly-field">{{
+            harvestPublicationData.lastDepublishedDate | date: 'dd/MM/yyyy - HH:mm'
+          }}</span>
+        </div>
+        <div class="form-group">
+          <label class="dataset-label">{{ 'numberDepublished' | translate }}</label>
+          <span class="readonly-field">{{ harvestPublicationData.lastDepublishedRecords }}</span>
         </div>
         <div class="form-group">
           <label class="dataset-label">{{ 'lastHarvest' | translate }}</label>

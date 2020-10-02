@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-
+import { MockTranslateService } from '../_mocked';
+import { TranslateService } from '../_translate';
 import { ErrorService, RedirectPreviousUrl } from '.';
 
 describe('ErrorService', () => {
@@ -15,7 +16,12 @@ describe('ErrorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [ErrorService, RedirectPreviousUrl]
+      providers: [
+        ErrorService,
+        RedirectPreviousUrl,
+
+        { provide: TranslateService, useClass: MockTranslateService }
+      ]
     });
     service = TestBed.get(ErrorService);
     router = TestBed.get(Router);
@@ -29,29 +35,13 @@ describe('ErrorService', () => {
   });
 
   it('should handle a 401', async(() => {
-    redirect.set('test2');
-    localStorage.setItem('currentUser', 'user3');
+    redirect.set('test1');
+    localStorage.setItem('currentUser', 'user1');
     spyOn(router, 'navigate');
-
+    redirect.set('test2');
+    localStorage.setItem('currentUser', 'user2');
     expect(service.handleError(new HttpErrorResponse({ status: 401 }))).toBe(false);
-
-    expect(redirect.get()).toBe('/');
-    expect(localStorage.getItem('currentUser')).toBe(null);
-    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
-  }));
-
-  it('should handle a wrong access token', async(() => {
-    redirect.set('test2');
-    localStorage.setItem('currentUser', 'user3');
-    spyOn(router, 'navigate');
-
-    expect(
-      service.handleError(new HttpErrorResponse({ error: { errorMessage: 'Wrong access token' } }))
-    ).toBe(false);
-
-    expect(redirect.get()).toBe('/');
-    expect(localStorage.getItem('currentUser')).toBe(null);
-    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
+    expect(router.navigate).toHaveBeenCalled();
   }));
 
   it('should ignore other errors', async(() => {
@@ -98,7 +88,7 @@ describe('ErrorService', () => {
     const rawResponses = [['ans1'], [3, 'ans2'], [0, 0, 'ans3'], [0, 0, 0, 0, 0, 0, 0, 'ans4']];
     const expectedResponses = ['ans1', 'error:3', 'ans3', 'error:0'];
 
-    forkJoin(
+    const sub = forkJoin(
       rawResponses.map((x) =>
         fromValues(x).pipe(
           service.handleRetry<string>(),
@@ -107,6 +97,7 @@ describe('ErrorService', () => {
       )
     ).subscribe((actualResponses) => {
       expect(actualResponses).toEqual(expectedResponses);
+      sub.unsubscribe();
     });
   }));
 });

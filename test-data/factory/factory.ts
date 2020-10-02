@@ -6,26 +6,28 @@ import {
   WorkflowX,
   WorkflowXRunConf
 } from '../_models/test-models';
-import { HarvestData } from '../../src/app/_models/harvest-data';
+import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
   DatasetOverviewExecution,
+  DatasetSearchView,
   ExecutionProgress,
   PluginAvailabilityList,
   PluginExecution,
   PluginExecutionOverview,
   PluginStatus,
   PluginType,
+  PublicationFitness,
   TopologyName,
+  Workflow,
   WorkflowExecution,
   WorkflowExecutionHistory,
   WorkflowStatus
-} from '../../src/app/_models/workflow-execution';
+} from '../../src/app/_models';
 
 import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
 import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
-import { DatasetSearchView, Workflow } from '../../src/app/_models';
 
 let baseDate = new Date('2019-02-18T07:36:59.801Z');
 const pageSize = 2;
@@ -182,14 +184,15 @@ function generateDatasetX(): Array<DatasetX> {
           enum: 'GD',
           name: 'Gaelic (Scottish)'
         },
-
         description: '',
         intermediateProvider: '',
         notes: '',
         replacedBy: '',
         replaces: '',
-
-        unfitForPublication: false,
+        publicationFitness:
+          parseInt(datasetId) % 3 == 1
+            ? PublicationFitness.PARTIALLY_FIT
+            : PublicationFitness.UNFIT,
         workflows: workflows,
         updatedDate: generateDate(DateBumpType.MINUTE)
       } as DatasetX;
@@ -245,6 +248,8 @@ function updateHarvestData(info: HarvestData, pe: PluginExecution): void {
       if (pe.executionProgress) {
         info.lastPreviewRecords = pe.executionProgress.processedRecords;
         info.lastPublishedRecords = pe.executionProgress.processedRecords;
+        info.lastDepublishedRecords = pe.executionProgress.processedRecords;
+        info.publicationStatus = DatasetDepublicationStatus.DEPUBLISHED;
       }
     } else if (pluginExecutionIsHarvest(pe)) {
       if (info.lastHarvestedDate.length === 0) {
@@ -263,7 +268,7 @@ function updateHarvestData(info: HarvestData, pe: PluginExecution): void {
 /* @param {boolean} fromZero - optional - include results from zero
 /* @param {number} page - optional- the page to return
 */
-function getListWrapper(
+export function getListWrapper(
   list: Array<Object> = [],
   fromZero: boolean = false,
   page: number = 0
@@ -273,8 +278,8 @@ function getListWrapper(
   const more = list && list.length > (page + 1) * pageSize;
   return {
     results: results,
-    listSize: results.length,
-    nextPage: more ? 0 : -1
+    listSize: list.length,
+    nextPage: more ? 1 : -1
   };
 }
 
@@ -594,7 +599,7 @@ export function pluginsAvailable(executionId: string): PluginAvailabilityList {
               we.metisPlugins.forEach((p) => {
                 res.plugins.push({
                   pluginType: p.pluginType,
-                  hasSuccessfulData: true
+                  canDisplayRawXml: true
                 });
               });
             }
@@ -631,12 +636,12 @@ export function information(informationId?: string): HarvestData {
       lastPreviewDate: '',
       lastPreviewRecords: 0,
       lastPreviewRecordsReadyForViewing: false,
-
       firstPublishedDate: '',
+      depublicationStatus: DatasetDepublicationStatus.PUBLISHED,
       lastPublishedDate: '',
       lastPublishedRecords: 0,
+      lastDepublishedRecords: 0,
       lastPublishedRecordsReadyForViewing: false,
-
       lastHarvestedDate: '',
       lastHarvestedRecords: 0
     } as HarvestData;
@@ -704,7 +709,7 @@ export function errorReport(reportId: string, process: string) {
         errorType: '1',
         message: process,
         occurrences: reportId,
-        errorDetails: new Array(3).fill(null).map(() => {
+        errorDetails: [1, 2, 3].forEach(() => {
           return {
             identifier: 'http://test.ecloud.psnc.pl/api/records/' + reportId,
             additionalInfo: 'Error while executing ' + process

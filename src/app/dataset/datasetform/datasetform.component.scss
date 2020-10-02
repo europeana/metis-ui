@@ -22,12 +22,6 @@ $small-margin: 0.82rem;
   .ng-invalid {
     border-color: $eu-red;
   }
-
-  @media (min-width: $bp-med) {
-    input:not([type='checkbox']) {
-      padding-right: 2.5rem;
-    }
-  }
 }
 
 .input-clear {
@@ -55,12 +49,24 @@ $small-margin: 0.82rem;
   }
 }
 
-.metis-form.metis-form-horizontal .form-fields .form-group .dataset-label {
-  padding-bottom: 0em;
+.metis-form.metis-form-horizontal .form-fields .form-group {
+  .dataset-label {
+    padding-bottom: 0em;
+  }
+
+  .fitness-radio {
+    margin-right: 0.3em;
+  }
+
+  .fitness-radio-label {
+    align-items: baseline;
+    display: flex;
+    font-weight: normal;
+    max-width: none;
+  }
 }
 
-.dataset-label + input[type='checkbox'] {
-  flex: initial;
+.dataset-label + .radio-group {
   margin-left: $small-margin;
 }
 
@@ -75,8 +81,7 @@ $small-margin: 0.82rem;
 }
 
 @media (max-width: $bp-med) {
-  .readonly-field,
-  .dataset-label + input[type='checkbox'] {
+  .readonly-field {
     margin-left: 0;
   }
 

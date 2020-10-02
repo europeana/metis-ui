@@ -123,7 +123,7 @@ export class ProfileComponent implements OnInit {
     const password = passwords.get('password')!.value;
     const oldpassword = passwords.get('oldpassword')!.value;
 
-    this.authentication.updatePassword(password, oldpassword).subscribe(
+    const subUpdate = this.authentication.updatePassword(password, oldpassword).subscribe(
       (result) => {
         this.loading = false;
         this.toggleEditMode();
@@ -132,6 +132,7 @@ export class ProfileComponent implements OnInit {
         } else {
           this.notification = errorNotification('Update password failed, please try again later');
         }
+        subUpdate.unsubscribe();
       },
       (err: HttpErrorResponse) => {
         const error = this.errors.handleError(err);
@@ -139,6 +140,7 @@ export class ProfileComponent implements OnInit {
           `Update password failed: ${StringifyHttpError(error)}`
         );
         this.loading = false;
+        subUpdate.unsubscribe();
       }
     );
   }
@@ -150,23 +152,27 @@ export class ProfileComponent implements OnInit {
     this.notification = undefined;
     this.loading = true;
 
-    this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
-      (result) => {
-        if (result) {
-          this.notification = successNotification('Your profile has been updated');
-          this.createForm();
-        } else {
-          this.notification = errorNotification('Refresh failed, please try again later');
+    const subReload = this.authentication
+      .reloadCurrentUser(this.profileForm.controls.email.value)
+      .subscribe(
+        (result) => {
+          if (result) {
+            this.notification = successNotification('Your profile has been updated');
+            this.createForm();
+          } else {
+            this.notification = errorNotification('Refresh failed, please try again later');
+          }
+          this.loading = false;
+          subReload.unsubscribe();
+          window.scrollTo(0, 0);
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
+          this.loading = false;
+          subReload.unsubscribe();
+          window.scrollTo(0, 0);
         }
-        this.loading = false;
-        window.scrollTo(0, 0);
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
-        this.loading = false;
-        window.scrollTo(0, 0);
-      }
-    );
+      );
   }
 }

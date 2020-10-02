@@ -13,6 +13,7 @@ describe('WorkflowHeaderComponent', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let formGroupConf = {} as any;
+  let dropEvent: Event;
 
   const getEvent = (): { dragDT: DragDT; eventDragDT: EventDragDT } => {
     const dragDT = ({
@@ -63,6 +64,10 @@ describe('WorkflowHeaderComponent', () => {
       pluginFAKE: true
     };
     fixture.detectChanges();
+    dropEvent = ({
+      target: fixture.nativeElement.querySelector('.orb-status'),
+      preventDefault: () => {}
+    } as unknown) as Event;
   });
 
   it('should get the correct label for the HARVEST orb', () => {
@@ -103,6 +108,8 @@ describe('WorkflowHeaderComponent', () => {
     });
     component.setWorkflowForm(fGroup);
     component.togglePlugin('pluginType');
+    expect(component.workflowForm.value.pluginType).toBeFalsy();
+    component.togglePlugin('pluginLINK_CHECKING');
     expect(component.workflowForm.value.pluginType).toBeFalsy();
     component.togglePlugin('pluginType');
     expect(component.workflowForm.value.pluginType).toBeTruthy();
@@ -188,6 +195,9 @@ describe('WorkflowHeaderComponent', () => {
     spyOn(dragDT, 'setDragImage');
 
     expect(component.isDragging).toBeFalsy();
+    component.dragStart(({} as unknown) as EventDragDT);
+    expect(component.isDragging).toBeFalsy();
+
     component.dragStart(eventDragDT);
     expect(component.isDragging).toBeTruthy();
 
@@ -200,10 +210,18 @@ describe('WorkflowHeaderComponent', () => {
     expect(dragDT).toBeTruthy();
 
     expect(component.isDragging).toBeFalsy();
+    component.dragEnd();
+    expect(component.isDragging).toBeFalsy();
+
     component.dragStart(eventDragDT);
     expect(component.isDragging).toBeTruthy();
     component.dragEnd();
     expect(component.isDragging).toBeFalsy();
+
+    component.dragStart(eventDragDT);
+    spyOn(component.ghostClone, 'remove');
+    component.dragEnd();
+    expect(component.ghostClone.remove).toHaveBeenCalled();
   });
 
   it('should handle dragging over orbs', () => {
@@ -255,41 +273,28 @@ describe('WorkflowHeaderComponent', () => {
     }
   });
 
-  it('should fire an event when the link-checking element is dropped', () => {
+  it('should hand;e the link-checking drop event', () => {
     spyOn(component.setLinkCheck, 'emit');
     component.isDragging = false;
-    component.drop(
-      ({
-        target: fixture.nativeElement.querySelector('.orb-status'),
-        preventDefault: () => {}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any) as Event,
-      0
-    );
+
+    component.drop(dropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
 
     component.isDragging = true;
-    component.drop(
-      ({
-        target: fixture.nativeElement.querySelector('.orb-status'),
-        preventDefault: () => {}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any) as Event,
-      0
-    );
+    component.drop(dropEvent, 0);
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
+    expect(component.isDragging).toBeFalsy();
+
+    component.isDragging = true;
+    component.ghostClone = ({ remove: jasmine.createSpy('cleanup') } as unknown) as Element;
+
+    component.drop(dropEvent, 0);
+    expect(component.ghostClone.remove).toHaveBeenCalled();
   });
 
   it('should not fire an event if no drag was started', () => {
     spyOn(component.setLinkCheck, 'emit');
-    component.drop(
-      ({
-        target: fixture.nativeElement.querySelector('.orb-status'),
-        preventDefault: () => {}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any) as Event,
-      0
-    );
+    component.drop(dropEvent, 0);
     expect(component.setLinkCheck.emit).not.toHaveBeenCalled();
   });
 

@@ -1,0 +1,9 @@
+<span class="{{ conf.cssClass }} {{ classes[current] }}" (click)="valueBump()">
+  <ng-template #tmpSelectAll
+    ><a (click)="toggleSelectAll()"
+      ><input [disabled]="selectAllDisabled" type="checkbox" [checked]="allSelected"/></a
+  ></ng-template>
+  <span *ngIf="conf.translateKey; else tmpSelectAll" class="state-arrow">{{
+    conf.translateKey | translate
+  }}</span>
+</span>

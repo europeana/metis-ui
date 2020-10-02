@@ -1,4 +1,6 @@
-import { Observable, of as observableOf, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, of as observableOf, throwError, timer } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
 
 import { AccountRole, User } from '../_models';
 
@@ -31,6 +33,7 @@ export class MockRedirectPreviousUrl {
 export class MockAuthenticationService {
   currentUser = mockUser;
   loggedIn = true;
+  errorMode = false;
 
   isNumber = (val: string): boolean => {
     return `${parseInt(val)}` === val;
@@ -41,22 +44,46 @@ export class MockAuthenticationService {
   }
 
   reloadCurrentUser(): Observable<boolean> {
-    return observableOf(true);
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError({
+            status: 401,
+            error: { errorMessage: 'Mock reloadCurrentUser Error' }
+          } as HttpErrorResponse);
+        })
+      );
+    }
+    return observableOf(true).pipe(delay(1));
   }
 
-  updatePassword(): Observable<boolean> {
-    return observableOf(true);
+  updatePassword(_: string, __: string): Observable<boolean> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError({
+            status: 401,
+            error: { errorMessage: 'Mock updatePassword Error' }
+          } as HttpErrorResponse);
+        })
+      );
+    }
+    return observableOf(true).pipe(delay(1));
   }
 
   login(_: string, password: string): Observable<boolean> {
     if (this.isNumber(password)) {
-      return throwError({
-        status: parseInt(password),
-        error: { errorMessage: 'Mock Authentication Error' }
-      });
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError({
+            status: parseInt(password),
+            error: { errorMessage: 'Mock Authentication Error' }
+          } as HttpErrorResponse);
+        })
+      );
     }
     this.loggedIn = password !== 'error';
-    return observableOf(this.loggedIn);
+    return observableOf(this.loggedIn).pipe(delay(1));
   }
 
   logout(): void {
@@ -64,7 +91,7 @@ export class MockAuthenticationService {
   }
 
   register(): Observable<boolean> {
-    return observableOf(true);
+    return observableOf(true).pipe(delay(1));
   }
 
   getCurrentUser(): User | null {
@@ -78,4 +105,8 @@ export class MockAuthenticationService {
   getUserByUserId(): Observable<User> {
     return observableOf(mockUser);
   }
+}
+
+export class MockAuthenticationServiceErrors extends MockAuthenticationService {
+  errorMode = true;
 }

@@ -7,13 +7,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';
+import { SubscriptionManager } from '../shared/subscription-manager';
 
 @Component({
   selector: 'search-results',
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnInit {
+export class SearchResultsComponent extends SubscriptionManager implements OnInit {
   searchString: string;
   currentPage = 0;
   isLoading = false;
@@ -25,7 +26,9 @@ export class SearchResultsComponent implements OnInit {
     private readonly documentTitleService: DocumentTitleService,
     private readonly datasets: DatasetsService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
   /* - URI-decode the query parameter
@@ -34,17 +37,19 @@ export class SearchResultsComponent implements OnInit {
   /*  - includes the query variable if available
   */
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      this.searchString = params.searchString;
-      this.load();
-      this.documentTitleService.setTitle(
-        ['Search Results', this.searchString]
-          .filter((x) => {
-            return x;
-          })
-          .join(' | ')
-      );
-    });
+    this.subs.push(
+      this.route.queryParams.subscribe((params) => {
+        this.searchString = params.searchString;
+        this.load();
+        this.documentTitleService.setTitle(
+          ['Search Results', this.searchString]
+            .filter((x) => {
+              return x;
+            })
+            .join(' | ')
+        );
+      })
+    );
   }
 
   /** loadNextPage
@@ -68,17 +73,21 @@ export class SearchResultsComponent implements OnInit {
       this.query = decodeURIComponent(this.searchString);
       this.isLoading = true;
 
-      this.datasets.getSearchResultsUptoPage(this.searchString, this.currentPage).subscribe(
-        ({ results, more }) => {
-          this.results = results;
-          this.isLoading = false;
-          this.hasMore = more;
-        },
-        (err: HttpErrorResponse) => {
-          this.isLoading = false;
-          console.log(err);
-        }
-      );
+      const subResults = this.datasets
+        .getSearchResultsUptoPage(this.searchString, this.currentPage)
+        .subscribe(
+          ({ results, more }) => {
+            this.results = results;
+            this.isLoading = false;
+            this.hasMore = more;
+            subResults.unsubscribe();
+          },
+          (err: HttpErrorResponse) => {
+            this.isLoading = false;
+            console.log(err);
+            subResults.unsubscribe();
+          }
+        );
     } else {
       this.results = [];
       this.searchString = '';

@@ -36,16 +36,6 @@ export class ExecutionsDataGridComponent {
     this.contentCopied = true;
   }
 
-  /** hasPreview
-  /* returns indication of preview
-  */
-  hasPreview(plugin: PluginExecution): boolean {
-    return (
-      plugin.executionProgress !== undefined &&
-      plugin.executionProgress.processedRecords > plugin.executionProgress.errors
-    );
-  }
-
   /** goToPreview
   /* fire the preview event
   */

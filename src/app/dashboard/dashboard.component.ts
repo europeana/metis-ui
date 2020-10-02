@@ -2,12 +2,9 @@
  */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
-
+import { Observable } from 'rxjs';
+import { DataPollingComponent } from '../data-polling';
 import { environment } from '../../environments/environment';
-
-import { triggerDelay } from '../_helpers';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
 import {
   AuthenticationService,
@@ -17,13 +14,11 @@ import {
 } from '../_services';
 
 @Component({
-  selector: 'app-dashboard',
   templateUrl: './dashboard.component.html'
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent extends DataPollingComponent implements OnInit, OnDestroy {
   userName: string;
   runningExecutions: WorkflowExecution[];
-  polledRunningData: Subscription;
   runningIsLoading = true;
   runningIsFirstLoading = true;
 
@@ -35,7 +30,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
   /* - set the document title
@@ -48,13 +45,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const user = Object.assign({ userName: '' }, this.authentication.getCurrentUser());
     this.userName = user.firstName;
-  }
-
-  /** ngOnDestroy
-  /* clear the timeout
-  */
-  ngOnDestroy(): void {
-    this.polledRunningData.unsubscribe();
   }
 
   /** checkUpdateLog
@@ -74,27 +64,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /** getRunningExecutions
-  /* - get all running executions
-  /* - manage load-tracking variables
-  /* - recommnece polling before returning
+  /* - poll running data
   */
   getRunningExecutions(): void {
-    const loadTriggerRunningExecutions = new BehaviorSubject(true);
-
-    const polledRunningExecutions = loadTriggerRunningExecutions.pipe(
-      switchMap(() => {
+    this.createNewDataPoller(
+      environment.intervalStatus,
+      (): Observable<WorkflowExecution[]> => {
         return this.workflows.getAllExecutionsCollectingPages(true);
-      }),
-      tap(() => {
-        triggerDelay.next({
-          subject: loadTriggerRunningExecutions,
-          wait: environment.intervalStatus
-        });
-      })
-    ) as Observable<WorkflowExecution[]>;
-
-    this.polledRunningData = polledRunningExecutions.subscribe(
-      (executions) => {
+      },
+      (executions: WorkflowExecution[]) => {
         this.runningExecutions = executions;
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
@@ -104,6 +82,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.errors.handleError(err);
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
+        return err;
       }
     );
   }

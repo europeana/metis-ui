@@ -1,0 +1,110 @@
+@import '../../../assets/sass/scss/generic/variables';
+@import '../../../assets/sass/pandora/settings/metis-variables';
+
+app-loading-button {
+  align-self: center;
+}
+
+app-search {
+  @media (min-width: $bp-large) {
+    margin-right: auto;
+  }
+}
+
+app-sortable-group {
+  display: none;
+}
+
+.btn-delete {
+  margin-left: 0;
+}
+
+.dialog-file,
+.dialog-input {
+  form {
+    height: 100%;
+    padding: 1em;
+  }
+}
+
+.dialog-file {
+  min-width: 18em;
+}
+
+.dialog-input {
+  height: 25em;
+  max-height: 90vh;
+  width: 90vw;
+}
+
+.dialog-input,
+.dialog-input form {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter :first-child:visible {
+  margin-left: auto;
+}
+
+.filter [disabled='true'] {
+  color: $gray-lighter;
+  cursor: not-allowed;
+}
+
+[name='recordIds'] {
+  height: 100%;
+  resize: none;
+  width: 100%;
+}
+
+.submit-form {
+  background: $eu-jade;
+  color: $white;
+  display: block;
+  margin: 1em 0 0 auto;
+
+  &:disabled {
+    background: $white;
+    border: 1px solid $eu-jade;
+    color: $eu-jade;
+    cursor: not-allowed;
+  }
+}
+
+.depublications-grid {
+  background: $white;
+  column-gap: 1.75em;
+  display: grid;
+  font-size: $font-size-metis-grid;
+  grid-template-columns: 1fr 4fr 2fr 2fr auto;
+  margin: 2em 0;
+  overflow: hidden;
+  padding: 0.5em 1em;
+
+  .grid-header {
+    background: $white;
+    display: none;
+    font-weight: bold;
+  }
+}
+
+.svg-icon-spin {
+  position: absolute;
+  right: 0.5em;
+}
+
+.filter .dropdown a {
+  padding-left: 0;
+  padding-right: 1.5rem;
+}
+
+.form-ctrls {
+  display: flex;
+  justify-content: space-between;
+  margin: 1em 0;
+}
+
+.depublications-grid .grid-header {
+  display: block;
+}

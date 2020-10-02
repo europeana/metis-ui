@@ -45,19 +45,22 @@ describe('DatasetlogComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should open the logs', () => {
+  it('should open the logs', fakeAsync(() => {
     expect(component.logMessages).toBeFalsy();
-    component.returnLog();
+    component.startPolling();
+    tick(1);
     expect(component.logMessages).toBeTruthy();
-  });
+    component.cleanup();
+  }));
 
   it('should show empty logs where there is no progress', () => {
     expect(component.logMessages).toBeFalsy();
     let peCopy = Object.assign({}, mockPluginExecution);
     peCopy = Object.assign(peCopy, { executionProgress: false });
     component.showPluginLog = Object.assign(peCopy, { executionProgress: false });
-    component.returnLog();
+    component.startPolling();
     expect(component.logMessages).toBeFalsy();
+    component.cleanup();
   });
 
   it('should close the logs', () => {
@@ -67,9 +70,8 @@ describe('DatasetlogComponent', () => {
   });
 
   it('should get a from number', () => {
-    component.logTo = 200;
     component.logPerStep = 100;
     fixture.detectChanges();
-    expect(component.getLogFrom()).toBe(101);
+    expect(component.getLogFrom(200)).toBe(101);
   });
 });

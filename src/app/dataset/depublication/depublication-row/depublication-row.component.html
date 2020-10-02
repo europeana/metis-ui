@@ -1,0 +1,22 @@
+<ng-template #depublicationTemplate>
+  <ng-template #empty_date><span class="date-and-time"></span></ng-template>
+  <span class="checkbox">
+    <input
+      type="checkbox"
+      #inputEl
+      (change)="onChange(inputEl.checked)"
+      [checked]="record.deletion"
+      [disabled]="checkboxDisabled()"
+    />
+  </span>
+  <span class="record-url">
+    <span>{{ record.recordId }}</span>
+  </span>
+  <span class="status">
+    <span>{{ record.depublicationStatus }}</span>
+  </span>
+  <span class="date-and-time" *ngIf="record && record.depublicationDate; else empty_date">
+    <span class="date">{{ record.depublicationDate | date: 'dd/MM/yyyy' }}</span>
+    <span class="time"> {{ record.depublicationDate | date: 'HH:mm' }}</span>
+  </span>
+</ng-template>

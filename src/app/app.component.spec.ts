@@ -94,4 +94,10 @@ describe('AppComponent', () => {
     expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');
     expect(app.showWrapper).toBe(false);
   });
+
+  it('should cleanup on destroy', () => {
+    spyOn(app, 'cleanup').and.callThrough();
+    app.ngOnDestroy();
+    expect(app.cleanup).toHaveBeenCalled();
+  });
 });

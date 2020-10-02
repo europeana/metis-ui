@@ -24,6 +24,10 @@ context('metis-ui', () => {
       cy.visit('/signin');
     });
 
+    it('should set the title of the page', () => {
+      cy.title().should('eq', 'Sign In | Metis');
+    });
+
     it('should validate the email', () => {
       cy.get('#email')
         .clear()

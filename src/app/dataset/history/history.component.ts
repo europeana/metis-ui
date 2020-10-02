@@ -5,7 +5,7 @@
 /* - handles redirects to the preview tab
 */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { copyExecutionAndTaskId } from '../../_helpers';
@@ -21,18 +21,21 @@ import {
   WorkflowOrPluginExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
+import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent implements OnInit {
+export class HistoryComponent extends SubscriptionManager {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
     private readonly router: Router
-  ) {}
+  ) {
+    super();
+  }
 
   @Input() datasetData: Dataset;
 
@@ -45,21 +48,28 @@ export class HistoryComponent implements OnInit {
   hasMore = false;
   report?: Report;
   contentCopied = false;
+  maxResults = 0;
   maxResultsReached = false;
-  lastWorkflowDoneId?: string;
+  lastExecutionId?: string;
+  lastExecutionIsCompleted?: boolean;
 
   @Input()
-  set lastExecutionData(execution: WorkflowExecution | undefined) {
-    if (execution && isWorkflowCompleted(execution) && execution.id !== this.lastWorkflowDoneId) {
+  set lastExecutionData(lastExecution: WorkflowExecution | undefined) {
+    // Only if there exists a last execution (i.e. there is a history) we need to retrieve the
+    // history. Given that a last execution exists, we retrieve the history (again) if and only if
+    // one of the following conditions hold:
+    // - We don't have the history yet
+    // - The last execution changed (i.e. a new execution appeared)
+    // - The last execution became completed (i.e. it will now be part of the history)
+    if (
+      lastExecution &&
+      (this.lastExecutionId !== lastExecution.id ||
+        this.lastExecutionIsCompleted !== isWorkflowCompleted(lastExecution))
+    ) {
       this.returnAllExecutions();
+      this.lastExecutionId = lastExecution.id;
+      this.lastExecutionIsCompleted = isWorkflowCompleted(lastExecution);
     }
-  }
-
-  /** ngOnInit
-  /* call load function for execution data
-  */
-  ngOnInit(): void {
-    this.returnAllExecutions();
   }
 
   /** returnAllExecutions
@@ -67,30 +77,32 @@ export class HistoryComponent implements OnInit {
   /* - update the hasMore variable
   */
   returnAllExecutions(): void {
-    this.workflows
-      .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
-      .subscribe(
-        ({ results, more, maxResultCountReached }) => {
-          this.allExecutions = [];
+    this.subs.push(
+      this.workflows
+        .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
+        .subscribe(
+          ({ results, more, maxResultCountReached }) => {
+            this.allExecutions = [];
 
-          results.forEach((execution) => {
-            this.workflows.getReportsForExecution(execution);
-            execution.metisPlugins.reverse();
+            results.forEach((execution) => {
+              this.workflows.getReportsForExecution(execution);
+              execution.metisPlugins.reverse();
 
-            this.allExecutions.push({ execution });
-            execution.metisPlugins.forEach((pluginExecution) => {
-              this.allExecutions.push({ execution, pluginExecution });
+              this.allExecutions.push({ execution });
+              execution.metisPlugins.forEach((pluginExecution) => {
+                this.allExecutions.push({ execution, pluginExecution });
+              });
             });
-          });
-          this.hasMore = more;
-          this.maxResultsReached = !!maxResultCountReached;
-          this.lastWorkflowDoneId = results[0] && results[0].id;
-        },
-        (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-        }
-      );
+            this.hasMore = more;
+            this.maxResultsReached = !!maxResultCountReached;
+            this.maxResults = results.length;
+          },
+          (err: HttpErrorResponse) => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
+          }
+        )
+    );
   }
 
   /** loadNextPage

@@ -38,8 +38,6 @@ export enum PluginStatus {
   FAILED = 'FAILED'
 }
 
-// Java name: AbstractMetisPlugin
-
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
   OAIPMH_HARVEST = 'OAIPMH_HARVEST',
@@ -51,6 +49,7 @@ export enum PluginType {
   MEDIA_PROCESS = 'MEDIA_PROCESS',
   PREVIEW = 'PREVIEW',
   PUBLISH = 'PUBLISH',
+  DEPUBLISH = 'DEPUBLISH',
   LINK_CHECKING = 'LINK_CHECKING'
 }
 
@@ -82,7 +81,7 @@ export interface PluginExecution extends PluginExecutionBasic {
   executionProgress?: ExecutionProgress;
   pluginMetadata: PluginMetadata;
   topologyName: TopologyName;
-
+  canDisplayRawXml?: boolean;
   hasReport?: boolean;
 }
 
@@ -116,7 +115,7 @@ export interface PreviewFilters {
 
 export interface PluginAvailability {
   pluginType: PluginType;
-  hasSuccessfulData: boolean;
+  canDisplayRawXml: boolean;
 }
 
 export interface PluginAvailabilityList {

@@ -6,6 +6,21 @@
   padding: 0.5em 0;
 }
 
+.depublication-status {
+  background: red;
+  border-radius: 1em;
+  color: $white;
+  font-size: $font-size-sm;
+  font-weight: bold;
+  margin-left: auto;
+  padding: 0.5em 0.75em;
+  text-transform: uppercase;
+
+  &.published {
+    background: $eu-jade;
+  }
+}
+
 .svg-icon-dataset {
   display: inline-block;
   width: 24px;

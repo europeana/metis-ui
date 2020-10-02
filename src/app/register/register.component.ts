@@ -91,16 +91,18 @@ export class RegisterComponent implements OnInit {
       this.notification = errorNotification(this.msgPasswordWeak);
       this.loading = false;
     } else {
-      this.authentication.register(email, password).subscribe(
+      const subRegister = this.authentication.register(email, password).subscribe(
         (result) => {
           this.loading = false;
           if (result) {
             this.onRegistration(this.msgSuccess);
           }
+          subRegister.unsubscribe();
         },
         (err: HttpErrorResponse) => {
           this.loading = false;
           this.notification = httpErrorNotification(err);
+          subRegister.unsubscribe();
         }
       );
     }

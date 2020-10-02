@@ -5,6 +5,7 @@ import {
   evolution,
   executionsHistory,
   executionsByDatasetIdAsList,
+  getListWrapper,
   information,
   overview,
   pluginsAvailable,
@@ -15,10 +16,12 @@ import {
   xslt
 } from './factory/factory';
 import { urlManipulation } from './_models/test-models';
+import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models';
 
 const port = 3000;
 const url = require('url');
 
+let depublicationInfoCache: Array<RecordDepublicationInfo> = [];
 let switchedOff: { [key: string]: string } = {};
 
 function returnEmpty(response: ServerResponse) {
@@ -129,7 +132,6 @@ function getStatistics(): string {
       },
       {
         xPath: '//rdf:RDF/edm:Agent',
-
         nodeValueStatistics: [
           {
             value: 'originally loaded B 1',
@@ -171,10 +173,142 @@ function getStatistics(): string {
   });
 }
 
-function routeToFile(response: ServerResponse, route: string): boolean {
+function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
-  let regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
+  const removeFromDepublicationCache = (recordId: string) => {
+    depublicationInfoCache = depublicationInfoCache.filter((entry) => {
+      return entry.recordId != recordId;
+    });
+  };
+
+  if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
+    let body = '';
+    request.on('data', function(data) {
+      body += data.toString();
+    });
+    request.on('end', function() {
+      body.split('\n').forEach((id: string) => {
+        removeFromDepublicationCache(id);
+      });
+      response.end();
+      return true;
+    });
+  }
+
+  let regRes = route.match(/depublish\/execute\/(\d+)/);
+
+  if (regRes && request.method === 'POST') {
+    const params = url.parse(route, true).query;
+
+    if (params.datasetDepublish === 'true') {
+      depublicationInfoCache = [];
+      response.end();
+      return true;
+    } else {
+      let body = '';
+      request.on('data', function(data) {
+        body += data.toString();
+      });
+      request.on('end', function() {
+        if (body.length === 0) {
+          depublicationInfoCache = [];
+        } else {
+          body.split('\n').forEach((id: string) => {
+            removeFromDepublicationCache(id);
+          });
+        }
+        response.end();
+        return true;
+      });
+    }
+  }
+
+  regRes = route.match(/depublish\/record_ids\/[^\?+]*/);
+
+  if (regRes) {
+    const params = url.parse(route, true).query;
+    if (request.method === 'POST') {
+      const pushToDepublicationCache = (url: string) => {
+        const time = new Date().toISOString();
+        depublicationInfoCache.push({
+          recordId: url,
+          depublicationStatus: DepublicationStatus.PENDING,
+          depublicationDate: time
+        } as RecordDepublicationInfo);
+      };
+
+      const fileName = params.clientFilename;
+
+      if (fileName) {
+        pushToDepublicationCache('file/upload/' + fileName);
+        response.end();
+        return true;
+      }
+
+      let body = '';
+
+      request.on('data', function(data) {
+        body += data.toString();
+      });
+      request.on('end', function() {
+        body.split(/\s+/).forEach((recordId: string) => pushToDepublicationCache(recordId));
+        response.end();
+        return true;
+      });
+    } else {
+      let result = Array.from(depublicationInfoCache);
+
+      if (result.length > 0 && params.searchQuery) {
+        result = result.filter((entry) => {
+          return entry.recordId.toUpperCase().includes(`${params.searchQuery}`.toUpperCase());
+        });
+      }
+      if (result.length > 0 && params.sortField) {
+        const snakeToCamel = (str: String): string =>
+          str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
+            group
+              .toUpperCase()
+              .replace('-', '')
+              .replace('_', '')
+          );
+
+        const sortField = snakeToCamel(params.sortField);
+
+        const sortResult = (res: Array<any>): Array<any> => {
+          let asc = params.sortAscending === 'true';
+          if (res[0][sortField]) {
+            res.sort((a: any, b: any) => {
+              const valA = a[sortField];
+              const valB = b[sortField];
+              let eq = valA === valB;
+              let grtr = valA > valB;
+              if (asc) {
+                grtr = !grtr;
+              }
+              return eq ? 0 : grtr ? -1 : 1;
+            });
+          } else {
+            console.log(`invalid sort field ${params.sortField} (${sortField})`);
+          }
+          return res;
+        };
+        result = sortResult(result);
+      }
+
+      const pageParam = parseInt(params.page);
+
+      response.end(
+        JSON.stringify({
+          depublicationRecordIds: getListWrapper(result, false, pageParam),
+          depublicationTriggerable: pageParam % 2 === 0
+        })
+      );
+      return true;
+    }
+  }
+
+  regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
 
   if (regRes) {
     response.end(JSON.stringify(reportExists(regRes[1])));
@@ -406,7 +540,7 @@ const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
     return;
   }
 
-  let requestHandled = routeToFile(response, route);
+  let requestHandled = routeToFile(request, response, route);
 
   if (!requestHandled) {
     if (request.method === 'POST') {
