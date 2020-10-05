@@ -3,6 +3,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
 import {
   createMockPipe,
   mockDataset,
@@ -14,7 +15,14 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../../_mocked';
-import { PluginType, PreviewFilters, XmlSample } from '../../_models';
+import {
+  PluginAvailabilityList,
+  PluginType,
+  PreviewFilters,
+  Results,
+  WorkflowExecution,
+  XmlSample
+} from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { PreviewComponent } from '.';
@@ -23,6 +31,7 @@ describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
   let router: Router;
+  let workflows: WorkflowService;
 
   const previewFilterData = {
     basic: {
@@ -59,6 +68,7 @@ describe('PreviewComponent', () => {
     component = fixture.componentInstance;
     component.previewFilters = { basic: {}, comparison: {} };
     router = TestBed.get(Router);
+    workflows = TestBed.get(WorkflowService);
   };
 
   const getTextElement = (textContent = '"http://test.link"', classMatch = true): Element => {
@@ -121,13 +131,22 @@ describe('PreviewComponent', () => {
 
       const runCheck = (): void => {
         component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
-        tick(0);
+        tick(1);
         fixture.detectChanges();
         expect(component.allPlugins.length).toBeTruthy();
         expect(component.isLoadingFilter).toBeFalsy();
       };
       runCheck();
       runCheck();
+
+      spyOn(workflows, 'getExecutionPlugins').and.callFake(() => {
+        const results: PluginAvailabilityList = { plugins: [] };
+        return of(results);
+      });
+      component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
+      tick(1);
+      expect(component.allPlugins.length).toBeFalsy();
+      expect(component.isLoadingFilter).toBeFalsy();
 
       component.ngOnDestroy();
     }));
@@ -142,7 +161,7 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
       component.previewFilters = previewFilterData;
       component.prefillFilters();
-      tick(0);
+      tick(1);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css(selNonDefaultEditor)).length).toBeTruthy();
       component.ngOnDestroy();
@@ -157,7 +176,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
 
       component.datasetData = mockDataset;
-      tick(0);
+      tick(1);
       fixture.detectChanges();
 
       expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
@@ -168,7 +187,7 @@ describe('PreviewComponent', () => {
       component.historyVersions = mockHistoryVersions;
       component.prefillFilters();
 
-      tick(0);
+      tick(1);
       fixture.detectChanges();
 
       expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
@@ -221,6 +240,26 @@ describe('PreviewComponent', () => {
       component.ngOnDestroy();
     }));
 
+    it('should automatically expand single samples', fakeAsync(() => {
+      expect(component.expandedSample).toEqual(undefined);
+      component.getXMLSamples(PluginType.NORMALIZATION, false);
+      tick(1);
+      expect(component.expandedSample).toEqual(0);
+
+      // reset
+      component.expandedSample = undefined;
+
+      spyOn(workflows, 'getWorkflowSamples').and.callFake(() => {
+        const results: Array<XmlSample> = [];
+        return of(results);
+      });
+
+      expect(component.expandedSample).toEqual(undefined);
+      component.getXMLSamples(PluginType.NORMALIZATION, false);
+      tick(1);
+      expect(component.expandedSample).toEqual(undefined);
+    }));
+
     it('should show sample comparison', fakeAsync(() => {
       expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(0);
       component.datasetData = mockDataset;
@@ -231,6 +270,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', false);
+      tick(1);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
       component.ngOnDestroy();
@@ -244,7 +284,7 @@ describe('PreviewComponent', () => {
         fixture.debugElement.queryAll(By.css('.dropdown-date .dropdown-wrapper')).length
       ).toBeFalsy();
       component.datasetData = mockDataset;
-      tick(0);
+      tick(1);
       fixture.detectChanges();
       component.toggleFilterDate();
       fixture.detectChanges();
@@ -274,20 +314,44 @@ describe('PreviewComponent', () => {
       component.ngOnDestroy();
     }));
 
-    it('should get transformed samples', () => {
+    it('should get transformed samples', fakeAsync(() => {
       component.datasetData = mockDataset;
       component.transformSamples('default');
+      tick(2);
       fixture.detectChanges();
       expect(component.allSamples.length).not.toBe(0);
-    });
 
-    it('provides links to transformed samples', () => {
-      component.datasetData = mockDataset;
-      expect(fixture.debugElement.query(By.css('.preview-controls button'))).toBeFalsy();
-      component.tempXSLT = 'hello';
+      spyOn(workflows, 'getFinishedDatasetExecutions').and.callFake(() => {
+        const results: Results<WorkflowExecution> = {
+          results: [],
+          listSize: 0,
+          nextPage: 0
+        };
+        return of(results);
+      });
+
+      component.allSamples = [];
+      component.transformSamples('default');
+      tick(1);
       fixture.detectChanges();
-      expect(fixture.debugElement.query(By.css('.preview-controls button'))).toBeTruthy();
-    });
+      expect(component.allSamples.length).toBe(0);
+
+      component.ngOnDestroy();
+      tick(1);
+    }));
+
+    it('provides links to transformed samples', fakeAsync(() => {
+      const selBtn = '.preview-controls button';
+      component.datasetData = mockDataset;
+      expect(fixture.debugElement.query(By.css(selBtn))).toBeFalsy();
+      component.tempXSLT = 'hello';
+      component.ngOnInit();
+      tick(2);
+      fixture.detectChanges();
+      expect(fixture.debugElement.query(By.css(selBtn))).toBeTruthy();
+      component.ngOnDestroy();
+      tick(1);
+    }));
 
     it('toggles the editor theme', () => {
       component.datasetData = mockDataset;
@@ -335,6 +399,11 @@ describe('PreviewComponent', () => {
 
       spyOn(element.classList, 'add');
       spyOn(element.classList, 'remove');
+
+      component.handleMouseOut(mouseEventNoText);
+
+      expect(element.classList.remove).not.toHaveBeenCalled();
+      expect(element.classList.add).not.toHaveBeenCalled();
 
       component.handleMouseOut(mouseEvent);
 
@@ -384,13 +453,14 @@ describe('PreviewComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should handle errors filtering on execution', () => {
+    it('should handle errors filtering on execution', fakeAsync(() => {
       component.datasetData = mockDataset;
       component.isLoadingFilter = true;
       expect(component.isLoading()).toBeTruthy();
       component.addExecutionsFilter();
+      tick(1);
       expect(component.isLoading()).toBeFalsy();
-    });
+    }));
 
     it('should handle errors filtering on plugins', fakeAsync(() => {
       component.datasetData = mockDataset;
@@ -398,44 +468,53 @@ describe('PreviewComponent', () => {
       component.isLoadingFilter = true;
       expect(component.isLoading()).toBeTruthy();
       component.addPluginsFilter(mockWorkflowExecutionHistoryList.executions[0]);
-      tick(0);
+      tick(1);
       fixture.detectChanges();
       expect(component.isLoading()).toBeFalsy();
       component.ngOnDestroy();
       tick(1);
     }));
 
-    it('should handle errors getting the XML comparisons', () => {
+    it('should handle errors getting the XML comparisons', fakeAsync(() => {
       component.datasetData = mockDataset;
       fixture.detectChanges();
       component.isLoadingSamples = true;
       component.getXMLSamples(PluginType.NORMALIZATION, false);
+      tick(1);
+      fixture.detectChanges();
       expect(component.isLoadingSamples).toBeFalsy();
       expect(component.notification).toBeTruthy();
-    });
+      component.ngOnDestroy();
+      tick(1);
+    }));
 
-    it('should handle errors showing the sample comparison', () => {
+    it('should handle errors showing the sample comparison', fakeAsync(() => {
       component.datasetData = mockDataset;
       component.previewFilters = previewFilterData;
       component.historyVersions = mockHistoryVersions;
       component.isLoadingSamples = true;
       fixture.detectChanges();
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', false);
+      tick(1);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
       expect(component.notification).toBeTruthy();
       expect(component.isLoadingSamples).toBeFalsy();
       component.ngOnDestroy();
-    });
+      tick(1);
+    }));
 
-    it('should handle errors transforming the samples', () => {
+    it('should handle errors transforming the samples', fakeAsync(() => {
       component.datasetData = mockDataset;
       component.isLoadingTransformSamples = true;
       component.transformSamples('default');
+      tick(1);
       fixture.detectChanges();
       expect(component.allSamples.length).toBe(0);
       expect(component.isLoadingTransformSamples).toBeFalsy();
       expect(component.isLoading()).toBeFalsy();
-    });
+      component.ngOnDestroy();
+      tick(1);
+    }));
   });
 });

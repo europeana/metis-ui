@@ -16,7 +16,9 @@
       >
         <a (click)="toggleFilterDate()"
           >{{ 'dateStarted' | translate
-          }}<span *ngIf="selectedDate">: {{ selectedDate | date: 'dd/MM/yyyy - HH:mm' }}</span></a
+          }}<span *ngIf="previewFilters.startedDate"
+            >: {{ previewFilters.startedDate | date: 'dd/MM/yyyy - HH:mm' }}</span
+          ></a
         >
         <div *ngIf="filterDateOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
@@ -37,14 +39,14 @@
       >
         <a (click)="toggleFilterPlugin()"
           >{{ 'plugin' | translate
-          }}<span *ngIf="selectedPlugin">: {{ selectedPlugin | renameWorkflow }}</span></a
+          }}<span *ngIf="previewFilters.basic && previewFilters.basic.pluginType"
+            >: {{ '' + previewFilters.basic.pluginType + '' | renameWorkflow }}</span
+          ></a
         >
         <div *ngIf="filterPluginOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
             <li *ngFor="let w of allPlugins">
-              <a (click)="getXMLSamples(w.type, false)" *ngIf="!w.error">{{
-                w.type | renameWorkflow
-              }}</a>
+              <a (click)="getXMLSamples(w.type)" *ngIf="!w.error">{{ w.type | renameWorkflow }}</a>
               <span class="notavailable" *ngIf="w.error">{{ w.type | renameWorkflow }}</span>
             </li>
           </ul>
@@ -59,12 +61,14 @@
       >
         <a (click)="toggleFilterCompare()"
           >{{ 'compare' | translate
-          }}<span *ngIf="selectedComparison">: {{ selectedComparison | renameWorkflow }}</span></a
+          }}<span *ngIf="previewFilters.comparison && previewFilters.comparison.pluginType"
+            >: {{ previewFilters.comparison.pluginType + '' | renameWorkflow }}</span
+          ></a
         >
         <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
             <li *ngFor="let h of historyVersions">
-              <a (click)="getXMLSamplesCompare(h.pluginType, h.workflowExecutionId, false)">{{
+              <a (click)="getXMLSamplesCompare(h.pluginType, h.workflowExecutionId)">{{
                 h.pluginType | renameWorkflow
               }}</a>
             </li>
@@ -85,7 +89,9 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }} </span>
+          <span class="smaller" *ngIf="previewFilters.basic && previewFilters.basic.pluginType"
+            >{{ previewFilters.basic.pluginType + '' | renameWorkflow }}
+          </span>
         </h3>
 
         <app-theme-selector
@@ -96,9 +102,14 @@
           <a (click)="expandSample(i)">-</a>
         </div>
 
-        <span class="compound" *ngIf="selectedPlugin" style="width:100%;"
-          ><span>{{ selectedPlugin | renameWorkflow }}</span>
-          <span *ngIf="selectedComparison"> {{ selectedComparison | renameWorkflow }}</span></span
+        <span
+          class="compound"
+          *ngIf="previewFilters.basic && previewFilters.basic.pluginType"
+          style="width:100%;"
+          ><span>{{ previewFilters.basic.pluginType | renameWorkflow }}</span>
+          <span *ngIf="previewFilters.comparison && previewFilters.comparison.pluginType">
+            {{ previewFilters.comparison.pluginType + '' | renameWorkflow }}</span
+          ></span
         >
       </div>
       <div class="view-sample-editor">
@@ -181,7 +192,9 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+          <span class="smaller" *ngIf="previewFilters.basic && previewFilters.basic.pluginType">{{
+            previewFilters.basic.pluginType + '' | renameWorkflow
+          }}</span>
         </h3>
         <app-theme-selector
           (themeSet)="onThemeSet($event)"

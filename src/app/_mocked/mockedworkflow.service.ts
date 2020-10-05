@@ -32,15 +32,15 @@ const xPathProvider = '//rdf:RDF/edm:ProvidedCHO/@rdf:about';
 
 export const mockHistoryVersions: Array<HistoryVersion> = [
   {
-    workflowExecutionId: 1,
+    workflowExecutionId: '1',
     pluginType: PluginType.OAIPMH_HARVEST
   },
   {
-    workflowExecutionId: 1,
+    workflowExecutionId: '1',
     pluginType: PluginType.VALIDATION_EXTERNAL
   },
   {
-    workflowExecutionId: 1,
+    workflowExecutionId: '1',
     pluginType: PluginType.TRANSFORMATION
   }
 ];
@@ -605,16 +605,24 @@ export class MockWorkflowService {
     return observableOf({ results: mockDatasetOverviewResults.results, more: false });
   }
 
-  getFinishedDatasetExecutions(): Observable<Results<WorkflowExecution>> {
+  getFinishedDatasetExecutions(_: string, __?: number): Observable<Results<WorkflowExecution>> {
     if (this.errorMode) {
-      return throwError(new Error(`mock getFinishedDatasetExecutions() throws error`));
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getFinishedDatasetExecutions() throws error`));
+        })
+      );
     }
     return observableOf(mockWorkflowExecutionResults);
   }
 
   getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryList> {
     if (this.errorMode) {
-      return throwError(new Error(`mock getDatasetHistory(${datasetId}) throws error`));
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getDatasetHistory(${datasetId}) throws error`));
+        })
+      );
     }
     return observableOf({
       executions: mockWorkflowExecutionResults.results.map((we: WorkflowExecution) => {
@@ -623,12 +631,16 @@ export class MockWorkflowService {
           startedDate: we.startedDate
         };
       })
-    });
+    }).pipe(delay(1));
   }
 
   getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {
     if (this.errorMode) {
-      return throwError(new Error(`mock getExecutionPlugins(${id}) throws error`));
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getExecutionPlugins(${id}) throws error`));
+        })
+      );
     }
     return observableOf({
       plugins: [
@@ -638,7 +650,7 @@ export class MockWorkflowService {
         { pluginType: PluginType.VALIDATION_INTERNAL, canDisplayRawXml: true },
         { pluginType: PluginType.NORMALIZATION, canDisplayRawXml: false }
       ]
-    });
+    }).pipe(delay(1));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -649,9 +661,13 @@ export class MockWorkflowService {
 
   getWorkflowSamples(): Observable<XmlSample[]> {
     if (this.errorMode) {
-      return throwError(new Error('mock getWorkflowSamples throws error...'));
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error('mock getWorkflowSamples throws error...'));
+        })
+      );
     }
-    return observableOf(mockXmlSamples);
+    return observableOf(mockXmlSamples).pipe(delay(1));
   }
 
   getReport(_: string, __: string): Observable<Report> {
@@ -666,7 +682,10 @@ export class MockWorkflowService {
   }
 
   getVersionHistory(): Observable<HistoryVersion[]> {
-    return observableOf(mockHistoryVersions);
+    if (this.errorMode) {
+      return throwError(new Error('mock getVersionHistory throws error...'));
+    }
+    return observableOf(mockHistoryVersions).pipe(delay(1));
   }
 
   getWorkflowComparisons(): Observable<XmlSample[]> {
@@ -681,6 +700,9 @@ export class MockWorkflowService {
   }
 
   getStatisticsDetail(): Observable<NodePathStatistics> {
+    if (this.errorMode) {
+      return throwError(new Error('mock getStatisticsDetail throws error'));
+    }
     return observableOf(mockStatisticsDetail).pipe(delay(1));
   }
 

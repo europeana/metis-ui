@@ -9,7 +9,6 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
@@ -23,7 +22,6 @@ import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from 'ng2-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
-import * as beautify from 'vkbeautify';
 import { environment } from '../../../environments/environment';
 import {
   Dataset,
@@ -52,8 +50,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     private readonly editorPrefs: EditorPrefService,
     private readonly errors: ErrorService,
     private readonly datasets: DatasetsService,
-    private readonly router: Router,
-    private readonly sanitizer: DomSanitizer
+    private readonly router: Router
   ) {
     super();
   }
@@ -76,9 +73,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   filterDateOpen = false;
   filterPluginOpen = false;
   historyVersions: Array<HistoryVersion>;
-  selectedDate: string;
-  selectedPlugin?: PluginType;
-  selectedComparison?: string;
   expandedSample?: number;
   nosample: string;
   notification?: Notification;
@@ -162,22 +156,27 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   }
 
   /** addPluginsFilter
-  /* - populate a filter with plugins based on selected execution
+  /* - populate a filter with plugins based on selected execution date
   *  - unsubscribe immediately if all plugins have completed
   */
-  addPluginsFilter(executionHistory: WorkflowExecutionHistory): void {
+  addPluginsFilter(executionHistory: WorkflowExecutionHistory, prefilling?: boolean): void {
     this.isLoadingFilter = true;
     this.filterDateOpen = false;
-    this.selectedPlugin = undefined;
     this.allPlugins = [];
     this.historyVersions = [];
     this.allSamples = [];
     this.allSampleComparisons = [];
     this.filteredExecutionId = executionHistory.workflowExecutionId;
-    this.selectedDate = executionHistory.startedDate;
-    this.selectedComparison = undefined;
+
+    if (!prefilling) {
+      this.previewFilters.basic = {};
+      this.previewFilters.comparison = {};
+    }
+
     this.previewFilters.basic.executionId = executionHistory.workflowExecutionId;
     this.previewFilters.startedDate = executionHistory.startedDate;
+
+    this.setPreviewFilters.emit(this.previewFilters);
 
     // unsubscribe from any previous subscription
     const prevSub = this.pluginsFilterSubscription;
@@ -224,13 +223,16 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /** getXMLSamplesCompare
   /* - populate a filter with plugins based on selected plugin for XML comparison
   */
-  getXMLSamplesCompare(plugin: PluginType, workflowExecutionId: string, prefilling: boolean): void {
+  getXMLSamplesCompare(
+    plugin: PluginType,
+    workflowExecutionId: string,
+    prefilling?: boolean
+  ): void {
     this.filterCompareOpen = false;
     this.isLoadingComparisons = true;
     this.allSampleComparisons = [];
 
     if (!prefilling) {
-      this.selectedComparison = plugin;
       this.previewFilters.comparison = {
         pluginType: plugin,
         executionId: workflowExecutionId
@@ -262,18 +264,17 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - get and show samples based on plugin
   *  - loads historyVersions based on plugin
   */
-  getXMLSamples(plugin: PluginType, prefilling: boolean): void {
+  getXMLSamples(plugin: PluginType, prefilling?: boolean): void {
     this.isLoadingHistories = true;
     this.isLoadingSamples = true;
 
     if (!prefilling) {
       this.allSampleComparisons = [];
-      this.selectedComparison = undefined;
+      this.previewFilters.comparison = {};
     }
 
     this.onClickedOutside();
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
-    this.selectedPlugin = plugin;
     this.previewFilters.basic.pluginType = plugin;
     this.setPreviewFilters.emit(this.previewFilters);
 
@@ -292,10 +293,10 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           });
 
           const prvCmp = this.previewFilters.comparison;
+
           if (prefilling && prvCmp && prvCmp.pluginType && prvCmp.executionId) {
             const comparisonPluginType = prvCmp.pluginType;
             const comparisonExecutionId = prvCmp.executionId;
-            this.selectedComparison = comparisonPluginType;
             this.getXMLSamplesCompare(comparisonPluginType, comparisonExecutionId, prefilling);
             this.isLoadingSamples = false;
           } else {
@@ -372,17 +373,18 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   */
   prefillFilters(): void {
     if (this.previewFilters.startedDate && this.previewFilters.basic.executionId) {
-      this.selectedDate = this.previewFilters.startedDate;
-      this.addPluginsFilter({
-        workflowExecutionId: this.previewFilters.basic.executionId,
-        startedDate: this.previewFilters.startedDate
-      });
+      this.addPluginsFilter(
+        {
+          workflowExecutionId: this.previewFilters.basic.executionId,
+          startedDate: this.previewFilters.startedDate
+        },
+        true
+      );
     }
 
     const pluginType = this.previewFilters.basic.pluginType;
 
     if (pluginType) {
-      this.selectedPlugin = pluginType;
       this.getXMLSamples(pluginType, true);
     }
   }
@@ -528,20 +530,5 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   */
   byId(_: number, item: WorkflowExecution): string {
     return item.id;
-  }
-
-  /** downloadUrl
-  /* returns the download url
-  */
-  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group = ''): SafeUrl {
-    const key = `${group}:${ecloudId}`;
-    let url = this.downloadUrlCache[key];
-    if (!url) {
-      const parts = [beautify.xml(xmlRecord)];
-      const blob = new Blob(parts, { type: 'text/xml' });
-      url = URL.createObjectURL(blob);
-      this.downloadUrlCache[key] = url;
-    }
-    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 }
