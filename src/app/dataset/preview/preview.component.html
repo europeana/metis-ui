@@ -61,7 +61,7 @@
       >
         <a (click)="toggleFilterCompare()"
           >{{ 'compare' | translate
-        }}<span *ngIf="previewFilters.comparison && previewFilters.comparison.pluginType"
+          }}<span *ngIf="previewFilters.comparison && previewFilters.comparison.pluginType"
             >: {{ previewFilters.comparison.pluginType | renameWorkflow }}</span
           ></a
         >
@@ -102,10 +102,7 @@
           <a (click)="expandSample(i)">-</a>
         </div>
 
-        <span
-          class="compound"
-          *ngIf="previewFilters.basic.pluginType"
-          style="width:100%;"
+        <span class="compound" *ngIf="previewFilters.basic.pluginType" style="width:100%;"
           ><span>{{ previewFilters.basic.pluginType | renameWorkflow }}</span>
           <span *ngIf="previewFilters.comparison && previewFilters.comparison.pluginType">
             {{ previewFilters.comparison.pluginType | renameWorkflow }}</span
