@@ -170,7 +170,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
     if (!prefilling) {
       this.previewFilters.basic = {};
-      this.previewFilters.comparison = {};
+      this.previewFilters.comparison = undefined;
     }
 
     this.previewFilters.basic.executionId = executionHistory.workflowExecutionId;
@@ -270,7 +270,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
     if (!prefilling) {
       this.allSampleComparisons = [];
-      this.previewFilters.comparison = {};
+      this.previewFilters.comparison = undefined;
     }
 
     this.onClickedOutside();
