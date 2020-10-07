@@ -31,11 +31,11 @@
     </div>
     <div class="view-sample-editor">
       <div class="view-sample-editor-codemirror">
-        <codemirror
+        <ngx-codemirror
           [ngModel]="xslt! | beautifyXML"
           (ngModelChange)="xsltToSave = $event"
-          [config]="editorConfig"
-        ></codemirror>
+          [options]="editorConfig"
+        ></ngx-codemirror>
       </div>
     </div>
   </div>

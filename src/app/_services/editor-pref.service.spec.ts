@@ -38,7 +38,7 @@ describe('editor pref service', () => {
     const editors: any = getCodeMirrorEditors();
     service.toggleTheme(editors);
     expect(service.getEditorPref()).not.toEqual('default');
-    expect(editors[0].instance.setOption).toHaveBeenCalledWith('theme', altTheme);
+    expect(editors[0].codeMirror.setOption).toHaveBeenCalledWith('theme', altTheme);
   });
 
   it('indicates if the toggled theme is the default theme', () => {
