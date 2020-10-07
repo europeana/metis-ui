@@ -346,7 +346,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
     return true;
   }
 
-  regRes = route.match(/orchestrator\/workflows\/executions\/-?(\d+)\/plugins\/data-availability/);
+  regRes = route.match(/orchestrator\/workflows\/executions\/-?(\S+)\/plugins\/data-availability/);
 
   if (regRes) {
     response.end(JSON.stringify(pluginsAvailable(regRes[1])));
@@ -470,7 +470,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
   }
 
   regRes = route.match(
-    /orchestrator\/proxies\/records\?workflowExecutionId=(\d+)\&pluginType=(\S+)\&nextPage/
+    /orchestrator\/proxies\/records\?workflowExecutionId=(\S+)\&pluginType=(\S+)\&nextPage/
   );
 
   if (regRes) {
@@ -479,7 +479,25 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         records: [
           {
             ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
-            xmlRecord: ''
+            xmlRecord: '<x>Preview</x>'
+          }
+        ]
+      })
+    );
+    return true;
+  }
+
+  regRes = route.match(
+    /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)\&pluginType=(\S+)/
+  );
+
+  if (regRes) {
+    response.end(
+      JSON.stringify({
+        records: [
+          {
+            ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
+            xmlRecord: '<x>Compare</x>'
           }
         ]
       })

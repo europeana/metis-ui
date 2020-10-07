@@ -16,7 +16,9 @@
       >
         <a (click)="toggleFilterDate()"
           >{{ 'dateStarted' | translate
-          }}<span *ngIf="selectedDate">: {{ selectedDate | date: 'dd/MM/yyyy - HH:mm' }}</span></a
+          }}<span *ngIf="previewFilters.baseStartedDate"
+            >: {{ previewFilters.baseStartedDate | date: 'dd/MM/yyyy - HH:mm' }}</span
+          ></a
         >
         <div *ngIf="filterDateOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
@@ -37,7 +39,9 @@
       >
         <a (click)="toggleFilterPlugin()"
           >{{ 'plugin' | translate
-          }}<span *ngIf="selectedPlugin">: {{ selectedPlugin | renameWorkflow }}</span></a
+          }}<span *ngIf="previewFilters.baseFilter.pluginType"
+            >: {{ '' + previewFilters.baseFilter.pluginType | renameWorkflow }}</span
+          ></a
         >
         <div *ngIf="filterPluginOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
@@ -49,7 +53,7 @@
         </div>
       </li>
       <li>
-        <span *ngIf="isLoading || isLoadingFilter" class="svg-icon-spin showing"></span>
+        <span *ngIf="isLoading()" class="svg-icon-spin showing"></span>
       </li>
       <li
         class="dropdown dropdown-compare arrow-right"
@@ -57,7 +61,10 @@
       >
         <a (click)="toggleFilterCompare()"
           >{{ 'compare' | translate
-          }}<span *ngIf="selectedComparison">: {{ selectedComparison | renameWorkflow }}</span></a
+          }}<span
+            *ngIf="previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType"
+            >: {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span
+          ></a
         >
         <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
           <ul class="dropdown-content">
@@ -71,7 +78,6 @@
       </li>
     </ul>
   </div>
-
   <div *ngIf="allSamples">
     <div
       class="view-sample"
@@ -84,7 +90,9 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }} </span>
+          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType"
+            >{{ previewFilters.baseFilter.pluginType | renameWorkflow }}
+          </span>
         </h3>
 
         <app-theme-selector
@@ -95,9 +103,13 @@
           <a (click)="expandSample(i)">-</a>
         </div>
 
-        <span class="compound" *ngIf="selectedPlugin" style="width:100%;"
-          ><span>{{ selectedPlugin | renameWorkflow }}</span>
-          <span *ngIf="selectedComparison"> {{ selectedComparison | renameWorkflow }}</span></span
+        <span class="compound" *ngIf="previewFilters.baseFilter.pluginType" style="width:100%;"
+          ><span>{{ previewFilters.baseFilter.pluginType | renameWorkflow }}</span>
+          <span
+            *ngIf="previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType"
+          >
+            {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span
+          ></span
         >
       </div>
       <div class="view-sample-editor">
@@ -139,7 +151,7 @@
     </div>
   </div>
 
-  <div class="view-sample" *ngIf="!isLoading && allSamples.length === 0">
+  <div class="view-sample no-sample" *ngIf="allSamples.length === 0">
     <div class="view-sample-title">
       <h3>
         {{ 'noSample' | translate }}
@@ -166,7 +178,7 @@
 </div>
 
 <div *ngIf="tempXSLT">
-  <div class="messages" *ngIf="isLoading || loadingTransformSamples">
+  <div class="messages" *ngIf="isLoading()">
     <div class="success-message">
       <span class="svg-icon-spin-inbutton"></span> Loading samples...
     </div>
@@ -180,7 +192,9 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="selectedPlugin">{{ selectedPlugin | renameWorkflow }}</span>
+          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType">{{
+            previewFilters.baseFilter.pluginType | renameWorkflow
+          }}</span>
         </h3>
         <app-theme-selector
           (themeSet)="onThemeSet($event)"

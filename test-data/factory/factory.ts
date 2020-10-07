@@ -206,7 +206,7 @@ function generateDatasetX(): Array<DatasetX> {
 
           // "run" the Workflows
           for (var i = 0; i < numExecutions; i++) {
-            let wExec = runWorkflow(w, '' + weIndex);
+            let wExec = runWorkflow(w, `${weIndex}`);
 
             w.executions.push(wExec);
 
@@ -723,7 +723,6 @@ export function errorReport(reportId: string, process: string) {
 // localhost:3000/orchestrator/workflows/evolution/0/OAIPMH_HARVEST
 export function evolution(datasetId: string, peType: string): HistoryVersions {
   let wl = getMostRecentExecutionByDatasetId(datasetId);
-
   let res: Array<HistoryVersion> = [];
 
   if (wl.length == 1) {
@@ -736,14 +735,13 @@ export function evolution(datasetId: string, peType: string): HistoryVersions {
       }
       if (!reachedEnd) {
         res.push({
-          workflowExecutionId: parseInt(w.id),
+          workflowExecutionId: w.id,
           pluginType: pe.pluginType.toString(),
           finishedTime: pe.finishedDate
         } as HistoryVersion);
       }
     });
   }
-
   return {
     evolutionSteps: res
   };

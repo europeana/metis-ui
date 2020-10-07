@@ -41,9 +41,11 @@ export class ExecutionsDataGridComponent {
   */
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
     const previewFilters: PreviewFilters = {
-      executionId: execution.id,
-      pluginType: pluginExecution.pluginType,
-      startedDate: execution.startedDate
+      baseFilter: {
+        executionId: execution.id,
+        pluginType: pluginExecution.pluginType
+      },
+      baseStartedDate: execution.startedDate
     };
     this.openPreview.emit(previewFilters);
   }

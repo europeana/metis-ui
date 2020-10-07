@@ -9,7 +9,6 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
@@ -23,7 +22,6 @@ import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from 'ng2-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
-import * as beautify from 'vkbeautify';
 import { environment } from '../../../environments/environment';
 import {
   Dataset,
@@ -52,8 +50,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     private readonly editorPrefs: EditorPrefService,
     private readonly errors: ErrorService,
     private readonly datasets: DatasetsService,
-    private readonly router: Router,
-    private readonly sanitizer: DomSanitizer
+    private readonly router: Router
   ) {
     super();
   }
@@ -70,22 +67,19 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   allPlugins: Array<{ type: PluginType; error: boolean }> = [];
   allSamples: Array<XmlSample> = [];
   allSampleComparisons: Array<XmlSample> = [];
-  sampleRecordIds: Array<string> = [];
   allTransformedSamples: XmlSample[];
   filterCompareOpen = false;
   filterDateOpen = false;
   filterPluginOpen = false;
   historyVersions: Array<HistoryVersion>;
-  selectedDate: string;
-  selectedPlugin?: PluginType;
-  selectedComparison?: string;
   expandedSample?: number;
   nosample: string;
   notification?: Notification;
-  filteredExecutionId: string;
-  isLoading = true;
-  isLoadingFilter: boolean;
-  loadingTransformSamples = false;
+  isLoadingComparisons = false;
+  isLoadingFilter = false;
+  isLoadingHistories = false;
+  isLoadingSamples = false;
+  isLoadingTransformSamples = false;
   downloadUrlCache: { [key: string]: string } = {};
   serviceTimer: Observable<number>;
   pluginsFilterSubscription: Subscription;
@@ -107,7 +101,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
         this.addExecutionsFilter();
       })
     );
-
     this.prefillFilters();
 
     if (this.tempXSLT) {
@@ -127,9 +120,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     if (this.pluginsFilterSubscription) {
       this.pluginsFilterSubscription.unsubscribe();
     }
-    //this.subs.push(this.pluginsFilterSubscription);
     this.cleanup();
-    //super.ngOnDestroy();
   }
 
   /** addExecutionsFilter
@@ -137,37 +128,52 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /* - update load-tracking variable
   */
   addExecutionsFilter(): void {
+    this.isLoadingFilter = true;
     this.subs.push(
       this.workflows.getDatasetHistory(this.datasetData.datasetId).subscribe(
         (result) => {
           this.allWorkflowExecutions = result.executions;
-          this.isLoading = false;
+          this.isLoadingFilter = false;
         },
         (err: HttpErrorResponse) => {
-          this.isLoading = false;
+          this.isLoadingFilter = false;
           this.errors.handleError(err);
         }
       )
     );
   }
 
+  isLoading(): boolean {
+    return (
+      this.isLoadingComparisons ||
+      this.isLoadingFilter ||
+      this.isLoadingHistories ||
+      this.isLoadingSamples ||
+      this.isLoadingTransformSamples
+    );
+  }
+
   /** addPluginsFilter
-  /* - populate a filter with plugins based on selected execution
+  /* - populate a filter with plugins based on selected execution date
   *  - unsubscribe immediately if all plugins have completed
   */
-  addPluginsFilter(executionHistory: WorkflowExecutionHistory): void {
-    this.isLoading = true;
+  addPluginsFilter(executionHistory: WorkflowExecutionHistory, prefilling?: boolean): void {
+    this.isLoadingFilter = true;
     this.filterDateOpen = false;
-    this.selectedPlugin = undefined;
     this.allPlugins = [];
     this.historyVersions = [];
     this.allSamples = [];
     this.allSampleComparisons = [];
-    this.filteredExecutionId = executionHistory.workflowExecutionId;
-    this.selectedDate = executionHistory.startedDate;
-    this.selectedComparison = undefined;
-    this.previewFilters.executionId = executionHistory.workflowExecutionId;
-    this.previewFilters.startedDate = executionHistory.startedDate;
+
+    if (!prefilling) {
+      this.previewFilters = {
+        baseFilter: {
+          executionId: executionHistory.workflowExecutionId
+        },
+        baseStartedDate: executionHistory.startedDate
+      };
+      this.setPreviewFilters.emit(this.previewFilters);
+    }
 
     // unsubscribe from any previous subscription
     const prevSub = this.pluginsFilterSubscription;
@@ -178,14 +184,13 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.pluginsFilterSubscription = this.serviceTimer
       .pipe(
         switchMap(() => {
-          this.isLoadingFilter = true;
-          return this.workflows.getExecutionPlugins(this.filteredExecutionId);
+          return this.workflows.getExecutionPlugins(executionHistory.workflowExecutionId);
         })
       )
       .subscribe(
         (result) => {
           let pluginsFilterComplete = true;
-          this.isLoading = false;
+
           this.isLoadingFilter = false;
           this.allPlugins.length = 0;
 
@@ -198,7 +203,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
               error: !pa.canDisplayRawXml
             });
           });
-
           if (pluginsFilterComplete) {
             // unsubscribe immediately
             this.pluginsFilterSubscription.unsubscribe();
@@ -206,41 +210,50 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
         },
         (err: HttpErrorResponse) => {
           console.log(err);
-          this.isLoading = false;
+          this.isLoadingFilter = false;
           this.errors.handleError(err);
         }
       );
   }
 
-  /** errorHandling
-  /* generic http error handler:
-  /* - update load-tracking variable
-  /* - set notification variable to new http error notification based on specified error
+  /** getXMLSamplesCompare
+  /* - populate a filter with plugins based on selected plugin for XML comparison
   */
-  errorHandling(err: HttpErrorResponse): void {
-    const error = this.errors.handleError(err);
-    this.notification = httpErrorNotification(error);
-    this.isLoading = false;
-  }
-
-  /** addPluginsFilter
-  /* - populate a filter with plugins based on selected execution
-  *  - unsubscribe immediately if all plugins have completed
-  */
-  getXMLSamplesCompare(plugin: PluginType, workflowExecutionId: string): void {
-    this.filterCompareOpen = false;
-    this.isLoading = true;
+  getXMLSamplesCompare(
+    plugin: PluginType,
+    workflowExecutionId: string,
+    prefilling?: boolean
+  ): void {
+    if (!prefilling) {
+      this.filterCompareOpen = false;
+      this.previewFilters.comparisonFilter = {
+        pluginType: plugin,
+        executionId: workflowExecutionId
+      };
+      this.setPreviewFilters.emit(this.previewFilters);
+    }
     this.allSampleComparisons = [];
-    this.subs.push(
-      this.workflows
-        .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
-        .subscribe((result) => {
-          // strip "new lines"
-          this.allSampleComparisons = this.undoNewLines(result);
-          this.isLoading = false;
-          this.selectedComparison = plugin;
-        }, this.errorHandling.bind(this))
-    );
+
+    const sampleRecordIds = this.previewFilters.sampleRecordIds;
+    if (sampleRecordIds) {
+      this.isLoadingComparisons = true;
+      this.subs.push(
+        this.workflows
+          .getWorkflowComparisons(workflowExecutionId, plugin, sampleRecordIds)
+          .subscribe(
+            (result) => {
+              // strip "new lines"
+              this.allSampleComparisons = this.undoNewLines(result);
+              this.isLoadingComparisons = false;
+            },
+            (err: HttpErrorResponse): void => {
+              const error = this.errors.handleError(err);
+              this.notification = httpErrorNotification(error);
+              this.isLoadingComparisons = false;
+            }
+          )
+      );
+    }
   }
 
   /** getXMLSamples
@@ -248,45 +261,61 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - get and show samples based on plugin
   *  - loads historyVersions based on plugin
   */
-  getXMLSamples(plugin: PluginType): void {
-    let loadingSamples = true;
-    let loadingHistories = true;
+  getXMLSamples(plugin: PluginType, prefilling?: boolean): void {
+    if (!prefilling) {
+      this.onClickedOutside();
+      this.allSampleComparisons = [];
 
-    this.isLoading = true;
-    this.allSampleComparisons = [];
-    this.selectedComparison = undefined;
+      this.previewFilters.comparisonFilter = undefined;
+      this.previewFilters.sampleRecordIds = [];
+      this.previewFilters.baseFilter.pluginType = plugin;
 
-    this.onClickedOutside();
+      this.setPreviewFilters.emit(this.previewFilters);
+    }
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
-    this.selectedPlugin = plugin;
-    this.previewFilters.pluginType = plugin;
-    this.setPreviewFilters.emit(this.previewFilters);
-    this.subs.push(
-      this.workflows.getWorkflowSamples(this.filteredExecutionId, plugin).subscribe((result) => {
-        this.allSamples = this.undoNewLines(result);
 
-        if (this.allSamples.length === 1) {
-          this.expandedSample = 0;
-        }
-        loadingSamples = false;
-        if (!loadingHistories) {
-          this.isLoading = false;
-        }
-        this.sampleRecordIds = [];
-        this.allSamples.forEach((sample) => {
-          this.sampleRecordIds.push(sample.ecloudId);
-        });
-      }, this.errorHandling.bind(this))
-    );
+    const filteredExecutionId = this.previewFilters.baseFilter.executionId;
+
+    if (filteredExecutionId) {
+      this.isLoadingSamples = true;
+      this.subs.push(
+        this.workflows.getWorkflowSamples(filteredExecutionId, plugin).subscribe(
+          (result) => {
+            this.isLoadingSamples = false;
+            this.allSamples = this.undoNewLines(result);
+            if (this.allSamples.length === 1) {
+              this.expandedSample = 0;
+            }
+            this.previewFilters.sampleRecordIds = this.allSamples.map((sample) => {
+              return sample.ecloudId;
+            });
+          },
+          (err: HttpErrorResponse): void => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
+            this.isLoadingSamples = false;
+          }
+        )
+      );
+      this.getVersions(plugin, filteredExecutionId);
+    }
+  }
+
+  getVersions(plugin: PluginType, filteredExecutionId: string): void {
+    this.isLoadingHistories = true;
 
     this.subs.push(
-      this.workflows.getVersionHistory(this.filteredExecutionId, plugin).subscribe((result) => {
-        loadingHistories = false;
-        if (!loadingSamples) {
-          this.isLoading = false;
+      this.workflows.getVersionHistory(filteredExecutionId, plugin).subscribe(
+        (result) => {
+          this.isLoadingHistories = false;
+          this.historyVersions = result;
+        },
+        (err: HttpErrorResponse): void => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.isLoadingHistories = false;
         }
-        this.historyVersions = result;
-      }, this.errorHandling.bind(this))
+      )
     );
   }
 
@@ -294,12 +323,12 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /* - transform samples on the fly based on temp saved XSLT
   */
   transformSamples(type: string): void {
+    this.isLoadingTransformSamples = true;
     const handleError = (err: HttpErrorResponse): void => {
       const error = this.errors.handleError(err);
       this.notification = httpErrorNotification(error);
-      this.loadingTransformSamples = false;
+      this.isLoadingTransformSamples = false;
     };
-    this.loadingTransformSamples = true;
     this.subs.push(
       this.workflows
         .getFinishedDatasetExecutions(this.datasetData.datasetId, 0)
@@ -308,7 +337,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
             if (result.results[0]) {
               return true;
             }
-            this.loadingTransformSamples = false;
+            this.isLoadingTransformSamples = false;
             return false;
           }),
           switchMap((result) => {
@@ -327,7 +356,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
         )
         .subscribe((transformed) => {
           this.allTransformedSamples = this.undoNewLines(transformed);
-          this.loadingTransformSamples = false;
+          this.isLoadingTransformSamples = false;
         }, handleError)
     );
   }
@@ -336,17 +365,29 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /* prefill the filters when temporarily saved options are available
   */
   prefillFilters(): void {
-    if (this.previewFilters && this.previewFilters.startedDate && this.previewFilters.executionId) {
-      this.selectedDate = this.previewFilters.startedDate;
-      this.addPluginsFilter({
-        workflowExecutionId: this.previewFilters.executionId,
-        startedDate: this.previewFilters.startedDate
-      });
-    }
-    const pluginType = this.previewFilters.pluginType;
+    const prvCmp = this.previewFilters.comparisonFilter;
+    const pluginType = this.previewFilters.baseFilter.pluginType;
+    const filteredExecutionId = this.previewFilters.baseFilter.executionId;
+
     if (pluginType) {
-      this.selectedPlugin = pluginType;
-      this.getXMLSamples(pluginType);
+      this.getXMLSamples(pluginType, true);
+
+      if (prvCmp && prvCmp.pluginType && prvCmp.executionId) {
+        this.getXMLSamplesCompare(prvCmp.pluginType, prvCmp.executionId, true);
+      }
+      if (filteredExecutionId) {
+        this.getVersions(pluginType, filteredExecutionId);
+      }
+    }
+
+    if (this.previewFilters.baseStartedDate && filteredExecutionId) {
+      this.addPluginsFilter(
+        {
+          workflowExecutionId: filteredExecutionId,
+          startedDate: this.previewFilters.baseStartedDate
+        },
+        true
+      );
     }
   }
 
@@ -491,20 +532,5 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   */
   byId(_: number, item: WorkflowExecution): string {
     return item.id;
-  }
-
-  /** downloadUrl
-  /* returns the download url
-  */
-  downloadUrl({ ecloudId, xmlRecord }: XmlSample, group = ''): SafeUrl {
-    const key = `${group}:${ecloudId}`;
-    let url = this.downloadUrlCache[key];
-    if (!url) {
-      const parts = [beautify.xml(xmlRecord)];
-      const blob = new Blob(parts, { type: 'text/xml' });
-      url = URL.createObjectURL(blob);
-      this.downloadUrlCache[key] = url;
-    }
-    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 }
