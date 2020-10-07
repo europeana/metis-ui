@@ -113,9 +113,10 @@ export interface PreviewFilter {
 }
 
 export interface PreviewFilters {
-  basic: PreviewFilter;
-  comparison?: PreviewFilter;
-  startedDate?: string;
+  baseFilter: PreviewFilter;
+  comparisonFilter?: PreviewFilter;
+  baseStartedDate?: string;
+  sampleRecordIds?: Array<string>;
 }
 
 export interface PluginAvailability {

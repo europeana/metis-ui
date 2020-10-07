@@ -62,7 +62,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
   showPluginLog?: PluginExecution;
   tempXSLT?: string;
-  previewFilters: PreviewFilters = { basic: {}, comparison: {} };
+  previewFilters: PreviewFilters = { baseFilter: {} };
   pollingRefresh: Subject<boolean>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

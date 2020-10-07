@@ -67,7 +67,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   allPlugins: Array<{ type: PluginType; error: boolean }> = [];
   allSamples: Array<XmlSample> = [];
   allSampleComparisons: Array<XmlSample> = [];
-  sampleRecordIds: Array<string> = [];
   allTransformedSamples: XmlSample[];
   filterCompareOpen = false;
   filterDateOpen = false;
@@ -76,7 +75,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   expandedSample?: number;
   nosample: string;
   notification?: Notification;
-  filteredExecutionId: string;
   isLoadingComparisons = false;
   isLoadingFilter = false;
   isLoadingHistories = false;
@@ -166,17 +164,16 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.historyVersions = [];
     this.allSamples = [];
     this.allSampleComparisons = [];
-    this.filteredExecutionId = executionHistory.workflowExecutionId;
 
     if (!prefilling) {
-      this.previewFilters.basic = {};
-      this.previewFilters.comparison = undefined;
+      this.previewFilters = {
+        baseFilter: {
+          executionId: executionHistory.workflowExecutionId
+        },
+        baseStartedDate: executionHistory.startedDate
+      };
+      this.setPreviewFilters.emit(this.previewFilters);
     }
-
-    this.previewFilters.basic.executionId = executionHistory.workflowExecutionId;
-    this.previewFilters.startedDate = executionHistory.startedDate;
-
-    this.setPreviewFilters.emit(this.previewFilters);
 
     // unsubscribe from any previous subscription
     const prevSub = this.pluginsFilterSubscription;
@@ -187,7 +184,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.pluginsFilterSubscription = this.serviceTimer
       .pipe(
         switchMap(() => {
-          return this.workflows.getExecutionPlugins(this.filteredExecutionId);
+          return this.workflows.getExecutionPlugins(executionHistory.workflowExecutionId);
         })
       )
       .subscribe(
@@ -206,7 +203,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
               error: !pa.canDisplayRawXml
             });
           });
-
           if (pluginsFilterComplete) {
             // unsubscribe immediately
             this.pluginsFilterSubscription.unsubscribe();
@@ -228,35 +224,36 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     workflowExecutionId: string,
     prefilling?: boolean
   ): void {
-    this.filterCompareOpen = false;
-    this.isLoadingComparisons = true;
-    this.allSampleComparisons = [];
-
     if (!prefilling) {
-      this.previewFilters.comparison = {
+      this.filterCompareOpen = false;
+      this.previewFilters.comparisonFilter = {
         pluginType: plugin,
         executionId: workflowExecutionId
       };
-
       this.setPreviewFilters.emit(this.previewFilters);
     }
+    this.allSampleComparisons = [];
 
-    this.subs.push(
-      this.workflows
-        .getWorkflowComparisons(workflowExecutionId, plugin, this.sampleRecordIds)
-        .subscribe(
-          (result) => {
-            // strip "new lines"
-            this.allSampleComparisons = this.undoNewLines(result);
-            this.isLoadingComparisons = false;
-          },
-          (err: HttpErrorResponse): void => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
-            this.isLoadingComparisons = false;
-          }
-        )
-    );
+    const sampleRecordIds = this.previewFilters.sampleRecordIds;
+    if (sampleRecordIds) {
+      this.isLoadingComparisons = true;
+      this.subs.push(
+        this.workflows
+          .getWorkflowComparisons(workflowExecutionId, plugin, sampleRecordIds)
+          .subscribe(
+            (result) => {
+              // strip "new lines"
+              this.allSampleComparisons = this.undoNewLines(result);
+              this.isLoadingComparisons = false;
+            },
+            (err: HttpErrorResponse): void => {
+              const error = this.errors.handleError(err);
+              this.notification = httpErrorNotification(error);
+              this.isLoadingComparisons = false;
+            }
+          )
+      );
+    }
   }
 
   /** getXMLSamples
@@ -265,54 +262,50 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - loads historyVersions based on plugin
   */
   getXMLSamples(plugin: PluginType, prefilling?: boolean): void {
-    this.isLoadingHistories = true;
-    this.isLoadingSamples = true;
-
     if (!prefilling) {
+      this.onClickedOutside();
       this.allSampleComparisons = [];
-      this.previewFilters.comparison = undefined;
+
+      this.previewFilters.comparisonFilter = undefined;
+      this.previewFilters.sampleRecordIds = [];
+      this.previewFilters.baseFilter.pluginType = plugin;
+
+      this.setPreviewFilters.emit(this.previewFilters);
     }
-
-    this.onClickedOutside();
     this.editorConfig = this.editorPrefs.getEditorConfig(true);
-    this.previewFilters.basic.pluginType = plugin;
-    this.setPreviewFilters.emit(this.previewFilters);
 
-    this.subs.push(
-      this.workflows.getWorkflowSamples(this.filteredExecutionId, plugin).subscribe(
-        (result) => {
-          this.allSamples = this.undoNewLines(result);
+    const filteredExecutionId = this.previewFilters.baseFilter.executionId;
 
-          if (this.allSamples.length === 1) {
-            this.expandedSample = 0;
-          }
-
-          this.sampleRecordIds = [];
-          this.allSamples.forEach((sample) => {
-            this.sampleRecordIds.push(sample.ecloudId);
-          });
-
-          const prvCmp = this.previewFilters.comparison;
-
-          if (prefilling && prvCmp && prvCmp.pluginType && prvCmp.executionId) {
-            const comparisonPluginType = prvCmp.pluginType;
-            const comparisonExecutionId = prvCmp.executionId;
-            this.getXMLSamplesCompare(comparisonPluginType, comparisonExecutionId, prefilling);
+    if (filteredExecutionId) {
+      this.isLoadingSamples = true;
+      this.subs.push(
+        this.workflows.getWorkflowSamples(filteredExecutionId, plugin).subscribe(
+          (result) => {
             this.isLoadingSamples = false;
-          } else {
+            this.allSamples = this.undoNewLines(result);
+            if (this.allSamples.length === 1) {
+              this.expandedSample = 0;
+            }
+            this.previewFilters.sampleRecordIds = this.allSamples.map((sample) => {
+              return sample.ecloudId;
+            });
+          },
+          (err: HttpErrorResponse): void => {
+            const error = this.errors.handleError(err);
+            this.notification = httpErrorNotification(error);
             this.isLoadingSamples = false;
           }
-        },
-        (err: HttpErrorResponse): void => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
-          this.isLoadingSamples = false;
-        }
-      )
-    );
+        )
+      );
+      this.getVersions(plugin, filteredExecutionId);
+    }
+  }
+
+  getVersions(plugin: PluginType, filteredExecutionId: string): void {
+    this.isLoadingHistories = true;
 
     this.subs.push(
-      this.workflows.getVersionHistory(this.filteredExecutionId, plugin).subscribe(
+      this.workflows.getVersionHistory(filteredExecutionId, plugin).subscribe(
         (result) => {
           this.isLoadingHistories = false;
           this.historyVersions = result;
@@ -372,20 +365,29 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /* prefill the filters when temporarily saved options are available
   */
   prefillFilters(): void {
-    if (this.previewFilters.startedDate && this.previewFilters.basic.executionId) {
-      this.addPluginsFilter(
-        {
-          workflowExecutionId: this.previewFilters.basic.executionId,
-          startedDate: this.previewFilters.startedDate
-        },
-        true
-      );
-    }
-
-    const pluginType = this.previewFilters.basic.pluginType;
+    const prvCmp = this.previewFilters.comparisonFilter;
+    const pluginType = this.previewFilters.baseFilter.pluginType;
+    const filteredExecutionId = this.previewFilters.baseFilter.executionId;
 
     if (pluginType) {
       this.getXMLSamples(pluginType, true);
+
+      if (prvCmp && prvCmp.pluginType && prvCmp.executionId) {
+        this.getXMLSamplesCompare(prvCmp.pluginType, prvCmp.executionId, true);
+      }
+      if (filteredExecutionId) {
+        this.getVersions(pluginType, filteredExecutionId);
+      }
+    }
+
+    if (this.previewFilters.baseStartedDate && filteredExecutionId) {
+      this.addPluginsFilter(
+        {
+          workflowExecutionId: filteredExecutionId,
+          startedDate: this.previewFilters.baseStartedDate
+        },
+        true
+      );
     }
   }
 

@@ -69,9 +69,9 @@ context('metis-ui', () => {
   };
 
   const leaveAndReturn = () => {
-    cy.get(`.tabs a[href="${urlLog}"]`).click();
+    cy.get(`.tabs a[href="${urlLog}"]`).click({ force: true });
     cy.wait(1000);
-    cy.get(`.tabs a[href="${urlPreview}"]`).click();
+    cy.get(`.tabs a[href="${urlPreview}"]`).click({ force: true });
     cy.wait(1000);
   };
 

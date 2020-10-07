@@ -16,8 +16,8 @@
       >
         <a (click)="toggleFilterDate()"
           >{{ 'dateStarted' | translate
-          }}<span *ngIf="previewFilters.startedDate"
-            >: {{ previewFilters.startedDate | date: 'dd/MM/yyyy - HH:mm' }}</span
+          }}<span *ngIf="previewFilters.baseStartedDate"
+            >: {{ previewFilters.baseStartedDate | date: 'dd/MM/yyyy - HH:mm' }}</span
           ></a
         >
         <div *ngIf="filterDateOpen" class="dropdown-wrapper">
@@ -39,8 +39,8 @@
       >
         <a (click)="toggleFilterPlugin()"
           >{{ 'plugin' | translate
-          }}<span *ngIf="previewFilters.basic.pluginType"
-            >: {{ '' + previewFilters.basic.pluginType | renameWorkflow }}</span
+          }}<span *ngIf="previewFilters.baseFilter.pluginType"
+            >: {{ '' + previewFilters.baseFilter.pluginType | renameWorkflow }}</span
           ></a
         >
         <div *ngIf="filterPluginOpen" class="dropdown-wrapper">
@@ -61,8 +61,9 @@
       >
         <a (click)="toggleFilterCompare()"
           >{{ 'compare' | translate
-          }}<span *ngIf="previewFilters.comparison && previewFilters.comparison.pluginType"
-            >: {{ previewFilters.comparison.pluginType | renameWorkflow }}</span
+          }}<span
+            *ngIf="previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType"
+            >: {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span
           ></a
         >
         <div *ngIf="filterCompareOpen" class="dropdown-wrapper">
@@ -89,8 +90,8 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="previewFilters.basic.pluginType"
-            >{{ previewFilters.basic.pluginType | renameWorkflow }}
+          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType"
+            >{{ previewFilters.baseFilter.pluginType | renameWorkflow }}
           </span>
         </h3>
 
@@ -102,10 +103,12 @@
           <a (click)="expandSample(i)">-</a>
         </div>
 
-        <span class="compound" *ngIf="previewFilters.basic.pluginType" style="width:100%;"
-          ><span>{{ previewFilters.basic.pluginType | renameWorkflow }}</span>
-          <span *ngIf="previewFilters.comparison && previewFilters.comparison.pluginType">
-            {{ previewFilters.comparison.pluginType | renameWorkflow }}</span
+        <span class="compound" *ngIf="previewFilters.baseFilter.pluginType" style="width:100%;"
+          ><span>{{ previewFilters.baseFilter.pluginType | renameWorkflow }}</span>
+          <span
+            *ngIf="previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType"
+          >
+            {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span
           ></span
         >
       </div>
@@ -189,8 +192,8 @@
       <div class="view-sample-title">
         <h3>
           <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="previewFilters.basic.pluginType">{{
-            previewFilters.basic.pluginType | renameWorkflow
+          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType">{{
+            previewFilters.baseFilter.pluginType | renameWorkflow
           }}</span>
         </h3>
         <app-theme-selector
