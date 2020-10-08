@@ -177,9 +177,10 @@
   </div>
 </div>
 <div *ngIf="tempXSLT">
-  <div class="messages" *ngIf="isLoading()">
+  <div class="messages" *ngIf="isLoadingTransformSamples">
     <div class="success-message">
-      <span class="svg-icon-spin-inbutton"></span> Loading samples...
+      <span class="svg-icon-spin-inbutton"></span>
+      <span i18n="load message|load message for samples">Loading samples...</span>
     </div>
   </div>
 

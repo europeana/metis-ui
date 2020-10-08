@@ -84,6 +84,15 @@
         <note priority="1" from="description">max result reached message</note>
         <note priority="1" from="meaning">max result reached</note>
       </trans-unit>
+      <trans-unit id="9cc462b11fe61340134589e8540811f75f60e7b8" datatype="html">
+        <source>Loading samples...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/preview/preview.component.html</context>
+          <context context-type="linenumber">183</context>
+        </context-group>
+        <note priority="1" from="description">load message for samples</note>
+        <note priority="1" from="meaning">load message</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
