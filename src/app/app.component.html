@@ -2,23 +2,13 @@
 <div class="pusher pusher-{{ bodyClass }}">
   <div class="metis-main-content"><router-outlet></router-outlet></div>
 </div>
-
-<div class="modal-wrapper" *ngIf="showWrapper">
-  <div class="modal modal-small">
-    <div class="head">
-      {{ 'cancel' | translate }} <a class="btn-close" (click)="closePrompt()"></a>
-    </div>
-    <div class="content content-autoscroll">
-      <p>
-        Are you sure you want to cancel "{{ cancellationRequest!.datasetId! }}
-        {{ cancellationRequest!.datasetName! }}"?
-      </p>
-      <p>
-        <button class="button" type="button" (click)="closePrompt()">{{ 'no' | translate }}</button>
-        <button class="button" type="button" (click)="cancelWorkflow()">
-          {{ 'yes' | translate }}
-        </button>
-      </p>
-    </div>
-  </div>
-</div>
+<app-modal-confirm id="{{ modalConfirmId }}" title="{{ 'cancel' | translate }}">
+  <ng-container *ngIf="cancellationRequest">
+    <p
+      i18n="confirm workflow cancellation|show modal to get user confirmation@@confirmWorkflowCancellation"
+    >
+      Are you sure you want to cancel "{{ cancellationRequest.datasetId! }}
+      {{ cancellationRequest.datasetName! }}"?
+    </p>
+  </ng-container>
+</app-modal-confirm>
