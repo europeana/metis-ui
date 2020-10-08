@@ -27,7 +27,9 @@ export class FilterOptionComponent implements CanHaveError {
   @Input() params: FilterParamHash;
   @Input() rowIndex: number;
 
-  @ViewChild('filterOptionTemplate', { static: true }) filterOptionTemplate: TemplateRef<HTMLElement>;
+  @ViewChild('filterOptionTemplate', { static: true }) filterOptionTemplate: TemplateRef<
+    HTMLElement
+  >;
   @ViewChild('input', { static: false }) input: ElementRef;
 
   hasError = false;

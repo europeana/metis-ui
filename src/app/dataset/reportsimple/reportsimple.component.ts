@@ -82,9 +82,9 @@ export class ReportSimpleComponent {
   */
   copyReport(): void {
     const element = this.contentRef.nativeElement;
-    const doIfSelectionPresent = (fn:(sel: Selection) => void): void => {
+    const doIfSelectionPresent = (fn: (sel: Selection) => void): void => {
       const selection = window.getSelection();
-      if(selection){
+      if (selection) {
         fn(selection);
       }
     };
