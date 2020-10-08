@@ -27,7 +27,7 @@ import { DatasetsService, ErrorService, WorkflowService } from '../../_services'
 import { TranslateService } from '../../_translate';
 import { PreviewComponent } from '.';
 
-fdescribe('PreviewComponent', () => {
+describe('PreviewComponent', () => {
   let component: PreviewComponent;
   let fixture: ComponentFixture<PreviewComponent>;
   let router: Router;

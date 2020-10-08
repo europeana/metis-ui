@@ -209,15 +209,6 @@ export class WorkflowService extends SubscriptionManager {
     return collectResultsUptoPage(getResults, endPage);
   }
 
-  /** getDatasetExecutions
-  /* get history of executions for specific datasetid, every status
-  */
-  getDatasetExecutions(id: string, page?: number): Observable<Results<WorkflowExecution>> {
-    // eslint-disable-next-line max-len
-    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
-  }
-
   /** getDatasetHistory
   /* get history of execution date data
   */

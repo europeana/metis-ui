@@ -254,19 +254,6 @@ describe('workflow service', () => {
     sub2.unsubscribe();
   });
 
-  it('should get executions for a dataset per page', () => {
-    const sub = service.getDatasetExecutions('543341', 7).subscribe((results) => {
-      expect(results).toEqual(mockWorkflowExecutionResults);
-    });
-    mockHttp
-      .expect(
-        'GET',
-        '/orchestrator/workflows/executions/dataset/543341?orderField=CREATED_DATE&ascending=false&nextPage=7'
-      )
-      .send(mockWorkflowExecutionResults);
-    sub.unsubscribe();
-  });
-
   it('should get all executions for a dataset', () => {
     const sub = service.getDatasetHistory('879').subscribe((results) => {
       expect(results).toEqual(mockWorkflowExecutionHistoryList);
