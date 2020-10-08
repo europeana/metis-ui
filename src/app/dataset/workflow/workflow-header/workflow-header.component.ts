@@ -21,8 +21,8 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
 
   @Input() conf: Array<WorkflowFieldData>;
-  @ViewChild('workflowheader') elRef: ElementRef;
-  @ViewChild('ghost') ghost: ElementRef;
+  @ViewChild('workflowheader', { static: true }) elRef: ElementRef;
+  @ViewChild('ghost', { static: true }) ghost: ElementRef;
 
   ghostClone: Element;
   workflowForm: FormGroup;

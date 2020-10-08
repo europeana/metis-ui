@@ -11,7 +11,7 @@ import { DatasetOverview, PluginExecutionOverview } from '../../../_models';
   styleUrls: ['./gridrow.component.scss']
 })
 export class GridrowComponent {
-  @ViewChild('childComponentTemplate') childComponentTemplate: TemplateRef<HTMLElement>;
+  @ViewChild('childComponentTemplate', { static: true }) childComponentTemplate: TemplateRef<HTMLElement>;
   @Input() dsExecution: DatasetOverview;
   @Input() expanded: boolean;
   @Output() closeExpanded: EventEmitter<string> = new EventEmitter();

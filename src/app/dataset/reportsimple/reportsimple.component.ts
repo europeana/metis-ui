@@ -17,7 +17,7 @@ export class ReportSimpleComponent {
   notification?: Notification;
   loading: boolean;
 
-  @ViewChild('contentRef') contentRef: ElementRef;
+  @ViewChild('contentRef', { static: false }) contentRef: ElementRef;
 
   @Output() closeReportSimple = new EventEmitter<void>();
 

@@ -23,7 +23,7 @@ export class AppComponent extends SubscriptionManager implements OnInit, AfterVi
   public loggedIn = false;
   modalConfirmId = 'confirm-cancellation-request';
 
-  @ViewChild(ModalConfirmComponent)
+  @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
 
   constructor(
