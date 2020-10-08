@@ -82,12 +82,18 @@ export class ReportSimpleComponent {
   */
   copyReport(): void {
     const element = this.contentRef.nativeElement;
-    window.getSelection().removeAllRanges();
+    const doIfSelectionPresent = (fn:(sel: Selection) => void): void => {
+      const selection = window.getSelection();
+      if(selection){
+        fn(selection);
+      }
+    };
+    doIfSelectionPresent((sel: Selection) => sel.removeAllRanges());
     const range = document.createRange();
     range.selectNode(element);
-    window.getSelection().addRange(range);
+    doIfSelectionPresent((sel: Selection) => sel.addRange(range));
     document.execCommand('copy');
-    window.getSelection().removeAllRanges();
+    doIfSelectionPresent((sel: Selection) => sel.removeAllRanges());
     this.notification = successNotification(this.translate.instant('reportCopied'));
   }
 
