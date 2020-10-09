@@ -58,7 +58,7 @@
     "@types/codemirror": "^0.0.71",
     "@types/jasmine": "^3.4.2",
     "@types/jasminewd2": "^2.0.8",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.12.67",
     "@types/vkbeautify": "^0.99.2",
     "@typescript-eslint/eslint-plugin": "^2.4.0",
     "@typescript-eslint/parser": "^2.4.0",
