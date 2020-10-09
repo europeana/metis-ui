@@ -2,6 +2,7 @@
   "name": "metis-ui",
   "version": "2.0.1-development",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -19,7 +20,7 @@
     "test:ci": "ng test --progress=false --watch=false --code-coverage --source-map=false",
     "cypress:ci": "run-p --race start:ci cypress:run",
     "start:ci": "ng serve --progress=false --port 4280 --live-reload=false --configuration=e2e",
-    "start:ci-data": "tsc && cd test-data && node ../dist/out-tsc/test-data/index.js",
+    "start:ci-data": "tsc && node ./dist/out-tsc/test-data/index.js",
     "cypress:run": "sleep 10 && cypress run",
     "test:e2e": "tsc && ((cd test-data && node ../dist/out-tsc/test-data/index.js test-data-server) & (npm run cypress:ci ; killall -SIGINT test-data-server))",
     "dist": "npm run i18n && ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",

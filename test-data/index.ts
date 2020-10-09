@@ -1,3 +1,4 @@
+import * as url from 'url';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import {
   dataset,
@@ -14,12 +15,11 @@ import {
   search,
   workflow,
   xslt
-} from './factory/factory';
-import { urlManipulation } from './_models/test-models';
-import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models';
+} from './factory/factory.js';
+import { urlManipulation } from './_models/test-models.js';
+import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models/depublication.js';
 
 const port = 3000;
-const url = require('url');
 
 let depublicationInfoCache: Array<RecordDepublicationInfo> = [];
 let switchedOff: { [key: string]: string } = {};
@@ -273,8 +273,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
               .replace('_', '')
           );
 
-        const sortField = snakeToCamel(params.sortField);
-
+        const sortField = snakeToCamel(params.sortField[0]);
         const sortResult = (res: Array<any>): Array<any> => {
           let asc = params.sortAscending === 'true';
           if (res[0][sortField]) {
@@ -295,9 +294,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         };
         result = sortResult(result);
       }
-
-      const pageParam = parseInt(params.page);
-
+      const pageParam = parseInt(params.page ? params.page[0] : '0');
       response.end(
         JSON.stringify({
           depublicationRecordIds: getListWrapper(result, false, pageParam),
@@ -327,7 +324,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
   if (regRes) {
     const params = url.parse(route, true).query;
     response.end(
-      JSON.stringify(overview(params.pageCount ? parseInt(params.pageCount) : undefined))
+      JSON.stringify(overview(params.pageCount ? parseInt(params.pageCount[0]) : undefined))
     );
     return true;
   }
@@ -361,7 +358,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
       JSON.stringify(
         executionsByDatasetIdAsList(
           regRes[1],
-          params.nextPage ? parseInt(params.nextPage) : undefined
+          params.nextPage ? parseInt(params.nextPage[0]) : undefined
         )
       )
     );
@@ -372,7 +369,9 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
 
   if (regRes) {
     const params = url.parse(route, true).query;
-    response.end(JSON.stringify(running(params.nextPage ? parseInt(params.nextPage) : undefined)));
+    response.end(
+      JSON.stringify(running(params.nextPage ? parseInt(params.nextPage[0]) : undefined))
+    );
     return true;
   }
 
@@ -435,7 +434,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
     const params = url.parse(route, true).query;
     response.end(
       JSON.stringify(
-        search(params.searchString, params.nextPage ? parseInt(params.nextPage) : undefined)
+        search(params.searchString[0], params.nextPage ? parseInt(params.nextPage[0]) : undefined)
       )
     );
     return true;
