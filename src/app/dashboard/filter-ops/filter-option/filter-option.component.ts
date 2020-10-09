@@ -30,7 +30,7 @@ export class FilterOptionComponent implements CanHaveError {
   @ViewChild('filterOptionTemplate', { static: true }) filterOptionTemplate: TemplateRef<
     HTMLElement
   >;
-  @ViewChild('input', { static: false }) input: ElementRef;
+  @ViewChild('input') input: ElementRef;
 
   hasError = false;
 

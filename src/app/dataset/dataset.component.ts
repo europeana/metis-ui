@@ -70,10 +70,10 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   reportMsg?: string;
   reportLoading: boolean;
 
-  @ViewChild(WorkflowComponent, { static: false }) workflowFormRef: WorkflowComponent;
+  @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
 
-  @ViewChild(WorkflowHeaderComponent, { static: false }) workflowHeaderRef: WorkflowHeaderComponent;
-  @ViewChild('scrollToTopAnchor', { static: false }) scrollToTopAnchor: ElementRef;
+  @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
+  @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
 
   formInitialised(workflowForm: FormGroup): void {
     if (this.workflowHeaderRef && this.workflowFormRef) {
