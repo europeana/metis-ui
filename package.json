@@ -79,6 +79,7 @@
     "prettier": "^1.16.1",
     "tar": "^4.4.8",
     "ts-loader": "^5.3.3",
+    "tslib": "^1.10.0",
     "typescript": "^3.5.2",
     "wallaby-webpack": "^3.9.13",
     "webpack": "^4.29.0"
