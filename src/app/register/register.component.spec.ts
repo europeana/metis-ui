@@ -26,7 +26,7 @@ describe('RegisterComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
-    router = TestBed.get(Router);
+    router = TestBed.inject(Router);
   }));
 
   beforeEach(() => {

@@ -15,8 +15,8 @@ describe('dataset service', () => {
       providers: [DatasetsService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
-    service = TestBed.get(DatasetsService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+    service = TestBed.inject(DatasetsService);
   }));
 
   afterEach(() => {

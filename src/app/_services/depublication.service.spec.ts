@@ -26,8 +26,8 @@ describe('depublication service', () => {
       providers: [DepublicationService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
-    service = TestBed.get(DepublicationService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+    service = TestBed.inject(DepublicationService);
   }));
 
   it('should depublish a dataset', () => {

@@ -54,9 +54,9 @@ describe('DepublicationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
-    modalConfirms = TestBed.get(ModalConfirmService);
-    depublications = TestBed.get(DepublicationService);
-    errors = TestBed.get(ErrorService);
+    modalConfirms = TestBed.inject(ModalConfirmService);
+    depublications = TestBed.inject(DepublicationService);
+    errors = TestBed.inject(ErrorService);
   };
 
   const b4Each = (): void => {
@@ -80,13 +80,13 @@ describe('DepublicationComponent', () => {
       expect(component.depublicationData.length).toBeTruthy();
     });
 
-    it('should toggle the add menu options', fakeAsync(() => {
+    it('should toggle the add menu options', () => {
       expect(component.optionsOpenAdd).toBeFalsy();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeTruthy();
       component.toggleMenuOptionsAdd();
       expect(component.optionsOpenAdd).toBeFalsy();
-    }));
+    });
 
     it('should toggle the depublish menu options', () => {
       expect(component.optionsOpenDepublish).toBeFalsy();
@@ -149,6 +149,7 @@ describe('DepublicationComponent', () => {
       expect(component.closeMenus).toHaveBeenCalledTimes(3);
       component.openDialogFile();
       expect(component.closeMenus).toHaveBeenCalledTimes(4);
+      component.cleanup();
     });
 
     it('should submit the file', fakeAsync(() => {

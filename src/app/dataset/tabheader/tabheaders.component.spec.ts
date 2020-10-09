@@ -22,7 +22,7 @@ describe('TabHeadersComponent', () => {
         }
       ]
     }).compileComponents();
-    router = TestBed.get(Router);
+    router = TestBed.inject(Router);
   }));
 
   beforeEach(() => {

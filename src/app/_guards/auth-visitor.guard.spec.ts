@@ -17,9 +17,9 @@ describe('AuthVisitorGuard', () => {
       providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }],
       imports: [RouterTestingModule]
     }).compileComponents();
-    guard = TestBed.get(AuthVisitorGuard);
-    authenticationService = TestBed.get(AuthenticationService);
-    router = TestBed.get(Router);
+    guard = TestBed.inject(AuthVisitorGuard);
+    authenticationService = TestBed.inject(AuthenticationService);
+    router = TestBed.inject(Router);
   }));
 
   it('should allow an non-authenticated user', () => {

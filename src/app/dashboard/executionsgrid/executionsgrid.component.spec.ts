@@ -40,7 +40,7 @@ describe('ExecutionsgridComponent', () => {
         }
       ]
     }).compileComponents();
-    workflows = TestBed.get(WorkflowService);
+    workflows = TestBed.inject(WorkflowService);
   };
 
   const b4Each = (): void => {

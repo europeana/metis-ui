@@ -30,9 +30,9 @@ describe('HeaderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderComponent);
     header = fixture.debugElement.componentInstance;
-    router = TestBed.get(Router);
-    auth = TestBed.get(AuthenticationService);
-    redirect = TestBed.get(RedirectPreviousUrl);
+    router = TestBed.inject(Router);
+    auth = TestBed.inject(AuthenticationService);
+    redirect = TestBed.inject(RedirectPreviousUrl);
   });
 
   it('should toggle the signin menu', () => {

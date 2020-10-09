@@ -60,9 +60,9 @@ describe('Dataset Component', () => {
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
-    datasets = TestBed.get(DatasetsService);
-    router = TestBed.get(Router);
-    workflows = TestBed.get(WorkflowService);
+    datasets = TestBed.inject(DatasetsService);
+    router = TestBed.inject(Router);
+    workflows = TestBed.inject(WorkflowService);
   };
 
   const b4Each = (): void => {

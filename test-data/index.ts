@@ -590,10 +590,7 @@ const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
 
 const server = createServer(requestHandler);
 
-server.listen(port, (err: Error) => {
-  if (err) {
-    return console.log('server startup error', err);
-  }
+server.listen(port, () => {
   console.log(`server is listening on ${port}`);
 });
 

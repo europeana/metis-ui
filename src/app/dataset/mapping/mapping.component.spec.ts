@@ -44,7 +44,7 @@ describe('MappingComponent', () => {
     fixture = TestBed.createComponent(MappingComponent);
     component = fixture.componentInstance;
     component.datasetData = mockDataset;
-    router = TestBed.get(Router);
+    router = TestBed.inject(Router);
   };
 
   describe('Normal operation', () => {

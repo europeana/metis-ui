@@ -83,7 +83,7 @@ describe('WorkflowComponent', () => {
         { provide: TranslateService, useClass: MockTranslateService }
       ]
     }).compileComponents();
-    workflows = TestBed.get(WorkflowService);
+    workflows = TestBed.inject(WorkflowService);
   };
 
   const b4Each = (): void => {

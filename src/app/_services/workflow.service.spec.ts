@@ -48,8 +48,8 @@ describe('workflow service', () => {
       ],
       imports: [HttpClientTestingModule]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
-    service = TestBed.get(WorkflowService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+    service = TestBed.inject(WorkflowService);
   }));
 
   afterEach(() => {

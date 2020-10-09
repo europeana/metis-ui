@@ -28,8 +28,8 @@ describe('TokenInterceptor', () => {
       ],
       imports: [HttpClientTestingModule, RouterTestingModule]
     });
-    service = TestBed.get(TokenInterceptor);
-    auth = TestBed.get(AuthenticationService);
+    service = TestBed.inject(TokenInterceptor);
+    auth = TestBed.inject(AuthenticationService);
   });
 
   it('should insert an authorization header if logged in', () => {

@@ -36,7 +36,7 @@ describe('ActionbarComponent', () => {
     component = fixture.componentInstance;
     component.workflowData = mockWorkflow;
     fixture.detectChanges();
-    workflows = TestBed.get(WorkflowService);
+    workflows = TestBed.inject(WorkflowService);
   });
 
   it('should create', () => {

@@ -26,10 +26,10 @@ describe('AuthenticationService', () => {
       ]
     }).compileComponents();
 
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostAuth);
-    router = TestBed.get(Router);
-    redirect = TestBed.get(RedirectPreviousUrl);
-    service = TestBed.get(AuthenticationService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostAuth);
+    router = TestBed.inject(Router);
+    redirect = TestBed.inject(RedirectPreviousUrl);
+    service = TestBed.inject(AuthenticationService);
   }));
 
   afterEach(() => {
@@ -178,7 +178,7 @@ it('should use the user from localstorage', () => {
     ]
   }).compileComponents();
 
-  const service: AuthenticationService = TestBed.get(AuthenticationService);
+  const service: AuthenticationService = TestBed.inject(AuthenticationService);
   expect(service.currentUser).toEqual(mockUser);
 
   localStorage.removeItem('currentUser');

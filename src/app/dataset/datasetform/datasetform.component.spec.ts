@@ -39,7 +39,7 @@ describe('DatasetformComponent', () => {
 
     fixture = TestBed.createComponent(DatasetformComponent);
     component = fixture.componentInstance;
-    router = TestBed.get(Router);
+    router = TestBed.inject(Router);
     component.datasetData = mockDataset;
   });
 

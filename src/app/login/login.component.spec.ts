@@ -36,9 +36,9 @@ describe('LoginComponent', () => {
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
-    router = TestBed.get(Router);
-    redirectPreviousUrl = TestBed.get(RedirectPreviousUrl);
-    authenticationService = TestBed.get(AuthenticationService);
+    router = TestBed.inject(Router);
+    redirectPreviousUrl = TestBed.inject(RedirectPreviousUrl);
+    authenticationService = TestBed.inject(AuthenticationService);
   }));
 
   beforeEach(() => {

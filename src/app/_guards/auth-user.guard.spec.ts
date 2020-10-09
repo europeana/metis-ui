@@ -18,10 +18,10 @@ describe('AuthUserGuard', () => {
       providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }],
       imports: [RouterTestingModule]
     }).compileComponents();
-    guard = TestBed.get(AuthUserGuard);
-    authenticationService = TestBed.get(AuthenticationService);
-    redirect = TestBed.get(RedirectPreviousUrl);
-    router = TestBed.get(Router);
+    guard = TestBed.inject(AuthUserGuard);
+    authenticationService = TestBed.inject(AuthenticationService);
+    redirect = TestBed.inject(RedirectPreviousUrl);
+    router = TestBed.inject(Router);
   }));
 
   it('should allow an authenticated user', () => {

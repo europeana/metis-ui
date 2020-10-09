@@ -70,8 +70,8 @@ describe('PreviewComponent', () => {
     fixture = TestBed.createComponent(PreviewComponent);
     component = fixture.componentInstance;
     component.previewFilters = { baseFilter: {} };
-    router = TestBed.get(Router);
-    workflows = TestBed.get(WorkflowService);
+    router = TestBed.inject(Router);
+    workflows = TestBed.inject(WorkflowService);
   };
 
   const getTextElement = (textContent = '"http://test.link"', classMatch = true): Element => {

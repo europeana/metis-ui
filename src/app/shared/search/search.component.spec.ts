@@ -16,8 +16,8 @@ describe('SearchComponent', () => {
   const beforeEachInitialisation = (): void => {
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    auth = TestBed.get(AuthenticationService);
+    router = TestBed.inject(Router);
+    auth = TestBed.inject(AuthenticationService);
     fixture.detectChanges();
   };
 
