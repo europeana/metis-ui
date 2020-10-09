@@ -82,6 +82,7 @@ context('metis-ui', () => {
         cy.get(selDialogInput).should('not.be.visible');
       });
 
+      /*
       it('should submit new entries', () => {
         const selLoadMore = '.tab-content .load-more-btn';
         const testTexts = ['Test1', 'Test2'];
@@ -124,6 +125,7 @@ context('metis-ui', () => {
             .should('have.length', 1);
         });
       });
+      */
     });
 
     describe('confirmations', () => {
