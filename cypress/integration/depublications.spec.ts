@@ -96,7 +96,7 @@ context('metis-ui', () => {
         };
 
         submitEntries(testTexts.join('\n'));
-        cy.wait(2000);
+        cy.wait(100);
 
         testTexts.forEach((txt) => {
           cy.get('.record-url')
@@ -113,10 +113,12 @@ context('metis-ui', () => {
         cy.get(selLoadMore).should('not.exist');
 
         submitEntries(testMore.join('\n'));
-        cy.wait(2000);
+        cy.wait(100);
 
         cy.get(selLoadMore).should('exist');
         cy.get(selLoadMore).click();
+
+        cy.wait(100);
 
         testMore.forEach((txt) => {
           cy.get('.record-url')
