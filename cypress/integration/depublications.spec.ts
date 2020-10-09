@@ -82,7 +82,6 @@ context('metis-ui', () => {
         cy.get(selDialogInput).should('not.be.visible');
       });
 
-      /*
       it('should submit new entries', () => {
         const selLoadMore = '.tab-content .load-more-btn';
         const testTexts = ['Test1', 'Test2'];
@@ -97,7 +96,7 @@ context('metis-ui', () => {
         };
 
         submitEntries(testTexts.join('\n'));
-        cy.wait(100);
+        cy.wait(2000);
 
         testTexts.forEach((txt) => {
           cy.get('.record-url')
@@ -114,7 +113,7 @@ context('metis-ui', () => {
         cy.get(selLoadMore).should('not.exist');
 
         submitEntries(testMore.join('\n'));
-        cy.wait(100);
+        cy.wait(2000);
 
         cy.get(selLoadMore).should('exist');
         cy.get(selLoadMore).click();
@@ -125,7 +124,6 @@ context('metis-ui', () => {
             .should('have.length', 1);
         });
       });
-      */
     });
 
     describe('confirmations', () => {
