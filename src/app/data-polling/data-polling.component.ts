@@ -96,7 +96,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
       pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
     });
     this.allRefreshSubs.forEach((sub: Subscription) => {
-      sub.unsubscribe();
+      sub && sub.unsubscribe();
     });
     super.cleanup();
   }

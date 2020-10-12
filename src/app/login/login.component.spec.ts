@@ -26,7 +26,10 @@ describe('LoginComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: LoginComponent }]),
+        ReactiveFormsModule
+      ],
       declarations: [LoginComponent, createMockPipe('translate')],
       providers: [
         { provide: RedirectPreviousUrl, useClass: MockRedirectPreviousUrl },
@@ -125,7 +128,7 @@ describe('LoginComponent', () => {
     component.loginForm.controls.password.setValue('');
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick();
+    tick(1);
     fixture.detectChanges();
     expect(router.navigate).not.toHaveBeenCalled();
   }));
@@ -144,19 +147,6 @@ describe('LoginComponent', () => {
     expect(component.notification).toBeFalsy();
     component.loginForm.controls.email.setValue(userName);
     component.loginForm.controls.password.setValue('404');
-    spyOn(router, 'navigate');
-    component.onSubmit();
-    tick(1);
-    fixture.detectChanges();
-    expect(component.notification).toBeTruthy();
-    expect(component.notification!.type).toBe(NotificationType.ERROR);
-    expect(router.navigate).not.toHaveBeenCalled();
-  }));
-
-  it('should not login when an 406 error occurs', fakeAsync((): void => {
-    expect(component.notification).toBeFalsy();
-    component.loginForm.controls.email.setValue(userName);
-    component.loginForm.controls.password.setValue('406');
     spyOn(router, 'navigate');
     component.onSubmit();
     tick(1);

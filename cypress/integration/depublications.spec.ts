@@ -118,7 +118,8 @@ context('metis-ui', () => {
         cy.get(selLoadMore).should('exist');
         cy.get(selLoadMore).click();
 
-        cy.wait(100);
+        cy.wait(1000);
+        cy.screenshot();
 
         testMore.forEach((txt) => {
           cy.get('.record-url')

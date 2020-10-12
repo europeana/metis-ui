@@ -28,7 +28,9 @@ describe('AppComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: ModalConfirmComponent }])
+      ],
       declarations: [AppComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
