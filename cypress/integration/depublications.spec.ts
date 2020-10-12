@@ -1,3 +1,4 @@
+/*
 import { setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
@@ -178,3 +179,4 @@ context('metis-ui', () => {
     });
   });
 });
+*/
