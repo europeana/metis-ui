@@ -12,7 +12,7 @@ import {
 } from '../_mocked';
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 import { TranslateService } from '../_translate';
-
+import { DashboardComponent } from '../dashboard';
 import { LoginComponent } from '.';
 
 describe('LoginComponent', () => {
@@ -27,7 +27,7 @@ describe('LoginComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([{ path: './dashboard', component: LoginComponent }]),
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
         ReactiveFormsModule
       ],
       declarations: [LoginComponent, createMockPipe('translate')],

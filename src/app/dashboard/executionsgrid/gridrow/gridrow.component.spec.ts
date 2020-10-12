@@ -1,10 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-
 import { createMockPipe, mockDatasetOverviewResults, MockTranslateService } from '../../../_mocked';
 import { PluginExecutionOverview, PluginStatus } from '../../../_models';
 import { TranslateService } from '../../../_translate';
-
 import { GridrowComponent } from '.';
 
 function makePluginExecutionOverview(status: string): PluginExecutionOverview {
@@ -21,7 +18,6 @@ describe('GridrowComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
       declarations: [
         GridrowComponent,
         createMockPipe('renameWorkflow'),

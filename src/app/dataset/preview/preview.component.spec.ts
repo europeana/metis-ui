@@ -25,6 +25,7 @@ import {
 } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { MappingComponent } from '../';
 import { PreviewComponent } from '.';
 
 describe('PreviewComponent', () => {
@@ -46,7 +47,11 @@ describe('PreviewComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: './dataset/mapping/TODO_ID_HERE', component: MappingComponent }
+        ])
+      ],
       declarations: [
         PreviewComponent,
         createMockPipe('translate'),
@@ -309,7 +314,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
 
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
-      tick(2);
+      tick(5);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
 

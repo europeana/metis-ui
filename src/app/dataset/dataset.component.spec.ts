@@ -5,6 +5,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { NewDatasetComponent } from './newdataset';
 import {
   createMockPipe,
   MockDatasetsService,
@@ -40,7 +41,9 @@ describe('Dataset Component', () => {
     params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
 
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './dataset/new', component: NewDatasetComponent }])
+      ],
       declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
         {

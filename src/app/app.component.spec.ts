@@ -18,6 +18,7 @@ import {
   WorkflowService
 } from './_services';
 import { ModalConfirmComponent } from './shared/modal-confirm';
+import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -29,7 +30,7 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([{ path: './dashboard', component: ModalConfirmComponent }])
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
       ],
       declarations: [AppComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],

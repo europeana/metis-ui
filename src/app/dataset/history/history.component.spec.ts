@@ -12,6 +12,7 @@ import {
 } from '../../_mocked';
 import { ErrorService, WorkflowService } from '../../_services';
 
+import { PreviewComponent } from '../preview';
 import { HistoryComponent } from '.';
 
 describe('HistoryComponent', () => {
@@ -20,7 +21,11 @@ describe('HistoryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: './dataset/preview/TODO_ID_HERE', component: PreviewComponent }
+        ])
+      ],
       declarations: [
         HistoryComponent,
         createMockPipe('translate'),

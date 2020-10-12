@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { throwError } from 'rxjs';
 
 import {
@@ -36,7 +35,6 @@ describe('StatisticsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
       declarations: [
         StatisticsComponent,
         createMockPipe('translate'),

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { apiSettings } from '../../environments/apisettings';
+import { DashboardComponent } from '../dashboard';
 import { MockHttp } from '../_helpers/test-helpers';
 import { MockErrorService, mockUser } from '../_mocked';
 import { ErrorService, RedirectPreviousUrl } from '../_services';
@@ -18,7 +19,10 @@ describe('AuthenticationService', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
+        HttpClientTestingModule
+      ],
       providers: [
         AuthenticationService,
         RedirectPreviousUrl,

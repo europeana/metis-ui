@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import {
   createMockPipe,
@@ -67,7 +66,7 @@ describe('WorkflowComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
       declarations: [
         WorkflowComponent,
         createMockPipe('translate'),

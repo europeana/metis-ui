@@ -1,8 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-
 import { DatasetsService } from '../../_services';
 import { createMockPipe, MockDatasetsService, MockDatasetsServiceErrors } from '../../_mocked';
 import { RedirectionComponent } from '.';
@@ -19,7 +17,7 @@ describe('RedirectionComponent', () => {
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
       declarations: [createMockPipe('translate'), RedirectionComponent],
-      imports: [FormsModule, RouterTestingModule],
+      imports: [FormsModule],
       providers: [
         {
           provide: DatasetsService,
