@@ -218,29 +218,6 @@ describe('FilterOpsComponent', () => {
     expect(component.params.pluginType.length).toEqual(0);
   });
 
-  // TODO: test this from custom filter-ops spec
-  /*
-  fromDate.componentInstance.config = {
-    input: {
-      cbFnOnSet: (
-        _: CanHaveError,
-        __: HTMLInputElement,
-        ___?: HTMLElement[]
-      ): void => {}
-    }
-  } as FilterExecutionConf;
-  */
-  /*
-  it('can invoke callbacks after changes to inputs', () => {
-    const fromDate = fixture.debugElement.query(By.css('#date-from'));
-    //console.log(JSON.stringify(fromDate.componentInstance));
-    spyOn(fromDate.componentInstance.config.input, 'cbFnOnSet');
-    fromDate.nativeElement.value = testDate1;
-    fromDate.nativeElement.dispatchEvent(new Event('change'));
-    expect(fromDate.componentInstance.config.input.cbFnOnSet).toHaveBeenCalled();
-  });
-  */
-
   it('can use callbacks to link the dates', () => {
     const fromDate = fixture.debugElement.query(By.css('#date-from'));
     const toDate = fixture.debugElement.query(By.css('#date-to'));

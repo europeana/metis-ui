@@ -23,7 +23,7 @@ describe('HistoryComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([
-          { path: './dataset/preview/TODO_ID_HERE', component: PreviewComponent }
+          { path: './dataset/preview/*', component: PreviewComponent }
         ])
       ],
       declarations: [

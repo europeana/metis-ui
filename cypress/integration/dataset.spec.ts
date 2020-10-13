@@ -98,7 +98,6 @@ context('metis-ui', () => {
   });
   // TODO: mapping
 
-  // TODO: preview
   describe('dataset log', () => {
     afterEach(() => {
       cleanupUser();

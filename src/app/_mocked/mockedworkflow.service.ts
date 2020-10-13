@@ -1,5 +1,5 @@
 import { EventEmitter } from '@angular/core';
-import { Observable, of as observableOf, throwError, timer } from 'rxjs';
+import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 
 import {
@@ -571,38 +571,36 @@ export class MockWorkflowService {
         })
       );
     }
-    return observableOf(mockWorkflowExecution).pipe(delay(1));
+    return of(mockWorkflowExecution).pipe(delay(1));
   }
 
   cancelThisWorkflow(): Observable<void> {
-    return observableOf(undefined);
+    return of(undefined);
   }
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {
     if (this.errorMode) {
       return throwError(new Error('mock getLastDatasetExecution throws error'));
     }
-    return observableOf(mockWorkflowExecution);
+    return of(mockWorkflowExecution);
   }
 
   getAllExecutionsCollectingPages(): Observable<WorkflowExecution[]> {
     if (this.errorMode) {
       return throwError(new Error('mock getAllExecutionsCollectingPages throws error'));
     }
-    return observableOf(mockWorkflowExecutionResults.results);
+    return of(mockWorkflowExecutionResults.results);
   }
 
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
-    return observableOf({ results: mockWorkflowExecutionResults.results, more: false }).pipe(
-      delay(1)
-    );
+    return of({ results: mockWorkflowExecutionResults.results, more: false }).pipe(delay(1));
   }
 
   getCompletedDatasetOverviewsUptoPage(): Observable<MoreResults<DatasetOverview>> {
     if (this.errorMode) {
       return throwError(new Error('mock getCompletedDatasetOverviewsUptoPage throws error'));
     }
-    return observableOf({ results: mockDatasetOverviewResults.results, more: false });
+    return of({ results: mockDatasetOverviewResults.results, more: false });
   }
 
   getFinishedDatasetExecutions(_: string, __?: number): Observable<Results<WorkflowExecution>> {
@@ -613,7 +611,7 @@ export class MockWorkflowService {
         })
       );
     }
-    return observableOf(mockWorkflowExecutionResults);
+    return of(mockWorkflowExecutionResults);
   }
 
   getDatasetHistory(datasetId: string): Observable<WorkflowExecutionHistoryList> {
@@ -624,7 +622,7 @@ export class MockWorkflowService {
         })
       );
     }
-    return observableOf({
+    return of({
       executions: mockWorkflowExecutionResults.results.map((we: WorkflowExecution) => {
         return {
           workflowExecutionId: we.id,
@@ -642,7 +640,7 @@ export class MockWorkflowService {
         })
       );
     }
-    return observableOf({
+    return of({
       plugins: [
         { pluginType: PluginType.HTTP_HARVEST, canDisplayRawXml: true },
         { pluginType: PluginType.VALIDATION_EXTERNAL, canDisplayRawXml: true },
@@ -667,7 +665,7 @@ export class MockWorkflowService {
         })
       );
     }
-    return observableOf(mockXmlSamples).pipe(delay(1));
+    return of(mockXmlSamples).pipe(delay(1));
   }
 
   getReport(_: string, __: string): Observable<Report> {
@@ -678,39 +676,39 @@ export class MockWorkflowService {
         })
       );
     }
-    return observableOf(mockReport).pipe(delay(1));
+    return of(mockReport).pipe(delay(1));
   }
 
   getVersionHistory(): Observable<HistoryVersion[]> {
     if (this.errorMode) {
       return throwError(new Error('mock getVersionHistory throws error...'));
     }
-    return observableOf(mockHistoryVersions).pipe(delay(1));
+    return of(mockHistoryVersions).pipe(delay(1));
   }
 
   getWorkflowComparisons(): Observable<XmlSample[]> {
     if (this.errorMode) {
       return throwError(new Error('mock getWorkflowComparisons throws error...'));
     }
-    return observableOf(mockXmlSamples);
+    return of(mockXmlSamples);
   }
 
   getStatistics(): Observable<Statistics> {
-    return observableOf(mockStatistics);
+    return of(mockStatistics);
   }
 
   getStatisticsDetail(): Observable<NodePathStatistics> {
     if (this.errorMode) {
       return throwError(new Error('mock getStatisticsDetail throws error'));
     }
-    return observableOf(mockStatisticsDetail).pipe(delay(1));
+    return of(mockStatisticsDetail).pipe(delay(1));
   }
 
   getWorkflowForDataset(): Observable<Workflow> {
     if (this.errorMode) {
       return throwError(new Error('mock getWorkflowForDataset throws error'));
     }
-    return observableOf(mockWorkflow);
+    return of(mockWorkflow);
   }
 
   createWorkflowForDataset(): Observable<Workflow> {
@@ -721,22 +719,22 @@ export class MockWorkflowService {
         })
       );
     }
-    return observableOf(mockWorkflow).pipe(delay(1));
+    return of(mockWorkflow).pipe(delay(1));
   }
 
   getPublishedHarvestedData(): Observable<HarvestData> {
     if (this.errorMode) {
       return throwError(new Error('mock getPublishedHarvestedData throws error'));
     }
-    return observableOf(mockHarvestData);
+    return of(mockHarvestData);
   }
 
   getLogs(): Observable<SubTaskInfo[]> {
-    return observableOf(mockLogs).pipe(delay(1));
+    return of(mockLogs).pipe(delay(1));
   }
 
   getWorkflowCancelledBy(): Observable<string | undefined> {
-    return observableOf(undefined);
+    return of(undefined);
   }
 }
 
