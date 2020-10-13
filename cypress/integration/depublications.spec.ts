@@ -1,4 +1,3 @@
-/*
 import { setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
@@ -58,6 +57,16 @@ context('metis-ui', () => {
     describe('forms', () => {
       const selItemFile = `${selMenuContentAdd} :first-child a`;
       const selItemInput = `${selMenuContentAdd} :last-child a`;
+      const selLoadMore = '.tab-content .load-more-btn';
+
+      const submitEntries = (entries: string): void => {
+        cy.get(selMenuOpenAdd).click({ force: true });
+        cy.get(selItemInput)
+          .scrollIntoView()
+          .click({ force: true });
+        cy.get('[name=recordIds]').type(entries);
+        cy.get('.submit-form').click();
+      };
 
       it('should open and close the file dialog form', () => {
         cy.get(selDialogFile).should('not.be.visible');
@@ -84,17 +93,8 @@ context('metis-ui', () => {
       });
 
       it('should submit new entries', () => {
-        const selLoadMore = '.tab-content .load-more-btn';
         const testTexts = ['Test1', 'Test2'];
-        const testMore = ['Test3', 'Test4'];
-        const submitEntries = (entries: string): void => {
-          cy.get(selMenuOpenAdd).click({ force: true });
-          cy.get(selItemInput)
-            .scrollIntoView()
-            .click({ force: true });
-          cy.get('[name=recordIds]').type(entries);
-          cy.get('.submit-form').click();
-        };
+        //        const testMore = ['Test3', 'Test4'];
 
         submitEntries(testTexts.join('\n'));
         cy.wait(100);
@@ -104,7 +104,9 @@ context('metis-ui', () => {
             .contains(txt)
             .should('have.length', 1);
         });
+        cy.get(selLoadMore).should('not.exist');
 
+        /*
         testMore.forEach((txt) => {
           cy.get('.record-url')
             .contains(txt)
@@ -112,6 +114,34 @@ context('metis-ui', () => {
         });
 
         cy.get(selLoadMore).should('not.exist');
+
+        submitEntries(testMore.join('\n'));
+        cy.wait(100);
+
+        cy.get(selLoadMore).should('exist');
+        cy.get(selLoadMore).click();
+
+        cy.wait(1000);
+        cy.screenshot();
+
+        testMore.forEach((txt) => {
+          cy.get('.record-url')
+            .contains(txt)
+            .should('have.length', 1);
+        });
+        */
+      });
+
+      it('should paginate entries', () => {
+        //        const selLoadMore = '.tab-content .load-more-btn';
+        //        const testTexts = ['Test1', 'Test2'];
+        const testMore = ['Test3', 'Test4'];
+
+        testMore.forEach((txt) => {
+          cy.get('.record-url')
+            .contains(txt)
+            .should('not.exist');
+        });
 
         submitEntries(testMore.join('\n'));
         cy.wait(100);
@@ -179,4 +209,3 @@ context('metis-ui', () => {
     });
   });
 });
-*/
