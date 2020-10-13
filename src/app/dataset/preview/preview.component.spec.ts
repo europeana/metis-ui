@@ -49,7 +49,7 @@ describe('PreviewComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([
-          { path: './dataset/mapping/TODO_ID_HERE', component: MappingComponent }
+          { path: './dataset/mapping/*', component: MappingComponent }
         ])
       ],
       declarations: [

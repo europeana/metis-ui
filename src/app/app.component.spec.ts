@@ -106,6 +106,7 @@ describe('AppComponent', () => {
 
   it('should cleanup on destroy', () => {
     spyOn(app, 'cleanup').and.callThrough();
+    app.ngOnInit();
     app.ngOnDestroy();
     expect(app.cleanup).toHaveBeenCalled();
   });
