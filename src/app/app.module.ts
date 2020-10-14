@@ -133,13 +133,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     CodemirrorModule,
     ClickOutsideModule
   ],
-  entryComponents: [
-    DatasetformComponent,
-    HistoryComponent,
-    MappingComponent,
-    PreviewComponent,
-    WorkflowComponent
-  ],
   providers: [
     TRANSLATION_PROVIDERS,
     {
