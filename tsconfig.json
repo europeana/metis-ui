@@ -10,7 +10,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es2017", "dom"],
-    "module": "esnext",
+    "module": "es2020",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "noImplicitReturns": true,
