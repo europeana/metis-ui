@@ -69,7 +69,7 @@ describe('dataset service', () => {
     sub1.unsubscribe();
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
-    const subUpdate = service.updateDataset(formValues).subscribe(() => {});
+    const subUpdate = service.updateDataset(formValues).subscribe(() => undefined);
     tick(1);
     mockHttp
       .expect('PUT', '/datasets')

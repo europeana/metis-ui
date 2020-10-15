@@ -96,7 +96,7 @@ export class AppComponent extends SubscriptionManager implements OnInit, AfterVi
   cancelWorkflow(): void {
     this.subs.push(
       this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId).subscribe(
-        () => {},
+        () => undefined,
         (err: HttpErrorResponse) => {
           this.errors.handleError(err);
         }

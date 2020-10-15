@@ -78,7 +78,7 @@ describe('Dataset Component', () => {
     beforeEach(b4Each);
 
     it('responds to form initialisation by setting it in the header', () => {
-      component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
+      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
       const mockHeader = new WorkflowHeaderComponent();
       mockHeader.elRef = { nativeElement: {} } as ElementRef;
       component.workflowHeaderRef = mockHeader;
@@ -88,7 +88,7 @@ describe('Dataset Component', () => {
     });
 
     it('responds to form initialisation by setting it in the header using delays ', fakeAsync(() => {
-      component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
+      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
       const mockHeader = new WorkflowHeaderComponent();
       spyOn(component.workflowFormRef, 'onHeaderSynchronised');
       component.formInitialised({} as FormGroup);

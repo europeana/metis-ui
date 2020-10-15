@@ -35,7 +35,7 @@ describe('FileUploadComponent', () => {
 
   it('should implement onTouched', () => {
     expect(component.registerOnTouched).toBeTruthy();
-    expect(component.registerOnTouched(() => {})).toBeFalsy();
+    expect(component.registerOnTouched(() => undefined)).toBeFalsy();
   });
 
   it('should implement writeValue', () => {

@@ -51,7 +51,7 @@ describe('AppComponent', () => {
     app = fixture.debugElement.componentInstance;
     app.modalConfirm = ({
       open: () => of(true),
-      close: () => {},
+      close: () => undefined,
       id: app.modalConfirmId
     } as unknown) as ModalConfirmComponent;
   });
@@ -105,7 +105,7 @@ describe('AppComponent', () => {
   });
 
   it('should cleanup on destroy', () => {
-    spyOn(app, 'cleanup').and.callThrough();
+    spyOn(app, 'cleanup');
     app.ngOnInit();
     app.ngOnDestroy();
     expect(app.cleanup).toHaveBeenCalled();

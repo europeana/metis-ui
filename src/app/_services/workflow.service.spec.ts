@@ -415,7 +415,7 @@ describe('workflow service', () => {
   });
 
   it('should cancel a workflow (DELETE)', () => {
-    const sub = service.cancelThisWorkflow('565645').subscribe(() => {});
+    const sub = service.cancelThisWorkflow('565645').subscribe(() => undefined);
     mockHttp.expect('DELETE', '/orchestrator/workflows/executions/565645').send({});
     sub.unsubscribe();
   });

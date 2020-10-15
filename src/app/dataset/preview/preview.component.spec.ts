@@ -84,8 +84,8 @@ describe('PreviewComponent', () => {
       contains: (_: string): boolean => {
         return classMatch;
       },
-      add: (_: string): void => {},
-      remove: (_: string): void => {}
+      add: (_: string): void => undefined,
+      remove: (_: string): void => undefined
     } as unknown) as DOMTokenList;
 
     return ({

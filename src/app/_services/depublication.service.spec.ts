@@ -156,7 +156,7 @@ describe('depublication service', () => {
     });
     const url = `/depublish/record_ids/${dsId}`;
     const mockRequest = new MockHttpRequest(
-      ({ flush: () => {}, request: { body: {}, url: url } } as unknown) as TestRequest,
+      ({ flush: () => undefined, request: { body: {}, url: url } } as unknown) as TestRequest,
       url
     );
     mockRequest.send({ depublicationFile: file });

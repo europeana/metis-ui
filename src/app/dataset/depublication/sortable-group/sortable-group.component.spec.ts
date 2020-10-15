@@ -38,7 +38,7 @@ describe('SortableGroupComponent', () => {
       sortName: 'header_1',
       cssClass: 'dynamic-class',
       text: 'Header 1',
-      reset: (): void => {}
+      reset: (): void => undefined
     };
     spyOn(testHeader, 'reset');
     component.headers = ([testHeader] as unknown) as QueryList<SortableHeaderComponent>;
