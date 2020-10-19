@@ -113,8 +113,8 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
   redirectAfterLogin(): void {
     const url = this.redirectPreviousUrl.get();
     if (url && url !== '/signin') {
-      this.router.navigateByUrl(`/${url}`);
       this.redirectPreviousUrl.set(undefined);
+      this.router.navigateByUrl(`/${url}`);
     } else {
       this.router.navigate([environment.afterLoginGoto]);
     }

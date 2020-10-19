@@ -314,7 +314,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
 
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
-      tick(5);
+      tick(1);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
 

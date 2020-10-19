@@ -24,7 +24,7 @@ export class ExecutionsDataGridComponent {
   @Input() wpe?: WorkflowOrPluginExecution;
   @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
-  @ViewChild('gridDataTemplate', { static: true }) gridDataTemplate: TemplateRef<HTMLElement>;
+  @ViewChild('gridDataTemplate') gridDataTemplate: TemplateRef<HTMLElement>;
 
   contentCopied = false;
 

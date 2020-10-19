@@ -14,7 +14,7 @@ export class WorkflowFormFieldComponent {
   @Input() workflowForm: FormGroup;
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
-  @ViewChild('pluginElement', { static: true }) pluginElement: ElementRef;
+  @ViewChild('pluginElement') pluginElement: ElementRef;
 
   /** ctrlSetLinkCheck
   /* emit link check event

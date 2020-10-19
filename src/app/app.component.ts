@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
@@ -17,7 +17,7 @@ import {
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent extends SubscriptionManager implements OnInit, AfterViewInit {
+export class AppComponent extends SubscriptionManager implements OnInit {
   bodyClass: string;
   cancellationRequest?: CancellationRequest;
   public loggedIn = false;
@@ -36,10 +36,6 @@ export class AppComponent extends SubscriptionManager implements OnInit, AfterVi
     super();
   }
 
-  ngAfterViewInit(): void {
-    this.modalConfirms.add(this.modalConfirm);
-  }
-
   /** ngOnInit
   /* init for this component
   /* watch router events
@@ -48,26 +44,7 @@ export class AppComponent extends SubscriptionManager implements OnInit, AfterVi
   /* and margins
   */
   public ngOnInit(): void {
-    this.subs.push(
-      this.router.events.subscribe((event: Event) => {
-        const url: string | undefined = (event as RouterEvent).url;
-        if (!url) {
-          return;
-        }
-        if (this.router.isActive(url, false)) {
-          this.loggedIn = this.authentication.validatedUser();
-
-          this.bodyClass = url.split('/')[1];
-          if (url === '/') {
-            this.bodyClass = 'home';
-          }
-
-          if ((url === '/' || url === '/home') && this.loggedIn) {
-            this.router.navigate([environment.afterLoginGoto]);
-          }
-        }
-      })
-    );
+    this.modalConfirms.add(this.modalConfirm);
 
     this.subs.push(
       this.workflows.promptCancelWorkflow
@@ -87,6 +64,27 @@ export class AppComponent extends SubscriptionManager implements OnInit, AfterVi
             this.cancelWorkflow();
           }
         })
+    );
+
+    this.subs.push(
+      this.router.events.subscribe((event: Event) => {
+        const url: string | undefined = (event as RouterEvent).url;
+        if (!url) {
+          return;
+        }
+        if (this.router.isActive(url, false)) {
+          this.loggedIn = this.authentication.validatedUser();
+
+          this.bodyClass = url.split('/')[1];
+          if (url === '/') {
+            this.bodyClass = 'home';
+          }
+
+          if ((url === '/' || url === '/home') && this.loggedIn) {
+            this.router.navigate([environment.afterLoginGoto]);
+          }
+        }
+      })
     );
   }
 
