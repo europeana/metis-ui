@@ -116,8 +116,8 @@ export class RegisterComponent implements OnInit {
   private onRegistration(msg: string): void {
     this.notification = successNotification(msg);
     const navigateTimer = timer(3000).subscribe(() => {
-      this.router.navigate(['/signin']);
       navigateTimer.unsubscribe();
+      this.router.navigate(['/signin']);
     });
   }
 }

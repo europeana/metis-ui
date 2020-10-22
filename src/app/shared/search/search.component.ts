@@ -47,7 +47,7 @@ export class SearchComponent extends SubscriptionManager implements OnInit {
   }
 
   /** submitOnEnter
-  /*  redirect to the search results page with the search term as a query paramter on key down
+  /*  key down handler to call executeSearch
   /* @param {KeyboardEvent} e - the key event
   */
   submitOnEnter(e: KeyboardEvent): void {

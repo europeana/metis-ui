@@ -66,7 +66,7 @@ describe('WorkflowHeaderComponent', () => {
     fixture.detectChanges();
     dropEvent = ({
       target: fixture.nativeElement.querySelector('.orb-status'),
-      preventDefault: () => {}
+      preventDefault: () => undefined
     } as unknown) as Event;
   });
 
@@ -225,7 +225,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should handle dragging over orbs', () => {
-    const ev = ({ preventDefault: () => {} } as unknown) as Event;
+    const ev = ({ preventDefault: () => undefined } as unknown) as Event;
     expect(component.isDraggingOverOrbs).toBeFalsy();
     component.stepsDragOver(ev);
     expect(component.isDraggingOverOrbs).toBeTruthy();
@@ -256,7 +256,7 @@ describe('WorkflowHeaderComponent', () => {
   it('should add a class to the orbs when the link-checking element is dragged over them', () => {
     const el = fixture.nativeElement.querySelector('.orb-status');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ev = ({ target: el, preventDefault: () => {} } as any) as Event;
+    const ev = ({ target: el, preventDefault: () => undefined } as any) as Event;
 
     spyOn(ev, 'preventDefault');
     expect(el).toBeTruthy();

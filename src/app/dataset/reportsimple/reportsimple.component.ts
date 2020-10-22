@@ -82,12 +82,12 @@ export class ReportSimpleComponent {
   */
   copyReport(): void {
     const element = this.contentRef.nativeElement;
-    window.getSelection().removeAllRanges();
+    window.getSelection()?.removeAllRanges();
     const range = document.createRange();
     range.selectNode(element);
-    window.getSelection().addRange(range);
+    window.getSelection()?.addRange(range);
     document.execCommand('copy');
-    window.getSelection().removeAllRanges();
+    window.getSelection()?.removeAllRanges();
     this.notification = successNotification(this.translate.instant('reportCopied'));
   }
 

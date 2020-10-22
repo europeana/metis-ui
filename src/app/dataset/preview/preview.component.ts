@@ -11,14 +11,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
-import 'codemirror/addon/fold/brace-fold';
-import 'codemirror/addon/fold/comment-fold';
-import 'codemirror/addon/fold/foldcode';
-import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/addon/fold/indent-fold';
-import 'codemirror/addon/fold/markdown-fold';
-import 'codemirror/addon/fold/xml-fold';
-import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';

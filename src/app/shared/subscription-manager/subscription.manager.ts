@@ -1,9 +1,10 @@
 /** SubscriptionManager
 /*  stores references to subscriptions / unsubscribes from them on destroy
 */
-import { OnDestroy } from '@angular/core';
+import { Directive, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
+@Directive()
 export class SubscriptionManager implements OnDestroy {
   subs: Array<Subscription> = [];
 

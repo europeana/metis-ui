@@ -13,7 +13,7 @@ describe('editor pref service', () => {
     TestBed.configureTestingModule({
       providers: [EditorPrefService]
     }).compileComponents();
-    service = TestBed.get(EditorPrefService);
+    service = TestBed.inject(EditorPrefService);
     altTheme = service.altTheme;
   }));
 

@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { ClickOutsideModule } from 'ng4-click-outside';
+import { ClickOutsideModule } from 'ng-click-outside';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
@@ -132,13 +132,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     AppRoutingModule,
     CodemirrorModule,
     ClickOutsideModule
-  ],
-  entryComponents: [
-    DatasetformComponent,
-    HistoryComponent,
-    MappingComponent,
-    PreviewComponent,
-    WorkflowComponent
   ],
   providers: [
     TRANSLATION_PROVIDERS,

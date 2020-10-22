@@ -1,8 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { DragType, PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
@@ -17,7 +15,7 @@ describe('WorkflowFormFieldComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
       declarations: [
         WorkflowFormFieldComponent,
         createMockPipe('translate'),

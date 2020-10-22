@@ -1,3 +1,6 @@
+import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared.js';
+import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data.js';
+import { Workflow } from '../../src/app/_models/workflow.js';
 import {
   DatasetX,
   DateBumpType,
@@ -5,29 +8,24 @@ import {
   ResultList,
   WorkflowX,
   WorkflowXRunConf
-} from '../_models/test-models';
-import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
+} from '../_models/test-models.js';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
   DatasetOverviewExecution,
-  DatasetSearchView,
   ExecutionProgress,
   PluginAvailabilityList,
   PluginExecution,
   PluginExecutionOverview,
   PluginStatus,
   PluginType,
-  PublicationFitness,
   TopologyName,
-  Workflow,
   WorkflowExecution,
   WorkflowExecutionHistory,
   WorkflowStatus
-} from '../../src/app/_models';
-
-import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
-import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
+} from '../../src/app/_models/workflow-execution.js';
+import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample.js';
+import { PluginMetadata } from '../../src/app/_models/plugin-metadata.js';
 
 let baseDate = new Date('2019-02-18T07:36:59.801Z');
 const pageSize = 2;

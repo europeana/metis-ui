@@ -18,6 +18,7 @@ import {
   WorkflowService
 } from './_services';
 import { ModalConfirmComponent } from './shared/modal-confirm';
+import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -28,7 +29,9 @@ describe('AppComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
+      ],
       declarations: [AppComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -41,14 +44,14 @@ describe('AppComponent', () => {
   }));
 
   beforeEach(() => {
-    modalConfirms = TestBed.get(ModalConfirmService);
-    workflows = TestBed.get(WorkflowService);
-    router = TestBed.get(Router);
+    modalConfirms = TestBed.inject(ModalConfirmService);
+    workflows = TestBed.inject(WorkflowService);
+    router = TestBed.inject(Router);
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.debugElement.componentInstance;
     app.modalConfirm = ({
       open: () => of(true),
-      close: () => {},
+      close: () => undefined,
       id: app.modalConfirmId
     } as unknown) as ModalConfirmComponent;
   });
@@ -102,7 +105,8 @@ describe('AppComponent', () => {
   });
 
   it('should cleanup on destroy', () => {
-    spyOn(app, 'cleanup').and.callThrough();
+    spyOn(app, 'cleanup');
+    app.ngOnInit();
     app.ngOnDestroy();
     expect(app.cleanup).toHaveBeenCalled();
   });

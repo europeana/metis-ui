@@ -8,6 +8,8 @@ import { NotificationType } from '../_models';
 import { AuthenticationService } from '../_services';
 import { TranslateService } from '../_translate';
 
+import { LoginComponent } from '../login';
+
 import { RegisterComponent } from '.';
 
 describe('RegisterComponent', () => {
@@ -18,7 +20,10 @@ describe('RegisterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './signin', component: LoginComponent }]),
+        ReactiveFormsModule
+      ],
       declarations: [RegisterComponent, createMockPipe('translate')],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
@@ -26,7 +31,7 @@ describe('RegisterComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
-    router = TestBed.get(Router);
+    router = TestBed.inject(Router);
   }));
 
   beforeEach(() => {

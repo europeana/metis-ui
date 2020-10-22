@@ -26,8 +26,8 @@ describe('depublication service', () => {
       providers: [DepublicationService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
-    service = TestBed.get(DepublicationService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+    service = TestBed.inject(DepublicationService);
   }));
 
   it('should depublish a dataset', () => {
@@ -156,7 +156,7 @@ describe('depublication service', () => {
     });
     const url = `/depublish/record_ids/${dsId}`;
     const mockRequest = new MockHttpRequest(
-      ({ flush: () => {}, request: { body: {}, url: url } } as unknown) as TestRequest,
+      ({ flush: () => undefined, request: { body: {}, url: url } } as unknown) as TestRequest,
       url
     );
     mockRequest.send({ depublicationFile: file });

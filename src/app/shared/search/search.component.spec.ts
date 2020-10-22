@@ -5,39 +5,46 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { createMockPipe, MockAuthenticationService } from '../../_mocked';
 import { AuthenticationService } from '../../_services';
 import { SearchComponent } from '.';
+import { LoginComponent } from '../../login';
+
 import { MockActivatedRoute } from '../../_mocked';
 
 describe('SearchComponent', () => {
+  const searchString = '123';
   let fixture: ComponentFixture<SearchComponent>;
   let component: SearchComponent;
   let router: Router;
   let auth: AuthenticationService;
 
+  const beforeEachAsync = (): void => {
+    const mar = new MockActivatedRoute();
+    mar.setQueryParams({ searchString: searchString });
+    TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: './signin', component: LoginComponent },
+          { path: './search', component: SearchComponent }
+        ])
+      ],
+      declarations: [SearchComponent, createMockPipe('translate')],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: ActivatedRoute, useValue: mar }
+      ]
+    }).compileComponents();
+  };
+
   const beforeEachInitialisation = (): void => {
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    auth = TestBed.get(AuthenticationService);
+    router = TestBed.inject(Router);
+    auth = TestBed.inject(AuthenticationService);
     fixture.detectChanges();
   };
 
   describe('with query param:', () => {
-    const searchString = '123';
-
-    beforeEach(async(() => {
-      const mar = new MockActivatedRoute();
-      mar.setQueryParams({ searchString: searchString });
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
-        declarations: [SearchComponent, createMockPipe('translate')],
-        schemas: [NO_ERRORS_SCHEMA],
-        providers: [
-          { provide: AuthenticationService, useClass: MockAuthenticationService },
-          { provide: ActivatedRoute, useValue: mar }
-        ]
-      }).compileComponents();
-    }));
-
+    beforeEach(async(beforeEachAsync));
     beforeEach(beforeEachInitialisation);
 
     it('should initialise its value on initialisation', () => {
@@ -73,15 +80,7 @@ describe('SearchComponent', () => {
   });
 
   describe('without query param:', () => {
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
-        declarations: [SearchComponent, createMockPipe('translate')],
-        schemas: [NO_ERRORS_SCHEMA],
-        providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }]
-      }).compileComponents();
-    }));
-
+    beforeEach(async(beforeEachAsync));
     beforeEach(beforeEachInitialisation);
 
     it('should not execute a search if not authenticated', () => {
