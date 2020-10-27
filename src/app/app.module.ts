@@ -20,6 +20,7 @@ import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-op
 import { DataPollingComponent } from './data-polling';
 import {
   ActionbarComponent,
+  ClioComponent,
   DatasetComponent,
   DatasetformComponent,
   DatasetlogComponent,
@@ -69,6 +70,7 @@ import { ThemeSelectorComponent } from './theme-selector';
 @NgModule({
   declarations: [
     ActionbarComponent,
+    ClioComponent,
     DataPollingComponent,
     AppComponent,
     CollapsibleDirective,

@@ -1,4 +1,5 @@
 export * from './actionbar/';
+export * from './clio/clio.component';
 export * from './dataset.component';
 export * from './datasetform/';
 export * from './datasetlog/';

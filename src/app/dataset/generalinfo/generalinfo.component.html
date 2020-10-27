@@ -1,6 +1,10 @@
 <div class="metis-dataset-info-block" *ngIf="datasetData">
   <div class="dataset-name">
-    <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
+    <!--
+      <span class="svg-icon-dataset"></span> {{ datasetData.datasetName }}
+    -->
+    <app-clio datasetData.datasetId [datasetId]="datasetData.datasetId"></app-clio>
+    {{ datasetData.datasetName }}
     <span
       *ngIf="currentDepublicationStatusMessage"
       class="depublication-status"
