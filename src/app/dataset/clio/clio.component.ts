@@ -1,12 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { ClioData } from '../../_models';
+import { ClioService } from '../../_services';
 import { DataPollingComponent } from '../../data-polling';
-
-export interface ClioData {
-  score: number;
-  date: string;
-}
 
 @Component({
   selector: 'app-clio',
@@ -14,13 +11,15 @@ export interface ClioData {
   styleUrls: ['./clio.component.scss']
 })
 export class ClioComponent extends DataPollingComponent implements OnInit {
-  openerIconClass: string;
-  isOpen = false;
   allClioData: Array<ClioData>;
+  isOpen = false;
+  openerIconClass: string;
+
   @Input() datasetId: string;
 
-  constructor(private readonly http: HttpClient) {
+  constructor(private readonly clios: ClioService) {
     super();
+    this.clios = clios;
   }
 
   /** ngOnInit
@@ -28,13 +27,8 @@ export class ClioComponent extends DataPollingComponent implements OnInit {
   */
   ngOnInit(): void {
     console.log('get the data (' + this.datasetId + ') - show icon if anything is available');
-
-    //const fn = () => {
-    //  this.loadData();
-    //};
-    //fn();
     this.createNewDataPoller(
-      5000,
+      environment.intervalStatusMedium,
       () => {
         return this.loadData(this.datasetId);
       },
@@ -43,22 +37,13 @@ export class ClioComponent extends DataPollingComponent implements OnInit {
         this.setOpenerIconClass(clioData);
       }
     );
-    //setTimeout(fn, 2000);
   }
 
   /** loadData
   /* - poll the data
   */
   loadData(datasetId: string): Observable<Array<ClioData>> {
-    const url = `http://localhost:3000/orchestrator/clio/${datasetId}`;
-    return this.http.get<Array<ClioData>>(url);
-    /*
-    .subscribe((clioData: Array<ClioData>) => {
-      this.allClioData = clioData;
-      return clioData;
-      //this.setOpenerIconClass();
-    });
-    */
+    return this.clios.loadClioData(datasetId);
   }
 
   /** close
@@ -72,15 +57,15 @@ export class ClioComponent extends DataPollingComponent implements OnInit {
   /* - sets opener icon class based on average score in clioStats
   */
   setOpenerIconClass(clioData: Array<ClioData>): void {
-    if (clioData) {
-      const scores: Array<number> = clioData.map((s: ClioData) => s.score);
-      const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-      this.openerIconClass = `clio-state-${Math.floor(avg)}`;
-    }
+    const scores: Array<number> = clioData.map((s: ClioData) => s.score);
+    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+    this.openerIconClass = `clio-state-${Math.floor(avg)}`;
   }
 
+  /** toggleVisible
+  /* - toggles isOpen variable
+  */
   toggleVisible(): void {
-    console.log('toggleVisible ' + this.isOpen);
     this.isOpen = !this.isOpen;
   }
 }

@@ -1,40 +1,24 @@
-//import { NO_ERRORS_SCHEMA } from '@angular/core';
-//import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-
-/*
-import {
-  createMockPipe,
-  MockErrorService,
-  mockPluginExecution,
-  MockTranslateService,
-  MockWorkflowService
-} from '../../_mocked';
-
-import { ErrorService, WorkflowService } from '../../_services';
-import { TranslateService } from '../../_translate';
-*/
 import { ClioComponent } from '.';
+import { MockClioService } from '../../_mocked';
+import { ClioService } from '../../_services';
 
-fdescribe('ClioComponent', () => {
+describe('ClioComponent', () => {
   const datasetId = '0';
+  let clios: ClioService;
   let component: ClioComponent;
   let fixture: ComponentFixture<ClioComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ClioComponent],
-      imports: [HttpClientTestingModule]
-
-      //providers: [
-      //  { provide: WorkflowService, useClass: MockWorkflowService },
-      //  { provide: ErrorService, useClass: MockErrorService },
-      //  { provide: TranslateService, useClass: MockTranslateService }
-      //],
-      //schemas: [NO_ERRORS_SCHEMA]
+      imports: [HttpClientTestingModule],
+      providers: [{ provide: ClioService, useClass: MockClioService }],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+    clios = TestBed.inject(ClioService);
   }));
 
   beforeEach(() => {
@@ -80,18 +64,16 @@ fdescribe('ClioComponent', () => {
       expect(component.openerIconClass).toEqual('clio-state-2');
     });
 
-    //it('should set the opener load the data', () => {
-    //  spyOn(component, 'setOpenerIconClass');
-    //  component.loadData(datasetId);
-    //  expect(component.setOpenerIconClass).toHaveBeenCalled();
-    //});
-
-    it('should load data on init', () => {
-      spyOn(component, 'loadData');
+    it('should load data on init', fakeAsync(() => {
+      spyOn(component, 'loadData').and.callThrough();
+      spyOn(clios, 'loadClioData').and.callThrough();
       component.ngOnInit();
+      tick(1);
+      fixture.detectChanges();
       expect(component.loadData).toHaveBeenCalled();
-    });
+      expect(clios.loadClioData).toHaveBeenCalled();
+      component.ngOnDestroy();
+      tick(1);
+    }));
   });
-
-  describe('Error handling', () => {});
 });
