@@ -22,12 +22,16 @@
     "start:ci": "ng serve --progress=false --port 4280 --live-reload=false --configuration=e2e",
     "start:ci-data": "tsc && node ./dist/out-tsc/test-data/index.js",
     "cypress:run": "sleep 10 && cypress run",
-    "test:e2e": "tsc && ((cd test-data && node ../dist/out-tsc/test-data/index.js) & (npm run cypress:ci ; fuser -k 3000/tcp))",
+    "test:e2e": "tsc && ((node ./dist/out-tsc/test-data/index.js) & (npm run cypress:ci ; fuser -k 3000/tcp))",
     "dist": "npm run i18n && ng build --progress=false --prod && cp src/static/manifest.yml src/static/Staticfile src/static/nginx.conf dist",
     "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
     "lite": "lite-server --baseDir=dist"
   },
   "private": true,
+  "engines": {
+    "node": ">=14.0.1 <15.0.1",
+    "npm": ">=6.14.5"
+  },
   "dependencies": {
     "@angular/common": "^10.1.5",
     "@angular/core": "^10.1.5",
