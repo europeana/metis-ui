@@ -1,5 +1,6 @@
 export * from './mockedactivatedroute';
 export * from './mockedauthentication.service';
+export * from './mockedclio.service';
 export * from './mockedcountries.service';
 export * from './mockeddatasets.service';
 export * from './mockeddepublication.service';

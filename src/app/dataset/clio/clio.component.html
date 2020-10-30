@@ -1,0 +1,13 @@
+<div class="dropdown" (clickOutside)="close()">
+  <a (click)="toggleVisible()" class="clio-open clio-state {{ openerIconClass }}"></a>
+  <div *ngIf="isOpen" class="dropdown-wrapper">
+    <ul class="dropdown-content">
+      <li
+        *ngFor="let clioData of allClioData"
+        class="clio-state clio-state-{{ clioData.score }}"
+        (click)="close()"
+        title="{{ clioData.date }}"
+      ></li>
+    </ul>
+  </div>
+</div>

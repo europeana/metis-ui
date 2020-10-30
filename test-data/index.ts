@@ -305,6 +305,22 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
     }
   }
 
+  regRes = route.match(/orchestrator\/clio\/(\d+)/);
+
+  if (regRes) {
+    response.end(
+      JSON.stringify(
+        [0, 1, 2, 3, 4].map((n) => {
+          return {
+            score: n,
+            date: new Date().toISOString().split('T')[0]
+          };
+        })
+      )
+    );
+    return true;
+  }
+
   regRes = route.match(/orchestrator\/proxies\/(\D+)\/task\/-?(\d+)\/report\/exists/);
 
   if (regRes) {
