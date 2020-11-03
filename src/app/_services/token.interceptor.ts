@@ -27,8 +27,7 @@ export class TokenInterceptor implements HttpInterceptor {
     if (!request.url.match(/signin|register/)) {
       const auth = this.inj.get<AuthenticationService>(AuthenticationService);
       const token = auth.getToken();
-
-      if (token) {
+      if (token && request.url.indexOf('api.europeana') === -1) {
         const headers = { Authorization: `Bearer ${token}` };
         request = request.clone({
           setHeaders: headers

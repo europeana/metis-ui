@@ -1,0 +1,81 @@
+@import '../../assets/sass/pandora/settings/metis-variables';
+
+@import '~@swimlane/ngx-datatable/index.css';
+@import '~@swimlane/ngx-datatable/themes/bootstrap.css';
+@import '~@swimlane/ngx-datatable/themes/material.css';
+@import '~@swimlane/ngx-datatable/assets/icons.css';
+
+$width-left-col: 200px;
+
+app-overview {
+  width: 100%;
+}
+
+datatable-scroller {
+  width: 100% !important;
+}
+
+label {
+  cursor: pointer;
+}
+
+@media (min-width: $bp-med) {
+  .dashboard-wrapper .metis-dashboard .metis-dashboard-left {
+    // override default
+    //max-width: $width-left-col;
+  }
+
+  .filter-select {
+    width: $width-left-col;
+    max-width: 100%;
+  }
+}
+
+.filter-select {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  max-width: $width-left-col;
+}
+
+.pie-chart {
+  height: 500px;
+  max-width: 100%;
+  padding-bottom: 5em;
+}
+
+.facet-params,
+.filter-params {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mobile-row {
+  font-size: 14px;
+  padding-left: 60px;
+}
+
+.mobile-row-detail {
+  &:not(:last-child)::after {
+    content: ', ';
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .desktop-hidden {
+    display: initial;
+  }
+  .mobile-hidden {
+    display: none;
+  }
+}
+@media screen and (min-width: 800px) {
+  .desktop-hidden {
+    display: none;
+  }
+  .mobile-hidden {
+    display: initial;
+  }
+}

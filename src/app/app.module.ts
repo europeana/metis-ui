@@ -2,9 +2,12 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { CollapsibleDirective } from './_directives/collapsible';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
@@ -50,6 +53,7 @@ import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
 import { LoadTitleComponent } from './load-title';
 import { LoginComponent } from './login';
+import { OverviewComponent } from './overview';
 import { PageNotFoundComponent } from './page-not-found';
 import { ProfileComponent } from './profile';
 import { RegisterComponent } from './register';
@@ -75,6 +79,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     ModalConfirmComponent,
     RegisterComponent,
     LoginComponent,
+    OverviewComponent,
     ProfileComponent,
     LoadAnimationComponent,
     LoadTitleComponent,
@@ -125,13 +130,16 @@ import { ThemeSelectorComponent } from './theme-selector';
     LoadingButtonComponent
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
     CodemirrorModule,
-    ClickOutsideModule
+    ClickOutsideModule,
+    NgxChartsModule,
+    NgxDatatableModule
   ],
   providers: [
     TRANSLATION_PROVIDERS,

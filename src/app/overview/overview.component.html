@@ -1,0 +1,135 @@
+<form [formGroup]="form" class="dashboard-wrapper">
+  <div class="metis-dashboard">
+    <div class="metis-dashboard-left">
+
+      <br />
+      <br />
+      <br />
+      <br />
+
+      <fieldset *ngIf="optionData" class="filter-params" formGroupName="filterParams">
+        <label *ngFor="let filter of facetConf; let i = index"
+          >{{ filter }}
+          <select class="filter-select" [formControlName]="i" (change)="refresh()">
+            <option value="">Select</option>
+            <option *ngFor="let option of selectData(filter)" [ngValue]="option">{{
+              option
+            }}</option>
+          </select>
+        </label>
+      </fieldset>
+      <br />
+      <br />
+      <h4>Facet Params</h4>
+
+      {{ getFacetParam() }}
+
+      <br />
+      <br />
+      <h4>Filter Params</h4>
+      {{ getSelectedFilters() }}
+    </div>
+
+    <div class="metis-dashboard-right">
+      <div class="facet-params">
+        <label *ngFor="let filter of facetConf; let i = index">
+          <input
+            type="radio"
+            value="{{ filter }}"
+            formControlName="facetParameter"
+            (change)="refresh()"
+          />
+          {{ filter }}
+        </label>
+      </div>
+
+      <div *ngIf="tableRows">
+        <ngx-datatable
+          #dataTable
+          [rows]="tableRows"
+          class="material expandable"
+          [columnMode]="ColumnMode.force"
+          [headerHeight]="50"
+          [footerHeight]="50"
+          [rowHeight]="50"
+          [scrollbarV]="false"
+          [limit]="5"
+        >
+          <!-- Mobile row detail -->
+          <ngx-datatable-row-detail [rowHeight]="50">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+              <div class="mobile-row">
+                <span *ngFor="let col of columns | slice: 1" class="mobile-row-detail">
+                  {{ row[col] }}</span
+                >
+              </div>
+            </ng-template>
+          </ngx-datatable-row-detail>
+
+          <!-- Mobile controls -->
+          <ngx-datatable-column
+            [width]="50"
+            [resizeable]="false"
+            [sortable]="false"
+            [draggable]="false"
+            [canAutoResize]="false"
+          >
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+              <a
+                href="#"
+                [class.datatable-icon-right]="!expanded"
+                [class.datatable-icon-down]="expanded"
+                title="Expand / Collapse Row"
+                (click)="toggleExpandRow(row)"
+                class="desktop-hidden"
+              >
+              </a>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <!-- Col 0 -->
+          <ngx-datatable-column name="{{ columns[0] | titlecase }}" [flexGrow]="3" [minWidth]="200">
+            <ng-template let-value="value" ngx-datatable-cell-template>
+              {{ value }}
+            </ng-template>
+          </ngx-datatable-column>
+
+          <!-- Col >= 1 -->
+          <ngx-datatable-column
+            *ngFor="let col of columns | slice: 1; index as i"
+            name="{{ col | titlecase }}"
+            [flexGrow]="1"
+          >
+            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+              <span class="mobile-hidden">{{ column.name }}</span>
+            </ng-template>
+            <ng-template let-value="value" ngx-datatable-cell-template>
+              <span class="mobile-hidden">{{ value }}</span>
+            </ng-template>
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+
+      <div *ngIf="pieData" class="pie-chart">
+        <ngx-charts-pie-chart
+          [scheme]="colorScheme"
+          [results]="pieData"
+          [gradient]="gradient"
+          [legend]="showLegend"
+          [legendPosition]="legendPosition"
+          [labels]="showLabels"
+          [doughnut]="isDoughnut"
+        >
+        </ngx-charts-pie-chart>
+        <!--
+    (select)="onSelect($event)"
+    (activate)="onActivate($event)"
+    (deactivate)="onDeactivate($event)"
+      [view]="[800, 200]"
+    -->
+        <h2>apiData</h2>
+        {{ apiData | json }}
+      </div>
+    </div>
+  </div>
+</form>
