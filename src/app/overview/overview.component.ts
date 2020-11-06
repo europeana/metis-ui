@@ -1,10 +1,14 @@
 import { AfterViewInit, Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { Subject } from 'rxjs';
 
-import { ColumnMode, DatatableRowDetailDirective } from '@swimlane/ngx-datatable';
+import {
+  ColumnMode,
+  DatatableRowDetailDirective,
+  DatatableComponent
+} from '@swimlane/ngx-datatable';
 import { DataPollingComponent } from '../data-polling';
 
 export interface FacetField {
@@ -12,10 +16,15 @@ export interface FacetField {
   label: string;
 }
 
+export interface TableRow {
+  name: string;
+  count: string;
+  percent: string;
+}
+
 export interface FmtTableData {
   columns: Array<string>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tableRows: Array<any>;
+  tableRows: Array<TableRow>;
 }
 
 export interface Facet {
@@ -39,18 +48,20 @@ export interface RawFacet {
   encapsulation: ViewEncapsulation.None
 })
 export class OverviewComponent extends DataPollingComponent implements AfterViewInit {
-  @ViewChild('dataTable') dataTable: any;
+  @ViewChild('dataTable') dataTable: DatatableComponent;
 
-  optionData: Array<Facet>;
-  apiData: Facet;
-  pieData: Array<NameValue>;
+  facetConf = [
+    'contentTier',
+    'metadataTier',
+    'COUNTRY',
+    'LANGUAGE',
+    'TYPE',
+    'RIGHTS',
+    'DATA_PROVIDER',
+    'PROVIDER'
+  ];
 
-  // options
-  gradient = true;
-  showLegend = false;
-  showLabels = true;
-  isDoughnut = false;
-  legendPosition = 'below';
+  chartTypes = ['Pie', 'Bar', 'Gauge'];
 
   colorScheme = {
     domain: [
@@ -72,111 +83,150 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
 
   ColumnMode = ColumnMode;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tableRows: Array<any>;
-  columns: Array<any>;
-
   pollRefresh: Subject<boolean>;
-  filters: Array<string>;
 
   form: FormGroup;
-  facetConf = ['contentTier', 'COUNTRY', 'LANGUAGE', 'TYPE', 'RIGHTS', 'DATA_PROVIDER', 'PROVIDER'];
+
+  chartOptionsOpen = false;
+  showPie = true;
+  showBar = false;
+  showGauge = false;
+  showTab = true;
+  isLoading = true;
+
+  selFacetIndex = 0;
+
+  allFacetData: Array<Facet>;
+  chartData: Array<NameValue>;
+  tableData: FmtTableData;
 
   constructor(private readonly http: HttpClient, private fb: FormBuilder) {
     super();
     this.buildForm();
   }
 
-  buildForm(): void {
-    this.form = this.fb.group({
-      filterParams: new FormArray([]),
-      facetParameter: ['']
-    });
-
-    this.facetConf.forEach(() => {
-      this.filterFormArray.push(new FormControl(false));
-    });
-  }
-
   /** ngOnInit
-  /* - poll the data
+  /* - set up data polling
   */
   ngAfterViewInit(): void {
     this.pollRefresh = this.createNewDataPoller(
-      50000,
+      60 * 1000,
       () => {
-
-        // TODO: getFacetParam should be all params (including content / metadata tiers) if none are selected
-        //       - this will populate the selects
-        const facetParam = this.getFacetParam();
-        const filterParam = this.getSelectedFilters();
-
+        this.isLoading = true;
         const apiSrv = 'https://api.europeana.eu/record/v2/search.json';
-        const tier = '?query=*';
-        //const tier = '?query=contentTier:0';
+        const qry = '?query=*&rows=0';
         const auth = '&wskey=api2demo';
         const profile = '&profile=facets';
-        const url = `${apiSrv}${tier}${profile}${facetParam}${filterParam}&rows=0${auth}`;
-
-        console.log('go get:\n\t' + url);
-
+        const facetParam = this.getFormattedFacetParam();
+        const filterParam = this.getFormattedFilterParam();
+        const url = `${apiSrv}${qry}${auth}${profile}${facetParam}${filterParam}`;
         return this.http.get<RawFacet>(url);
       },
       (rawResult: RawFacet) => {
-        const result = rawResult.facets[0];
+        this.isLoading = false;
+        this.allFacetData = rawResult.facets;
+        this.selFacetIndex = this.findFacetIndex(this.form.value.facetParameter);
 
-        // set pie data
-        this.pieData = this.pieDataFromFacetData(result.fields);
-
-        // set table data
-        const fmtTableData = this.tableDataFromFacetData(result.fields);
-        this.columns = fmtTableData.columns;
-        this.tableRows = fmtTableData.tableRows;
-
-        // set debug data
-        this.apiData = result;
-
-        if (!this.optionData) {
-          this.optionData = rawResult.facets;
-        }
+        // set pie and table data
+        this.extractChartData();
+        this.extractTableData();
       }
     ).getPollingSubject();
   }
 
-  selectData(name: string): Array<string> {
-    let res: Array<string> = [];
-    if (this.optionData) {
-      let match = this.optionData.filter((f: Facet) => {
-        return f.name === name;
-      });
-      if (match.length > 0) {
-        res = match[0].fields.map((ff: FacetField) => {
-          return ff.label;
-        });
-      }
-    }
-    return res;
+  /** buildForm
+  /* - set upt data polling
+  */
+  buildForm(): void {
+    const defaultFacetIndex = 0;
+    this.form = this.fb.group({
+      filterParams: new FormArray([]),
+      facetParameter: [this.facetConf[defaultFacetIndex]],
+      showPercent: [false],
+      chartType: [this.chartTypes[0]]
+    });
+    this.facetConf.forEach((_, i) => {
+      this.filterFormArray.push(new FormControl({ value: '', disabled: i === defaultFacetIndex }));
+    });
   }
 
+  findFacetIndex(facetName: string): number {
+    return this.allFacetData.findIndex((f: Facet) => {
+      return f.name === facetName;
+    });
+  }
+
+  /** getSelectOptions
+  /* returns array of values for a facet
+  /* @param {string} facetName - the name of the facet
+  */
+  getSelectOptions(facetName: string): Array<string> {
+    if (this.allFacetData) {
+      const matchIndex = this.findFacetIndex(facetName);
+      return this.allFacetData[matchIndex].fields.map((ff: FacetField) => {
+        return ff.label;
+      });
+    }
+    return [];
+  }
+
+  /** filterFormArray
+  /* getter - casts filterParams controls as a FormArray
+  */
   get filterFormArray() {
     return this.form.controls.filterParams as FormArray;
   }
 
-  getFacetParam(): string {
-    const facetParam = encodeURIComponent(this.form.value.facetParameter);
-    return `&facet=${facetParam}`;
-  }
-
-  getSelectedFilters(): string {
-    return this.form.value.filterParams
-      .map((val: string, i: number) => {
-        return val ? `&qf=${this.facetConf[i]}:"${encodeURIComponent(val)}"` : null;
+  /** getFormattedFacetParam
+  /* returns facets names formatted as url parameters
+  */
+  getFormattedFacetParam(): string {
+    return this.facetConf
+      .map((f) => {
+        return `&facet=${encodeURIComponent(f)}`;
       })
-      .filter((f: string) => !!f)
       .join('');
   }
 
-  refresh(): void {
+  /** getFormattedFilterParam
+  /* returns facets filter names and values formatted as url parameters
+  /* @param {string} def - the default return value
+  */
+  getFormattedFilterParam(def: string = ''): string {
+    const offset = this.filterFormArray.controls.findIndex((control: AbstractControl) => {
+      return control.disabled;
+    });
+    return (
+      this.form.value.filterParams
+        .map((val: string, i: number) => {
+          if (val) {
+            const facetIndex = i >= offset && offset > -1 ? i + 1 : i;
+            const facetName = this.facetConf[facetIndex];
+            return `&qf=${facetName}:"${encodeURIComponent(val)}"`;
+          } else {
+            return null;
+          }
+        })
+        .filter((s: string) => !!s)
+        .join('') || def
+    );
+  }
+
+  enableFilters(): void {
+    this.filterFormArray.controls.forEach((control) => {
+      control.enable();
+    });
+  }
+
+  disableFilter(i: number): void {
+    this.enableFilters();
+    this.form.get(`filterParams.${i}`)!.disable();
+  }
+
+  refresh(disableIndex?: number): void {
+    if (disableIndex !== undefined) {
+      this.disableFilter(disableIndex);
+    }
     this.pollRefresh.next(true);
   }
 
@@ -185,26 +235,84 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     return false;
   }
 
-  pieDataFromFacetData(apiData: Array<FacetField>): Array<NameValue> {
-    return apiData.map((f: FacetField) => {
+  getCountTotal(facetData: Array<FacetField>): number {
+    let total = 0;
+    facetData.forEach((f: FacetField) => {
+      total += f.count;
+    });
+    return total;
+  }
+
+  extractChartData(): void {
+    const facetFields = this.allFacetData[this.selFacetIndex].fields;
+    const total = this.getCountTotal(facetFields);
+
+    this.chartData = facetFields.map((f: FacetField) => {
+      const val = this.form.value.showPercent
+        ? parseFloat(((f.count / total) * 100).toFixed(2))
+        : f.count;
       return {
         name: f.label,
-        value: f.count
+        value: val
       };
     });
   }
 
-  tableDataFromFacetData(apiData: Array<FacetField>): FmtTableData {
-    const cols = ['name', 'count'];
-    const rows = apiData.map((f: FacetField) => {
-      return {
-        name: f.label,
-        count: `${f.count}`
-      };
-    });
-    return {
-      columns: cols,
-      tableRows: rows
+  toggleChartOptions(): void {
+    this.chartOptionsOpen = !this.chartOptionsOpen;
+  }
+
+  onClickedOutside(): void {
+    this.chartOptionsOpen = false;
+  }
+
+  chrtPct(): void {
+    this.extractChartData();
+  }
+
+  switchChartType(): void {
+    if (this.form.value.chartType === 'Bar') {
+      this.showPie = false;
+      this.showBar = true;
+      this.showGauge = false;
+      console.log('match bar ');
+    } else if (this.form.value.chartType === 'Gauge') {
+      this.showPie = false;
+      this.showBar = false;
+      this.showGauge = true;
+
+      console.log('match g');
+    } else if (this.form.value.chartType === 'Pie') {
+      this.showPie = true;
+      this.showBar = false;
+      this.showGauge = false;
+
+      console.log('match pi ');
+    }
+    console.log(this.form.value.chartType);
+  }
+
+  /* extractTableData
+  /*
+  /* - maps array of FacetField objects to TableRow data
+  /* - calculates percentage
+  /* returns converted data wrapped in a FmtTableData object
+  /*
+  /* @param
+  */
+  extractTableData(): void {
+    const facetData = this.allFacetData[this.selFacetIndex].fields;
+    const total = this.getCountTotal(facetData);
+
+    this.tableData = {
+      columns: ['name', 'count', 'percent'],
+      tableRows: facetData.map((f: FacetField) => {
+        return {
+          name: f.label,
+          count: `${f.count}`,
+          percent: `${((f.count / total) * 100).toFixed(2)}%`
+        } as TableRow;
+      })
     };
   }
 }

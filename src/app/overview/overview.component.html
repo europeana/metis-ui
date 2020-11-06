@@ -1,134 +1,167 @@
 <form [formGroup]="form" class="dashboard-wrapper">
   <div class="metis-dashboard">
     <div class="metis-dashboard-left">
-
-      <br />
-      <br />
-      <br />
-      <br />
-
-      <fieldset *ngIf="optionData" class="filter-params" formGroupName="filterParams">
-        <label *ngFor="let filter of facetConf; let i = index"
-          >{{ filter }}
+      <fieldset *ngIf="allFacetData" class="filter-params" formGroupName="filterParams">
+        <h3 [title]="getFormattedFilterParam('None selected')">Filters</h3>
+        <label *ngFor="let facet of facetConf; let i = index"
+          >{{ facet | renameApiFacet }}
           <select class="filter-select" [formControlName]="i" (change)="refresh()">
-            <option value="">Select</option>
-            <option *ngFor="let option of selectData(filter)" [ngValue]="option">{{
+            <option value=""></option>
+            <option *ngFor="let option of getSelectOptions(facet)" [ngValue]="option">{{
               option
             }}</option>
           </select>
         </label>
       </fieldset>
-      <br />
-      <br />
-      <h4>Facet Params</h4>
-
-      {{ getFacetParam() }}
-
-      <br />
-      <br />
-      <h4>Filter Params</h4>
-      {{ getSelectedFilters() }}
     </div>
 
     <div class="metis-dashboard-right">
+      <h3 [title]="getFormattedFacetParam()">
+        Facets
+        <span class="svg-icon-spin" [ngClass]="{ showing: isLoading }"></span>
+      </h3>
+
       <div class="facet-params">
-        <label *ngFor="let filter of facetConf; let i = index">
+        <label *ngFor="let facet of facetConf; let i = index">
           <input
             type="radio"
-            value="{{ filter }}"
+            value="{{ facet }}"
             formControlName="facetParameter"
-            (change)="refresh()"
+            (change)="refresh(i)"
           />
-          {{ filter }}
+          {{ facet | renameApiFacet }}
         </label>
       </div>
 
-      <div *ngIf="tableRows">
-        <ngx-datatable
-          #dataTable
-          [rows]="tableRows"
-          class="material expandable"
-          [columnMode]="ColumnMode.force"
-          [headerHeight]="50"
-          [footerHeight]="50"
-          [rowHeight]="50"
-          [scrollbarV]="false"
-          [limit]="5"
+      <ngx-datatable
+        *ngIf="showTab && tableData"
+        #dataTable
+        [rows]="tableData.tableRows"
+        class="material expandable datatable"
+        [columnMode]="ColumnMode.flex"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="50"
+        [scrollbarV]="false"
+        [limit]="5"
+      >
+        <!-- Mobile row detail -->
+        <ngx-datatable-row-detail [rowHeight]="50">
+          <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+            <div class="mobile-row">
+              <span *ngFor="let col of tableData.columns | slice: 1" class="mobile-row-detail">
+                {{ row[col] }}</span
+              >
+            </div>
+          </ng-template>
+        </ngx-datatable-row-detail>
+
+        <!-- Mobile controls -->
+        <ngx-datatable-column
+          [width]="50"
+          [resizeable]="false"
+          [sortable]="false"
+          [draggable]="false"
+          [canAutoResize]="false"
         >
-          <!-- Mobile row detail -->
-          <ngx-datatable-row-detail [rowHeight]="50">
-            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
-              <div class="mobile-row">
-                <span *ngFor="let col of columns | slice: 1" class="mobile-row-detail">
-                  {{ row[col] }}</span
+          <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+            <a
+              href="#"
+              [class.datatable-icon-right]="!expanded"
+              [class.datatable-icon-down]="expanded"
+              title="Expand / Collapse Row"
+              (click)="toggleExpandRow(row)"
+              class="desktop-hidden"
+            >
+            </a>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Col 0 -->
+        <ngx-datatable-column
+          name="{{ tableData.columns[0] | titlecase }}"
+          [flexGrow]="3"
+          [minWidth]="200"
+        >
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{ value }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Col >= 1 -->
+        <ngx-datatable-column
+          *ngFor="let col of tableData.columns | slice: 1; index as i"
+          name="{{ col | titlecase }}"
+          [flexGrow]="1"
+        >
+          <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+            <span class="mobile-hidden">{{ column.name }}</span>
+          </ng-template>
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            <span class="mobile-hidden">{{ value }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+
+      <ul class="options-wrapper" (clickOutside)="onClickedOutside()">
+        <li class="dropdown">
+          <a (click)="toggleChartOptions()"><h3>Charts</h3></a>
+          <div *ngIf="chartOptionsOpen" class="dropdown-wrapper">
+            <div class="dropdown-content">
+              <div class="chart-settings">
+                <label *ngFor="let chartType of chartTypes; let i = index">
+                  <input
+                    type="radio"
+                    value="{{ chartType }}"
+                    (change)="switchChartType()"
+                    formControlName="chartType"
+                  />
+                  {{ chartType }}
+                </label>
+                <label
+                  ><input
+                    type="checkbox"
+                    formControlName="showPercent"
+                    (change)="chrtPct()"
+                  />%</label
                 >
               </div>
-            </ng-template>
-          </ngx-datatable-row-detail>
+            </div>
+          </div>
+        </li>
+      </ul>
 
-          <!-- Mobile controls -->
-          <ngx-datatable-column
-            [width]="50"
-            [resizeable]="false"
-            [sortable]="false"
-            [draggable]="false"
-            [canAutoResize]="false"
-          >
-            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
-              <a
-                href="#"
-                [class.datatable-icon-right]="!expanded"
-                [class.datatable-icon-down]="expanded"
-                title="Expand / Collapse Row"
-                (click)="toggleExpandRow(row)"
-                class="desktop-hidden"
-              >
-              </a>
-            </ng-template>
-          </ngx-datatable-column>
-
-          <!-- Col 0 -->
-          <ngx-datatable-column name="{{ columns[0] | titlecase }}" [flexGrow]="3" [minWidth]="200">
-            <ng-template let-value="value" ngx-datatable-cell-template>
-              {{ value }}
-            </ng-template>
-          </ngx-datatable-column>
-
-          <!-- Col >= 1 -->
-          <ngx-datatable-column
-            *ngFor="let col of columns | slice: 1; index as i"
-            name="{{ col | titlecase }}"
-            [flexGrow]="1"
-          >
-            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span class="mobile-hidden">{{ column.name }}</span>
-            </ng-template>
-            <ng-template let-value="value" ngx-datatable-cell-template>
-              <span class="mobile-hidden">{{ value }}</span>
-            </ng-template>
-          </ngx-datatable-column>
-        </ngx-datatable>
-      </div>
-
-      <div *ngIf="pieData" class="pie-chart">
+      <div *ngIf="chartData" class="chart-wrapper">
         <ngx-charts-pie-chart
+          *ngIf="showPie"
           [scheme]="colorScheme"
-          [results]="pieData"
-          [gradient]="gradient"
-          [legend]="showLegend"
-          [legendPosition]="legendPosition"
-          [labels]="showLabels"
-          [doughnut]="isDoughnut"
+          [results]="chartData"
+          [gradient]="true"
+          [legend]="false"
+          [labels]="true"
+          [doughnut]="false"
         >
         </ngx-charts-pie-chart>
-        <!--
-    (select)="onSelect($event)"
-    (activate)="onActivate($event)"
-    (deactivate)="onDeactivate($event)"
-      [view]="[800, 200]"
-    -->
-        <h2>apiData</h2>
-        {{ apiData | json }}
+
+        <ngx-charts-bar-vertical
+          *ngIf="showBar"
+          [scheme]="colorScheme"
+          [results]="chartData"
+          [gradient]="true"
+          [xAxis]="true"
+          [yAxis]="true"
+          [legend]="false"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+        ></ngx-charts-bar-vertical>
+
+        <ngx-charts-gauge
+          *ngIf="showGauge"
+          [scheme]="colorScheme"
+          [results]="chartData"
+          [legend]="false"
+          [legendPosition]="'below'"
+        ></ngx-charts-gauge>
       </div>
     </div>
   </div>

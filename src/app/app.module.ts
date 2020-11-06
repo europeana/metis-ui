@@ -10,7 +10,12 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
-import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
+import {
+  RenameApiFacetPipe,
+  RenameWorkflowPipe,
+  TranslatePipe,
+  TRANSLATION_PROVIDERS
+} from './_translate';
 import { AppComponent } from './app.component';
 import {
   DashboardactionsComponent,
@@ -123,6 +128,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     ThemeSelectorComponent,
     TranslatePipe,
     XmlPipe,
+    RenameApiFacetPipe,
     RenameWorkflowPipe,
     GridrowComponent,
     ExecutionsgridComponent,

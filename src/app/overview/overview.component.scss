@@ -11,45 +11,59 @@ app-overview {
   width: 100%;
 }
 
+.svg-icon-spin {
+  position: absolute;
+  right: -1.5em;
+}
+h3 {
+  display: inline-block;
+  position: relative;
+}
+
 datatable-scroller {
   width: 100% !important;
 }
 
-label {
-  cursor: pointer;
-}
-
-@media (min-width: $bp-med) {
-  .dashboard-wrapper .metis-dashboard .metis-dashboard-left {
-    // override default
-    //max-width: $width-left-col;
-  }
-
-  .filter-select {
-    width: $width-left-col;
-    max-width: 100%;
-  }
+.datatable {
+  margin: 1.6em 0;
 }
 
 .filter-select {
+  display: block;
+  margin: auto;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  max-width: $width-left-col;
+  width: $bp-small;
 }
 
-.pie-chart {
+.options-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.chart-settings {
+  align-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  height: 8em;
+  padding: 1em;
+}
+
+.chart-wrapper {
   height: 500px;
   max-width: 100%;
   padding-bottom: 5em;
 }
 
-.facet-params,
-.filter-params {
+.facet-params {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 100%;
+
+  label {
+    cursor: pointer;
+  }
 }
 
 .mobile-row {
@@ -63,6 +77,30 @@ label {
   }
 }
 
+.metis-dashboard {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.metis-dashboard-right {
+  min-width: 0;
+}
+
+@media (min-width: $bp-xl) {
+  .filter-params {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-select {
+    width: $width-left-col;
+  }
+
+  .metis-dashboard {
+    flex-direction: row;
+  }
+}
+
 @media screen and (max-width: 800px) {
   .desktop-hidden {
     display: initial;
@@ -71,6 +109,7 @@ label {
     display: none;
   }
 }
+
 @media screen and (min-width: 800px) {
   .desktop-hidden {
     display: none;
