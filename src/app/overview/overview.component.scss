@@ -37,7 +37,10 @@ datatable-scroller {
 }
 
 .options-wrapper {
-  display: inline-block;
+  display: flex;
+}
+
+.dropdown {
   position: relative;
 }
 

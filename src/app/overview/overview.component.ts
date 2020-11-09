@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
+import { ExportAsService } from 'ngx-export-as';
 import { Subject } from 'rxjs';
 
 import {
@@ -11,13 +12,15 @@ import {
 } from '@swimlane/ngx-datatable';
 import { DataPollingComponent } from '../data-polling';
 
+export type HeaderNameType = 'name' | 'count' | 'percent';
+
 export interface FacetField {
   count: number;
-  label: string;
+  label: HeaderNameType;
 }
 
 export interface TableRow {
-  name: string;
+  name: HeaderNameType;
   count: string;
   percent: string;
 }
@@ -41,6 +44,8 @@ export interface RawFacet {
   facets: Array<Facet>;
 }
 
+export type ExportType = 'csv' | 'pdf' | 'png';
+
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
@@ -49,6 +54,11 @@ export interface RawFacet {
 })
 export class OverviewComponent extends DataPollingComponent implements AfterViewInit {
   @ViewChild('dataTable') dataTable: DatatableComponent;
+  @ViewChild('downloadAnchor') downloadAnchor: ElementRef;
+
+  chartTypes = ['Pie', 'Bar', 'Gauge'];
+  columnNames = ['name', 'count', 'percent'].map((x) => x as HeaderNameType);
+  exportTypes = ['csv', 'pdf', 'png'];
 
   facetConf = [
     'contentTier',
@@ -60,8 +70,6 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     'DATA_PROVIDER',
     'PROVIDER'
   ];
-
-  chartTypes = ['Pie', 'Bar', 'Gauge'];
 
   colorScheme = {
     domain: [
@@ -88,6 +96,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   form: FormGroup;
 
   chartOptionsOpen = false;
+  downloadOptionsOpen = false;
   showPie = true;
   showBar = false;
   showGauge = false;
@@ -100,9 +109,61 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   chartData: Array<NameValue>;
   tableData: FmtTableData;
 
-  constructor(private readonly http: HttpClient, private fb: FormBuilder) {
+  constructor(
+    private readonly http: HttpClient,
+    private fb: FormBuilder,
+    private exportAsService: ExportAsService
+  ) {
     super();
     this.buildForm();
+  }
+
+  async download(data: string): Promise<void> {
+    const url = window.URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=utf-8' }));
+    const link = this.downloadAnchor.nativeElement;
+
+    link.href = url;
+    link.download = 'data.csv';
+    link.click();
+
+    const fn = () => {
+      window.URL.revokeObjectURL(url);
+    };
+    fn();
+  }
+
+  export(type: ExportType): false {
+    this.downloadOptionsOpen = false;
+    if (type === 'csv') {
+      const items = this.tableData.tableRows;
+      const replacer = (_: string, value: string) => (value === null ? '' : value);
+      const header = this.columnNames;
+
+      let csv = items.map((row: TableRow) => {
+        let vals: Array<string> = header.map((fieldName: HeaderNameType) => {
+          return JSON.stringify(row[fieldName], replacer);
+        });
+        return vals.join(',');
+      });
+      csv.unshift(header.join(','));
+      this.download(csv.join('\r\n'));
+
+    } else {
+      const exportAsConfig = {
+        type: type,
+        elementIdOrContent: 'dataTable'
+      };
+
+      this.exportAsService.save(exportAsConfig, 'Europeana_Data_Export').subscribe(() => {});
+
+      /*
+      // get the data as base64 or json object for json type - this will be helpful in ionic or SSR
+      this.exportAsService.get(exportAsConfig).subscribe((content) => {
+        console.log(content);
+      });
+      */
+    }
+    return false;
   }
 
   /** ngOnInit
@@ -260,14 +321,17 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
 
   toggleChartOptions(): void {
     this.chartOptionsOpen = !this.chartOptionsOpen;
+    this.downloadOptionsOpen = false;
+  }
+
+  toggleDownloadOptions(): void {
+    this.downloadOptionsOpen = !this.downloadOptionsOpen;
+    this.chartOptionsOpen = false;
   }
 
   onClickedOutside(): void {
     this.chartOptionsOpen = false;
-  }
-
-  chrtPct(): void {
-    this.extractChartData();
+    this.downloadOptionsOpen = false;
   }
 
   switchChartType(): void {
@@ -305,7 +369,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     const total = this.getCountTotal(facetData);
 
     this.tableData = {
-      columns: ['name', 'count', 'percent'],
+      columns: this.columnNames,
       tableRows: facetData.map((f: FacetField) => {
         return {
           name: f.label,

@@ -36,6 +36,7 @@
       <ngx-datatable
         *ngIf="showTab && tableData"
         #dataTable
+        id="dataTable"
         [rows]="tableData.tableRows"
         class="material expandable datatable"
         [columnMode]="ColumnMode.flex"
@@ -122,11 +123,26 @@
                   ><input
                     type="checkbox"
                     formControlName="showPercent"
-                    (change)="chrtPct()"
+                    (change)="extractChartData()"
                   />%</label
                 >
               </div>
             </div>
+          </div>
+        </li>
+
+        <li>
+          <a #downloadAnchor></a>
+        </li>
+
+        <li class="dropdown">
+          <a (click)="toggleDownloadOptions()"><h3>Downloads</h3></a>
+          <div *ngIf="downloadOptionsOpen" class="dropdown-wrapper">
+            <ul class="dropdown-content">
+              <li *ngFor="let exportType of exportTypes">
+                <a (click)="export(exportType)">{{ exportType }}</a>
+              </li>
+            </ul>
           </div>
         </li>
       </ul>
