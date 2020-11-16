@@ -11,17 +11,59 @@ app-overview {
   width: 100%;
 }
 
-.svg-icon-spin {
-  position: absolute;
-  right: -1.5em;
+datatable-scroller {
+  width: 100% !important;
 }
+
 h3 {
   display: inline-block;
   position: relative;
 }
 
-datatable-scroller {
-  width: 100% !important;
+label {
+  cursor: pointer;
+}
+
+.checkboxes {
+  display: inline-grid;
+  grid-auto-flow: row;
+
+  @media (min-width: $bp-med) {
+    grid-template-columns: repeat(2, auto);
+  }
+
+  @media (min-width: $bp-xl) {
+    grid-template-columns: repeat(3, auto);
+  }
+
+  &.DATA_PROVIDER,
+  &.PROVIDER,
+  &.RIGHTS {
+    @media (min-width: $bp-med) {
+      grid-template-columns: repeat(1, auto);
+    }
+
+    @media (min-width: $bp-xl) {
+      grid-template-columns: repeat(2, auto);
+    }
+  }
+
+  white-space: nowrap;
+  label {
+    display: block;
+  }
+}
+
+.filter-opener {
+  &.disabled {
+    color: #aaa;
+    pointer-events: none;
+  }
+}
+
+.svg-icon-spin {
+  position: absolute;
+  right: -1.5em;
 }
 
 .datatable {
@@ -38,6 +80,13 @@ datatable-scroller {
 
 .options-wrapper {
   display: flex;
+}
+.options-wrapper-2 {
+  display: flex;
+  flex-direction: column;
+  //.dropdown  .dropdown-content{
+  //  max-height: 40em;
+  //}
 }
 
 .dropdown {
@@ -63,10 +112,6 @@ datatable-scroller {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-
-  label {
-    cursor: pointer;
-  }
 }
 
 .mobile-row {

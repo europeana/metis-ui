@@ -13,7 +13,8 @@ const apiFacetNames: { [key: string]: string } = {
   TYPE: 'Type',
   RIGHTS: 'Rights',
   DATA_PROVIDER: 'Data Provider',
-  PROVIDER: 'Provider'
+  PROVIDER: 'Provider',
+  '1 OR 2 OR 3 OR 4': '> 0'
 };
 
 @Pipe({
@@ -21,6 +22,7 @@ const apiFacetNames: { [key: string]: string } = {
 })
 export class RenameApiFacetPipe implements PipeTransform {
   transform(value: string): string {
-    return apiFacetNames[value];
+    const res = apiFacetNames[value];
+    return res ? res : value;
   }
 }

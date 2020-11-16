@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { ExportAsService } from 'ngx-export-as';
 import { Subject } from 'rxjs';
@@ -61,15 +61,17 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   exportTypes = ['csv', 'pdf', 'png'];
 
   facetConf = [
-    'contentTier',
     'metadataTier',
     'COUNTRY',
-    'LANGUAGE',
     'TYPE',
     'RIGHTS',
     'DATA_PROVIDER',
     'PROVIDER'
   ];
+
+  menuStates: { [key: string]: { visible: boolean; disabled: boolean } } = {};
+  contentTiersConf = ['0', '1 OR 2 OR 3 OR 4'];
+  contentTiersOptions = ['0', '1', '2', '3', '4'];
 
   colorScheme = {
     domain: [
@@ -97,6 +99,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
 
   chartOptionsOpen = false;
   downloadOptionsOpen = false;
+
   showPie = true;
   showBar = false;
   showGauge = false;
@@ -104,6 +107,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   isLoading = true;
 
   selFacetIndex = 0;
+  disableZeros = false;
 
   allFacetData: Array<Facet>;
   chartData: Array<NameValue>;
@@ -147,21 +151,16 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
       });
       csv.unshift(header.join(','));
       this.download(csv.join('\r\n'));
-
     } else {
-      const exportAsConfig = {
-        type: type,
-        elementIdOrContent: 'dataTable'
-      };
-
-      this.exportAsService.save(exportAsConfig, 'Europeana_Data_Export').subscribe(() => {});
-
-      /*
-      // get the data as base64 or json object for json type - this will be helpful in ionic or SSR
-      this.exportAsService.get(exportAsConfig).subscribe((content) => {
-        console.log(content);
-      });
-      */
+      this.exportAsService
+        .save(
+          {
+            type: type,
+            elementIdOrContent: 'dataTable'
+          },
+          'Europeana_Data_Export'
+        )
+        .subscribe(() => {});
     }
     return false;
   }
@@ -171,22 +170,39 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   */
   ngAfterViewInit(): void {
     this.pollRefresh = this.createNewDataPoller(
-      60 * 1000,
+      60 * 100000,
       () => {
         this.isLoading = true;
         const apiSrv = 'https://api.europeana.eu/record/v2/search.json';
-        const qry = '?query=*&rows=0';
+        const qry = this.getFormattedContentTierParam();
         const auth = '&wskey=api2demo';
-        const profile = '&profile=facets';
+        const profile = '&profile=facets';//&f.DEFAULT.facet.limit=500';
         const facetParam = this.getFormattedFacetParam();
+
+        let theVal = this.form.value['filterContentTierCB'];
+        const filterContentTierCBParam = Object.keys(theVal)
+          .filter((key) => {
+            return theVal[key];
+          })
+          .map((s: string) => {
+            return `&qf=contentTier:(${encodeURIComponent(s)})`;
+          })
+          .join('');
+
         const filterParam = this.getFormattedFilterParam();
-        const url = `${apiSrv}${qry}${auth}${profile}${facetParam}${filterParam}`;
+        const url = `${apiSrv}${qry}${auth}${profile}${facetParam}${filterParam}${filterContentTierCBParam}&rows=0`;
         return this.http.get<RawFacet>(url);
       },
       (rawResult: RawFacet) => {
         this.isLoading = false;
+        this.selFacetIndex = this.findFacetIndex(this.form.value.facetParameter, rawResult.facets);
+
+
+        this.facetConf.forEach((name: string) => {
+          this.addCheckboxes(name, this.getSelectOptions(name, rawResult.facets));
+        });
+
         this.allFacetData = rawResult.facets;
-        this.selFacetIndex = this.findFacetIndex(this.form.value.facetParameter);
 
         // set pie and table data
         this.extractChartData();
@@ -195,24 +211,65 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     ).getPollingSubject();
   }
 
+  addCheckboxes(name: string, options: Array<string>): void {
+    const checkboxes = <FormGroup>this.form.get(name);
+    if(!this.menuStates[name]){
+      this.menuStates[name] = { visible: false, disabled: this.form.value.facetParameter === name };
+    }
+    options.forEach((option: string) => {
+      const fName = this.fixName(option);
+      if(!this.form.get(name + '.' + fName)){
+        checkboxes.addControl(fName, new FormControl(false));
+      }
+    });
+  }
+
   /** buildForm
   /* - set upt data polling
   */
   buildForm(): void {
-    const defaultFacetIndex = 0;
     this.form = this.fb.group({
-      filterParams: new FormArray([]),
-      facetParameter: [this.facetConf[defaultFacetIndex]],
+
+      facetParameter: [this.facetConf[0]],
+      contentTiers: [this.contentTiersConf[1]],
+
+      filterContentTier: [''],
+
+      filterContentTierCB: this.fb.group({}),
+
+      metadataTier: this.fb.group({}),
+      COUNTRY: this.fb.group({}),
+      TYPE: this.fb.group({}),
+      RIGHTS: this.fb.group({}),
+      DATA_PROVIDER: this.fb.group({}),
+      PROVIDER: this.fb.group({}),
+
+      /*
+      ...['filterCountry', 'filterType'].map((s: string) => {
+        return {
+          s: this.fb.group({})
+        }
+      }),
+      */
+
       showPercent: [false],
       chartType: [this.chartTypes[0]]
     });
-    this.facetConf.forEach((_, i) => {
-      this.filterFormArray.push(new FormControl({ value: '', disabled: i === defaultFacetIndex }));
-    });
+
+    this.menuStates['filterContentTierCB'] = { visible: false, disabled: this.form.value.facetParameter === 'filterContentTierCB' };
+    this.addCheckboxes('filterContentTierCB', this.contentTiersOptions);
   }
 
-  findFacetIndex(facetName: string): number {
-    return this.allFacetData.findIndex((f: Facet) => {
+  /** fixName
+  /* - removes the dot character from a string
+  */
+  fixName(s: string):string {
+    const res = s.replace(/\./g, '');
+    return res;
+  }
+
+  findFacetIndex(facetName: string, facetData: Array<Facet>): number {
+    return facetData.findIndex((f: Facet) => {
       return f.name === facetName;
     });
   }
@@ -221,21 +278,19 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   /* returns array of values for a facet
   /* @param {string} facetName - the name of the facet
   */
-  getSelectOptions(facetName: string): Array<string> {
-    if (this.allFacetData) {
-      const matchIndex = this.findFacetIndex(facetName);
-      return this.allFacetData[matchIndex].fields.map((ff: FacetField) => {
-        return ff.label;
-      });
-    }
-    return [];
+  getSelectOptions(facetName: string, facetData: Array<Facet>): Array<string> {
+    //if (this.allFacetData) {
+    const matchIndex = this.findFacetIndex(facetName, facetData);
+    return facetData[matchIndex].fields.map((ff: FacetField) => {
+      return ff.label;
+    });
   }
 
-  /** filterFormArray
-  /* getter - casts filterParams controls as a FormArray
+  /** getFormattedContentTierParam
+  /* returns contentTier formatted as url parameters
   */
-  get filterFormArray() {
-    return this.form.controls.filterParams as FormArray;
+  getFormattedContentTierParam(): string {
+    return `?query=contentTier:(${encodeURIComponent(this.form.value['contentTiers'])})`;
   }
 
   /** getFormattedFacetParam
@@ -253,6 +308,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   /* returns facets filter names and values formatted as url parameters
   /* @param {string} def - the default return value
   */
+  /*
   getFormattedFilterParam(def: string = ''): string {
     const offset = this.filterFormArray.controls.findIndex((control: AbstractControl) => {
       return control.disabled;
@@ -263,7 +319,12 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
           if (val) {
             const facetIndex = i >= offset && offset > -1 ? i + 1 : i;
             const facetName = this.facetConf[facetIndex];
-            return `&qf=${facetName}:"${encodeURIComponent(val)}"`;
+            return `${val}`
+              .split(',')
+              .map((value: string) => {
+                return `&qf=${facetName}:"${encodeURIComponent(value)}"`;
+              })
+              .join('');
           } else {
             return null;
           }
@@ -272,23 +333,82 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
         .join('') || def
     );
   }
+  */
 
-  enableFilters(): void {
-    this.filterFormArray.controls.forEach((control) => {
-      control.enable();
-    });
+  /** getFormattedFilterParam
+  /* returns concatentated filter names-value pairs formatted as url parameters
+  /* @param {string} def - the default return value
+  */
+  getFormattedFilterParam(def: string = ''): string {
+    return this.facetConf
+    .filter((filterName: string) => {
+      const state = this.menuStates[filterName];
+      return state && !state.disabled;
+    })
+    .map((filterName: string) => {
+      let checks = this.form.value[filterName];
+
+
+      /*
+      this.form.value.filterParams
+        .map((val: string, i: number) => {
+          if (val) {
+            const facetIndex = i >= offset && offset > -1 ? i + 1 : i;
+            const facetName = this.facetConf[facetIndex];
+            return `${val}`
+              .split(',')
+              .map((value: string) => {
+                return `&qf=${facetName}:"${encodeURIComponent(value)}"`;
+              })
+
+      */
+      return Object.keys(checks)
+        .filter((key) => {
+          return checks[key];
+        })
+        .map((value: string) => {
+          return `&qf=${filterName}:"${encodeURIComponent(value)}"`;
+        })
+        .join('');
+    }).join('');
   }
 
-  disableFilter(i: number): void {
-    this.enableFilters();
-    this.form.get(`filterParams.${i}`)!.disable();
+
+  enableFilters(): void {
+    //this.filterFormArray.controls.forEach((control) => {
+    //  control.enable();
+    //});
+  }
+
+  //disableFilter(i: number): void {
+  //  this.enableFilters();
+  //  this.form.get(`filterParams.${i}`)!.disable();
+  //}
+
+  switchFacet(disableName: string): void {
+    //this.disableFilter(disableIndex);
+    console.log('switchFacet(' + disableName + ')')
+    this.menuStates[disableName]!.disabled = true;
+    this.refresh();
   }
 
   refresh(disableIndex?: number): void {
-    if (disableIndex !== undefined) {
-      this.disableFilter(disableIndex);
-    }
     this.pollRefresh.next(true);
+  }
+
+  refreshCT(): void {
+    const val = this.form.value['contentTiers'];
+    console.log('refreshCT ' + val);
+    if (val === this.contentTiersConf[0]) {
+      this.disableZeros = true;
+    } else {
+      this.disableZeros = false;
+    }
+    this.refresh();
+  }
+
+  selectOptionEnabled(val: string): boolean {
+    return !(this.disableZeros && val === '0');
   }
 
   toggleExpandRow(row: DatatableRowDetailDirective): false {
@@ -319,14 +439,19 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     });
   }
 
+  toggleFilterMenu(filterName: string): void {
+    //this.menuVisibilities[filterName] = !this.menuVisibilities[filterName];
+    this.menuStates[filterName].visible = !this.menuStates[filterName].visible;
+  }
+
   toggleChartOptions(): void {
+    this.onClickedOutside();
     this.chartOptionsOpen = !this.chartOptionsOpen;
-    this.downloadOptionsOpen = false;
   }
 
   toggleDownloadOptions(): void {
+    this.onClickedOutside();
     this.downloadOptionsOpen = !this.downloadOptionsOpen;
-    this.chartOptionsOpen = false;
   }
 
   onClickedOutside(): void {
@@ -339,21 +464,15 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
       this.showPie = false;
       this.showBar = true;
       this.showGauge = false;
-      console.log('match bar ');
     } else if (this.form.value.chartType === 'Gauge') {
       this.showPie = false;
       this.showBar = false;
       this.showGauge = true;
-
-      console.log('match g');
     } else if (this.form.value.chartType === 'Pie') {
       this.showPie = true;
       this.showBar = false;
       this.showGauge = false;
-
-      console.log('match pi ');
     }
-    console.log(this.form.value.chartType);
   }
 
   /* extractTableData

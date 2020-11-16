@@ -1,25 +1,78 @@
 <form [formGroup]="form" class="dashboard-wrapper">
+
+  <ng-template #cbFieldset let-group="group" let-options="options">
+    <li class="dropdown">
+      <a
+        (click)="toggleFilterMenu(group)"
+        class="filter-opener"
+        [ngClass]="{ disabled: menuStates[group].disabled }"
+        >{{ group | renameApiFacet }}</a
+      >
+      <div *ngIf="menuStates[group].visible" class="dropdown-wrapper">
+        <div class="dropdown-content">
+          <fieldset [formGroupName]="group" class="checkboxes" [ngClass]="group">
+            <ng-container *ngFor="let option of options">
+              <label>
+                <input
+                  type="checkbox"
+                  [value]="option"
+                  (change)="refresh()"
+                  [formControlName]="fixName(option)"
+                  [attr.disabled]="!selectOptionEnabled(option) ? true : null"
+                />
+                {{ option }}
+              </label>
+            </ng-container>
+          </fieldset>
+        </div>
+      </div>
+    </li>
+  </ng-template>
+
   <div class="metis-dashboard">
     <div class="metis-dashboard-left">
-      <fieldset *ngIf="allFacetData" class="filter-params" formGroupName="filterParams">
-        <h3 [title]="getFormattedFilterParam('None selected')">Filters</h3>
-        <label *ngFor="let facet of facetConf; let i = index"
-          >{{ facet | renameApiFacet }}
-          <select class="filter-select" [formControlName]="i" (change)="refresh()">
-            <option value=""></option>
-            <option *ngFor="let option of getSelectOptions(facet)" [ngValue]="option">{{
-              option
-            }}</option>
-          </select>
-        </label>
-      </fieldset>
+      <h3 [title]="getFormattedFilterParam('None selected')">Filters</h3>
+      <label
+        >{{ 'contentTier' | renameApiFacet }}
+      </label>
+
+      <ul class="options-wrapper-2">
+        <ng-container *ngIf="allFacetData">
+          <ng-content
+            *ngTemplateOutlet="
+              cbFieldset;
+              context: { options: contentTiersOptions, group: 'filterContentTierCB' }
+            "
+          ></ng-content>
+          <ng-container *ngFor="let filter of facetConf">
+            <ng-content
+              *ngTemplateOutlet="
+                cbFieldset;
+                context: { options: getSelectOptions(filter, allFacetData), group: filter }
+              "
+            ></ng-content>
+          </ng-container>
+        </ng-container>
+      </ul>
     </div>
 
     <div class="metis-dashboard-right">
-      <h3 [title]="getFormattedFacetParam()">
+      <h3 [title]="getFormattedContentTierParam() + getFormattedFacetParam()">
         Facets
         <span class="svg-icon-spin" [ngClass]="{ showing: isLoading }"></span>
       </h3>
+
+      <div>
+        <label *ngFor="let tier of contentTiersConf; let i = index">
+          <input
+            type="radio"
+            value="{{ tier }}"
+            (change)="refreshCT()"
+            formControlName="contentTiers"
+          />
+          {{ tier | renameApiFacet }}
+        </label>
+      </div>
 
       <div class="facet-params">
         <label *ngFor="let facet of facetConf; let i = index">
@@ -27,7 +80,7 @@
             type="radio"
             value="{{ facet }}"
             formControlName="facetParameter"
-            (change)="refresh(i)"
+            (change)="switchFacet(facet)"
           />
           {{ facet | renameApiFacet }}
         </label>
@@ -104,7 +157,7 @@
         </ngx-datatable-column>
       </ngx-datatable>
 
-      <ul class="options-wrapper" (clickOutside)="onClickedOutside()">
+      <ul *ngIf="allFacetData" class="options-wrapper" (clickOutside)="onClickedOutside()">
         <li class="dropdown">
           <a (click)="toggleChartOptions()"><h3>Charts</h3></a>
           <div *ngIf="chartOptionsOpen" class="dropdown-wrapper">
