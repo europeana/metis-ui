@@ -1,13 +1,12 @@
 <form [formGroup]="form" class="dashboard-wrapper">
-
   <ng-template #cbFieldset let-group="group" let-options="options">
     <li class="dropdown">
       <a
         (click)="toggleFilterMenu(group)"
         class="filter-opener"
         [ngClass]="{ disabled: menuStates[group].disabled }"
-        >{{ group | renameApiFacet }}</a
-      >
+        >{{ group | renameApiFacet }}
+      </a>
       <div *ngIf="menuStates[group].visible" class="dropdown-wrapper">
         <div class="dropdown-content">
           <fieldset [formGroupName]="group" class="checkboxes" [ngClass]="group">
@@ -31,17 +30,14 @@
 
   <div class="metis-dashboard">
     <div class="metis-dashboard-left">
-      <h3 [title]="getFormattedFilterParam('None selected')">Filters</h3>
-      <label
-        >{{ 'contentTier' | renameApiFacet }}
-      </label>
+      <h3 [title]="getFormattedFilterParam()">Filters</h3>
 
-      <ul class="options-wrapper-2">
+      <ul class="filters" (clickOutside)="closeFilters()">
         <ng-container *ngIf="allFacetData">
           <ng-content
             *ngTemplateOutlet="
               cbFieldset;
-              context: { options: contentTiersOptions, group: 'filterContentTierCB' }
+              context: { options: contentTiersOptions, group: 'filterContentTier' }
             "
           ></ng-content>
           <ng-container *ngFor="let filter of facetConf">
@@ -157,7 +153,11 @@
         </ngx-datatable-column>
       </ngx-datatable>
 
-      <ul *ngIf="allFacetData" class="options-wrapper" (clickOutside)="onClickedOutside()">
+      <hr />
+      <a [href]="getUrl(true)" target="_blank">View in portal</a>
+      <hr />
+
+      <ul *ngIf="allFacetData" class="options-wrapper" (clickOutside)="closeDisplayOptions()">
         <li class="dropdown">
           <a (click)="toggleChartOptions()"><h3>Charts</h3></a>
           <div *ngIf="chartOptionsOpen" class="dropdown-wrapper">

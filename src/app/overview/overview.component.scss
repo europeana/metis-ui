@@ -51,6 +51,7 @@ label {
   white-space: nowrap;
   label {
     display: block;
+    margin: 0 0.6em;
   }
 }
 
@@ -81,12 +82,9 @@ label {
 .options-wrapper {
   display: flex;
 }
-.options-wrapper-2 {
+.filters {
   display: flex;
   flex-direction: column;
-  //.dropdown  .dropdown-content{
-  //  max-height: 40em;
-  //}
 }
 
 .dropdown {

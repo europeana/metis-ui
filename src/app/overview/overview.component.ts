@@ -14,6 +14,11 @@ import { DataPollingComponent } from '../data-polling';
 
 export type HeaderNameType = 'name' | 'count' | 'percent';
 
+export interface MenuState {
+  visible: boolean;
+  disabled?: boolean;
+}
+
 export interface FacetField {
   count: number;
   label: HeaderNameType;
@@ -60,16 +65,12 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   columnNames = ['name', 'count', 'percent'].map((x) => x as HeaderNameType);
   exportTypes = ['csv', 'pdf', 'png'];
 
-  facetConf = [
-    'metadataTier',
-    'COUNTRY',
-    'TYPE',
-    'RIGHTS',
-    'DATA_PROVIDER',
-    'PROVIDER'
-  ];
+  facetConf = ['metadataTier', 'COUNTRY', 'TYPE', 'RIGHTS', 'DATA_PROVIDER', 'PROVIDER'];
 
-  menuStates: { [key: string]: { visible: boolean; disabled: boolean } } = {};
+  menuStates: { [key: string]: MenuState } = {
+    filterContentTier: { visible: false }
+  };
+
   contentTiersConf = ['0', '1 OR 2 OR 3 OR 4'];
   contentTiersOptions = ['0', '1', '2', '3', '4'];
 
@@ -107,7 +108,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   isLoading = true;
 
   selFacetIndex = 0;
-  disableZeros = false;
+  disableZeros = true;
 
   allFacetData: Array<Facet>;
   chartData: Array<NameValue>;
@@ -165,6 +166,21 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     return false;
   }
 
+  getUrl(portal = false): string {
+    let apiOnly = '';
+    let server;
+    const ct = this.getFormattedContentTierParam();
+    const filterParam = this.getFormattedFilterParam();
+
+    if (portal) {
+      server = 'https://www.europeana.eu/en/search';
+    } else {
+      server = 'https://api.europeana.eu/record/v2/search.json';
+      apiOnly = '&wskey=api2demo&profile=facets&rows=0' + this.getFormattedFacetParam();
+    }
+    return `${server}${ct}${apiOnly}${filterParam}`;
+  }
+
   /** ngOnInit
   /* - set up data polling
   */
@@ -173,30 +189,11 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
       60 * 100000,
       () => {
         this.isLoading = true;
-        const apiSrv = 'https://api.europeana.eu/record/v2/search.json';
-        const qry = this.getFormattedContentTierParam();
-        const auth = '&wskey=api2demo';
-        const profile = '&profile=facets';//&f.DEFAULT.facet.limit=500';
-        const facetParam = this.getFormattedFacetParam();
-
-        let theVal = this.form.value['filterContentTierCB'];
-        const filterContentTierCBParam = Object.keys(theVal)
-          .filter((key) => {
-            return theVal[key];
-          })
-          .map((s: string) => {
-            return `&qf=contentTier:(${encodeURIComponent(s)})`;
-          })
-          .join('');
-
-        const filterParam = this.getFormattedFilterParam();
-        const url = `${apiSrv}${qry}${auth}${profile}${facetParam}${filterParam}${filterContentTierCBParam}&rows=0`;
-        return this.http.get<RawFacet>(url);
+        return this.http.get<RawFacet>(this.getUrl());
       },
       (rawResult: RawFacet) => {
         this.isLoading = false;
         this.selFacetIndex = this.findFacetIndex(this.form.value.facetParameter, rawResult.facets);
-
 
         this.facetConf.forEach((name: string) => {
           this.addCheckboxes(name, this.getSelectOptions(name, rawResult.facets));
@@ -213,12 +210,12 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
 
   addCheckboxes(name: string, options: Array<string>): void {
     const checkboxes = <FormGroup>this.form.get(name);
-    if(!this.menuStates[name]){
+    if (!this.menuStates[name]) {
       this.menuStates[name] = { visible: false, disabled: this.form.value.facetParameter === name };
     }
     options.forEach((option: string) => {
       const fName = this.fixName(option);
-      if(!this.form.get(name + '.' + fName)){
+      if (!this.form.get(name + '.' + fName)) {
         checkboxes.addControl(fName, new FormControl(false));
       }
     });
@@ -229,45 +226,36 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   */
   buildForm(): void {
     this.form = this.fb.group({
-
       facetParameter: [this.facetConf[0]],
       contentTiers: [this.contentTiersConf[1]],
-
-      filterContentTier: [''],
-
-      filterContentTierCB: this.fb.group({}),
-
-      metadataTier: this.fb.group({}),
-      COUNTRY: this.fb.group({}),
-      TYPE: this.fb.group({}),
-      RIGHTS: this.fb.group({}),
-      DATA_PROVIDER: this.fb.group({}),
-      PROVIDER: this.fb.group({}),
-
-      /*
-      ...['filterCountry', 'filterType'].map((s: string) => {
-        return {
-          s: this.fb.group({})
-        }
-      }),
-      */
-
       showPercent: [false],
       chartType: [this.chartTypes[0]]
     });
-
-    this.menuStates['filterContentTierCB'] = { visible: false, disabled: this.form.value.facetParameter === 'filterContentTierCB' };
-    this.addCheckboxes('filterContentTierCB', this.contentTiersOptions);
+    ['filterContentTier', ...this.facetConf].map((s: string) => {
+      this.form.addControl(s, this.fb.group({}));
+    });
+    this.addCheckboxes('filterContentTier', this.contentTiersOptions);
   }
 
   /** fixName
   /* - removes the dot character from a string
   */
-  fixName(s: string):string {
-    const res = s.replace(/\./g, '');
-    return res;
+  fixName(s: string): string {
+    return s.replace(/\./g, '_____');
   }
 
+  /** unfixName
+  /* - removes the dot character from a string
+  */
+  unfixName(s: string): string {
+    return s.replace(/_____/g, '.');
+  }
+
+  /** findFacetIndex
+  /* - get the index of an item in the array
+  /* @param {string} facetName - the name of the facet
+  /* @param {Array<Facet>} facetData - the array to search
+  */
   findFacetIndex(facetName: string, facetData: Array<Facet>): number {
     return facetData.findIndex((f: Facet) => {
       return f.name === facetName;
@@ -275,11 +263,10 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   }
 
   /** getSelectOptions
-  /* returns array of values for a facet
   /* @param {string} facetName - the name of the facet
+  /* returns Array<string> of values for a facet
   */
   getSelectOptions(facetName: string, facetData: Array<Facet>): Array<string> {
-    //if (this.allFacetData) {
     const matchIndex = this.findFacetIndex(facetName, facetData);
     return facetData[matchIndex].fields.map((ff: FacetField) => {
       return ff.label;
@@ -290,7 +277,21 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   /* returns contentTier formatted as url parameters
   */
   getFormattedContentTierParam(): string {
-    return `?query=contentTier:(${encodeURIComponent(this.form.value['contentTiers'])})`;
+    let res = '';
+    let theVal = this.form.value['filterContentTier'];
+
+    const filterContentTierParam = Object.keys(theVal)
+      .filter((key) => {
+        return theVal[key];
+      })
+      .join(' OR ');
+
+    if (filterContentTierParam.length > 0) {
+      res = `(${filterContentTierParam})`;
+    } else {
+      res = `(${this.form.value['contentTiers']})`;
+    }
+    return '?query=contentTier:' + encodeURIComponent(res);
   }
 
   /** getFormattedFacetParam
@@ -339,70 +340,55 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   /* returns concatentated filter names-value pairs formatted as url parameters
   /* @param {string} def - the default return value
   */
-  getFormattedFilterParam(def: string = ''): string {
+  getFormattedFilterParam(): string {
     return this.facetConf
-    .filter((filterName: string) => {
-      const state = this.menuStates[filterName];
-      return state && !state.disabled;
-    })
-    .map((filterName: string) => {
-      let checks = this.form.value[filterName];
+      .filter((filterName: string) => {
+        return this.form.controls[filterName].enabled;
+      })
+      .map((filterName: string) => {
+        const checkVals = this.form.value[filterName];
 
-
-      /*
-      this.form.value.filterParams
-        .map((val: string, i: number) => {
-          if (val) {
-            const facetIndex = i >= offset && offset > -1 ? i + 1 : i;
-            const facetName = this.facetConf[facetIndex];
-            return `${val}`
-              .split(',')
-              .map((value: string) => {
-                return `&qf=${facetName}:"${encodeURIComponent(value)}"`;
-              })
-
-      */
-      return Object.keys(checks)
-        .filter((key) => {
-          return checks[key];
-        })
-        .map((value: string) => {
-          return `&qf=${filterName}:"${encodeURIComponent(value)}"`;
-        })
-        .join('');
-    }).join('');
+        return Object.keys(checkVals)
+          .filter((key: string) => {
+            return checkVals[key];
+          })
+          .map((value: string) => {
+            const unfixed = this.unfixName(value);
+            return `&qf=${filterName}:"${encodeURIComponent(unfixed)}"`;
+          })
+          .join('');
+      })
+      .join('');
   }
-
 
   enableFilters(): void {
-    //this.filterFormArray.controls.forEach((control) => {
-    //  control.enable();
-    //});
+    this.facetConf.forEach((name: string) => {
+      this.form.controls[name].enable();
+      this.menuStates[name].disabled = false;
+    });
   }
 
-  //disableFilter(i: number): void {
-  //  this.enableFilters();
-  //  this.form.get(`filterParams.${i}`)!.disable();
-  //}
-
   switchFacet(disableName: string): void {
-    //this.disableFilter(disableIndex);
-    console.log('switchFacet(' + disableName + ')')
-    this.menuStates[disableName]!.disabled = true;
+    this.enableFilters();
+    this.form.controls[disableName].disable();
+    this.menuStates[disableName].disabled = true;
     this.refresh();
   }
 
-  refresh(disableIndex?: number): void {
+  refresh(): void {
     this.pollRefresh.next(true);
   }
 
   refreshCT(): void {
     const val = this.form.value['contentTiers'];
-    console.log('refreshCT ' + val);
+    const stateCT = this.menuStates['filterContentTier'];
+
     if (val === this.contentTiersConf[0]) {
-      this.disableZeros = true;
-    } else {
+      stateCT.disabled = true;
       this.disableZeros = false;
+    } else {
+      stateCT.disabled = false;
+      this.disableZeros = true;
     }
     this.refresh();
   }
@@ -439,22 +425,32 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     });
   }
 
+  closeFilters(exempt = ''): void {
+    Object.keys(this.menuStates)
+      .filter((s: string) => {
+        return s !== exempt;
+      })
+      .forEach((s: string) => {
+        this.menuStates[s].visible = false;
+      });
+  }
+
   toggleFilterMenu(filterName: string): void {
-    //this.menuVisibilities[filterName] = !this.menuVisibilities[filterName];
+    this.closeFilters(filterName);
     this.menuStates[filterName].visible = !this.menuStates[filterName].visible;
   }
 
   toggleChartOptions(): void {
-    this.onClickedOutside();
+    this.downloadOptionsOpen = false;
     this.chartOptionsOpen = !this.chartOptionsOpen;
   }
 
   toggleDownloadOptions(): void {
-    this.onClickedOutside();
+    this.chartOptionsOpen = false;
     this.downloadOptionsOpen = !this.downloadOptionsOpen;
   }
 
-  onClickedOutside(): void {
+  closeDisplayOptions(): void {
     this.chartOptionsOpen = false;
     this.downloadOptionsOpen = false;
   }
