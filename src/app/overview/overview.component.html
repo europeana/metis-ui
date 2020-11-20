@@ -4,7 +4,7 @@
       <a
         (click)="toggleFilterMenu(group)"
         class="filter-opener"
-        [ngClass]="{ disabled: menuStates[group].disabled }"
+        [ngClass]="{ disabled: menuStates[group].disabled, open: menuStates[group].visible }"
         >{{ group | renameApiFacet }}
       </a>
       <div *ngIf="menuStates[group].visible" class="dropdown-wrapper">
@@ -25,6 +25,16 @@
           </fieldset>
         </div>
       </div>
+
+      <ng-container *ngIf="!menuStates[group].visible">
+        <ng-container *ngIf="getSetValues(group) as setVals">
+          <ng-container *ngIf="setVals.length > 0">
+            <ul class="applied-filter-summary">
+              <li *ngFor="let val of setVals">{{ val }}</li>
+            </ul>
+          </ng-container>
+        </ng-container>
+      </ng-container>
     </li>
   </ng-template>
 
@@ -34,12 +44,6 @@
 
       <ul class="filters" (clickOutside)="closeFilters()">
         <ng-container *ngIf="allFacetData">
-          <ng-content
-            *ngTemplateOutlet="
-              cbFieldset;
-              context: { options: contentTiersOptions, group: 'filterContentTier' }
-            "
-          ></ng-content>
           <ng-container *ngFor="let filter of facetConf">
             <ng-content
               *ngTemplateOutlet="
@@ -50,6 +54,32 @@
           </ng-container>
         </ng-container>
       </ul>
+
+      <ul class="filters">
+        <li>
+          <input formControlName="datasetId" placeholder="Dataset Id" class="datasetId" />
+        </li>
+        <li>
+          <input
+            formControlName="dateFrom"
+            #dateFrom
+            [attr.max]="today"
+            type="date"
+            placeholder="{{ 'YYYY-MM-DD' | translate }}"
+            (change)="dateChange(true)"
+          />
+        </li>
+        <li>
+          <input
+            formControlName="dateFrom"
+            #dateTo
+            [attr.max]="today"
+            type="date"
+            placeholder="{{ 'YYYY-MM-DD' | translate }}"
+            (change)="dateChange(false)"
+          />
+        </li>
+      </ul>
     </div>
 
     <div class="metis-dashboard-right">
@@ -58,19 +88,16 @@
         <span class="svg-icon-spin" [ngClass]="{ showing: isLoading }"></span>
       </h3>
 
-      <div>
-        <label *ngFor="let tier of contentTiersConf; let i = index">
-          <input
-            type="radio"
-            value="{{ tier }}"
-            (change)="refreshCT()"
-            formControlName="contentTiers"
-          />
-          {{ tier | renameApiFacet }}
-        </label>
-      </div>
-
       <div class="facet-params">
+        <div class="switch-wrapper">
+          <span>
+            CT Zero
+          </span>
+          <label class="switch">
+            <input type="checkbox" formControlName="contentTierZero" (change)="refreshCTZ()" />
+            <span class="slider round"></span>
+          </label>
+        </div>
         <label *ngFor="let facet of facetConf; let i = index">
           <input
             type="radio"
@@ -87,12 +114,12 @@
         #dataTable
         id="dataTable"
         [rows]="tableData.tableRows"
-        class="material expandable datatable"
+        class="material expandable datatable fullscreen"
         [columnMode]="ColumnMode.flex"
         [headerHeight]="50"
         [footerHeight]="50"
         [rowHeight]="50"
-        [scrollbarV]="false"
+        [scrollbarV]="true"
         [limit]="5"
       >
         <!-- Mobile row detail -->
@@ -134,7 +161,9 @@
           [minWidth]="200"
         >
           <ng-template let-value="value" ngx-datatable-cell-template>
-            {{ value }}
+            <a target="_blank" [href]="getUrlRow(value)">
+              {{ value }}
+            </a>
           </ng-template>
         </ngx-datatable-column>
 
@@ -151,15 +180,42 @@
             <span class="mobile-hidden">{{ value }}</span>
           </ng-template>
         </ngx-datatable-column>
-      </ngx-datatable>
 
-      <hr />
-      <a [href]="getUrl(true)" target="_blank">View in portal</a>
-      <hr />
+        <ngx-datatable-footer *ngIf="true">
+          <ng-template
+            ngx-datatable-footer-template
+            let-rowCount="rowCount"
+            let-pageSize="pageSize"
+            let-selectedCount="selectedCount"
+            let-curPage="curPage"
+            let-offset="offset"
+          >
+            <div style="margin: 5px 10px">
+              <div><strong>Total</strong>: {{ totalResults }}</div>
+              <a [href]="getUrl(true)" target="_blank">View in portal</a>
+            </div>
+
+            <datatable-pager
+              [pagerLeftArrowIcon]="'datatable-icon-left'"
+              [pagerRightArrowIcon]="'datatable-icon-right'"
+              [pagerPreviousIcon]="'datatable-icon-prev'"
+              [pagerNextIcon]="'datatable-icon-skip'"
+              [page]="curPage"
+              [size]="pageSize"
+              [count]="rowCount"
+              [hidden]="!(rowCount / pageSize > 1)"
+              (change)="dataTable.onFooterPage($event)"
+            >
+            </datatable-pager>
+          </ng-template>
+        </ngx-datatable-footer>
+      </ngx-datatable>
 
       <ul *ngIf="allFacetData" class="options-wrapper" (clickOutside)="closeDisplayOptions()">
         <li class="dropdown">
-          <a (click)="toggleChartOptions()"><h3>Charts</h3></a>
+          <a (click)="toggleChartOptions()" [ngClass]="{ open: chartOptionsOpen }"
+            ><h3>Charts</h3></a
+          >
           <div *ngIf="chartOptionsOpen" class="dropdown-wrapper">
             <div class="dropdown-content">
               <div class="chart-settings">
@@ -189,7 +245,9 @@
         </li>
 
         <li class="dropdown">
-          <a (click)="toggleDownloadOptions()"><h3>Downloads</h3></a>
+          <a (click)="toggleDownloadOptions()" [ngClass]="{ open: downloadOptionsOpen }"
+            ><h3>Downloads</h3></a
+          >
           <div *ngIf="downloadOptionsOpen" class="dropdown-wrapper">
             <ul class="dropdown-content">
               <li *ngFor="let exportType of exportTypes">
@@ -200,7 +258,7 @@
         </li>
       </ul>
 
-      <div *ngIf="chartData" class="chart-wrapper">
+      <div *ngIf="chartData" class="chart-wrapper" id="pieChart" #pieChart>
         <ngx-charts-pie-chart
           *ngIf="showPie"
           [scheme]="colorScheme"
@@ -232,6 +290,7 @@
           [legendPosition]="'below'"
         ></ngx-charts-gauge>
       </div>
+      <img style="z-index: -1; position: absolute; width: 500px; max-width: 100%;" #canvas />
     </div>
   </div>
 </form>

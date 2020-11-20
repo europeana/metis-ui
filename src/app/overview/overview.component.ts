@@ -2,13 +2,19 @@ import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } fr
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
-import { ExportAsService } from 'ngx-export-as';
+import html2canvas from 'html2canvas';
+import * as pdfMake from 'pdfmake/build/pdfmake.js';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
+
 import { Subject } from 'rxjs';
 
 import {
   ColumnMode,
-  DatatableRowDetailDirective,
-  DatatableComponent
+  DatatableComponent,
+  DatatableRowDetailDirective
 } from '@swimlane/ngx-datatable';
 import { DataPollingComponent } from '../data-polling';
 
@@ -47,9 +53,13 @@ export interface NameValue {
 
 export interface RawFacet {
   facets: Array<Facet>;
+  totalResults: number;
 }
 
-export type ExportType = 'csv' | 'pdf' | 'png';
+export enum ExportType {
+  CSV = 'CSV',
+  PDF = 'PDF'
+}
 
 @Component({
   selector: 'app-overview',
@@ -60,19 +70,35 @@ export type ExportType = 'csv' | 'pdf' | 'png';
 export class OverviewComponent extends DataPollingComponent implements AfterViewInit {
   @ViewChild('dataTable') dataTable: DatatableComponent;
   @ViewChild('downloadAnchor') downloadAnchor: ElementRef;
+  @ViewChild('pieChart') pieChart: ElementRef;
+  @ViewChild('canvas') canvas: ElementRef;
+  @ViewChild('dateFrom') dateFrom: ElementRef;
+  @ViewChild('dateTo') dateTo: ElementRef;
+
+  today = new Date().toISOString().split('T')[0];
+  totalResults = 0;
 
   chartTypes = ['Pie', 'Bar', 'Gauge'];
   columnNames = ['name', 'count', 'percent'].map((x) => x as HeaderNameType);
-  exportTypes = ['csv', 'pdf', 'png'];
+  exportTypes: Array<ExportType> = [ExportType.CSV, ExportType.PDF];
 
-  facetConf = ['metadataTier', 'COUNTRY', 'TYPE', 'RIGHTS', 'DATA_PROVIDER', 'PROVIDER'];
+  facetConf = [
+    'contentTier',
+    'metadataTier',
+    'COUNTRY',
+    'TYPE',
+    'RIGHTS',
+    'DATA_PROVIDER',
+    'PROVIDER'
+  ];
 
   menuStates: { [key: string]: MenuState } = {
     filterContentTier: { visible: false }
   };
 
-  contentTiersConf = ['0', '1 OR 2 OR 3 OR 4'];
-  contentTiersOptions = ['0', '1', '2', '3', '4'];
+  contentTiersOptions = Array(5)
+    .fill(0)
+    .map((x, index) => `${x + index}`);
 
   colorScheme = {
     domain: [
@@ -114,13 +140,18 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   chartData: Array<NameValue>;
   tableData: FmtTableData;
 
-  constructor(
-    private readonly http: HttpClient,
-    private fb: FormBuilder,
-    private exportAsService: ExportAsService
-  ) {
+  constructor(private readonly http: HttpClient, private fb: FormBuilder) {
     super();
     this.buildForm();
+  }
+
+  getChartAsImageUrl(): Promise<string> {
+    return new Promise((resolve) => {
+      html2canvas(this.pieChart.nativeElement).then((canvas: HTMLCanvasElement) => {
+        this.canvas.nativeElement.src = canvas.toDataURL('image/png');
+        resolve(canvas.toDataURL('image/png'));
+      });
+    });
   }
 
   async download(data: string): Promise<void> {
@@ -131,7 +162,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     link.download = 'data.csv';
     link.click();
 
-    const fn = () => {
+    const fn = (): void => {
       window.URL.revokeObjectURL(url);
     };
     fn();
@@ -139,38 +170,91 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
 
   export(type: ExportType): false {
     this.downloadOptionsOpen = false;
-    if (type === 'csv') {
-      const items = this.tableData.tableRows;
-      const replacer = (_: string, value: string) => (value === null ? '' : value);
-      const header = this.columnNames;
 
-      let csv = items.map((row: TableRow) => {
-        let vals: Array<string> = header.map((fieldName: HeaderNameType) => {
+    if (type === ExportType.CSV) {
+      const items = this.tableData.tableRows;
+      const replacer = (_: string, value: string): string => {
+        return value === null ? '' : value;
+      };
+
+      const header = this.columnNames;
+      const csv = items.map((row: TableRow) => {
+        const vals: Array<string> = header.map((fieldName: HeaderNameType) => {
           return JSON.stringify(row[fieldName], replacer);
         });
         return vals.join(',');
       });
       csv.unshift(header.join(','));
       this.download(csv.join('\r\n'));
-    } else {
-      this.exportAsService
-        .save(
-          {
-            type: type,
-            elementIdOrContent: 'dataTable'
+    } else if (type === ExportType.PDF) {
+      this.getChartAsImageUrl().then((imgUrl: string) => {
+        let html = {
+          content: [
+            { text: 'Tables', style: 'header' },
+            'Official documentation is in progress, this document is just a glimpse of what is possible with pdfmake and its layout engine.',
+            {
+              text: 'A simple table (no headers, no width specified, no spans, no styling)',
+              style: 'subheader'
+            },
+            {
+              image: imgUrl
+            },
+            'The following table has nothing more than a body array',
+            {
+              style: 'tableExample',
+              table: {
+                body: [
+                  this.tableData.columns.map((s: string) => {
+                    return { text: s, style: 'tableHeader', alignment: 'center' };
+                  }),
+                  ...this.tableData.tableRows.map((tr: TableRow) => {
+                    return [tr.name, tr.count, tr.percent];
+                  })
+                ]
+              },
+              layout: {
+                fillColor: function(rowIndex: number) {
+                  return rowIndex % 2 === 0 ? '#CCCCCC' : null;
+                }
+              }
+            }
+          ],
+          styles: {
+            header: {
+              backgroundColor: 'red',
+              fontSize: 18,
+              bold: true
+            },
+            subheader: {
+              fontSize: 16,
+              bold: true
+            },
+            tableHeader: {
+              bold: true,
+              fontSize: 13,
+              color: 'black'
+            }
           },
-          'Europeana_Data_Export'
-        )
-        .subscribe(() => {});
+          defaultStyle: {
+            // alignment: 'justify'
+          }
+        };
+        pdfMake.createPdf(html).download();
+      });
     }
     return false;
   }
 
+  /** getUrl
+  /* @param {boolean} portal - the url type returned
+  /* returns the url (portal or api) according to the form state
+  */
   getUrl(portal = false): string {
     let apiOnly = '';
     let server;
     const ct = this.getFormattedContentTierParam();
     const filterParam = this.getFormattedFilterParam();
+    const datasetIdParam = this.getFormattedDatasetIdParam();
 
     if (portal) {
       server = 'https://www.europeana.eu/en/search';
@@ -178,7 +262,17 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
       server = 'https://api.europeana.eu/record/v2/search.json';
       apiOnly = '&wskey=api2demo&profile=facets&rows=0' + this.getFormattedFacetParam();
     }
-    return `${server}${ct}${apiOnly}${filterParam}`;
+    return `${server}${ct}${apiOnly}${filterParam}${datasetIdParam}`;
+  }
+
+  /** getUrlRow
+  /* @param {string} qfVal - the specific item's value for the currently-selected facet
+  /* returns the (portal) url for a specific item
+  */
+  getUrlRow(qfVal: string): string {
+    return `${this.getUrl(true)}&qf=${this.form.value.facetParameter}:"${encodeURIComponent(
+      qfVal
+    )}"`;
   }
 
   /** ngOnInit
@@ -196,10 +290,11 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
         this.selFacetIndex = this.findFacetIndex(this.form.value.facetParameter, rawResult.facets);
 
         this.facetConf.forEach((name: string) => {
-          this.addCheckboxes(name, this.getSelectOptions(name, rawResult.facets));
+          this.addMenuCheckboxes(name, this.getSelectOptions(name, rawResult.facets));
         });
 
         this.allFacetData = rawResult.facets;
+        this.totalResults = rawResult.totalResults;
 
         // set pie and table data
         this.extractChartData();
@@ -208,8 +303,8 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     ).getPollingSubject();
   }
 
-  addCheckboxes(name: string, options: Array<string>): void {
-    const checkboxes = <FormGroup>this.form.get(name);
+  addMenuCheckboxes(name: string, options: Array<string>): void {
+    const checkboxes = this.form.get(name) as FormGroup;
     if (!this.menuStates[name]) {
       this.menuStates[name] = { visible: false, disabled: this.form.value.facetParameter === name };
     }
@@ -227,17 +322,21 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   buildForm(): void {
     this.form = this.fb.group({
       facetParameter: [this.facetConf[0]],
-      contentTiers: [this.contentTiersConf[1]],
+      contentTierZero: [false],
       showPercent: [false],
-      chartType: [this.chartTypes[0]]
+      chartType: [this.chartTypes[0]],
+      datasetId: [''],
+      dateFrom: [''],
+      dateTo: ['']
     });
-    ['filterContentTier', ...this.facetConf].map((s: string) => {
+
+    this.facetConf.map((s: string) => {
       this.form.addControl(s, this.fb.group({}));
     });
-    this.addCheckboxes('filterContentTier', this.contentTiersOptions);
   }
 
   /** fixName
+  /* @param {string} s - the target string
   /* - removes the dot character from a string
   */
   fixName(s: string): string {
@@ -245,6 +344,7 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   }
 
   /** unfixName
+  /* @param {string} s - the target string
   /* - removes the dot character from a string
   */
   unfixName(s: string): string {
@@ -274,24 +374,19 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   }
 
   /** getFormattedContentTierParam
-  /* returns contentTier formatted as url parameters
+  /* returns concatenated filterContentTier values if present
+  /* returns contentTierZero value if filterContentTier values not present
   */
   getFormattedContentTierParam(): string {
     let res = '';
-    let theVal = this.form.value['filterContentTier'];
-
-    const filterContentTierParam = Object.keys(theVal)
-      .filter((key) => {
-        return theVal[key];
-      })
-      .join(' OR ');
-
-    if (filterContentTierParam.length > 0) {
-      res = `(${filterContentTierParam})`;
-    } else {
-      res = `(${this.form.value['contentTiers']})`;
-    }
-    return '?query=contentTier:' + encodeURIComponent(res);
+    const filterContentTierParam = this.getSetValues('filterContentTier');
+    res = (filterContentTierParam.length > 0
+      ? filterContentTierParam
+      : this.form.value['contentTierZero']
+      ? this.contentTiersOptions
+      : this.contentTiersOptions.slice(1)
+    ).join(' OR ');
+    return `?query=contentTier:(${encodeURIComponent(res)})`;
   }
 
   /** getFormattedFacetParam
@@ -305,36 +400,13 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
       .join('');
   }
 
-  /** getFormattedFilterParam
-  /* returns facets filter names and values formatted as url parameters
-  /* @param {string} def - the default return value
-  */
-  /*
-  getFormattedFilterParam(def: string = ''): string {
-    const offset = this.filterFormArray.controls.findIndex((control: AbstractControl) => {
-      return control.disabled;
-    });
-    return (
-      this.form.value.filterParams
-        .map((val: string, i: number) => {
-          if (val) {
-            const facetIndex = i >= offset && offset > -1 ? i + 1 : i;
-            const facetName = this.facetConf[facetIndex];
-            return `${val}`
-              .split(',')
-              .map((value: string) => {
-                return `&qf=${facetName}:"${encodeURIComponent(value)}"`;
-              })
-              .join('');
-          } else {
-            return null;
-          }
-        })
-        .filter((s: string) => !!s)
-        .join('') || def
-    );
+  /** getFormattedDatasetIdParam
+   */
+  getFormattedDatasetIdParam(): string {
+    const val = this.form.value['datasetId'];
+    console.log('val datasetId ===  ' + val);
+    return val ? `&datasetId=${val}` : '';
   }
-  */
 
   /** getFormattedFilterParam
   /* returns concatentated filter names-value pairs formatted as url parameters
@@ -342,16 +414,12 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
   */
   getFormattedFilterParam(): string {
     return this.facetConf
+      .slice(1)
       .filter((filterName: string) => {
         return this.form.controls[filterName].enabled;
       })
       .map((filterName: string) => {
-        const checkVals = this.form.value[filterName];
-
-        return Object.keys(checkVals)
-          .filter((key: string) => {
-            return checkVals[key];
-          })
+        return this.getSetValues(filterName)
           .map((value: string) => {
             const unfixed = this.unfixName(value);
             return `&qf=${filterName}:"${encodeURIComponent(unfixed)}"`;
@@ -359,6 +427,25 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
           .join('');
       })
       .join('');
+  }
+
+  getSetValues(filterName: string): Array<string> {
+    const checkVals = this.form.value[filterName];
+    return checkVals
+      ? Object.keys(checkVals).filter((key: string) => {
+          return checkVals[key];
+        })
+      : [];
+  }
+
+  dateChange(isDateFrom: boolean): void {
+    const valFrom = this.form.value.dateFrom;
+    const valTo = this.form.value.dateFrom;
+    if (isDateFrom) {
+      this.dateTo.nativeElement.setAttribute('min', valFrom);
+    } else {
+      this.dateFrom.nativeElement.setAttribute('max', valTo ? valTo : this.today);
+    }
   }
 
   enableFilters(): void {
@@ -379,17 +466,8 @@ export class OverviewComponent extends DataPollingComponent implements AfterView
     this.pollRefresh.next(true);
   }
 
-  refreshCT(): void {
-    const val = this.form.value['contentTiers'];
-    const stateCT = this.menuStates['filterContentTier'];
-
-    if (val === this.contentTiersConf[0]) {
-      stateCT.disabled = true;
-      this.disableZeros = false;
-    } else {
-      stateCT.disabled = false;
-      this.disableZeros = true;
-    }
+  refreshCTZ(): void {
+    this.disableZeros = !this.form.value['contentTierZero'];
     this.refresh();
   }
 

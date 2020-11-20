@@ -6,7 +6,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { CollapsibleDirective } from './_directives/collapsible';
-import { ExportAsModule } from 'ngx-export-as';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { XmlPipe } from './_helpers';
@@ -145,7 +144,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     AppRoutingModule,
     CodemirrorModule,
     ClickOutsideModule,
-    ExportAsModule,
     NgxChartsModule,
     NgxDatatableModule
   ],

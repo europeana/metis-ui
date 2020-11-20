@@ -7,6 +7,72 @@
 
 $width-left-col: 200px;
 
+.switch-wrapper {
+  align-items: center;
+  display: flex;
+  > span {
+    padding-right: 0.4em;
+  }
+  .switch {
+    position: relative;
+    width: 60px;
+
+    .slider {
+      background-color: #ccc;
+      bottom: 0;
+      border-radius: 34px;
+      cursor: pointer;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transition: 0.4s;
+
+      &::before {
+        border-radius: 50%;
+        position: absolute;
+        content: '';
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+    }
+
+    input:checked + .slider {
+      background-color: $eu-jade;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px $eu-jade;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+  }
+}
+
+input[type='date'],
+.datasetId {
+  width: 11em;
+}
+
+.datasetId {
+  margin-bottom: 1em;
+}
+
 app-overview {
   width: 100%;
 }
@@ -82,13 +148,33 @@ label {
 .options-wrapper {
   display: flex;
 }
+
 .filters {
   display: flex;
   flex-direction: column;
+
+  > li:not(:last-child) {
+    margin-bottom: 1em;
+  }
+
+  &:last-child {
+    margin-top: 2em;
+  }
+
+  .applied-filter-summary {
+    color: #999;
+    font-size: 0.7em;
+    font-style: italic;
+    list-style: circle;
+    margin: 0.5em 2em;
+  }
 }
 
 .dropdown {
   position: relative;
+  a.open::after {
+    transform: rotate(180deg);
+  }
 }
 
 .chart-settings {
@@ -110,6 +196,13 @@ label {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+
+  label {
+    align-items: center;
+    display: flex;
+    height: 34px;
+    padding: 0;
+  }
 }
 
 .mobile-row {
