@@ -6,6 +6,7 @@ import {
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
+  PluginType,
   SimpleReportRequest,
   TopologyName,
   Workflow,
@@ -71,6 +72,7 @@ export class ActionbarComponent {
   /** assignExecutionData
   /* - extract the model to the component
   /* - optionally show the log
+  /*  @param {WorkflowExecution} value - the execution data
   */
   assignExecutionData(value: WorkflowExecution): void {
     this.currentPlugin = getCurrentPlugin(value);
@@ -139,6 +141,16 @@ export class ActionbarComponent {
       this.lastExecutionData!.id,
       this.datasetId,
       this.datasetName
+    );
+  }
+
+  /** canCancelWorkflow
+  /*  calculate if the workflow can be cancelled
+  */
+  canCancelWorkflow(): boolean {
+    return (
+      [`${PluginType.PUBLISH}`, `${PluginType.DEPUBLISH}`].indexOf(`${this.currentPluginName}`) ==
+        -1 && !this.isCompleted
     );
   }
 

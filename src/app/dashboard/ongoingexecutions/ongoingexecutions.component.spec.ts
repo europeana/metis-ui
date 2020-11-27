@@ -7,6 +7,9 @@ import {
   mockWorkflowExecution,
   MockWorkflowService
 } from '../../_mocked';
+
+import { PluginType, WorkflowExecution } from '../../_models';
+
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -54,6 +57,22 @@ describe('OngoingexecutionsComponent', () => {
     component.copyInformation('plugin', '1', '2');
     fixture.detectChanges();
     expect(component.contentCopied).toBe(true);
+  });
+
+  it('should calculate if the workflow can be cancelled', (): void => {
+    const we = {
+      currentPlugin: {},
+      cancelling: false
+    } as WorkflowExecution;
+
+    we.currentPlugin!.pluginType = PluginType.PUBLISH;
+    expect(component.canCancelWorkflow(we)).toBeFalsy();
+
+    we.currentPlugin!.pluginType = PluginType.NORMALIZATION;
+    expect(component.canCancelWorkflow(we)).toBeTruthy();
+
+    we.currentPlugin!.pluginType = PluginType.DEPUBLISH;
+    expect(component.canCancelWorkflow(we)).toBeFalsy();
   });
 
   it('should cancel a workflow', () => {
