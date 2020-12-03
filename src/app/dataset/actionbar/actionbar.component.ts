@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { copyExecutionAndTaskId } from '../../_helpers';
+import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
-  PluginType,
   SimpleReportRequest,
   TopologyName,
   Workflow,
@@ -67,6 +66,13 @@ export class ActionbarComponent {
   */
   get lastExecutionData(): WorkflowExecution | undefined {
     return this._lastExecutionData;
+  }
+
+  checkCanCancelWorkflow(): boolean {
+    if (this.isCompleted) {
+      return false;
+    }
+    return canCancelWorkflow(this._lastExecutionData);
   }
 
   /** assignExecutionData
@@ -141,16 +147,6 @@ export class ActionbarComponent {
       this.lastExecutionData!.id,
       this.datasetId,
       this.datasetName
-    );
-  }
-
-  /** canCancelWorkflow
-  /*  calculate if the workflow can be cancelled
-  */
-  canCancelWorkflow(): boolean {
-    return (
-      [`${PluginType.PUBLISH}`, `${PluginType.DEPUBLISH}`].indexOf(`${this.currentPluginName}`) ==
-        -1 && !this.isCompleted
     );
   }
 

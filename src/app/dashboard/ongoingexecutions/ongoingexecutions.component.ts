@@ -2,12 +2,11 @@
  */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { calcProgress, copyExecutionAndTaskId } from '../../_helpers';
+import { calcProgress, canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
   PluginExecution,
   PluginExecutionOverview,
-  PluginType,
   WorkflowExecution
 } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -29,6 +28,7 @@ export class OngoingexecutionsComponent implements OnInit {
   @Input() selectedExecutionDsId: string;
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
 
+  canCancelWorkflow = canCancelWorkflow;
   cancelling: string;
   contentCopied = false;
 
@@ -44,18 +44,6 @@ export class OngoingexecutionsComponent implements OnInit {
   */
   getPluginStatusClass(plugin: PluginExecutionOverview): string {
     return `status-${plugin.pluginStatus.toString().toLowerCase()}`;
-  }
-
-  /** canCancelWorkflow
-  /*  calculate if the workflow can be cancelled
-  /*  @param {WorkflowExecution} ongoing - the execution
-  */
-  canCancelWorkflow(ongoing: WorkflowExecution): boolean {
-    return (
-      [`${PluginType.PUBLISH}`, `${PluginType.DEPUBLISH}`].indexOf(
-        ongoing.currentPlugin!.pluginType
-      ) == -1 && !ongoing.cancelling
-    );
   }
 
   /** cancelWorkflow

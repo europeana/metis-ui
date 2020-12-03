@@ -9,7 +9,7 @@ import {
   mockWorkflowExecutionResults,
   MockWorkflowService
 } from '../../_mocked';
-import { PluginType, WorkflowStatus } from '../../_models';
+import { WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
 
 import { ActionbarComponent } from '.';
@@ -66,19 +66,6 @@ describe('ActionbarComponent', () => {
     expect(component.setShowPluginLog.emit).toHaveBeenCalled();
   });
 
-  it('should calculate if workflow can be cancelled', (): void => {
-    expect(component.canCancelWorkflow()).toBeTruthy();
-
-    component.currentPluginName = PluginType.PUBLISH;
-    expect(component.canCancelWorkflow()).toBeFalsy();
-
-    component.currentPluginName = PluginType.NORMALIZATION;
-    expect(component.canCancelWorkflow()).toBeTruthy();
-
-    component.currentPluginName = PluginType.DEPUBLISH;
-    expect(component.canCancelWorkflow()).toBeFalsy();
-  });
-
   it('should cancel', (): void => {
     component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
@@ -86,6 +73,8 @@ describe('ActionbarComponent', () => {
 
     spyOn(workflows, 'promptCancelThisWorkflow');
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
+    expect(cancel).toBeTruthy();
+
     cancel.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(
