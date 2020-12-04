@@ -73,6 +73,8 @@ describe('ActionbarComponent', () => {
 
     spyOn(workflows, 'promptCancelThisWorkflow');
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
+    expect(cancel).toBeTruthy();
+
     cancel.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(

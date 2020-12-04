@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { copyExecutionAndTaskId } from '../../_helpers';
+import { canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
   isWorkflowCompleted,
@@ -68,9 +68,17 @@ export class ActionbarComponent {
     return this._lastExecutionData;
   }
 
+  checkCanCancelWorkflow(): boolean {
+    if (this.isCompleted) {
+      return false;
+    }
+    return canCancelWorkflow(this._lastExecutionData);
+  }
+
   /** assignExecutionData
   /* - extract the model to the component
   /* - optionally show the log
+  /*  @param {WorkflowExecution} value - the execution data
   */
   assignExecutionData(value: WorkflowExecution): void {
     this.currentPlugin = getCurrentPlugin(value);

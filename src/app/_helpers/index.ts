@@ -1,6 +1,7 @@
 export * from './beautifyxml.pipe';
 export * from './cache';
 export * from './calcprogress';
+export * from './can-cancel-workflow';
 export * from './copycontent';
 export * from './statusclassfromplugin';
 export * from './harvest.validator';
