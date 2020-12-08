@@ -51,7 +51,7 @@
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1001.6",
+    "@angular-devkit/build-angular": "^0.1100.3",
     "@angular/cli": "^10.1.6",
     "@angular/compiler": "^10.1.5",
     "@angular/compiler-cli": "^10.1.5",
@@ -73,7 +73,7 @@
     "cypress": "^3.8.3",
     "eslint": "^6.8.0",
     "eslint-plugin-rxjs": "0.0.3-beta.30",
-    "http-server": "^0.11.1",
+    "http-server": "^0.12.3",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.0.0",
@@ -81,7 +81,7 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
-    "lite-server": "^2.5.4",
+    "lite-server": "^2.6.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
     "tar": "^4.4.8",
