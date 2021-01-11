@@ -13,7 +13,9 @@ import {
 export class DepublicationRowComponent {
   @Input() record: RecordDepublicationInfoDeletable;
   @Output() checkEvents: EventEmitter<DepublicationDeletionInfo> = new EventEmitter();
-  @ViewChild('depublicationTemplate') depublicationTemplate: TemplateRef<HTMLElement>;
+  @ViewChild('depublicationTemplate', { static: true }) depublicationTemplate: TemplateRef<
+    HTMLElement
+  >;
 
   checkboxDisabled(): boolean {
     return this.record.depublicationStatus !== DepublicationStatus.PENDING;
