@@ -6,6 +6,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { createMockPipe, MockAuthenticationService } from '../../_mocked';
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 
+import { HomeComponent } from '../../home';
+import { LoginComponent } from '../../login';
+import { ProfileComponent } from '../../profile';
+import { RegisterComponent } from '../../register';
+
 import { HeaderComponent } from '.';
 
 describe('HeaderComponent', () => {
@@ -17,7 +22,14 @@ describe('HeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: './profile', component: ProfileComponent },
+          { path: './signin', component: LoginComponent },
+          { path: './register', component: RegisterComponent },
+          { path: './home', component: HomeComponent }
+        ])
+      ],
       declarations: [HeaderComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -30,9 +42,9 @@ describe('HeaderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderComponent);
     header = fixture.debugElement.componentInstance;
-    router = TestBed.get(Router);
-    auth = TestBed.get(AuthenticationService);
-    redirect = TestBed.get(RedirectPreviousUrl);
+    router = TestBed.inject(Router);
+    auth = TestBed.inject(AuthenticationService);
+    redirect = TestBed.inject(RedirectPreviousUrl);
   });
 
   it('should toggle the signin menu', () => {

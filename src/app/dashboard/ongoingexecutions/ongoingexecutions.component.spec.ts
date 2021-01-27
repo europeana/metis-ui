@@ -7,6 +7,7 @@ import {
   mockWorkflowExecution,
   MockWorkflowService
 } from '../../_mocked';
+
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -35,7 +36,7 @@ describe('OngoingexecutionsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OngoingexecutionsComponent);
     component = fixture.componentInstance;
-    workflows = TestBed.get(WorkflowService);
+    workflows = TestBed.inject(WorkflowService);
   });
 
   it('should create', () => {

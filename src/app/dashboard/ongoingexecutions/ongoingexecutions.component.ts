@@ -2,7 +2,7 @@
  */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { calcProgress, copyExecutionAndTaskId } from '../../_helpers';
+import { calcProgress, canCancelWorkflow, copyExecutionAndTaskId } from '../../_helpers';
 import {
   getCurrentPlugin,
   PluginExecution,
@@ -28,6 +28,7 @@ export class OngoingexecutionsComponent implements OnInit {
   @Input() selectedExecutionDsId: string;
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
 
+  canCancelWorkflow = canCancelWorkflow;
   cancelling: string;
   contentCopied = false;
 

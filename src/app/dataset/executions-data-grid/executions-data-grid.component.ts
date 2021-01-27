@@ -24,7 +24,7 @@ export class ExecutionsDataGridComponent {
   @Input() wpe?: WorkflowOrPluginExecution;
   @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
-  @ViewChild('gridDataTemplate') gridDataTemplate: TemplateRef<HTMLElement>;
+  @ViewChild('gridDataTemplate', { static: true }) gridDataTemplate: TemplateRef<HTMLElement>;
 
   contentCopied = false;
 
@@ -41,9 +41,11 @@ export class ExecutionsDataGridComponent {
   */
   goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
     const previewFilters: PreviewFilters = {
-      executionId: execution.id,
-      pluginType: pluginExecution.pluginType,
-      startedDate: execution.startedDate
+      baseFilter: {
+        executionId: execution.id,
+        pluginType: pluginExecution.pluginType
+      },
+      baseStartedDate: execution.startedDate
     };
     this.openPreview.emit(previewFilters);
   }

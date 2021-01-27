@@ -59,7 +59,7 @@
       </div>
       <nav class="grid-cell ctrls row-divider">
         <ul>
-          <li *ngIf="!ongoing.cancelling && ongoing.currentPlugin.pluginType !== 'PUBLISH'">
+          <li *ngIf="canCancelWorkflow(ongoing)">
             <a
               class="cancel-btn svg-icon-cancel"
               title="{{ 'cancel' | translate }}"

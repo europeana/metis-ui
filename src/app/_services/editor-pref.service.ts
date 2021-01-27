@@ -1,6 +1,6 @@
 import { Injectable, QueryList } from '@angular/core';
 import { EditorConfiguration } from 'codemirror';
-import { CodemirrorComponent } from 'ng2-codemirror';
+import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 
 @Injectable({ providedIn: 'root' })
 export class EditorPrefService {
@@ -43,7 +43,9 @@ export class EditorPrefService {
     const newTheme = currTheme === 'default' ? this.altTheme : 'default';
 
     editors.forEach((cc) => {
-      cc.instance.setOption('theme', newTheme);
+      if (cc.codeMirror) {
+        cc.codeMirror.setOption('theme', newTheme);
+      }
     });
 
     this.setEditorPref(newTheme);

@@ -9,7 +9,7 @@ describe('RedirectPreviousUrl', () => {
     TestBed.configureTestingModule({
       providers: [RedirectPreviousUrl]
     });
-    service = TestBed.get(RedirectPreviousUrl);
+    service = TestBed.inject(RedirectPreviousUrl);
   });
 
   it('should store a url', () => {

@@ -15,7 +15,7 @@ import {
 } from '../../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-
+import { PreviewComponent } from '../';
 import { MappingComponent } from '.';
 
 describe('MappingComponent', () => {
@@ -25,7 +25,11 @@ describe('MappingComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: './dataset/preview/1', component: PreviewComponent }
+        ])
+      ],
       declarations: [MappingComponent, createMockPipe('translate'), createMockPipe('beautifyXML')],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
@@ -44,7 +48,7 @@ describe('MappingComponent', () => {
     fixture = TestBed.createComponent(MappingComponent);
     component = fixture.componentInstance;
     component.datasetData = mockDataset;
-    router = TestBed.get(Router);
+    router = TestBed.inject(Router);
   };
 
   describe('Normal operation', () => {

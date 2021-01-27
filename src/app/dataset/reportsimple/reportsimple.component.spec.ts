@@ -84,7 +84,7 @@ describe('ReportSimpleComponent', () => {
     expect(component.isObject(true)).toBe(false);
     expect(component.isObject(1)).toBe(false);
     expect(component.isObject('665')).toBe(false);
-    expect(component.isObject(() => {})).toBe(false);
+    expect(component.isObject(() => undefined)).toBe(false);
     expect(component.isObject(undefined)).toBe(false);
   });
 

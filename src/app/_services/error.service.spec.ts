@@ -23,9 +23,9 @@ describe('ErrorService', () => {
         { provide: TranslateService, useClass: MockTranslateService }
       ]
     });
-    service = TestBed.get(ErrorService);
-    router = TestBed.get(Router);
-    redirect = TestBed.get(RedirectPreviousUrl);
+    service = TestBed.inject(ErrorService);
+    router = TestBed.inject(Router);
+    redirect = TestBed.inject(RedirectPreviousUrl);
 
     service.retryDelay = 5;
   });

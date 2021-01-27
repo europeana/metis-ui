@@ -1,7 +1,7 @@
 import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { LoginComponent } from '../login';
 import { MockAuthenticationService } from '../_mocked';
 import { AuthenticationService, RedirectPreviousUrl } from '../_services';
 
@@ -16,12 +16,12 @@ describe('AuthUserGuard', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }],
-      imports: [RouterTestingModule]
+      imports: [RouterTestingModule.withRoutes([{ path: './signin', component: LoginComponent }])]
     }).compileComponents();
-    guard = TestBed.get(AuthUserGuard);
-    authenticationService = TestBed.get(AuthenticationService);
-    redirect = TestBed.get(RedirectPreviousUrl);
-    router = TestBed.get(Router);
+    guard = TestBed.inject(AuthUserGuard);
+    authenticationService = TestBed.inject(AuthenticationService);
+    redirect = TestBed.inject(RedirectPreviousUrl);
+    router = TestBed.inject(Router);
   }));
 
   it('should allow an authenticated user', () => {

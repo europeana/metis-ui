@@ -46,7 +46,7 @@
   <!-- show cancel button, log button, report button and run button -->
   <nav>
     <ul class="nav-ctrls">
-      <li class="nav-ctrl" *ngIf="!isCompleted && currentPluginName !== 'PUBLISH'">
+      <li class="nav-ctrl" *ngIf="checkCanCancelWorkflow()">
         <a
           class="nav-btn cancel-btn svg-icon-cancel tooltip"
           title="{{ 'cancel' | translate }}"

@@ -48,8 +48,8 @@ describe('workflow service', () => {
       ],
       imports: [HttpClientTestingModule]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
-    service = TestBed.get(WorkflowService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+    service = TestBed.inject(WorkflowService);
   }));
 
   afterEach(() => {
@@ -254,19 +254,6 @@ describe('workflow service', () => {
     sub2.unsubscribe();
   });
 
-  it('should get executions for a dataset per page', () => {
-    const sub = service.getDatasetExecutions('543341', 7).subscribe((results) => {
-      expect(results).toEqual(mockWorkflowExecutionResults);
-    });
-    mockHttp
-      .expect(
-        'GET',
-        '/orchestrator/workflows/executions/dataset/543341?orderField=CREATED_DATE&ascending=false&nextPage=7'
-      )
-      .send(mockWorkflowExecutionResults);
-    sub.unsubscribe();
-  });
-
   it('should get all executions for a dataset', () => {
     const sub = service.getDatasetHistory('879').subscribe((results) => {
       expect(results).toEqual(mockWorkflowExecutionHistoryList);
@@ -428,7 +415,7 @@ describe('workflow service', () => {
   });
 
   it('should cancel a workflow (DELETE)', () => {
-    const sub = service.cancelThisWorkflow('565645').subscribe(() => {});
+    const sub = service.cancelThisWorkflow('565645').subscribe(() => undefined);
     mockHttp.expect('DELETE', '/orchestrator/workflows/executions/565645').send({});
     sub.unsubscribe();
   });

@@ -257,13 +257,22 @@ export class DepublicationComponent extends DataPollingComponent {
     this.optionsOpenDepublish = false;
   }
 
+  /** refreshPolling
+  /* - call next on this.pollingRefresh if it exists
+  */
+  refreshPolling(): void {
+    if (this.pollingRefresh) {
+      this.pollingRefresh.next(true);
+    }
+  }
+
   /** loadNextPage
   /* - increment currentPage variable
   /* - refresh the polling
   */
   loadNextPage(): void {
     this.currentPage++;
-    this.pollingRefresh.next(true);
+    this.refreshPolling();
   }
 
   /** setDataFilterParameter
@@ -277,7 +286,7 @@ export class DepublicationComponent extends DataPollingComponent {
     } else {
       this.dataFilterParam = event;
     }
-    this.pollingRefresh.next(true);
+    this.refreshPolling();
   }
 
   /** setDataSortParameter
@@ -291,7 +300,7 @@ export class DepublicationComponent extends DataPollingComponent {
     } else if (event.field) {
       this.dataSortParam = event;
     }
-    this.pollingRefresh.next(true);
+    this.refreshPolling();
   }
 
   /** toggleMenuOptionsAdd
@@ -335,7 +344,7 @@ export class DepublicationComponent extends DataPollingComponent {
           .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
           .subscribe(
             () => {
-              this.pollingRefresh.next(true);
+              this.refreshPolling();
               this.closeDialogs();
               this.isSaving = false;
             },
@@ -371,7 +380,7 @@ export class DepublicationComponent extends DataPollingComponent {
     this.subs.push(
       this.depublications.depublishDataset(this._datasetId).subscribe(
         () => {
-          this.pollingRefresh.next(true);
+          this.refreshPolling();
           this.isSaving = false;
         },
         (err: HttpErrorResponse): void => {
@@ -417,7 +426,7 @@ export class DepublicationComponent extends DataPollingComponent {
         .subscribe(
           () => {
             this.depublicationSelections = [];
-            this.pollingRefresh.next(true);
+            this.refreshPolling();
             this.isSaving = false;
           },
           (err: HttpErrorResponse): void => {
@@ -439,7 +448,7 @@ export class DepublicationComponent extends DataPollingComponent {
         .subscribe(
           () => {
             this.depublicationSelections = [];
-            this.pollingRefresh.next(true);
+            this.refreshPolling();
             this.isSaving = false;
           },
           (err: HttpErrorResponse): void => {
@@ -462,7 +471,7 @@ export class DepublicationComponent extends DataPollingComponent {
           .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
           .subscribe(
             () => {
-              this.pollingRefresh.next(true);
+              this.refreshPolling();
               form.get('recordIds')!.reset();
               this.closeDialogs();
               this.isSaving = false;

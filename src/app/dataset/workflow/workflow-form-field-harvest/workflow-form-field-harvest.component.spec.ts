@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { ParameterFieldName, PluginType, WorkflowFieldDataParameterised } from '../../../_models';
@@ -20,7 +19,7 @@ describe('WorkflowFormFieldHarvestComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
       declarations: [
         WorkflowFormFieldHarvestComponent,
         createMockPipe('translate'),

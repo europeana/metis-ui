@@ -36,7 +36,7 @@ describe('ActionbarComponent', () => {
     component = fixture.componentInstance;
     component.workflowData = mockWorkflow;
     fixture.detectChanges();
-    workflows = TestBed.get(WorkflowService);
+    workflows = TestBed.inject(WorkflowService);
   });
 
   it('should create', () => {
@@ -73,6 +73,8 @@ describe('ActionbarComponent', () => {
 
     spyOn(workflows, 'promptCancelThisWorkflow');
     const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
+    expect(cancel).toBeTruthy();
+
     cancel.triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(

@@ -2,6 +2,18 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="confirmWorkflowCancellation" datatype="html">
+        <source>
+      Are you sure you want to cancel &quot;<x id="INTERPOLATION" equiv-text="{{ cancellationRequest.datasetId! }}"/>
+      <x id="INTERPOLATION_1" equiv-text="{{ cancellationRequest.datasetName! }}"/>&quot;?
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/app.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">show modal to get user confirmation</note>
+        <note priority="1" from="meaning">confirm workflow cancellation</note>
+      </trans-unit>
       <trans-unit id="welcomeMessage" datatype="html">
         <source>
       Welcome <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ userName }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>, let&apos;s ingest a world of Culture!
@@ -83,6 +95,15 @@
         </context-group>
         <note priority="1" from="description">max result reached message</note>
         <note priority="1" from="meaning">max result reached</note>
+      </trans-unit>
+      <trans-unit id="9cc462b11fe61340134589e8540811f75f60e7b8" datatype="html">
+        <source>Loading samples...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dataset/preview/preview.component.html</context>
+          <context context-type="linenumber">183</context>
+        </context-group>
+        <note priority="1" from="description">load message for samples</note>
+        <note priority="1" from="meaning">load message</note>
       </trans-unit>
     </body>
   </file>

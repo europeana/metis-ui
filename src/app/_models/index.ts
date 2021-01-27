@@ -1,4 +1,5 @@
 export * from './country';
+export * from './dataset-shared';
 export * from './dataset';
 export * from './depublication';
 export * from './filterExecution';

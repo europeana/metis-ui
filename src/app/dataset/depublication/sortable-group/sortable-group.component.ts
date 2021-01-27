@@ -18,7 +18,9 @@ import { SortHeaderGroupConf, SortParameter } from '../../../_models';
 export class SortableGroupComponent {
   _allSelected = false;
   @ViewChildren(SortableHeaderComponent) headers: QueryList<SortableHeaderComponent>;
-  @ViewChild('sortableGroupTemplate') sortableGroupTemplate: TemplateRef<HTMLElement>;
+  @ViewChild('sortableGroupTemplate', { static: true }) sortableGroupTemplate: TemplateRef<
+    HTMLElement
+  >;
   @Output() onGroupSet: EventEmitter<SortParameter> = new EventEmitter();
   @Output() onSelectAll: EventEmitter<boolean> = new EventEmitter();
   @Input() grpConf: SortHeaderGroupConf;

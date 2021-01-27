@@ -1,3 +1,6 @@
+import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared.js';
+import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data.js';
+import { Workflow } from '../../src/app/_models/workflow.js';
 import {
   DatasetX,
   DateBumpType,
@@ -5,29 +8,24 @@ import {
   ResultList,
   WorkflowX,
   WorkflowXRunConf
-} from '../_models/test-models';
-import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
+} from '../_models/test-models.js';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
   DatasetOverviewExecution,
-  DatasetSearchView,
   ExecutionProgress,
   PluginAvailabilityList,
   PluginExecution,
   PluginExecutionOverview,
   PluginStatus,
   PluginType,
-  PublicationFitness,
   TopologyName,
-  Workflow,
   WorkflowExecution,
   WorkflowExecutionHistory,
   WorkflowStatus
-} from '../../src/app/_models';
-
-import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
-import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
+} from '../../src/app/_models/workflow-execution.js';
+import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample.js';
+import { PluginMetadata } from '../../src/app/_models/plugin-metadata.js';
 
 let baseDate = new Date('2019-02-18T07:36:59.801Z');
 const pageSize = 2;
@@ -206,7 +204,7 @@ function generateDatasetX(): Array<DatasetX> {
 
           // "run" the Workflows
           for (var i = 0; i < numExecutions; i++) {
-            let wExec = runWorkflow(w, '' + weIndex);
+            let wExec = runWorkflow(w, `${weIndex}`);
 
             w.executions.push(wExec);
 
@@ -723,7 +721,6 @@ export function errorReport(reportId: string, process: string) {
 // localhost:3000/orchestrator/workflows/evolution/0/OAIPMH_HARVEST
 export function evolution(datasetId: string, peType: string): HistoryVersions {
   let wl = getMostRecentExecutionByDatasetId(datasetId);
-
   let res: Array<HistoryVersion> = [];
 
   if (wl.length == 1) {
@@ -736,14 +733,13 @@ export function evolution(datasetId: string, peType: string): HistoryVersions {
       }
       if (!reachedEnd) {
         res.push({
-          workflowExecutionId: parseInt(w.id),
+          workflowExecutionId: w.id,
           pluginType: pe.pluginType.toString(),
           finishedTime: pe.finishedDate
         } as HistoryVersion);
       }
     });
   }
-
   return {
     evolutionSteps: res
   };

@@ -15,7 +15,7 @@ describe('ModalConfirmComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(ModalConfirmComponent);
     component = fixture.componentInstance;
-    modalConfirms = TestBed.get(ModalConfirmService);
+    modalConfirms = TestBed.inject(ModalConfirmService);
   });
 
   it('should create', () => {

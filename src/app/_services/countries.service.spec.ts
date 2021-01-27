@@ -16,8 +16,8 @@ describe('countries service', () => {
       providers: [CountriesService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
-    service = TestBed.get(CountriesService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+    service = TestBed.inject(CountriesService);
   }));
 
   afterEach(() => {

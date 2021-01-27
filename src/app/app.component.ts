@@ -1,10 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { SubscriptionManager } from './shared/subscription-manager/subscription.manager';
 import { CancellationRequest } from './_models';
-import { AuthenticationService, ErrorService, WorkflowService } from './_services';
+import { ModalConfirmComponent } from './shared/modal-confirm';
+import {
+  AuthenticationService,
+  ErrorService,
+  ModalConfirmService,
+  WorkflowService
+} from './_services';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +19,17 @@ import { AuthenticationService, ErrorService, WorkflowService } from './_service
 })
 export class AppComponent extends SubscriptionManager implements OnInit {
   bodyClass: string;
-  showWrapper = false;
   cancellationRequest?: CancellationRequest;
   public loggedIn = false;
+  modalConfirmId = 'confirm-cancellation-request';
+
+  @ViewChild(ModalConfirmComponent, { static: true })
+  modalConfirm: ModalConfirmComponent;
 
   constructor(
     private readonly workflows: WorkflowService,
     private readonly authentication: AuthenticationService,
+    private readonly modalConfirms: ModalConfirmService,
     private readonly errors: ErrorService,
     private readonly router: Router
   ) {
@@ -33,6 +44,28 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   /* and margins
   */
   public ngOnInit(): void {
+    this.modalConfirms.add(this.modalConfirm);
+
+    this.subs.push(
+      this.workflows.promptCancelWorkflow
+        .pipe(
+          filter((cancellationRequest: CancellationRequest) => {
+            return !!cancellationRequest.workflowExecutionId;
+          }),
+          tap((cancellationRequest: CancellationRequest) => {
+            this.cancellationRequest = cancellationRequest;
+          }),
+          switchMap(() => {
+            return this.modalConfirms.open(this.modalConfirmId);
+          })
+        )
+        .subscribe((response: boolean) => {
+          if (response) {
+            this.cancelWorkflow();
+          }
+        })
+    );
+
     this.subs.push(
       this.router.events.subscribe((event: Event) => {
         const url: string | undefined = (event as RouterEvent).url;
@@ -53,22 +86,6 @@ export class AppComponent extends SubscriptionManager implements OnInit {
         }
       })
     );
-
-    this.subs.push(
-      this.workflows.promptCancelWorkflow.subscribe((cancellationRequest: CancellationRequest) => {
-        this.cancellationRequest = cancellationRequest;
-        if (cancellationRequest.workflowExecutionId) {
-          this.showWrapper = true;
-        }
-      })
-    );
-  }
-
-  /** closePrompt
-  /*  as the name suggests, this one closes the prompt or modal window
-  */
-  closePrompt(): void {
-    this.showWrapper = false;
   }
 
   /** cancelWorkflow
@@ -78,7 +95,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     this.subs.push(
       this.workflows.cancelThisWorkflow(this.cancellationRequest!.workflowExecutionId).subscribe(
         () => {
-          this.closePrompt();
+          console.log('cancelling');
         },
         (err: HttpErrorResponse) => {
           this.errors.handleError(err);

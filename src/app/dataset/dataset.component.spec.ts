@@ -5,6 +5,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { NewDatasetComponent } from './newdataset';
 import {
   createMockPipe,
   MockDatasetsService,
@@ -40,7 +41,9 @@ describe('Dataset Component', () => {
     params = new BehaviorSubject({ tab: 'edit', id: '123' } as Params);
 
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './dataset/new', component: NewDatasetComponent }])
+      ],
       declarations: [DatasetComponent, createMockPipe('translate')],
       providers: [
         {
@@ -60,9 +63,9 @@ describe('Dataset Component', () => {
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
-    datasets = TestBed.get(DatasetsService);
-    router = TestBed.get(Router);
-    workflows = TestBed.get(WorkflowService);
+    datasets = TestBed.inject(DatasetsService);
+    router = TestBed.inject(Router);
+    workflows = TestBed.inject(WorkflowService);
   };
 
   const b4Each = (): void => {
@@ -75,7 +78,7 @@ describe('Dataset Component', () => {
     beforeEach(b4Each);
 
     it('responds to form initialisation by setting it in the header', () => {
-      component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
+      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
       const mockHeader = new WorkflowHeaderComponent();
       mockHeader.elRef = { nativeElement: {} } as ElementRef;
       component.workflowHeaderRef = mockHeader;
@@ -85,7 +88,7 @@ describe('Dataset Component', () => {
     });
 
     it('responds to form initialisation by setting it in the header using delays ', fakeAsync(() => {
-      component.workflowFormRef = { onHeaderSynchronised: () => {} } as WorkflowComponent;
+      component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
       const mockHeader = new WorkflowHeaderComponent();
       spyOn(component.workflowFormRef, 'onHeaderSynchronised');
       component.formInitialised({} as FormGroup);

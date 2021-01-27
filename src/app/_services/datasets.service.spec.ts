@@ -15,8 +15,8 @@ describe('dataset service', () => {
       providers: [DatasetsService, { provide: ErrorService, useClass: MockErrorService }],
       imports: [HttpClientTestingModule]
     }).compileComponents();
-    mockHttp = new MockHttp(TestBed.get(HttpTestingController), apiSettings.apiHostCore);
-    service = TestBed.get(DatasetsService);
+    mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);
+    service = TestBed.inject(DatasetsService);
   }));
 
   afterEach(() => {
@@ -69,7 +69,7 @@ describe('dataset service', () => {
     sub1.unsubscribe();
 
     const formValues = { dataset: { datasetId: '5', datasetName: 'welcome' } };
-    const subUpdate = service.updateDataset(formValues).subscribe(() => {});
+    const subUpdate = service.updateDataset(formValues).subscribe(() => undefined);
     tick(1);
     mockHttp
       .expect('PUT', '/datasets')

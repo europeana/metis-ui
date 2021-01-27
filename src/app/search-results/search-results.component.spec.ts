@@ -1,5 +1,4 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SearchResultsComponent } from '.';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -22,7 +21,6 @@ describe('SearchResultsComponent', () => {
     }
     TestBed.configureTestingModule({
       declarations: [SearchResultsComponent, createMockPipe('translate')],
-      imports: [RouterTestingModule],
       providers: [
         { provide: ActivatedRoute, useValue: mar },
         {

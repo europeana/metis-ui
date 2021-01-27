@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
+import { of } from 'rxjs';
 import { AppComponent } from '.';
 import {
   createMockPipe,
@@ -11,20 +11,31 @@ import {
   MockWorkflowService
 } from './_mocked';
 import { CancellationRequest } from './_models';
-import { AuthenticationService, ErrorService, WorkflowService } from './_services';
+import {
+  AuthenticationService,
+  ErrorService,
+  ModalConfirmService,
+  WorkflowService
+} from './_services';
+import { ModalConfirmComponent } from './shared/modal-confirm';
+import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
+  let modalConfirms: ModalConfirmService;
   let workflows: WorkflowService;
   let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
+      ],
       declarations: [AppComponent, createMockPipe('translate')],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        ModalConfirmService,
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: ErrorService, useClass: MockErrorService }
@@ -33,10 +44,16 @@ describe('AppComponent', () => {
   }));
 
   beforeEach(() => {
-    workflows = TestBed.get(WorkflowService);
-    router = TestBed.get(Router);
+    modalConfirms = TestBed.inject(ModalConfirmService);
+    workflows = TestBed.inject(WorkflowService);
+    router = TestBed.inject(Router);
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.debugElement.componentInstance;
+    app.modalConfirm = ({
+      open: () => of(true),
+      close: () => undefined,
+      id: app.modalConfirmId
+    } as unknown) as ModalConfirmComponent;
   });
 
   it('should handle url changes', () => {
@@ -66,24 +83,17 @@ describe('AppComponent', () => {
 
   it('should show a prompt', () => {
     fixture.detectChanges();
-    expect(app.showWrapper).toBe(false);
+    spyOn(modalConfirms, 'open');
     workflows.promptCancelWorkflow.emit({
       workflowExecutionId: '15',
       datasetId: '11',
       datasetName: 'The Name'
     } as CancellationRequest);
     expect(app.cancellationRequest!.workflowExecutionId).toBe('15');
-    expect(app.showWrapper).toBe(true);
-  });
-
-  it('show close a prompt', () => {
-    app.showWrapper = true;
-    app.closePrompt();
-    expect(app.showWrapper).toBe(false);
+    expect(modalConfirms.open).toHaveBeenCalled();
   });
 
   it('should cancel a workflow', () => {
-    app.showWrapper = true;
     app.cancellationRequest = {
       workflowExecutionId: '16',
       datasetId: '11',
@@ -92,11 +102,11 @@ describe('AppComponent', () => {
     spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
     app.cancelWorkflow();
     expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');
-    expect(app.showWrapper).toBe(false);
   });
 
   it('should cleanup on destroy', () => {
-    spyOn(app, 'cleanup').and.callThrough();
+    spyOn(app, 'cleanup');
+    app.ngOnInit();
     app.ngOnDestroy();
     expect(app.cleanup).toHaveBeenCalled();
   });

@@ -1,6 +1,6 @@
 import { HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { QueryList } from '@angular/core';
-import { CodemirrorComponent } from 'ng2-codemirror';
+import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription } from 'rxjs';
 import { reduce } from 'rxjs/operators';
 
@@ -60,7 +60,7 @@ export function gatherError<Value>(observable: Observable<Value>): any {
 export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
   return ([
     {
-      instance: {
+      codeMirror: {
         setOption: jasmine.createSpy('setEditorOption')
       }
     }
