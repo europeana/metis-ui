@@ -184,7 +184,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
 
   if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
     let body = '';
-    request.on('data', function(data) {
+    request.on('data', function(data: { toString: () => string }) {
       body += data.toString();
     });
     request.on('end', function() {
@@ -207,7 +207,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
       return true;
     } else {
       let body = '';
-      request.on('data', function(data) {
+      request.on('data', function(data: { toString: () => string }) {
         body += data.toString();
       });
       request.on('end', function() {
@@ -248,7 +248,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
 
       let body = '';
 
-      request.on('data', function(data) {
+      request.on('data', function(data: { toString: () => string }) {
         body += data.toString();
       });
       request.on('end', function() {

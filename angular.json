@@ -4,25 +4,35 @@
   "newProjectRoot": "projects",
   "projects": {
     "metis": {
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/metis",
+      "schematics": {
+        "@schematics/angular:component": {
+          "prefix": "app",
+          "style": "scss"
+        },
+        "@schematics/angular:directive": {
+          "prefix": "app"
+        }
+      },
+      "sourceRoot": "projects/metis/src",
       "projectType": "application",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "aot": true,
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
+            "outputPath": "projects/metis/dist/metis",
+            "index": "projects/metis/src/index.html",
+            "main": "projects/metis/src/main.ts",
+            "tsConfig": "projects/metis/src/tsconfig.app.json",
+            "polyfills": "projects/metis/src/polyfills.ts",
+            "progress": false,
             "allowedCommonJsDependencies": ["@ctrl/ngx-codemirror", "codemirror"],
             "stylePreprocessorOptions": {
               "includePaths": []
             },
-            "assets": ["src/assets", "src/favicon.ico"],
-            "styles": ["src/styles.scss"],
+            "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"],
+            "styles": ["projects/metis/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -50,8 +60,8 @@
               ],
               "fileReplacements": [
                 {
-                  "replace": "src/environments/apisettings.ts",
-                  "with": "src/environments/apisettings-ci.ts"
+                  "replace": "projects/metis/src/environments/apisettings.ts",
+                  "with": "projects/metis/src/environments/apisettings-ci.ts"
                 }
               ]
             }
@@ -80,43 +90,20 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src/test.ts",
-            "karmaConfig": "./karma.conf.cjs",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
+            "main": "projects/metis/src/test.ts",
+            "karmaConfig": "projects/metis/karma.conf.cjs",
+            "polyfills": "projects/metis/src/polyfills.ts",
+            "tsConfig": "projects/metis/src/tsconfig.spec.json",
             "scripts": [],
-            "styles": ["src/styles.scss"],
+            "styles": ["projects/metis/src/styles.scss"],
             "stylePreprocessorOptions": {
               "includePaths": []
             },
-            "assets": ["src/assets", "src/favicon.ico"]
-          }
-        }
-      }
-    },
-    "metis-cypress": {
-      "root": "",
-      "sourceRoot": "cypress",
-      "projectType": "application",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": ["cypress/tsconfig.json"],
-            "exclude": []
+            "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"]
           }
         }
       }
     }
   },
-  "defaultProject": "metis",
-  "schematics": {
-    "@schematics/angular:component": {
-      "prefix": "app",
-      "style": "scss"
-    },
-    "@schematics/angular:directive": {
-      "prefix": "app"
-    }
-  }
+  "defaultProject": "metis"
 }

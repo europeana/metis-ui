@@ -2,8 +2,9 @@
 .idea
 .scannerwork
 
-/coverage
+**/coverage
+**/dist
 /dist
 /node_modules
-/src/environments/apisettings.ts
-/tmp
+/projects/metis/src/environments/apisettings.ts
+**/tmp
