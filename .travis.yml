@@ -16,5 +16,8 @@ addons:
 before_install:
 - export TZ=Europe/Amsterdam
 
+# before_script:
+# - cp src/environments/apisettings-test.ts src/environments/apisettings.ts
+
 before_script:
-- cp src/environments/apisettings-test.ts src/environments/apisettings.ts
+- cp projects/metis/src/environments/apisettings-test.ts projects/metis/src/environments/apisettings.ts
