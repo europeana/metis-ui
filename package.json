@@ -43,7 +43,6 @@
     "dist-metis": "npm run i18n && ng build metis --progress=false --prod && npm run dist-metis-copy-conf && cp -R projects/metis/dist/metis/. dist",
     "dist": "npm run dist-metis",
     "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
-    "i18n-metis": "TODO",
     "lite-metis": "lite-server --baseDir=./dist",
     "lite": "npm run lite-metis"
   },
