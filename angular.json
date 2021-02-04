@@ -26,7 +26,7 @@
             "progress": false,
             "allowedCommonJsDependencies": ["@ctrl/ngx-codemirror", "codemirror"],
             "stylePreprocessorOptions": {
-              "includePaths": []
+              "includePaths": ["shared-styles"]
             },
             "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"],
             "styles": ["projects/metis/src/styles.scss"],
@@ -124,6 +124,9 @@
             "progress": false,
             "assets": ["projects/sandbox/src/favicon.ico", "projects/sandbox/src/assets"],
             "styles": ["projects/sandbox/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["shared-styles"]
+            },
             "scripts": []
           },
           "configurations": {
