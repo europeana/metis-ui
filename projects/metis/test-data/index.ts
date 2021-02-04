@@ -4,8 +4,8 @@ import {
   dataset,
   errorReport,
   evolution,
-  executionsHistory,
   executionsByDatasetIdAsList,
+  executionsHistory,
   getListWrapper,
   information,
   overview,
@@ -16,7 +16,7 @@ import {
   workflow,
   xslt
 } from './factory/factory.js';
-import { urlManipulation } from './_models/test-models.js';
+import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-models.js';
 import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models/depublication.js';
 
 const port = 3000;
@@ -24,34 +24,34 @@ const port = 3000;
 let depublicationInfoCache: Array<RecordDepublicationInfo> = [];
 let switchedOff: { [key: string]: string } = {};
 
-function returnEmpty(response: ServerResponse) {
+function returnEmpty(response: ServerResponse): void {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
   response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
 }
 
-function return404(response: ServerResponse) {
+function return404(response: ServerResponse): void {
   response.statusCode = 404;
   response.end();
 }
 
-function cleanSwitches() {
+function cleanSwitches(): void {
   switchedOff = {};
 }
 
-function switchOff(r: string) {
-  let route = r.replace(urlManipulation.RETURN_404, '');
-  switchedOff[route.replace(urlManipulation.RETURN_EMPTY, '')] =
-    route === r ? urlManipulation.RETURN_EMPTY : urlManipulation.RETURN_404;
+function switchOff(r: string): void {
+  const route = r.replace(UrlManipulation.RETURN_404, '');
+  switchedOff[route.replace(UrlManipulation.RETURN_EMPTY, '')] =
+    route === r ? UrlManipulation.RETURN_EMPTY : UrlManipulation.RETURN_404;
 }
 
-function switchOn(r: string) {
-  let route = r.replace(urlManipulation.RETURN_404, '').replace(urlManipulation.RETURN_EMPTY, '');
+function switchOn(r: string): void {
+  const route = r.replace(UrlManipulation.RETURN_404, '').replace(UrlManipulation.RETURN_EMPTY, '');
   delete switchedOff[route];
 }
 
-function isSwitchedOff(r: string) {
-  let route = r.replace(urlManipulation.RETURN_404, '').replace(urlManipulation.RETURN_EMPTY, '');
-  return switchedOff[route];
+function isSwitchedOff(r: string): UrlManipulation {
+  const route = r.replace(UrlManipulation.RETURN_404, '').replace(UrlManipulation.RETURN_EMPTY, '');
+  return switchedOff[route] as UrlManipulation;
 }
 
 function getStatisticsDetail(): string {
@@ -176,7 +176,7 @@ function getStatistics(): string {
 function routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
   response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
-  const removeFromDepublicationCache = (recordId: string) => {
+  const removeFromDepublicationCache = (recordId: string): void => {
     depublicationInfoCache = depublicationInfoCache.filter((entry) => {
       return entry.recordId != recordId;
     });
@@ -229,7 +229,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
   if (regRes) {
     const params = url.parse(route, true).query;
     if (request.method === 'POST') {
-      const pushToDepublicationCache = (url: string) => {
+      const pushToDepublicationCache = (url: string): void => {
         const time = new Date().toISOString();
         depublicationInfoCache.push({
           recordId: url,
@@ -265,23 +265,26 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
         });
       }
       if (result.length > 0 && params.sortField) {
-        const snakeToCamel = (str: String): string =>
-          str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
+        const snakeToCamel = (str: String): RecordDepublicationInfoField => {
+          return str.toLowerCase().replace(/([-_][a-z])/g, (group) =>
             group
               .toUpperCase()
               .replace('-', '')
               .replace('_', '')
-          );
+          ) as RecordDepublicationInfoField;
+        };
 
         const sortField = snakeToCamel(params.sortField[0]);
-        const sortResult = (res: Array<any>): Array<any> => {
-          let asc = params.sortAscending === 'true';
+        const sortResult = (
+          res: Array<RecordDepublicationInfo>
+        ): Array<RecordDepublicationInfo> => {
+          const asc = params.sortAscending === 'true';
           if (res[0][sortField]) {
-            res.sort((a: any, b: any) => {
+            res.sort((a: RecordDepublicationInfo, b: RecordDepublicationInfo) => {
               const valA = a[sortField];
               const valB = b[sortField];
-              let eq = valA === valB;
-              let grtr = valA > valB;
+              const eq = valA === valB;
+              let grtr = valA && valB && valA > valB;
               if (asc) {
                 grtr = !grtr;
               }
@@ -513,7 +516,7 @@ function routeToFile(request: IncomingMessage, response: ServerResponse, route: 
   return false;
 }
 
-const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
+const requestHandler = (request: IncomingMessage, response: ServerResponse): void => {
   response.setHeader('Access-Control-Allow-Origin', '*');
 
   if (request.method === 'OPTIONS') {
@@ -529,26 +532,26 @@ const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
     return;
   }
 
-  let route = request.url as string;
+  const route = request.url as string;
 
-  if (route.match(urlManipulation.METIS_UI_CLEAR)) {
+  if (route.match(UrlManipulation.METIS_UI_CLEAR)) {
     cleanSwitches();
     response.end();
     return;
   }
 
-  let isSwitch =
-    route.match(urlManipulation.RETURN_404) || route.match(urlManipulation.RETURN_EMPTY);
+  const isSwitch =
+    route.match(UrlManipulation.RETURN_404) || route.match(UrlManipulation.RETURN_EMPTY);
 
   if (isSwitch) {
     switchOff(route);
   }
 
-  let switchedOff = isSwitchedOff(route);
+  const switchedOff = isSwitchedOff(route);
   if (switchedOff) {
-    if (switchedOff === urlManipulation.RETURN_EMPTY) {
+    if (switchedOff === UrlManipulation.RETURN_EMPTY) {
       returnEmpty(response);
-    } else if (switchedOff === urlManipulation.RETURN_404) {
+    } else if (switchedOff === UrlManipulation.RETURN_404) {
       return404(response);
     }
     if (!isSwitch) {
@@ -557,13 +560,13 @@ const requestHandler = (request: IncomingMessage, response: ServerResponse) => {
     return;
   }
 
-  let requestHandled = routeToFile(request, response, route);
+  const requestHandled = routeToFile(request, response, route);
 
   if (!requestHandled) {
     if (request.method === 'POST') {
       response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
-      let result = {
+      const result = {
         userId: '1',
         email: 'xxx@xxx.xxx',
         firstName: 'Valentine',

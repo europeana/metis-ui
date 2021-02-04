@@ -26,14 +26,14 @@ context('metis-ui', () => {
   const selMenuDateFirstItem = `${selMenuDateItems} ${selFirstItem}`;
   const selMenuPluginSecondItem = `${selMenuPluginItems} ${selSecondItem}`;
 
-  const checkMenusVisible = () => {
+  const checkMenusVisible = (): void => {
     cy.get(selMenuDate).should('be.visible');
     cy.get(selMenuPlugin).should('be.visible');
     cy.get(selMenuCompare).should('be.visible');
     cy.get(selEditorCompare).should('be.visible');
   };
 
-  const fillMenus = (number: FillMenuNumber) => {
+  const fillMenus = (number: FillMenuNumber): void => {
     cy.scrollTo(0, 100000);
 
     cy.get(selMenuDate + ' a').click({ force: true });
@@ -68,7 +68,7 @@ context('metis-ui', () => {
     cy.get(selEditorCompare).should('be.visible');
   };
 
-  const leaveAndReturn = () => {
+  const leaveAndReturn = (): void => {
     cy.get(`.tabs a[href="${urlLog}"]`).click({ force: true });
     cy.wait(1000);
     cy.get(`.tabs a[href="${urlPreview}"]`).click({ force: true });
@@ -113,7 +113,7 @@ context('metis-ui', () => {
     });
 
     it('should clear the editors when the user changes the date', () => {
-      const checkEditorsHidden = () => {
+      const checkEditorsHidden = (): void => {
         cy.get(selEditorCompare).should('not.be.visible');
         cy.get(selEditorDefault).should('not.be.visible');
       };

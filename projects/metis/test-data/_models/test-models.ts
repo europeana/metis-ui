@@ -3,17 +3,23 @@ import { HarvestData } from '../../src/app/_models/harvest-data';
 import { Workflow } from '../../src/app/_models/workflow';
 import { PluginStatus, WorkflowExecution } from '../../src/app/_models/workflow-execution';
 
-export const urlManipulation = {
-  RETURN_404: 'METIS_UI_404',
-  RETURN_EMPTY: 'METIS_UI_EMPTY',
-  METIS_UI_CLEAR: 'METIS_UI_CLEAR'
-};
+export enum UrlManipulation {
+  RETURN_404 = 'METIS_UI_404',
+  RETURN_EMPTY = 'METIS_UI_EMPTY',
+  METIS_UI_CLEAR = 'METIS_UI_CLEAR'
+}
 
 export enum DateBumpType {
   SECOND = 'SECOND',
   MINUTE = 'MINUTE',
   HOUR = 'HOUR',
   DATE = 'DATE'
+}
+
+export enum RecordDepublicationInfoField {
+  RECORDID = 'recordId',
+  DEPUBLICATIONSTATUS = 'depublicationStatus',
+  DEPUBLICATIONDATE = 'depublicationDate'
 }
 
 export interface UnfinishedPlugin {

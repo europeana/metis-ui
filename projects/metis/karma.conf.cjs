@@ -1,39 +1,16 @@
-// Karma configuration file, see link for more information
-// https://karma-runner.github.io/1.0/config/configuration-file.html
+let properties = null;
+const originalConfigFn = require('../../karma.conf.cjs');
+originalConfigFn({ set: function(arg) { properties = arg; } });
 
-module.exports = function(config) {
-  config.set({
-    basePath: '',
-    frameworks: ['jasmine', '@angular-devkit/build-angular'],
-    plugins: [
-      'karma-coverage',
-      'karma-jasmine',
-      'karma-chrome-launcher',
-      'karma-jasmine-html-reporter',
-      '@angular-devkit/build-angular/plugins/karma'
-    ],
-    client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
-    },
-    coverageReporter: {
-      type : 'html',
-      dir : 'coverage/'
-    },
-    angularCli: {
-      environment: 'dev'
-    },
-    mime: {
-      'text/x-typescript': ['ts', 'tsx']
-    },
-    preprocessors: {
-      'src/app/**/*.ts': ['coverage']
-    },
-    reporters: ['progress', 'kjhtml', 'coverage'],
-    port: 9876,
-    colors: true,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['ChromeHeadless'],
-    singleRun: true
-  });
+/** Override here as needed, i.e.
+
+  properties.preprocessors = {
+    'src/app/path/file.ts': ['coverage']
+  };
+
+*/
+
+// export settings
+module.exports = function (config) {
+  config.set(properties);
 };

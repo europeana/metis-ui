@@ -2,7 +2,7 @@ import { cleanupUser } from '../support/helpers';
 import { user } from '../fixtures';
 
 context('metis-ui', () => {
-  const fillLoginFieldsAndSubmit = (submit = true) => {
+  const fillLoginFieldsAndSubmit = (submit = true): void => {
     cy.get('#email')
       .clear()
       .type('hello@example.com');

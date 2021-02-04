@@ -4,18 +4,15 @@
   "newProjectRoot": "projects",
   "projects": {
     "metis": {
+      "prefix": "app",
+      "projectType": "application",
       "root": "projects/metis",
       "schematics": {
         "@schematics/angular:component": {
-          "prefix": "app",
           "style": "scss"
-        },
-        "@schematics/angular:directive": {
-          "prefix": "app"
         }
       },
       "sourceRoot": "projects/metis/src",
-      "projectType": "application",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -100,6 +97,93 @@
               "includePaths": []
             },
             "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"]
+          }
+        }
+      }
+    },
+    "sandbox": {
+      "prefix": "sb",
+      "projectType": "application",
+      "root": "projects/sandbox",
+      "sourceRoot": "projects/sandbox/src",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "aot": true,
+            "outputPath": "dist/sandbox",
+            "index": "projects/sandbox/src/index.html",
+            "main": "projects/sandbox/src/main.ts",
+            "tsConfig": "projects/sandbox/tsconfig.app.json",
+            "polyfills": "projects/sandbox/src/polyfills.ts",
+            "progress": false,
+            "assets": ["projects/sandbox/src/favicon.ico", "projects/sandbox/src/assets"],
+            "styles": ["projects/sandbox/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "aot": true,
+              "fileReplacements": [
+                {
+                  "replace": "projects/sandbox/src/environments/environment.ts",
+                  "with": "projects/sandbox/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "sandbox:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "sandbox:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "sandbox:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sandbox/src/test.ts",
+            "karmaConfig": "projects/sandbox/karma.conf.cjs",
+            "polyfills": "projects/sandbox/src/polyfills.ts",
+            "tsConfig": "projects/sandbox/tsconfig.spec.json",
+            "scripts": [],
+            "styles": ["projects/sandbox/src/styles.scss"],
+            "assets": ["projects/sandbox/src/assets", "projects/sandbox/src/favicon.ico"]
           }
         }
       }

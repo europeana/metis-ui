@@ -1,5 +1,5 @@
 import { User } from '../../src/app/_models/user';
-import { urlManipulation } from '../../test-data/_models/test-models';
+import { UrlManipulation } from '../../test-data/_models/test-models';
 
 export function setupUser(): void {
   cy.window().then((w) => {
@@ -26,7 +26,7 @@ export function cleanupUser(): void {
 }
 
 export function setEmptyDataResult(url: string): void {
-  url = Cypress.env('dataServer') + url + urlManipulation.RETURN_EMPTY;
+  url = Cypress.env('dataServer') + url + UrlManipulation.RETURN_EMPTY;
   cy.request(url);
 }
 
