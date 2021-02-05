@@ -2,13 +2,23 @@
 
 [![Build Status](https://travis-ci.org/europeana/metis-ui.svg?branch=develop)](https://travis-ci.org/europeana/metis-ui)
 
-## Getting started
+## Repository Contents
+
+This repository is an angular workspace configured to build the projects:
+
+* metis-ui
+* mentis-sandbox (placeholder)
+
+
+## Getting started (Metis-UI)
 
 To run the Metis UI you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
 
     cp projects/metis/src/environments/apisettings-example.ts projects/metis/src/environments/apisettings.ts
 
 If you are working at Europeana, just ask Andy MacLean or Mirjam Verloop for the right `apisettings.ts` file.
+
+## Getting started (Metis-UI and Sandbox)
 
 Make sure you have `node` version 14 and `npm` version 6.x:
 
@@ -21,7 +31,9 @@ Get the `npm` dependencies:
 
 ## Development server
 
-Run `npm start` for a dev server. Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files.
+Run `npm start-metis` or just `npm start`for a dev server. Navigate to [http://localhost:4200/](http://localhost:4200/). The `(metis-ui)` app will automatically reload if you change any of the source files.
+
+Run `npm start-sandbox` to run a dev server for the sandbox.
 
 ## Branches and Pull Requests
 
@@ -94,15 +106,17 @@ We use Angular AOT compiling with `fullTemplateTypeCheck: true` to do limited ch
 
 ## Build
 
-Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory. Use `npm run dist` for a production build.
+Run `npm run build-metis` or `npm run build-sandbox` to build a single project, or run `npm run build` to build both projects. The build artifacts will be stored in the relative `projects/[PROJECT_NAME]/dist/` sub-directories.
+
+Use `npm run dist-metis`or `npm run dist-sandbox` for a production build (stored in the `/dist` directory).
 
 ## Deploy
 
 We use jenkins to deploy. Make sure you can access [https://jenkins.eanadev.org/](https://jenkins.eanadev.org/) and use the following jobs:
-
 - `develop_deploy-test_metis-ui-angular_bluemix`
 - `develop_deploy-acceptance_metis-ui-angular_bluemix`
 - `branch_deploy-production_metis-ui-angular_bluemix`
+- `Sandbox-UI-Test`
 
 The test and acceptance jobs should be run off the `develop` branch.
 

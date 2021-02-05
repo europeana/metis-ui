@@ -116,10 +116,10 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "aot": true,
-            "outputPath": "dist/sandbox",
+            "outputPath": "projects/sandbox/dist/sandbox",
             "index": "projects/sandbox/src/index.html",
             "main": "projects/sandbox/src/main.ts",
-            "tsConfig": "projects/sandbox/tsconfig.app.json",
+            "tsConfig": "projects/sandbox/src/tsconfig.app.json",
             "polyfills": "projects/sandbox/src/polyfills.ts",
             "progress": false,
             "assets": ["projects/sandbox/src/favicon.ico", "projects/sandbox/src/assets"],
@@ -183,7 +183,7 @@
             "main": "projects/sandbox/src/test.ts",
             "karmaConfig": "projects/sandbox/karma.conf.cjs",
             "polyfills": "projects/sandbox/src/polyfills.ts",
-            "tsConfig": "projects/sandbox/tsconfig.spec.json",
+            "tsConfig": "projects/sandbox/src/tsconfig.spec.json",
             "scripts": [],
             "styles": ["projects/sandbox/src/styles.scss"],
             "assets": ["projects/sandbox/src/assets", "projects/sandbox/src/favicon.ico"]
