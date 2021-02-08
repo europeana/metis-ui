@@ -1,6 +1,6 @@
-import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared.js';
-import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data.js';
-import { Workflow } from '../../src/app/_models/workflow.js';
+import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared';
+import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
+import { Workflow } from '../../src/app/_models/workflow';
 import {
   DatasetX,
   DateBumpType,
@@ -8,7 +8,7 @@ import {
   ResultList,
   WorkflowX,
   WorkflowXRunConf
-} from '../_models/test-models.js';
+} from '../_models/test-models';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
@@ -23,10 +23,10 @@ import {
   WorkflowExecution,
   WorkflowExecutionHistory,
   WorkflowStatus
-} from '../../src/app/_models/workflow-execution.js';
-import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample.js';
-import { PluginMetadata } from '../../src/app/_models/plugin-metadata.js';
-import { Report, ReportAvailability } from '../../src/app/_models/report.js';
+} from '../../src/app/_models/workflow-execution';
+import { HistoryVersion, HistoryVersions } from '../../src/app/_models/xml-sample';
+import { PluginMetadata } from '../../src/app/_models/plugin-metadata';
+import { Report, ReportAvailability } from '../../src/app/_models/report';
 
 let datasetXs: Array<DatasetX> = [];
 const baseDate = new Date('2019-02-18T07:36:59.801Z');

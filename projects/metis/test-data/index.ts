@@ -15,9 +15,9 @@ import {
   search,
   workflow,
   xslt
-} from './factory/factory.js';
-import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-models.js';
-import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models/depublication.js';
+} from './factory/factory';
+import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-models';
+import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models/depublication';
 
 const port = 3000;
 
