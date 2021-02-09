@@ -3,8 +3,8 @@
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SubscriptionManager } from '@shared';
 import { AuthenticationService } from '../../_services';
-import { SubscriptionManager } from '../../shared/subscription-manager';
 
 @Component({
   selector: 'app-search',

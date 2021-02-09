@@ -1,5 +1,17 @@
-import { getUnsubscribable } from '../../_helpers/test-helpers';
+import { Subscription } from 'rxjs';
 import { SubscriptionManager } from '.';
+
+/** getUnsubscribable
+/* Subscription utility
+*/
+function getUnsubscribable(undef?: boolean): Subscription {
+  return (undef
+    ? undefined
+    : ({
+        unsubscribe: jasmine.createSpy('unsubscribe')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)) as Subscription;
+}
 
 describe('SubscriptionManager', () => {
   let clss: SubscriptionManager;

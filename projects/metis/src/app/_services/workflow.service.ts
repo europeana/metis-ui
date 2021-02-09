@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-
+import { SubscriptionManager } from '@shared';
 import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
 import {
@@ -30,10 +30,7 @@ import {
   WorkflowStatus,
   XmlSample
 } from '../_models';
-
-import { SubscriptionManager } from '../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../_translate';
-
 import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';

@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, timer } from 'rxjs';
+import { DataPollingComponent } from '@shared';
 import { environment } from '../../environments/environment';
 import {
   Dataset,
@@ -19,8 +20,6 @@ import {
   WorkflowExecution,
   workflowFormFieldConf
 } from '../_models';
-
-import { DataPollingComponent } from '../data-polling';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';

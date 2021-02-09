@@ -2,8 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { filter, switchMap, tap } from 'rxjs/operators';
+import { SubscriptionManager } from '@shared';
 import { environment } from '../environments/environment';
-import { SubscriptionManager } from './shared/subscription-manager/subscription.manager';
 import { CancellationRequest } from './_models';
 import { ModalConfirmComponent } from './shared/modal-confirm';
 import {
