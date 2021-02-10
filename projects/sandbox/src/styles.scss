@@ -1,23 +1,23 @@
 @charset "UTF-8";
 
 /* Variables */
-@import '../../../shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/generic/variables';
 
 /* Mixins */
-@import '../../../shared-styles/assets/sass/scss/generic/mixins';
+@import 'shared-styles/assets/sass/scss/generic/mixins';
 
 /* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 $accent: $eu-blue;
 $textcolour_highlight: $accent;
 
 /* Reset */
-@import '../../../shared-styles/assets/sass/scss/generic/reset';
+@import 'shared-styles/assets/sass/scss/generic/reset';
 
 /* GLOBAL ELEMENTS */
-@import '../../../shared-styles/assets/sass/scss/base/global-classes';
-@import '../../../shared-styles/assets/sass/scss/base/main';
-@import '../../../shared-styles/assets/sass/scss/base/text';
-@import '../../../shared-styles/assets/sass/scss/base/links';
+@import 'shared-styles/assets/sass/scss/base/global-classes';
+@import 'shared-styles/assets/sass/scss/base/main';
+@import 'shared-styles/assets/sass/scss/base/text';
+@import 'shared-styles/assets/sass/scss/base/links';
 
 /* Sandbox */
 .metis-sandbox {
