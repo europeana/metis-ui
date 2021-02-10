@@ -157,6 +157,20 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "e2e": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/sandbox/src/environments/apisettings.ts",
+                  "with": "projects/sandbox/src/environments/apisettings-ci.ts"
+                }
+              ]
             }
           }
         },
@@ -168,6 +182,9 @@
           "configurations": {
             "production": {
               "browserTarget": "sandbox:build:production"
+            },
+            "e2e": {
+              "browserTarget": "sandbox:build:e2e"
             }
           }
         },
