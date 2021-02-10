@@ -14,7 +14,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { DataPollingComponent } from '../../data-polling';
+import { DataPollingComponent } from '@shared';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';

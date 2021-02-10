@@ -1,65 +1,65 @@
 @charset "UTF-8";
 
-@import 'assets/sass/scss/generic/variables';
-@import 'assets/sass/scss/iconography/svg-icons-metis';
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 /* Mixins */
-@import 'assets/sass/scss/generic/mixins';
+@import 'shared-styles/assets/sass/scss/generic/mixins';
 
 /* SITE SPECIFIC VARIABLE OVERRIDES HERE */
 $accent: $eu-blue;
 $textcolour_highlight: $accent;
 
 /* Reset */
-@import 'assets/sass/scss/generic/reset';
+@import 'shared-styles/assets/sass/scss/generic/reset';
 
 /* GLOBAL ELEMENTS */
-@import 'assets/sass/scss/base/global-classes';
-@import 'assets/sass/scss/base/main';
-@import 'assets/sass/scss/base/links';
-@import 'assets/sass/scss/base/headings_simple';
-@import 'assets/sass/scss/base/lists';
-@import 'assets/sass/scss/base/media';
-@import 'assets/sass/scss/base/forms';
-@import 'assets/sass/scss/base/tables';
-@import 'assets/sass/scss/base/text';
+@import 'shared-styles/assets/sass/scss/base/global-classes';
+@import 'shared-styles/assets/sass/scss/base/main';
+@import 'shared-styles/assets/sass/scss/base/links';
+@import 'shared-styles/assets/sass/scss/base/headings_simple';
+@import 'shared-styles/assets/sass/scss/base/lists';
+@import 'shared-styles/assets/sass/scss/base/media';
+@import 'shared-styles/assets/sass/scss/base/forms';
+@import 'shared-styles/assets/sass/scss/base/tables';
+@import 'shared-styles/assets/sass/scss/base/text';
 
 /* PAGE STRUCTURE */
-@import 'assets/sass/scss/objects/header';
-@import 'assets/sass/scss/objects/blocks/site-hero';
+@import 'shared-styles/assets/sass/scss/objects/header';
+@import 'shared-styles/assets/sass/scss/objects/blocks/site-hero';
 
 /* NAVIGATION */
-@import 'assets/sass/scss/objects/nav';
-@import 'assets/sass/scss/objects/navigation/phase-flags';
+@import 'shared-styles/assets/sass/scss/objects/nav';
+@import 'shared-styles/assets/sass/scss/objects/navigation/phase-flags';
 
 /* Buttons and text Styles */
-@import 'assets/sass/scss/objects/buttons';
-@import 'assets/sass/scss/objects/attribution';
-@import 'assets/sass/scss/theme/hero-branding-v2';
+@import 'shared-styles/assets/sass/scss/objects/buttons';
+@import 'shared-styles/assets/sass/scss/objects/attribution';
+@import 'shared-styles/assets/sass/scss/theme/hero-branding-v2';
 
 /* Global icons (svg) */
-@import 'assets/sass/scss/objects/icons/icons-licenses';
+@import 'shared-styles/assets/sass/scss/objects/icons/icons-licenses';
 
 /* Metis */
-@import 'assets/sass/pandora/settings/metis-variables';
-@import 'assets/sass/pandora/tools/ellipsis-mixin';
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/pandora/tools/ellipsis-mixin';
 
-@import 'assets/sass/pandora/base/form';
-@import 'assets/sass/pandora/base/helpers';
-@import 'assets/sass/pandora/base/layout';
-@import 'assets/sass/pandora/base/grid';
-@import 'assets/sass/pandora/base/tabs';
+@import 'shared-styles/assets/sass/pandora/base/form';
+@import 'shared-styles/assets/sass/pandora/base/helpers';
+@import 'shared-styles/assets/sass/pandora/base/layout';
+@import 'shared-styles/assets/sass/pandora/base/grid';
+@import 'shared-styles/assets/sass/pandora/base/tabs';
 
-@import 'assets/sass/pandora/components/banner';
-@import 'assets/sass/pandora/components/collapse-block';
-@import 'assets/sass/pandora/components/dashboard';
-@import 'assets/sass/pandora/components/dashboard-header';
-@import 'assets/sass/pandora/components/dashboard-filter';
-@import 'assets/sass/pandora/components/dataset-info-block';
-@import 'assets/sass/pandora/components/modal';
-@import 'assets/sass/pandora/components/sitehero';
-@import 'assets/sass/pandora/components/status-bullet';
-@import 'assets/sass/pandora/components/viewxmlsamples';
+@import 'shared-styles/assets/sass/pandora/components/banner';
+@import 'shared-styles/assets/sass/pandora/components/collapse-block';
+@import 'shared-styles/assets/sass/pandora/components/dashboard';
+@import 'shared-styles/assets/sass/pandora/components/dashboard-header';
+@import 'shared-styles/assets/sass/pandora/components/dashboard-filter';
+@import 'shared-styles/assets/sass/pandora/components/dataset-info-block';
+@import 'shared-styles/assets/sass/pandora/components/modal';
+@import 'shared-styles/assets/sass/pandora/components/sitehero';
+@import 'shared-styles/assets/sass/pandora/components/status-bullet';
+@import 'shared-styles/assets/sass/pandora/components/viewxmlsamples';
 
 @import '~codemirror/lib/codemirror.css';
 @import '~codemirror/theme/midnight.css';

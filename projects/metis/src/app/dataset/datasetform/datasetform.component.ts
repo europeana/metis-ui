@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SubscriptionManager } from '@shared';
 import {
   Country,
   Dataset,
@@ -14,7 +15,6 @@ import {
   successNotification
 } from '../../_models';
 import { CountriesService, DatasetsService, ErrorService } from '../../_services';
-import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';

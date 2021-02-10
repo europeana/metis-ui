@@ -1,4 +1,4 @@
-import { urlManipulation } from '../../test-data/_models/test-models';
+import { UrlManipulation } from '../../test-data/_models/test-models';
 import { checkAHref, cleanupUser, setEmptyDataResult, setupUser } from '../support/helpers';
 
 function allRunning(): Cypress.Chainable {
@@ -18,7 +18,7 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server();
       setupUser();
-      cy.request(Cypress.env('dataServer') + '/' + urlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions/?orderField=CREATED_DATE&ascending=false' +
           '&nextPage=0&workflowStatus=INQUEUE&workflowStatus=RUNNING'
@@ -39,7 +39,7 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server();
       setupUser();
-      cy.request(Cypress.env('dataServer') + '/' + urlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       setEmptyDataResult(
         '/orchestrator/workflows/executions/overview?nextPage=0&pluginType=HTTP_HARVEST'
       );
@@ -68,7 +68,7 @@ context('metis-ui', () => {
     beforeEach(() => {
       cy.server();
       setupUser();
-      cy.request(Cypress.env('dataServer') + '/' + urlManipulation.METIS_UI_CLEAR);
+      cy.request(Cypress.env('dataServer') + '/' + UrlManipulation.METIS_UI_CLEAR);
       cy.visit('/dashboard');
     });
 

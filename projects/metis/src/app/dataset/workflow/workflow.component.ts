@@ -11,7 +11,7 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
-
+import { SubscriptionManager } from '@shared';
 import { harvestValidator } from '../../_helpers';
 import {
   Dataset,
@@ -32,7 +32,6 @@ import {
   WorkflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { SubscriptionManager } from '../../shared/subscription-manager';
 
 import { TranslateService } from '../../_translate';
 

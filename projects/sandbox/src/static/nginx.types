@@ -1,0 +1,13 @@
+module js;
+text/html                             html htm shtml;
+text/css                              css;
+text/xml                              xml;
+image/jpeg                            jpeg jpg;
+application/x-javascript              js;
+application/atom+xml                  atom;
+application/rss+xml                   rss;
+text/plain                            txt;
+image/png                             png;
+image/tiff                            tif tiff;
+image/x-icon                          ico;
+image/svg+xml                         svg svgz;

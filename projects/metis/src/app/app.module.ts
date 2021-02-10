@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { ClickOutsideModule } from 'ng-click-outside';
+import { SharedModule } from '@shared';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
@@ -17,7 +18,6 @@ import {
   OngoingexecutionsComponent
 } from './dashboard';
 import { FilterOpsComponent, FilterOptionComponent } from './dashboard/filter-ops';
-import { DataPollingComponent } from './data-polling';
 import {
   ActionbarComponent,
   DatasetComponent,
@@ -69,7 +69,6 @@ import { ThemeSelectorComponent } from './theme-selector';
 @NgModule({
   declarations: [
     ActionbarComponent,
-    DataPollingComponent,
     AppComponent,
     CollapsibleDirective,
     ModalConfirmComponent,
@@ -131,7 +130,8 @@ import { ThemeSelectorComponent } from './theme-selector';
     HttpClientModule,
     AppRoutingModule,
     CodemirrorModule,
-    ClickOutsideModule
+    ClickOutsideModule,
+    SharedModule
   ],
   providers: [
     TRANSLATION_PROVIDERS,

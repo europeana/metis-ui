@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../dist/out-tsc",
+    "baseUrl": "./",
+    "paths": {
+      "@shared": ["../../../dist/shared", "../../../dist/shared/shared"]
+    }
+  },
+  "files": ["main.ts", "polyfills.ts"],
+
+  "include": ["**/*.d.ts"]
+}

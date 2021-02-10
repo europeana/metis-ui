@@ -10,8 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
 import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { SubscriptionManager } from '../shared/subscription-manager/subscription.manager';
+import { SubscriptionManager } from '../subscription-manager/subscription.manager';
 
 export interface DataPollerInfo {
   interval: number;
@@ -39,6 +38,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
   allPollingInfo: Array<DataPollerInfo> = [];
   allRefreshSubs: Array<Subscription> = [];
   pollRateDropped = false;
+  intervalStatusMax = 60000 * 9.5;
   triggerDelay = new Subject<TriggerDelayConfig>();
 
   /** constructor
@@ -154,7 +154,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
   ): TriggerDelayConfig {
     return {
       subject: loadTrigger,
-      wait: this.pollRateDropped ? environment.intervalStatusMax : interval,
+      wait: this.pollRateDropped ? this.intervalStatusMax : interval,
       blockIf: (): boolean => visibilityContextBind !== this.allPollingInfo[infoIndex].pollContext
     };
   }

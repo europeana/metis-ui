@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { SubscriptionManager } from '@shared';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   Dataset,
@@ -21,7 +22,6 @@ import {
   WorkflowOrPluginExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 
 @Component({
   selector: 'app-history',

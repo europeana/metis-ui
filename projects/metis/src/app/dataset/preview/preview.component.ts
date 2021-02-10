@@ -14,6 +14,7 @@ import { EditorConfiguration } from 'codemirror';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
+import { SubscriptionManager } from '@shared';
 import { environment } from '../../../environments/environment';
 import {
   Dataset,
@@ -27,7 +28,6 @@ import {
   XmlSample
 } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
-import { SubscriptionManager } from '../../shared/subscription-manager/subscription.manager';
 import { TranslateService } from '../../_translate';
 
 @Component({

@@ -16,7 +16,7 @@ import {
   SortParameter
 } from '../../_models';
 
-import { DataPollingComponent } from '../../data-polling';
+import { DataPollingComponent } from '@shared';
 import { DepublicationService, ErrorService, ModalConfirmService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
