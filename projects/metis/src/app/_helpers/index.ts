@@ -4,7 +4,6 @@ export * from './calcprogress';
 export * from './can-cancel-workflow';
 export * from './copycontent';
 export * from './statusclassfromplugin';
-export * from './harvest.validator';
 export * from './match-password-validator';
 export * from './password-strength';
 export * from './stringify-http-error';

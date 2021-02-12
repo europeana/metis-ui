@@ -104,11 +104,11 @@
     </div>
     <ng-container *ngIf="dialogFileOpen">
       <form [formGroup]="formFile" (ngSubmit)="onSubmitFormFile()">
-        <app-file-upload
+        <lib-file-upload
           formControlName="depublicationFile"
           [form]="formFile"
           [acceptedTypes]="'.txt'"
-        ></app-file-upload>
+        ></lib-file-upload>
         <div class="form-ctrls">
           <div
             class="errors"

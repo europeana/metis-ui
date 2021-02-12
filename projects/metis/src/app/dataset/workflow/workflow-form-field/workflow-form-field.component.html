@@ -15,11 +15,61 @@
   </label>
 
   <ng-container *ngIf="conf.name === 'pluginHARVEST'">
-    <app-workflow-form-field-harvest
-      [conf]="conf"
-      [workflowForm]="workflowForm"
-      (fieldChanged)="onFieldChanged($event)"
-    ></app-workflow-form-field-harvest>
+    <div
+      class="show-on-hover"
+      *ngIf="
+        workflowForm.get('pluginHARVEST')!.disabled || !workflowForm.get('pluginHARVEST')!.value
+      "
+    >
+      <span class="hovered-content">
+        Harvest URL:
+        <ng-container *ngIf="workflowForm.value.pluginType === 'HTTP_HARVEST'">
+          {{ workflowForm.value.url }}
+        </ng-container>
+        <ng-container *ngIf="workflowForm.value.pluginType === 'OAIPMH_HARVEST'">
+          {{ workflowForm.value.harvestUrl }}
+          <br />
+          Setspec: {{ workflowForm.value.setSpec }}
+        </ng-container>
+
+        <!-- Unusual (impossible?) case where there is no type yet there is a protocol-->
+        <ng-container *ngIf="!workflowForm.value.pluginType">
+          <ng-container
+            *ngIf="workflowForm.value.url && workflowForm.value.harvestUrl; else notBoth"
+          >
+            {{ workflowForm.value.url }}
+          </ng-container>
+          <ng-template #notBoth>
+            <ng-container *ngIf="workflowForm.value.url; else notUrl">
+              {{ workflowForm.value.url }}
+            </ng-container>
+            <ng-template #notUrl>
+              <ng-container *ngIf="workflowForm.value.harvestUrl">
+                {{ workflowForm.value.harvestUrl }}
+                <br />
+                Setspec: {{ workflowForm.value.setSpec }}
+              </ng-container>
+            </ng-template>
+          </ng-template>
+        </ng-container>
+
+        <ng-container *ngIf="workflowForm.value.metadataFormat">
+          <br />
+          Metadata format: {{ workflowForm.value.metadataFormat }}
+        </ng-container></span
+      >
+    </div>
+    <ng-container
+      *ngIf="
+        !workflowForm.get('pluginHARVEST')!.disabled && workflowForm.get('pluginHARVEST')!.value
+      "
+    >
+      <lib-protocol-field-set
+        [protocolSwitchField]="'pluginType'"
+        [protocolForm]="workflowForm"
+        (fieldChanged)="onFieldChanged($event)"
+      ></lib-protocol-field-set>
+    </ng-container>
   </ng-container>
 
   <ng-container *ngIf="conf.name === 'pluginLINK_CHECKING'">

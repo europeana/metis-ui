@@ -40,12 +40,10 @@ import {
   TabHeadersComponent,
   WorkflowComponent,
   WorkflowFormFieldComponent,
-  WorkflowFormFieldHarvestComponent,
   WorkflowFormFieldLinkCheckComponent,
   WorkflowFormFieldTransformComponent,
   WorkflowHeaderComponent
 } from './dataset';
-import { FileUploadComponent } from './file-upload';
 import { HomeComponent } from './home';
 import { LoadAnimationComponent } from './load-animation';
 import { LoadTitleComponent } from './load-title';
@@ -94,13 +92,11 @@ import { ThemeSelectorComponent } from './theme-selector';
     GeneralinfoComponent,
     DashboardactionsComponent,
     ExecutionsDataGridComponent,
-    FileUploadComponent,
     LastExecutionComponent,
     HistoryComponent,
     WorkflowComponent,
     WorkflowHeaderComponent,
     WorkflowFormFieldComponent,
-    WorkflowFormFieldHarvestComponent,
     WorkflowFormFieldLinkCheckComponent,
     WorkflowFormFieldTransformComponent,
     MappingComponent,

@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, Input } from '@angular/core';
 import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'app-file-upload',
+  selector: 'lib-file-upload',
   templateUrl: './file-upload.component.html',
   providers: [
     {

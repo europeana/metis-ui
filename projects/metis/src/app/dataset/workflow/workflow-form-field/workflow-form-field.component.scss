@@ -182,3 +182,15 @@
     right: 4.5rem;
   }
 }
+
+.show-on-hover {
+  align-items: flex-start;
+  flex-direction: column;
+  line-height: 1.3em;
+
+  .hovered-content {
+    line-height: 1.3em;
+    position: absolute;
+    transform: translateY(-50%);
+  }
+}
