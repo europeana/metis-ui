@@ -2,13 +2,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { harvestValidator } from '../../_helpers';
+import { SubscriptionManager } from '../../subscription-manager';
 
 @Component({
   selector: 'lib-protocol-field-set',
   templateUrl: './protocol-field-set.component.html',
   styleUrls: ['./protocol-field-set.component.scss']
 })
-export class ProtocolFieldSetComponent {
+export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;
   @Input() hasFileOption = false;
   @Input() protocolSwitchField: string;
@@ -19,10 +20,12 @@ export class ProtocolFieldSetComponent {
     this.form = form;
     this.updateRequired();
 
-    this.form.valueChanges.subscribe(() => {
-      this.updateRequired();
-      this.fieldChanged.emit();
-    });
+    this.subs.push(
+      this.form.valueChanges.subscribe(() => {
+        this.updateRequired();
+        this.fieldChanged.emit();
+      })
+    );
   }
   subValueChanges: Subscription;
 
