@@ -1,1 +1,2 @@
-src/environments/apisettings.ts
+**/src/environments/apisettings.ts
+**/dist

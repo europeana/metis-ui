@@ -739,7 +739,7 @@ export function evolution(datasetId: string, peType: string): HistoryVersions {
         res.push({
           workflowExecutionId: w.id,
           pluginType: pe.pluginType.toString(),
-          finishedTime: pe.finishedDate
+          finishedTime: pe.finishedDate ? new Date(pe.finishedDate).getTime() : undefined
         } as HistoryVersion);
       }
     });

@@ -6,5 +6,5 @@
 **/dist
 /dist
 /node_modules
-/projects/metis/src/environments/apisettings.ts
+/projects/**/apisettings.ts
 **/tmp
