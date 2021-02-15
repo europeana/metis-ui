@@ -30,34 +30,12 @@
           {{ workflowForm.value.harvestUrl }}
           <br />
           Setspec: {{ workflowForm.value.setSpec }}
-        </ng-container>
-
-        <!-- Unusual (impossible?) case where there is no type yet there is a protocol-->
-        <ng-container *ngIf="!workflowForm.value.pluginType">
-          <ng-container
-            *ngIf="workflowForm.value.url && workflowForm.value.harvestUrl; else notBoth"
-          >
-            {{ workflowForm.value.url }}
+          <ng-container *ngIf="workflowForm.value.metadataFormat">
+            <br />
+            Metadata format: {{ workflowForm.value.metadataFormat }}
           </ng-container>
-          <ng-template #notBoth>
-            <ng-container *ngIf="workflowForm.value.url; else notUrl">
-              {{ workflowForm.value.url }}
-            </ng-container>
-            <ng-template #notUrl>
-              <ng-container *ngIf="workflowForm.value.harvestUrl">
-                {{ workflowForm.value.harvestUrl }}
-                <br />
-                Setspec: {{ workflowForm.value.setSpec }}
-              </ng-container>
-            </ng-template>
-          </ng-template>
         </ng-container>
-
-        <ng-container *ngIf="workflowForm.value.metadataFormat">
-          <br />
-          Metadata format: {{ workflowForm.value.metadataFormat }}
-        </ng-container></span
-      >
+      </span>
     </div>
     <ng-container
       *ngIf="

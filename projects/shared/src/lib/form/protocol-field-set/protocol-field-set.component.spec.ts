@@ -1,34 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ProtocolFieldSetComponent } from '.';
-
-// TODO: move models to shared
-//import { ParameterFieldName, PluginType, WorkflowFieldDataParameterised } from '../../../_models';
-
-export enum ParameterFieldName {
-  customXslt = 'customXslt',
-  harvestUrl = 'harvestUrl',
-  metadataFormat = 'metadataFormat',
-  performSampling = 'performSampling',
-  pluginType = 'pluginType',
-  setSpec = 'setSpec',
-  url = 'url'
-}
-
-export enum PluginType {
-  HTTP_HARVEST = 'HTTP_HARVEST',
-  OAIPMH_HARVEST = 'OAIPMH_HARVEST',
-  VALIDATION_EXTERNAL = 'VALIDATION_EXTERNAL',
-  TRANSFORMATION = 'TRANSFORMATION',
-  VALIDATION_INTERNAL = 'VALIDATION_INTERNAL',
-  NORMALIZATION = 'NORMALIZATION',
-  ENRICHMENT = 'ENRICHMENT',
-  MEDIA_PROCESS = 'MEDIA_PROCESS',
-  PREVIEW = 'PREVIEW',
-  PUBLISH = 'PUBLISH',
-  DEPUBLISH = 'DEPUBLISH',
-  LINK_CHECKING = 'LINK_CHECKING'
-}
+import { ProtocolType } from '../../_models';
 
 describe('ProtocolFieldSetComponent', () => {
   let component: ProtocolFieldSetComponent;
@@ -63,14 +36,31 @@ describe('ProtocolFieldSetComponent', () => {
       metadataFormat: null,
       fileFormName: null
     });
+    component.protocolSwitchField = 'pluginType';
     fixture.detectChanges();
+  });
+
+  it('should report if the harvest protocol is FILE', () => {
+    expect(component.isProtocolFile()).toBeFalsy();
+    component.form.value.pluginType = ProtocolType.FILE;
+    expect(component.isProtocolFile()).toBeTruthy();
+    component.form.value.pluginType = ProtocolType.OAIPMH_HARVEST;
+    expect(component.isProtocolFile()).toBeFalsy();
   });
 
   it('should report if the harvest protocol is HTTP', () => {
     expect(component.isProtocolHTTP()).toBeFalsy();
-    component.form.value.pluginType = PluginType.HTTP_HARVEST;
+    component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
     expect(component.isProtocolHTTP()).toBeTruthy();
-    component.form.value.pluginType = PluginType.OAIPMH_HARVEST;
+    component.form.value.pluginType = ProtocolType.OAIPMH_HARVEST;
     expect(component.isProtocolHTTP()).toBeFalsy();
+  });
+
+  it('should report if the harvest protocol is OAI-PMH', () => {
+    expect(component.isProtocolOAIPMH()).toBeFalsy();
+    component.form.value.pluginType = ProtocolType.OAIPMH_HARVEST;
+    expect(component.isProtocolOAIPMH()).toBeTruthy();
+    component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
+    expect(component.isProtocolOAIPMH()).toBeFalsy();
   });
 });

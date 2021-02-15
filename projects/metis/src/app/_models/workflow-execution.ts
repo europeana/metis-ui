@@ -1,4 +1,7 @@
+import { PluginType } from '../../../../shared/src/lib/_models';
 import { PluginMetadata } from './plugin-metadata';
+
+export { PluginType };
 
 export enum TaskState {
   PENDING = 'PENDING',
@@ -36,21 +39,6 @@ export enum PluginStatus {
   FINISHED = 'FINISHED',
   CANCELLED = 'CANCELLED',
   FAILED = 'FAILED'
-}
-
-export enum PluginType {
-  HTTP_HARVEST = 'HTTP_HARVEST',
-  OAIPMH_HARVEST = 'OAIPMH_HARVEST',
-  VALIDATION_EXTERNAL = 'VALIDATION_EXTERNAL',
-  TRANSFORMATION = 'TRANSFORMATION',
-  VALIDATION_INTERNAL = 'VALIDATION_INTERNAL',
-  NORMALIZATION = 'NORMALIZATION',
-  ENRICHMENT = 'ENRICHMENT',
-  MEDIA_PROCESS = 'MEDIA_PROCESS',
-  PREVIEW = 'PREVIEW',
-  PUBLISH = 'PUBLISH',
-  DEPUBLISH = 'DEPUBLISH',
-  LINK_CHECKING = 'LINK_CHECKING'
 }
 
 // See Topology.java

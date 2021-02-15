@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { harvestValidator } from '../../_helpers';
+import { ProtocolType } from '../../_models';
+
 import { SubscriptionManager } from '../../subscription-manager';
 
 @Component({
@@ -33,21 +35,21 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   /* return true if pluginType is HTTP_HARVEST
   */
   isProtocolHTTP(): boolean {
-    return this.form!.value[this.protocolSwitchField] === 'HTTP_HARVEST'; //PluginType.HTTP_HARVEST;
+    return this.form!.value[this.protocolSwitchField] === ProtocolType.HTTP_HARVEST;
   }
 
   /** isProtocolOAIPMH
   /* return true if pluginType is OAIPMH_HARVEST
   */
   isProtocolOAIPMH(): boolean {
-    return this.form!.value[this.protocolSwitchField] === 'OAIPMH_HARVEST';
+    return this.form!.value[this.protocolSwitchField] === ProtocolType.OAIPMH_HARVEST;
   }
 
   /** isProtocolFile
   /* return true if pluginType is FILE
   */
   isProtocolFile(): boolean {
-    return this.form!.value[this.protocolSwitchField] === 'FILE';
+    return this.form!.value[this.protocolSwitchField] === ProtocolType.FILE;
   }
 
   clearValidators(): void {
