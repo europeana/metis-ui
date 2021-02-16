@@ -1,8 +1,6 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 
 export abstract class TestDataServer {
-  //export  class TestDataServer {
-  //serverName: string;
   abstract serverName: string;
 
   port = 3000;

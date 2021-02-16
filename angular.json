@@ -141,7 +141,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "buildOptimizer": true,
@@ -230,6 +229,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "projects/shared/src/test.ts",
+            "polyfills": "projects/shared/src/polyfills.ts",
             "tsConfig": "projects/shared/src/tsconfig.spec.json",
             "karmaConfig": "projects/shared/karma.conf.cjs"
           }
