@@ -15,7 +15,11 @@ const webpack = require('@cypress/webpack-preprocessor');
 
 module.exports = (on, config) => {
   const options = {
+    //webpackOptions: require('../webpack.config'),
+
     webpackOptions: require('../../../../tools/cypress-webpack.config.js'),
+
+
     watchOptions: {}
   };
 
