@@ -16,15 +16,15 @@ $textcolour_highlight: $accent;
 /* GLOBAL ELEMENTS */
 @import 'shared-styles/assets/sass/scss/base/global-classes';
 @import 'shared-styles/assets/sass/scss/base/main';
+@import 'shared-styles/assets/sass/scss/base/lists';
+@import 'shared-styles/assets/sass/scss/base/forms';
 @import 'shared-styles/assets/sass/scss/base/text';
 @import 'shared-styles/assets/sass/scss/base/links';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-/* Sandbox */
-.metis-sandbox {
-  border: 1px solid $eu-light-orange;
-  color: $eu-jade;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+@import 'shared-styles/assets/sass/pandora/components/status-bullet';
+
+.wizard input[type='file'] {
+  box-shadow: none;
+  border-color: $eu-jade;
 }

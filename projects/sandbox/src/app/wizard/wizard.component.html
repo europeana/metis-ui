@@ -1,0 +1,126 @@
+<div class="wizard">
+  <div
+    class="wizard-head"
+    [ngClass]="{ 'orbs-hidden': orbsHidden, 'orb-square': getOrbsAreSquare() }"
+  >
+    <ng-container *ngFor="let conf of wizardConf; let i = index">
+      <label *ngIf="step === i">{{ conf.instruction }}</label>
+    </ng-container>
+
+    <ul class="wizard-status">
+      <li
+        *ngFor="let conf of wizardConf; let i = index"
+        [ngClass]="{ 'progress-orb': conf.title === 'progress' }"
+      >
+        <a
+          (click)="setStep(i)"
+          [ngClass]="{
+            'is-set': stepIsComplete(i),
+            active: step === i,
+            'svg-icon-spin-inbutton': isBusy
+          }"
+          class="orb-status labelled"
+          [attr.data-label]="i + 1"
+        ></a>
+      </li>
+    </ul>
+  </div>
+  <div class="wizard-content">
+    <div *ngFor="let conf of wizardConf; let i = index" [ngClass]="{ hidden: i !== step }">
+      <ng-container
+        *ngFor="let field of conf.fields"
+        [ngSwitch]="field.type"
+        [formGroup]="getFormGroup(conf)"
+      >
+        <div class="form-group" *ngSwitchCase="'select'">
+          <label *ngIf="field.label" for="{{ field.name }}">{{ field.label }}</label>
+          <select id="{{ field.name }}" [formControlName]="field.name">
+            <option
+              *ngFor="let option of field.options"
+              [ngValue]="option.code ? option.code : option"
+              >{{ option.name ? option.name : option }}</option
+            >
+          </select>
+        </div>
+
+        <div class="form-group" *ngSwitchCase="'text'">
+          <label *ngIf="field.label" for="{{ field.name }}">{{ field.label }}</label>
+          <input id="{{ field.name }}" [formControlName]="field.name" />
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="conf.title === 'harvest'">
+        <lib-protocol-field-set
+          [formGroup]="getFormGroup(conf)"
+          [protocolForm]="formUpload"
+          [protocolSwitchField]="'uploadProtocol'"
+          visibleProtocols="['ZIP_UPLOAD', 'HTTP_HARVEST'. 'OAIPMH_HARVEST']"
+          disabledProtocols="['HTTP_HARVEST'. 'OAIPMH_HARVEST']"
+          [fileFormName]="fileFormName"
+        >
+        </lib-protocol-field-set>
+      </ng-container>
+
+      <ng-container *ngIf="conf.title === 'progress'">
+        <form [formGroup]="formProgress" (ngSubmit)="onSubmitProgress()">
+          <sb-progress-tracker
+            *ngIf="progressData"
+            [progressData]="progressData"
+            [datasetId]="trackId"
+          ></sb-progress-tracker>
+
+          <div class="form-group" style="position:relative;">
+            <label>Enter the id of the dataset to track </label>
+            <div class="submit-track-id">
+              <input formControlName="idToTrack" data-e2e="idToTrack" />
+              <button
+                type="submit"
+                [disabled]="!formProgress.value.idToTrack"
+                data-e2e="submitProgress"
+              >
+                track id
+              </button>
+            </div>
+          </div>
+        </form>
+      </ng-container>
+    </div>
+
+    <form class="buttons" [formGroup]="formUpload" (ngSubmit)="onSubmitDataset()">
+      <ng-container *ngIf="wizardConf[step].title === 'progress'">
+        <label class="inline-text"
+          >Or <a (click)="setStep(0)" data-e2e="link-dataset-form">create a new dataset</a></label
+        >
+      </ng-container>
+      <button
+        [ngClass]="{
+          hidden: orbsHidden || (wizardConf[step].title === 'progress' && !formUpload.valid)
+        }"
+        [disabled]="!formUpload.valid"
+        type="submit"
+        #btnSubmit
+      >
+        Upload
+      </button>
+
+      <div [ngClass]="{ hidden: orbsHidden }">
+        <button
+          class="orb-status labelled previous"
+          [ngClass]="{ hidden: step < 1 }"
+          (click)="setStep(step - 1)"
+        ></button>
+        <button
+          class="orb-status labelled next"
+          [ngClass]="{ hidden: step >= 3 }"
+          (click)="setStep(step + 1)"
+        ></button>
+      </div>
+    </form>
+    <div *ngIf="error" class="errors">
+      {{ error.statusText }}
+      <ul class="error-detail">
+        <li>{{ error.message }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

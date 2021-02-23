@@ -1,0 +1,30 @@
+<h2 class="progress-title">Dataset {{ datasetId }}</h2>
+<div class="wrapper">
+  <div>
+    <span
+      *ngFor="let item of progressData['progress-by-step']"
+      class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
+    ></span>
+  </div>
+  <div class="step-columns">
+    <span *ngFor="let item of progressData['progress-by-step']" class="step-column-entry">
+      <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
+      <span class="step-label">{{ item.step }}</span>
+      <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
+      <a *ngIf="item.fail" class="errors">{{ item.fail }}</a>
+      <!--TODO: use modal for error details -->
+      <!--ul *ngIf="item.errors">
+      <li *ngFor="let error of item.errors">
+        <ul>
+          <li>
+            {{ error.warning }}
+          </li>
+          <li>
+            {{ error.message }}
+          </li>
+        </ul>
+      </li>
+    </ul-->
+    </span>
+  </div>
+</div>

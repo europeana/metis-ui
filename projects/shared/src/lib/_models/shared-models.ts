@@ -14,7 +14,7 @@ export enum PluginType {
 }
 
 export enum ProtocolType {
-  FILE = 'FILE',
+  ZIP_UPLOAD = 'ZIP_UPLOAD',
   HTTP_HARVEST = 'HTTP_HARVEST',
   OAIPMH_HARVEST = 'OAIPMH_HARVEST'
 }

@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-
+import { ProtocolType } from '@shared';
 import { WorkflowFieldData } from '../../../_models';
 
 @Component({
@@ -15,6 +15,8 @@ export class WorkflowFormFieldComponent {
   @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
+
+  protocolType = ProtocolType;
 
   /** ctrlSetLinkCheck
   /* emit link check event
