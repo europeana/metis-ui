@@ -16,7 +16,7 @@ export class WorkflowFormFieldComponent {
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 
-  protocolType = ProtocolType;
+  EnumProtocolType = ProtocolType;
 
   /** ctrlSetLinkCheck
   /* emit link check event

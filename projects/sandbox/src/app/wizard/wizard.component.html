@@ -4,7 +4,7 @@
     [ngClass]="{ 'orbs-hidden': orbsHidden, 'orb-square': getOrbsAreSquare() }"
   >
     <ng-container *ngFor="let conf of wizardConf; let i = index">
-      <label *ngIf="step === i">{{ conf.instruction }}</label>
+      <label *ngIf="currentStepIndex === i">{{ conf.instruction }}</label>
     </ng-container>
 
     <ul class="wizard-status">
@@ -16,7 +16,7 @@
           (click)="setStep(i)"
           [ngClass]="{
             'is-set': stepIsComplete(i),
-            active: step === i,
+            active: currentStepIndex === i,
             'svg-icon-spin-inbutton': isBusy
           }"
           class="orb-status labelled"
@@ -26,7 +26,10 @@
     </ul>
   </div>
   <div class="wizard-content">
-    <div *ngFor="let conf of wizardConf; let i = index" [ngClass]="{ hidden: i !== step }">
+    <div
+      *ngFor="let conf of wizardConf; let i = index"
+      [ngClass]="{ hidden: i !== currentStepIndex }"
+    >
       <ng-container
         *ngFor="let field of conf.fields"
         [ngSwitch]="field.type"
@@ -66,7 +69,7 @@
           <sb-progress-tracker
             *ngIf="progressData"
             [progressData]="progressData"
-            [datasetId]="trackId"
+            [datasetId]="trackDatasetId"
           ></sb-progress-tracker>
 
           <div class="form-group" style="position:relative;">
@@ -87,18 +90,18 @@
     </div>
 
     <form class="buttons" [formGroup]="formUpload" (ngSubmit)="onSubmitDataset()">
-      <ng-container *ngIf="wizardConf[step].title === 'progress'">
+      <ng-container *ngIf="wizardConf[currentStepIndex].title === 'progress'">
         <label class="inline-text"
           >Or <a (click)="setStep(0)" data-e2e="link-dataset-form">create a new dataset</a></label
         >
       </ng-container>
       <button
         [ngClass]="{
-          hidden: orbsHidden || (wizardConf[step].title === 'progress' && !formUpload.valid)
+          hidden:
+            orbsHidden || (wizardConf[currentStepIndex].title === 'progress' && !formUpload.valid)
         }"
         [disabled]="!formUpload.valid"
         type="submit"
-        #btnSubmit
       >
         Upload
       </button>
@@ -106,13 +109,13 @@
       <div [ngClass]="{ hidden: orbsHidden }">
         <button
           class="orb-status labelled previous"
-          [ngClass]="{ hidden: step < 1 }"
-          (click)="setStep(step - 1)"
+          [ngClass]="{ hidden: currentStepIndex < 1 }"
+          (click)="setStep(currentStepIndex - 1)"
         ></button>
         <button
           class="orb-status labelled next"
-          [ngClass]="{ hidden: step >= 3 }"
-          (click)="setStep(step + 1)"
+          [ngClass]="{ hidden: currentStepIndex >= wizardConf.length - 1 }"
+          (click)="setStep(currentStepIndex + 1)"
         ></button>
       </div>
     </form>

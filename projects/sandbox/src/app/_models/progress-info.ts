@@ -37,10 +37,7 @@ export interface DatasetInfo {
   //portal-preview:	string,
   //portal-publish:	string,
   'processed-records': number;
-  //progress-by-step	[ProgressByStep{
-
   'progress-by-step': Array<ProgressByStep>;
-
   //errors	[...]
   //fail	integer($int64)
   //step	stringEnum:

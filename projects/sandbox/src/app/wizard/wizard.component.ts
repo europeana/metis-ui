@@ -24,14 +24,14 @@ export class WizardComponent extends DataPollingComponent {
   orbsHidden = true;
   protocolType = ProtocolType;
   progressData: DatasetInfo;
-  step: number;
-  trackId: number;
+  currentStepIndex: number;
+  trackDatasetId: number;
   wizardConf: Array<WizardStep>;
 
   @Input() fileFormName: string;
   @Input() set _wizardConf(wizardConf: Array<WizardStep>) {
     this.wizardConf = wizardConf;
-    this.step = this.wizardConf.length - 1;
+    this.currentStepIndex = this.wizardConf.length - 1;
     this.buildForms();
   }
 
@@ -76,12 +76,14 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   getOrbsAreSquare(): boolean {
-    return this.step === 3 && !!this.formProgress.value.idToTrack;
+    return (
+      this.currentStepIndex === this.wizardConf.length - 1 && !!this.formProgress.value.idToTrack
+    );
   }
 
-  setStep(step: number): void {
+  setStep(stepIndex: number): void {
     this.orbsHidden = false;
-    this.step = step;
+    this.currentStepIndex = stepIndex;
   }
 
   resetBusy(): void {
@@ -101,7 +103,7 @@ export class WizardComponent extends DataPollingComponent {
         this.sandbox.requestProgress(idToTrack).subscribe(
           (progressInfo: DatasetInfo) => {
             this.progressData = progressInfo;
-            this.trackId = idToTrack;
+            this.trackDatasetId = idToTrack;
             this.resetBusy();
           },
           (err: HttpErrorResponse): void => {
@@ -136,9 +138,8 @@ export class WizardComponent extends DataPollingComponent {
             (res: SubmissionResponseData) => {
               this.resetBusy();
               if (res.body) {
-                const trackId = res.body['dataset-id'];
-                this.trackId = trackId;
-                this.step = this.wizardConf.length - 1;
+                this.trackDatasetId = res.body['dataset-id'];
+                this.currentStepIndex = this.wizardConf.length - 1;
               }
             },
             (err: HttpErrorResponse): void => {
@@ -152,7 +153,7 @@ export class WizardComponent extends DataPollingComponent {
   stepIsComplete(step: number): boolean {
     if (this.wizardConf[step].title === 'progress') {
       const val = this.formProgress.get('idToTrack');
-      return val ? val.valid : !!this.trackId;
+      return val ? val.valid : !!this.trackDatasetId;
     }
     const fields = this.wizardConf[step].fields;
     if (fields) {
