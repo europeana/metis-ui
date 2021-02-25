@@ -9,6 +9,7 @@ context('Sandbox', () => {
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(testFile);
           el.files = dataTransfer.files;
+          cy.wrap(subject).trigger('change', { force: true });
           console.log(el.files);
         });
     });
@@ -24,7 +25,9 @@ context('Sandbox', () => {
 
     const selectorBtnPrevious = '.previous';
     const selectorBtnNext = '.next';
+    const selectorBtnSubmit = '[data-e2e="submit-upload"]';
     const selectorInputName = '#name';
+    const selectorProgress = '.progress-title';
 
     beforeEach(() => {
       cy.server();
@@ -139,6 +142,18 @@ context('Sandbox', () => {
       setStep(4);
       cy.get(selectorInputTrackId).type('1');
       cy.get('.wizard-status li:nth-child(4) a').should('have.class', 'is-set');
+    });
+
+    it('should track the progress on submit', () => {
+      cy.get(selectorInputName).type('Test-dataset');
+      cy.get(selectorBtnNext).click();
+      cy.get(selectorInputCountry).select('Greece');
+      cy.get(selectorInputLanguage).select('Greek');
+      cy.get(selectorBtnNext).click();
+      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+      cy.get(selectorProgress).should('have.length', 0);
+      cy.get(selectorBtnSubmit).click();
+      cy.get(selectorProgress).should('have.length', 1);
     });
   });
 });

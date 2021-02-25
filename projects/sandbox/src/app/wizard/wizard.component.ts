@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge } from 'rxjs';
 import { DataPollingComponent } from '@shared';
@@ -95,9 +95,9 @@ export class WizardComponent extends DataPollingComponent {
 
   onSubmitProgress(): void {
     const form = this.formProgress;
-    const idToTrack = this.formProgress.value.idToTrack;
 
     if (form.valid) {
+      const idToTrack = this.formProgress.value.idToTrack;
       this.isBusy = true;
       this.subs.push(
         this.sandbox.requestProgress(idToTrack).subscribe(
@@ -139,6 +139,9 @@ export class WizardComponent extends DataPollingComponent {
               this.resetBusy();
               if (res.body) {
                 this.trackDatasetId = res.body['dataset-id'];
+                const ctrl = this.formProgress.get('idToTrack') as FormControl;
+                ctrl.setValue(this.trackDatasetId);
+                this.onSubmitProgress();
                 this.currentStepIndex = this.wizardConf.length - 1;
               }
             },

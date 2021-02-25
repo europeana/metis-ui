@@ -101,6 +101,7 @@
             orbsHidden || (wizardConf[currentStepIndex].title === 'progress' && !formUpload.valid)
         }"
         [disabled]="!formUpload.valid"
+        data-e2e="submit-upload"
         type="submit"
       >
         Upload
