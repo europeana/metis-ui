@@ -17,7 +17,9 @@ export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.PROCESS_MEDIA, 'media_process'],
   [StepStatus.TRANSFORM, 'transformation'],
   [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],
-  [StepStatus.VALIDATE_INTERNAL, 'validation_internal']
+  [StepStatus.VALIDATE_INTERNAL, 'validation_internal'],
+  [StepStatus.PREVIEW, 'preview'],
+  [StepStatus.PUBLISH, 'publish']
 ]);
 
 /** Raw data **/

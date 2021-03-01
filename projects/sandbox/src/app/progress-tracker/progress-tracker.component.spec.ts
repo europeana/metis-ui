@@ -44,5 +44,7 @@ describe('ProgressTrackerComponent', () => {
     expect(component.getLabelClass(StepStatus.ENRICH)).toEqual('enrichment');
     expect(component.getLabelClass(StepStatus.TRANSFORM)).toEqual('transformation');
     expect(component.getLabelClass(StepStatus.NORMALISE)).toEqual('normalization');
+    expect(component.getLabelClass(StepStatus.PREVIEW)).toEqual('preview');
+    expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
   });
 });

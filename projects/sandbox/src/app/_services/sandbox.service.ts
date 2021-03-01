@@ -32,10 +32,7 @@ export class SandboxService {
     fileFormName: string,
     file: File
   ): Observable<SubmissionResponseData> {
-    const url = `${apiSettings.apiHost}/dataset/${datasetName}/process?country=${country}&language=${language}`.replace(
-      /\/\/proc/,
-      '/proc'
-    );
+    const url = `${apiSettings.apiHost}/dataset/${datasetName}/process?country=${country}&language=${language}`;
     const formData = new FormData();
     formData.append(fileFormName, file);
 
