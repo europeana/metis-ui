@@ -30,6 +30,5 @@ export enum WizardStepType {
 
 export interface WizardStep {
   stepType: WizardStepType;
-  instruction: string;
   fields?: Array<WizardField>;
 }

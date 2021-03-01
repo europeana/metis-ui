@@ -85,9 +85,7 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   getOrbsAreSquare(): boolean {
-    return (
-      this.currentStepIndex === this.wizardConf.length - 1 && !!this.formProgress.value.idToTrack
-    );
+    return this.getIsProgressTrack(this.currentStepIndex) && !!this.formProgress.value.idToTrack;
   }
 
   getIsProgressTrack(stepIndex: number): boolean {

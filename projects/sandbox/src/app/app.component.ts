@@ -71,7 +71,6 @@ export class AppComponent {
     },
     {
       stepType: WizardStepType.PROTOCOL_SELECT,
-      instruction: 'Configure the Data Source',
       fields: [
         {
           name: 'uploadProtocol',
