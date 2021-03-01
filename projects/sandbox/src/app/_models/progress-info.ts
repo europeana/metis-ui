@@ -1,20 +1,24 @@
 export enum StepStatus {
-  'import' = 'import',
-  'validate (edm external)' = 'validate (edm external)',
-  'transform' = 'transform',
-  'validate (edm internal)' = 'validate (edm internal)',
-  'normalise' = 'normalise',
-  'enrich' = 'enrich',
-  'process media' = 'process media',
-  'preview' = 'preview',
-  'publish' = 'publish'
+  'IMPORT' = 'import',
+  'VALIDATE_EXTERNAL' = 'validate (edm external)',
+  'TRANSFORM' = 'transform',
+  'VALIDATE_INTERNAL' = 'validate (edm internal)',
+  'NORMALISE' = 'normalise',
+  'ENRICH' = 'enrich',
+  'PROCESS_MEDIA' = 'process media',
+  'PREVIEW' = 'preview',
+  'PUBLISH' = 'publish'
 }
 
-/** Converted data **/
-export interface PercentageClassInfo {
-  pct: number;
-  className: string;
-}
+export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
+  [StepStatus.IMPORT, 'harvest'],
+  [StepStatus.ENRICH, 'enrichment'],
+  [StepStatus.NORMALISE, 'normalization'],
+  [StepStatus.PROCESS_MEDIA, 'media_process'],
+  [StepStatus.TRANSFORM, 'transformation'],
+  [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],
+  [StepStatus.VALIDATE_INTERNAL, 'validation_internal']
+]);
 
 /** Raw data **/
 
@@ -28,25 +32,12 @@ export interface ProgressByStep {
   fail: number;
   warn: number;
   success: number;
-  //errors	[...]
   step: StepStatus;
   total: number;
 }
 
 export interface DatasetInfo {
-  //portal-preview:	string,
-  //portal-publish:	string,
   'processed-records': number;
   'progress-by-step': Array<ProgressByStep>;
-  //errors	[...]
-  //fail	integer($int64)
-  //step	stringEnum:
-  //Array [ 10 ]
-  //success	integer($int64)
-  //total	integer($int64)
-  //warn	integer($int64)
-  //}]
-  //status	stringEnum:
-  //Array [ 2 ]
   'total-records': number;
 }

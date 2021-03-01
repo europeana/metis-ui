@@ -7,19 +7,29 @@ export enum WizardFieldType {
   harvest = 'harvest'
 }
 
+interface FieldOption {
+  code: string;
+  name: string;
+}
+
 export interface WizardField {
   name: string;
   label?: string;
   type?: WizardFieldType;
   validators?: Array<Validators>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  options?: Array<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  options?: Array<string> | Array<FieldOption>;
   defaultValue?: string;
 }
 
+export enum WizardStepType {
+  SET_NAME = 'SET_NAME',
+  SET_LANG_LOCATION = 'SET_LANG_LOCATION',
+  PROTOCOL_SELECT = 'PROTOCOL_SELECT',
+  PROGRESS_TRACK = 'PROGRESS_TRACK'
+}
+
 export interface WizardStep {
-  title: string;
+  stepType: WizardStepType;
   instruction: string;
   fields?: Array<WizardField>;
 }

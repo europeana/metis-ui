@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ProtocolType } from '@shared';
-import { WizardStep } from './_models';
+import { WizardStep, WizardStepType } from './_models';
 
 @Component({
   selector: 'sb-root',
@@ -30,8 +30,7 @@ export class AppComponent {
 
   wizardConf = [
     {
-      title: 'name',
-      instruction: 'Enter a Dataset Name',
+      stepType: WizardStepType.SET_NAME,
       fields: [
         {
           name: 'name',
@@ -52,8 +51,7 @@ export class AppComponent {
       ]
     },
     {
-      title: 'country_language',
-      instruction: 'Enter the Details',
+      stepType: WizardStepType.SET_LANG_LOCATION,
       fields: [
         {
           name: 'country',
@@ -72,7 +70,7 @@ export class AppComponent {
       ]
     },
     {
-      title: 'harvest',
+      stepType: WizardStepType.PROTOCOL_SELECT,
       instruction: 'Configure the Data Source',
       fields: [
         {
@@ -99,8 +97,7 @@ export class AppComponent {
       ]
     },
     {
-      title: 'progress',
-      instruction: 'Track Data Processing'
+      stepType: WizardStepType.PROGRESS_TRACK
     }
   ] as Array<WizardStep>;
 }

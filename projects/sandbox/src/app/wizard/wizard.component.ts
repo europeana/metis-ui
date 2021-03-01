@@ -3,7 +3,13 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge } from 'rxjs';
 import { DataPollingComponent } from '@shared';
-import { DatasetInfo, SubmissionResponseData, WizardField, WizardStep } from '../_models';
+import {
+  DatasetInfo,
+  SubmissionResponseData,
+  WizardField,
+  WizardStep,
+  WizardStepType
+} from '../_models';
 import { SandboxService } from '../_services';
 import { ProtocolType } from '@shared';
 
@@ -22,7 +28,8 @@ export class WizardComponent extends DataPollingComponent {
   formUpload: FormGroup;
   isBusy = false;
   orbsHidden = true;
-  protocolType = ProtocolType;
+  EnumProtocolType = ProtocolType;
+  EnumWizardStepType = WizardStepType;
   progressData: DatasetInfo;
   currentStepIndex: number;
   trackDatasetId: number;
@@ -39,8 +46,10 @@ export class WizardComponent extends DataPollingComponent {
     super();
   }
 
-  getFormGroup(conf: WizardStep): FormGroup {
-    return conf.title === 'progress' ? this.formProgress : this.formUpload;
+  getFormGroup(stepConf: WizardStep): FormGroup {
+    return stepConf.stepType === WizardStepType.PROGRESS_TRACK
+      ? this.formProgress
+      : this.formUpload;
   }
 
   buildForms(): void {
@@ -79,6 +88,10 @@ export class WizardComponent extends DataPollingComponent {
     return (
       this.currentStepIndex === this.wizardConf.length - 1 && !!this.formProgress.value.idToTrack
     );
+  }
+
+  getIsProgressTrack(stepIndex: number): boolean {
+    return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
   }
 
   setStep(stepIndex: number): void {
@@ -154,7 +167,7 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   stepIsComplete(step: number): boolean {
-    if (this.wizardConf[step].title === 'progress') {
+    if (this.wizardConf[step].stepType === WizardStepType.PROGRESS_TRACK) {
       const val = this.formProgress.get('idToTrack');
       return val ? val.valid : !!this.trackDatasetId;
     }

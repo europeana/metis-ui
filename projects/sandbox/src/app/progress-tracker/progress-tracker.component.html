@@ -12,19 +12,6 @@
       <span class="step-label">{{ item.step }}</span>
       <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
       <a *ngIf="item.fail" class="errors">{{ item.fail }}</a>
-      <!--TODO: use modal for error details -->
-      <!--ul *ngIf="item.errors">
-      <li *ngFor="let error of item.errors">
-        <ul>
-          <li>
-            {{ error.warning }}
-          </li>
-          <li>
-            {{ error.message }}
-          </li>
-        </ul>
-      </li>
-    </ul-->
     </span>
   </div>
 </div>

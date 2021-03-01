@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { DatasetInfo, ProgressByStep } from '../_models';
+import { DatasetInfo, ProgressByStep, StepStatus, StepStatusClass } from '../_models';
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -13,18 +13,9 @@ export class ProgressTrackerComponent {
   /** getLabelClass
   /* return a css class based on the plugin status
   */
-  getLabelClass(step: string): string {
-    console.log('datasetId ' + this.datasetId);
-    const plugin = step
-      .trim()
-      .replace('import', 'harvest')
-      .replace('enrich', 'enrichment')
-      .replace('normalise', 'normalization')
-      .replace('process media', 'media_process')
-      .replace('transform', 'transformation')
-      .replace('validate (edm external)', 'validation_external')
-      .replace('validate (edm internal)', 'validation_internal');
-    return `${plugin.toString().toLowerCase()}`;
+  getLabelClass(step: StepStatus): string {
+    const labelClass = StepStatusClass.get(step);
+    return labelClass ? labelClass : '';
   }
 
   /** getStatusClass
