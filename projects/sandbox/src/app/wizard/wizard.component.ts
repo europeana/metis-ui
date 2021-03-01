@@ -38,7 +38,7 @@ export class WizardComponent extends DataPollingComponent {
   @Input() fileFormName: string;
   @Input() set _wizardConf(wizardConf: Array<WizardStep>) {
     this.wizardConf = wizardConf;
-    this.currentStepIndex = this.wizardConf.length - 1;
+    this.currentStepIndex = this.getTrackProgressConfIndex();
     this.buildForms();
   }
 
@@ -97,6 +97,22 @@ export class WizardComponent extends DataPollingComponent {
     this.currentStepIndex = stepIndex;
   }
 
+  getTrackProgressConfIndex(): number {
+    const result = this.wizardConf.reduce(
+      (arr: Array<number>, step: { stepType: WizardStepType }, index: number) => {
+        if (step.stepType === WizardStepType.PROGRESS_TRACK) {
+          arr.push(index);
+        }
+        return arr;
+      },
+      []
+    );
+    if (result.length === 1) {
+      return result[0];
+    }
+    return -1;
+  }
+
   resetBusy(): void {
     const fn = (): void => {
       this.isBusy = false;
@@ -153,7 +169,7 @@ export class WizardComponent extends DataPollingComponent {
                 const ctrl = this.formProgress.get('idToTrack') as FormControl;
                 ctrl.setValue(this.trackDatasetId);
                 this.onSubmitProgress();
-                this.currentStepIndex = this.wizardConf.length - 1;
+                this.currentStepIndex = this.getTrackProgressConfIndex();
               }
             },
             (err: HttpErrorResponse): void => {

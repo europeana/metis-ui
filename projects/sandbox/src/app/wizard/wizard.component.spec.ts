@@ -73,7 +73,7 @@ describe('WizardComponent', () => {
   it('should get if the orbs are square', () => {
     component.currentStepIndex = 1;
     expect(component.getOrbsAreSquare()).toEqual(false);
-    component.setStep(component.wizardConf.length - 1);
+    component.setStep(component.getTrackProgressConfIndex());
     expect(component.getOrbsAreSquare()).toEqual(false);
     const ctrl = component.formProgress.get('idToTrack') as FormControl;
     ctrl.setValue(1);
@@ -86,5 +86,9 @@ describe('WizardComponent', () => {
     component.setStep(0);
     expect(component.orbsHidden).toBeFalsy();
     expect(component.currentStepIndex).toEqual(0);
+  });
+
+  it('should get the index of the progress track step', () => {
+    expect(component.getTrackProgressConfIndex()).toEqual(2);
   });
 });
