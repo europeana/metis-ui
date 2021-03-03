@@ -18,6 +18,5 @@ module.exports = (on, config) => {
     webpackOptions: require('../../../../tools/cypress-webpack.config.js'),
     watchOptions: {}
   };
-
   on('file:preprocessor', webpack(options));
 };

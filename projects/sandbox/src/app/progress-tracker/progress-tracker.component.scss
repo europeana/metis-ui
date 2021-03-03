@@ -1,0 +1,50 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.progress-title {
+  color: $eu-jade-dark;
+}
+
+.wrapper {
+  background-color: $white;
+  margin-bottom: 1em;
+  padding: 0.5em;
+}
+
+.success {
+  background: $eu-jade;
+}
+.fail {
+  background: $eu-red;
+}
+.warn {
+  background: $eu-yellow;
+}
+
+.step-label {
+  color: $gray-light;
+  margin-left: 0.2em;
+  &::after {
+    content: ':';
+  }
+}
+
+.step-columns {
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.5em;
+}
+
+.step-column-entry {
+  align-items: center;
+  display: flex;
+
+  .errors,
+  .step-progress {
+    margin-left: 0.5em;
+  }
+
+  .orb-status {
+    font-size: 0.7em;
+  }
+}

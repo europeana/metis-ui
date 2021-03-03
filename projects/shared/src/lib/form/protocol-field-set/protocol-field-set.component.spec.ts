@@ -27,7 +27,6 @@ describe('ProtocolFieldSetComponent', () => {
     fixture = TestBed.createComponent(ProtocolFieldSetComponent);
     component = fixture.componentInstance;
 
-    component.hasFileOption = false;
     component.protocolForm = formBuilder.group({
       pluginType: null,
       harvestUrl: urlHarvest1,
@@ -40,9 +39,9 @@ describe('ProtocolFieldSetComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should report if the harvest protocol is FILE', () => {
+  it('should report if the harvest protocol is ZIP_UPLOAD', () => {
     expect(component.isProtocolFile()).toBeFalsy();
-    component.form.value.pluginType = ProtocolType.FILE;
+    component.form.value.pluginType = ProtocolType.ZIP_UPLOAD;
     expect(component.isProtocolFile()).toBeTruthy();
     component.form.value.pluginType = ProtocolType.OAIPMH_HARVEST;
     expect(component.isProtocolFile()).toBeFalsy();

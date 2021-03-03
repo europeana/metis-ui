@@ -1,16 +1,31 @@
 <div class="form-group" [formGroup]="form">
   <label i18n="protocol label main@@protocolLabelMain">Harvest protocol *</label>
   <div class="form-group-radios">
-    <label *ngIf="hasFileOption" i18n="protocol radio file@@protocolRadioFile">
-      <input type="radio" [formControlName]="protocolSwitchField" value="FILE" />
+    <label *ngIf="isVisible(ZIP)" i18n="protocol radio file@@protocolRadioFile">
+      <input
+        type="radio"
+        [formControlName]="protocolSwitchField"
+        [value]="ZIP"
+        [attr.disabled]="isDisabled(ZIP) || null"
+      />
       File upload
     </label>
-    <label i18n="protocol radio oai-pmh@@protocolRadioOaiPmh">
-      <input type="radio" [formControlName]="protocolSwitchField" value="OAIPMH_HARVEST" />
+    <label *ngIf="isVisible(OAIPMH)" i18n="protocol radio oai-pmh@@protocolRadioOaiPmh">
+      <input
+        type="radio"
+        [formControlName]="protocolSwitchField"
+        [value]="OAIPMH"
+        [attr.disabled]="isDisabled(OAIPMH) || null"
+      />
       OAI-PMH upload
     </label>
-    <label i18n="protocol radio http@@protocolRadioHttp">
-      <input type="radio" [formControlName]="protocolSwitchField" value="HTTP_HARVEST" />
+    <label *ngIf="isVisible(HTTP)" i18n="protocol radio http@@protocolRadioHttp">
+      <input
+        type="radio"
+        [formControlName]="protocolSwitchField"
+        [value]="HTTP"
+        [attr.disabled]="isDisabled(HTTP) || null"
+      />
       HTTP upload
     </label>
   </div>
@@ -45,7 +60,7 @@
 </div>
 
 <div
-  *ngIf="hasFileOption"
+  *ngIf="fileFormName"
   class="form-group"
   [formGroup]="form"
   [ngStyle]="{ display: isProtocolFile() ? 'block' : 'none' }"

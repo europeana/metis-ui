@@ -1,0 +1,266 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+$wizard-border-radius: 1.5em;
+$eu-jade-darker: #135116;
+$eu-jade-darkest: #155819;
+
+.buttons {
+  display: flex;
+  margin-top: 1.25em;
+  justify-content: space-between;
+
+  align-content: center;
+  .inline-text {
+    align-self: center;
+  }
+}
+
+.errors {
+  font-weight: bold;
+  margin-top: 0.75em;
+
+  .error-detail {
+    font-weight: normal;
+    list-style: disc;
+    margin-left: 1em;
+  }
+}
+
+.form-group {
+  color: $eu-jade-dark;
+  margin: 0 auto 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+select {
+  width: 100%;
+}
+
+.svg-icon-spin-inbutton {
+  height: 23px;
+  padding-right: 0;
+  visibility: visible;
+  &::after {
+    background-position: center;
+    left: 0;
+  }
+}
+
+.wizard button {
+  background: $eu-jade;
+  border-radius: $wizard-border-radius;
+  font-weight: bold;
+
+  &.next,
+  &.previous {
+    padding: 0;
+    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
+    &::after {
+      content: '\25B2';
+      transform-origin: top;
+    }
+  }
+  &:hover {
+    background-color: $white;
+    color: $eu-jade-darker;
+  }
+  &:active {
+    border-color: $eu-light-orange;
+    color: $eu-light-orange;
+  }
+
+  &.next::after {
+    left: 1.1rem;
+    transform: rotate(90deg);
+  }
+  &.previous::after {
+    left: -1.1rem;
+    transform: rotate(270deg);
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.5);
+  }
+
+  &[type='submit'] {
+    &:hover {
+      box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
+      text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
+    }
+
+    &[disabled] {
+      cursor: default;
+      background: $gray-lighter;
+      border-color: $gray-light;
+      color: $gray-light;
+      pointer-events: none;
+    }
+  }
+}
+
+.wizard,
+.wizard button {
+  border: 1px solid $eu-jade-dark;
+}
+
+.wizard {
+  background-color: $eu-light-jade;
+  border: 1px solid $eu-jade-dark;
+  border-radius: $wizard-border-radius;
+  margin: auto;
+  width: 80%;
+}
+
+.wizard-head {
+  background: $eu-jade;
+  border-bottom: 1px solid $eu-jade-dark;
+  border-radius: $wizard-border-radius $wizard-border-radius 0 0;
+  color: $white;
+
+  label {
+    font-size: 1.5em;
+    text-align: center;
+    top: 0.75em;
+    padding-bottom: 0;
+    position: relative;
+  }
+}
+
+.wizard-content {
+  margin: 3em 2em 2em 2em;
+
+  a {
+    color: $eu-jade-dark;
+    font-weight: bold;
+    &:hover {
+      color: $eu-jade-darkest;
+    }
+    &:active {
+      color: $eu-light-orange;
+    }
+  }
+
+  label {
+    color: $eu-jade-dark;
+    cursor: pointer;
+  }
+}
+
+.wizard-status {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+
+  li {
+    position: relative;
+    top: 2em;
+  }
+}
+
+.progress-orb .orb-status.labelled:not(.svg-icon-spin-inbutton) {
+  transition: 0.3s ease-in border-radius;
+
+  &::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23FFF' viewBox='0 0 24 24'%3E%3Cpath d='M20.285 2L9 13.567 3.714 8.556 0 12.272 9 21 24 5.715z'%3E%3C/path%3E%3C/svg%3E");
+    content: '';
+    font-size: 1.75rem;
+    left: 4%;
+    top: 55%;
+    height: 90%;
+    width: 90%;
+  }
+  &:hover::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 24 24'%3E%3Cpath d='M20.285 2L9 13.567 3.714 8.556 0 12.272 9 21 24 5.715z'%3E%3C/path%3E%3C/svg%3E");
+  }
+  &:active {
+    background-color: $white;
+    border-color: $eu-light-orange;
+    &::after {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fc8a62' viewBox='0 0 24 24'%3E%3Cpath d='M20.285 2L9 13.567 3.714 8.556 0 12.272 9 21 24 5.715z'%3E%3C/path%3E%3C/svg%3E");
+    }
+  }
+}
+
+.orbs-hidden {
+  li:not(.progress-orb) .orb-status.labelled {
+    display: none;
+  }
+
+  .progress-orb {
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+
+.orbs-hidden,
+.orb-square {
+  .progress-orb .orb-status.labelled {
+    border-radius: 0;
+  }
+}
+
+.orb-status {
+  background-color: $eu-jade-light;
+  border-color: $eu-jade-dark;
+  margin: 0;
+
+  &.labelled {
+    border-radius: $wizard-border-radius;
+    height: 3em;
+    min-width: 3em;
+    width: 3em;
+
+    &::after {
+      font-size: 1.25em;
+    }
+
+    &.svg-icon-spin-inbutton {
+      background-image: none;
+      background-position: center;
+      &::after {
+        content: '';
+        //width: 0;
+      }
+    }
+  }
+
+  &.next {
+    margin-left: 0.25em;
+  }
+
+  &:hover {
+    background-color: $white;
+    box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
+  }
+
+  &::after {
+    content: attr(data-label);
+  }
+  &.is-set {
+    background-color: $eu-light-orange;
+    border-color: $white;
+    &:active {
+      color: $white;
+    }
+  }
+  &.active {
+    border-width: 2px;
+    border-color: $eu-yellow;
+  }
+  &:active {
+    border-color: $eu-light-orange;
+    color: $eu-light-orange;
+  }
+}
+
+.submit-track-id {
+  display: flex;
+  button {
+    margin-left: 0.5rem;
+    text-shadow: none;
+    white-space: nowrap;
+  }
+  input {
+    min-width: 0;
+  }
+}

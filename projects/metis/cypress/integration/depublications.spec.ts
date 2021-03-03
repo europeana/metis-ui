@@ -94,8 +94,6 @@ context('metis-ui', () => {
 
       it('should submit new entries', () => {
         const testTexts = ['Test1', 'Test2'];
-        //        const testMore = ['Test3', 'Test4'];
-
         submitEntries(testTexts.join('\n'));
         cy.wait(100);
 
@@ -105,36 +103,9 @@ context('metis-ui', () => {
             .should('have.length', 1);
         });
         cy.get(selLoadMore).should('not.exist');
-
-        /*
-        testMore.forEach((txt) => {
-          cy.get('.record-url')
-            .contains(txt)
-            .should('not.exist');
-        });
-
-        cy.get(selLoadMore).should('not.exist');
-
-        submitEntries(testMore.join('\n'));
-        cy.wait(100);
-
-        cy.get(selLoadMore).should('exist');
-        cy.get(selLoadMore).click();
-
-        cy.wait(1000);
-        cy.screenshot();
-
-        testMore.forEach((txt) => {
-          cy.get('.record-url')
-            .contains(txt)
-            .should('have.length', 1);
-        });
-        */
       });
 
       it('should paginate entries', () => {
-        //        const selLoadMore = '.tab-content .load-more-btn';
-        //        const testTexts = ['Test1', 'Test2'];
         const testMore = ['Test3', 'Test4'];
 
         testMore.forEach((txt) => {

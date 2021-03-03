@@ -23,10 +23,10 @@
     >
       <span class="hovered-content">
         Harvest URL:
-        <ng-container *ngIf="workflowForm.value.pluginType === 'HTTP_HARVEST'">
+        <ng-container *ngIf="workflowForm.value.pluginType === EnumProtocolType.HTTP_HARVEST">
           {{ workflowForm.value.url }}
         </ng-container>
-        <ng-container *ngIf="workflowForm.value.pluginType === 'OAIPMH_HARVEST'">
+        <ng-container *ngIf="workflowForm.value.pluginType === EnumProtocolType.OAIPMH_HARVEST">
           {{ workflowForm.value.harvestUrl }}
           <br />
           Setspec: {{ workflowForm.value.setSpec }}
@@ -43,6 +43,7 @@
       "
     >
       <lib-protocol-field-set
+        visibleProtocols="[EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
         [protocolSwitchField]="'pluginType'"
         [protocolForm]="workflowForm"
         (fieldChanged)="onFieldChanged($event)"
