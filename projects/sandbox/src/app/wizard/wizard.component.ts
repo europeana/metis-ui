@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { merge } from 'rxjs';
+import { Observable, merge, timer } from 'rxjs';
 import { DataPollingComponent } from '@shared';
 import {
   DatasetInfo,
+  DatasetInfoStatus,
   SubmissionResponseData,
   WizardField,
   WizardStep,
@@ -27,7 +28,9 @@ export class WizardComponent extends DataPollingComponent {
   formProgress: FormGroup;
   formUpload: FormGroup;
   isBusy = false;
+  isPolling = false;
   orbsHidden = true;
+  pollinInterval = 2000;
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData: DatasetInfo;
@@ -114,10 +117,10 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   resetBusy(): void {
-    const fn = (): void => {
+    timer(500).subscribe(() => {
       this.isBusy = false;
-    };
-    setTimeout(fn, 500);
+      this.isPolling = false;
+    });
   }
 
   onSubmitProgress(): void {
@@ -125,19 +128,28 @@ export class WizardComponent extends DataPollingComponent {
 
     if (form.valid) {
       const idToTrack = this.formProgress.value.idToTrack;
-      this.isBusy = true;
-      this.subs.push(
-        this.sandbox.requestProgress(idToTrack).subscribe(
-          (progressInfo: DatasetInfo) => {
-            this.progressData = progressInfo;
-            this.trackDatasetId = idToTrack;
-            this.resetBusy();
-          },
-          (err: HttpErrorResponse): void => {
-            this.error = err;
-            this.resetBusy();
+
+      this.clearDataPollers();
+
+      this.createNewDataPoller(
+        this.pollinInterval,
+        (): Observable<DatasetInfo> => {
+          this.isPolling = true;
+          return this.sandbox.requestProgress(idToTrack);
+        },
+        (progressInfo: DatasetInfo) => {
+          this.progressData = progressInfo;
+          this.trackDatasetId = idToTrack;
+          if (this.progressData.status === DatasetInfoStatus.COMPLETED) {
+            this.clearDataPollers();
           }
-        )
+          this.resetBusy();
+        },
+        (err: HttpErrorResponse) => {
+          this.error = err;
+          this.resetBusy();
+          return err;
+        }
       );
     }
   }

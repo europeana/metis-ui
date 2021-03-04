@@ -88,17 +88,28 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
     }
   }
 
-  /** cleanup
-  /* unsubscribe from subscriptions
-  */
+  /**
+   * cleanup
+   * - calls clearDataPollers
+   * - unsubs from allRefreshSubs
+   * - calls super.cleanup()
+   **/
   cleanup(): void {
-    this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
-      pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
-    });
+    this.clearDataPollers();
     this.allRefreshSubs.forEach((sub: Subscription) => {
       sub && sub.unsubscribe();
     });
     super.cleanup();
+  }
+
+  /**
+   * clearDataPollers
+   * - unsub from pollerData
+   **/
+  clearDataPollers(): void {
+    this.allPollingInfo.forEach((pollerData: DataPollerInfo) => {
+      pollerData && pollerData.subscription && pollerData.subscription.unsubscribe();
+    });
   }
 
   /** dropPollRate

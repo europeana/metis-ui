@@ -1,6 +1,6 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import {
   createMockPipe,
@@ -49,19 +49,24 @@ describe('WorkflowComponent', () => {
 
   const setSavableChanges = function(): void {
     component.datasetData = mockDataset;
-    component.workflowForm.get('pluginHARVEST')!.setValue(true);
     component.workflowForm.get('pluginType')!.setValue('HTTP_HARVEST');
-    component.workflowForm.get('pluginTRANSFORMATION')!.setValue(true);
     component.workflowForm.get('customXslt')!.setValue('mocked');
-    component.workflowForm.get('pluginVALIDATION_EXTERNAL')!.setValue(true);
-    component.workflowForm.get('pluginVALIDATION_INTERNAL')!.setValue(true);
-    component.workflowForm.get('pluginNORMALIZATION')!.setValue(true);
-    component.workflowForm.get('pluginENRICHMENT')!.setValue(true);
-    component.workflowForm.get('pluginMEDIA_PROCESS')!.setValue(true);
-    component.workflowForm.get('pluginPREVIEW')!.setValue(true);
-    component.workflowForm.get('pluginPUBLISH')!.setValue(true);
-    component.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
     component.workflowForm.get('url')!.setValue('http://eu/zip');
+    [
+      'pluginHARVEST',
+      'pluginTRANSFORMATION',
+      'pluginVALIDATION_EXTERNAL',
+      'pluginVALIDATION_INTERNAL',
+      'pluginNORMALIZATION',
+      'pluginENRICHMENT',
+      'pluginMEDIA_PROCESS',
+      'pluginPREVIEW',
+      'pluginPUBLISH',
+      'pluginLINK_CHECKING'
+    ].forEach((fName: string) => {
+      const field = component.workflowForm.get(fName) as FormControl;
+      field.setValue(true);
+    });
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -72,7 +77,7 @@ describe('WorkflowComponent', () => {
         createMockPipe('translate'),
         createMockPipe('renameWorkflow')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: WorkflowService,
@@ -254,13 +259,6 @@ describe('WorkflowComponent', () => {
       expect(component.notification).toBeUndefined();
     });
 
-    it('should notify the user of form errors', () => {
-      setSavableChanges();
-      expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
-      component.workflowForm.get('url')!.setValue('');
-      expect(component.getSaveNotification()!.content).toBe('en:formError');
-    });
-
     it('should submit the changes', fakeAsync(() => {
       spyOn(workflows, 'createWorkflowForDataset').and.callThrough();
       setSavableChanges();
@@ -361,15 +359,6 @@ describe('WorkflowComponent', () => {
       tick(1);
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);
-    }));
-
-    it('should not submit if there are form errors', fakeAsync(() => {
-      spyOn(workflows, 'createWorkflowForDataset');
-      setSavableChanges();
-      component.workflowForm.get('url')!.setValue('');
-      component.onSubmit();
-      tick();
-      expect(workflows.createWorkflowForDataset).not.toHaveBeenCalled();
     }));
   });
 });
