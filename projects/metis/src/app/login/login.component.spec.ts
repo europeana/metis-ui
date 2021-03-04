@@ -1,7 +1,7 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NotificationType } from '../_models';
 import {
@@ -29,6 +29,12 @@ describe('LoginComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
+        RouterModule.forRoot([
+          {
+            path: 'dashboard',
+            component: DashboardComponent
+          }
+        ]),
         RouterTestingModule.withRoutes([
           { path: './dashboard', component: DashboardComponent },
           { path: mockPrevUrl, component: DashboardComponent }
@@ -41,9 +47,8 @@ describe('LoginComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-
     router = TestBed.inject(Router);
     redirectPreviousUrl = TestBed.inject(RedirectPreviousUrl);
     authenticationService = TestBed.inject(AuthenticationService);
@@ -67,55 +72,21 @@ describe('LoginComponent', () => {
   });
 
   it('should login', fakeAsync((): void => {
-    component.ngOnInit();
     component.loginForm.controls.email.setValue(userName);
     component.loginForm.controls.password.setValue('mocked123');
-
     spyOn(router, 'navigate');
     component.onSubmit();
-    const sub = authenticationService.login('name', 'pw').subscribe();
-
     tick(interval);
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
-    sub.unsubscribe();
     component.cleanup();
     tick(interval);
   }));
 
   it('should redirect if already logged in', fakeAsync((): void => {
-    component.ngOnInit();
-    component.loginForm.controls.email.setValue(userName);
-    component.loginForm.controls.password.setValue('mocked123');
-
-    spyOn(router, 'navigate');
-    component.onSubmit();
-    tick(1);
-
-    fixture.detectChanges();
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
-    component.cleanup();
-    tick(interval);
-  }));
-
-  it('should redirect if already logged in on load', fakeAsync((): void => {
-    spyOn(router, 'navigate');
-    const sub = authenticationService.login('name', 'pw').subscribe();
-    component.ngOnInit();
-    tick(interval);
-    fixture.detectChanges();
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
-    sub.unsubscribe();
-    component.cleanup();
-    tick(interval);
-  }));
-
-  it('should redirect if a user logs in is detected after the initial load', fakeAsync((): void => {
+    console.log('should redirect if already logged in');
     spyOn(router, 'navigate');
     component.ngOnInit();
-    tick(interval);
-    fixture.detectChanges();
-    expect(router.navigate).not.toHaveBeenCalled();
     const sub = authenticationService.login('name', 'pw').subscribe();
     tick(interval);
     fixture.detectChanges();
@@ -126,7 +97,6 @@ describe('LoginComponent', () => {
   }));
 
   it('should not login for empty passwords', fakeAsync((): void => {
-    component.ngOnInit();
     component.loginForm.controls.email.setValue('');
     component.loginForm.controls.password.setValue('');
     spyOn(router, 'navigate');
@@ -139,12 +109,11 @@ describe('LoginComponent', () => {
   }));
 
   it('should not login for wrong passwords', fakeAsync((): void => {
-    component.ngOnInit();
     component.loginForm.controls.email.setValue(userName);
     component.loginForm.controls.password.setValue('error');
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick(1);
+    tick(interval);
     fixture.detectChanges();
     expect(router.navigate).not.toHaveBeenCalled();
     component.cleanup();
@@ -157,7 +126,7 @@ describe('LoginComponent', () => {
     component.loginForm.controls.password.setValue('404');
     spyOn(router, 'navigate');
     component.onSubmit();
-    tick(1);
+    tick(interval);
     fixture.detectChanges();
     expect(component.notification).toBeTruthy();
     expect(component.notification!.type).toBe(NotificationType.ERROR);
@@ -166,6 +135,8 @@ describe('LoginComponent', () => {
 
   it('should not login when an 406 error occurs', fakeAsync((): void => {
     expect(component.notification).toBeFalsy();
+    tick(interval);
+    fixture.detectChanges();
     component.loginForm.controls.email.setValue(userName);
     component.loginForm.controls.password.setValue('406');
     spyOn(router, 'navigate');
@@ -178,7 +149,6 @@ describe('LoginComponent', () => {
   }));
 
   it('should redirect after login', fakeAsync((): void => {
-    component.ngOnInit();
     spyOn(router, 'navigate');
     component.redirectAfterLogin();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);

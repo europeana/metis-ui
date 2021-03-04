@@ -1,4 +1,3 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { DatasetsService } from '../../_services';
@@ -23,8 +22,7 @@ describe('RedirectionComponent', () => {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
         }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+      ]
     }).compileComponents();
   };
 

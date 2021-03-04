@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
@@ -17,7 +17,7 @@ describe('FilterOpsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [FilterOpsComponent, FilterOptionComponent, createMockPipe('translate')],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });
   }));
 

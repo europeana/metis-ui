@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { createMockPipe } from '../../_mocked';
 import { NewDatasetComponent } from '.';
@@ -9,7 +9,7 @@ describe('NewDatasetComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [NewDatasetComponent, createMockPipe('translate')],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));
 

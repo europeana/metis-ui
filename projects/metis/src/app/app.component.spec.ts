@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -8,6 +8,7 @@ import {
   createMockPipe,
   MockAuthenticationService,
   MockErrorService,
+  MockModalConfirmService,
   MockWorkflowService
 } from './_mocked';
 import { CancellationRequest } from './_models';
@@ -33,9 +34,9 @@ describe('AppComponent', () => {
         RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }])
       ],
       declarations: [AppComponent, createMockPipe('translate')],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        ModalConfirmService,
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
         { provide: WorkflowService, useClass: MockWorkflowService },
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: ErrorService, useClass: MockErrorService }
@@ -54,35 +55,30 @@ describe('AppComponent', () => {
       close: () => undefined,
       id: app.modalConfirmId
     } as unknown) as ModalConfirmComponent;
+    fixture.detectChanges();
   });
 
   it('should handle url changes', () => {
-    const spy = spyOn(router.events, 'subscribe');
     spyOn(router, 'isActive').and.returnValue(true);
     spyOn(router, 'navigate');
     fixture.detectChanges();
-    const fn = spy.calls.first().args[0];
 
-    expect(fn).toBeTruthy();
+    app.handleRouterEvent({} as RouterEvent);
+    expect(app.bodyClass).toBeFalsy();
 
-    if (fn) {
-      fn({} as RouterEvent);
-      expect(app.bodyClass).toBeFalsy();
+    app.handleRouterEvent({ url: '/' } as RouterEvent);
+    expect(app.bodyClass).toBe('home');
+    expect(app.loggedIn).toBe(true);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
 
-      fn({ url: '/' } as RouterEvent);
-      expect(app.bodyClass).toBe('home');
-      expect(app.loggedIn).toBe(true);
-      expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+    app.handleRouterEvent({ url: '/home' } as RouterEvent);
+    expect(app.bodyClass).toBe('home');
 
-      fn({ url: '/home' } as RouterEvent);
-      expect(app.bodyClass).toBe('home');
-      fn({ url: '/dataset' } as RouterEvent);
-      expect(app.bodyClass).toBe('dataset');
-    }
+    app.handleRouterEvent({ url: '/dataset' } as RouterEvent);
+    expect(app.bodyClass).toBe('dataset');
   });
 
   it('should show a prompt', () => {
-    fixture.detectChanges();
     spyOn(modalConfirms, 'open');
     workflows.promptCancelWorkflow.emit({
       workflowExecutionId: '15',
@@ -91,6 +87,7 @@ describe('AppComponent', () => {
     } as CancellationRequest);
     expect(app.cancellationRequest!.workflowExecutionId).toBe('15');
     expect(modalConfirms.open).toHaveBeenCalled();
+    app.cleanup();
   });
 
   it('should cancel a workflow', () => {
@@ -102,11 +99,11 @@ describe('AppComponent', () => {
     spyOn(workflows, 'cancelThisWorkflow').and.callThrough();
     app.cancelWorkflow();
     expect(workflows.cancelThisWorkflow).toHaveBeenCalledWith('16');
+    app.cleanup();
   });
 
   it('should cleanup on destroy', () => {
-    spyOn(app, 'cleanup');
-    app.ngOnInit();
+    spyOn(app, 'cleanup').and.callThrough();
     app.ngOnDestroy();
     expect(app.cleanup).toHaveBeenCalled();
   });

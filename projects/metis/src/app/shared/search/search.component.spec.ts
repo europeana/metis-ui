@@ -1,12 +1,11 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { createMockPipe, MockAuthenticationService } from '../../_mocked';
 import { AuthenticationService } from '../../_services';
 import { SearchComponent } from '.';
 import { LoginComponent } from '../../login';
-
 import { MockActivatedRoute } from '../../_mocked';
 
 describe('SearchComponent', () => {
@@ -21,13 +20,13 @@ describe('SearchComponent', () => {
     mar.setQueryParams({ searchString: searchString });
     TestBed.configureTestingModule({
       imports: [
+        FormsModule,
         RouterTestingModule.withRoutes([
           { path: './signin', component: LoginComponent },
           { path: './search', component: SearchComponent }
         ])
       ],
       declarations: [SearchComponent, createMockPipe('translate')],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: ActivatedRoute, useValue: mar }

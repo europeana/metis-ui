@@ -174,7 +174,10 @@ it('should use the user from localstorage', () => {
     JSON.stringify({ user: mockUser, email: 'jan@example.com', token: 'tggij534$' })
   );
   TestBed.configureTestingModule({
-    imports: [RouterTestingModule, HttpClientTestingModule],
+    imports: [
+      RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
+      HttpClientTestingModule
+    ],
     providers: [
       AuthenticationService,
       RedirectPreviousUrl,

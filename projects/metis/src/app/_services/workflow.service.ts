@@ -443,6 +443,6 @@ export class WorkflowService extends SubscriptionManager {
         );
       }
     }
-    return of(undefined);
+    return of(void 0);
   }
 }

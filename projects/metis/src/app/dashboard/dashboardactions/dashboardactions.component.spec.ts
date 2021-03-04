@@ -1,7 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { createMockPipe } from '../../_mocked';
-
 import { DashboardactionsComponent } from '.';
 
 describe('DashboardactionsComponent', () => {

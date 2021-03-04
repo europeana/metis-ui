@@ -1,4 +1,4 @@
-import { ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -60,7 +60,7 @@ describe('Dataset Component', () => {
         },
         { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
 
     datasets = TestBed.inject(DatasetsService);

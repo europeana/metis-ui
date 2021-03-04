@@ -1,4 +1,4 @@
-import { Observable, of as observableOf, throwError, timer } from 'rxjs';
+import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import { Dataset, DatasetSearchView, MoreResults, XmlSample } from '../_models';
 
@@ -72,7 +72,7 @@ export class MockDatasetsService {
         })
       );
     }
-    return observableOf(mockXslt).pipe(delay(1));
+    return of(mockXslt).pipe(delay(1));
   }
 
   getDataset(): Observable<Dataset> {
@@ -83,20 +83,20 @@ export class MockDatasetsService {
         })
       );
     }
-    return observableOf(mockDataset).pipe(delay(1));
+    return of(mockDataset).pipe(delay(1));
   }
 
   updateDataset(): Observable<void> {
-    return observableOf(undefined).pipe(delay(1));
+    return of(void 0).pipe(delay(1));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createDataset(_: { dataset: any }): Observable<Dataset> {
-    return observableOf(mockDataset);
+    return of(mockDataset);
   }
 
   getTransform(): Observable<XmlSample[]> {
-    return observableOf(mockXmlSamples);
+    return of(mockXmlSamples);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -110,7 +110,7 @@ export class MockDatasetsService {
         })
       );
     }
-    return observableOf({ results: mockSearchResults, more: false }).pipe(delay(1));
+    return of({ results: mockSearchResults, more: false }).pipe(delay(1));
   }
 }
 

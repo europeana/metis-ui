@@ -1,4 +1,3 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DepublicationStatus } from '../../../_models';
 import { DepublicationRowComponent } from '.';
@@ -9,8 +8,7 @@ describe('DepublicationRowComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [DepublicationRowComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      declarations: [DepublicationRowComponent]
     }).compileComponents();
   }));
 

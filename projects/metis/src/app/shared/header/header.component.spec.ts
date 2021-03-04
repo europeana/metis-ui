@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -31,7 +31,7 @@ describe('HeaderComponent', () => {
         ])
       ],
       declarations: [HeaderComponent, createMockPipe('translate')],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         RedirectPreviousUrl,
         { provide: AuthenticationService, useClass: MockAuthenticationService }

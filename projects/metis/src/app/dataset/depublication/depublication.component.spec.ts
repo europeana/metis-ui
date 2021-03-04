@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, QueryList } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import {
   async,
   ComponentFixture,
@@ -12,7 +12,8 @@ import {
   createMockPipe,
   MockDepublicationService,
   MockDepublicationServiceErrors,
-  MockErrorService
+  MockErrorService,
+  MockModalConfirmService
 } from '../../_mocked';
 import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
@@ -44,7 +45,7 @@ describe('DepublicationComponent', () => {
         createMockPipe('renameWorkflow')
       ],
       providers: [
-        ModalConfirmService,
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {
           provide: DepublicationService,
           useClass: errorMode ? MockDepublicationServiceErrors : MockDepublicationService
@@ -52,7 +53,7 @@ describe('DepublicationComponent', () => {
         { provide: ErrorService, useClass: MockErrorService },
         { provide: FormBuilder, useValue: formBuilder }
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
     depublications = TestBed.inject(DepublicationService);
@@ -456,6 +457,7 @@ describe('DepublicationComponent', () => {
       component.datasetId = '123';
       component.beginPolling();
       addFormFieldData();
+
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       tick(1);

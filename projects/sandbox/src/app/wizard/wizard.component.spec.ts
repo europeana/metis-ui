@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -12,7 +13,8 @@ describe('WizardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [WizardComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule]
+      imports: [HttpClientTestingModule, ReactiveFormsModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });
 

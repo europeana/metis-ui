@@ -41,8 +41,8 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.documentTitleService.setTitle(this.translate.instant('signIn'), true);
     this.msgBadCredentials = this.translate.instant('msgBadCredentials');
     this.msgSigninFailed = this.translate.instant('msgSigninFailed');
-    this.buildForm();
 
+    this.buildForm();
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       (): Observable<boolean> => {
