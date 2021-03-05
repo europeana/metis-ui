@@ -1,8 +1,7 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $wizard-border-radius: 1.5em;
-$eu-jade-darker: #135116;
-$eu-jade-darkest: #155819;
 
 .buttons {
   display: flex;
@@ -128,18 +127,6 @@ select {
 
 .wizard-content {
   margin: 3em 2em 2em 2em;
-
-  a {
-    color: $eu-jade-dark;
-    font-weight: bold;
-    &:hover {
-      color: $eu-jade-darkest;
-    }
-    &:active {
-      color: $eu-light-orange;
-    }
-  }
-
   label {
     color: $eu-jade-dark;
     cursor: pointer;
@@ -159,9 +146,8 @@ select {
 
 .progress-orb .orb-status.labelled:not(.svg-icon-spin-inbutton) {
   transition: 0.3s ease-in border-radius;
-
   &::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23FFF' viewBox='0 0 24 24'%3E%3Cpath d='M20.285 2L9 13.567 3.714 8.556 0 12.272 9 21 24 5.715z'%3E%3C/path%3E%3C/svg%3E");
+    background-image: svg-url-icon-tick('#{$white}');
     content: '';
     font-size: 1.75rem;
     left: 4%;
@@ -170,13 +156,13 @@ select {
     width: 90%;
   }
   &:hover::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 24 24'%3E%3Cpath d='M20.285 2L9 13.567 3.714 8.556 0 12.272 9 21 24 5.715z'%3E%3C/path%3E%3C/svg%3E");
+    background-image: svg-url-icon-tick('#000');
   }
   &:active {
     background-color: $white;
     border-color: $eu-light-orange;
     &::after {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fc8a62' viewBox='0 0 24 24'%3E%3Cpath d='M20.285 2L9 13.567 3.714 8.556 0 12.272 9 21 24 5.715z'%3E%3C/path%3E%3C/svg%3E");
+      background-image: svg-url-icon-tick('#{$eu-light-orange}');
     }
   }
 }

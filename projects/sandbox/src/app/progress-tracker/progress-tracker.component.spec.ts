@@ -1,16 +1,20 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { testDatasetInfo } from '../_mocked';
-import { ProgressByStep, StepStatus } from '../_models';
+import { DatasetInfoStatus, ProgressByStep, StepStatus } from '../_models';
+import { MockModalConfirmService, ModalConfirmService } from '@shared';
 
 describe('ProgressTrackerComponent', () => {
   let component: ProgressTrackerComponent;
   let fixture: ComponentFixture<ProgressTrackerComponent>;
+  let modalConfirms: ModalConfirmService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
       declarations: [ProgressTrackerComponent],
       imports: [ReactiveFormsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -18,13 +22,38 @@ describe('ProgressTrackerComponent', () => {
   });
 
   beforeEach(() => {
+    modalConfirms = TestBed.inject(ModalConfirmService);
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
-    component.progressData = testDatasetInfo[0];
+    component.progressData = testDatasetInfo;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should open the modal', () => {
+    spyOn(modalConfirms, 'open').and.callFake(() => {
+      const res = of(true);
+      modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+      return res;
+    });
+    component.confirmModalErrors(1);
+    expect(modalConfirms.open).toHaveBeenCalled();
+  });
+
+  it('should report if links are available', () => {
+    expect(component.hasLinks()).toBeTruthy();
+    testDatasetInfo['portal-preview'] = undefined;
+    expect(component.hasLinks()).toBeTruthy();
+    testDatasetInfo['portal-publish'] = undefined;
+    expect(component.hasLinks()).toBeFalsy();
+  });
+
+  it('should report if complete', () => {
+    expect(component.isComplete()).toBeTruthy();
+    testDatasetInfo.status = DatasetInfoStatus.IN_PROGRESS;
+    expect(component.isComplete()).toBeFalsy();
   });
 
   it('should get the status class', () => {
@@ -48,5 +77,6 @@ describe('ProgressTrackerComponent', () => {
     expect(component.getLabelClass(StepStatus.NORMALISE)).toEqual('normalization');
     expect(component.getLabelClass(StepStatus.PREVIEW)).toEqual('preview');
     expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
+    expect(component.getLabelClass('' as StepStatus)).toEqual('');
   });
 });

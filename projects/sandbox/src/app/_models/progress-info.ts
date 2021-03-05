@@ -49,4 +49,6 @@ export interface DatasetInfo {
   'processed-records': number;
   'progress-by-step': Array<ProgressByStep>;
   'total-records': number;
+  'portal-preview'?: string;
+  'portal-publish'?: string;
 }

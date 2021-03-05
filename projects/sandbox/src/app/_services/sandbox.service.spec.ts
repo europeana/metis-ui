@@ -28,33 +28,9 @@ describe('sandbox service', () => {
 
   it('should get the progress', () => {
     const sub = service.requestProgress('1').subscribe((datasetInfo) => {
-      expect(datasetInfo).toEqual(testDatasetInfo[0]);
+      expect(datasetInfo).toEqual(testDatasetInfo);
     });
-    mockHttp.expect('GET', '/dataset/1').send(testDatasetInfo[0]);
+    mockHttp.expect('GET', '/dataset/1').send(testDatasetInfo);
     sub.unsubscribe();
   });
-
-  /*
-  it('should submit new datasets', fakeAsync(() => {
-    const datasetName = 'Andy';
-    const country = 'uk';
-    const language = 'en';
-
-
-    let blob = new Blob([""], { type: 'application/zip'});
-//blob["lastModifiedDate"] = "";
-//blob["name"] = "file.zip";
-
-let fakeF = <File>blob;
-
-    const sub = service.submitDataset(datasetName, country, language, 'x', fakeF ).subscribe(() => {
-      //expect(datasetInfo).toEqual(testDatasetInfo[0]);
-    });
-
-    mockHttp.expect('POST', `/dataset/${datasetName}/process?country=${country}&language=${language}&clientFilename=undefined&mimeType=application/zip`).send({});
-    tick(1);
-    sub.unsubscribe();
-
-  }));
-  */
 });

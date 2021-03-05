@@ -1,4 +1,8 @@
-<h2 class="progress-title" title="({{ progressData.status }})">
+<h2
+  class="progress-title"
+  title="({{ progressData.status }})"
+  [ngClass]="{ complete: isComplete() }"
+>
   Dataset {{ datasetId }}
 </h2>
 <div class="wrapper">
@@ -7,6 +11,7 @@
       *ngFor="let item of progressData['progress-by-step']"
       class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
     ></span>
+    <span class="orb-status labelled svg-icon-spin" [ngClass]="{ showing: isLoading }"></span>
   </div>
   <lib-modal
     id="{{ modalIdErrors }}"
@@ -38,3 +43,11 @@
     </span>
   </div>
 </div>
+<ul *ngIf="hasLinks()" class="portal-links">
+  <li *ngIf="progressData['portal-preview']; let link">
+    <a [href]="link">Preview</a>
+  </li>
+  <li *ngIf="progressData['portal-publish']; let link">
+    <a [href]="link">Publish</a>
+  </li>
+</ul>

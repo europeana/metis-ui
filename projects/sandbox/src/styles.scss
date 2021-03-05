@@ -25,6 +25,17 @@ $textcolour_highlight: $accent;
 @import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
+a {
+  color: $eu-jade-dark;
+  font-weight: bold;
+  &:hover {
+    color: $eu-jade-darkest;
+  }
+  &:active {
+    color: $eu-light-orange;
+  }
+}
+
 .wizard input[type='file'] {
   box-shadow: none;
   border-color: $eu-jade;
