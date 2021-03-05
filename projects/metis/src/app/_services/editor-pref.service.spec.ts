@@ -1,7 +1,5 @@
 import { async, TestBed } from '@angular/core/testing';
-
-import { getCodeMirrorEditors } from '../_helpers/test-helpers';
-
+import { getCodeMirrorEditors } from '../_helpers';
 import { EditorPrefService } from '.';
 
 describe('editor pref service', () => {

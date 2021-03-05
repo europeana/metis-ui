@@ -1,4 +1,5 @@
 export * from './lib/shared.module';
+export * from './lib/_helpers';
 export * from './lib/_mocked';
 export * from './lib/_models';
 export * from './lib/_services';

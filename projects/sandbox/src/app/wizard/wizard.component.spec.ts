@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProtocolType } from '@shared';
 import { WizardStep, WizardStepType } from '../_models';
@@ -70,6 +70,38 @@ describe('WizardComponent', () => {
     expect(component.getFormGroup({ stepType: WizardStepType.SET_NAME } as WizardStep)).toEqual(
       component.formUpload
     );
+  });
+
+  it('should get the index of the tracking step', () => {
+    expect(component.getTrackProgressConfIndex()).toBeGreaterThan(-1);
+    component._wizardConf = [];
+    expect(component.getTrackProgressConfIndex()).toEqual(-1);
+  });
+
+  it('should reset the busy flags', fakeAsync(() => {
+    component.isBusy = true;
+    component.isPolling = true;
+    component.resetBusy();
+    tick(500);
+    expect(component.isBusy).toBeFalsy();
+    component._wizardConf = [];
+    expect(component.isPolling).toBeFalsy();
+  }));
+
+  it('should submit the progress from', () => {
+    spyOn(component, 'clearDataPollers');
+    component.onSubmitProgress();
+    expect(component.clearDataPollers).not.toHaveBeenCalled();
+
+    (component.formProgress.get('idToTrack') as FormControl).setValue('1');
+    component.onSubmitProgress();
+    expect(component.clearDataPollers).toHaveBeenCalled();
+  });
+
+  it('should submit the upload from', () => {
+    expect(component.isBusy).toBeFalsy();
+    component.onSubmitDataset();
+    expect(component.isBusy).toBeFalsy();
   });
 
   it('should get if the orbs are square', () => {
