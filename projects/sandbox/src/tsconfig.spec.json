@@ -4,5 +4,5 @@
     "types": ["jasmine", "node"]
   },
   "files": ["test.ts", "polyfills.ts"],
-  "include": ["**/*.spec.ts", "**/test-helpers.ts"]
+  "include": ["**/*.spec.ts"]
 }
