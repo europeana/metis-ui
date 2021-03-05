@@ -3,7 +3,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { getCodeMirrorEditors } from '../../_helpers';
+import { getCodeMirrorEditors } from '@shared';
 import {
   createMockPipe,
   mockDataset,

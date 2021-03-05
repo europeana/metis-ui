@@ -1,4 +1,6 @@
+import { QueryList } from '@angular/core';
 import { HttpTestingController, TestRequest } from '@angular/common/http/testing';
+import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription } from 'rxjs';
 import { reduce } from 'rxjs/operators';
 
@@ -12,6 +14,20 @@ export function getUnsubscribable(undef?: boolean): Subscription {
         unsubscribe: jasmine.createSpy('unsubscribe')
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)) as Subscription;
+}
+
+/** getCodeMirrorEditors
+/* export function for generating a representation of CodeMirror components
+*/
+export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
+  return ([
+    {
+      codeMirror: {
+        setOption: jasmine.createSpy('setEditorOption')
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ] as any) as QueryList<CodemirrorComponent>;
 }
 
 /** gatherValues

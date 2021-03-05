@@ -2,7 +2,6 @@ export * from './beautifyxml.pipe';
 export * from './cache';
 export * from './calcprogress';
 export * from './can-cancel-workflow';
-export * from './codemirror';
 export * from './copycontent';
 export * from './statusclassfromplugin';
 export * from './match-password-validator';
