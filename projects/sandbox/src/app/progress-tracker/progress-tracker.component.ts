@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { DatasetInfo, ProgressByStep, StepStatus, StepStatusClass } from '../_models';
+import { ModalConfirmService } from '@shared';
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -9,6 +10,11 @@ import { DatasetInfo, ProgressByStep, StepStatus, StepStatusClass } from '../_mo
 export class ProgressTrackerComponent {
   @Input() progressData: DatasetInfo;
   @Input() datasetId: number;
+
+  modalIdErrors = 'confirm-modal-errors';
+  detailIndex: number;
+
+  constructor(private modalConfirms: ModalConfirmService) {}
 
   /** getLabelClass
   /* return a css class based on the plugin status
@@ -23,5 +29,12 @@ export class ProgressTrackerComponent {
   */
   getStatusClass(step: ProgressByStep): string {
     return step.total === step.success ? 'success' : step.fail > 0 ? 'fail' : 'warn';
+  }
+
+  confirmModalErrors(detailIndex: number): void {
+    this.detailIndex = detailIndex;
+    const sub = this.modalConfirms.open(this.modalIdErrors).subscribe(() => {
+      sub.unsubscribe();
+    });
   }
 }

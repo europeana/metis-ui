@@ -67,7 +67,7 @@
       padding: 0.8rem 2rem;
     }
 
-    button:first-child {
+    button:first-child:not(:last-child) {
       margin-right: 1rem;
     }
 

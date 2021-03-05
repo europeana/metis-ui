@@ -3,22 +3,17 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
+import { MockModalConfirmService, ModalConfirmComponent, ModalConfirmService } from '@shared';
 import { AppComponent } from '.';
 import {
   createMockPipe,
   MockAuthenticationService,
   MockErrorService,
-  MockModalConfirmService,
   MockWorkflowService
 } from './_mocked';
 import { CancellationRequest } from './_models';
-import {
-  AuthenticationService,
-  ErrorService,
-  ModalConfirmService,
-  WorkflowService
-} from './_services';
-import { ModalConfirmComponent } from './shared/modal-confirm';
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
+
 import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {

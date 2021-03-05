@@ -1,4 +1,6 @@
-<h2 class="progress-title">Dataset {{ datasetId }}</h2>
+<h2 class="progress-title" title="({{ progressData.status }})">
+  Dataset {{ datasetId }}
+</h2>
 <div class="wrapper">
   <div>
     <span
@@ -6,12 +8,33 @@
       class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
     ></span>
   </div>
+  <lib-modal
+    id="{{ modalIdErrors }}"
+    title="Error Detail"
+    [isSmall]="false"
+    [buttons]="[{ label: 'Close' }]"
+  >
+    <div *ngIf="progressData['progress-by-step'][detailIndex]; let detailItem">
+      <ul *ngFor="let error of detailItem.errors">
+        <li>Type: {{ error.type }}</li>
+        <li>
+          Records: [{{ error.records }}]
+          <ul>
+            <li>{{ error.message }}</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </lib-modal>
   <div class="step-columns">
-    <span *ngFor="let item of progressData['progress-by-step']" class="step-column-entry">
+    <span
+      *ngFor="let item of progressData['progress-by-step']; let i = index"
+      class="step-column-entry"
+    >
       <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
       <span class="step-label">{{ item.step }}</span>
       <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
-      <a *ngIf="item.fail" class="errors">{{ item.fail }}</a>
+      <a *ngIf="item.fail" class="errors" (click)="confirmModalErrors(i)">{{ item.fail }}</a>
     </span>
   </div>
 </div>

@@ -1,15 +1,19 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { ModalDialog } from '../../_models';
-import { ModalConfirmService } from '../../_services';
+import { ModalDialog, ModalDialogButtonDefinition } from '../_models';
+import { ModalConfirmService } from '../_services';
 
 @Component({
-  selector: 'app-modal-confirm',
+  selector: 'lib-modal',
   templateUrl: './modal-confirm.component.html'
 })
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() id: string;
   @Input() title: string;
+  @Input() buttonText: string;
+  @Input() buttons: Array<ModalDialogButtonDefinition>;
+  @Input() isSmall = true;
+
   subConfirmResponse: Subject<boolean>;
   show = false;
 

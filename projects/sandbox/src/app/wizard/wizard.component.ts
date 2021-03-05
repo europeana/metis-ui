@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, merge, timer } from 'rxjs';
+import { merge, Observable, timer } from 'rxjs';
 import { DataPollingComponent } from '@shared';
 import {
   DatasetInfo,
@@ -49,12 +49,10 @@ export class WizardComponent extends DataPollingComponent {
     super();
   }
 
-  getFormGroup(stepConf: WizardStep): FormGroup {
-    return stepConf.stepType === WizardStepType.PROGRESS_TRACK
-      ? this.formProgress
-      : this.formUpload;
-  }
-
+  /**
+   * buildForms
+   * builds the two forms
+   **/
   buildForms(): void {
     this.formProgress = this.fb.group({
       idToTrack: ['', Validators.required]
@@ -87,19 +85,57 @@ export class WizardComponent extends DataPollingComponent {
     );
   }
 
+  /**
+   * getFormGroup
+   * Template utility: returns the correct form for the given WizardStep
+   *
+   * @param { WizardStep } stepConf - the config to evaluate
+   * @returns FormGroup
+   **/
+  getFormGroup(stepConf: WizardStep): FormGroup {
+    return stepConf.stepType === WizardStepType.PROGRESS_TRACK
+      ? this.formProgress
+      : this.formUpload;
+  }
+
+  /**
+   * getOrbsAreSquare
+   * Template utility to set square orbs
+   *
+   * @return boolean
+   **/
   getOrbsAreSquare(): boolean {
     return this.getIsProgressTrack(this.currentStepIndex) && !!this.formProgress.value.idToTrack;
   }
 
+  /**
+   * getIsProgressTrack
+   * Returns if the WizardStep at the given conf index's stepType is PROGRESS_TRACK
+   *
+   * @param { number } stepIndex - the config index to evaluate
+   * @returns boolean
+   **/
   getIsProgressTrack(stepIndex: number): boolean {
     return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
   }
 
+  /**
+   * setStep
+   * Sets the currentStepIndex and sets orbsHidden to false
+   *
+   * @param { number } stepIndex - the value to set
+   **/
   setStep(stepIndex: number): void {
     this.orbsHidden = false;
     this.currentStepIndex = stepIndex;
   }
 
+  /**
+   * getTrackProgressConfIndex
+   * Returns the index of the PROGRESS_TRACK step within this.wizardConf or -1
+   *
+   * @return number
+   **/
   getTrackProgressConfIndex(): number {
     const result = this.wizardConf.reduce(
       (arr: Array<number>, step: { stepType: WizardStepType }, index: number) => {
@@ -116,13 +152,24 @@ export class WizardComponent extends DataPollingComponent {
     return -1;
   }
 
+  /**
+   * resetBusy
+   * Resets the busy-tracking variables
+   *
+   **/
   resetBusy(): void {
-    timer(500).subscribe(() => {
+    const sub = timer(500).subscribe(() => {
       this.isBusy = false;
       this.isPolling = false;
+      sub.unsubscribe();
     });
   }
 
+  /**
+   * onSubmitProgress
+   * Submits the formProgress data if valid
+   *
+   **/
   onSubmitProgress(): void {
     const form = this.formProgress;
 
@@ -154,9 +201,10 @@ export class WizardComponent extends DataPollingComponent {
     }
   }
 
-  /** onSubmitDataset
-  /* - submit the form data if valid
-  */
+  /**
+   * onSubmitDataset
+   * Submits the formUpload data if valid
+   **/
   onSubmitDataset(): void {
     const form = this.formUpload;
 
@@ -192,6 +240,13 @@ export class WizardComponent extends DataPollingComponent {
     }
   }
 
+  /**
+   * stepIsComplete
+   * Runs partial validation on this.formProgress and returns the validity
+   *
+   * @param { number } step - the index of the WizardStep to evaluate
+   * @returns boolean
+   **/
   stepIsComplete(step: number): boolean {
     if (this.wizardConf[step].stepType === WizardStepType.PROGRESS_TRACK) {
       const val = this.formProgress.get('idToTrack');

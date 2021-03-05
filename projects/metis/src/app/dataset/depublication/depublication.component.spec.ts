@@ -8,16 +8,16 @@ import {
   tick
 } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MockModalConfirmService, ModalConfirmService } from '@shared';
 import {
   createMockPipe,
   MockDepublicationService,
   MockDepublicationServiceErrors,
-  MockErrorService,
-  MockModalConfirmService
+  MockErrorService
 } from '../../_mocked';
 import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
-import { DepublicationService, ErrorService, ModalConfirmService } from '../../_services';
+import { DepublicationService, ErrorService } from '../../_services';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 

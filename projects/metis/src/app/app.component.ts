@@ -3,16 +3,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
-import { SubscriptionManager } from '@shared';
+import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from '@shared';
 import { environment } from '../environments/environment';
 import { CancellationRequest } from './_models';
-import { ModalConfirmComponent } from './shared/modal-confirm';
-import {
-  AuthenticationService,
-  ErrorService,
-  ModalConfirmService,
-  WorkflowService
-} from './_services';
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 @Component({
   selector: 'app-root',

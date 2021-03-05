@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
+import { DataPollingComponent, ModalConfirmService } from '@shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
@@ -15,9 +16,7 @@ import {
   SortDirection,
   SortParameter
 } from '../../_models';
-
-import { DataPollingComponent } from '@shared';
-import { DepublicationService, ErrorService, ModalConfirmService } from '../../_services';
+import { DepublicationService, ErrorService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
 

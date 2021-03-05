@@ -55,7 +55,6 @@ import { AppRoutingModule } from './routing';
 import {
   HeaderComponent,
   LoadingButtonComponent,
-  ModalConfirmComponent,
   NotificationComponent,
   PasswordCheckComponent,
   SearchComponent,
@@ -69,7 +68,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     ActionbarComponent,
     AppComponent,
     CollapsibleDirective,
-    ModalConfirmComponent,
     RegisterComponent,
     LoginComponent,
     ProfileComponent,

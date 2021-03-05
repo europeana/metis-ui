@@ -5,7 +5,6 @@ export * from './depublication';
 export * from './filterExecution';
 export * from './harvest-data';
 export * from './language';
-export * from './modal-dialog';
 export * from './notification';
 export * from './plugin-metadata';
 export * from './report';

@@ -1,0 +1,28 @@
+<div class="modal-wrapper" *ngIf="show">
+  <div class="modal" [ngClass]="{ 'modal-small': isSmall }">
+    <div class="head">{{ title }} <a class="btn-close" (click)="close(false)"></a></div>
+    <div class="content content-autoscroll">
+      <p>
+        <ng-content></ng-content>
+      </p>
+      <p *ngIf="buttons; else yes_no">
+        <ng-container *ngFor="let item of buttons">
+          <button
+            [class]="item.cssClass ? item.cssClass : ''"
+            (click)="close(item.clickVal)"
+            [type]="item.type ? item.type : 'button'"
+            [disabled]="item.disabled ? item.disabled : false"
+          >
+            {{ item.label }}
+          </button>
+        </ng-container>
+      </p>
+      <ng-template #yes_no>
+        <p>
+          <button class="button" type="button" (click)="close(false)">No</button>
+          <button class="button" type="button" (click)="close(true)">Yes</button>
+        </p>
+      </ng-template>
+    </div>
+  </div>
+</div>
