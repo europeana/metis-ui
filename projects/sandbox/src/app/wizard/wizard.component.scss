@@ -91,7 +91,8 @@ select {
   background-color: $eu-light-jade;
   border: 1px solid $eu-jade-dark;
   border-radius: $wizard-border-radius;
-  margin: auto;
+  margin: 1.5rem auto;
+  max-width: 50em;
   width: 80%;
 }
 

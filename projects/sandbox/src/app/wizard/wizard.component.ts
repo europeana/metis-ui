@@ -26,6 +26,7 @@ export interface ValidatorArrayHash {
 })
 export class WizardComponent extends DataPollingComponent {
   error: HttpErrorResponse | undefined;
+  fileFormName = 'dataset';
   formProgress: FormGroup;
   formUpload: FormGroup;
   resetBusyDelay = 1000;
@@ -40,7 +41,6 @@ export class WizardComponent extends DataPollingComponent {
   trackDatasetId: number;
   wizardConf: Array<WizardStep>;
 
-  @Input() fileFormName: string;
   @Input() set _wizardConf(wizardConf: Array<WizardStep>) {
     this.wizardConf = wizardConf;
     this.currentStepIndex = this.getTrackProgressConfIndex();
@@ -78,7 +78,6 @@ export class WizardComponent extends DataPollingComponent {
           return Object.assign(map, test);
         }, {})
     );
-
     this.subs.push(
       merge(this.formProgress.valueChanges, this.formUpload.valueChanges).subscribe(() => {
         this.error = undefined;
@@ -198,7 +197,6 @@ export class WizardComponent extends DataPollingComponent {
     if (form.valid) {
       const ctrl = this.formProgress.get('idToTrack') as FormControl;
       const idToTrack = ctrl.value;
-      ctrl.setValue('');
 
       this.isBusyProgress = true;
       this.clearDataPollers();
@@ -210,6 +208,7 @@ export class WizardComponent extends DataPollingComponent {
           return this.sandbox.requestProgress(idToTrack);
         },
         (progressInfo: DatasetInfo) => {
+          ctrl.setValue('');
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;
           if (this.progressComplete()) {
@@ -236,13 +235,12 @@ export class WizardComponent extends DataPollingComponent {
     if (form.valid) {
       form.disable();
       this.isBusy = true;
-
       this.subs.push(
         this.sandbox
           .submitDataset(
-            this.formUpload.value.name,
-            this.formUpload.value.country,
-            this.formUpload.value.language,
+            form.value.name,
+            form.value.country,
+            form.value.language,
             this.fileFormName,
             form.get(this.fileFormName)!.value
           )
