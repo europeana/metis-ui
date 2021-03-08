@@ -1,21 +1,30 @@
 <div class="wizard">
-  <div
-    class="wizard-head"
-    [ngClass]="{ 'orbs-hidden': orbsHidden, 'orb-square': getOrbsAreSquare() }"
-  >
+  <div class="wizard-head" [ngClass]="{ 'orbs-hidden': orbsHidden }">
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <label *ngIf="currentStepIndex === i">
-        <ng-container *ngSwitchCase="EnumWizardStepType.SET_NAME">
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.SET_NAME"
+          i18n="upload step title@@enterName"
+        >
           Enter a Dataset Name
         </ng-container>
-        <ng-container *ngSwitchCase="EnumWizardStepType.SET_LANG_LOCATION">
-          Enter the Details
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.SET_LANG_LOCATION"
+          i18n="upload step title@@enterDetails"
+        >
+          Enter the Dataset Details
         </ng-container>
-        <ng-container *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK">
-          Track Data Processing
-        </ng-container>
-        <ng-container *ngSwitchCase="EnumWizardStepType.PROTOCOL_SELECT">
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.PROTOCOL_SELECT"
+          i18n="upload step title@@configureSource"
+        >
           Configure the Data Source
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK"
+          i18n="upload step title@@trackProcessing"
+        >
+          Track Dataset Processing
         </ng-container>
       </label>
     </ng-container>
@@ -23,14 +32,26 @@
     <ul class="wizard-status">
       <li
         *ngFor="let stepConf of wizardConf; let i = index"
-        [ngClass]="{ 'progress-orb': stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK }"
+        class="orb-container"
+        [ngClass]="{
+          'progress-orb-container': stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK
+        }"
       >
         <a
           (click)="setStep(i)"
           [ngClass]="{
             'is-set': stepIsComplete(i),
-            active: currentStepIndex === i,
-            'svg-icon-spin-inbutton': isBusy
+            'is-active': currentStepIndex === i,
+            'orb-square': getStepIsSubmittable(stepConf),
+            'progress-orb': stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK,
+            'indicator-orb':
+              stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK || this.formUpload.disabled,
+            'submitted-orb':
+              this.formUpload.disabled && stepConf.stepType !== EnumWizardStepType.PROGRESS_TRACK,
+            spinner:
+              stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK ? isBusyProgress : isBusy,
+            'indicate-complete': progressComplete(),
+            'indicate-polling': isPolling && stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK
           }"
           class="orb-status labelled"
           [attr.data-label]="i + 1"
@@ -87,15 +108,16 @@
           ></sb-progress-tracker>
 
           <div class="form-group">
-            <label>Enter the id of the dataset to track </label>
+            <label i18n="track id label">Enter the id of a dataset to track </label>
             <div class="submit-track-id">
-              <input formControlName="idToTrack" data-e2e="idToTrack" />
+              <input formControlName="idToTrack" data-e2e="idToTrack" autofocus />
               <button
                 type="submit"
                 [disabled]="!formProgress.value.idToTrack"
                 data-e2e="submitProgress"
+                i18n="track button|submits the track id button@@submitTrackId"
               >
-                track id
+                track
               </button>
             </div>
           </div>
@@ -103,21 +125,24 @@
       </ng-container>
     </div>
 
-    <form class="buttons" [formGroup]="formUpload" (ngSubmit)="onSubmitDataset()">
+    <form class="buttons" [formGroup]="formUpload">
       <ng-container *ngIf="getIsProgressTrack(currentStepIndex)">
-        <label class="inline-text"
-          >Or <a (click)="setStep(0)" data-e2e="link-dataset-form">create a new dataset</a></label
+        <label class="inline-text" i18n="create link link@@createLinkInternal"
+          >Or
+          <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
+            >create a new dataset</a
+          ></label
         >
       </ng-container>
       <button
-        [ngClass]="{
-          hidden: orbsHidden || (getIsProgressTrack(currentStepIndex) && !formUpload.valid)
-        }"
+        [ngClass]="{ hidden: orbsHidden || getIsProgressTrack(currentStepIndex) }"
         [disabled]="!formUpload.valid"
         data-e2e="submit-upload"
-        type="submit"
+        class="submit"
+        (click)="onSubmitDataset()"
+        i18n="create button|uploads the dataset button@@submitDataset"
       >
-        Upload
+        Create
       </button>
 
       <div [ngClass]="{ hidden: orbsHidden }">

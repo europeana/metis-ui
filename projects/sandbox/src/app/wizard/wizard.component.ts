@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
 import { DataPollingComponent } from '@shared';
+import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetInfo,
   DatasetInfoStatus,
@@ -27,10 +28,11 @@ export class WizardComponent extends DataPollingComponent {
   error: HttpErrorResponse | undefined;
   formProgress: FormGroup;
   formUpload: FormGroup;
+  resetBusyDelay = 1000;
   isBusy = false;
+  isBusyProgress = false;
   isPolling = false;
   orbsHidden = true;
-  pollinInterval = 2000;
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData: DatasetInfo;
@@ -73,7 +75,6 @@ export class WizardComponent extends DataPollingComponent {
               map[wf.name] = entry;
               return map;
             }, {});
-
           return Object.assign(map, test);
         }, {})
     );
@@ -99,13 +100,13 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   /**
-   * getOrbsAreSquare
-   * Template utility to set square orbs
+   * getStepIsSubmittable
    *
-   * @return boolean
+   * @param { number } step - the index of the WizardStep to evaluate
+   * @returns boolean
    **/
-  getOrbsAreSquare(): boolean {
-    return this.getIsProgressTrack(this.currentStepIndex) && !!this.formProgress.value.idToTrack;
+  getStepIsSubmittable(step: WizardStep): boolean {
+    return this.getFormGroup(step).valid;
   }
 
   /**
@@ -121,11 +122,20 @@ export class WizardComponent extends DataPollingComponent {
 
   /**
    * setStep
-   * Sets the currentStepIndex and sets orbsHidden to false
+   * Sets the currentStepIndex and sets orbsHidden to false.
+   * Optionally resets the form
    *
    * @param { number } stepIndex - the value to set
+   * @param { boolean } reset - flag a reset
    **/
-  setStep(stepIndex: number): void {
+  setStep(stepIndex: number, reset = false): void {
+    if (reset) {
+      const form = this.getFormGroup(this.wizardConf[stepIndex]);
+      if (form.disabled) {
+        form.enable();
+        this.buildForms();
+      }
+    }
     this.orbsHidden = false;
     this.currentStepIndex = stepIndex;
   }
@@ -158,11 +168,23 @@ export class WizardComponent extends DataPollingComponent {
    *
    **/
   resetBusy(): void {
-    const sub = timer(500).subscribe(() => {
+    const sub = timer(this.resetBusyDelay).subscribe(() => {
       this.isBusy = false;
+      this.isBusyProgress = false;
       this.isPolling = false;
       sub.unsubscribe();
     });
+  }
+
+  /**
+   * progressComplete
+   * Template utility to determine if the progress is complete
+   *
+   **/
+  progressComplete(): boolean {
+    return this.progressData && this.progressData.status === DatasetInfoStatus.COMPLETED
+      ? true
+      : false;
   }
 
   /**
@@ -174,12 +196,15 @@ export class WizardComponent extends DataPollingComponent {
     const form = this.formProgress;
 
     if (form.valid) {
-      const idToTrack = this.formProgress.value.idToTrack;
+      const ctrl = this.formProgress.get('idToTrack') as FormControl;
+      const idToTrack = ctrl.value;
+      ctrl.setValue('');
 
+      this.isBusyProgress = true;
       this.clearDataPollers();
 
       this.createNewDataPoller(
-        this.pollinInterval,
+        apiSettings.interval,
         (): Observable<DatasetInfo> => {
           this.isPolling = true;
           return this.sandbox.requestProgress(idToTrack);
@@ -187,7 +212,7 @@ export class WizardComponent extends DataPollingComponent {
         (progressInfo: DatasetInfo) => {
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;
-          if (this.progressData.status === DatasetInfoStatus.COMPLETED) {
+          if (this.progressComplete()) {
             this.clearDataPollers();
           }
           this.resetBusy();
@@ -226,14 +251,14 @@ export class WizardComponent extends DataPollingComponent {
               this.resetBusy();
               if (res.body) {
                 this.trackDatasetId = res.body['dataset-id'];
-                const ctrl = this.formProgress.get('idToTrack') as FormControl;
-                ctrl.setValue(this.trackDatasetId);
+                (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
                 this.onSubmitProgress();
                 this.currentStepIndex = this.getTrackProgressConfIndex();
               }
             },
             (err: HttpErrorResponse): void => {
               this.error = err;
+              this.resetBusy();
             }
           )
       );
@@ -253,15 +278,13 @@ export class WizardComponent extends DataPollingComponent {
       return val ? val.valid : !!this.trackDatasetId;
     }
     const fields = this.wizardConf[step].fields;
-    if (fields) {
-      return !fields
-        .filter((f: { name: string }) => !!f.name)
-        .find((f: { name: string }) => {
-          const val = this.formUpload.get(f.name);
-          return val ? !val.valid : false;
-        });
-    } else {
-      return false;
-    }
+    return fields
+      ? !fields
+          .filter((f: { name: string }) => !!f.name)
+          .find((f: { name: string }) => {
+            const val = this.formUpload.get(f.name);
+            return val ? !val.valid : false;
+          })
+      : false;
   }
 }

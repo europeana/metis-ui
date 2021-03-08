@@ -2,10 +2,12 @@
  * MockModalConfirmService
  *
  **/
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { ModalDialog } from '../_models';
 
 export class MockModalConfirmService {
+  errorMode = false;
+
   add(id: ModalDialog): void {
     console.log(`Mock add modal ${id}`);
   }
@@ -20,7 +22,14 @@ export class MockModalConfirmService {
    *  @param {string} _ - the unused modal id to open
    *  @return observable of true
    **/
-  open(_: string): Observable<boolean> {
+  open(id: string): Observable<boolean> {
+    if (this.errorMode) {
+      return throwError(new Error(`mock open with id "${id}" throws error`));
+    }
     return of(true);
   }
+}
+
+export class MockModalConfirmServiceErrors extends MockModalConfirmService {
+  errorMode = true;
 }

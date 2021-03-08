@@ -2,7 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, TestBed } from '@angular/core/testing';
 import { MockHttp } from '@shared';
 import { apiSettings } from '../../environments/apisettings';
-import { testDatasetInfo } from '../_mocked';
+import { mockDatasetInfo } from '../_mocked';
 import { SandboxService } from '.';
 
 describe('sandbox service', () => {
@@ -28,9 +28,9 @@ describe('sandbox service', () => {
 
   it('should get the progress', () => {
     const sub = service.requestProgress('1').subscribe((datasetInfo) => {
-      expect(datasetInfo).toEqual(testDatasetInfo);
+      expect(datasetInfo).toEqual(mockDatasetInfo);
     });
-    mockHttp.expect('GET', '/dataset/1').send(testDatasetInfo);
+    mockHttp.expect('GET', '/dataset/1').send(mockDatasetInfo);
     sub.unsubscribe();
   });
 });

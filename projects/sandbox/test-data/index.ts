@@ -11,38 +11,33 @@ import { ProgressByStepStatus, TimedTarget } from './models/models';
 
 new (class extends TestDataServer {
   serverName = 'sandbox';
-  errorCodes = ['400', '404', '500'];
+  errorCodes: Array<string>;
   newId = 0;
   timedTargets: Map<string, TimedTarget> = new Map<string, TimedTarget>();
 
   /**
    * constructor
    *
+   * generate the error codes
    * initialise the progress timer
    **/
   constructor() {
     super();
+
+    const generateRange = (start: number, end: number) => {
+      return [...Array(1 + end - start).keys()].map((v: number) => {
+        return `${start + v}`;
+      });
+    };
+
+    this.errorCodes = generateRange(400, 418).concat(generateRange(500, 508));
+
     const fn = (): void => {
       this.timedTargets.forEach((tgt: TimedTarget) => {
         this.makeProgress(tgt);
       });
     };
     setInterval(fn, 1000);
-  }
-
-  /**
-   * getExternalUrl
-   *
-   * Returns a url string according to the paramters
-   *
-   * @param {boolean} isPreview - flag if preview or publish
-   * @param {string} datasetName - the edm_datasetName parameter
-   **/
-  getExternalUrl(isPreview: boolean, datasetName: string): string {
-    return (
-      `https://metis-sandbox-${isPreview ? 'preview' : 'publish'}-api-test-portal.eanadev.org/` +
-      `portal/search?view=grid&q=edm_datasetName:${datasetName}*`
-    );
   }
 
   /**
@@ -119,8 +114,8 @@ new (class extends TestDataServer {
     const info = timedTarget.datasetInfo;
     if (info['processed-records'] === info['total-records']) {
       info.status = DatasetInfoStatus.COMPLETED;
-      info['portal-preview'] = 'http://www.europeana.eu/preview';
-      info['portal-publish'] = 'http://www.europeana.eu/publish")';
+      info['portal-preview'] = 'this-collection/that-dataset/preview';
+      info['portal-publish'] = 'this-collection/that-dataset/publish';
       return;
     }
     info['processed-records'] += 1;
@@ -151,9 +146,7 @@ new (class extends TestDataServer {
           } else {
             pbs.errors = [error];
           }
-          if (Object.is(pbsArray.length - 1, key)) {
-            burndown.error--;
-          }
+          burndown.error--;
         }
       } else {
         pbs[ProgressByStepStatus.SUCCESS] += 1;

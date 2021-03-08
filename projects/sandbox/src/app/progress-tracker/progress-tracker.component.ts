@@ -6,14 +6,15 @@ import {
   StepStatus,
   StepStatusClass
 } from '../_models';
-import { ModalConfirmService } from '@shared';
+import { ModalConfirmService, SubscriptionManager } from '@shared';
+import { apiSettings } from '../../environments/apisettings';
 
 @Component({
   selector: 'sb-progress-tracker',
   templateUrl: './progress-tracker.component.html',
   styleUrls: ['./progress-tracker.component.scss']
 })
-export class ProgressTrackerComponent {
+export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() progressData: DatasetInfo;
   @Input() datasetId: number;
   @Input() isLoading: boolean;
@@ -21,12 +22,15 @@ export class ProgressTrackerComponent {
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
 
-  constructor(private modalConfirms: ModalConfirmService) {}
+  constructor(private modalConfirms: ModalConfirmService) {
+    super();
+  }
 
   /**
    * getLabelClass
+   * Template utility to get css class based on the StepStatus
    * @param { StepStatus } step - the step status
-   * @returns { string } - a css class based on the plugin status
+   * @returns string
    **/
   getLabelClass(step: StepStatus): string {
     const labelClass = StepStatusClass.get(step);
@@ -52,6 +56,15 @@ export class ProgressTrackerComponent {
   }
 
   /**
+   * getLinkPrefixes
+   * Template utility to get link prefixes
+   * @returns { viewCollections: string; viewPreview: string }
+   **/
+  getLinkPrefixes(): { viewCollections: string; viewPreview: string } {
+    return { viewCollections: apiSettings.viewCollections, viewPreview: apiSettings.viewPreview };
+  }
+
+  /**
    * isComplete
    * Template utility to detect if processing is complete
    * @returns boolean
@@ -67,8 +80,6 @@ export class ProgressTrackerComponent {
    **/
   confirmModalErrors(detailIndex: number): void {
     this.detailIndex = detailIndex;
-    const sub = this.modalConfirms.open(this.modalIdErrors).subscribe(() => {
-      sub.unsubscribe();
-    });
+    this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
   }
 }

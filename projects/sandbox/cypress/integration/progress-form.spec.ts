@@ -15,7 +15,7 @@ context('Sandbox', () => {
     const selectorFailPresent = '.orb-status.labelled.fail';
     const selectorSuccessPresent = '.orb-status.labelled.success';
 
-    const selectorErrorLink = '.errors';
+    const selectorErrorLink = '.open-error-detail';
     const selectorModalDisplay = '.modal';
 
     const selPortalLinks = '.portal-links';

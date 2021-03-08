@@ -1,17 +1,34 @@
-<h2
-  class="progress-title"
-  title="({{ progressData.status }})"
-  [ngClass]="{ complete: isComplete() }"
->
-  Dataset {{ datasetId }}
-</h2>
+<div class="form-group">
+  <h2
+    class="progress-title"
+    title="({{ progressData.status }})"
+    [ngClass]="{ complete: isComplete() }"
+    i18n="progress title"
+  >
+    Dataset {{ datasetId }}
+  </h2>
+  <ul *ngIf="hasLinks() && getLinkPrefixes(); let prefixes" class="portal-links">
+    <li *ngIf="progressData['portal-preview']; let link">
+      <a href="{{ prefixes.viewPreview }}/{{ link }}" i18n="progress link link@@progressLinkPreview"
+        >Preview</a
+      >
+    </li>
+    <li *ngIf="progressData['portal-publish']; let link">
+      <a
+        href="{{ prefixes.viewCollections }}/{{ link }}"
+        i18n="progress link link@@progressLinkPublish"
+        >Publish</a
+      >
+    </li>
+  </ul>
+</div>
 <div class="wrapper">
   <div>
     <span
       *ngFor="let item of progressData['progress-by-step']"
       class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
     ></span>
-    <span class="orb-status labelled svg-icon-spin" [ngClass]="{ showing: isLoading }"></span>
+    <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading }"></span>
   </div>
   <lib-modal
     id="{{ modalIdErrors }}"
@@ -21,8 +38,8 @@
   >
     <div *ngIf="progressData['progress-by-step'][detailIndex]; let detailItem">
       <ul *ngFor="let error of detailItem.errors">
-        <li>Type: {{ error.type }}</li>
-        <li>
+        <li i18n="progress error error@@progressErrorType">Type: {{ error.type }}</li>
+        <li i18n="progress error error@@progressErrorRecords">
           Records: [{{ error.records }}]
           <ul>
             <li>{{ error.message }}</li>
@@ -31,23 +48,40 @@
       </ul>
     </div>
   </lib-modal>
-  <div class="step-columns">
-    <span
-      *ngFor="let item of progressData['progress-by-step']; let i = index"
-      class="step-column-entry"
-    >
-      <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
-      <span class="step-label">{{ item.step }}</span>
+  <div class="progress-grid">
+    <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
+      <span class="row-start">
+        <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
+        <span class="step-label">{{ item.step }}</span>
+      </span>
       <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
-      <a *ngIf="item.fail" class="errors" (click)="confirmModalErrors(i)">{{ item.fail }}</a>
-    </span>
+      <span>
+        <a
+          *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
+          class="link-internal"
+          (click)="confirmModalErrors(i)"
+        >
+          <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
+        </a>
+        <ng-template #conditionalWrap
+          ><ng-content></ng-content
+          ><span *ngIf="item.fail" class="errors">{{ item.fail }}</span></ng-template
+        >
+      </span>
+      <span class="grid-cell-errors">
+        <a
+          (click)="confirmModalErrors(i)"
+          class="open-error-detail link-internal"
+          *ngIf="item.errors"
+          ><span
+            class="link-label"
+            i18n="detail link|opens modal with the selected error@@progressOpenDetailLinkText"
+            >view {item.errors.length, plural, =1 { detail } other { details } } ({{
+              item.errors.length
+            }})</span
+          ></a
+        >
+      </span>
+    </ng-container>
   </div>
 </div>
-<ul *ngIf="hasLinks()" class="portal-links">
-  <li *ngIf="progressData['portal-preview']; let link">
-    <a [href]="link">Preview</a>
-  </li>
-  <li *ngIf="progressData['portal-publish']; let link">
-    <a [href]="link">Publish</a>
-  </li>
-</ul>
