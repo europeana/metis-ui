@@ -22,7 +22,7 @@ describe('ProgressTrackerComponent', () => {
     modalConfirms = TestBed.inject(ModalConfirmService);
   };
 
-  const b4Each = () => {
+  const b4Each = (): void => {
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
     component.progressData = mockDatasetInfo;

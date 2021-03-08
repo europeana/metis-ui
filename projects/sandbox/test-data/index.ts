@@ -24,7 +24,7 @@ new (class extends TestDataServer {
   constructor() {
     super();
 
-    const generateRange = (start: number, end: number) => {
+    const generateRange = (start: number, end: number): Array<string> => {
       return [...Array(1 + end - start).keys()].map((v: number) => {
         return `${start + v}`;
       });
