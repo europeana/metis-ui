@@ -48,7 +48,7 @@
               stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK || this.formUpload.disabled,
             'submitted-orb':
               this.formUpload.disabled && stepConf.stepType !== EnumWizardStepType.PROGRESS_TRACK,
-            'spinner':
+            spinner:
               stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK ? isBusyProgress : isBusy,
             'indicate-complete': progressComplete(),
             'indicate-polling': isPolling && stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK
@@ -62,7 +62,7 @@
   <div class="wizard-content">
     <div
       *ngFor="let stepConf of wizardConf; let i = index"
-      [ngClass]="{ 'hidden': i !== currentStepIndex }"
+      [ngClass]="{ hidden: i !== currentStepIndex }"
     >
       <ng-container
         *ngFor="let field of stepConf.fields"
@@ -135,7 +135,7 @@
         >
       </ng-container>
       <button
-        [ngClass]="{ 'hidden': orbsHidden || getIsProgressTrack(currentStepIndex) }"
+        [ngClass]="{ hidden: orbsHidden || getIsProgressTrack(currentStepIndex) }"
         [disabled]="!formUpload.valid"
         data-e2e="submit-upload"
         class="submit"
@@ -145,15 +145,15 @@
         Create
       </button>
 
-      <div [ngClass]="{ 'hidden': orbsHidden }">
+      <div [ngClass]="{ hidden: orbsHidden }">
         <button
           class="orb-status labelled previous"
-          [ngClass]="{ 'hidden': currentStepIndex < 1 }"
+          [ngClass]="{ hidden: currentStepIndex < 1 }"
           (click)="setStep(currentStepIndex - 1)"
         ></button>
         <button
           class="orb-status labelled next"
-          [ngClass]="{ 'hidden': !canGoToNext() }"
+          [ngClass]="{ hidden: !canGoToNext() }"
           (click)="setStep(currentStepIndex + 1)"
         ></button>
       </div>
