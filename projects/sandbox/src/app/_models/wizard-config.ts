@@ -23,5 +23,5 @@ export enum WizardStepType {
 
 export interface WizardStep {
   stepType: WizardStepType;
-  fields?: Array<string>;
+  fields: Array<string>;
 }

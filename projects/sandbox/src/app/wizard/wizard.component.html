@@ -151,7 +151,7 @@
       <div [ngClass]="{ hidden: orbsHidden }">
         <button
           class="orb-status labelled previous"
-          [ngClass]="{ hidden: currentStepIndex < 1 }"
+          [ngClass]="{ hidden: !canGoToPrevious() }"
           (click)="setStep(currentStepIndex - 1)"
         ></button>
         <button

@@ -80,6 +80,8 @@ describe('WizardComponent', () => {
       expect(component.stepIsComplete(0)).toBeFalsy();
       (component.formUpload.get('name') as FormControl).setValue('A');
       expect(component.stepIsComplete(0)).toBeTruthy();
+      (component.formUpload.get('name') as FormControl).setValue(' ');
+      expect(component.stepIsComplete(0)).toBeFalsy();
 
       expect(component.stepIsComplete(1)).toBeFalsy();
       (component.formUpload.get('country') as FormControl).setValue('Greece');
@@ -93,6 +95,8 @@ describe('WizardComponent', () => {
       expect(component.stepIsComplete(3)).toBeFalsy();
       (component.formProgress.get('idToTrack') as FormControl).setValue('1');
       expect(component.stepIsComplete(3)).toBeTruthy();
+      (component.formProgress.get('idToTrack') as FormControl).setValue(' ');
+      expect(component.stepIsComplete(3)).toBeFalsy();
     });
 
     it('should validate input', () => {
@@ -119,20 +123,30 @@ describe('WizardComponent', () => {
       assertSubmittable(false);
     });
 
-    it('should submit the progress form', fakeAsync(() => {
+    it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
       spyOn(component, 'clearDataPollers');
       component.onSubmitProgress();
       expect(component.clearDataPollers).not.toHaveBeenCalled();
       (component.formProgress.get('idToTrack') as FormControl).setValue('1');
       component.onSubmitProgress();
-      expect(component.clearDataPollers).toHaveBeenCalled();
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
       tick(1);
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(2);
       expect(component.formProgress.value.idToTrack).toBeFalsy();
+
+      // clear and re-submit
+
+      spyOn(component, 'progressComplete').and.callFake(() => false);
+      (component.formProgress.get('idToTrack') as FormControl).setValue('1');
+      component.onSubmitProgress();
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+      tick(1);
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
       component.cleanup();
       tick(apiSettings.interval);
     }));
 
-    it('should submit the upload form', fakeAsync(() => {
+    it('should submit the dataset form', fakeAsync(() => {
       expect(component.isBusy).toBeFalsy();
       component.onSubmitDataset();
       expect(component.isBusy).toBeFalsy();
@@ -140,6 +154,8 @@ describe('WizardComponent', () => {
       component.onSubmitDataset();
       tick(1);
       expect(component.isBusy).toBeTruthy();
+      expect(component.trackDatasetId).toBeTruthy();
+
       component.cleanup();
       tick(apiSettings.interval);
     }));
@@ -169,6 +185,17 @@ describe('WizardComponent', () => {
       form.disable();
       component.setStep(0, true);
       expect(form.enable).toHaveBeenCalled();
+    });
+
+    it('should calculate if it can go to the previous step', () => {
+      component.setStep(3);
+      expect(component.canGoToPrevious()).toBeFalsy();
+      component.setStep(0);
+      expect(component.canGoToPrevious()).toBeFalsy();
+      component.setStep(1);
+      expect(component.canGoToPrevious()).toBeTruthy();
+      component.setStep(2);
+      expect(component.canGoToPrevious()).toBeTruthy();
     });
 
     it('should calculate if it can go to the next step', () => {

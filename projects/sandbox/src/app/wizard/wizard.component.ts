@@ -63,8 +63,16 @@ export class WizardComponent extends DataPollingComponent {
 
   constructor(private readonly fb: FormBuilder, private readonly sandbox: SandboxService) {
     super();
-    this.countryList = this.sandbox.getCountries();
-    this.languageList = this.sandbox.getLanguages();
+    this.subs.push(
+      this.sandbox.getCountries().subscribe((countries: Array<string>) => {
+        this.countryList = countries;
+      })
+    );
+    this.subs.push(
+      this.sandbox.getLanguages().subscribe((languages: Array<FieldOption>) => {
+        this.languageList = languages;
+      })
+    );
     this.buildForms();
   }
 
@@ -142,11 +150,7 @@ export class WizardComponent extends DataPollingComponent {
    * @returns boolean
    **/
   getIsProgressTrack(stepIndex: number): boolean {
-    if (!stepIndex) {
-      return false;
-    } else {
-      return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
-    }
+    return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
   }
 
   /**
@@ -170,10 +174,23 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   /**
-   * canGoToNext
-   * Template utility: returns if
+   * canGoToPrevious
+   * Template utility: returns navigation to previous step is possible
    *
-   * @returns FormGroup
+   * @returns boolean
+   **/
+  canGoToPrevious(): boolean {
+    if ([1, 2].includes(this.currentStepIndex)) {
+      return true;
+    }
+    return this.formUpload.disabled;
+  }
+
+  /**
+   * canGoToNext
+   * Template utility: returns navigation to next step is possible
+   *
+   * @returns boolean
    **/
   canGoToNext(): boolean {
     if (this.currentStepIndex == 2) {
@@ -295,11 +312,9 @@ export class WizardComponent extends DataPollingComponent {
     const fields = wStep.fields;
     const form = this.getFormGroup(wStep);
 
-    return fields
-      ? !fields.find((f: string) => {
-          const val = form.get(f);
-          return val ? !val.valid : false;
-        })
-      : false;
+    return !fields.find((f: string) => {
+      const val = form.get(f);
+      return val ? !val.valid : false;
+    });
   }
 }

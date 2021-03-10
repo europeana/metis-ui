@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import { DatasetInfo, FieldOption, SubmissionResponseData } from '../_models';
 
@@ -15,8 +15,8 @@ export class SandboxService {
    *
    * @returns Array<string>
    **/
-  getCountries(): Array<string> {
-    return ['Greece', 'Hungary', 'Italy'];
+  getCountries(): Observable<Array<string>> {
+    return of(['Greece', 'Hungary', 'Italy']);
   }
 
   /**
@@ -26,8 +26,8 @@ export class SandboxService {
    *
    * @returns Array<string>
    **/
-  getLanguages(): Array<FieldOption> {
-    return [
+  getLanguages(): Observable<Array<FieldOption>> {
+    return of([
       {
         code: 'el',
         name: 'Greek'
@@ -40,7 +40,7 @@ export class SandboxService {
         code: 'it',
         name: 'Italian'
       }
-    ];
+    ]);
   }
 
   /** requestProgress
