@@ -1,15 +1,14 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { apiSettings } from '../../environments/apisettings';
 import { mockDatasetInfo, MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { DatasetInfoStatus, WizardStep, WizardStepType } from '../_models';
 import { SandboxService } from '../_services';
 import { WizardComponent } from './wizard.component';
-import { wizardConf } from '.';
 
-fdescribe('WizardComponent', () => {
+describe('WizardComponent', () => {
   let component: WizardComponent;
   let fixture: ComponentFixture<WizardComponent>;
   const testFile = new File([], 'file.zip', { type: 'zip' });
@@ -31,7 +30,6 @@ fdescribe('WizardComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(WizardComponent);
     component = fixture.componentInstance;
-    component._wizardConf = wizardConf;
     fixture.detectChanges();
   };
 
@@ -60,19 +58,12 @@ fdescribe('WizardComponent', () => {
       );
     });
 
-    it('should get the index of the tracking step', () => {
-      expect(component.getTrackProgressConfIndex()).toBeGreaterThan(-1);
-      component._wizardConf = [];
-      expect(component.getTrackProgressConfIndex()).toEqual(-1);
-    });
-
     it('should reset the busy flags', fakeAsync(() => {
       component.isBusy = true;
       component.isPolling = true;
       component.resetBusy();
       tick(component.resetBusyDelay);
       expect(component.isBusy).toBeFalsy();
-      component._wizardConf = [];
       expect(component.isPolling).toBeFalsy();
     }));
 
@@ -154,26 +145,14 @@ fdescribe('WizardComponent', () => {
     }));
 
     it('should get if the step is submittable', () => {
-      const conf = {
-        stepType: WizardStepType.SET_NAME,
-        fields: [
-          {
-            name: 'name',
-            validators: [Validators.required]
-          }
-        ]
-      };
-      component._wizardConf = [conf];
-      component.buildForms();
-      expect(component.getStepIsSubmittable(component.wizardConf[0])).toEqual(false);
+      component.setStep(0);
+      const wizardStep = component.wizardConf[0];
+      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
       const ctrl = component.formUpload.get('name') as FormControl;
       ctrl.setValue('name');
-      expect(component.getStepIsSubmittable(component.wizardConf[0])).toEqual(true);
-
-      delete conf.fields;
-      component._wizardConf = [conf];
-      component.buildForms();
-      expect(component.getStepIsSubmittable(component.wizardConf[0])).toEqual(true);
+      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
+      fillUploadForm();
+      expect(component.getStepIsSubmittable(wizardStep)).toEqual(true);
     });
 
     it('should set the step', () => {
@@ -199,10 +178,6 @@ fdescribe('WizardComponent', () => {
       expect(component.canGoToNext()).toBeTruthy();
       component.setStep(2);
       expect(component.canGoToNext()).toBeFalsy();
-    });
-
-    it('should get the index of the progress track step', () => {
-      expect(component.getTrackProgressConfIndex()).toEqual(3);
     });
   });
 

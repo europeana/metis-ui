@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
@@ -7,8 +7,9 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetInfo,
   DatasetInfoStatus,
+  FieldOption,
+  FixedLengthArray,
   SubmissionResponseData,
-  WizardField,
   WizardStep,
   WizardStepType
 } from '../_models';
@@ -37,18 +38,34 @@ export class WizardComponent extends DataPollingComponent {
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData: DatasetInfo;
-  currentStepIndex: number;
   trackDatasetId: number;
-  wizardConf: Array<WizardStep>;
-
-  @Input() set _wizardConf(wizardConf: Array<WizardStep>) {
-    this.wizardConf = wizardConf;
-    this.currentStepIndex = this.getTrackProgressConfIndex();
-    this.buildForms();
-  }
+  countryList: Array<string>;
+  languageList: Array<FieldOption>;
+  wizardConf: FixedLengthArray<WizardStep, 4> = [
+    {
+      stepType: WizardStepType.SET_NAME,
+      fields: ['name']
+    },
+    {
+      stepType: WizardStepType.SET_LANG_LOCATION,
+      fields: ['country', 'language']
+    },
+    {
+      stepType: WizardStepType.PROTOCOL_SELECT,
+      fields: ['uploadProtocol', 'harvestUrl', 'setSpec', 'metadataFormat', 'url', 'dataset']
+    },
+    {
+      stepType: WizardStepType.PROGRESS_TRACK,
+      fields: ['idToTrack']
+    }
+  ];
+  currentStepIndex = this.wizardConf.length - 1;
 
   constructor(private readonly fb: FormBuilder, private readonly sandbox: SandboxService) {
     super();
+    this.countryList = this.sandbox.getCountries();
+    this.languageList = this.sandbox.getLanguages();
+    this.buildForms();
   }
 
   /**
@@ -57,32 +74,41 @@ export class WizardComponent extends DataPollingComponent {
    **/
   buildForms(): void {
     this.formProgress = this.fb.group({
-      idToTrack: ['', Validators.required]
+      idToTrack: ['', [Validators.required, this.validatorWhitespace]]
     });
-    this.formUpload = this.fb.group(
-      this.wizardConf
-        .filter((conf) => {
-          return !!conf.fields;
-        })
-        .reduce((map: ValidatorArrayHash, conf: WizardStep) => {
-          const test = (conf.fields ? conf.fields : [])
-            .filter((map: WizardField) => !!map.name)
-            .reduce((map: ValidatorArrayHash, wf: WizardField) => {
-              const entry: Array<string | Validators[]> = [wf.defaultValue ? wf.defaultValue : ''];
-              if (wf.validators) {
-                entry.push(wf.validators);
-              }
-              map[wf.name] = entry;
-              return map;
-            }, {});
-          return Object.assign(map, test);
-        }, {})
-    );
+
+    this.formUpload = this.fb.group({
+      name: ['', [Validators.required, this.validatorWhitespace]],
+      country: ['', [Validators.required]],
+      language: ['', [Validators.required]],
+      uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
+      setSpec: [''],
+      metadataFormat: [''],
+      url: [''],
+      dataset: ['', [Validators.required]]
+    });
+
     this.subs.push(
       merge(this.formProgress.valueChanges, this.formUpload.valueChanges).subscribe(() => {
         this.error = undefined;
       })
     );
+  }
+
+  /**
+   * validatorWhitespace
+   *
+   * form validator implementation for whitespace detection
+   *
+   * @param { FormControl } control - the control to validate
+   * @returns null or a code-keyed boolean
+   **/
+  validatorWhitespace(control: FormControl): { [key: string]: boolean } | null {
+    const isWhitespace = control.value.length > 0 && control.value.trim().length === 0;
+    if (isWhitespace) {
+      return { invalid: true };
+    }
+    return null;
   }
 
   /**
@@ -101,7 +127,7 @@ export class WizardComponent extends DataPollingComponent {
   /**
    * getStepIsSubmittable
    *
-   * @param { number } step - the index of the WizardStep to evaluate
+   * @param { WizardStep } step - the WizardStep to evaluate
    * @returns boolean
    **/
   getStepIsSubmittable(step: WizardStep): boolean {
@@ -116,7 +142,11 @@ export class WizardComponent extends DataPollingComponent {
    * @returns boolean
    **/
   getIsProgressTrack(stepIndex: number): boolean {
-    return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
+    if (!stepIndex) {
+      return false;
+    } else {
+      return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
+    }
   }
 
   /**
@@ -154,28 +184,6 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   /**
-   * getTrackProgressConfIndex
-   * Returns the index of the PROGRESS_TRACK step within this.wizardConf or -1
-   *
-   * @return number
-   **/
-  getTrackProgressConfIndex(): number {
-    const result = this.wizardConf.reduce(
-      (arr: Array<number>, step: { stepType: WizardStepType }, index: number) => {
-        if (step.stepType === WizardStepType.PROGRESS_TRACK) {
-          arr.push(index);
-        }
-        return arr;
-      },
-      []
-    );
-    if (result.length === 1) {
-      return result[0];
-    }
-    return -1;
-  }
-
-  /**
    * resetBusy
    * Resets the busy-tracking variables
    *
@@ -195,9 +203,7 @@ export class WizardComponent extends DataPollingComponent {
    *
    **/
   progressComplete(): boolean {
-    return this.progressData && this.progressData.status === DatasetInfoStatus.COMPLETED
-      ? true
-      : false;
+    return this.progressData && this.progressData.status === DatasetInfoStatus.COMPLETED;
   }
 
   /**
@@ -265,7 +271,7 @@ export class WizardComponent extends DataPollingComponent {
                 this.trackDatasetId = res.body['dataset-id'];
                 (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
                 this.onSubmitProgress();
-                this.currentStepIndex = this.getTrackProgressConfIndex();
+                this.currentStepIndex = this.wizardConf.length - 1;
               }
             },
             (err: HttpErrorResponse): void => {
@@ -285,18 +291,15 @@ export class WizardComponent extends DataPollingComponent {
    * @returns boolean
    **/
   stepIsComplete(step: number): boolean {
-    if (this.wizardConf[step].stepType === WizardStepType.PROGRESS_TRACK) {
-      const val = this.formProgress.get('idToTrack');
-      return val ? val.valid : !!this.trackDatasetId;
-    }
-    const fields = this.wizardConf[step].fields;
+    const wStep = this.wizardConf[step];
+    const fields = wStep.fields;
+    const form = this.getFormGroup(wStep);
+
     return fields
-      ? !fields
-          .filter((f: { name: string }) => !!f.name)
-          .find((f: { name: string }) => {
-            const val = this.formUpload.get(f.name);
-            return val ? !val.valid : false;
-          })
+      ? !fields.find((f: string) => {
+          const val = form.get(f);
+          return val ? !val.valid : false;
+        })
       : false;
   }
 }

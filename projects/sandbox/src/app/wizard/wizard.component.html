@@ -60,35 +60,35 @@
     </ul>
   </div>
   <div class="wizard-content">
-    <div
-      *ngFor="let stepConf of wizardConf; let i = index"
-      [ngClass]="{ hidden: i !== currentStepIndex }"
-    >
-      <ng-container
-        *ngFor="let field of stepConf.fields"
-        [ngSwitch]="field.type"
-        [formGroup]="getFormGroup(stepConf)"
-      >
-        <div class="form-group" *ngSwitchCase="'select'">
-          <label *ngIf="field.label" for="{{ field.name }}">{{ field.label }}</label>
-          <select id="{{ field.name }}" [formControlName]="field.name">
-            <option
-              *ngFor="let option of field.options"
-              [ngValue]="option.code ? option.code : option"
-              >{{ option.name ? option.name : option }}</option
-            >
-          </select>
-        </div>
+    <form [formGroup]="formUpload">
+      <div *ngIf="currentStepIndex === 0" class="form-group">
+        <label for="name" i18n="name label">Name</label>
+        <input id="name" formControlName="name" autocomplete="off" />
+        <span class="field-errors" *ngIf="formUpload.get('name')?.errors?.invalid; let errors">
+          <span class="errors" i18n="Field error@@invalidDatasetName"
+            >Please provide a valid name</span
+          >
+        </span>
+      </div>
 
-        <div class="form-group" *ngSwitchCase="'text'">
-          <label *ngIf="field.label" for="{{ field.name }}">{{ field.label }}</label>
-          <input id="{{ field.name }}" [formControlName]="field.name" />
-        </div>
-      </ng-container>
+      <div *ngIf="currentStepIndex === 1" class="form-group">
+        <label for="country" i18n="country label">Country</label>
+        <select id="country" formControlName="country">
+          <option *ngFor="let option of countryList" [ngValue]="option">{{ option }}</option>
+        </select>
+      </div>
 
-      <ng-container *ngIf="stepConf.stepType === EnumWizardStepType.PROTOCOL_SELECT">
+      <div *ngIf="currentStepIndex === 1" class="form-group">
+        <label for="language" i18n="language label">Language</label>
+        <select id="language" formControlName="language">
+          <option *ngFor="let option of languageList" [ngValue]="option.code">{{
+            option.name
+          }}</option>
+        </select>
+      </div>
+
+      <div *ngIf="currentStepIndex === 2" class="form-group">
         <lib-protocol-field-set
-          [formGroup]="getFormGroup(stepConf)"
           [protocolForm]="formUpload"
           [protocolSwitchField]="'uploadProtocol'"
           visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
@@ -96,34 +96,37 @@
           [fileFormName]="fileFormName"
         >
         </lib-protocol-field-set>
-      </ng-container>
+      </div>
+    </form>
 
-      <ng-container *ngIf="stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK">
-        <form [formGroup]="formProgress" (ngSubmit)="onSubmitProgress()">
-          <sb-progress-tracker
-            *ngIf="progressData"
-            [progressData]="progressData"
-            [datasetId]="trackDatasetId"
-            [isLoading]="isPolling"
-          ></sb-progress-tracker>
+    <form *ngIf="currentStepIndex === 3" [formGroup]="formProgress" (ngSubmit)="onSubmitProgress()">
+      <sb-progress-tracker
+        *ngIf="progressData"
+        [progressData]="progressData"
+        [datasetId]="trackDatasetId"
+        [isLoading]="isPolling"
+      ></sb-progress-tracker>
 
-          <div class="form-group">
-            <label i18n="track id label">Enter the id of a dataset to track </label>
-            <div class="submit-track-id">
-              <input formControlName="idToTrack" data-e2e="idToTrack" autofocus />
-              <button
-                type="submit"
-                [disabled]="!formProgress.value.idToTrack"
-                data-e2e="submitProgress"
-                i18n="track button|submits the track id button@@submitTrackId"
-              >
-                track
-              </button>
-            </div>
-          </div>
-        </form>
-      </ng-container>
-    </div>
+      <div class="form-group">
+        <label i18n="track id label">Enter the id of a dataset to track </label>
+        <div class="submit-track-id">
+          <input formControlName="idToTrack" data-e2e="idToTrack" autofocus autocomplete="off" />
+          <button
+            type="submit"
+            [disabled]="!formProgress.value.idToTrack"
+            data-e2e="submitProgress"
+            i18n="track button|submits the track id button@@submitTrackId"
+          >
+            track
+          </button>
+        </div>
+        <span class="field-errors" *ngIf="formProgress.get('idToTrack')?.errors; let errors">
+          <span class="errors" *ngIf="errors.invalid" i18n="Field error@@invalidTrackId"
+            >Please provide a valid id</span
+          >
+        </span>
+      </div>
+    </form>
 
     <form class="buttons" [formGroup]="formUpload">
       <ng-container *ngIf="getIsProgressTrack(currentStepIndex)">

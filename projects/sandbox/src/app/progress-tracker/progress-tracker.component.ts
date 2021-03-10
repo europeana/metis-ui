@@ -74,11 +74,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
-   * confirmModalErrors
+   * showErrorsForStep
    * Trigger the modal open
    * @param { number } detailIndex - the item to open
    **/
-  confirmModalErrors(detailIndex: number): void {
+  showErrorsForStep(detailIndex: number): void {
     this.detailIndex = detailIndex;
     this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
   }

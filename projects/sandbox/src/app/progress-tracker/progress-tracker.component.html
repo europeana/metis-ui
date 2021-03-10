@@ -59,7 +59,7 @@
         <a
           *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
           class="link-internal"
-          (click)="confirmModalErrors(i)"
+          (click)="showErrorsForStep(i)"
         >
           <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
         </a>
@@ -70,7 +70,7 @@
       </span>
       <span class="grid-cell-errors">
         <a
-          (click)="confirmModalErrors(i)"
+          (click)="showErrorsForStep(i)"
           class="open-error-detail link-internal"
           *ngIf="item.errors"
           ><span

@@ -2,11 +2,46 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
-import { DatasetInfo, SubmissionResponseData } from '../_models';
+import { DatasetInfo, FieldOption, SubmissionResponseData } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
   constructor(private readonly http: HttpClient) {}
+
+  /**
+   * getCountries
+   *
+   * gets the country options
+   *
+   * @returns Array<string>
+   **/
+  getCountries(): Array<string> {
+    return ['Greece', 'Hungary', 'Italy'];
+  }
+
+  /**
+   * getLanguages
+   *
+   * gets the language options
+   *
+   * @returns Array<string>
+   **/
+  getLanguages(): Array<FieldOption> {
+    return [
+      {
+        code: 'el',
+        name: 'Greek'
+      },
+      {
+        code: 'hu',
+        name: 'Hungarian'
+      },
+      {
+        code: 'it',
+        name: 'Italian'
+      }
+    ];
+  }
 
   /** requestProgress
   /*

@@ -25,6 +25,11 @@ $wizard-border-radius: 1.5em;
   }
 }
 
+.field-errors {
+  display: block;
+  margin-top: 1em;
+}
+
 .hidden {
   display: none;
 }

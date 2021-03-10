@@ -1,10 +1,45 @@
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import { mockDatasetInfo } from '.';
-import { DatasetInfo, DatasetInfoStatus, SubmissionResponseData } from '../_models';
+import { DatasetInfo, DatasetInfoStatus, FieldOption, SubmissionResponseData } from '../_models';
 
 export class MockSandboxService {
   errorMode = false;
+
+  /**
+   * getCountries
+   *
+   * gets the country options
+   *
+   * @returns Array<string>
+   **/
+  getCountries(): Array<string> {
+    return ['Greece', 'Hungary', 'Italy'];
+  }
+
+  /**
+   * getLanguages
+   *
+   * gets the language options
+   *
+   * @returns Array<string>
+   **/
+  getLanguages(): Array<FieldOption> {
+    return [
+      {
+        code: 'el',
+        name: 'Greek'
+      },
+      {
+        code: 'hu',
+        name: 'Hungarian'
+      },
+      {
+        code: 'it',
+        name: 'Italian'
+      }
+    ];
+  }
 
   requestProgress(_: string): Observable<DatasetInfo> {
     if (this.errorMode) {

@@ -21,6 +21,7 @@ context('Sandbox', () => {
     const selectorBtnNext = '.next';
     const selectorBtnPrevious = '.previous';
     const selectorBtnSubmit = '[data-e2e="submit-upload"]';
+    const selectorFieldErrors = '.field-errors';
     const selectorInputCountry = '#country';
     const selectorInputName = '#name';
     const selectorInputLanguage = '#language';
@@ -158,6 +159,12 @@ context('Sandbox', () => {
       cy.get('.wizard-status li:nth-child(4) a').should('have.class', classSet);
     });
 
+    it('should flag when a step is invalid', () => {
+      cy.get(selectorFieldErrors).should('have.length', 0);
+      cy.get(selectorInputName).type(' ');
+      cy.get(selectorFieldErrors).should('have.length', 1);
+    });
+
     it('should track the progress on submit', () => {
       cy.get(selectorProgress).should('have.length', 0);
       fillUploadForm();
@@ -183,7 +190,9 @@ context('Sandbox', () => {
     it('should re-enable the disabled form after submit', () => {
       fillUploadForm();
       cy.get(selectorBtnSubmit).click();
+      cy.get(`.wizard-status li:first-child a`).click();
       cy.get(selectorInputName).should('be.disabled');
+      cy.get(`.wizard-status li:nth-child(4) a`).click();
       cy.get(selectorLinkDatasetForm).click();
       cy.get(selectorInputName).should('not.be.disabled');
     });

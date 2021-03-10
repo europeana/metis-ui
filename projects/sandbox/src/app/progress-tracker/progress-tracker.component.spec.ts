@@ -42,7 +42,7 @@ describe('ProgressTrackerComponent', () => {
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
         return res;
       });
-      component.confirmModalErrors(1);
+      component.showErrorsForStep(1);
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
