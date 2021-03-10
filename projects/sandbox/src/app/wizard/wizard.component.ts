@@ -183,7 +183,7 @@ export class WizardComponent extends DataPollingComponent {
     if ([1, 2].includes(this.currentStepIndex)) {
       return true;
     }
-    return this.formUpload.disabled;
+    return this.currentStepIndex === 3 && this.formUpload.disabled;
   }
 
   /**

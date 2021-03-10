@@ -196,6 +196,10 @@ describe('WizardComponent', () => {
       expect(component.canGoToPrevious()).toBeTruthy();
       component.setStep(2);
       expect(component.canGoToPrevious()).toBeTruthy();
+      component.setStep(3);
+      expect(component.canGoToPrevious()).toBeFalsy();
+      component.formUpload.disable();
+      expect(component.canGoToPrevious()).toBeTruthy();
     });
 
     it('should calculate if it can go to the next step', () => {
