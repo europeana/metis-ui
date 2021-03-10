@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
-import { DataPollingComponent } from '@shared';
+import { DataPollingComponent } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetInfo,

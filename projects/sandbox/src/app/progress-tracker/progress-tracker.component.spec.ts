@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDatasetInfo } from '../_mocked';
 import { DatasetInfoStatus, ProgressByStep, StepStatus } from '../_models';
-import { MockModalConfirmService, ModalConfirmService } from '@shared';
+import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
 describe('ProgressTrackerComponent', () => {
   let component: ProgressTrackerComponent;

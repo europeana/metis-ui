@@ -21,7 +21,7 @@ import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { switchMap } from 'rxjs/operators';
 
-import { SubscriptionManager } from '@shared';
+import { SubscriptionManager } from 'shared';
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';

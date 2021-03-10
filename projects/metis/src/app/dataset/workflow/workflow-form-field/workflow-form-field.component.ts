@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { ProtocolType } from '@shared';
+import { ProtocolType } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
 
 @Component({

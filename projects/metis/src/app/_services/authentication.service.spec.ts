@@ -2,7 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockHttp } from '@shared';
+import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { DashboardComponent } from '../dashboard';
 import { MockErrorService, mockUser } from '../_mocked';

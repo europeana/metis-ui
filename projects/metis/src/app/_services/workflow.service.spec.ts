@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { gatherValuesAsync, getUnsubscribable, MockHttp } from '@shared';
+import { gatherValuesAsync, getUnsubscribable, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   MockAuthenticationService,

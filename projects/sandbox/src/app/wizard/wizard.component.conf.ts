@@ -1,7 +1,7 @@
 /** Defines steps for upload
  */
 import { FormControl, Validators } from '@angular/forms';
-import { ProtocolType } from '@shared';
+import { ProtocolType } from 'shared';
 import { WizardStep, WizardStepType } from '../_models';
 
 const countries = ['Greece', 'Hungary', 'Italy'];

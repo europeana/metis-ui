@@ -1,5 +1,5 @@
 import { async, TestBed } from '@angular/core/testing';
-import { getCodeMirrorEditors } from '@shared';
+import { getCodeMirrorEditors } from 'shared';
 import { EditorPrefService } from '.';
 
 describe('editor pref service', () => {

@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
-import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from '@shared';
+import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { environment } from '../environments/environment';
 import { CancellationRequest } from './_models';
 import { AuthenticationService, ErrorService, WorkflowService } from './_services';

@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { SubscriptionManager } from '@shared';
+import { SubscriptionManager } from 'shared';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   Dataset,

@@ -6,7 +6,7 @@ import {
   StepStatus,
   StepStatusClass
 } from '../_models';
-import { ModalConfirmService, SubscriptionManager } from '@shared';
+import { ModalConfirmService, SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 
 @Component({

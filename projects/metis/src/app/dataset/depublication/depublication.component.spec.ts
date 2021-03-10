@@ -8,7 +8,7 @@ import {
   tick
 } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MockModalConfirmService, ModalConfirmService } from '@shared';
+import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
   MockDepublicationService,

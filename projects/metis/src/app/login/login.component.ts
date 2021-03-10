@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataPollingComponent } from '@shared';
+import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification } from '../_models';

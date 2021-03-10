@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MockHttp } from '@shared';
+import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockDataset, MockErrorService, mockXmlSamples, mockXslt } from '../_mocked';
 import { DatasetsService, ErrorService } from '.';
