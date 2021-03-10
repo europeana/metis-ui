@@ -2,7 +2,7 @@
   <h2
     class="progress-title"
     title="({{ progressData.status }})"
-    [ngClass]="{ 'complete': isComplete() }"
+    [ngClass]="{ complete: isComplete() }"
     i18n="progress title"
   >
     Dataset {{ datasetId }}
@@ -28,7 +28,7 @@
       *ngFor="let item of progressData['progress-by-step']"
       class="orb-status labelled {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"
     ></span>
-    <span class="orb-status labelled orb-spinner" [ngClass]="{ 'showing': isLoading }"></span>
+    <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading }"></span>
   </div>
   <lib-modal
     id="{{ modalIdErrors }}"
