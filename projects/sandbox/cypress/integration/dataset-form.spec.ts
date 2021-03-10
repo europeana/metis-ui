@@ -40,11 +40,23 @@ context('Sandbox', () => {
       cy.get(selectorInputName).should('be.visible');
     });
 
-    const navigateSteps = (fnFwd: () => void, fnBack: () => void): void => {
+    const fillUploadForm = (): void => {
+      cy.get(selectorInputName).type('Test-dataset');
+      cy.get(selectorBtnNext).click();
+      cy.get(selectorInputCountry).select('Greece');
+      cy.get(selectorInputLanguage).select('Greek');
+      cy.get(selectorBtnNext).click();
+      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+    };
+
+    const navigateSteps = (
+      fnFwd: () => void,
+      fnBack: () => void,
+      includeProgress = false
+    ): void => {
       // Forwards
       cy.get(selectorBtnPrevious).should('not.be.visible');
       cy.get(selectorBtnNext).should('be.visible');
-
       cy.get(selectorInputName).should('be.visible');
       cy.get(selectorInputCountry).should('not.be.visible');
       cy.get(selectorInputLanguage).should('not.be.visible');
@@ -58,21 +70,25 @@ context('Sandbox', () => {
 
       fnFwd();
 
+      const notPrefixNext = includeProgress ? '' : 'not.';
+      cy.get(selectorBtnNext).should(`${notPrefixNext}be.visible`);
       cy.get(selectorInputCountry).should('not.be.visible');
       cy.get(selectorInputLanguage).should('not.be.visible');
       cy.get(selectorInputZipFile).should('be.visible');
 
-      fnFwd();
+      if (includeProgress) {
+        fnFwd();
 
-      cy.get(selectorInputZipFile).should('not.be.visible');
-      cy.get(selectorBtnNext).should('not.be.visible');
+        cy.get(selectorInputZipFile).should('not.be.visible');
+        cy.get(selectorBtnNext).should('not.be.visible');
 
-      // Backwards
+        // Backwards
 
-      fnBack();
+        fnBack();
 
-      cy.get(selectorBtnNext).should('be.visible');
-      cy.get(selectorInputZipFile).should('be.visible');
+        cy.get(selectorBtnNext).should('be.visible');
+        cy.get(selectorInputZipFile).should('be.visible');
+      }
 
       fnBack();
 
@@ -143,15 +159,33 @@ context('Sandbox', () => {
     });
 
     it('should track the progress on submit', () => {
-      cy.get(selectorInputName).type('Test-dataset');
-      cy.get(selectorBtnNext).click();
-      cy.get(selectorInputCountry).select('Greece');
-      cy.get(selectorInputLanguage).select('Greek');
-      cy.get(selectorBtnNext).click();
-      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
       cy.get(selectorProgress).should('have.length', 0);
+      fillUploadForm();
       cy.get(selectorBtnSubmit).click();
       cy.get(selectorProgress).should('have.length', 1);
+    });
+
+    it('should allow full navigation of both forms after submit', () => {
+      fillUploadForm();
+      cy.get(selectorBtnSubmit).click();
+      cy.get(`.wizard-status li:nth-child(1) a`).click();
+      navigateSteps(
+        () => {
+          cy.get(selectorBtnNext).click();
+        },
+        () => {
+          cy.get(selectorBtnPrevious).click();
+        },
+        true
+      );
+    });
+
+    it('should re-enable the disabled form after submit', () => {
+      fillUploadForm();
+      cy.get(selectorBtnSubmit).click();
+      cy.get(selectorInputName).should('be.disabled');
+      cy.get(selectorLinkDatasetForm).click();
+      cy.get(selectorInputName).should('not.be.disabled');
     });
   });
 });

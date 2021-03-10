@@ -13,7 +13,7 @@ import {
   WizardStepType
 } from '../_models';
 import { SandboxService } from '../_services';
-import { ProtocolType } from '@shared';
+import { ProtocolType } from 'shared';
 
 export interface ValidatorArrayHash {
   [key: string]: Array<Validators>;
@@ -87,7 +87,7 @@ export class WizardComponent extends DataPollingComponent {
 
   /**
    * getFormGroup
-   * Template utility: returns the correct form for the given WizardStep
+   * Returns the correct form for the given WizardStep
    *
    * @param { WizardStep } stepConf - the config to evaluate
    * @returns FormGroup
@@ -137,6 +137,20 @@ export class WizardComponent extends DataPollingComponent {
     }
     this.orbsHidden = false;
     this.currentStepIndex = stepIndex;
+  }
+
+  /**
+   * canGoToNext
+   * Template utility: returns if
+   *
+   * @returns FormGroup
+   **/
+  canGoToNext(): boolean {
+    if (this.currentStepIndex == 2) {
+      return this.formUpload.disabled;
+    } else {
+      return this.currentStepIndex < this.wizardConf.length - 1;
+    }
   }
 
   /**

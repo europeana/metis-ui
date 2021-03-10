@@ -9,7 +9,7 @@ import { SandboxService } from '../_services';
 import { WizardComponent } from './wizard.component';
 import { wizardConf } from '.';
 
-describe('WizardComponent', () => {
+fdescribe('WizardComponent', () => {
   let component: WizardComponent;
   let fixture: ComponentFixture<WizardComponent>;
   const testFile = new File([], 'file.zip', { type: 'zip' });
@@ -154,22 +154,25 @@ describe('WizardComponent', () => {
     }));
 
     it('should get if the step is submittable', () => {
-      const conf = [
-        {
-          stepType: WizardStepType.SET_NAME,
-          fields: [
-            {
-              name: 'name',
-              validators: [Validators.required]
-            }
-          ]
-        }
-      ];
-      component._wizardConf = conf;
+      const conf = {
+        stepType: WizardStepType.SET_NAME,
+        fields: [
+          {
+            name: 'name',
+            validators: [Validators.required]
+          }
+        ]
+      };
+      component._wizardConf = [conf];
       component.buildForms();
       expect(component.getStepIsSubmittable(component.wizardConf[0])).toEqual(false);
       const ctrl = component.formUpload.get('name') as FormControl;
       ctrl.setValue('name');
+      expect(component.getStepIsSubmittable(component.wizardConf[0])).toEqual(true);
+
+      delete conf.fields;
+      component._wizardConf = [conf];
+      component.buildForms();
       expect(component.getStepIsSubmittable(component.wizardConf[0])).toEqual(true);
     });
 
@@ -187,6 +190,15 @@ describe('WizardComponent', () => {
       form.disable();
       component.setStep(0, true);
       expect(form.enable).toHaveBeenCalled();
+    });
+
+    it('should calculate if it can go to the next step', () => {
+      component.setStep(0);
+      expect(component.canGoToNext()).toBeTruthy();
+      component.setStep(1);
+      expect(component.canGoToNext()).toBeTruthy();
+      component.setStep(2);
+      expect(component.canGoToNext()).toBeFalsy();
     });
 
     it('should get the index of the progress track step', () => {
