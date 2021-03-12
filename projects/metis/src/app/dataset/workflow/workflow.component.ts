@@ -11,7 +11,7 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
-import { SubscriptionManager } from '@shared';
+import { SubscriptionManager } from 'shared';
 import {
   Dataset,
   DragType,

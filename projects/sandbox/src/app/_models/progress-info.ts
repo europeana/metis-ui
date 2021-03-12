@@ -24,22 +24,31 @@ export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
 
 /** Raw data **/
 
-export enum Progress {
-  'fail' = 'fail',
-  'warn' = 'warn',
-  'success' = 'success'
-}
-
 export interface ProgressByStep {
   fail: number;
   warn: number;
   success: number;
   step: StepStatus;
   total: number;
+  errors?: Array<ProgressError>;
+}
+
+export interface ProgressError {
+  type: string;
+  message: string;
+  records: Array<string>;
+}
+
+export enum DatasetInfoStatus {
+  'COMPLETED' = 'completed',
+  'IN_PROGRESS' = 'in progress'
 }
 
 export interface DatasetInfo {
+  status: DatasetInfoStatus;
   'processed-records': number;
   'progress-by-step': Array<ProgressByStep>;
   'total-records': number;
+  'portal-preview'?: string;
+  'portal-publish'?: string;
 }

@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ModalConfirmService } from '../../_services';
-import { createMockPipe } from '../../_mocked';
+import { ModalConfirmService } from '../_services';
 import { ModalConfirmComponent } from '.';
 
 describe('ModalConfirmComponent', () => {
@@ -10,7 +9,7 @@ describe('ModalConfirmComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ModalConfirmComponent, createMockPipe('translate')],
+      declarations: [ModalConfirmComponent],
       providers: [ModalConfirmService]
     }).compileComponents();
     fixture = TestBed.createComponent(ModalConfirmComponent);

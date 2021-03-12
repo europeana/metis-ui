@@ -575,7 +575,7 @@ export class MockWorkflowService {
   }
 
   cancelThisWorkflow(): Observable<void> {
-    return of(undefined);
+    return of(void 0);
   }
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {
@@ -734,7 +734,7 @@ export class MockWorkflowService {
   }
 
   getWorkflowCancelledBy(): Observable<string | undefined> {
-    return of(undefined);
+    return of(void 0);
   }
 }
 

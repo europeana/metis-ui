@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataPollingComponent } from '@shared';
+import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification } from '../_models';
@@ -41,8 +41,8 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.documentTitleService.setTitle(this.translate.instant('signIn'), true);
     this.msgBadCredentials = this.translate.instant('msgBadCredentials');
     this.msgSigninFailed = this.translate.instant('msgSigninFailed');
-    this.buildForm();
 
+    this.buildForm();
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       (): Observable<boolean> => {

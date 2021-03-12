@@ -1,7 +1,6 @@
 import { Observable, of, throwError } from 'rxjs';
-
+import { gatherError, gatherValues } from 'shared';
 import { KeyedCache, SingleCache } from './cache';
-import { gatherError, gatherValues } from './test-helpers';
 
 function createCacheFn(): () => Observable<number> {
   let i = 1;

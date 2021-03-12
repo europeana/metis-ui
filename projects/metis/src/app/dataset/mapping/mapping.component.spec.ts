@@ -1,9 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { getCodeMirrorEditors } from '../../_helpers/test-helpers';
+import { getCodeMirrorEditors } from 'shared';
 import {
   createMockPipe,
   mockDataset,
@@ -40,7 +40,7 @@ describe('MappingComponent', () => {
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: ErrorService, useClass: MockErrorService }
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };
 

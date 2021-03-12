@@ -14,7 +14,7 @@ import { EditorConfiguration } from 'codemirror';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
-import { SubscriptionManager } from '@shared';
+import { SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
 import {
   Dataset,

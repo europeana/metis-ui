@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": ["node"],
     "paths": {
-      "@shared": ["../../../dist/shared", "../../../dist/shared/shared"],
+      "shared": ["../../../dist/shared", "../../../dist/shared/shared"],
       "@tools": ["../../../tools/test-data-server/test-data-server"]
     }
   },

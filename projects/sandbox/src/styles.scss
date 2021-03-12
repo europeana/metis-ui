@@ -22,7 +22,26 @@ $textcolour_highlight: $accent;
 @import 'shared-styles/assets/sass/scss/base/links';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+@import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
+
+a {
+  color: $eu-jade-dark;
+  &.link-internal {
+    font-weight: bold;
+  }
+  &:hover {
+    color: $eu-jade-darkest;
+  }
+  &:active {
+    color: $eu-light-orange;
+  }
+}
+
+.form-group {
+  color: $eu-jade-dark;
+  margin: 0 auto 1rem;
+}
 
 .wizard input[type='file'] {
   box-shadow: none;

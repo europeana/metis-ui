@@ -4,7 +4,7 @@
     "outDir": "../dist/out-tsc",
     "baseUrl": "./",
     "paths": {
-      "@shared": ["../../../dist/shared", "../../../dist/shared/shared"]
+      "shared": ["../../../dist/shared", "../../../dist/shared/shared"]
     }
   },
   "files": ["main.ts", "polyfills.ts"],

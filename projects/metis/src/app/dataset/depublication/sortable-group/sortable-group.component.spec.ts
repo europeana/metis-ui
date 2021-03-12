@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, QueryList, TemplateRef } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, QueryList, TemplateRef } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SortDirection } from '../../../_models';
 import { SortableHeaderComponent } from '../sortable-header';
@@ -11,7 +11,7 @@ describe('SortableGroupComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [SortableGroupComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));
 
@@ -55,6 +55,14 @@ describe('SortableGroupComponent', () => {
 
   it('should emit events on select', () => {
     spyOn(component.onSelectAll, 'emit').and.callThrough();
+    component.selectAllHandler(true);
+    expect(component.onSelectAll.emit).toHaveBeenCalledWith(true);
+    component.selectAllHandler(false);
+    expect(component.onSelectAll.emit).toHaveBeenCalledWith(false);
+  });
+
+  it('should emit events on select', () => {
+    spyOn(component.onSelectAll, 'emit');
     component.selectAllHandler(true);
     expect(component.onSelectAll.emit).toHaveBeenCalledWith(true);
     component.selectAllHandler(false);

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
-import { SubscriptionManager } from '@shared';
+import { SubscriptionManager } from 'shared';
 import { Dataset, httpErrorNotification, Notification, Statistics } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 

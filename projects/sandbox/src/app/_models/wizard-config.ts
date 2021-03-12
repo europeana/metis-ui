@@ -1,24 +1,17 @@
-import { Validators } from '@angular/forms';
+type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' | 'unshift';
 
-export enum WizardFieldType {
-  select = 'select',
-  text = 'text',
-  progress = 'progress',
-  harvest = 'harvest'
-}
+export type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> = Pick<
+  TObj,
+  Exclude<keyof TObj, ArrayLengthMutationKeys>
+> & {
+  readonly length: L;
+  [I: number]: T;
+  [Symbol.iterator]: () => IterableIterator<T>;
+};
 
-interface FieldOption {
+export interface FieldOption {
   code: string;
   name: string;
-}
-
-export interface WizardField {
-  name: string;
-  label?: string;
-  type?: WizardFieldType;
-  validators?: Array<Validators>;
-  options?: Array<string> | Array<FieldOption>;
-  defaultValue?: string;
 }
 
 export enum WizardStepType {
@@ -30,5 +23,5 @@ export enum WizardStepType {
 
 export interface WizardStep {
   stepType: WizardStepType;
-  fields?: Array<WizardField>;
+  fields: Array<string>;
 }

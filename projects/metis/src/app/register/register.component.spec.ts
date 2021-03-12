@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { RegisterComponent } from '.';
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
-  let submitBtn;
+  let submitBtn: HTMLInputElement;
   let router: Router;
 
   beforeEach(async(() => {
@@ -29,7 +29,7 @@ describe('RegisterComponent', () => {
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: TranslateService, useClass: MockTranslateService }
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     router = TestBed.inject(Router);
   }));
@@ -40,7 +40,7 @@ describe('RegisterComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should be created', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
@@ -75,8 +75,8 @@ describe('RegisterComponent', () => {
     tick(3000);
     tick(1);
     fixture.detectChanges();
-    expect(submitBtn.disabled).toBe(false);
-    expect(component.loading).toBe(false);
+    expect(submitBtn.disabled).toBeFalsy();
+    expect(component.loading).toBeFalsy();
     expect(router.navigate).toHaveBeenCalledWith(['/signin']);
   }));
 

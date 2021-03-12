@@ -1,17 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
+import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
-import { SubscriptionManager } from '@shared';
+import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { environment } from '../environments/environment';
 import { CancellationRequest } from './_models';
-import { ModalConfirmComponent } from './shared/modal-confirm';
-import {
-  AuthenticationService,
-  ErrorService,
-  ModalConfirmService,
-  WorkflowService
-} from './_services';
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 @Component({
   selector: 'app-root',
@@ -36,16 +31,14 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     super();
   }
 
-  /** ngOnInit
-  /* init for this component
-  /* watch router events
-  /* check if user is logged in
-  /* add a body class
-  /* and margins
-  */
+  /**
+   * ngOnInit
+   * - register modalConfirm
+   * - subscribe to workflow cancellations
+   * - subscribe to router events
+   **/
   public ngOnInit(): void {
     this.modalConfirms.add(this.modalConfirm);
-
     this.subs.push(
       this.workflows.promptCancelWorkflow
         .pipe(
@@ -56,7 +49,8 @@ export class AppComponent extends SubscriptionManager implements OnInit {
             this.cancellationRequest = cancellationRequest;
           }),
           switchMap(() => {
-            return this.modalConfirms.open(this.modalConfirmId);
+            const modal = this.modalConfirms.open(this.modalConfirmId);
+            return modal ? modal : of(false);
           })
         )
         .subscribe((response: boolean) => {
@@ -65,27 +59,30 @@ export class AppComponent extends SubscriptionManager implements OnInit {
           }
         })
     );
+    this.subs.push(this.router.events.subscribe(this.handleRouterEvent.bind(this)));
+  }
 
-    this.subs.push(
-      this.router.events.subscribe((event: Event) => {
-        const url: string | undefined = (event as RouterEvent).url;
-        if (!url) {
-          return;
-        }
-        if (this.router.isActive(url, false)) {
-          this.loggedIn = this.authentication.validatedUser();
-
-          this.bodyClass = url.split('/')[1];
-          if (url === '/') {
-            this.bodyClass = 'home';
-          }
-
-          if ((url === '/' || url === '/home') && this.loggedIn) {
-            this.router.navigate([environment.afterLoginGoto]);
-          }
-        }
-      })
-    );
+  /**
+   * handleRouterEvent
+   * conditionally sets this.bodyClass or calls router
+   *
+   * @param { Event } event - the router event
+   **/
+  handleRouterEvent(event: Event): void {
+    const url: string | undefined = (event as RouterEvent).url;
+    if (!url) {
+      return;
+    }
+    if (this.router.isActive(url, false)) {
+      this.loggedIn = this.authentication.validatedUser();
+      this.bodyClass = url.split('/')[1];
+      if (url === '/') {
+        this.bodyClass = 'home';
+      }
+      if ((url === '/' || url === '/home') && this.loggedIn) {
+        this.router.navigate([environment.afterLoginGoto]);
+      }
+    }
   }
 
   /** cancelWorkflow

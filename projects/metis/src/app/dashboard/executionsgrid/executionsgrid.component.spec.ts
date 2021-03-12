@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, QueryList } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
@@ -31,7 +31,7 @@ describe('ExecutionsgridComponent', () => {
         createMockPipe('renameWorkflow'),
         createMockPipe('translate')
       ],
-      schemas: [NO_ERRORS_SCHEMA],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
         {

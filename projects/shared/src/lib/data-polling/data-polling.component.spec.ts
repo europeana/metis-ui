@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { RouterModule } from '@angular/router';
 import { DataPollingComponent, PollingSubjectAccesor } from './';
 
 describe('DataPollingComponent', () => {
@@ -21,7 +20,6 @@ describe('DataPollingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterModule.forRoot([])],
       declarations: [DataPollingComponent]
     }).compileComponents();
   }));

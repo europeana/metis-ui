@@ -3,7 +3,7 @@
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SubscriptionManager } from '@shared';
+import { SubscriptionManager } from 'shared';
 import { AuthenticationService } from '../../_services';
 
 @Component({

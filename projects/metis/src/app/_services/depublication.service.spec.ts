@@ -5,10 +5,9 @@ import {
   TestRequest
 } from '@angular/common/http/testing';
 import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MockHttp, MockHttpRequest } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { MockHttp, MockHttpRequest } from '../_helpers/test-helpers';
 import { of } from 'rxjs';
-
 import {
   MockErrorService,
   mockPublicationInfoMoreResults,

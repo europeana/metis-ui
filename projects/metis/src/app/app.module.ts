@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { ClickOutsideModule } from 'ng-click-outside';
-import { SharedModule } from '@shared';
+import { SharedModule } from 'shared';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
@@ -55,7 +55,6 @@ import { AppRoutingModule } from './routing';
 import {
   HeaderComponent,
   LoadingButtonComponent,
-  ModalConfirmComponent,
   NotificationComponent,
   PasswordCheckComponent,
   SearchComponent,
@@ -69,7 +68,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     ActionbarComponent,
     AppComponent,
     CollapsibleDirective,
-    ModalConfirmComponent,
     RegisterComponent,
     LoginComponent,
     ProfileComponent,

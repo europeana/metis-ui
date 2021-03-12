@@ -26,9 +26,9 @@
     "lint": "npm run lint-metis && npm run lint-sandbox && npm run lint-shared",
     "lint:ci": "npm run lint:ci-metis && npm run lint:ci-sandbox && npm run lint:ci-shared",
     "fix": "npm run prettier && npm run lint",
-    "test:dev-metis": "ng test metis",
-    "test:dev-sandbox": "ng test sandbox",
-    "test:dev-shared": "ng test shared",
+    "test:dev-metis": "ng test metis  --code-coverage",
+    "test:dev-sandbox": "ng test sandbox  --code-coverage",
+    "test:dev-shared": "ng test shared  --code-coverage",
     "test:dev": "npm run test:dev-shared && npm run test:dev-sandbox && npm run test:dev-metis",
     "test": "npm run prettier:ci && npm run lint:ci && npm run build-shared && npm run template-check && npm run test:e2e",
     "test:ci-any": "ng test ${npm_config_project} --progress=false --watch=false --code-coverage --source-map=false",
@@ -63,6 +63,7 @@
     "dist-any": "ng build ${npm_config_project} --progress=false --prod && npm run dist-copy-conf --project=${npm_config_project} && cp -R projects/${npm_config_project}/dist/${npm_config_project}/. dist",
     "dist-metis": "npm run dist-any --project=metis",
     "dist-sandbox": "npm run dist-any --project=sandbox",
+    "dist-shared": "ng build --project=shared --prod && mv dist/shared projects/shared/dist",
     "dist": "npm run dist-metis",
     "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
     "lite": "test -d ./dist && lite-server --baseDir=./dist || echo '(run dist first)'"
@@ -86,6 +87,7 @@
     "lodash-es": "^4.17.20",
     "ng-click-outside": "^7.0.1",
     "rxjs": "^6.6.3",
+    "shared": "file:projects/shared",
     "tslib": "^2.0.0",
     "vkbeautify": "^0.99.3",
     "zone.js": "~0.10.2"

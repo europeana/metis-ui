@@ -67,8 +67,13 @@
       padding: 0.8rem 2rem;
     }
 
-    button:first-child {
+    button:first-child:not(:last-child) {
       margin-right: 1rem;
+    }
+
+    button:first-child:last-child {
+      display: block;
+      margin: 1.5em auto 0 auto;
     }
 
     strong {
