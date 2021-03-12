@@ -90,9 +90,6 @@ export class WizardComponent extends DataPollingComponent {
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
       uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-      setSpec: [''],
-      metadataFormat: [''],
-      url: [''],
       dataset: ['', [Validators.required]]
     });
 
