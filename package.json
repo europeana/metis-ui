@@ -87,7 +87,6 @@
     "lodash-es": "^4.17.20",
     "ng-click-outside": "^7.0.1",
     "rxjs": "^6.6.3",
-    "shared": "file:projects/shared",
     "tslib": "^2.0.0",
     "vkbeautify": "^0.99.3",
     "zone.js": "~0.10.2"
