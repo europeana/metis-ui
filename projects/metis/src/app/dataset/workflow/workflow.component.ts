@@ -8,7 +8,7 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
@@ -180,12 +180,39 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     });
   }
 
+  /**
+   * addIncrementalHarvestingFieldIfAvailable
+   *
+   * calls servive methos to see if incremental harvesting is allowed
+   * and adds a field if so
+   *
+   * @param { Workflow } - workflowData
+   **/
+  addIncrementalHarvestingFieldIfAvailable(workflowData: Workflow): void {
+    this.subs.push(
+      this.workflows
+        .getIsIncrementalHarvestAllowed(workflowData.datasetId)
+        .subscribe((canIncrementHarvest) => {
+          if (canIncrementHarvest) {
+            const incrementalDefault =
+              workflowData.metisPluginsMetadata.findIndex((plugin) => {
+                return plugin.pluginType === PluginType.OAIPMH_HARVEST && plugin.incrementalHarvest;
+              }) > -1;
+
+            this.workflowForm.addControl(
+              ParameterFieldName.incrementalHarvest,
+              new FormControl(incrementalDefault, [])
+            );
+          }
+        })
+    );
+  }
+
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
   */
   buildForm(): void {
     const formGroupConf = {} as { [key: string]: Array<string> };
-
     this.fieldConf.forEach((confItem) => {
       formGroupConf[confItem.name] = [''];
       if (confItem.parameterFields) {
@@ -400,6 +427,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     this.clearForm();
     this.extractWorkflowParamsAlways(workflow);
     this.extractWorkflowParamsEnabled(workflow);
+    this.addIncrementalHarvestingFieldIfAvailable(workflow);
   }
 
   /** reset
@@ -451,6 +479,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         if (conf.name === 'pluginHARVEST') {
           const paramsOAIPMH: ParameterField = [
             ParameterFieldName.harvestUrl,
+            ParameterFieldName.incrementalHarvest,
             ParameterFieldName.metadataFormat,
             ParameterFieldName.setSpec
           ];

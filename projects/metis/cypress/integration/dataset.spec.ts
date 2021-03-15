@@ -74,12 +74,15 @@ context('metis-ui', () => {
   });
 
   describe('dataset workflow', () => {
-    afterEach(() => {
-      cleanupUser();
-    });
+    const fieldsOnlyHTTP = ['#url'];
+    const fieldsOnlyOAI = ['#incremental-harvest', '#harvest-url', '#setspec', '#metadata-format'];
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
+    });
+
+    afterEach(() => {
+      cleanupUser();
     });
 
     it('should show the workflow', () => {
@@ -94,7 +97,35 @@ context('metis-ui', () => {
       checkPluginStatus('Publish', false);
     });
 
-    // TODO: check and update fields
+    describe('HTTP Harvest', () => {
+      beforeEach(() => {
+        setupDatasetPage('workflow', 1);
+      });
+
+      it('should show the appropriate fields', () => {
+        fieldsOnlyHTTP.forEach((selector: string) => {
+          cy.get(selector).should('have.length', 1);
+        });
+        fieldsOnlyOAI.forEach((selector: string) => {
+          cy.get(selector).should('have.length', 0);
+        });
+      });
+    });
+
+    describe('OAI Harvest', () => {
+      beforeEach(() => {
+        setupDatasetPage('workflow', 0);
+      });
+
+      it('should show the appropriate fields', () => {
+        fieldsOnlyOAI.forEach((selector: string) => {
+          cy.get(selector).should('have.length', 1);
+        });
+        fieldsOnlyHTTP.forEach((selector: string) => {
+          cy.get(selector).should('have.length', 0);
+        });
+      });
+    });
   });
   // TODO: mapping
 

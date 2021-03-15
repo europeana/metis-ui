@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ProtocolFieldSetComponent } from '.';
 import { ProtocolType } from '../../_models';
 
@@ -33,7 +33,7 @@ describe('ProtocolFieldSetComponent', () => {
       url: urlHarvest2,
       setSpec: spec,
       metadataFormat: null,
-      fileFormName: null
+      fileField: null
     });
     component.protocolSwitchField = 'pluginType';
     fixture.detectChanges();
@@ -61,5 +61,42 @@ describe('ProtocolFieldSetComponent', () => {
     expect(component.isProtocolOAIPMH()).toBeTruthy();
     component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
     expect(component.isProtocolOAIPMH()).toBeFalsy();
+  });
+
+  it('should report if the protocol is disabled', () => {
+    expect(component.isDisabled(ProtocolType.OAIPMH_HARVEST)).toBeFalsy();
+    component.disabledProtocols = [ProtocolType.OAIPMH_HARVEST];
+    expect(component.isDisabled(ProtocolType.OAIPMH_HARVEST)).toBeTruthy();
+  });
+
+  it('should update the UI', () => {
+    spyOn(component, 'setFormValidators').and.callThrough();
+
+    const getTestFile = (fileType: ProtocolType): File => {
+      return new File([], 'name', { type: fileType });
+    };
+
+    const setProtocol = (protocol: ProtocolType): void => {
+      (component.form.get(component.protocolSwitchField) as FormControl).setValue(protocol);
+    };
+
+    expect(component.form.valid).toBeTruthy();
+
+    setProtocol(ProtocolType.OAIPMH_HARVEST);
+    component.updateRequired();
+
+    expect(component.form.valid).toBeFalsy();
+
+    setProtocol(ProtocolType.ZIP_UPLOAD);
+    (component.form.get('fileField') as FormControl).setValue(getTestFile(component.ZIP));
+    component.updateRequired();
+
+    expect(component.form.valid).toBeTruthy();
+
+    (component.form.get('url') as FormControl).setValue('');
+    setProtocol(ProtocolType.HTTP_HARVEST);
+    component.updateRequired();
+
+    expect(component.form.valid).toBeFalsy();
   });
 });

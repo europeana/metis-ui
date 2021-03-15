@@ -35,6 +35,7 @@ export type WorkflowFieldDataName =
 export enum ParameterFieldName {
   customXslt = 'customXslt',
   harvestUrl = 'harvestUrl',
+  incrementalHarvest = 'incrementalHarvest',
   metadataFormat = 'metadataFormat',
   performSampling = 'performSampling',
   pluginType = 'pluginType',
@@ -58,6 +59,10 @@ export interface WorkflowFieldData extends WorkflowFieldDataBase {
 
 export interface WorkflowFieldDataParameterised extends WorkflowFieldData {
   parameterFields: ParameterField;
+}
+
+export interface IncrementalHarvestingAllowedResult {
+  incrementalHarvestingAllowed: boolean;
 }
 
 const parameterFieldPresets = Object.assign(
@@ -97,19 +102,21 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
       return PluginType.DEPUBLISH !== pType;
     })
     .map((pType: PluginType) => {
-      return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].indexOf(pType) > -1
-        ? {
-            label: '',
-            name: '' as WorkflowFieldDataName,
-            parameterFields: null,
-            dragType: DragType.dragNone
-          }
-        : {
-            label: PluginType[pType] as string,
-            name: ('plugin' + pType) as WorkflowFieldDataName,
-            parameterFields: parameterFieldPresets[pType],
-            dragType: pType === 'LINK_CHECKING' ? DragType.dragSource : DragType.dragNone
-          };
+      if ([PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(pType)) {
+        return {
+          label: '',
+          name: '' as WorkflowFieldDataName,
+          parameterFields: null,
+          dragType: DragType.dragNone
+        };
+      } else {
+        return {
+          label: PluginType[pType] as string,
+          name: ('plugin' + pType) as WorkflowFieldDataName,
+          parameterFields: parameterFieldPresets[pType],
+          dragType: pType === 'LINK_CHECKING' ? DragType.dragSource : DragType.dragNone
+        };
+      }
     })
     .filter((fData) => fData.label.length > 0)
 );

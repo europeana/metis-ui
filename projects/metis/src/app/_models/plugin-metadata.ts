@@ -27,6 +27,7 @@ export interface OAIHarvestPluginMetadata extends HarvestPluginMetadataBase {
   pluginType: 'OAIPMH_HARVEST';
   setSpec: string;
   metadataFormat: string;
+  incrementalHarvest?: boolean;
 }
 
 // Allow OAIHarvestPluginMetadata to have the property 'harvestUrl' temporarily
