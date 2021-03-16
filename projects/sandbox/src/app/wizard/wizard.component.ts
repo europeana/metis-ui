@@ -16,10 +16,6 @@ import {
 import { SandboxService } from '../_services';
 import { ProtocolType } from 'shared';
 
-export interface ValidatorArrayHash {
-  [key: string]: Array<Validators>;
-}
-
 @Component({
   selector: 'sb-wizard',
   templateUrl: './wizard.component.html',
@@ -52,7 +48,7 @@ export class WizardComponent extends DataPollingComponent {
     },
     {
       stepType: WizardStepType.PROTOCOL_SELECT,
-      fields: ['uploadProtocol', 'harvestUrl', 'setSpec', 'metadataFormat', 'url', 'dataset']
+      fields: ['uploadProtocol', 'dataset']
     },
     {
       stepType: WizardStepType.PROGRESS_TRACK,
@@ -109,9 +105,12 @@ export class WizardComponent extends DataPollingComponent {
    * @returns null or a code-keyed boolean
    **/
   validatorWhitespace(control: FormControl): { [key: string]: boolean } | null {
-    const isWhitespace = control.value.length > 0 && control.value.trim().length === 0;
-    if (isWhitespace) {
-      return { invalid: true };
+    const val = control.value;
+    if (val) {
+      const isWhitespace = val.length > 0 && val.trim().length === 0;
+      if (isWhitespace) {
+        return { invalid: true };
+      }
     }
     return null;
   }
@@ -190,7 +189,7 @@ export class WizardComponent extends DataPollingComponent {
    * @returns boolean
    **/
   canGoToNext(): boolean {
-    if (this.currentStepIndex == 2) {
+    if (this.currentStepIndex === 2) {
       return this.formUpload.disabled;
     } else {
       return this.currentStepIndex < this.wizardConf.length - 1;

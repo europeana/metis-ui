@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
 import { ProtocolType } from '../../_models';
-
 import { SubscriptionManager } from '../../subscription-manager';
 
 @Component({
@@ -28,33 +27,43 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
     this.updateRequired();
   }
 
-  isDisabled(protocol: ProtocolType): boolean {
-    return this.disabledProtocols.indexOf(protocol) > -1;
+  /** isProtocolDisabled
+  /* Template utility
+  /* @param { ProtocolType } - protocol
+  /* @returns true if form is disabled or the protocol is in disabledProtocols array
+  */
+  isProtocolDisabled(protocol: ProtocolType): boolean {
+    return this.form.disabled || this.disabledProtocols.includes(protocol);
   }
 
-  isVisible(protocol: ProtocolType): boolean {
-    return this.visibleProtocols.indexOf(protocol) > -1;
+  /** isProtocolVisible
+  /* Template utility
+  /* @param { ProtocolType } - protocol
+  /* @returns true if protocol is in visibleProtocols array
+  */
+  isProtocolVisible(protocol: ProtocolType): boolean {
+    return this.visibleProtocols.includes(protocol);
   }
 
   /** isProtocolHTTP
   /* return true if pluginType is HTTP_HARVEST
   */
   isProtocolHTTP(): boolean {
-    return this.form!.value[this.protocolSwitchField] === this.HTTP;
+    return this.form.value[this.protocolSwitchField] === this.HTTP;
   }
 
   /** isProtocolOAIPMH
   /* return true if pluginType is OAIPMH_HARVEST
   */
   isProtocolOAIPMH(): boolean {
-    return this.form!.value[this.protocolSwitchField] === this.OAIPMH;
+    return this.form.value[this.protocolSwitchField] === this.OAIPMH;
   }
 
   /** isProtocolFile
   /* return true if pluginType is FILE
   */
   isProtocolFile(): boolean {
-    return this.form!.value[this.protocolSwitchField] === this.ZIP;
+    return this.form.value[this.protocolSwitchField] === this.ZIP;
   }
 
   /** clearFormValidators

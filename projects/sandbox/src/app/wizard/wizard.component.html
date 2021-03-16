@@ -64,7 +64,7 @@
       <div *ngIf="currentStepIndex === 0" class="form-group">
         <label for="name" i18n="name label">Name</label>
         <input id="name" formControlName="name" autocomplete="off" />
-        <span class="field-errors" *ngIf="formUpload.get('name')?.errors?.invalid; let errors">
+        <span class="field-errors" *ngIf="formUpload.get('name')?.errors?.invalid">
           <span class="errors" i18n="Field error@@invalidDatasetName"
             >Please provide a valid name</span
           >
@@ -113,7 +113,8 @@
           <input formControlName="idToTrack" data-e2e="idToTrack" autofocus autocomplete="off" />
           <button
             type="submit"
-            [disabled]="!formProgress.value.idToTrack"
+            class="submit"
+            [disabled]="!formProgress.valid"
             data-e2e="submitProgress"
             i18n="track button|submits the track id button@@submitTrackId"
           >
@@ -143,9 +144,9 @@
         data-e2e="submit-upload"
         class="submit"
         (click)="onSubmitDataset()"
-        i18n="create button|uploads the dataset button@@submitDataset"
+        i18n="Submit button|uploads the dataset button@@submitDataset"
       >
-        Create
+        Submit
       </button>
 
       <div [ngClass]="{ hidden: orbsHidden }">

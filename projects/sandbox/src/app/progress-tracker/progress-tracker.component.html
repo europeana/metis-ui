@@ -7,16 +7,14 @@
   >
     Dataset {{ datasetId }}
   </h2>
-  <ul *ngIf="hasLinks() && getLinkPrefixes(); let prefixes" class="portal-links">
+  <ul *ngIf="hasLinks()" class="portal-links">
     <li *ngIf="progressData['portal-preview']; let link">
-      <a href="{{ prefixes.viewPreview }}/{{ link }}" i18n="progress link link@@progressLinkPreview"
+      <a href="{{ link }}" i18n="progress link link@@progressLinkPreview" target="_blank"
         >Preview</a
       >
     </li>
     <li *ngIf="progressData['portal-publish']; let link">
-      <a
-        href="{{ prefixes.viewCollections }}/{{ link }}"
-        i18n="progress link link@@progressLinkPublish"
+      <a href="{{ link }}" i18n="progress link link@@progressLinkPublish" target="_blank"
         >Publish</a
       >
     </li>

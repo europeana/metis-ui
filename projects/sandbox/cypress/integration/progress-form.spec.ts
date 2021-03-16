@@ -23,6 +23,7 @@ context('Sandbox', () => {
     it('should show the input and submit button', () => {
       cy.get(selectorInput).should('have.length', 1);
       cy.get(selectorSubmit).should('have.length', 1);
+      cy.get(selectorSubmit).should('be.disabled');
     });
 
     it('should show the complete progress on submit', () => {
