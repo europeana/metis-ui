@@ -9,7 +9,7 @@ describe('RedirectionComponent', () => {
   let fixture: ComponentFixture<RedirectionComponent>;
   const enterKey = 'Enter';
 
-  const getKeyEvent = (key: String): KeyboardEvent => {
+  const getKeyEvent = (key: string): KeyboardEvent => {
     return ({ key: key } as unknown) as KeyboardEvent;
   };
 
