@@ -22,7 +22,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
 
-  constructor(private modalConfirms: ModalConfirmService) {
+  constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
   }
 

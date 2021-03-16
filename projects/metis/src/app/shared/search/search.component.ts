@@ -25,7 +25,7 @@ export class SearchComponent extends SubscriptionManager implements OnInit {
   constructor(
     readonly authentication: AuthenticationService,
     private readonly router: Router,
-    private route: ActivatedRoute
+    private readonly route: ActivatedRoute
   ) {
     super();
   }

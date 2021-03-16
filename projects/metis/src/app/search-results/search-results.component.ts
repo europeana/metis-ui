@@ -25,7 +25,7 @@ export class SearchResultsComponent extends SubscriptionManager implements OnIni
   constructor(
     private readonly documentTitleService: DocumentTitleService,
     private readonly datasets: DatasetsService,
-    private route: ActivatedRoute
+    private readonly route: ActivatedRoute
   ) {
     super();
   }
