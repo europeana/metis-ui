@@ -59,7 +59,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
   /* @param {string} overviewParams - parameters as a string
   */
   setOverviewParams(overviewParams: string): void {
-    if (this.overviewParams != overviewParams) {
+    if (this.overviewParams !== overviewParams) {
       this.overviewParams = overviewParams;
       this.pollingRefresh.next(true);
     }
