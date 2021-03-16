@@ -44,7 +44,7 @@
     <span class="time">{{ now | date: 'HH:mm' }}</span>
   </div>
   <!-- show cancel button, log button, report button and run button -->
-  <nav>
+  <nav aria-label="Operations to perform on workflow">
     <ul class="nav-ctrls">
       <li class="nav-ctrl" *ngIf="checkCanCancelWorkflow()">
         <a
@@ -87,7 +87,7 @@
 >
   <div class="status status-new">{{ 'startWorkflow' | translate }}</div>
   <div class="spacer"></div>
-  <nav>
+  <nav aria-label="Run or show workflow">
     <ul>
       <li>
         <a *ngIf="workflowData" class="nav-btn newaction-btn" (click)="beginWorkflow()">
