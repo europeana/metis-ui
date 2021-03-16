@@ -8,10 +8,10 @@ import { DatasetsService } from '../../_services';
   styleUrls: ['./redirection.component.scss']
 })
 export class RedirectionComponent {
-  @Input() currentId?: String;
-  @Input() redirectionId?: String;
-  @Output() addRedirectionId = new EventEmitter<String>();
-  @Output() removeRedirectionId = new EventEmitter<String>();
+  @Input() currentId?: string;
+  @Input() redirectionId?: string;
+  @Output() addRedirectionId = new EventEmitter<string>();
+  @Output() removeRedirectionId = new EventEmitter<string>();
 
   newIdString: string;
   flagIdInvalid: boolean;
