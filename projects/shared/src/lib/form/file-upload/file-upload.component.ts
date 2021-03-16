@@ -26,7 +26,7 @@ export class FileUploadComponent implements ControlValueAccessor {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  constructor(private host: ElementRef<HTMLInputElement>) {}
+  constructor(private readonly host: ElementRef<HTMLInputElement>) {}
 
   /** writeValue
   /*  clear file input

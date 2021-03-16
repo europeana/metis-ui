@@ -17,7 +17,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   subConfirmResponse: Subject<boolean>;
   show = false;
 
-  constructor(private modalConfirms: ModalConfirmService) {
+  constructor(private readonly modalConfirms: ModalConfirmService) {
     this.subConfirmResponse = new Subject<boolean>();
   }
 
