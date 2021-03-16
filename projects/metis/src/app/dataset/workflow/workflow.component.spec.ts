@@ -234,9 +234,12 @@ describe('WorkflowComponent', () => {
       expect(fields[1].conf.currentlyViewed).toBeFalsy();
     });
 
-    it('should add the incremental-harvesting field', () => {
-      expect(component.workflowForm.contains('incrementalHarvest')).toBeFalsy();
-      component.workflowData = {
+    it('should enable the incremental-harvesting field', fakeAsync(() => {
+      const getField = (): FormControl => {
+        return component.workflowForm.get('incrementalHarvest') as FormControl;
+      };
+
+      const testWorkflowData = {
         datasetId: '1',
         id: '1',
         metisPluginsMetadata: [
@@ -246,24 +249,27 @@ describe('WorkflowComponent', () => {
             setSpec: 'oai_test',
             url: 'http://www.mocked.com',
             enabled: true
-          }
+          } as PluginMetadata
         ]
       };
 
-      let serviceResult = false;
+      component.workflowData = testWorkflowData;
+      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
+      tick(1);
+      expect(getField().disabled).toBeFalsy();
 
+      let serviceResult = false;
       spyOn(workflows, 'getIsIncrementalHarvestAllowed').and.callFake(() => {
         return of(serviceResult);
       });
-
-      expect(component.workflowForm.contains('incrementalHarvest')).toBeFalsy();
-      component.addIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
-      expect(component.workflowForm.contains('incrementalHarvest')).toBeFalsy();
+      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
+      expect(getField().disabled).toBeTruthy();
 
       serviceResult = true;
-      component.addIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
-      expect(component.workflowForm.contains('incrementalHarvest')).toBeTruthy();
-    });
+
+      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
+      expect(getField().disabled).toBeFalsy();
+    }));
 
     it('should format the form values', () => {
       let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();

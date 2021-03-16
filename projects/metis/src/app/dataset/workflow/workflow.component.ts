@@ -8,7 +8,7 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
@@ -181,28 +181,23 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   }
 
   /**
-   * addIncrementalHarvestingFieldIfAvailable
+   * enableIncrementalHarvestingFieldIfAvailable
    *
    * calls servive methos to see if incremental harvesting is allowed
-   * and adds a field if so
+   * and enables the incrementalHarvest field if so
    *
-   * @param { Workflow } - workflowData
+   * @param {Workflow} workflowData
    **/
-  addIncrementalHarvestingFieldIfAvailable(workflowData: Workflow): void {
+  enableIncrementalHarvestingFieldIfAvailable(workflowData: Workflow): void {
     this.subs.push(
       this.workflows
         .getIsIncrementalHarvestAllowed(workflowData.datasetId)
         .subscribe((canIncrementHarvest) => {
           if (canIncrementHarvest) {
-            const incrementalDefault =
-              workflowData.metisPluginsMetadata.findIndex((plugin) => {
-                return plugin.pluginType === PluginType.OAIPMH_HARVEST && plugin.incrementalHarvest;
-              }) > -1;
-
-            this.workflowForm.addControl(
-              ParameterFieldName.incrementalHarvest,
-              new FormControl(incrementalDefault, [])
-            );
+            this.workflowForm.controls.incrementalHarvest.enable();
+          }
+          else{
+            this.workflowForm.controls.incrementalHarvest.disable();
           }
         })
     );
@@ -371,8 +366,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
+        this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
+        this.workflowForm.controls.incrementalHarvest.disable();
       }
     }
+    this.enableIncrementalHarvestingFieldIfAvailable(workflow);
   }
 
   /** extractPluginParamsExtra
@@ -427,7 +425,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     this.clearForm();
     this.extractWorkflowParamsAlways(workflow);
     this.extractWorkflowParamsEnabled(workflow);
-    this.addIncrementalHarvestingFieldIfAvailable(workflow);
   }
 
   /** reset

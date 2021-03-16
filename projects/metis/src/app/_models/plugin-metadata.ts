@@ -39,6 +39,10 @@ export interface HttpHarvestPluginMetadata extends HarvestPluginMetadataBase {
   pluginType: 'HTTP_HARVEST';
 }
 
+export interface IncrementalHarvestingAllowedResult {
+  incrementalHarvestingAllowed: boolean;
+}
+
 export interface TransformationPluginMetadata {
   pluginType: 'TRANSFORMATION';
   mocked?: boolean;

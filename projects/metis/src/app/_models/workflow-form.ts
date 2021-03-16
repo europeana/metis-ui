@@ -61,10 +61,6 @@ export interface WorkflowFieldDataParameterised extends WorkflowFieldData {
   parameterFields: ParameterField;
 }
 
-export interface IncrementalHarvestingAllowedResult {
-  incrementalHarvestingAllowed: boolean;
-}
-
 const parameterFieldPresets = Object.assign(
   {},
   ...['HARVEST', PluginType.TRANSFORMATION, PluginType.LINK_CHECKING].map((pType) => {
@@ -73,6 +69,7 @@ const parameterFieldPresets = Object.assign(
         pType === 'HARVEST'
           ? ([
               ParameterFieldName.harvestUrl,
+              ParameterFieldName.incrementalHarvest,
               ParameterFieldName.metadataFormat,
               ParameterFieldName.pluginType,
               ParameterFieldName.setSpec,
@@ -102,19 +99,23 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
       return PluginType.DEPUBLISH !== pType;
     })
     .map((pType: PluginType) => {
+      let dragType = DragType.dragNone;
       if ([PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(pType)) {
         return {
           label: '',
           name: '' as WorkflowFieldDataName,
           parameterFields: null,
-          dragType: DragType.dragNone
+          dragType: dragType
         };
       } else {
+        if (pType === 'LINK_CHECKING') {
+          dragType = DragType.dragSource;
+        }
         return {
           label: PluginType[pType] as string,
           name: ('plugin' + pType) as WorkflowFieldDataName,
           parameterFields: parameterFieldPresets[pType],
-          dragType: pType === 'LINK_CHECKING' ? DragType.dragSource : DragType.dragNone
+          dragType: dragType
         };
       }
     })

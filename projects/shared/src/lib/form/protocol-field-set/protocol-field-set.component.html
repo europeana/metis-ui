@@ -31,11 +31,7 @@
   </div>
 </div>
 
-<div
-  class="form-group"
-  *ngIf="isProtocolOAIPMH() && form.contains('incrementalHarvest')"
-  [formGroup]="form"
->
+<div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">
   <input type="checkbox" id="incremental-harvest" formControlName="incrementalHarvest" />
   <label
     for="incremental-harvest"
