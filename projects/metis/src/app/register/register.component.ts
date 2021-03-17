@@ -60,7 +60,7 @@ export class RegisterComponent implements OnInit {
     });
 
     this.msgSuccess = this.translate.instant('registrationSuccessful');
-    this.msgPasswordWeak = this.translate.instant('passwordWeakError');
+    this.msgPasswordWeak = this.translate.instant('userPasswordWeakError');
     this.msgRegistrationFailed = this.translate.instant('registrationFailed');
     this.msgAlreadyRegistered = this.translate.instant('registrationAlready');
   }
