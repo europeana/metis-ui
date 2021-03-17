@@ -13,5 +13,6 @@ export function isDateSupported(): boolean {
 /* check the format of the specified date string
 */
 export function isValidDate(value: string): boolean {
-  return value.match(/\d{4}-\d{2}-\d{2}/) !== null;
+  const date = new Date(value);
+  return !isNaN(date.getDate()) && date.toISOString().split('T')[0] === value;
 }
