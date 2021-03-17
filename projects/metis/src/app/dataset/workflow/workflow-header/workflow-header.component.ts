@@ -37,8 +37,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   */
   togglePlugin(plugin: string): void {
     if (plugin !== 'pluginLINK_CHECKING') {
-      this.workflowForm.get(plugin)!.setValue(!this.workflowForm.get(plugin)!.value);
-      this.workflowForm.markAsDirty();
+      const ctrl = this.workflowForm.get(plugin);
+      if (ctrl) {
+        ctrl.setValue(!ctrl.value);
+        this.workflowForm.markAsDirty();
+      }
     }
   }
 
@@ -81,7 +84,10 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   clearAll(): void {
     const hasSelected = Object.values(this.workflowForm.value).indexOf(true) > -1;
     this.conf.forEach((plugin) => {
-      this.workflowForm.get(plugin.name)!.setValue(false);
+      const ctrl = this.workflowForm.get(plugin.name);
+      if (ctrl) {
+        ctrl.setValue(false);
+      }
     });
     if (hasSelected) {
       this.workflowForm.markAsDirty();
@@ -97,8 +103,11 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   selectAll(): void {
     const hasUnselected = Object.values(this.workflowForm.value).indexOf(false) > -1;
     this.conf.forEach((plugin) => {
-      this.workflowForm.get(plugin.name)!.enable();
-      this.workflowForm.get(plugin.name)!.setValue(true);
+      const ctrl = this.workflowForm.get(plugin.name);
+      if (ctrl) {
+        ctrl.enable();
+        ctrl.setValue(true);
+      }
     });
     if (hasUnselected) {
       this.workflowForm.markAsDirty();
