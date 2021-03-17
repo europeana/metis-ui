@@ -367,7 +367,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
         this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
-        this.workflowForm.controls.incrementalHarvest.disable();
       }
     }
     this.enableIncrementalHarvestingFieldIfAvailable(workflow);
