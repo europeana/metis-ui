@@ -23,14 +23,14 @@
       </fieldset>
 
       <fieldset class="form-group" formGroupName="passwords">
-        <legend>{{ 'password' | translate }}</legend>
-        <label for="password">{{ 'password' | translate }}:</label>
+        <legend>{{ 'userPassword' | translate }}</legend>
+        <label for="password">{{ 'userPassword' | translate }}:</label>
         <input
           id="password"
           type="password"
           formControlName="password"
           (keyup)="onKeyupPassword()"
-          placeholder="{{ 'password' | translate }}"
+          placeholder="{{ 'userPassword' | translate }}"
         />
         <app-password-check [passwordToCheck]="password"></app-password-check>
         <input
@@ -46,7 +46,7 @@
             !registerForm.controls['passwords'].get('confirm')!.valid
           "
         >
-          <div class="error-message">{{ 'passwordMatchError' | translate }}</div>
+          <div class="error-message">{{ 'userPasswordMatchError' | translate }}</div>
         </div>
       </fieldset>
 

@@ -17,7 +17,7 @@
 
     <div class="form-fields">
       <fieldset class="form-group">
-        <legend>{{ 'email' | translate }} &amp; {{ 'password' | translate }}</legend>
+        <legend>{{ 'email' | translate }} &amp; {{ 'userPassword' | translate }}</legend>
 
         <label for="email">{{ 'email' | translate }}:</label>
         <input id="email" type="email" formControlName="email" />
@@ -28,13 +28,13 @@
           <div class="error-message">{{ 'emailError' | translate }}</div>
         </div>
 
-        <label for="password">{{ 'password' | translate }}:</label>
+        <label for="password">{{ 'userPassword' | translate }}:</label>
         <input id="password" type="password" formControlName="password" />
         <div
           class="messages"
           *ngIf="loginForm.controls['password'].touched && !loginForm.controls['password'].valid"
         >
-          <div class="error-message">{{ 'passwordError' | translate }}</div>
+          <div class="error-message">{{ 'userPasswordError' | translate }}</div>
         </div>
       </fieldset>
 

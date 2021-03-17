@@ -110,19 +110,19 @@
 
       <div class="form-fields">
         <fieldset class="form-group" formGroupName="passwords">
-          <legend>{{ 'password' | translate }}</legend>
+          <legend>{{ 'userPassword' | translate }}</legend>
           <input
             id="oldpassword"
             type="password"
             formControlName="oldpassword"
-            placeholder="{{ 'passwordOld' | translate }}"
+            placeholder="{{ 'userPasswordOld' | translate }}"
           />
           <input
             id="password"
             type="password"
             formControlName="password"
             (keyup)="onKeyupPassword()"
-            placeholder="{{ 'passwordNew' | translate }}"
+            placeholder="{{ 'userPasswordNew' | translate }}"
           />
           <app-password-check [passwordToCheck]="password"></app-password-check>
           <div
@@ -132,7 +132,7 @@
               !profileForm.controls['passwords'].get('password')!.valid
             "
           >
-            <div class="error-message">{{ 'passwordOldError' | translate }}</div>
+            <div class="error-message">{{ 'userPasswordOldError' | translate }}</div>
           </div>
 
           <input
@@ -151,7 +151,7 @@
               confirmPasswordError
             "
           >
-            <div class="error-message">{{ 'passwordMatchError' | translate }}</div>
+            <div class="error-message">{{ 'userPasswordMatchError' | translate }}</div>
           </div>
         </fieldset>
         <div class="form-group form-group-btns user-profile-edit-btns">
