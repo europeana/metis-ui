@@ -22,6 +22,7 @@ import {
   mockXmlSamples
 } from '../_mocked';
 import {
+  IncrementalHarvestingAllowedResult,
   PluginAvailabilityList,
   PluginType,
   ReportAvailability,
@@ -196,6 +197,16 @@ describe('workflow service', () => {
     mockHttp
       .expect('GET', '/orchestrator/workflows/executions/overview' + '?nextPage=0')
       .send(mockDatasetOverviewResults);
+    sub.unsubscribe();
+  });
+
+  it('should get if incremental harvest is allowed', () => {
+    const sub = service.getIsIncrementalHarvestAllowed('1').subscribe((result: boolean) => {
+      expect(result).toEqual(true);
+    });
+    mockHttp
+      .expect('GET', '/orchestrator/workflows/executions/dataset/1/allowed_incremental')
+      .send({ incrementalHarvestingAllowed: true } as IncrementalHarvestingAllowedResult);
     sub.unsubscribe();
   });
 

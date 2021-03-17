@@ -180,12 +180,34 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     });
   }
 
+  /**
+   * enableIncrementalHarvestingFieldIfAvailable
+   *
+   * calls servive methos to see if incremental harvesting is allowed
+   * and enables the incrementalHarvest field if so
+   *
+   * @param {Workflow} workflowData
+   **/
+  enableIncrementalHarvestingFieldIfAvailable(workflowData: Workflow): void {
+    this.subs.push(
+      this.workflows
+        .getIsIncrementalHarvestAllowed(workflowData.datasetId)
+        .subscribe((canIncrementHarvest) => {
+          if (canIncrementHarvest) {
+            this.workflowForm.controls.incrementalHarvest.enable();
+          }
+          else{
+            this.workflowForm.controls.incrementalHarvest.disable();
+          }
+        })
+    );
+  }
+
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
   */
   buildForm(): void {
     const formGroupConf = {} as { [key: string]: Array<string> };
-
     this.fieldConf.forEach((confItem) => {
       formGroupConf[confItem.name] = [''];
       if (confItem.parameterFields) {
@@ -344,8 +366,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
+        this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
       }
     }
+    this.enableIncrementalHarvestingFieldIfAvailable(workflow);
   }
 
   /** extractPluginParamsExtra
@@ -451,6 +475,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         if (conf.name === 'pluginHARVEST') {
           const paramsOAIPMH: ParameterField = [
             ParameterFieldName.harvestUrl,
+            ParameterFieldName.incrementalHarvest,
             ParameterFieldName.metadataFormat,
             ParameterFieldName.setSpec
           ];

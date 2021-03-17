@@ -592,6 +592,10 @@ export class MockWorkflowService {
     return of(mockWorkflowExecutionResults.results);
   }
 
+  getIsIncrementalHarvestAllowed(_: string): Observable<boolean> {
+    return of(true).pipe(delay(1));
+  }
+
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
     return of({ results: mockWorkflowExecutionResults.results, more: false }).pipe(delay(1));
   }

@@ -253,6 +253,7 @@ function generatePluginMetadata(pType: PluginType): PluginMetadata {
         : undefined,
     metadataFormat: pType === PluginType.OAIPMH_HARVEST ? 'edm' : undefined,
     setSpec: pType === PluginType.OAIPMH_HARVEST ? 'setSpec' : undefined,
+    incrementalHarvest: pType === PluginType.OAIPMH_HARVEST ? true : undefined,
     customXslt: pType === PluginType.TRANSFORMATION ? false : undefined,
     conf: {}
   } as PluginMetadata;

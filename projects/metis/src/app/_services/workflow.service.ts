@@ -13,6 +13,7 @@ import {
   HarvestData,
   HistoryVersion,
   HistoryVersions,
+  IncrementalHarvestingAllowedResult,
   isPluginCompleted,
   MoreResults,
   NodePathStatistics,
@@ -182,6 +183,24 @@ export class WorkflowService extends SubscriptionManager {
         })
       );
     }
+  }
+
+  /**
+   * getIsIncrementalHarvestAllowed
+   * gets the incremental harvest availability (mapped to a boolean)
+   * @param { string } - id - the id of the dataset to check
+   * @returns ( Observable<boolean> )
+   **/
+  getIsIncrementalHarvestAllowed(id: string): Observable<boolean> {
+    const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/allowed_incremental`;
+    return this.http
+      .get<IncrementalHarvestingAllowedResult>(url)
+      .pipe(
+        switchMap((result: IncrementalHarvestingAllowedResult) => {
+          return of(result.incrementalHarvestingAllowed);
+        })
+      )
+      .pipe(this.errors.handleRetry());
   }
 
   /** getCompletedDatasetExecutions

@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 
 import {
   createMockPipe,
@@ -18,6 +19,7 @@ import {
   PluginMetadata,
   PluginType,
   successNotification,
+  Workflow,
   WorkflowExecution,
   WorkflowFieldData,
   workflowFormFieldConf,
@@ -232,6 +234,43 @@ describe('WorkflowComponent', () => {
       expect(fields[1].conf.currentlyViewed).toBeFalsy();
     });
 
+    it('should enable the incremental-harvesting field', fakeAsync(() => {
+      const getField = (): FormControl => {
+        return component.workflowForm.get('incrementalHarvest') as FormControl;
+      };
+
+      const testWorkflowData = {
+        datasetId: '1',
+        id: '1',
+        metisPluginsMetadata: [
+          {
+            metadataFormat: 'edm',
+            pluginType: PluginType.OAIPMH_HARVEST,
+            setSpec: 'oai_test',
+            url: 'http://www.mocked.com',
+            enabled: true
+          } as PluginMetadata
+        ]
+      };
+
+      component.workflowData = testWorkflowData;
+      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
+      tick(1);
+      expect(getField().disabled).toBeFalsy();
+
+      let serviceResult = false;
+      spyOn(workflows, 'getIsIncrementalHarvestAllowed').and.callFake(() => {
+        return of(serviceResult);
+      });
+      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
+      expect(getField().disabled).toBeTruthy();
+
+      serviceResult = true;
+
+      component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
+      expect(getField().disabled).toBeFalsy();
+    }));
+
     it('should format the form values', () => {
       let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
       expect(result.metisPluginsMetadata.length).toBeGreaterThan(1);
@@ -268,6 +307,7 @@ describe('WorkflowComponent', () => {
       expect(component.getSaveNotification()!.content).toBe('en:workflowSaved');
       expect(component.getSaveNotification()).toEqual(component.notification);
       expect(workflows.createWorkflowForDataset).toHaveBeenCalled();
+      tick(1);
     }));
 
     it('should get the save notification unless saving', () => {

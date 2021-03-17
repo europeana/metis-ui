@@ -340,6 +340,15 @@ new (class extends TestDataServer {
       return true;
     }
 
+    regRes = route.match(
+      /orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/allowed_incremental/
+    );
+
+    if (regRes) {
+      response.end(JSON.stringify({ incrementalHarvestingAllowed: true }));
+      return true;
+    }
+
     regRes = route.match(/orchestrator\/workflows\/executions\/dataset\/-?(\d+)\/information/);
 
     if (regRes) {

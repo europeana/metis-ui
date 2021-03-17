@@ -35,6 +35,7 @@ export type WorkflowFieldDataName =
 export enum ParameterFieldName {
   customXslt = 'customXslt',
   harvestUrl = 'harvestUrl',
+  incrementalHarvest = 'incrementalHarvest',
   metadataFormat = 'metadataFormat',
   performSampling = 'performSampling',
   pluginType = 'pluginType',
@@ -68,6 +69,7 @@ const parameterFieldPresets = Object.assign(
         pType === 'HARVEST'
           ? ([
               ParameterFieldName.harvestUrl,
+              ParameterFieldName.incrementalHarvest,
               ParameterFieldName.metadataFormat,
               ParameterFieldName.pluginType,
               ParameterFieldName.setSpec,
@@ -97,19 +99,25 @@ export const workflowFormFieldConf: WorkflowFormFieldConf = [
       return PluginType.DEPUBLISH !== pType;
     })
     .map((pType: PluginType) => {
-      return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].indexOf(pType) > -1
-        ? {
-            label: '',
-            name: '' as WorkflowFieldDataName,
-            parameterFields: null,
-            dragType: DragType.dragNone
-          }
-        : {
-            label: PluginType[pType] as string,
-            name: ('plugin' + pType) as WorkflowFieldDataName,
-            parameterFields: parameterFieldPresets[pType],
-            dragType: pType === 'LINK_CHECKING' ? DragType.dragSource : DragType.dragNone
-          };
+      let dragType = DragType.dragNone;
+      if ([PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(pType)) {
+        return {
+          label: '',
+          name: '' as WorkflowFieldDataName,
+          parameterFields: null,
+          dragType: dragType
+        };
+      } else {
+        if (pType === 'LINK_CHECKING') {
+          dragType = DragType.dragSource;
+        }
+        return {
+          label: PluginType[pType] as string,
+          name: ('plugin' + pType) as WorkflowFieldDataName,
+          parameterFields: parameterFieldPresets[pType],
+          dragType: dragType
+        };
+      }
     })
     .filter((fData) => fData.label.length > 0)
 );

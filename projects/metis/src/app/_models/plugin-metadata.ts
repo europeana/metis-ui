@@ -27,6 +27,7 @@ export interface OAIHarvestPluginMetadata extends HarvestPluginMetadataBase {
   pluginType: 'OAIPMH_HARVEST';
   setSpec: string;
   metadataFormat: string;
+  incrementalHarvest?: boolean;
 }
 
 // Allow OAIHarvestPluginMetadata to have the property 'harvestUrl' temporarily
@@ -36,6 +37,10 @@ export interface OAIHarvestPluginMetadataTmp extends OAIHarvestPluginMetadata {
 
 export interface HttpHarvestPluginMetadata extends HarvestPluginMetadataBase {
   pluginType: 'HTTP_HARVEST';
+}
+
+export interface IncrementalHarvestingAllowedResult {
+  incrementalHarvestingAllowed: boolean;
 }
 
 export interface TransformationPluginMetadata {
