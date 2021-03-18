@@ -72,11 +72,6 @@ describe('ProgressTrackerComponent', () => {
       );
     });
 
-    it('should get the link prefixes', () => {
-      expect(component.getLinkPrefixes().viewCollections).toBeTruthy();
-      expect(component.getLinkPrefixes().viewPreview).toBeTruthy();
-    });
-
     it('should get the label class', () => {
       expect(component.getLabelClass(StepStatus.IMPORT)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');

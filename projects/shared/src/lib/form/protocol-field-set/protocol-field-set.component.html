@@ -1,30 +1,42 @@
 <div class="form-group" [formGroup]="form">
   <label i18n="protocol label main@@protocolLabelMain">Harvest protocol *</label>
   <div class="form-group-radios">
-    <label *ngIf="isVisible(ZIP)" i18n="protocol radio file@@protocolRadioFile">
+    <label
+      *ngIf="isProtocolVisible(ZIP)"
+      i18n="protocol radio file@@protocolRadioFile"
+      [ngClass]="{ disabled: isProtocolDisabled(ZIP) }"
+    >
       <input
         type="radio"
         [formControlName]="protocolSwitchField"
         [value]="ZIP"
-        [attr.disabled]="isDisabled(ZIP) || null"
+        [attr.disabled]="isProtocolDisabled(ZIP) || null"
       />
       File upload
     </label>
-    <label *ngIf="isVisible(OAIPMH)" i18n="protocol radio oai-pmh@@protocolRadioOaiPmh">
+    <label
+      *ngIf="isProtocolVisible(OAIPMH)"
+      i18n="protocol radio oai-pmh@@protocolRadioOaiPmh"
+      [ngClass]="{ disabled: isProtocolDisabled(OAIPMH) }"
+    >
       <input
         type="radio"
         [formControlName]="protocolSwitchField"
         [value]="OAIPMH"
-        [attr.disabled]="isDisabled(OAIPMH) || null"
+        [attr.disabled]="isProtocolDisabled(OAIPMH)"
       />
       OAI-PMH upload
     </label>
-    <label *ngIf="isVisible(HTTP)" i18n="protocol radio http@@protocolRadioHttp">
+    <label
+      *ngIf="isProtocolVisible(HTTP)"
+      i18n="protocol radio http@@protocolRadioHttp"
+      [ngClass]="{ disabled: isProtocolDisabled(HTTP) }"
+    >
       <input
         type="radio"
         [formControlName]="protocolSwitchField"
         [value]="HTTP"
-        [attr.disabled]="isDisabled(HTTP) || null"
+        [attr.disabled]="isProtocolDisabled(HTTP)"
       />
       HTTP upload
     </label>

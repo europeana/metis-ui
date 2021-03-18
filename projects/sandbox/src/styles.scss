@@ -38,6 +38,16 @@ a {
   }
 }
 
+input,
+label {
+  &.disabled,
+  &[disabled] {
+    cursor: default;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
 .form-group {
   color: $eu-jade-dark;
   margin: 0 auto 1rem;

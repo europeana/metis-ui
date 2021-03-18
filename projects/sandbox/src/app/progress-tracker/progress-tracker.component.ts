@@ -7,7 +7,6 @@ import {
   StepStatusClass
 } from '../_models';
 import { ModalConfirmService, SubscriptionManager } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -53,15 +52,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    **/
   hasLinks(): boolean {
     return !!this.progressData['portal-preview'] || !!this.progressData['portal-publish'];
-  }
-
-  /**
-   * getLinkPrefixes
-   * Template utility to get link prefixes
-   * @returns { viewCollections: string; viewPreview: string }
-   **/
-  getLinkPrefixes(): { viewCollections: string; viewPreview: string } {
-    return { viewCollections: apiSettings.viewCollections, viewPreview: apiSettings.viewPreview };
   }
 
   /**

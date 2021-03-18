@@ -9,8 +9,7 @@ function getUnsubscribable(undef?: boolean): Subscription {
     ? undefined
     : ({
         unsubscribe: jasmine.createSpy('unsubscribe')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)) as Subscription;
+      } as unknown)) as Subscription;
 }
 
 describe('SubscriptionManager', () => {
@@ -33,7 +32,7 @@ describe('SubscriptionManager', () => {
   it('should unsub on cleanup', () => {
     const s1 = getUnsubscribable();
     const s2 = getUnsubscribable();
-    clss.subs = [s1, s2];
+    clss.subs = [s1, (undefined as unknown) as Subscription, s2];
     clss.cleanup();
     expect(s1.unsubscribe).toHaveBeenCalled();
     expect(s2.unsubscribe).toHaveBeenCalled();
