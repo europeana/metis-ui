@@ -390,9 +390,10 @@ export class DepublicationComponent extends DataPollingComponent {
   }
 
   /** confirmDepublishRecordIds
-  /* - get user confirmation to call onDepublishRecordIds
-  */
-  confirmDepublishRecordIds(all?: boolean): void {
+   * - get user confirmation to call onDepublishRecordIds
+   *  @param {boolean} all - false - flag to send all or selected
+   **/
+  confirmDepublishRecordIds(all = false): void {
     if (!all && this.depublicationSelections.length === 0) {
       return;
     }
@@ -407,53 +408,57 @@ export class DepublicationComponent extends DataPollingComponent {
     );
   }
 
-  /** onDepublishRecordIds
-  /* - handler for depublish record ids button
-  /* - invoke service call
-  /* - flag success / trigger reload / clear selection cache
-  /*  @param {boolean} all - optional - flag to send empty (all) or selected
-  */
-  onDepublishRecordIds(all?: boolean): void {
+  /**
+   * resetSelectionOnEvent
+   * - subscribes to the supplied Observable for common subscription handling
+   * -
+   *  @param {Observable <unknown>} observable
+   **/
+  resetSelectionOnEvent(observable: Observable<unknown>): void {
+    this.subs.push(
+      observable.subscribe(
+        () => {
+          this.depublicationSelections = [];
+          this.refreshPolling();
+          this.isSaving = false;
+        },
+        (err: HttpErrorResponse): void => {
+          this.onError(err);
+        }
+      )
+    );
+  }
+
+  /**
+   * onDepublishRecordIds
+   * - handler for depublish record ids button
+   * - invoke service call
+   * - flag success / trigger reload / clear selection cache
+   *  @param {boolean} all - false - flag to send empty (all) or selected
+   **/
+  onDepublishRecordIds(all = false): void {
     this.closeMenus();
     if (!all && this.depublicationSelections.length === 0) {
       return;
     }
     this.isSaving = true;
-    this.subs.push(
-      this.depublications
-        .depublishRecordIds(this._datasetId, all ? null : this.depublicationSelections)
-        .subscribe(
-          () => {
-            this.depublicationSelections = [];
-            this.refreshPolling();
-            this.isSaving = false;
-          },
-          (err: HttpErrorResponse): void => {
-            this.onError(err);
-          }
-        )
+    this.resetSelectionOnEvent(
+      this.depublications.depublishRecordIds(
+        this._datasetId,
+        all ? null : this.depublicationSelections
+      )
     );
   }
 
-  /** deleteDepublications
-  /* - handler for delete records button
-  /* - invoke service call
-  */
+  /**
+   * deleteDepublications
+   * - handler for delete records button
+   * - invoke service call
+   **/
   deleteDepublications(): void {
     this.isSaving = true;
-    this.subs.push(
-      this.depublications
-        .deleteDepublications(this._datasetId, this.depublicationSelections)
-        .subscribe(
-          () => {
-            this.depublicationSelections = [];
-            this.refreshPolling();
-            this.isSaving = false;
-          },
-          (err: HttpErrorResponse): void => {
-            this.onError(err);
-          }
-        )
+    this.resetSelectionOnEvent(
+      this.depublications.deleteDepublications(this._datasetId, this.depublicationSelections)
     );
   }
 

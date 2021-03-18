@@ -1,16 +1,6 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
 
-app-loading-button {
-  align-self: center;
-}
-
-app-search {
-  @media (min-width: $bp-large) {
-    margin-right: auto;
-  }
-}
-
 app-sortable-group {
   display: none;
 }
