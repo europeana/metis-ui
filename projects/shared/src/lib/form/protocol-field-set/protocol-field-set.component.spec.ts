@@ -64,9 +64,9 @@ describe('ProtocolFieldSetComponent', () => {
   });
 
   it('should report if the protocol is disabled', () => {
-    expect(component.isDisabled(ProtocolType.OAIPMH_HARVEST)).toBeFalsy();
+    expect(component.isProtocolDisabled(ProtocolType.OAIPMH_HARVEST)).toBeFalsy();
     component.disabledProtocols = [ProtocolType.OAIPMH_HARVEST];
-    expect(component.isDisabled(ProtocolType.OAIPMH_HARVEST)).toBeTruthy();
+    expect(component.isProtocolDisabled(ProtocolType.OAIPMH_HARVEST)).toBeTruthy();
   });
 
   it('should update the UI', () => {
