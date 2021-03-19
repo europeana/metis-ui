@@ -23,7 +23,7 @@
         type="radio"
         [formControlName]="protocolSwitchField"
         [value]="OAIPMH"
-        [attr.disabled]="isProtocolDisabled(OAIPMH)"
+        [attr.disabled]="isProtocolDisabled(OAIPMH) || null"
       />
       OAI-PMH upload
     </label>
@@ -36,7 +36,7 @@
         type="radio"
         [formControlName]="protocolSwitchField"
         [value]="HTTP"
-        [attr.disabled]="isProtocolDisabled(HTTP)"
+        [attr.disabled]="isProtocolDisabled(HTTP) || null"
       />
       HTTP upload
     </label>
