@@ -64,22 +64,23 @@ export interface WorkflowFieldDataParameterised extends WorkflowFieldData {
 const parameterFieldPresets = Object.assign(
   {},
   ...['HARVEST', PluginType.TRANSFORMATION, PluginType.LINK_CHECKING].map((pType) => {
+    let paramField = null;
+    if (pType === 'HARVEST') {
+      paramField = [
+        ParameterFieldName.harvestUrl,
+        ParameterFieldName.incrementalHarvest,
+        ParameterFieldName.metadataFormat,
+        ParameterFieldName.pluginType,
+        ParameterFieldName.setSpec,
+        ParameterFieldName.url
+      ];
+    } else if (pType === PluginType.TRANSFORMATION) {
+      paramField = [ParameterFieldName.customXslt];
+    } else if (pType === PluginType.LINK_CHECKING) {
+      paramField = [ParameterFieldName.performSampling];
+    }
     return {
-      [pType]:
-        pType === 'HARVEST'
-          ? ([
-              ParameterFieldName.harvestUrl,
-              ParameterFieldName.incrementalHarvest,
-              ParameterFieldName.metadataFormat,
-              ParameterFieldName.pluginType,
-              ParameterFieldName.setSpec,
-              ParameterFieldName.url
-            ] as ParameterField)
-          : pType === PluginType.TRANSFORMATION
-          ? ([ParameterFieldName.customXslt] as ParameterField)
-          : pType === PluginType.LINK_CHECKING
-          ? ([ParameterFieldName.performSampling] as ParameterField)
-          : null
+      [pType]: paramField
     };
   })
 );

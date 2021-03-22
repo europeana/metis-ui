@@ -8,7 +8,7 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
@@ -149,22 +149,27 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     const bottomOnScreen = rect.bottom >= headerHeight && rect.bottom <= wh;
     const elSpansViewport = rect.top <= headerHeight && rect.bottom >= wh;
 
-    return elSpansViewport
-      ? 4
-      : topOnScreen && bottomOnScreen
-      ? 3
-      : topOnScreen
-      ? 2
-      : bottomOnScreen
-      ? 1
-      : 0;
+    if (elSpansViewport) {
+      return 4;
+    } else if (topOnScreen && bottomOnScreen) {
+      return 3;
+    } else if (topOnScreen) {
+      return 2;
+    } else if (bottomOnScreen) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   /** setHighlightedField
    * marks header orb as highlighted if it's the topmost in the viewport
    */
   setHighlightedField(fields: Array<WorkflowFormFieldComponent>, headerEl?: HTMLElement): void {
-    const headerHeight = 77 + (headerEl ? headerEl.offsetHeight : 0);
+    const headerHeight = 77;
+    if (headerEl) {
+      headerHeight + headerEl.offsetHeight;
+    }
     let scorePositive = false;
 
     fields.sort((a: WorkflowFormFieldComponent, b: WorkflowFormFieldComponent) => {
@@ -173,7 +178,13 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       if (!scorePositive && scoreA + scoreB > 0) {
         scorePositive = true;
       }
-      return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
+      if (scoreA === scoreB) {
+        return -1;
+      } else if (scoreA > scoreB) {
+        return -1;
+      } else {
+        return 1;
+      }
     });
     fields.forEach((item: WorkflowFormFieldComponent, i) => {
       item.conf.currentlyViewed = i === 0 && scorePositive;
@@ -195,8 +206,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         .subscribe((canIncrementHarvest) => {
           if (canIncrementHarvest) {
             this.workflowForm.controls.incrementalHarvest.enable();
-          }
-          else{
+          } else {
             this.workflowForm.controls.incrementalHarvest.disable();
           }
         })
@@ -244,7 +254,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     insertIndex: number,
     correctForInactive: boolean
   ): void {
-    this.workflowForm.get('pluginLINK_CHECKING')!.setValue(true);
+    (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValue(true);
 
     let activeCount = -1;
     let newInsertIndex = -1;
@@ -278,7 +288,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     });
     if (removeIndex > -1) {
       // remove any previously-set link-check
-      this.workflowForm.get('pluginLINK_CHECKING')!.setValue(false);
+      (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValue(false);
       this.fieldConf.splice(removeIndex, 1);
     }
   }
@@ -302,7 +312,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     }
 
     const validateTimer = timer(10).subscribe(() => {
-      this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
+      if (this.inputFields) {
+        this.workflowStepAllowed(this.inputFields.toArray());
+      } else {
+        this.workflowStepAllowed(undefined);
+      }
       this.workflowForm.updateValueAndValidity();
       validateTimer.unsubscribe();
     });
@@ -314,9 +328,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   updateRequired(): void {
     this.subs.push(
       this.workflowForm.valueChanges.subscribe(() => {
-        this.workflowStepAllowed(this.inputFields ? this.inputFields.toArray() : undefined);
+        let fieldsArray: Array<WorkflowFormFieldComponent> | undefined = undefined;
+        if (this.inputFields) {
+          fieldsArray = this.inputFields.toArray();
+        }
+        this.workflowStepAllowed(fieldsArray);
         if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
-          this.workflowForm.get('pluginLINK_CHECKING')!.setValidators([Validators.required]);
+          (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValidators([
+            Validators.required
+          ]);
         }
       })
     );
@@ -351,7 +371,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   clearForm(): void {
     this.fieldConf.forEach((field) => {
-      this.workflowForm.get(field.name)!.setValue(false);
+      (this.workflowForm.get(field.name) as FormControl).setValue(false);
     });
   }
 
@@ -382,9 +402,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     }
     // parameters for link-checking
     if (enabledPluginMetadata.pluginType === 'LINK_CHECKING') {
-      this.workflowForm.controls.performSampling.setValue(
-        enabledPluginMetadata.performSampling ? 'true' : 'false'
-      );
+      let value = 'false';
+      if (enabledPluginMetadata.performSampling) {
+        value = 'true';
+      }
+      this.workflowForm.controls.performSampling.setValue(value);
     }
   }
 
@@ -451,8 +473,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       ...params.map((pf) => {
         let valToSave = this.workflowForm.value[pf];
         if (!valToSave) {
-          valToSave =
-            ['harvestUrl', 'url', 'setSpec', 'metadataFormat'].indexOf(pf) > -1 ? '' : false;
+          if (['harvestUrl', 'url', 'setSpec', 'metadataFormat'].includes(pf)) {
+            valToSave = '';
+          } else {
+            valToSave = false;
+          }
         }
         return {
           [pf]: valToSave
@@ -498,10 +523,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
           plugins.push(dataHTTP);
           plugins.push(dataOAIPMH);
         } else {
-          conf.parameterFields = conf.parameterFields ? conf.parameterFields : [];
-          plugins.push(
-            this.formatFormValue(conf.label as PluginType, conf.parameterFields, enabled)
-          );
+          let parameterFields: ParameterField = [];
+          if (conf.parameterFields) {
+            parameterFields = conf.parameterFields;
+          }
+          plugins.push(this.formatFormValue(conf.label as PluginType, parameterFields, enabled));
         }
       });
 
@@ -580,9 +606,17 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     }
 
     if (this.workflowForm.valid) {
-      return this.newWorkflow ? this.newNotification : this.saveNotification;
+      if (this.newWorkflow) {
+        return this.newNotification;
+      } else {
+        return this.saveNotification;
+      }
     } else {
-      return this.gapInSequence ? this.gapInSequenceNotification : this.invalidNotification;
+      if (this.gapInSequence) {
+        return this.gapInSequenceNotification;
+      } else {
+        return this.invalidNotification;
+      }
     }
   }
 
