@@ -35,7 +35,7 @@ export class WizardComponent extends DataPollingComponent {
   EnumWizardStepType = WizardStepType;
   progressData: DatasetInfo;
   trackDatasetId: number;
-  countryList: Array<string>;
+  countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
   wizardConf: FixedLengthArray<WizardStep, 4> = [
     {
@@ -60,7 +60,7 @@ export class WizardComponent extends DataPollingComponent {
   constructor(private readonly fb: FormBuilder, private readonly sandbox: SandboxService) {
     super();
     this.subs.push(
-      this.sandbox.getCountries().subscribe((countries: Array<string>) => {
+      this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
         this.countryList = countries;
       })
     );

@@ -3,6 +3,7 @@ import { TestDataServer } from '../../../tools/test-data-server/test-data-server
 import {
   DatasetInfo,
   DatasetInfoStatus,
+  FieldOption,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData
@@ -265,16 +266,54 @@ new (class extends TestDataServer {
         response.end(`{ "error": "invalid url" }`);
       }
     } else {
-      const regRes = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
-      if (!regRes) {
-        this.handle404(route, response);
+      if (route === '/dataset/countries') {
+        this.headerJSON(response);
+        response.end(
+          JSON.stringify([
+            {
+              name: 'Greece',
+              xmlValue: 'Greece'
+            },
+            {
+              name: 'Hungary',
+              xmlValue: 'Hungary'
+            },
+            {
+              name: 'Italy',
+              xmlValue: 'Italy'
+            }
+          ] as Array<FieldOption>)
+        );
+      } else if (route === '/dataset/languages') {
+        this.headerJSON(response);
+        response.end(
+          JSON.stringify([
+            {
+              name: 'Greek',
+              xmlValue: 'Greek'
+            },
+            {
+              name: 'Hungarian',
+              xmlValue: 'Hungarian'
+            },
+            {
+              name: 'Italian',
+              xmlValue: 'Italian'
+            }
+          ] as Array<FieldOption>)
+        );
       } else {
-        const id = regRes[1];
-        if (this.errorCodes.indexOf(id) > -1) {
-          response.statusCode = parseInt(id);
-          response.end();
+        const regxDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
+        if (!regxDataset) {
+          this.handle404(route, response);
         } else {
-          this.handleId(response, id);
+          const id = regxDataset[1];
+          if (this.errorCodes.indexOf(id) > -1) {
+            response.statusCode = parseInt(id);
+            response.end();
+          } else {
+            this.handleId(response, id);
+          }
         }
       }
     }

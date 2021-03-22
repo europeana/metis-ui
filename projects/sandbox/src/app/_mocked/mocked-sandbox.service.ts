@@ -3,20 +3,33 @@ import { delay, switchMap } from 'rxjs/operators';
 import { mockDatasetInfo } from '.';
 import { DatasetInfo, DatasetInfoStatus, FieldOption, SubmissionResponseData } from '../_models';
 
-export const mockCountries = ['Greece', 'Hungary', 'Italy'];
+export const mockCountries = [
+  {
+    name: 'Greece',
+    xmlValue: 'Greece'
+  },
+  {
+    name: 'Hungary',
+    xmlValue: 'Hungary'
+  },
+  {
+    name: 'Italy',
+    xmlValue: 'Italy'
+  }
+];
 
 export const mockLanguages = [
   {
-    code: 'el',
-    name: 'Greek'
+    name: 'Greek',
+    xmlValue: 'Greek'
   },
   {
-    code: 'hu',
-    name: 'Hungarian'
+    name: 'Hungarian',
+    xmlValue: 'Hungarian'
   },
   {
-    code: 'it',
-    name: 'Italian'
+    name: 'Italian',
+    xmlValue: 'Italian'
   }
 ];
 
@@ -30,7 +43,7 @@ export class MockSandboxService {
    *
    * @returns Array<string>
    **/
-  getCountries(): Observable<Array<string>> {
+  getCountries(): Observable<Array<FieldOption>> {
     return of(mockCountries);
   }
 

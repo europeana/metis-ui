@@ -74,15 +74,17 @@
       <div *ngIf="currentStepIndex === 1" class="form-group">
         <label for="country" i18n="country label">Country</label>
         <select id="country" formControlName="country">
-          <option *ngFor="let option of countryList" [ngValue]="option">{{ option }}</option>
+          <option *ngFor="let option of countryList" [ngValue]="option.xmlValue">{{
+            option.xmlValue
+          }}</option>
         </select>
       </div>
 
       <div *ngIf="currentStepIndex === 1" class="form-group">
         <label for="language" i18n="language label">Language</label>
         <select id="language" formControlName="language">
-          <option *ngFor="let option of languageList" [ngValue]="option.code">{{
-            option.name
+          <option *ngFor="let option of languageList" [ngValue]="option.xmlValue">{{
+            option.xmlValue
           }}</option>
         </select>
       </div>

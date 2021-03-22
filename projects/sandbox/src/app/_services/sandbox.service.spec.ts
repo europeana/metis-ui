@@ -28,9 +28,10 @@ describe('sandbox service', () => {
   });
 
   it('should get the countries', () => {
-    const sub = service.getCountries().subscribe((countries: Array<string>) => {
+    const sub = service.getCountries().subscribe((countries: Array<FieldOption>) => {
       expect(countries).toEqual(mockCountries);
     });
+    mockHttp.expect('GET', '/dataset/countries').send(mockCountries);
     sub.unsubscribe();
   });
 
@@ -38,6 +39,7 @@ describe('sandbox service', () => {
     const sub = service.getLanguages().subscribe((languages: Array<FieldOption>) => {
       expect(languages).toEqual(mockLanguages);
     });
+    mockHttp.expect('GET', '/dataset/languages').send(mockLanguages);
     sub.unsubscribe();
   });
 
