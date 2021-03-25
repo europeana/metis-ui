@@ -254,7 +254,7 @@ describe('FilterOpsComponent', () => {
     fromDate.nativeElement.value = testDate1_plus1;
     fromDate.nativeElement.dispatchEvent(new Event('change'));
 
-    // set the to to be less than the min
+    // set the "to" to be less than the min
     toDate.nativeElement.value = testDate1;
     toDate.nativeElement.dispatchEvent(new Event('change'));
 
