@@ -179,7 +179,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         scorePositive = true;
       }
       if (scoreA === scoreB) {
-        return -1;
+        return 0;
       } else if (scoreA > scoreB) {
         return -1;
       } else {
