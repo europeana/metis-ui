@@ -10,8 +10,8 @@ export type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> = Pic
 };
 
 export interface FieldOption {
-  code: string;
   name: string;
+  xmlValue: string;
 }
 
 export enum WizardStepType {
