@@ -21,11 +21,11 @@ const today = new Date().toISOString().split('T')[0];
  * @param { string } value - the value to set
  **/
 const setElementValue = (el: HTMLInputElement, value: string | null): void => {
-  if(value){
+  if (value) {
     el.value = value;
     el.dispatchEvent(new Event('change'));
   }
-}
+};
 
 /**
  * setAttributeOnElements
@@ -37,20 +37,26 @@ const setElementValue = (el: HTMLInputElement, value: string | null): void => {
  * @param { string } value - the value to set
  * @param { HTMLElement[] } opElements - elements related in the config group
  **/
-const setAttributeOnElements = (filterId: string, attributeName: string, value: string, opElements?: HTMLElement[]): void => {
+const setAttributeOnElements = (
+  filterId: string,
+  attributeName: string,
+  value: string,
+  opElements?: HTMLElement[]
+): void => {
   if (opElements) {
-    opElements.filter((item) => {
-      return item.id === filterId;
-    })
-    .forEach((item) => {
-      if (value) {
-        item.setAttribute(attributeName, value);
-      } else {
-        item.removeAttribute(attributeName);
-      }
-    });
+    opElements
+      .filter((item) => {
+        return item.id === filterId;
+      })
+      .forEach((item) => {
+        if (value) {
+          item.setAttribute(attributeName, value);
+        } else {
+          item.removeAttribute(attributeName);
+        }
+      });
   }
-}
+};
 
 /**
  * setDateFrom
@@ -101,15 +107,19 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
  * @param { string | Date | null } otherVal - the other value
  * @param { boolean } compareAsDate - flag that the otherVal should be converted to a date before comparing
  **/
-const compareLTGT = (lt: boolean, val: string | Date, otherVal: string | Date | null, compareAsDate = false):boolean => {
-  if(compareAsDate && otherVal){
+const compareLTGT = (
+  lt: boolean,
+  val: string | Date,
+  otherVal: string | Date | null,
+  compareAsDate = false
+): boolean => {
+  if (compareAsDate && otherVal) {
     otherVal = new Date(otherVal);
   }
-  if(lt){
-    return !!otherVal && (val < otherVal);
-  }
-  else{
-    return !!otherVal && (val > otherVal);
+  if (lt) {
+    return !!otherVal && val < otherVal;
+  } else {
+    return !!otherVal && val > otherVal;
   }
 };
 
@@ -123,7 +133,6 @@ const compareLTGT = (lt: boolean, val: string | Date, otherVal: string | Date | 
  * @param { HTMLElement[] } opElements - elements related in the config group
  **/
 const setDateTo = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLElement[]): void => {
-
   const val = el.value;
   if (!val) {
     setAttributeOnElements('date-from', 'max', today, opElements);
@@ -149,14 +158,12 @@ const setDateTo = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLEle
       cmp.setHasError(true);
       return;
     } else {
-
       const dateFromVal = new Date(val);
 
-      if(compareLTGT(false, dateFromVal, max, true)){
+      if (compareLTGT(false, dateFromVal, max, true)) {
         setElementValue(el, max);
         return;
-      }
-      else if (compareLTGT(true, dateFromVal, min, true)) {
+      } else if (compareLTGT(true, dateFromVal, min, true)) {
         setElementValue(el, min);
         return;
       } else {
