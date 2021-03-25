@@ -166,9 +166,9 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
    * marks header orb as highlighted if it's the topmost in the viewport
    */
   setHighlightedField(fields: Array<WorkflowFormFieldComponent>, headerEl?: HTMLElement): void {
-    const headerHeight = 77;
+    let headerHeight = 77;
     if (headerEl) {
-      headerHeight + headerEl.offsetHeight;
+      headerHeight += headerEl.offsetHeight;
     }
     let scorePositive = false;
 
@@ -312,11 +312,11 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     }
 
     const validateTimer = timer(10).subscribe(() => {
+      let fieldsArray: Array<WorkflowFormFieldComponent> | undefined = undefined;
       if (this.inputFields) {
-        this.workflowStepAllowed(this.inputFields.toArray());
-      } else {
-        this.workflowStepAllowed(undefined);
+        fieldsArray = this.inputFields.toArray();
       }
+      this.workflowStepAllowed(fieldsArray);
       this.workflowForm.updateValueAndValidity();
       validateTimer.unsubscribe();
     });
@@ -402,10 +402,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     }
     // parameters for link-checking
     if (enabledPluginMetadata.pluginType === 'LINK_CHECKING') {
-      let value = 'false';
-      if (enabledPluginMetadata.performSampling) {
-        value = 'true';
-      }
+      const value = String(enabledPluginMetadata.performSampling);
       this.workflowForm.controls.performSampling.setValue(value);
     }
   }
