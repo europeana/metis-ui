@@ -17,9 +17,9 @@ const today = new Date().toISOString().split('T')[0];
  *
  * Function to invoke when the date-from is set
  *
- * @param { CanHaveError } - cmp - the component
- * @param { HTMLInputElement } - el - the native element
- * @param { HTMLElement[] } - opElements - elements related in the config group
+ * @param { CanHaveError } cmp - the component
+ * @param { HTMLInputElement } el - the native element
+ * @param { HTMLElement[] } opElements - elements related in the config group
  **/
 const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLElement[]): void => {
   const dates = isDateSupported() && el.getAttribute('type') === 'date';
@@ -68,9 +68,9 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
  *
  * Function to invoke when the date-from is set
  *
- * @param { CanHaveError } - cmp - the component
- * @param { HTMLInputElement } - el - the native element
- * @param { HTMLElement[] } - opElements - elements related in the config group
+ * @param { CanHaveError } cmp - the component
+ * @param { HTMLInputElement } el - the native element
+ * @param { HTMLElement[] } opElements - elements related in the config group
  **/
 const setDateTo = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLElement[]): void => {
   const val = el.value;
