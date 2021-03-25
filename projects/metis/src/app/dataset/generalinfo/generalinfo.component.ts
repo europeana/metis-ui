@@ -29,12 +29,13 @@ export class GeneralinfoComponent {
   set harvestPublicationData(value: HarvestData) {
     this._harvestPublicationData = value;
     if (value) {
-      this.currentDepublicationStatusMessage =
-        value.publicationStatus === DatasetDepublicationStatus.DEPUBLISHED
-          ? 'depublished'
-          : value.publicationStatus === DatasetDepublicationStatus.PUBLISHED
-          ? 'published'
-          : undefined;
+      if (value.publicationStatus === DatasetDepublicationStatus.DEPUBLISHED) {
+        this.currentDepublicationStatusMessage = 'depublished';
+      } else if (value.publicationStatus === DatasetDepublicationStatus.PUBLISHED) {
+        this.currentDepublicationStatusMessage = 'published';
+      } else {
+        this.currentDepublicationStatusMessage = undefined;
+      }
       this.currentDepublicationStatusClass = this.currentDepublicationStatusMessage;
       this.lastDepublishedDate = value.lastDepublishedDate;
       this.lastDepublishedRecords = value.lastDepublishedRecords;
