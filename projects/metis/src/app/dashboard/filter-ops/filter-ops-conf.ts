@@ -1,6 +1,6 @@
 /** Defines which filters are available for the dashboard executions overview
  */
-import { isDateSupported, isValidDate } from '../../_helpers/date-helpers';
+import { isSupportedDateElement, isValidDate } from '../../_helpers/date-helpers';
 import {
   CanHaveError,
   FilterExecutionConf,
@@ -13,6 +13,52 @@ import { RenameWorkflowPipe } from '../../_translate';
 const today = new Date().toISOString().split('T')[0];
 
 /**
+ * setElementValue
+ *
+ * Sets an element's value if the value is present and dispatches the change event
+ *
+ * @param { HTMLInputElement } el - the native element
+ * @param { string } value - the value to set
+ **/
+const setElementValue = (el: HTMLInputElement, value: string | null): void => {
+  if (value) {
+    el.value = value;
+    el.dispatchEvent(new Event('change'));
+  }
+};
+
+/**
+ * setAttributeOnElements
+ *
+ * Sets the specified attribute on a (filtered) element list
+ *
+ * @param { string } filterId - the id to filter on
+ * @param { string } attributeName - the attribute to set
+ * @param { string } value - the value to set
+ * @param { HTMLElement[] } opElements - elements related in the config group
+ **/
+const setAttributeOnElements = (
+  filterId: string,
+  attributeName: string,
+  value: string,
+  opElements?: HTMLElement[]
+): void => {
+  if (opElements) {
+    opElements
+      .filter((item) => {
+        return item.id === filterId;
+      })
+      .forEach((item) => {
+        if (value) {
+          item.setAttribute(attributeName, value);
+        } else {
+          item.removeAttribute(attributeName);
+        }
+      });
+  }
+};
+
+/**
  * setDateFrom
  *
  * Function to invoke when the date-from is set
@@ -22,14 +68,13 @@ const today = new Date().toISOString().split('T')[0];
  * @param { HTMLElement[] } opElements - elements related in the config group
  **/
 const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLElement[]): void => {
-  const dates = isDateSupported() && el.getAttribute('type') === 'date';
+  const dates = isSupportedDateElement(el);
   const val = el.value;
   const max = el.getAttribute('max');
 
   if (val && max) {
     if (dates && val > max) {
-      el.value = max;
-      el.dispatchEvent(new Event('change'));
+      setElementValue(el, max);
       return;
     } else if (!dates) {
       const valid = isValidDate(val);
@@ -39,8 +84,7 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
       } else {
         cmp.setHasError(false);
         if (new Date(val) > new Date(max)) {
-          el.value = max;
-          el.dispatchEvent(new Event('change'));
+          setElementValue(el, max);
           return;
         }
       }
@@ -50,16 +94,32 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
   }
 
   // Add/remove the min value attribute to/from the related html elements
-  if (opElements) {
-    opElements.forEach((item) => {
-      if (item.id === 'date-to') {
-        if (val) {
-          item.setAttribute('min', val);
-        } else {
-          item.removeAttribute('min');
-        }
-      }
-    });
+  setAttributeOnElements('date-to', 'min', val, opElements);
+};
+
+/**
+ * compareLTGT
+ *
+ * Generic comparison function (strings / Dates) that accepts a null comparison
+ *
+ * @param { boolean } lt - indicate if comparison is "less than" ("greater than" if false)
+ * @param { string | Date } val - the value
+ * @param { string | Date | null } otherVal - the other value
+ * @param { boolean } compareAsDate - flag that the otherVal should be converted to a date before comparing
+ **/
+const compareLTGT = (
+  lt: boolean,
+  val: string | Date,
+  otherVal: string | Date | null,
+  compareAsDate = false
+): boolean => {
+  if (compareAsDate && otherVal) {
+    otherVal = new Date(otherVal);
+  }
+  if (lt) {
+    return !!otherVal && val < otherVal;
+  } else {
+    return !!otherVal && val > otherVal;
   }
 };
 
@@ -74,54 +134,44 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
  **/
 const setDateTo = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLElement[]): void => {
   const val = el.value;
+  if (!val) {
+    setAttributeOnElements('date-from', 'max', today, opElements);
+    return;
+  }
+
   const max = el.getAttribute('max');
   const min = el.getAttribute('min');
-  const dates = isDateSupported() && el.getAttribute('type') === 'date';
+  const dates = isSupportedDateElement(el);
 
-  if (val) {
-    if (dates) {
-      if (min && val < min) {
-        el.value = min;
-        el.dispatchEvent(new Event('change'));
-        return;
-      }
-      if (max && val > max) {
-        el.value = max;
-        el.dispatchEvent(new Event('change'));
-        return;
-      }
+  if (dates) {
+    if (compareLTGT(true, val, min)) {
+      setElementValue(el, min);
+      return;
+    }
+    if (compareLTGT(false, val, max)) {
+      setElementValue(el, max);
+      return;
+    }
+  } else {
+    const valid = isValidDate(val);
+    if (!valid) {
+      cmp.setHasError(true);
+      return;
     } else {
-      const valid = isValidDate(val);
-      if (!valid) {
-        cmp.setHasError(true);
+      const dateFromVal = new Date(val);
+
+      if (compareLTGT(false, dateFromVal, max, true)) {
+        setElementValue(el, max);
+        return;
+      } else if (compareLTGT(true, dateFromVal, min, true)) {
+        setElementValue(el, min);
         return;
       } else {
-        if (max && new Date(val) > new Date(max)) {
-          el.value = max;
-          el.dispatchEvent(new Event('change'));
-          return;
-        } else if (min && new Date(val) < new Date(min)) {
-          el.value = min;
-          el.dispatchEvent(new Event('change'));
-          return;
-        } else {
-          cmp.setHasError(false);
-        }
+        cmp.setHasError(false);
       }
     }
   }
-
-  if (opElements) {
-    opElements.forEach((item) => {
-      if (item.id === 'date-from') {
-        if (val) {
-          item.setAttribute('max', val);
-        } else {
-          item.setAttribute('max', today);
-        }
-      }
-    });
-  }
+  setAttributeOnElements('date-from', 'max', val, opElements);
 };
 
 /**

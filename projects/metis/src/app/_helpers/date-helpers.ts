@@ -1,12 +1,13 @@
-/** isDateSupported
-/* check if the browser supports the html date input
+/** isSupportedDateElement
+/* check if the browser supports the html date input and that the supplied input is a date
+/* @param { HTMLInputElement } el - the elemnt to test
 */
-export function isDateSupported(): boolean {
+export function isSupportedDateElement(el: HTMLInputElement): boolean {
   const input = document.createElement('input');
   const value = 'a';
   input.setAttribute('type', 'date');
   input.setAttribute('value', value);
-  return input.value !== value;
+  return el.getAttribute('type') === 'date' && input.value !== value;
 }
 
 /** isValidDate
