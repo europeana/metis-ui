@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
-import { DataPollingComponent } from 'shared';
+import { DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   DatasetInfo,
@@ -14,7 +14,6 @@ import {
   WizardStepType
 } from '../_models';
 import { SandboxService } from '../_services';
-import { ProtocolType } from 'shared';
 
 @Component({
   selector: 'sb-wizard',

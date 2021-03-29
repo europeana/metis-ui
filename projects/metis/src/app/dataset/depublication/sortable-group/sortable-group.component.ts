@@ -4,10 +4,10 @@ import {
   Input,
   Output,
   QueryList,
+  TemplateRef,
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { TemplateRef } from '@angular/core';
 import { SortableHeaderComponent } from '../sortable-header';
 import { SortHeaderGroupConf, SortParameter } from '../../../_models';
 
