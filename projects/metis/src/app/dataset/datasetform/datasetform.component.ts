@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SubscriptionManager } from 'shared';
 import {
@@ -181,12 +181,13 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
       this.countries.getCountries().subscribe(
         (result) => {
           this.countryOptions = result;
-          if (this.datasetData && this.countryOptions && this.datasetData.country) {
-            for (let i = 0; i < this.countryOptions.length; i++) {
-              if (this.countryOptions[i].enum === this.datasetData.country.enum) {
-                this.selectedCountry = this.countryOptions[i];
+          const datasetCountry = this.datasetData.country;
+          if (this.datasetData && this.countryOptions && datasetCountry) {
+            this.countryOptions.forEach((country: Country) => {
+              if (country.enum === datasetCountry.enum) {
+                this.selectedCountry = country;
               }
-            }
+            });
           }
           this.updateForm();
         },
@@ -206,12 +207,13 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
       this.countries.getLanguages().subscribe(
         (result) => {
           this.languageOptions = result;
-          if (this.datasetData && this.languageOptions && this.datasetData.language) {
-            for (let i = 0; i < this.languageOptions.length; i++) {
-              if (this.languageOptions[i].enum === this.datasetData.language.enum) {
-                this.selectedLanguage = this.languageOptions[i];
+          const datasetLanguage = this.datasetData.language;
+          if (this.datasetData && this.languageOptions && datasetLanguage) {
+            this.languageOptions.forEach((lang: Language) => {
+              if (lang.enum === datasetLanguage.enum) {
+                this.selectedLanguage = lang;
               }
-            }
+            });
           }
           this.updateForm();
         },
@@ -245,12 +247,17 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     this.updateFormEnabled();
   }
 
+  /** getIdsAsFormArray
+  /* generates a FormArray object from datasetIdsToRedirectFrom
+  /* @returns FormArray
+  */
   getIdsAsFormArray(): FormArray {
-    const list = this.datasetData.datasetIdsToRedirectFrom
-      ? this.datasetData.datasetIdsToRedirectFrom.map((id) => {
-          return this.fb.control(id);
-        })
-      : [];
+    let list: Array<FormControl> = [];
+    if (this.datasetData.datasetIdsToRedirectFrom) {
+      list = this.datasetData.datasetIdsToRedirectFrom.map((id) => {
+        return this.fb.control(id);
+      });
+    }
     return this.fb.array(list);
   }
 
