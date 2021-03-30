@@ -2,8 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { throwError } from 'rxjs';
-
+import { of, throwError } from 'rxjs';
 import {
   createMockPipe,
   mockDataset,
@@ -103,6 +102,19 @@ describe('StatisticsComponent', () => {
     expect(spyLoading).toHaveBeenCalledTimes(2);
     expect(calls).toEqual([true, false]);
   }));
+
+  it('shuld handle empty results', () => {
+    expect(component.isLoading).toBeFalsy();
+    spyOn(cmpWorkflowService, 'getFinishedDatasetExecutions').and.callFake((_: string) => {
+      return of({
+        listSize: 1,
+        nextPage: -1,
+        results: []
+      });
+    });
+    component.loadStatistics();
+    expect(component.isLoading).toBeFalsy();
+  });
 
   it('shows a notification when loading finished executions fails', () => {
     expect(component.notification).toBeFalsy();

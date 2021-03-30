@@ -2,7 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { SubscriptionManager } from 'shared';
-import { Dataset, httpErrorNotification, Notification, Statistics } from '../../_models';
+import {
+  Dataset,
+  httpErrorNotification,
+  Notification,
+  PluginExecution,
+  Statistics
+} from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 @Component({
@@ -59,11 +65,13 @@ export class StatisticsComponent extends SubscriptionManager implements OnInit {
           tap((result) => {
             if (result.results.length > 0) {
               // find validation in the latest run, and if available, find taskid
-              for (let i = 0; i < result.results[0].metisPlugins.length; i++) {
-                if (result.results[0].metisPlugins[i].pluginType === 'VALIDATION_EXTERNAL') {
-                  this.taskId = result.results[0].metisPlugins[i].externalTaskId;
-                }
-              }
+              result.results[0].metisPlugins
+                .filter((pe: PluginExecution) => {
+                  return pe.pluginType === 'VALIDATION_EXTERNAL';
+                })
+                .forEach((pe: PluginExecution) => {
+                  this.taskId = pe.externalTaskId;
+                });
             }
           }),
           filter(() => {
