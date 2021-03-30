@@ -1,10 +1,10 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-app-sortable-group {
+#app-sortable-group {
   display: none;
 }
-
 .btn-delete {
   margin-left: 0;
 }
@@ -79,9 +79,13 @@ app-sortable-group {
   }
 }
 
-.svg-icon-spin {
-  position: absolute;
-  right: 0.5em;
+.indicator-saving {
+  display: block;
+  height: 1.5rem;
+  width: 1.5rem;
+  &.showing {
+    background-image: svg-url-icon-spin('#777');
+  }
 }
 
 .filter .dropdown a {
