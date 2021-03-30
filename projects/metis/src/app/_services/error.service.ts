@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { concat, Observable, of, throwError } from 'rxjs';
-import { delay, flatMap, retryWhen, take } from 'rxjs/operators';
+import { delay, mergeMap, retryWhen, take } from 'rxjs/operators';
 
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
 import { TranslateService } from '../_translate';
@@ -47,7 +47,7 @@ export class ErrorService {
     return retryWhen<T>((error) =>
       concat(
         error.pipe(
-          flatMap((errorM: HttpErrorResponse) => {
+          mergeMap((errorM: HttpErrorResponse) => {
             if (this.shouldRetry(errorM)) {
               return of(true).pipe(delay(this.retryDelay));
             } else {
