@@ -45,7 +45,7 @@
 
   <ul class="filter" (clickOutside)="closeMenus()">
     <li>
-      <span class="svg-icon-spin" [ngClass]="{ showing: isSaving }"></span>
+      <span class="indicator-saving" [ngClass]="{ showing: isSaving }"></span>
     </li>
     <li class="dropdown dropdown-options depublish">
       <a
@@ -169,6 +169,7 @@
   <ng-container>
     <app-sortable-group
       #dataWrapper
+      id="app-sortable-group"
       [grpConf]="sortHeaderGroupConf"
       (onGroupSet)="setDataSortParameter($event)"
       (onSelectAll)="setSelection($event)"
