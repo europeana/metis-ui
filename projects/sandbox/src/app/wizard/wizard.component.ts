@@ -325,10 +325,9 @@ export class WizardComponent extends DataPollingComponent {
     const wStep = this.wizardConf[step];
     const fields = wStep.fields;
     const form = this.getFormGroup(wStep);
-
     return !fields.find((f: string) => {
-      const val = form.get(f);
-      return val ? !val.valid : false;
+      const val = form.get(f) as FormControl;
+      return !val.valid;
     });
   }
 }
