@@ -29,6 +29,7 @@ context('Sandbox', () => {
     const selectorInputZipFile = '[type="file"]';
     const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
     const selectorProgress = '.progress-title';
+    const testDatasetName = 'Test_dataset_1';
 
     beforeEach(() => {
       cy.server();
@@ -42,7 +43,7 @@ context('Sandbox', () => {
     });
 
     const fillUploadForm = (): void => {
-      cy.get(selectorInputName).type('Test-dataset');
+      cy.get(selectorInputName).type(testDatasetName);
       cy.get(selectorBtnNext).click();
       cy.get(selectorInputCountry).select('Greece');
       cy.get(selectorInputLanguage).select('Greek');
@@ -139,7 +140,7 @@ context('Sandbox', () => {
         cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
       };
 
-      cy.get(selectorInputName).type('Test-dataset');
+      cy.get(selectorInputName).type(testDatasetName);
       cy.get('.wizard-status li:nth-child(1) a').should('have.class', classSet);
 
       setStep(2);

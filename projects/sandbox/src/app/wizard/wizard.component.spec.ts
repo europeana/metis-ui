@@ -155,7 +155,6 @@ describe('WizardComponent', () => {
       tick(1);
       expect(component.isBusy).toBeTruthy();
       expect(component.trackDatasetId).toBeTruthy();
-
       component.cleanup();
       tick(apiSettings.interval);
     }));
@@ -209,6 +208,30 @@ describe('WizardComponent', () => {
       expect(component.canGoToNext()).toBeTruthy();
       component.setStep(2);
       expect(component.canGoToNext()).toBeFalsy();
+    });
+
+    it('should validate the dataset id', () => {
+      const frmCtrl = (val: string): FormControl => {
+        return ({ value: val } as unknown) as FormControl;
+      };
+      ['0', '1'].forEach((val: string) => {
+        expect(component.validateDatasetId(frmCtrl(val))).toBeFalsy();
+      });
+      [' 1', '1 ', ' 1 ', '1 1', 'a', '@'].forEach((val: string) => {
+        expect(component.validateDatasetId(frmCtrl(val))).toBeTruthy();
+      });
+    });
+
+    it('should validate the dataset name', () => {
+      const frmCtrl = (val: string): FormControl => {
+        return ({ value: val } as unknown) as FormControl;
+      };
+      ['0', '1', 'A1', 'A_1', '_1_A_'].forEach((val: string) => {
+        expect(component.validateDatasetName(frmCtrl(val))).toBeFalsy();
+      });
+      [' 1', '1 ', ' 1 ', '1 1', '@', '-', '"', 'A ', 'A A'].forEach((val: string) => {
+        expect(component.validateDatasetName(frmCtrl(val))).toBeTruthy();
+      });
     });
   });
 
