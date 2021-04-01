@@ -40,12 +40,14 @@ describe('single cache', () => {
     expect(fn).toHaveBeenCalledTimes(2);
   });
 
-  it('should not cache an error', () => {
-    const fn = jasmine.createSpy().and.callFake(() => throwError(new Error('wrong')));
+  it('should not cache an error, but clear the cache', () => {
+    const error = new Error('wrong');
+    const fn = jasmine.createSpy().and.callFake(() => throwError(error));
     const cache = new SingleCache<number>(fn);
     new Array(3).fill(null).map(() => {
-      expect(gatherError(cache.get())).not.toEqual('wrong');
+      expect(gatherError(cache.get())).toEqual(error);
     });
+    // Must be called 3 times, indicating that error was not cached.
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
@@ -102,10 +104,15 @@ describe('keyed cache', () => {
     expect(fn).toHaveBeenCalledTimes(4);
   });
 
-  it('should not cache an error', () => {
-    const fn = jasmine.createSpy().and.callFake(() => throwError(new Error('wrong')));
+  it('should not cache an error, but clear the cache', () => {
+    const error = new Error('wrong');
+    const fn = jasmine.createSpy().and.callFake(() => throwError(error));
     const cache = new KeyedCache<string>(fn);
-    expect(gatherError(cache.get('wrong'))).not.toEqual('wrong');
+    new Array(3).fill(null).map(() => {
+      expect(gatherError(cache.get('key'))).toEqual(error);
+    });
+    // Must be called 3 times, indicating that error was not cached.
+    expect(fn).toHaveBeenCalledTimes(3);
   });
 
   it('should peek', () => {

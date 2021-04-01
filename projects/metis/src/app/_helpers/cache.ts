@@ -10,9 +10,12 @@ export class SingleCache<Value> {
   /* accessor for the observable variable
   */
   public get(refresh = false): Observable<Value> {
+    // If already cached, return.
     if (this.observable && !refresh) {
       return this.observable;
     }
+
+    // Create new observable.
     const observable = this.sourceFn().pipe(
       tap(
         (_) => undefined,
@@ -22,7 +25,7 @@ export class SingleCache<Value> {
       publishLast()
     ) as ConnectableObservable<Value>;
 
-    // assignment to this.observable has to happen before calling connect()
+    // Return local variable, as this.observable might be cleared by the connect call.
     this.observable = observable;
     observable.connect();
     return observable;
@@ -52,10 +55,13 @@ export class KeyedCache<Value> {
   /* accessor for the observable variable
   */
   public get(key: string, refresh = false): Observable<Value> {
+    // If already cached, return.
     const o = this.observableByKey[key];
     if (o && !refresh) {
       return o;
     }
+
+    // Create new observable.
     const observable = this.sourceFn(key).pipe(
       tap(
         (_) => undefined,
@@ -64,6 +70,8 @@ export class KeyedCache<Value> {
       ),
       publishLast()
     ) as ConnectableObservable<Value>;
+
+    // Return local variable, as this.observableByKey[key] might be cleared by the connect call.
     this.observableByKey[key] = observable;
     observable.connect();
     return observable;
