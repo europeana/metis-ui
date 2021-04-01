@@ -33,7 +33,7 @@
   flex-direction: column;
 }
 
-.filter :first-child:visible {
+.filter {
   margin-left: auto;
 }
 
@@ -84,7 +84,7 @@
   height: 1.5rem;
   width: 1.5rem;
   &.showing {
-    background-image: svg-url-icon-spin('#777');
+    background: svg-url-icon-spin('#{$gray-light}') center no-repeat;
   }
 }
 
