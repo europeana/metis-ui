@@ -101,7 +101,7 @@ export class ActionbarComponent {
     this.now = this.currentPlugin.updatedDate || this.currentPlugin.startedDate;
     this.workflowPercentage = 0;
 
-    if (isWorkflowCompleted(value)) {
+    if (this.isCompleted) {
       if (value.workflowStatus === WorkflowStatus.FINISHED) {
         this.now = value.finishedDate;
       } else {
@@ -143,11 +143,13 @@ export class ActionbarComponent {
   /* cancel the workflow
   */
   cancelWorkflow(): void {
-    this.workflows.promptCancelThisWorkflow(
-      this.lastExecutionData!.id,
-      this.datasetId,
-      this.datasetName
-    );
+    if (this.lastExecutionData) {
+      this.workflows.promptCancelThisWorkflow(
+        this.lastExecutionData.id,
+        this.datasetId,
+        this.datasetName
+      );
+    }
   }
 
   /** showLog

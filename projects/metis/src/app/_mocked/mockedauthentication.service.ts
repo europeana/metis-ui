@@ -31,7 +31,7 @@ export class MockRedirectPreviousUrl {
 }
 
 export class MockAuthenticationService {
-  currentUser = mockUser;
+  currentUser: User | null = mockUser;
   loggedIn = true;
   errorMode = false;
   timerInterval = 1;
@@ -100,7 +100,10 @@ export class MockAuthenticationService {
   }
 
   getToken(): string | null {
-    return this.currentUser.metisUserAccessToken.accessToken;
+    if (this.currentUser) {
+      return this.currentUser.metisUserAccessToken.accessToken;
+    }
+    return null;
   }
 
   getUserByUserId(): Observable<User> {

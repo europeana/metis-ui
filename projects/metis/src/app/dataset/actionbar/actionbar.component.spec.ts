@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-
 import {
   createMockPipe,
   mockWorkflow,
@@ -8,7 +7,7 @@ import {
   mockWorkflowExecutionResults,
   MockWorkflowService
 } from '../../_mocked';
-import { WorkflowStatus } from '../../_models';
+import { PluginExecution, WorkflowExecution, WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
 
 import { ActionbarComponent } from '.';
@@ -41,6 +40,32 @@ describe('ActionbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should begin the workflow', () => {
+    component.cancelledBy = 'XXX';
+    component.beginWorkflow();
+    expect(component.cancelledBy).toBeFalsy();
+  });
+
+  it('should assign the execution data', () => {
+    spyOn(component, 'assignExecutionData').and.callThrough();
+    component.lastExecutionData = undefined;
+    expect(component.assignExecutionData).not.toHaveBeenCalled();
+    component.lastExecutionData = ({ metisPlugins: [{}] } as unknown) as WorkflowExecution;
+    expect(component.assignExecutionData).toHaveBeenCalled();
+    expect(component.totalInDataset).toBeFalsy();
+    expect(component.now).toBeFalsy();
+    component.lastExecutionData = ({
+      workflowStatus: WorkflowStatus.CANCELLED,
+      metisPlugins: [{}],
+      updatedDate: 'XXX'
+    } as unknown) as WorkflowExecution;
+    expect(component.now).toBeTruthy();
+    spyOn(component, 'showLog').and.callFake(() => {});
+    component.showPluginLog = {} as PluginExecution;
+    component.lastExecutionData = ({ metisPlugins: [{}] } as unknown) as WorkflowExecution;
+    expect(component.showLog).toHaveBeenCalled();
+  });
+
   it('should update fields based on the last execution', () => {
     component.lastExecutionData = mockWorkflowExecutionResults.results[4];
     expect(component.currentPlugin!.id).toBe('432552345');
@@ -65,15 +90,16 @@ describe('ActionbarComponent', () => {
   });
 
   it('should cancel', (): void => {
+    spyOn(workflows, 'promptCancelThisWorkflow');
+    component.cancelWorkflow();
+    fixture.detectChanges();
+    expect(workflows.promptCancelThisWorkflow).not.toHaveBeenCalled();
+
     component.lastExecutionData = mockWorkflowExecutionResults.results[1];
     fixture.detectChanges();
     expect(component.lastExecutionData.workflowStatus).toBe(WorkflowStatus.RUNNING);
 
-    spyOn(workflows, 'promptCancelThisWorkflow');
-    const cancel = fixture.debugElement.query(By.css('.dataset-actionbar nav .cancel-btn'));
-    expect(cancel).toBeTruthy();
-
-    cancel.triggerEventHandler('click', null);
+    component.cancelWorkflow();
     fixture.detectChanges();
     expect(workflows.promptCancelThisWorkflow).toHaveBeenCalledWith(
       '253453453',

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, StringifyHttpError } from '../_helpers';
 import { errorNotification, Notification, successNotification, User } from '../_models';
@@ -11,7 +11,7 @@ import { AuthenticationService, DocumentTitleService, ErrorService } from '../_s
   selector: 'app-profile',
   templateUrl: './profile.component.html'
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent extends SubscriptionManager implements OnInit {
   editMode = false;
   loading = false;
   notification?: Notification;
@@ -25,7 +25,9 @@ export class ProfileComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
   /* init of this component
@@ -123,25 +125,25 @@ export class ProfileComponent implements OnInit {
     const password = passwords.get('password')!.value;
     const oldpassword = passwords.get('oldpassword')!.value;
 
-    const subUpdate = this.authentication.updatePassword(password, oldpassword).subscribe(
-      (result) => {
-        this.loading = false;
-        this.toggleEditMode();
-        if (result) {
-          this.notification = successNotification('Update password successful!');
-        } else {
-          this.notification = errorNotification('Update password failed, please try again later');
+    this.subs.push(
+      this.authentication.updatePassword(password, oldpassword).subscribe(
+        (result) => {
+          this.loading = false;
+          this.toggleEditMode();
+          if (result) {
+            this.notification = successNotification('Update password successful!');
+          } else {
+            this.notification = errorNotification('Update password failed, please try again later');
+          }
+        },
+        (err: HttpErrorResponse) => {
+          const error = this.errors.handleError(err);
+          this.notification = errorNotification(
+            `Update password failed: ${StringifyHttpError(error)}`
+          );
+          this.loading = false;
         }
-        subUpdate.unsubscribe();
-      },
-      (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = errorNotification(
-          `Update password failed: ${StringifyHttpError(error)}`
-        );
-        this.loading = false;
-        subUpdate.unsubscribe();
-      }
+      )
     );
   }
 
@@ -151,10 +153,8 @@ export class ProfileComponent implements OnInit {
   onReloadProfile(): void {
     this.notification = undefined;
     this.loading = true;
-
-    const subReload = this.authentication
-      .reloadCurrentUser(this.profileForm.controls.email.value)
-      .subscribe(
+    this.subs.push(
+      this.authentication.reloadCurrentUser(this.profileForm.controls.email.value).subscribe(
         (result) => {
           if (result) {
             this.notification = successNotification('Your profile has been updated');
@@ -163,16 +163,15 @@ export class ProfileComponent implements OnInit {
             this.notification = errorNotification('Refresh failed, please try again later');
           }
           this.loading = false;
-          subReload.unsubscribe();
           window.scrollTo(0, 0);
         },
         (err: HttpErrorResponse) => {
           const error = this.errors.handleError(err);
           this.notification = errorNotification(`Refresh failed: ${StringifyHttpError(error)}`);
           this.loading = false;
-          subReload.unsubscribe();
           window.scrollTo(0, 0);
         }
-      );
+      )
+    );
   }
 }
