@@ -60,6 +60,7 @@ describe('ActionbarComponent', () => {
       updatedDate: 'XXX'
     } as unknown) as WorkflowExecution;
     expect(component.now).toBeTruthy();
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     spyOn(component, 'showLog').and.callFake(() => {});
     component.showPluginLog = {} as PluginExecution;
     component.lastExecutionData = ({ metisPlugins: [{}] } as unknown) as WorkflowExecution;
