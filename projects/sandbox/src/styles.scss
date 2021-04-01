@@ -20,8 +20,21 @@ $textcolour_highlight: $accent;
 @import 'shared-styles/assets/sass/scss/base/forms';
 @import 'shared-styles/assets/sass/scss/base/text';
 @import 'shared-styles/assets/sass/scss/base/links';
+
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+/* PAGE STRUCTURE */
+@import 'shared-styles/assets/sass/scss/objects/header';
+@import 'shared-styles/assets/sass/scss/objects/blocks/site-hero';
+
+/* NAVIGATION */
+@import 'shared-styles/assets/sass/scss/objects/nav';
+@import 'shared-styles/assets/sass/scss/objects/navigation/phase-flags';
+
+/* Metis */
+@import 'shared-styles/assets/sass/pandora/base/helpers';
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/pandora/components/dashboard-header';
 @import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
@@ -51,6 +64,10 @@ label {
 .form-group {
   color: $eu-jade-dark;
   margin: 0 auto 1rem;
+}
+
+.header-wrapper header {
+  height: $fixed-header-height;
 }
 
 .wizard input[type='file'] {

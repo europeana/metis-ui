@@ -22,9 +22,8 @@
     /* logo */
     .metis-logo {
       width: auto;
-
       .logo {
-        background-image: url('/assets/images/europeana-metis-logo.png');
+        background-image: url('../../../images/europeana-metis-logo.png');
         margin-left: 1rem;
         width: 168px;
         @media all and (min-width: $bp-small-3) {
