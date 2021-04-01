@@ -21,7 +21,11 @@ describe('single cache', () => {
     const fn = createCacheFn();
     const cache = new SingleCache<number>(fn);
     expect(gatherValues(cache.get())).toEqual([1]);
+    expect(fn).toHaveBeenCalledTimes(1);
     expect(gatherValues(cache.get(true))).toEqual([2]);
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(gatherValues(cache.get())).toEqual([2]);
+    expect(fn).toHaveBeenCalledTimes(2);
     expect(gatherValues(cache.get(true))).toEqual([3]);
     expect(fn).toHaveBeenCalledTimes(3);
   });

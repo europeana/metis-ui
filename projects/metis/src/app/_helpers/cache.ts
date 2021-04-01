@@ -2,7 +2,7 @@ import { ConnectableObservable, Observable, of } from 'rxjs';
 import { publishLast, tap } from 'rxjs/operators';
 
 export class SingleCache<Value> {
-  private observable?: Observable<Value>;
+  private observable?: ConnectableObservable<Value>;
 
   constructor(private readonly sourceFn: () => Observable<Value>) {}
 
@@ -13,15 +13,18 @@ export class SingleCache<Value> {
     if (this.observable && !refresh) {
       return this.observable;
     }
-    const observable = (this.observable = this.sourceFn().pipe(
+    const observable = this.sourceFn().pipe(
       tap(
         (_) => undefined,
         (_) => this.clear(),
         () => undefined
       ),
       publishLast()
-    ));
-    (observable as ConnectableObservable<Value>).connect();
+    ) as ConnectableObservable<Value>;
+
+    // assignment to this.observable has to happen before calling connect()
+    this.observable = observable;
+    observable.connect();
     return observable;
   }
 
@@ -29,7 +32,7 @@ export class SingleCache<Value> {
   /* return the observable or undefined as an observable
   */
   public peek(): Observable<Value | undefined> {
-    return this.observable || of(undefined);
+    return this.observable || of(void 0);
   }
 
   /** clear
@@ -53,15 +56,16 @@ export class KeyedCache<Value> {
     if (o && !refresh) {
       return o;
     }
-    const observable = (this.observableByKey[key] = this.sourceFn(key).pipe(
+    const observable = this.sourceFn(key).pipe(
       tap(
         (_) => undefined,
         (_) => this.clear(key),
         () => undefined
       ),
       publishLast()
-    ));
-    (observable as ConnectableObservable<Value>).connect();
+    ) as ConnectableObservable<Value>;
+    this.observableByKey[key] = observable;
+    observable.connect();
     return observable;
   }
 
@@ -69,7 +73,7 @@ export class KeyedCache<Value> {
   /* return the observable or undefined as an observable
   */
   public peek(key: string): Observable<Value | undefined> {
-    return this.observableByKey[key] || of(undefined);
+    return this.observableByKey[key] || of(void 0);
   }
 
   /** clear
