@@ -92,6 +92,16 @@ export class MockAuthenticationService {
   }
 
   register(): Observable<boolean> {
+    if (this.errorMode) {
+      return timer(this.timerInterval).pipe(
+        switchMap(() => {
+          return throwError({
+            status: 401,
+            error: { errorMessage: 'Mock register Error' }
+          } as HttpErrorResponse);
+        })
+      );
+    }
     return of(true).pipe(delay(this.timerInterval));
   }
 

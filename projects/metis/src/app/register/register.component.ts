@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SubscriptionManager } from 'shared';
 import { timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MatchPasswordValidator, PasswordStrength } from '../_helpers';
@@ -19,7 +20,7 @@ import { TranslateService } from '../_translate';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent extends SubscriptionManager implements OnInit {
   loading = false;
   notification?: Notification;
   msgSuccess: string;
@@ -36,7 +37,9 @@ export class RegisterComponent implements OnInit {
     private readonly authentication: AuthenticationService,
     private readonly translate: TranslateService,
     private readonly documentTitleService: DocumentTitleService
-  ) {}
+  ) {
+    super();
+  }
 
   /** ngOnInit
   /* init for this component
@@ -69,7 +72,7 @@ export class RegisterComponent implements OnInit {
   /* get password after keyup in form
   */
   onKeyupPassword(): void {
-    this.password = this.registerForm.controls.passwords.get('password')!.value;
+    this.password = (this.registerForm.controls.passwords.get('password') as FormControl).value;
   }
 
   /** onSubmit
@@ -83,7 +86,7 @@ export class RegisterComponent implements OnInit {
     const controls = this.registerForm.controls;
     const email = controls.email.value;
     const passwords = controls.passwords;
-    const password = passwords.get('password')!.value;
+    const password = (passwords.get('password') as FormControl).value;
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 
@@ -91,19 +94,19 @@ export class RegisterComponent implements OnInit {
       this.notification = errorNotification(this.msgPasswordWeak);
       this.loading = false;
     } else {
-      const subRegister = this.authentication.register(email, password).subscribe(
-        (result) => {
-          this.loading = false;
-          if (result) {
-            this.onRegistration(this.msgSuccess);
+      this.subs.push(
+        this.authentication.register(email, password).subscribe(
+          (result) => {
+            this.loading = false;
+            if (result) {
+              this.onRegistration(this.msgSuccess);
+            }
+          },
+          (err: HttpErrorResponse) => {
+            this.loading = false;
+            this.notification = httpErrorNotification(err);
           }
-          subRegister.unsubscribe();
-        },
-        (err: HttpErrorResponse) => {
-          this.loading = false;
-          this.notification = httpErrorNotification(err);
-          subRegister.unsubscribe();
-        }
+        )
       );
     }
   }

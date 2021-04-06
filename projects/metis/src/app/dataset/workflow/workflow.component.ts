@@ -243,7 +243,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
    */
   setLinkCheck(linkCheckIndex: number): void {
     this.rearrange(linkCheckIndex, false);
-    this.workflowForm.get('pluginLINK_CHECKING')!.markAsDirty();
+    (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).markAsDirty();
   }
 
   /** addLinkCheck
@@ -333,10 +333,9 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
           fieldsArray = this.inputFields.toArray();
         }
         this.workflowStepAllowed(fieldsArray);
-        if (this.workflowForm.get('pluginLINK_CHECKING')!.value === true) {
-          (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValidators([
-            Validators.required
-          ]);
+        const ctrlLinkChecking = this.workflowForm.get('pluginLINK_CHECKING') as FormControl;
+        if (ctrlLinkChecking.value === true) {
+          ctrlLinkChecking.setValidators([Validators.required]);
         }
       })
     );
