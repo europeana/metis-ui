@@ -105,9 +105,9 @@ export class WizardComponent extends DataPollingComponent {
    **/
   validateDatasetId(control: FormControl): { [key: string]: boolean } | null {
     const val = control.value;
-    const sVal = `${val}`;
     if (val) {
-      if (isNaN(val) || sVal.length === 0 || sVal.length !== `${parseInt(val)}`.length) {
+      const matches = `${val}`.match(/[0-9]+/);
+      if (!matches || matches[0] !== val) {
         return { invalid: true };
       }
     }
@@ -125,7 +125,7 @@ export class WizardComponent extends DataPollingComponent {
   validateDatasetName(control: FormControl): { [key: string]: boolean } | null {
     const val = control.value;
     if (val) {
-      const matches = val.match(/[a-zA-Z0-9\\_\\]+/);
+      const matches = `${val}`.match(/[a-zA-Z0-9_]+/);
       if (!matches || matches[0] !== val) {
         return { invalid: true };
       }

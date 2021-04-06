@@ -220,7 +220,7 @@ describe('WizardComponent', () => {
       ['0', '1'].forEach((val: string) => {
         expect(component.validateDatasetId(frmCtrl(val))).toBeFalsy();
       });
-      [' 1', '1 ', ' 1 ', '1 1', 'a', '@'].forEach((val: string) => {
+      [' 1', '1 ', ' 1 ', '1 1', 'a', '@', '_', '-'].forEach((val: string) => {
         expect(component.validateDatasetId(frmCtrl(val))).toBeTruthy();
       });
     });
