@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import { mockDatasetInfo, MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { DatasetInfoStatus, WizardStep, WizardStepType } from '../_models';
@@ -11,6 +12,7 @@ import { WizardComponent } from './wizard.component';
 describe('WizardComponent', () => {
   let component: WizardComponent;
   let fixture: ComponentFixture<WizardComponent>;
+  let sandbox: SandboxService;
   const testFile = new File([], 'file.zip', { type: 'zip' });
 
   const configureTestbed = (errorMode = false): void => {
@@ -25,6 +27,7 @@ describe('WizardComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    sandbox = TestBed.inject(SandboxService);
   };
 
   const b4Each = (): void => {
@@ -155,7 +158,6 @@ describe('WizardComponent', () => {
       tick(1);
       expect(component.isBusy).toBeTruthy();
       expect(component.trackDatasetId).toBeTruthy();
-
       component.cleanup();
       tick(apiSettings.interval);
     }));
@@ -210,6 +212,30 @@ describe('WizardComponent', () => {
       component.setStep(2);
       expect(component.canGoToNext()).toBeFalsy();
     });
+
+    it('should validate the dataset id', () => {
+      const frmCtrl = (val: string): FormControl => {
+        return ({ value: val } as unknown) as FormControl;
+      };
+      ['0', '1'].forEach((val: string) => {
+        expect(component.validateDatasetId(frmCtrl(val))).toBeFalsy();
+      });
+      [' 1', '1 ', ' 1 ', '1 1', 'a', '@', '_', '-'].forEach((val: string) => {
+        expect(component.validateDatasetId(frmCtrl(val))).toBeTruthy();
+      });
+    });
+
+    it('should validate the dataset name', () => {
+      const frmCtrl = (val: string): FormControl => {
+        return ({ value: val } as unknown) as FormControl;
+      };
+      ['0', '1', 'A1', 'A_1', '_1_A_'].forEach((val: string) => {
+        expect(component.validateDatasetName(frmCtrl(val))).toBeFalsy();
+      });
+      [' 1', '1 ', ' 1 ', '1 1', '@', '-', '"', 'A ', 'A A'].forEach((val: string) => {
+        expect(component.validateDatasetName(frmCtrl(val))).toBeTruthy();
+      });
+    });
   });
 
   describe('Error handling', () => {
@@ -236,6 +262,21 @@ describe('WizardComponent', () => {
       component.onSubmitDataset();
       tick(1);
       expect(component.error).toBeTruthy();
+      component.cleanup();
+      tick(apiSettings.interval);
+    }));
+
+    it('should handle upload form errors', fakeAsync(() => {
+      spyOn(sandbox, 'submitDataset').and.callFake(() => {
+        return of({});
+      });
+      fillUploadForm();
+      component.onSubmitDataset();
+      tick(1);
+      expect(component.isBusy).toBeTruthy();
+      expect(component.error).toBeFalsy();
+      tick(component.resetBusyDelay);
+      expect(component.isBusy).toBeFalsy();
       component.cleanup();
       tick(apiSettings.interval);
     }));

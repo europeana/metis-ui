@@ -77,11 +77,11 @@ export class WizardComponent extends DataPollingComponent {
    **/
   buildForms(): void {
     this.formProgress = this.fb.group({
-      idToTrack: ['', [Validators.required, this.validatorWhitespace]]
+      idToTrack: ['', [Validators.required, this.validateDatasetId]]
     });
 
     this.formUpload = this.fb.group({
-      name: ['', [Validators.required, this.validatorWhitespace]],
+      name: ['', [Validators.required, this.validateDatasetName]],
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
       uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
@@ -96,18 +96,37 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   /**
-   * validatorWhitespace
+   * validateDatasetId
    *
-   * form validator implementation for whitespace detection
+   * form validator implementation for dataset id field
    *
    * @param { FormControl } control - the control to validate
    * @returns null or a code-keyed boolean
    **/
-  validatorWhitespace(control: FormControl): { [key: string]: boolean } | null {
+  validateDatasetId(control: FormControl): { [key: string]: boolean } | null {
     const val = control.value;
     if (val) {
-      const isWhitespace = val.length > 0 && val.trim().length === 0;
-      if (isWhitespace) {
+      const matches = `${val}`.match(/[0-9]+/);
+      if (!matches || matches[0] !== val) {
+        return { invalid: true };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * validateDatasetName
+   *
+   * form validator implementation for dataset name field
+   *
+   * @param { FormControl } control - the control to validate
+   * @returns null or a code-keyed boolean
+   **/
+  validateDatasetName(control: FormControl): { [key: string]: boolean } | null {
+    const val = control.value;
+    if (val) {
+      const matches = `${val}`.match(/[a-zA-Z0-9_]+/);
+      if (!matches || matches[0] !== val) {
         return { invalid: true };
       }
     }
@@ -306,10 +325,9 @@ export class WizardComponent extends DataPollingComponent {
     const wStep = this.wizardConf[step];
     const fields = wStep.fields;
     const form = this.getFormGroup(wStep);
-
     return !fields.find((f: string) => {
-      const val = form.get(f);
-      return val ? !val.valid : false;
+      const val = form.get(f) as FormControl;
+      return !val.valid;
     });
   }
 }
