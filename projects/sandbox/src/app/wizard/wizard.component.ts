@@ -33,7 +33,7 @@ export class WizardComponent extends DataPollingComponent {
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData: DatasetInfo;
-  trackDatasetId: number;
+  trackDatasetId: string;
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
   wizardConf: FixedLengthArray<WizardStep, 4> = [

@@ -21,6 +21,7 @@ context('Sandbox', () => {
     const selectorBtnNext = '.next';
     const selectorBtnPrevious = '.previous';
     const selectorBtnSubmit = '[data-e2e="submit-upload"]';
+    const selectorErrors = '.errors';
     const selectorFieldErrors = '.field-errors';
     const selectorInputCountry = '#country';
     const selectorInputName = '#name';
@@ -171,6 +172,7 @@ context('Sandbox', () => {
       fillUploadForm();
       cy.get(selectorBtnSubmit).click();
       cy.get(selectorProgress).should('have.length', 1);
+      cy.get(selectorErrors).should('have.length', 0);
     });
 
     it('should allow full navigation of both forms after submit', () => {

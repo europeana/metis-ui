@@ -257,7 +257,7 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify({
-            'dataset-id': this.newId,
+            'dataset-id': `${this.newId}`,
             'duplicate-records': 0,
             'records-to-process': 0
           } as SubmissionResponseData)
