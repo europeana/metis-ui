@@ -90,7 +90,7 @@ export class MockSandboxService {
     }
     return of({
       body: {
-        'dataset-id': 1,
+        'dataset-id': '1',
         'records-to-process': 1,
         'duplicate-records': 0
       }
