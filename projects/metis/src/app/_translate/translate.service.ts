@@ -46,8 +46,9 @@ export class TranslateService {
   */
   public instant(key: string): string {
     const translation = key;
-    if (this._translations[this.currentLang] && this._translations[this.currentLang]![key]) {
-      return this._translations[this.currentLang]![key]!;
+    const currentLang = this._translations[this.currentLang];
+    if (currentLang && currentLang[key]) {
+      return currentLang[key] as string;
     }
     return translation;
   }

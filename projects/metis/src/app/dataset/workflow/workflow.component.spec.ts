@@ -125,6 +125,9 @@ describe('WorkflowComponent', () => {
       const testTargetIndex = 4;
       component.addLinkCheck(pluginData, testTargetIndex, false);
       expect(getIndexCopy()).toEqual(testTargetIndex + 1);
+
+      component.addLinkCheck(pluginData, testTargetIndex, true);
+      expect(getIndexCopy()).toEqual(testTargetIndex + 1);
     });
 
     it('should remove the link checking', () => {
@@ -144,6 +147,13 @@ describe('WorkflowComponent', () => {
       let indexCopy = component.fieldConf.findIndex((c) => {
         return c.dragType === DragType.dragCopy;
       });
+
+      component.rearrange(-1, false);
+      indexCopy = component.fieldConf.findIndex((c) => {
+        return c.dragType === DragType.dragCopy;
+      });
+      expect(indexCopy).toBe(-1);
+
       component.rearrange(1, false);
       indexCopy = component.fieldConf.findIndex((c) => {
         return c.dragType === DragType.dragCopy;
@@ -198,6 +208,7 @@ describe('WorkflowComponent', () => {
     it('should get the viewport score', () => {
       expect(component.getViewportScore(getTestEl(20), 50)).toEqual(0);
       expect(component.getViewportScore(getTestEl(50), 50)).toEqual(1);
+      expect(component.getViewportScore(getTestEl(70, 1000), 50)).toEqual(2);
       expect(component.getViewportScore(getTestEl(70), 50)).toEqual(3);
       expect(component.getViewportScore(getTestEl(20, 1000), 50)).toEqual(4);
     });
@@ -231,6 +242,10 @@ describe('WorkflowComponent', () => {
       ];
       component.setHighlightedField(fields);
       expect(fields[0].conf.currentlyViewed).toBeTruthy();
+      expect(fields[1].conf.currentlyViewed).toBeFalsy();
+
+      component.setHighlightedField(fields, getTestEl(200));
+      expect(fields[0].conf.currentlyViewed).toBeFalsy();
       expect(fields[1].conf.currentlyViewed).toBeFalsy();
     });
 
@@ -300,6 +315,11 @@ describe('WorkflowComponent', () => {
 
     it('should submit the changes', fakeAsync(() => {
       spyOn(workflows, 'createWorkflowForDataset').and.callThrough();
+
+      component.onSubmit();
+      tick(1);
+      expect(workflows.createWorkflowForDataset).not.toHaveBeenCalled();
+
       setSavableChanges();
       expect(component.getSaveNotification()!.content).toBe('en:workflowSaveNew');
       component.onSubmit();
@@ -322,8 +342,17 @@ describe('WorkflowComponent', () => {
         workflowStatus: WorkflowStatus.INQUEUE
       } as unknown) as WorkflowExecution;
       expect(component.getRunNotification()).toBeTruthy();
+
+      expect(component.getRunNotification()).toEqual(component.runningNotification);
+
       component.isStarting = true;
       expect(component.getRunNotification()).toBeFalsy();
+      component.isStarting = false;
+
+      component.getSaveNotification();
+      component.notification = successNotification('hoi!');
+      expect(component.getRunNotification()).toBeTruthy();
+      expect(component.getRunNotification()).not.toEqual(component.runningNotification);
     });
 
     it('should start a workflow', () => {

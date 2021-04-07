@@ -31,7 +31,7 @@ export class MockRedirectPreviousUrl {
 }
 
 export class MockAuthenticationService {
-  currentUser = mockUser;
+  currentUser: User | null = mockUser;
   loggedIn = true;
   errorMode = false;
   timerInterval = 1;
@@ -92,6 +92,16 @@ export class MockAuthenticationService {
   }
 
   register(): Observable<boolean> {
+    if (this.errorMode) {
+      return timer(this.timerInterval).pipe(
+        switchMap(() => {
+          return throwError({
+            status: 401,
+            error: { errorMessage: 'Mock register Error' }
+          } as HttpErrorResponse);
+        })
+      );
+    }
     return of(true).pipe(delay(this.timerInterval));
   }
 
@@ -100,7 +110,10 @@ export class MockAuthenticationService {
   }
 
   getToken(): string | null {
-    return this.currentUser.metisUserAccessToken.accessToken;
+    if (this.currentUser) {
+      return this.currentUser.metisUserAccessToken.accessToken;
+    }
+    return null;
   }
 
   getUserByUserId(): Observable<User> {

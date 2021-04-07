@@ -575,6 +575,9 @@ export class MockWorkflowService {
   }
 
   cancelThisWorkflow(): Observable<void> {
+    if (this.errorMode) {
+      return throwError(new Error('mock cancelThisWorkflow throws error'));
+    }
     return of(void 0);
   }
 

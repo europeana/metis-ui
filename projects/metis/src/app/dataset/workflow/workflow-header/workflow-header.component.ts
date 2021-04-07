@@ -7,7 +7,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 import { DragType, EventDragDT, WorkflowFieldData, WorkflowFieldDataName } from '../../../_models';
 
@@ -37,11 +37,9 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   */
   togglePlugin(plugin: string): void {
     if (plugin !== 'pluginLINK_CHECKING') {
-      const ctrl = this.workflowForm.get(plugin);
-      if (ctrl) {
-        ctrl.setValue(!ctrl.value);
-        this.workflowForm.markAsDirty();
-      }
+      const ctrl = this.workflowForm.get(plugin) as FormControl;
+      ctrl.setValue(!ctrl.value);
+      this.workflowForm.markAsDirty();
     }
   }
 
@@ -84,10 +82,8 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   clearAll(): void {
     const hasSelected = Object.values(this.workflowForm.value).indexOf(true) > -1;
     this.conf.forEach((plugin) => {
-      const ctrl = this.workflowForm.get(plugin.name);
-      if (ctrl) {
-        ctrl.setValue(false);
-      }
+      const ctrl = this.workflowForm.get(plugin.name) as FormControl;
+      ctrl.setValue(false);
     });
     if (hasSelected) {
       this.workflowForm.markAsDirty();
@@ -103,11 +99,9 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   selectAll(): void {
     const hasUnselected = Object.values(this.workflowForm.value).indexOf(false) > -1;
     this.conf.forEach((plugin) => {
-      const ctrl = this.workflowForm.get(plugin.name);
-      if (ctrl) {
-        ctrl.enable();
-        ctrl.setValue(true);
-      }
+      const ctrl = this.workflowForm.get(plugin.name) as FormControl;
+      ctrl.enable();
+      ctrl.setValue(true);
     });
     if (hasUnselected) {
       this.workflowForm.markAsDirty();

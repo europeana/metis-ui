@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ProtocolType } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
 
@@ -39,7 +39,7 @@ export class WorkflowFormFieldComponent {
     if (this.conf.name === 'pluginLINK_CHECKING') {
       return false;
     }
-    return !this.workflowForm.get(this.conf.name)!.value;
+    return !(this.workflowForm.get(this.conf.name) as FormControl).value;
   }
 
   /** onFieldChanged
