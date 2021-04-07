@@ -1,3 +1,8 @@
+/** Script to rename (change extension) of files within a (argument-supplied) directory
+/* The e2e test-data servers use node's native 'http' module, which can only be imported within the context of a module. A module can be declared at package.json level (with the attribute type="module") or at file level (with the .mjs extension).
+/* This script renames (compiled typescript) files with the .js extension to files with a .mjs extension - within the supplied (dist) directory.  It renames all the files because modular js can't import non modular js.  It should be run after typescript compilation and before starting the e2e test-data servers.
+*/
+
 import * as path from 'path';
 import * as fs from 'fs';
 
