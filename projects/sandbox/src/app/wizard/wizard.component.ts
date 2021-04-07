@@ -33,7 +33,7 @@ export class WizardComponent extends DataPollingComponent {
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData: DatasetInfo;
-  trackDatasetId: number;
+  trackDatasetId: string;
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
   wizardConf: FixedLengthArray<WizardStep, 4> = [
@@ -300,9 +300,7 @@ export class WizardComponent extends DataPollingComponent {
               this.resetBusy();
               if (res.body) {
                 this.trackDatasetId = res.body['dataset-id'];
-                (this.formProgress.get('idToTrack') as FormControl).setValue(
-                  `${this.trackDatasetId}`
-                );
+                (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
                 this.onSubmitProgress();
                 this.currentStepIndex = this.wizardConf.length - 1;
               }

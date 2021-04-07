@@ -1,6 +1,6 @@
 export interface SubmissionResponseData {
   body?: {
-    'dataset-id': number;
+    'dataset-id': string;
     'records-to-process': number;
     'duplicate-records': number;
   };
