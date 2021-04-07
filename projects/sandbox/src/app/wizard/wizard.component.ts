@@ -300,7 +300,9 @@ export class WizardComponent extends DataPollingComponent {
               this.resetBusy();
               if (res.body) {
                 this.trackDatasetId = res.body['dataset-id'];
-                (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
+                (this.formProgress.get('idToTrack') as FormControl).setValue(
+                  `${this.trackDatasetId}`
+                );
                 this.onSubmitProgress();
                 this.currentStepIndex = this.wizardConf.length - 1;
               }
