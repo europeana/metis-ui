@@ -11,10 +11,10 @@
 
   <div class="info" class="data-summary">
     <ul>
-      <li *ngIf="progressData.creationDate">
+      <li *ngIf="progressData.creationDate" data-e2e="creation-date">
         {{ getFormattedDate() }}
       </li>
-      <li>{{ progressData.country }} / {{ progressData.language }}</li>
+      <li data-e2e="country-language">{{ progressData.country }} / {{ progressData.language }}</li>
     </ul>
     <ul *ngIf="hasLinks()" class="portal-links">
       <li *ngIf="progressData['portal-preview']; let link">
