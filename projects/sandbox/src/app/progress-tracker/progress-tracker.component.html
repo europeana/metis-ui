@@ -5,20 +5,30 @@
     [ngClass]="{ complete: isComplete() }"
     i18n="progress title"
   >
-    Dataset {{ datasetId }}
+    <span class="title-name">{{ progressData.datasetName }}</span
+    ><span class="title-id">{{ datasetId }}</span>
   </h2>
-  <ul *ngIf="hasLinks()" class="portal-links">
-    <li *ngIf="progressData['portal-preview']; let link">
-      <a href="{{ link }}" i18n="progress link link@@progressLinkPreview" target="_blank"
-        >Preview</a
-      >
-    </li>
-    <li *ngIf="progressData['portal-publish']; let link">
-      <a href="{{ link }}" i18n="progress link link@@progressLinkPublish" target="_blank"
-        >Publish</a
-      >
-    </li>
-  </ul>
+
+  <div class="info" class="data-summary">
+    <ul>
+      <li *ngIf="progressData.creationDate">
+        {{ getFormattedDate() }}
+      </li>
+      <li>{{ progressData.country }} / {{ progressData.language }}</li>
+    </ul>
+    <ul *ngIf="hasLinks()" class="portal-links">
+      <li *ngIf="progressData['portal-preview']; let link">
+        <a href="{{ link }}" i18n="progress link link@@progressLinkPreview" target="_blank"
+          >view preview</a
+        >
+      </li>
+      <li *ngIf="progressData['portal-publish']; let link">
+        <a href="{{ link }}" i18n="progress link link@@progressLinkPublish" target="_blank"
+          >view publish</a
+        >
+      </li>
+    </ul>
+  </div>
 </div>
 <div class="wrapper">
   <div>

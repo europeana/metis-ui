@@ -26,6 +26,15 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
+   * getFormattedDate
+   * Template utility to format the progressData creationDate as a local string
+   * @returns string
+   **/
+  getFormattedDate(): string {
+    return new Date(parseInt(this.progressData.creationDate)).toLocaleString();
+  }
+
+  /**
    * getLabelClass
    * Template utility to get css class based on the StepStatus
    * @param { StepStatus } step - the step status

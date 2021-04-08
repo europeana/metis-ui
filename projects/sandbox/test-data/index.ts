@@ -1,3 +1,4 @@
+import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import {
@@ -92,14 +93,23 @@ new (class extends TestDataServer {
    * @param {number} totalRecords - the value for the result's 'total-records'
    * @returns {DatasetInfo}
    **/
-  initialiseDatasetInfo(totalRecords: number): DatasetInfo {
+  initialiseDatasetInfo(
+    totalRecords: number,
+    datasetName?: string,
+    country?: string,
+    language?: string
+  ): DatasetInfo {
     return {
       status: DatasetInfoStatus.IN_PROGRESS,
       'total-records': totalRecords,
       'processed-records': 0,
       'progress-by-step': Object.values(StepStatus).map((key: StepStatus) => {
         return this.initialiseProgressByStep(key, totalRecords);
-      })
+      }),
+      creationDate: `${new Date().getTime()}`,
+      datasetName: datasetName ? datasetName : 'GeneratedName',
+      country: country ? country : 'GeneratedCountry',
+      language: language ? language : 'GeneratedLanguage'
     };
   }
 
@@ -254,6 +264,20 @@ new (class extends TestDataServer {
       const regRes = route.match(/\/dataset\/(\S+)\//);
       if (regRes) {
         this.newId++;
+
+        const params = url.parse(route, true).query;
+        const getParam = (name: string): string => {
+          return params[name] as string;
+        };
+        const datasetInfo = this.initialiseDatasetInfo(
+          this.newId,
+          regRes[1].split('/')[0],
+          getParam('country'),
+          getParam('language')
+        );
+
+        this.addTimedTarget(`${this.newId}`, datasetInfo);
+
         this.headerJSON(response);
         response.end(
           JSON.stringify({

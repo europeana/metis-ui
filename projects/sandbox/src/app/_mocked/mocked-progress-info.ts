@@ -1,6 +1,7 @@
 import { DatasetInfo, ProgressByStep } from '../_models';
 
 export const mockDatasetInfo = {
+  creationDate: '1617886312265',
   status: 'completed',
   'portal-preview':
     'https://metis-sandbox-preview-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',

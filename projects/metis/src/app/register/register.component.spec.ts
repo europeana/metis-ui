@@ -23,7 +23,7 @@ describe('RegisterComponent', () => {
   let authentication: AuthenticationService;
   let router: Router;
 
-  const configureTestingModule = (errorMode = false) => {
+  const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([{ path: './signin', component: LoginComponent }]),
@@ -43,13 +43,13 @@ describe('RegisterComponent', () => {
     authentication = TestBed.inject(AuthenticationService);
   };
 
-  const b4Each = () => {
+  const b4Each = (): void => {
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   };
 
-  const fillVaidForm = () => {
+  const fillVaidForm = (): void => {
     component.registerForm.controls.email.setValue('test@mocked.com');
     (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
       '!Passw0rd123'

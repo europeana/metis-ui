@@ -51,4 +51,8 @@ export interface DatasetInfo {
   'total-records': number;
   'portal-preview'?: string;
   'portal-publish'?: string;
+  creationDate: string;
+  datasetName: string;
+  country: string;
+  language: string;
 }

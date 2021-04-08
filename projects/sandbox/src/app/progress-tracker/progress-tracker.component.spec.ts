@@ -36,6 +36,10 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should get the formatted date', () => {
+      expect(component.getFormattedDate()).toEqual('4/8/2021, 2:51:52 PM');
+    });
+
     it('should open the modal', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(true);
