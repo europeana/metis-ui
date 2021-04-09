@@ -1,24 +1,34 @@
-<div class="form-group">
+<div class="form-group" *ngIf="progressData['dataset-info']; let info">
   <h2
     class="progress-title"
     title="({{ progressData.status }})"
     [ngClass]="{ complete: isComplete() }"
     i18n="progress title"
   >
-    Dataset {{ datasetId }}
+    <span class="title-name">{{ info['dataset-name'] }}</span
+    ><span class="title-id">{{ datasetId }}</span>
   </h2>
-  <ul *ngIf="hasLinks()" class="portal-links">
-    <li *ngIf="progressData['portal-preview']; let link">
-      <a href="{{ link }}" i18n="progress link link@@progressLinkPreview" target="_blank"
-        >Preview</a
-      >
-    </li>
-    <li *ngIf="progressData['portal-publish']; let link">
-      <a href="{{ link }}" i18n="progress link link@@progressLinkPublish" target="_blank"
-        >Publish</a
-      >
-    </li>
-  </ul>
+
+  <div class="info" class="data-summary">
+    <ul>
+      <li *ngIf="info['creation-date']" data-e2e="creation-date">
+        {{ getFormattedDate() }}
+      </li>
+      <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
+    </ul>
+    <ul *ngIf="hasLinks()" class="portal-links">
+      <li *ngIf="progressData['portal-preview']; let link">
+        <a href="{{ link }}" i18n="progress link link@@progressLinkPreview" target="_blank"
+          >view preview</a
+        >
+      </li>
+      <li *ngIf="progressData['portal-publish']; let link">
+        <a href="{{ link }}" i18n="progress link link@@progressLinkPublish" target="_blank"
+          >view publish</a
+        >
+      </li>
+    </ul>
+  </div>
 </div>
 <div class="wrapper">
   <div>

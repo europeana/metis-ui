@@ -5,33 +5,50 @@ $eu-jade-slightly-dark: #1ea072;
 
 .progress-title {
   color: $eu-jade-dark;
-  &.complete::after {
-    background-image: svg-url-icon-tick('#{$eu-jade}');
-    width: 1em;
-    height: 1em;
-    content: '';
-    display: inline-block;
-    position: relative;
-    transform: scale(0.8);
-    top: 0.175em;
+  display: flex;
+
+  &.complete {
+    .title-name::after {
+      background-image: svg-url-icon-tick('#{$eu-jade}');
+      width: 1em;
+      height: 1em;
+      content: '';
+      display: inline-block;
+      position: relative;
+      transform: scale(0.8);
+      top: 0.175em;
+    }
+  }
+  .title-id {
+    font-weight: normal;
+    margin-left: auto;
   }
 }
 
-.portal-links a {
-  position: relative;
-  &::after {
-    background-image: svg-url-icon-external('#{$eu-jade}');
-    background-repeat: no-repeat;
-    content: '';
-    display: block;
-    position: absolute;
-    height: 1em;
-    right: -1.35em;
-    top: 0.2em;
-    width: 1em;
-  }
-  &:hover::after {
-    background-image: svg-url-icon-external('#{$eu-jade-darkest}');
+.data-summary {
+  display: flex;
+  justify-content: space-between;
+}
+
+.portal-links {
+  margin-right: 1rem;
+  text-align: right;
+  a {
+    position: relative;
+    &::after {
+      background-image: svg-url-icon-external('#{$eu-jade}');
+      background-repeat: no-repeat;
+      content: '';
+      display: block;
+      position: absolute;
+      height: 1em;
+      right: -1.35em;
+      top: 0.2em;
+      width: 1em;
+    }
+    &:hover::after {
+      background-image: svg-url-icon-external('#{$eu-jade-darkest}');
+    }
   }
 }
 

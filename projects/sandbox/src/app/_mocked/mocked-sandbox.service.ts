@@ -1,7 +1,7 @@
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
-import { mockDatasetInfo } from '.';
-import { DatasetInfo, DatasetInfoStatus, FieldOption, SubmissionResponseData } from '../_models';
+import { mockDataset } from '.';
+import { Dataset, DatasetStatus, FieldOption, SubmissionResponseData } from '../_models';
 
 export const mockCountries = [
   {
@@ -58,7 +58,7 @@ export class MockSandboxService {
     return of(mockLanguages);
   }
 
-  requestProgress(_: string): Observable<DatasetInfo> {
+  requestProgress(_: string): Observable<Dataset> {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
@@ -66,8 +66,8 @@ export class MockSandboxService {
         })
       );
     }
-    const res = Object.assign({}, mockDatasetInfo);
-    res.status = DatasetInfoStatus.COMPLETED;
+    const res = Object.assign({}, mockDataset);
+    res.status = DatasetStatus.COMPLETED;
     return of(res).pipe(delay(1));
   }
 

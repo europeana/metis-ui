@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
-import { DatasetInfo, FieldOption, SubmissionResponseData } from '../_models';
+import { Dataset, FieldOption, SubmissionResponseData } from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
@@ -36,9 +36,9 @@ export class SandboxService {
   /*
   /* request progress info from server
   */
-  requestProgress(id: string): Observable<DatasetInfo> {
+  requestProgress(id: string): Observable<Dataset> {
     const url = `${apiSettings.apiHost}/dataset/${id}`;
-    return this.http.get<DatasetInfo>(url);
+    return this.http.get<Dataset>(url);
   }
 
   /** submitDataset

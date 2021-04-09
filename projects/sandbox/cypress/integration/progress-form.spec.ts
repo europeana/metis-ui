@@ -9,7 +9,7 @@ context('Sandbox', () => {
     const selectorInput = '[data-e2e="idToTrack"]';
     const selectorSubmit = '[data-e2e="submitProgress"]';
     const selectorProgressTitle = '.progress-title';
-    const selectorProgressTitleComplete = '.progress-title.complete';
+    const selectorProgressTitleComplete = selectorProgressTitle + '.complete';
 
     const selectorWarnPresent = '.orb-status.labelled.warn';
     const selectorFailPresent = '.orb-status.labelled.fail';
@@ -19,6 +19,8 @@ context('Sandbox', () => {
     const selectorModalDisplay = '.modal';
 
     const selPortalLinks = '.portal-links';
+    const selCountryLang = '[data-e2e="country-language"]';
+    const selCreationDate = '[data-e2e="creation-date"]';
 
     it('should show the input and submit button', () => {
       cy.get(selectorInput).should('have.length', 1);
@@ -29,6 +31,8 @@ context('Sandbox', () => {
     it('should show the complete progress on submit', () => {
       cy.get(selectorProgressTitle).should('have.length', 0);
       cy.get(selectorProgressTitleComplete).should('have.length', 0);
+      cy.get(selCountryLang).should('have.length', 0);
+      cy.get(selCreationDate).should('have.length', 0);
       cy.get(selPortalLinks).should('have.length', 0);
       cy.get(selectorInput)
         .clear()
@@ -36,6 +40,8 @@ context('Sandbox', () => {
       cy.get(selectorSubmit).click();
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleComplete).should('have.length', 1);
+      cy.get(selCountryLang).should('have.length', 1);
+      cy.get(selCreationDate).should('have.length', 1);
       cy.get(selPortalLinks).should('have.length', 1);
     });
 

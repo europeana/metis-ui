@@ -1,6 +1,13 @@
-import { DatasetInfo, ProgressByStep } from '../_models';
+import { Dataset, ProgressByStep } from '../_models';
 
-export const mockDatasetInfo = {
+export const mockDataset = {
+  'dataset-info': {
+    'creation-date': '1617886312265',
+    'dataset-name': 'Test_Dataset_Name',
+    'dataset-id': '1',
+    country: 'Greece',
+    language: 'He'
+  },
   status: 'completed',
   'portal-preview':
     'https://metis-sandbox-preview-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
@@ -96,4 +103,4 @@ export const mockDatasetInfo = {
       warn: 0
     } as ProgressByStep
   ]
-} as DatasetInfo;
+} as Dataset;
