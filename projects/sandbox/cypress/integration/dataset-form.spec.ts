@@ -184,7 +184,7 @@ context('Sandbox', () => {
           cy.get(selectorBtnNext).click();
         },
         () => {
-          cy.get(selectorBtnPrevious).click();
+          cy.get(selectorBtnPrevious).click({ force: true });
         },
         true
       );
@@ -201,7 +201,7 @@ context('Sandbox', () => {
       cy.get(`.wizard-status li:nth-child(3) a`).click();
       cy.get(selectorInputZipFile).should('be.disabled');
       cy.get(`.wizard-status li:nth-child(4) a`).click();
-      cy.get(selectorLinkDatasetForm).click();
+      cy.get(selectorLinkDatasetForm).click({ force: true });
       cy.get(selectorInputName).should('not.be.disabled');
       cy.get(`.wizard-status li:nth-child(2) a`).click();
       cy.get(selectorInputCountry).should('not.be.disabled');

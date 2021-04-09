@@ -2,8 +2,8 @@ import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import {
-  DatasetInfo,
-  DatasetInfoStatus,
+  Dataset,
+  DatasetStatus,
   FieldOption,
   ProgressByStep,
   StepStatus,
@@ -86,30 +86,34 @@ new (class extends TestDataServer {
   }
 
   /**
-   * initialiseDatasetInfo
+   * initialiseDataset
    *
-   * Initialises and returns a new DatasetInfo object
+   * Initialises and returns a new Dataset object
    *
    * @param {number} totalRecords - the value for the result's 'total-records'
-   * @returns {DatasetInfo}
+   * @returns {Dataset}
    **/
-  initialiseDatasetInfo(
-    totalRecords: number,
+  initialiseDataset(
+    datasetId: string,
     datasetName?: string,
     country?: string,
     language?: string
-  ): DatasetInfo {
+  ): Dataset {
+    const totalRecords = parseInt(datasetId);
     return {
-      status: DatasetInfoStatus.IN_PROGRESS,
+      status: DatasetStatus.IN_PROGRESS,
       'total-records': totalRecords,
       'processed-records': 0,
       'progress-by-step': Object.values(StepStatus).map((key: StepStatus) => {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
-      creationDate: `${new Date().getTime()}`,
-      datasetName: datasetName ? datasetName : 'GeneratedName',
-      country: country ? country : 'GeneratedCountry',
-      language: language ? language : 'GeneratedLanguage'
+      'dataset-info': {
+        'creation-date': `${new Date().getTime()}`,
+        'dataset-id': datasetId,
+        'dataset-name': datasetName ? datasetName : 'GeneratedName',
+        country: country ? country : 'GeneratedCountry',
+        language: language ? language : 'GeneratedLanguage'
+      }
     };
   }
 
@@ -124,7 +128,7 @@ new (class extends TestDataServer {
   makeProgress(timedTarget: TimedTarget): void {
     const info = timedTarget.datasetInfo;
     if (info['processed-records'] === info['total-records']) {
-      info.status = DatasetInfoStatus.COMPLETED;
+      info.status = DatasetStatus.COMPLETED;
       info['portal-preview'] = 'this-collection/that-dataset/preview';
       info['portal-publish'] = 'this-collection/that-dataset/publish';
       return;
@@ -190,7 +194,7 @@ new (class extends TestDataServer {
     if (timedTarget) {
       response.end(JSON.stringify(timedTarget.datasetInfo));
     } else {
-      const datasetInfo = this.initialiseDatasetInfo(parseInt(this.ensureNumeric(id[0])));
+      const datasetInfo = this.initialiseDataset(this.ensureNumeric(id[0]));
       this.addTimedTarget(id, datasetInfo);
       response.end(JSON.stringify(datasetInfo));
     }
@@ -202,9 +206,9 @@ new (class extends TestDataServer {
    *  Derives progressBurndown data and adds it to a TimedTarget
    *
    * @param { string } id - object identity
-   * @param { DatasetInfo } datasetInfo - the timed target datasetInfo
+   * @param { Dataset } datasetInfo - the timed target datasetInfo
    **/
-  addTimedTarget(id: string, datasetInfo: DatasetInfo): void {
+  addTimedTarget(id: string, datasetInfo: Dataset): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
@@ -269,8 +273,8 @@ new (class extends TestDataServer {
         const getParam = (name: string): string => {
           return params[name] as string;
         };
-        const datasetInfo = this.initialiseDatasetInfo(
-          this.newId,
+        const datasetInfo = this.initialiseDataset(
+          `${this.newId}`,
           regRes[1].split('/')[0],
           getParam('country'),
           getParam('language')

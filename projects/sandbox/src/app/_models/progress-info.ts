@@ -39,20 +39,25 @@ export interface ProgressError {
   records: Array<string>;
 }
 
-export enum DatasetInfoStatus {
+export enum DatasetStatus {
   'COMPLETED' = 'completed',
   'IN_PROGRESS' = 'in progress'
 }
 
 export interface DatasetInfo {
-  status: DatasetInfoStatus;
+  'creation-date': string;
+  'dataset-id': string;
+  'dataset-name': string;
+  country: string;
+  language: string;
+}
+
+export interface Dataset {
+  status: DatasetStatus;
   'processed-records': number;
   'progress-by-step': Array<ProgressByStep>;
   'total-records': number;
   'portal-preview'?: string;
   'portal-publish'?: string;
-  creationDate: string;
-  datasetName: string;
-  country: string;
-  language: string;
+  'dataset-info': DatasetInfo;
 }

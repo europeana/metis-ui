@@ -1,4 +1,4 @@
-import { DatasetInfo } from '../../src/app/_models';
+import { Dataset } from '../../src/app/_models';
 
 export interface ProgressBurndown {
   total: number;
@@ -16,5 +16,5 @@ export enum ProgressByStepStatus {
 
 export interface TimedTarget {
   progressBurndown: ProgressBurndown;
-  datasetInfo: DatasetInfo;
+  datasetInfo: Dataset;
 }

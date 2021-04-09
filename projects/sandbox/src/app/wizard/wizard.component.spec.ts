@@ -4,8 +4,8 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
-import { mockDatasetInfo, MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
-import { DatasetInfoStatus, WizardStep, WizardStepType } from '../_models';
+import { mockDataset, MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
+import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
 import { SandboxService } from '../_services';
 import { WizardComponent } from './wizard.component';
 
@@ -72,10 +72,10 @@ describe('WizardComponent', () => {
 
     it('should tell if the progress is complete', () => {
       expect(component.progressComplete()).toBeFalsy();
-      component.progressData = Object.assign({}, mockDatasetInfo);
-      component.progressData.status = DatasetInfoStatus.COMPLETED;
+      component.progressData = Object.assign({}, mockDataset);
+      component.progressData.status = DatasetStatus.COMPLETED;
       expect(component.progressComplete()).toBeTruthy();
-      component.progressData.status = DatasetInfoStatus.IN_PROGRESS;
+      component.progressData.status = DatasetStatus.IN_PROGRESS;
       expect(component.progressComplete()).toBeFalsy();
     });
 

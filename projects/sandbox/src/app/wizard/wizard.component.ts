@@ -5,8 +5,8 @@ import { merge, Observable, timer } from 'rxjs';
 import { DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  DatasetInfo,
-  DatasetInfoStatus,
+  Dataset,
+  DatasetStatus,
   FieldOption,
   FixedLengthArray,
   SubmissionResponseData,
@@ -32,7 +32,7 @@ export class WizardComponent extends DataPollingComponent {
   orbsHidden = true;
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
-  progressData: DatasetInfo;
+  progressData: Dataset;
   trackDatasetId: string;
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
@@ -234,7 +234,7 @@ export class WizardComponent extends DataPollingComponent {
    *
    **/
   progressComplete(): boolean {
-    return this.progressData && this.progressData.status === DatasetInfoStatus.COMPLETED;
+    return this.progressData && this.progressData.status === DatasetStatus.COMPLETED;
   }
 
   /**
@@ -254,11 +254,11 @@ export class WizardComponent extends DataPollingComponent {
 
       this.createNewDataPoller(
         apiSettings.interval,
-        (): Observable<DatasetInfo> => {
+        (): Observable<Dataset> => {
           this.isPolling = true;
           return this.sandbox.requestProgress(idToTrack);
         },
-        (progressInfo: DatasetInfo) => {
+        (progressInfo: Dataset) => {
           ctrl.setValue('');
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;

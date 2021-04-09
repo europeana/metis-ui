@@ -3,8 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
-import { mockDatasetInfo } from '../_mocked';
-import { DatasetInfoStatus, ProgressByStep, StepStatus } from '../_models';
+import { mockDataset } from '../_mocked';
+import { DatasetStatus, ProgressByStep, StepStatus } from '../_models';
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
 describe('ProgressTrackerComponent', () => {
@@ -25,7 +25,7 @@ describe('ProgressTrackerComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(ProgressTrackerComponent);
     component = fixture.componentInstance;
-    component.progressData = mockDatasetInfo;
+    component.progressData = mockDataset;
   };
 
   describe('Normal operation', () => {
@@ -52,15 +52,15 @@ describe('ProgressTrackerComponent', () => {
 
     it('should report if links are available', () => {
       expect(component.hasLinks()).toBeTruthy();
-      mockDatasetInfo['portal-preview'] = undefined;
+      mockDataset['portal-preview'] = undefined;
       expect(component.hasLinks()).toBeTruthy();
-      mockDatasetInfo['portal-publish'] = undefined;
+      mockDataset['portal-publish'] = undefined;
       expect(component.hasLinks()).toBeFalsy();
     });
 
     it('should report if complete', () => {
       expect(component.isComplete()).toBeTruthy();
-      mockDatasetInfo.status = DatasetInfoStatus.IN_PROGRESS;
+      mockDataset.status = DatasetStatus.IN_PROGRESS;
       expect(component.isComplete()).toBeFalsy();
     });
 

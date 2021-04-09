@@ -1,20 +1,20 @@
-<div class="form-group">
+<div class="form-group" *ngIf="progressData['dataset-info']; let info">
   <h2
     class="progress-title"
     title="({{ progressData.status }})"
     [ngClass]="{ complete: isComplete() }"
     i18n="progress title"
   >
-    <span class="title-name">{{ progressData.datasetName }}</span
+    <span class="title-name">{{ info['dataset-name'] }}</span
     ><span class="title-id">{{ datasetId }}</span>
   </h2>
 
   <div class="info" class="data-summary">
     <ul>
-      <li *ngIf="progressData.creationDate" data-e2e="creation-date">
+      <li *ngIf="info['creation-date']" data-e2e="creation-date">
         {{ getFormattedDate() }}
       </li>
-      <li data-e2e="country-language">{{ progressData.country }} / {{ progressData.language }}</li>
+      <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
     </ul>
     <ul *ngIf="hasLinks()" class="portal-links">
       <li *ngIf="progressData['portal-preview']; let link">

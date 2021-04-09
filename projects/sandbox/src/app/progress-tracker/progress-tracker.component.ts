@@ -1,11 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {
-  DatasetInfo,
-  DatasetInfoStatus,
-  ProgressByStep,
-  StepStatus,
-  StepStatusClass
-} from '../_models';
+import { Dataset, DatasetStatus, ProgressByStep, StepStatus, StepStatusClass } from '../_models';
 import { ModalConfirmService, SubscriptionManager } from 'shared';
 
 @Component({
@@ -14,7 +8,7 @@ import { ModalConfirmService, SubscriptionManager } from 'shared';
   styleUrls: ['./progress-tracker.component.scss']
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
-  @Input() progressData: DatasetInfo;
+  @Input() progressData: Dataset;
   @Input() datasetId: number;
   @Input() isLoading: boolean;
 
@@ -31,7 +25,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns string
    **/
   getFormattedDate(): string {
-    return new Date(parseInt(this.progressData.creationDate)).toLocaleString();
+    return new Date(parseInt(this.progressData['dataset-info']['creation-date'])).toLocaleString();
   }
 
   /**
@@ -75,7 +69,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns boolean
    **/
   isComplete(): boolean {
-    return this.progressData && this.progressData.status === DatasetInfoStatus.COMPLETED;
+    return this.progressData && this.progressData.status === DatasetStatus.COMPLETED;
   }
 
   /**

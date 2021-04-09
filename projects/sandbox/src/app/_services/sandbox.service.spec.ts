@@ -2,7 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, TestBed } from '@angular/core/testing';
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { mockCountries, mockDatasetInfo, mockLanguages } from '../_mocked';
+import { mockCountries, mockDataset, mockLanguages } from '../_mocked';
 import { FieldOption } from '../_models';
 import { SandboxService } from '.';
 
@@ -45,9 +45,9 @@ describe('sandbox service', () => {
 
   it('should get the progress', () => {
     const sub = service.requestProgress('1').subscribe((datasetInfo) => {
-      expect(datasetInfo).toEqual(mockDatasetInfo);
+      expect(datasetInfo).toEqual(mockDataset);
     });
-    mockHttp.expect('GET', '/dataset/1').send(mockDatasetInfo);
+    mockHttp.expect('GET', '/dataset/1').send(mockDataset);
     sub.unsubscribe();
   });
 });
