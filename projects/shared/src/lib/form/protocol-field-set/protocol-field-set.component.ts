@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
-import { ProtocolType } from '../../_models';
-import { SubscriptionManager } from '../../subscription-manager';
+import { ProtocolType } from '../../_models/shared-models';
+import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
 
 @Component({
   selector: 'lib-protocol-field-set',
