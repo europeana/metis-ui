@@ -1,4 +1,4 @@
-import { PluginType } from '../../../../shared/src/lib/_models';
+import { PluginType } from 'shared';
 import { PluginMetadata } from './plugin-metadata';
 
 export { PluginType };

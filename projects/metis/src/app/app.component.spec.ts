@@ -145,7 +145,7 @@ describe('AppComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should shoe  a workflow', () => {
+    it('should show a workflow', () => {
       spyOn(errors, 'handleError').and.callThrough();
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
