@@ -2,7 +2,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+// @SONAR_STOP@
 import { SubscriptionManager } from 'shared';
+// @SONAR_START@
 import { apiSettings } from '../../environments/apisettings';
 import { KeyedCache } from '../_helpers';
 import {
