@@ -19,3 +19,5 @@ before_install:
 before_script:
 - cp projects/metis/src/environments/apisettings-test.ts projects/metis/src/environments/apisettings.ts
 - cp projects/sandbox/src/environments/apisettings-ci.ts projects/sandbox/src/environments/apisettings.ts
+- npm run dist-shared
+- npm install --save-optional projects/shared

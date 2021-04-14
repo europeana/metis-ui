@@ -63,7 +63,7 @@
     "dist-any": "ng build ${npm_config_project} --progress=false --prod && npm run dist-copy-conf --project=${npm_config_project} && cp -R projects/${npm_config_project}/dist/${npm_config_project}/. dist",
     "dist-metis": "npm run dist-any --project=metis",
     "dist-sandbox": "npm run dist-any --project=sandbox",
-    "dist-shared": "ng build --project=shared --prod && mv dist/shared projects/shared/dist",
+    "dist-shared": "ng build --project=shared --prod && cp -r dist/shared projects/shared/dist",
     "dist": "npm run dist-metis",
     "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
     "lite": "test -d ./dist && lite-server --baseDir=./dist || echo '(run dist first)'"
@@ -137,5 +137,8 @@
     "printWidth": 100,
     "singleQuote": true,
     "trailingComma": "none"
+  },
+  "optionalDependencies": {
+    "shared": "file:projects/shared"
   }
 }
