@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ProtocolFieldSetComponent } from '.';
-import { ProtocolType } from '../../_models';
+import { ProtocolFieldSetComponent } from './protocol-field-set.component';
+import { ProtocolType } from '../../_models/shared-models';
 
 describe('ProtocolFieldSetComponent', () => {
   let component: ProtocolFieldSetComponent;
