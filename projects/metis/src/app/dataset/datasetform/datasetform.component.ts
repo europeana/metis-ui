@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import {
   Country,

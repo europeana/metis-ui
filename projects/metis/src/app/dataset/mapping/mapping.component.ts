@@ -20,7 +20,7 @@ import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { switchMap } from 'rxjs/operators';
-
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';

@@ -3,6 +3,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { getCodeMirrorEditors } from 'shared';
 import {
   createMockPipe,

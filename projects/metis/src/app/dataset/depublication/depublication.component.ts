@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ModalConfirmService } from 'shared';
 import {
   DatasetDepublicationInfo,

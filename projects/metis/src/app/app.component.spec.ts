@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { AppComponent } from '.';
 import {

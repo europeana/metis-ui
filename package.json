@@ -137,8 +137,5 @@
     "printWidth": 100,
     "singleQuote": true,
     "trailingComma": "none"
-  },
-  "optionalDependencies": {
-    "shared": "file:projects/shared"
   }
 }

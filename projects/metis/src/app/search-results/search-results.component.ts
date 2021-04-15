@@ -5,6 +5,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { DatasetSearchView } from '../_models';
 import { DatasetsService, DocumentTitleService } from '../_services';

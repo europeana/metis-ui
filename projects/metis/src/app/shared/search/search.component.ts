@@ -3,6 +3,7 @@
 */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { AuthenticationService } from '../../_services';
 
