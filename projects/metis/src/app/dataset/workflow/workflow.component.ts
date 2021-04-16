@@ -498,7 +498,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         if (conf.name === 'pluginHARVEST') {
           const paramsOAIPMH: ParameterField = [
             ParameterFieldName.harvestUrl,
-            ParameterFieldName.incrementalHarvest,
+            //ParameterFieldName.incrementalHarvest,
             ParameterFieldName.metadataFormat,
             ParameterFieldName.setSpec
           ];
