@@ -6,20 +6,6 @@
 ></app-notification>
 
 <div class="table-grid history">
-  <div class="table-grid-header">
-    {{ 'workflowStep' | translate }}
-  </div>
-  <div class="table-grid-header">
-    {{ 'processedRecords' | translate }}
-  </div>
-  <div class="table-grid-header date-header">
-    {{ 'startTime' | translate }}
-  </div>
-  <div class="table-grid-header date-header">
-    {{ 'endTime' | translate }}
-  </div>
-  <div class="table-grid-header"></div>
-
   <ng-container *ngFor="let wpe of allExecutions; trackBy: byId">
     <div
       *ngIf="!wpe.pluginExecution && wpe.execution; let execution"
@@ -31,12 +17,40 @@
         title="{{ 'doubleClickToCopy' | translate }}"
       >
         <span class="head-prefix">{{ 'workflowCreated' | translate }}</span>
-        {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}
+
+        <span class="head-date">
+          {{ execution.createdDate | date: 'dd/MM/yyyy' }}
+        </span>
+
+        {{ execution.createdDate | date: 'HH:mm' }}
+
         <div class="head-right" *ngIf="getCancelledBy(execution) | async as canceller">
           <span class="head-prefix">{{ 'cancelledBy' | translate }}</span>
           {{ canceller }}
         </div>
       </div>
+
+      <div class="table-grid">
+        <div class="grid-header small-title" style="overflow:hidden;">
+          {{ 'workflowStep' | translate }}
+        </div>
+        <div
+          class="grid-header small-title"
+          i18n="label grid header processed @@labelGridHeaderProcessed"
+        >
+          Processed / Records / Deleted
+        </div>
+        <div class="grid-header small-title">
+          {{ 'startTime' | translate }}
+        </div>
+        <div class="grid-header small-title">
+          {{ 'endTime' | translate }}
+        </div>
+        <div class="grid-header small-title">
+          {{ 'actions' | translate }}
+        </div>
+      </div>
+      <div class="grid-header small-title"></div>
     </div>
 
     <ng-container *ngIf="wpe.pluginExecution; let plugin">

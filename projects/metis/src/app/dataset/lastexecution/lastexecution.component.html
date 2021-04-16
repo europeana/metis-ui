@@ -1,19 +1,19 @@
 <ng-template #empty_date><span class="date-and-time"></span></ng-template>
 
 <div class="table-grid last-execution">
-  <div class="table-grid-header">
+  <div class="grid-header small-title">
     {{ 'workflowStep' | translate }}
   </div>
-  <div class="table-grid-header">
+  <div class="grid-header small-title">
     {{ 'processedRecords' | translate }}
   </div>
-  <div class="table-grid-header date-header">
+  <div class="grid-header small-title date-header">
     {{ 'startTime' | translate }}
   </div>
-  <div class="table-grid-header date-header">
+  <div class="grid-header small-title date-header">
     {{ 'endTime' | translate }}
   </div>
-  <div class="table-grid-header"></div>
+  <div class="grid-header"></div>
 
   <ng-container *ngFor="let plugin of pluginExecutions">
     <app-executions-grid-data

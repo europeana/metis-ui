@@ -56,7 +56,7 @@ export class DepublicationComponent extends DataPollingComponent {
   optionsOpenDepublish = false;
   pollingRefresh: Subject<boolean>;
   sortHeaderGroupConf = {
-    cssClass: 'grid-header',
+    cssClass: 'grid-header-underlined small-title',
     items: [
       {},
       {
