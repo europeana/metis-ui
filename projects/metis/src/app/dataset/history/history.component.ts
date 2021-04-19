@@ -52,6 +52,7 @@ export class HistoryComponent extends SubscriptionManager {
   maxResultsReached = false;
   lastExecutionId?: string;
   lastExecutionIsCompleted?: boolean;
+  templateRowIndex = 0;
 
   @Input()
   set lastExecutionData(lastExecution: WorkflowExecution | undefined) {
@@ -70,6 +71,22 @@ export class HistoryComponent extends SubscriptionManager {
       this.lastExecutionId = lastExecution.id;
       this.lastExecutionIsCompleted = isWorkflowCompleted(lastExecution);
     }
+  }
+
+  /** resetTemplateRowIndex
+  /* Resets templateRowIndex to 0
+  */
+  resetTemplateRowIndex(): void {
+    this.templateRowIndex = 0;
+  }
+
+  /** rowIsStripe
+  /* Increments templateRowIndex variable and returns its modulus of 2
+  /* @return boolean
+  */
+  rowIsStripe(): boolean {
+    this.templateRowIndex++;
+    return this.templateRowIndex % 2 === 0;
   }
 
   /** returnAllExecutions

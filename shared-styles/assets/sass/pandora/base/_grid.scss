@@ -2,16 +2,10 @@
   display: none;
 }
 
-.date-and-time:empty,
-.status-label,
-.time {
-  color: #ccc;
-}
-
 .date-and-time:empty::after {
-  content: '--';
+  content: '—';
   display: block;
-  text-align: center;
+  text-align: left;
   width: 9em;
 }
 
@@ -47,7 +41,7 @@
 
 .table-grid {
   background: $offwhite;
-  color: $gray-light;
+  color: $near-black;
   font-size: $font-size-metis-grid;
 
   .date-and-time {
@@ -74,11 +68,6 @@
     right: 2em;
   }
 
-  .sub-header {
-    grid-column: 1/6;
-    margin-top: 2em;
-  }
-
   .table-grid-footer {
     display: inline-block;
     grid-column: 1/6;
@@ -89,11 +78,7 @@
     background: $white;
     color: $grey-3;
     display: none;
-    padding: 0.5rem;
-  }
-
-  .time {
-    margin-left: 0.4em;
+    padding: 0.5rem 1em;
   }
 
   .totals + .date-and-time {
@@ -124,6 +109,7 @@
     grid-template-columns: 3fr 2fr 2fr 2fr 1fr auto;
 
     .date-and-time {
+      align-items: flex-start;
       width: auto;
       &:empty {
         display: inline-block;
@@ -138,13 +124,9 @@
       display: block;
     }
 
-    .date-header {
-      justify-content: space-around;
-      text-align: center;
-    }
-
     .date-and-time,
-    .buttonplaceholder {
+    .button-placeholder {
+      align-items: flex-start;
       flex-direction: column;
     }
 
@@ -168,14 +150,16 @@
   .table-grid {
     grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
 
-    .date-header {
-      text-align: left;
-    }
-
     .date-and-time,
-    .buttonplaceholder {
+    .button-placeholder {
+      align-items: center;
       flex-direction: row;
     }
+
+    .time {
+      margin-left: 0.4em;
+    }
+
   }
 }
 
@@ -183,26 +167,28 @@
   .table-grid {
     grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
 
-    .date-header {
-      text-align: center;
+    .date-and-time,
+    .button-placeholder {
+      align-items: flex-start;
+      flex-direction: column;
     }
 
-    .date-and-time,
-    .buttonplaceholder {
-      flex-direction: column;
+    .time {
+      margin-left: 0;
     }
   }
 }
 
 @media all and (min-width: $bp-xxl) {
   .table-grid {
-    .date-header {
-      text-align: left;
+    .date-and-time,
+    .button-placeholder {
+      align-items: center;
+      flex-direction: row;
     }
 
-    .date-and-time,
-    .buttonplaceholder {
-      flex-direction: row;
+    .time {
+      margin-left: 0.4em;
     }
   }
 }

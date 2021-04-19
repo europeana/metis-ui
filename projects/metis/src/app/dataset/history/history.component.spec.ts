@@ -48,6 +48,30 @@ describe('HistoryComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should reset the templateRowIndex', () => {
+    component.templateRowIndex = 5;
+    component.resetTemplateRowIndex();
+    expect(component.templateRowIndex).toEqual(0);
+  });
+
+  it('should tell if the row is stripey', () => {
+    expect(component.rowIsStripe()).toBeFalsy();
+    expect(component.rowIsStripe()).toBeTruthy();
+    expect(component.rowIsStripe()).toBeFalsy();
+  });
+
+  it('should load the next page', () => {
+    component.datasetData = mockDataset;
+    expect(component.currentPage).toEqual(0);
+    component.loadNextPage();
+    expect(component.currentPage).toEqual(1);
+  });
+
+  it('should copy the information', () => {
+    component.copyInformation('X', '1', '2');
+    expect(component.contentCopied).toBeTruthy();
+  });
+
   it('should update history panel', () => {
     component.datasetData = mockDataset;
     component.lastExecutionData = mockWorkflowExecutionResults.results[4];

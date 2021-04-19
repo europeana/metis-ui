@@ -3,7 +3,7 @@ $offwhite: #f1f1ee;
 
 $gray-lightest: #f8f8f8;
 $gray-almost-lightest: #dedede;
-$gray-lighter: #ccc;
+$gray-lighter: #cccccc;
 $gray-light: #777;
 $gray-med: #4d4d4d;
 $gray-hero: #e7e7e7;
@@ -54,8 +54,11 @@ $base-font-multiplier: 1;
 
 /* Zeplin styleguide colours */
 
+$grey-1: #EBEBE9;
+$grey-2: $gray-lighter;
 $grey-3: #999999;
-
+$light-green: #bde2c2;
+$near-black: $gray-med;
 
 /* Brand colours */
 $brand-facebook: #03539e;

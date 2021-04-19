@@ -29,6 +29,13 @@ describe('LastExecutionComponent', () => {
     fixture.detectChanges();
   });
 
+  const getPluginExecution = (status: PluginStatus): PluginExecution => {
+    return ({
+      pluginStatus: status,
+      executionProgress: { errors: 0 }
+    } as unknown) as PluginExecution;
+  };
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -62,13 +69,16 @@ describe('LastExecutionComponent', () => {
     expect(mockFn).toHaveBeenCalled();
   });
 
+  it('should get if the plugin is hightlighted', () => {
+    expect(1).toEqual(1);
+    expect(component.getPluginHighlighted(getPluginExecution(PluginStatus.RUNNING))).toBeTruthy();
+    expect(component.getPluginHighlighted(getPluginExecution(PluginStatus.FINISHED))).toBeFalsy();
+  });
+
   it('should get the plugin status', () => {
-    expect(
-      component.getPluginStatusClass(({
-        pluginStatus: PluginStatus.FINISHED,
-        executionProgress: { errors: 0 }
-      } as unknown) as PluginExecution)
-    ).toEqual('status-finished');
+    expect(component.getPluginStatusClass(getPluginExecution(PluginStatus.FINISHED))).toEqual(
+      'status-finished'
+    );
   });
 
   it('should open a simple report', () => {

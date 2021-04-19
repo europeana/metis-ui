@@ -1,14 +1,11 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $width-orb: 3em;
 
-.workflow-head {
-  height: 4em;
-  width: 100%;
-  position: sticky;
-  top: $fixed-header-height;
-  z-index: 1;
+#app-executions-grid-data {
+  display: none;
 }
 
 .head-prefix {
@@ -20,7 +17,7 @@ $width-orb: 3em;
 
 .table-grid {
   // override _grid.scss
-  grid-template-columns: 2fr 2fr 2fr 1fr 1fr auto;
+  grid-template-columns: 2fr 2fr 2fr 1fr 1fr;
 }
 
 @media all and (min-width: $bp-med) {
@@ -29,19 +26,44 @@ $width-orb: 3em;
   }
 }
 
-.workflow-head {
-  background-color: $white;
+.grid-header {
+  margin-bottom: 3px;
+  position: sticky;
+  top: 7rem;
+  z-index: 1;
+}
 
-  .head-whitespace {
-    height: 1.5rem;
+.head-text {
+  border-bottom: 1px solid $grey-2;
+  padding-bottom: 0.45rem;
+
+  .head-prefix.canceller {
+    background: svg-url-icon-user('#{$eu-jade}') 0 center / 16px no-repeat $white;
+    margin-left: 1rem;
+    padding-left: 1.75em;
+  }
+
+  .head-prefix.workflow {
+    background: svg-url-icon-workflow('#{$eu-jade}') 0 center / 16px no-repeat $white;
+    padding-left: 1.75em;
+  }
+}
+
+.head-text-wrapper {
+  background-color: $white;
+  grid-column: 1/6;
+  padding: 0.5rem 1em;
+  position: sticky;
+  top: $fixed-header-height;
+  z-index: 1;
+
+  &:not(:first-child) {
+    margin-top: 2em;
   }
 
   .head-date {
+    color: $near-black;
     font-weight: bold;
-  }
-
-  .head-text {
-    padding: 0.5rem;
   }
 
   .head-right {

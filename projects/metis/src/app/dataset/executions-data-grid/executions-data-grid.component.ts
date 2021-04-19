@@ -19,7 +19,8 @@ import {
 })
 export class ExecutionsDataGridComponent {
   @Input() hasMore?: boolean;
-
+  @Input() applyHighlight?: boolean;
+  @Input() applyStripe?: boolean;
   @Input() plugin: PluginExecution;
   @Input() wpe?: WorkflowOrPluginExecution;
   @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();

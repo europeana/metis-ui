@@ -7,19 +7,21 @@
   <div class="grid-header small-title">
     {{ 'processedRecords' | translate }}
   </div>
-  <div class="grid-header small-title date-header">
+  <div class="grid-header small-title">
     {{ 'startTime' | translate }}
   </div>
-  <div class="grid-header small-title date-header">
+  <div class="grid-header small-title">
     {{ 'endTime' | translate }}
   </div>
   <div class="grid-header"></div>
 
-  <ng-container *ngFor="let plugin of pluginExecutions">
+  <ng-container *ngFor="let plugin of pluginExecutions; let i = index">
     <app-executions-grid-data
       #dataWrapper
       [plugin]="plugin"
       (setReportMsg)="openFailReport($event)"
+      [applyHighlight]="getPluginHighlighted(plugin)"
+      [applyStripe]="i % 2 === 1"
     ></app-executions-grid-data>
     <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
   </ng-container>

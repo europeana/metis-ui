@@ -18,6 +18,7 @@ $orb-size-small-half: 0.75em;
 }
 
 .orb-status {
+  border-color: $white;
   border-radius: $orb-size-small-half;
   border-style: solid;
   border-width: 1px;
@@ -33,6 +34,8 @@ $orb-size-small-half: 0.75em;
 
   &.status-inqueue {
     background: $color-status-inqueue;
+    color: $near-black;
+    text-shadow: none;
   }
   &.status-cancelled {
     background: $color-status-cancelled;
@@ -51,6 +54,8 @@ $orb-size-small-half: 0.75em;
   }
   &.status-running {
     background: $color-status-running;
+    color: $near-black;
+    text-shadow: none;
   }
   &.status-warning {
     background: $color-status-warning;
