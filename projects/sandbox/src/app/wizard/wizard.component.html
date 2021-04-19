@@ -1,0 +1,174 @@
+<div class="wizard">
+  <div class="wizard-head" [ngClass]="{ 'orbs-hidden': orbsHidden }">
+    <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
+      <label *ngIf="currentStepIndex === i">
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.SET_NAME"
+          i18n="upload step title@@enterName"
+        >
+          Enter a Dataset Name
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.SET_LANG_LOCATION"
+          i18n="upload step title@@enterDetails"
+        >
+          Enter the Dataset Details
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.PROTOCOL_SELECT"
+          i18n="upload step title@@configureSource"
+        >
+          Configure the Data Source
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK"
+          i18n="upload step title@@trackProcessing"
+        >
+          Track Dataset Processing
+        </ng-container>
+      </label>
+    </ng-container>
+
+    <ul class="wizard-status">
+      <li
+        *ngFor="let stepConf of wizardConf; let i = index"
+        class="orb-container"
+        [ngClass]="{
+          'progress-orb-container': stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK
+        }"
+      >
+        <a
+          (click)="setStep(i)"
+          [ngClass]="{
+            'is-set': stepIsComplete(i),
+            'is-active': currentStepIndex === i,
+            'orb-square': getStepIsSubmittable(stepConf),
+            'progress-orb': stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK,
+            'indicator-orb':
+              stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK || this.formUpload.disabled,
+            'submitted-orb':
+              this.formUpload.disabled && stepConf.stepType !== EnumWizardStepType.PROGRESS_TRACK,
+            spinner:
+              stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK ? isBusyProgress : isBusy,
+            'indicate-complete': progressComplete(),
+            'indicate-polling': isPolling && stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK
+          }"
+          class="orb-status labelled"
+          [attr.data-label]="i + 1"
+        ></a>
+      </li>
+    </ul>
+  </div>
+  <div class="wizard-content">
+    <form [formGroup]="formUpload">
+      <div *ngIf="currentStepIndex === 0" class="form-group">
+        <label for="name" i18n="name label">Name</label>
+        <input id="name" formControlName="name" autocomplete="off" />
+        <span class="field-errors" *ngIf="formUpload.get('name')?.errors?.invalid">
+          <span class="errors" i18n="Field error@@invalidDatasetName"
+            >Please provide a valid name</span
+          >
+        </span>
+      </div>
+
+      <div *ngIf="currentStepIndex === 1" class="form-group">
+        <label for="country" i18n="country label">Country</label>
+        <select id="country" formControlName="country">
+          <option *ngFor="let option of countryList" [ngValue]="option.name">{{
+            option.xmlValue
+          }}</option>
+        </select>
+      </div>
+
+      <div *ngIf="currentStepIndex === 1" class="form-group">
+        <label for="language" i18n="language label">Language</label>
+        <select id="language" formControlName="language">
+          <option *ngFor="let option of languageList" [ngValue]="option.name">{{
+            option.xmlValue
+          }}</option>
+        </select>
+      </div>
+
+      <div *ngIf="currentStepIndex === 2" class="form-group">
+        <lib-protocol-field-set
+          [protocolForm]="formUpload"
+          [protocolSwitchField]="'uploadProtocol'"
+          visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
+          disabledProtocols="[EnumProtocolType.HTTP_HARVEST EnumProtocolType.OAIPMH_HARVEST]"
+          [fileFormName]="fileFormName"
+        >
+        </lib-protocol-field-set>
+      </div>
+    </form>
+
+    <form *ngIf="currentStepIndex === 3" [formGroup]="formProgress" (ngSubmit)="onSubmitProgress()">
+      <sb-progress-tracker
+        *ngIf="progressData"
+        [progressData]="progressData"
+        [datasetId]="trackDatasetId"
+        [isLoading]="isPolling"
+      ></sb-progress-tracker>
+
+      <div class="form-group">
+        <label i18n="track id label">Enter the id of a dataset to track </label>
+        <div class="submit-track-id">
+          <input formControlName="idToTrack" data-e2e="idToTrack" autofocus autocomplete="off" />
+          <button
+            type="submit"
+            class="submit"
+            [disabled]="!formProgress.valid"
+            data-e2e="submitProgress"
+            i18n="track button|submits the track id button@@submitTrackId"
+          >
+            track
+          </button>
+        </div>
+        <span class="field-errors" *ngIf="formProgress.get('idToTrack')?.errors; let errors">
+          <span class="errors" *ngIf="errors.invalid" i18n="Field error@@invalidTrackId"
+            >Please provide a valid id</span
+          >
+        </span>
+      </div>
+    </form>
+
+    <form class="buttons" [formGroup]="formUpload">
+      <ng-container *ngIf="getIsProgressTrack(currentStepIndex)">
+        <label class="inline-text" i18n="create link link@@createLinkInternal"
+          >Or
+          <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
+            >create a new dataset</a
+          ></label
+        >
+      </ng-container>
+      <button
+        [ngClass]="{ hidden: orbsHidden || getIsProgressTrack(currentStepIndex) }"
+        [disabled]="!formUpload.valid"
+        data-e2e="submit-upload"
+        class="submit"
+        (click)="onSubmitDataset()"
+        i18n="Submit button|uploads the dataset button@@submitDataset"
+      >
+        Submit
+      </button>
+
+      <div [ngClass]="{ hidden: orbsHidden }">
+        <button
+          class="orb-status labelled previous"
+          [ngClass]="{ hidden: !canGoToPrevious() }"
+          (click)="setStep(currentStepIndex - 1)"
+        ></button>
+        <button
+          class="orb-status labelled next"
+          [ngClass]="{ hidden: !canGoToNext() }"
+          (click)="setStep(currentStepIndex + 1)"
+        ></button>
+      </div>
+    </form>
+    <div *ngIf="error" class="errors">
+      {{ error.statusText }}
+      <ul class="error-detail">
+        <li>{{ error.message }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

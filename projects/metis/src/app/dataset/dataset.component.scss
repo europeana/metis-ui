@@ -1,0 +1,35 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+
+hr {
+  background: $gray-lighter;
+  border: 0;
+  clear: both;
+  height: 1px;
+  margin: 0 1rem 1rem 1rem;
+}
+
+.star {
+  padding-left: 0.5rem;
+  color: $gray-lighter;
+  cursor: pointer;
+}
+
+.star-active {
+  color: $eu-jade;
+}
+
+.tabbed-content {
+  padding: 0.6rem 1rem 1rem 1rem;
+}
+
+.partial-fitness,
+.unfit-to-publish {
+  color: red;
+  font-weight: bold;
+  margin: 0 0 1em 0;
+}
+
+.partial-fitness {
+  color: #ff8c00;
+}

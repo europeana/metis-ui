@@ -1,0 +1,14 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.tabs li {
+  &.disabled {
+    background-color: $offwhite;
+    pointer-events: none;
+    a {
+      color: $gray-lighter;
+    }
+  }
+  a {
+    cursor: auto;
+  }
+}

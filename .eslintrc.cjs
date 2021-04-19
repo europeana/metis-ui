@@ -4,6 +4,7 @@ module.exports = {
   env: {
     node: true
   },
+  ignorePatterns: ['**/dist/*', '**/cypress/plugins/*', '**/cypress/fixtures/*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: path.resolve(__dirname, './tsconfig.json'),

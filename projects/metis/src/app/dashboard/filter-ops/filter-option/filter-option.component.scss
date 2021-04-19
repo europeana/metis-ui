@@ -1,0 +1,97 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+$active-colour: #e0f1e5;
+$border-colour: #eaeaea;
+$cell-height: 1.6rem;
+
+input,
+input[type='date'] {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0 0 0 0.5em;
+  width: 10.5em;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+
+input[type='date']::-webkit-datetime-edit-year-field,
+input[type='date']::-webkit-datetime-edit-month-field,
+input[type='date']::-webkit-datetime-edit-day-field {
+  color: $black;
+}
+
+.input-label {
+  align-items: center;
+  display: flex;
+  height: $cell-height;
+  padding: 0 0.25em;
+}
+
+a {
+  text-align: center;
+  width: 100%;
+}
+
+.filter-cell {
+  border: 1px solid $border-colour;
+  border-radius: 3px;
+
+  & > a:hover {
+    text-decoration: none;
+  }
+
+  & > a,
+  .label {
+    display: block;
+    line-height: $cell-height;
+    padding: 0.25rem;
+  }
+
+  &.active {
+    background: $active-colour;
+  }
+  &.error {
+    border: 1px solid $eu-red;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .continue-row-3 {
+    grid-column: 2;
+  }
+}
+@media (min-width: $bp-large) {
+  .continue-row-3 {
+    grid-column: unset;
+  }
+  .continue-row-4 {
+    grid-column: 2;
+  }
+}
+
+@media (min-width: $bp-xl) {
+  .continue-row-4 {
+    grid-column: unset;
+  }
+  .continue-row-6 {
+    grid-column: 2;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .end-row {
+    &:not(:last-of-type) {
+      margin-bottom: 2em;
+      &::after {
+        background: $border-colour;
+        content: ' ';
+        height: 1px;
+        left: 1em;
+        position: absolute;
+        right: 1em;
+        transform: translateY(2.5em);
+      }
+    }
+  }
+}

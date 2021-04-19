@@ -1,0 +1,213 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import {
+  createMockPipe,
+  MockCountriesService,
+  MockCountriesServiceErrors,
+  mockDataset,
+  MockDatasetsService,
+  MockDatasetsServiceErrors,
+  MockErrorService,
+  MockTranslateService
+} from '../../_mocked';
+import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import { TranslateService } from '../../_translate';
+
+import { DatasetformComponent } from '.';
+
+describe('DatasetformComponent', () => {
+  let component: DatasetformComponent;
+  let fixture: ComponentFixture<DatasetformComponent>;
+  let router: Router;
+  let errors: ErrorService;
+
+  const existingId = '123';
+  const newId = 'some_id';
+
+  const configureTestbed = (errorMode = false): void => {
+    console.log('errorMode ' + errorMode);
+
+    TestBed.configureTestingModule({
+      imports: [RouterTestingModule, ReactiveFormsModule],
+      declarations: [DatasetformComponent, createMockPipe('translate')],
+      providers: [
+        {
+          provide: DatasetsService,
+          useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
+        },
+        {
+          provide: CountriesService,
+          useClass: errorMode ? MockCountriesServiceErrors : MockCountriesService
+        },
+        { provide: ErrorService, useClass: MockErrorService },
+        { provide: TranslateService, useClass: MockTranslateService }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    });
+
+    fixture = TestBed.createComponent(DatasetformComponent);
+    errors = fixture.debugElement.injector.get<ErrorService>(ErrorService);
+    component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    component.datasetData = mockDataset;
+  };
+
+  describe('Normal Operations', () => {
+    beforeEach(configureTestbed);
+
+    it('should create', () => {
+      fixture.detectChanges();
+      expect(component).toBeTruthy();
+    });
+
+    it('should get the redirection ids FormArray', () => {
+      fixture.detectChanges();
+      expect(component.getIdsAsFormArray().length).toEqual(2);
+      const data = Object.assign({}, component.datasetData);
+      delete data.datasetIdsToRedirectFrom;
+      component.datasetData = data;
+      expect(component.getIdsAsFormArray().length).toEqual(0);
+    });
+
+    it('should handle form enabling and disabling', () => {
+      expect(component.datasetForm).toBeFalsy();
+      component.isSaving = false;
+      fixture.detectChanges();
+      expect(component.datasetForm).toBeTruthy();
+      spyOn(component.datasetForm, 'enable');
+      spyOn(component.datasetForm, 'disable');
+      component.isSaving = false;
+      expect(component.datasetForm.enable).toHaveBeenCalled();
+      expect(component.datasetForm.disable).not.toHaveBeenCalled();
+      component.isSaving = true;
+      expect(component.datasetForm.disable).toHaveBeenCalled();
+    });
+
+    it('should submit the valid form and update the dataset', fakeAsync((): void => {
+      fixture.detectChanges();
+
+      component.datasetForm.controls.datasetName.setValue('');
+
+      component.onSubmit();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.notification).toBeFalsy();
+
+      component.datasetForm.controls.datasetName.setValue('X');
+
+      component.onSubmit();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.notification!.content).toBe('en:datasetSaved');
+    }));
+
+    it('should submit form and create the dataset', fakeAsync((): void => {
+      component.isNew = true;
+      fixture.detectChanges();
+      spyOn(router, 'navigate');
+      component.onSubmit();
+      fixture.detectChanges();
+      expect(router.navigate).toHaveBeenCalledWith(['/dataset/new/1']);
+    }));
+
+    it('should cancel', fakeAsync((): void => {
+      fixture.detectChanges();
+      spyOn(router, 'navigate');
+      localStorage.setItem('tempDatasetData', 'X');
+      component.cancel();
+      expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+      expect(localStorage.getItem('tempDatasetData')).toBeFalsy();
+    }));
+
+    it('should temp save the form', () => {
+      const key = 'tempDatasetData';
+      fixture.detectChanges();
+      expect(localStorage.getItem(key)).toBeFalsy();
+      component.saveTempData();
+      fixture.detectChanges();
+      expect(localStorage.getItem(key)).toBeFalsy();
+      component.isNew = true;
+      component.saveTempData();
+      expect(localStorage.getItem(key)).toBeTruthy();
+      localStorage.removeItem(key);
+    });
+
+    it('should clear the fields', () => {
+      fixture.detectChanges();
+      const fName = 'datasetName';
+      const field = component.datasetForm.controls[fName];
+
+      expect(component.datasetForm.dirty).toBeFalsy();
+      expect(field.value).toBeTruthy();
+
+      component.clearField(fName);
+
+      expect(component.datasetForm.dirty).toBeTruthy();
+      expect(field.value).toBeFalsy();
+    });
+
+    it('should reset', () => {
+      fixture.detectChanges();
+      const fName = 'datasetName';
+      expect(component.datasetForm.pristine).toBeTruthy();
+      component.clearField(fName);
+      expect(component.datasetForm.pristine).toBeFalsy();
+      component.reset();
+      expect(component.datasetForm.pristine).toBeTruthy();
+    });
+
+    it('should add redirection ids', () => {
+      fixture.detectChanges();
+      expect(component.datasetForm.dirty).toBeFalsy();
+      component.addRedirectionId(existingId);
+      expect(component.datasetForm.dirty).toBeFalsy();
+      component.addRedirectionId(newId);
+      expect(component.datasetForm.dirty).toBeTruthy();
+    });
+
+    it('should remove redirection ids', () => {
+      fixture.detectChanges();
+      expect(component.datasetForm.dirty).toBeFalsy();
+      component.removeRedirectionId(newId);
+      expect(component.datasetForm.dirty).toBeFalsy();
+      component.removeRedirectionId(existingId);
+      expect(component.datasetForm.dirty).toBeTruthy();
+    });
+
+    it('should cleanup on destroy', () => {
+      fixture.detectChanges();
+      spyOn(component, 'cleanup').and.callThrough();
+      component.ngOnDestroy();
+      expect(component.cleanup).toHaveBeenCalled();
+    });
+  });
+
+  describe('Error Handling', () => {
+    beforeEach(() => {
+      configureTestbed(true);
+    });
+
+    it('should handle errors getting the countries', () => {
+      spyOn(errors, 'handleError');
+      component.returnCountries();
+      expect(errors.handleError).toHaveBeenCalled();
+    });
+
+    it('should handle errors getting the languages', () => {
+      spyOn(errors, 'handleError');
+      component.returnLanguages();
+      expect(errors.handleError).toHaveBeenCalled();
+    });
+
+    it('should handle errors submitting the form', fakeAsync(() => {
+      spyOn(errors, 'handleError');
+      fixture.detectChanges();
+      component.onSubmit();
+      tick(1);
+      expect(errors.handleError).toHaveBeenCalled();
+    }));
+  });
+});

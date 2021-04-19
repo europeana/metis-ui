@@ -1,0 +1,95 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+
+$speech-bubble-offset: 6.7em;
+
+.dropdown.arrow-right .dropdown-wrapper::before {
+  right: $speech-bubble-offset;
+  transform: translateX(2px);
+}
+.dropdown.arrow-right .dropdown-wrapper::after {
+  right: $speech-bubble-offset;
+}
+
+.dropdown > a:last-of-type::after {
+  display: none;
+}
+
+.dropdown .dropdown-content {
+  max-height: none;
+}
+
+.dropdown-wrapper.hidden {
+  display: none;
+}
+
+.filter-ops {
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+
+  .filter {
+    position: relative;
+    li {
+      margin-left: auto;
+      position: static;
+    }
+  }
+
+  @media (min-width: $bp-small-2) {
+    display: flex;
+  }
+}
+
+.filter {
+  margin: 0.25rem 0;
+  padding: 0;
+
+  li > .active {
+    font-weight: bold;
+  }
+  li > .error {
+    color: $eu-red;
+  }
+  li .filter-grid a {
+    display: block;
+    padding: 0;
+  }
+}
+
+.filter-grid {
+  display: grid;
+  column-gap: 1.25em;
+  grid-row-gap: 0.75em;
+  padding: 1em;
+}
+
+.start-row {
+  grid-column: 1;
+  font-weight: bold;
+}
+
+@media (min-width: $bp-small-2) {
+  .filter-grid {
+    grid-auto-flow: row;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: $bp-med) {
+  .filter-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .filter-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: $bp-xl) {
+  .filter-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+}

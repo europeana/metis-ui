@@ -1,0 +1,159 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+
+.workflow-selector {
+  max-height: 10rem;
+  overflow: auto;
+}
+
+.dataset-actionbar {
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 4rem;
+  padding: 0.75rem;
+  width: 100%;
+
+  .status {
+    font-size: 0.75rem;
+    text-align: center;
+    strong,
+    &.status-new {
+      display: block;
+      font-size: $font-size-slightly-smaller;
+    }
+  }
+
+  .datetime {
+    font-size: $font-size-metis-grid;
+    text-align: center;
+    white-space: nowrap;
+
+    @media (max-width: $bp-xxl) {
+      span {
+        display: block;
+      }
+
+      .datedivider {
+        display: none;
+      }
+    }
+  }
+}
+
+.svg-icon-report {
+  padding: 0.25rem 0.5rem;
+  &::before {
+    height: 1.25rem;
+    transform: translate(-85%, 28%);
+  }
+}
+
+.nav-ctrls {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+  .nav-ctrl {
+    margin-top: 1em;
+  }
+}
+
+nav {
+  white-space: nowrap;
+
+  .nav-ctrl {
+    display: inline-block;
+    padding: 0 0.4rem;
+    position: relative;
+
+    @media (min-width: $bp-xxl) {
+      a:not(.newaction-btn)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: $bp-xxl) {
+      .newaction-btn span {
+        display: inline-block;
+      }
+    }
+  }
+
+  .nav-btn {
+    color: $gray-med;
+    font-size: $font-size-slightly-smaller;
+
+    &:hover {
+      background: $offwhite;
+      border-radius: $border-radius;
+    }
+  }
+
+  .nav-btn:not(.report-btn) {
+    padding: 0.25rem 0.5rem 0.25rem 1.75rem;
+  }
+
+  .nav-btn.newaction-btn {
+    background: $eu-jade;
+    border: 1px solid $eu-jade;
+    border-radius: $border-radius;
+    color: $white;
+    font-size: $font-size-slightly-smaller;
+    padding: 0.25rem 0.5rem;
+    text-transform: uppercase;
+
+    &:hover {
+      background: $offwhite;
+      border-color: transparent;
+      color: $gray-med;
+    }
+  }
+}
+
+@media (min-width: $bp-small) {
+  .dataset-actionbar .status {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: $bp-small-3) {
+  .nav-ctrls {
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    .nav-ctrl {
+      margin-top: 0;
+
+      &:last-child {
+        padding-right: 0;
+        .nav-btn {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: $bp-med) {
+  .dataset-actionbar {
+    display: flex;
+
+    .datetime {
+      padding-right: 0.5rem;
+    }
+
+    .status {
+      padding-left: 0.75rem;
+      padding-right: 1.5rem;
+      text-align: left;
+    }
+  }
+
+  .nav-btn {
+    margin: 0 0.4rem;
+  }
+
+  .nav-ctrl:not(:first-child) {
+    border-left: 1px solid $offwhite;
+  }
+}
