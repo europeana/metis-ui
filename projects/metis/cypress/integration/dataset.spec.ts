@@ -75,7 +75,8 @@ context('metis-ui', () => {
 
   describe('dataset workflow', () => {
     const fieldsOnlyHTTP = ['#url'];
-    const fieldsOnlyOAI = ['#incremental-harvest', '#harvest-url', '#setspec', '#metadata-format'];
+    //const fieldsOnlyOAI = ['#incremental-harvest', '#harvest-url', '#setspec', '#metadata-format'];
+    const fieldsOnlyOAI = ['#harvest-url', '#setspec', '#metadata-format'];
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);

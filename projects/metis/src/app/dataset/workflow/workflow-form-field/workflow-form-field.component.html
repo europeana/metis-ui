@@ -28,8 +28,10 @@
         </ng-container>
         <ng-container *ngIf="workflowForm.value.pluginType === EnumProtocolType.OAIPMH_HARVEST">
           {{ workflowForm.value.harvestUrl }}
+          <!--
           <br />
           Incremental harvest: {{ workflowForm.value.incrementalHarvest }}
+          -->
           <br />
           Setspec: {{ workflowForm.value.setSpec }}
           <ng-container *ngIf="workflowForm.value.metadataFormat">

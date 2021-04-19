@@ -199,6 +199,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
    *
    * @param {Workflow} workflowData
    **/
+  /*
   enableIncrementalHarvestingFieldIfAvailable(workflowData: Workflow): void {
     this.subs.push(
       this.workflows
@@ -212,6 +213,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         })
     );
   }
+  */
 
   /** buildForm
   /* set up a reactive form for creating and editing a workflow
@@ -385,10 +387,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
-        this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
+        //this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
       }
     }
-    this.enableIncrementalHarvestingFieldIfAvailable(workflow);
+    //this.enableIncrementalHarvestingFieldIfAvailable(workflow);
   }
 
   /** extractPluginParamsExtra
@@ -496,7 +498,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         if (conf.name === 'pluginHARVEST') {
           const paramsOAIPMH: ParameterField = [
             ParameterFieldName.harvestUrl,
-            ParameterFieldName.incrementalHarvest,
+            //ParameterFieldName.incrementalHarvest,
             ParameterFieldName.metadataFormat,
             ParameterFieldName.setSpec
           ];

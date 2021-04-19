@@ -68,7 +68,7 @@ const parameterFieldPresets = Object.assign(
     if (pType === 'HARVEST') {
       paramField = [
         ParameterFieldName.harvestUrl,
-        ParameterFieldName.incrementalHarvest,
+        //ParameterFieldName.incrementalHarvest,
         ParameterFieldName.metadataFormat,
         ParameterFieldName.pluginType,
         ParameterFieldName.setSpec,
