@@ -49,7 +49,7 @@ context('metis-ui', () => {
       cy.get('@dd').contains(lastPublished);
 
       cy.get('.dataset-actionbar .status').as('status');
-      cy.get('@status').contains('FINISHED');
+      cy.get('@status').contains('Finished');
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
       cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 11);
@@ -61,7 +61,7 @@ context('metis-ui', () => {
     });
 
     it('should show the tabs', () => {
-      cy.get('.tabs .tab-title').as('tabTitle');
+      cy.get('.tabs .pre-title').as('tabTitle');
       checkAHref(
         cy.get('@tabTitle').contains('Dataset Information'),
         '/dataset/edit/' + expectedId
@@ -169,7 +169,7 @@ context('metis-ui', () => {
     });
 
     it('should show the user who cancelled an execution', () => {
-      cy.get('.table-grid.history .head-right')
+      cy.get('.table-grid.history .head-text.workflow')
         .eq(0)
         .contains('Valentine');
     });

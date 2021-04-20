@@ -9,7 +9,7 @@ $eu-jade-slightly-dark: #1ea072;
 
   &.complete {
     .title-name::after {
-      background-image: svg-url-icon-tick('#{$eu-jade}');
+      background-image: svg-url-icon-tick('#{$eu-jade-classic}');
       width: 1em;
       height: 1em;
       content: '';
@@ -36,7 +36,7 @@ $eu-jade-slightly-dark: #1ea072;
   a {
     position: relative;
     &::after {
-      background-image: svg-url-icon-external('#{$eu-jade}');
+      background-image: svg-url-icon-external('#{$eu-jade-classic}');
       background-repeat: no-repeat;
       content: '';
       display: block;
@@ -98,10 +98,10 @@ $eu-jade-slightly-dark: #1ea072;
     white-space: nowrap;
 
     .open-error-detail {
-      color: $eu-jade;
+      color: $eu-jade-classic;
       position: relative;
       &::before {
-        background-image: svg-url-icon-report('#{$eu-jade}');
+        background-image: svg-url-icon-report('#{$eu-jade-classic}');
         background-repeat: no-repeat;
         content: '';
         top: 0.35em;
@@ -142,7 +142,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .success {
-  background: $eu-jade;
+  background: $eu-jade-classic;
 }
 .fail {
   background: $eu-red;

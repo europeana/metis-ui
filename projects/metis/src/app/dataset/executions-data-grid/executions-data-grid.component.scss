@@ -1,4 +1,5 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
 
 $width-orb: 3em;
@@ -32,6 +33,10 @@ $width-orb: 3em;
   color: $gray-light;
 }
 
+.table-button {
+  grid-column: 1/6;
+}
+
 .table-btn {
   align-items: center;
   margin-left: auto;
@@ -58,10 +63,8 @@ $width-orb: 3em;
   width: calc(100% - #{$width-orb});
 }
 
-// reversal is here
 @media all and (min-width: $bp-med) {
   .button-placeholder {
-    align-items: flex-start;
     white-space: nowrap;
     &:empty {
       display: flex;
@@ -93,7 +96,21 @@ $width-orb: 3em;
 }
 
 .xml-icon {
-  font-size: 130%;
-  font-weight: bold;
-  line-height: 1rem;
+  background: svg-url-icon-xml('#{$near-black}') center no-repeat;
+  display: inline-block;
+  height: 16px;
+  margin-right: 6px;
+  width: 16px;
+}
+
+.svg-icon-report {
+  display: flex;
+  padding-left: 0;
+  margin-right: 6px;
+
+  &::before {
+    height: 16px;
+    position: static;
+    width: 16px;
+  }
 }

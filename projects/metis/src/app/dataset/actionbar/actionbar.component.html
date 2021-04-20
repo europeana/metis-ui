@@ -12,7 +12,7 @@
     {{
       (currentStatus == 'CANCELLED' ? ('cancelledBy' | translate) + ' ' + cancelledBy : '') ||
         currentStatus ||
-        '' | uppercase
+        '' | titlecase
     }}
   </div>
   <!-- show progress bar -->
@@ -73,7 +73,7 @@
       </li>
       <li class="nav-ctrl" *ngIf="isCompleted">
         <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
-          <span>{{ 'runWorkflow' | translate }}</span>
+          <span class="icon-workflow">{{ 'runWorkflow' | translate }}</span>
         </a>
       </li>
     </ul>

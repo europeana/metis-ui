@@ -1,8 +1,8 @@
 @import '../../scss/generic/variables';
 @import '../settings/metis-variables';
 
-$orb-size: 1.5em;
-$orb-size-half: 0.75em;
+$orb-size: 24px;
+$orb-size-half: 12px;
 $orb-size-small: 1em;
 $orb-size-small-half: 0.75em;
 
@@ -29,16 +29,15 @@ $orb-size-small-half: 0.75em;
   min-width: $orb-size-small;
   position: relative;
   text-align: left;
-  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
   width: $orb-size-small;
 
   &.status-inqueue {
     background: $color-status-inqueue;
     color: $near-black;
-    text-shadow: none;
   }
   &.status-cancelled {
     background: $color-status-cancelled;
+    color: $near-black;
   }
   &.status-cleaning {
     background: $color-status-cleaning;
@@ -55,7 +54,6 @@ $orb-size-small-half: 0.75em;
   &.status-running {
     background: $color-status-running;
     color: $near-black;
-    text-shadow: none;
   }
   &.status-warning {
     background: $color-status-warning;
@@ -68,7 +66,7 @@ $orb-size-small-half: 0.75em;
     width: $orb-size;
 
     &:after {
-      font-size: 0.7em;
+      font-size: 14px;
       font-weight: bold;
       position: absolute;
       text-align: center;

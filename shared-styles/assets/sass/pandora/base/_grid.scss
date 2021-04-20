@@ -1,3 +1,5 @@
+$space-sibling-buttons: 1em;
+
 .table-grid.last-execution {
   display: none;
 }
@@ -7,6 +9,12 @@
   display: block;
   text-align: left;
   width: 9em;
+}
+
+.table-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .grid-footer {
@@ -33,10 +41,6 @@
   .time:not(.br) {
     margin-right: 1em;
   }
-}
-
-.svg-icon-report::before {
-  transform: translate(0%, -10%);
 }
 
 .table-grid {
@@ -92,10 +96,15 @@
     align-self: center;
     background: $white;
     display: inline-block;
+    font-weight: 600;
     height: 100%;
     min-height: 3em;
     padding: 0.5em 1em;
     width: 100%;
+  }
+
+  .time {
+    font-weight: 400;
   }
 }
 
@@ -104,12 +113,16 @@
 }
 
 @media all and (min-width: $bp-med) {
+  .table-btn {
+    justify-content: flex-start;
+  }
+
   .table-grid {
     display: grid;
     grid-template-columns: 3fr 2fr 2fr 2fr 1fr auto;
 
+    .button-placeholder,
     .date-and-time {
-      align-items: flex-start;
       width: auto;
       &:empty {
         display: inline-block;
@@ -124,10 +137,11 @@
       display: block;
     }
 
-    .date-and-time,
-    .button-placeholder {
+    .button-placeholder,
+    .date-and-time {
       align-items: flex-start;
       flex-direction: column;
+      justify-content: space-around;
     }
 
     .plugin-name.mobile {
@@ -147,6 +161,7 @@
 }
 
 @media all and (min-width: $bp-large) {
+
   .table-grid {
     grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
 
@@ -154,6 +169,11 @@
     .button-placeholder {
       align-items: center;
       flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .button-placeholder .table-btn + .table-btn {
+      margin-left: $space-sibling-buttons;
     }
 
     .time {
@@ -164,6 +184,7 @@
 }
 
 @media all and (min-width: $bp-xl) {
+
   .table-grid {
     grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
 
@@ -171,6 +192,13 @@
     .button-placeholder {
       align-items: flex-start;
       flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .button-placeholder {
+      .table-btn + .table-btn {
+        margin-left: 0;
+      }
     }
 
     .time {
@@ -180,11 +208,19 @@
 }
 
 @media all and (min-width: $bp-xxl) {
+
   .table-grid {
     .date-and-time,
     .button-placeholder {
       align-items: center;
       flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .button-placeholder {
+      .table-btn + .table-btn {
+        margin-left: $space-sibling-buttons;
+      }
     }
 
     .time {

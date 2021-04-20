@@ -39,7 +39,7 @@ select {
 }
 
 .wizard button {
-  background: $eu-jade;
+  background: $eu-jade-classic;
   border-radius: $wizard-border-radius;
   font-weight: bold;
 
@@ -102,7 +102,7 @@ select {
 }
 
 .wizard-head {
-  background: $eu-jade;
+  background: $eu-jade-classic;
   border-bottom: 1px solid $eu-jade-dark;
   border-radius: $wizard-border-radius $wizard-border-radius 0 0;
   color: $white;

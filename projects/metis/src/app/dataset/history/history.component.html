@@ -34,10 +34,10 @@
         class="grid-header small-title"
         i18n="label grid header processed @@labelGridHeaderProcessed"
       >
-        Processed / Records / Deleted
+        {{ 'processedRecords' | translate }}
       </div>
       <div class="grid-header small-title">
-        {{ 'startTime' }}
+        {{ 'startTime' | translate }}
       </div>
       <div class="grid-header small-title">
         {{ 'endTime' | translate }}
@@ -69,7 +69,5 @@
     You've reached the limit of the number of executions that can be displayed ({{ maxResults }})
   </span>
 
-  <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">
-    <a class="load-more-btn">{{ 'loadMore' | translate }}</a>
-  </span>
+  <a *ngIf="hasMore" class="table-button" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
 </div>

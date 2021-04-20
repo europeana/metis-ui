@@ -52,7 +52,7 @@
   <span class="button-placeholder" [ngClass]="{ stripey: applyStripe }">
     <a
       *ngIf="plugin.failMessage || plugin.hasReport"
-      class="table-btn svg-icon-report"
+      class="table-btn"
       (click)="
         openFailReport(
           plugin.hasReport ? plugin.topologyName : undefined,
@@ -61,11 +61,11 @@
         )
       "
     >
-      {{ 'report' | translate }}
+      <span class="svg-icon-report"></span> {{ 'report' | translate }}
     </a>
     <ng-container *ngIf="wpe && plugin.canDisplayRawXml">
       <a class="table-btn" (click)="goToPreview(wpe.execution, plugin)"
-        ><span class="xml-icon">&#8249;&#8250;</span> XML</a
+        ><span class="xml-icon"></span> XML</a
       >
     </ng-container>
   </span>
