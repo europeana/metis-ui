@@ -104,11 +104,11 @@ $eu-jade-slightly-dark: #1ea072;
         background-image: svg-url-icon-report('#{$eu-jade-classic}');
         background-repeat: no-repeat;
         content: '';
-        top: 0.35em;
-        left: -1.2em;
-        height: 17px;
+        top: 4px;
+        left: -20px;
+        height: 15px;
         position: absolute;
-        width: 17px;
+        width: 16px;
       }
       &:hover {
         color: $eu-jade-slightly-dark;
