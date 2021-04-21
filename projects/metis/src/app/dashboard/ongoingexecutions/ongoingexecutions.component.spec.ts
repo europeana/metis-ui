@@ -41,6 +41,23 @@ describe('OngoingexecutionsComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should get the plugin status class', () => {
+    expect(
+      component.getPluginStatusClass({
+        pluginStatus: 'XXX'
+      } as any)
+    ).toEqual('status-xxx');
+  });
+
+  it('should create', () => {
+    fixture.detectChanges();
+    expect(component).toBeTruthy();
+  });
+
+  it('should calculate the progress', () => {
+    expect(component.calcProgress(mockWorkflowExecution)).toBeTruthy();
+  });
+
   it('should show a log', () => {
     spyOn(component.setShowPluginLog, 'emit');
     component.showLog(mockWorkflowExecution);

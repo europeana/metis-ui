@@ -1,6 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { createMockPipe, MockErrorService, MockWorkflowService } from '../../_mocked';
+import {
+  createMockPipe,
+  MockErrorService,
+  mockWorkflowExecution,
+  MockWorkflowService
+} from '../../_mocked';
 import { PluginExecution, PluginStatus, PluginType } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -73,8 +78,16 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should copy something to the clipboard', () => {
     component.plugin = basicPluginExecution;
-    fixture.detectChanges();
     component.copyInformation('plugin', '1', '2');
     expect(component.contentCopied).toBe(true);
+    component.contentCopied = false;
+    component.copyInformation('plugin', '1');
+    expect(component.contentCopied).toBe(true);
+  });
+
+  it('should go to the preview', () => {
+    spyOn(component.openPreview, 'emit');
+    component.goToPreview(mockWorkflowExecution, basicPluginExecution);
+    expect(component.openPreview.emit).toHaveBeenCalled();
   });
 });

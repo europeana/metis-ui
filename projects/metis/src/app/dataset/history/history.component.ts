@@ -46,6 +46,7 @@ export class HistoryComponent extends SubscriptionManager {
   currentPage = 0;
   allExecutions: Array<WorkflowOrPluginExecution> = [];
   hasMore = false;
+  isLoading = false;
   report?: Report;
   contentCopied = false;
   maxResults = 0;
@@ -94,6 +95,7 @@ export class HistoryComponent extends SubscriptionManager {
   /* - update the hasMore variable
   */
   returnAllExecutions(): void {
+    this.isLoading = true;
     this.subs.push(
       this.workflows
         .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
@@ -111,12 +113,14 @@ export class HistoryComponent extends SubscriptionManager {
               });
             });
             this.hasMore = more;
+            this.isLoading = false;
             this.maxResultsReached = !!maxResultCountReached;
             this.maxResults = results.length;
           },
           (err: HttpErrorResponse) => {
             const error = this.errors.handleError(err);
             this.notification = httpErrorNotification(error);
+            this.isLoading = false;
           }
         )
     );

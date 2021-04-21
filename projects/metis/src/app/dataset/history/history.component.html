@@ -14,7 +14,7 @@
         title="{{ 'doubleClickToCopy' | translate }}"
       >
         <span class="head-text workflow">
-          <span class="head-prefix workflow">{{ 'workflowCreated' | translate }} </span>
+          <span class="head-prefix workflow">{{ 'workflowCreated' | translate }}</span>
           {{ resetTemplateRowIndex() }}
           <span class="head-date">
             {{ execution.createdDate | date: 'dd/MM/yyyy' }}
@@ -69,5 +69,12 @@
     You've reached the limit of the number of executions that can be displayed ({{ maxResults }})
   </span>
 
-  <a *ngIf="hasMore" class="table-button" (click)="loadNextPage()">{{ 'loadMore' | translate }}</a>
+  <a
+    *ngIf="hasMore"
+    class="table-button"
+    (click)="loadNextPage()"
+    [ngClass]="{ 'is-loading': isLoading }"
+  >
+    {{ 'loadMore' | translate }}<span class="workflow-icon"></span>
+  </a>
 </div>

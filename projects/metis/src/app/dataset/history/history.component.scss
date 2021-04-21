@@ -38,13 +38,13 @@ $width-orb: 3em;
   padding-bottom: 0.45rem;
 
   .head-prefix.canceller {
-    background: svg-url-icon-user('#{$eu-jade}') 0 center / 16px no-repeat $white;
+    background: svg-url-icon-person('#{$eu-jade}', 0.5) 4px center / 14px no-repeat;
     margin-left: 1rem;
     padding-left: 1.75em;
   }
 
   .head-prefix.workflow {
-    background: svg-url-icon-workflow('#{$eu-jade}', 0.5) 0 center / 16px no-repeat $white;
+    background: svg-url-icon-workflow('#{$eu-jade}', 0.5) 0 center / 16px no-repeat;
     padding-left: 1.75em;
   }
 }
@@ -75,6 +75,28 @@ $width-orb: 3em;
   }
 }
 
-.tooltip {
-  display: inline-block;
+.table-button {
+  align-content: center;
+  display: flex;
+  grid-column: 1/6;
+  margin-top: 38px;
+
+  .workflow-icon {
+    background-image: svg-url-icon-workflow('#{$eu-jade}', 0.5);
+    background-position: 0 center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    margin-left: 7px;
+    width: 16px;
+  }
+  &:hover {
+    .workflow-icon {
+      background-image: svg-url-icon-workflow('#{$eu-jade}', 1);
+    }
+  }
+  &.is-loading {
+    .workflow-icon {
+      background-image: svg-url-icon-spin('#{$eu-jade}');
+    }
+  }
 }
