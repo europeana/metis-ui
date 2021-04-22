@@ -63,8 +63,8 @@
     >
       <span class="svg-icon-report"></span> {{ 'report' | translate }}
     </a>
-    <ng-container *ngIf="wpe && plugin.canDisplayRawXml">
-      <a class="table-btn" (click)="goToPreview(wpe.execution, plugin)"
+    <ng-container *ngIf="workflowExecutionId && plugin.canDisplayRawXml">
+      <a class="table-btn" (click)="goToPreview(workflowExecutionId, plugin)"
         ><span class="xml-icon"></span> XML</a
       >
     </ng-container>

@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
-  mockDataset,
   MockErrorService,
   mockWorkflowExecution,
   MockWorkflowService,
@@ -62,20 +61,7 @@ describe('HistoryComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should reset the templateRowIndex', () => {
-      component.templateRowIndex = 5;
-      component.resetTemplateRowIndex();
-      expect(component.templateRowIndex).toEqual(0);
-    });
-
-    it('should tell if the row is stripey', () => {
-      expect(component.rowIsStripe()).toBeFalsy();
-      expect(component.rowIsStripe()).toBeTruthy();
-      expect(component.rowIsStripe()).toBeFalsy();
-    });
-
     it('should load the next page', () => {
-      component.datasetData = mockDataset;
       expect(component.currentPage).toEqual(0);
       component.loadNextPage();
       expect(component.currentPage).toEqual(1);
@@ -94,7 +80,6 @@ describe('HistoryComponent', () => {
 
     it('should update the last execution when it changes ', () => {
       spyOn(component, 'returnAllExecutions');
-      component.datasetData = mockDataset;
       component.lastExecutionData = mockWorkflowExecution;
       expect(component.returnAllExecutions).toHaveBeenCalledTimes(1);
       component.lastExecutionData = undefined;
@@ -108,7 +93,6 @@ describe('HistoryComponent', () => {
     });
 
     it('should display history in tabs', fakeAsync(() => {
-      component.datasetData = mockDataset;
       component.returnAllExecutions();
       expect(component.isLoading).toBeTruthy();
       tick(1);
@@ -120,7 +104,6 @@ describe('HistoryComponent', () => {
     it('should submit form and create the dataset', fakeAsync((): void => {
       spyOn(router, 'navigate');
       spyOn(component.setPreviewFilters, 'emit');
-      component.datasetData = mockDataset;
       component.goToPreview({
         baseFilter: {}
       });
@@ -140,7 +123,6 @@ describe('HistoryComponent', () => {
 
     it('should update the notification', fakeAsync(() => {
       expect(component.notification).toBeFalsy();
-      component.datasetData = mockDataset;
       component.returnAllExecutions();
       expect(component.isLoading).toBeTruthy();
       tick(1);

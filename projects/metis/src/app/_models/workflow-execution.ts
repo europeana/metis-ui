@@ -135,11 +135,6 @@ export interface WorkflowExecution {
   currentPluginIndex?: number;
 }
 
-export interface WorkflowOrPluginExecution {
-  execution: WorkflowExecution;
-  pluginExecution?: PluginExecution;
-}
-
 export interface DatasetOverviewExecution {
   finishedDate?: string;
   startedDate?: string;

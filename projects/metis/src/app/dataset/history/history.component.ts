@@ -11,15 +11,13 @@ import { Observable } from 'rxjs';
 import { SubscriptionManager } from 'shared';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
-  Dataset,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
   PreviewFilters,
   Report,
   SimpleReportRequest,
-  WorkflowExecution,
-  WorkflowOrPluginExecution
+  WorkflowExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -37,14 +35,13 @@ export class HistoryComponent extends SubscriptionManager {
     super();
   }
 
-  @Input() datasetData: Dataset;
-
+  @Input() datasetId: string;
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   notification?: Notification;
   currentPage = 0;
-  allExecutions: Array<WorkflowOrPluginExecution> = [];
+  allExecutions: Array<WorkflowExecution> = [];
   hasMore = false;
   isLoading = false;
   report?: Report;
@@ -74,13 +71,6 @@ export class HistoryComponent extends SubscriptionManager {
     }
   }
 
-  /** resetTemplateRowIndex
-  /* Resets templateRowIndex to 0
-  */
-  resetTemplateRowIndex(): void {
-    this.templateRowIndex = 0;
-  }
-
   /** rowIsStripe
   /* Increments templateRowIndex variable and returns its modulus of 2
   /* @return boolean
@@ -98,20 +88,14 @@ export class HistoryComponent extends SubscriptionManager {
     this.isLoading = true;
     this.subs.push(
       this.workflows
-        .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
+        .getCompletedDatasetExecutionsUptoPage(this.datasetId, this.currentPage)
         .subscribe(
           ({ results, more, maxResultCountReached }) => {
-            this.allExecutions = [];
-
             results.forEach((execution) => {
               this.workflows.getReportsForExecution(execution);
               execution.metisPlugins.reverse();
-
-              this.allExecutions.push({ execution });
-              execution.metisPlugins.forEach((pluginExecution) => {
-                this.allExecutions.push({ execution, pluginExecution });
-              });
             });
+            this.allExecutions = results;
             this.hasMore = more;
             this.isLoading = false;
             this.maxResultsReached = !!maxResultCountReached;
@@ -151,20 +135,13 @@ export class HistoryComponent extends SubscriptionManager {
     this.contentCopied = true;
   }
 
-  /** byId
-  /* retrieve plugin execution or the execution id
-  */
-  byId(_: number, item: WorkflowOrPluginExecution): string {
-    return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
-  }
-
   /** goToPreview
   /* - emit the setPreviewFilters event
   /* - redirect to the preview
   */
   goToPreview(previewData: PreviewFilters): void {
     this.setPreviewFilters.emit(previewData);
-    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
+    this.router.navigate(['/dataset/preview/' + this.datasetId]);
   }
 
   /** getCancelledBy

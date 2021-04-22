@@ -1,11 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import {
-  createMockPipe,
-  MockErrorService,
-  mockWorkflowExecution,
-  MockWorkflowService
-} from '../../_mocked';
+import { createMockPipe, MockErrorService, MockWorkflowService } from '../../_mocked';
 import { PluginExecution, PluginStatus, PluginType } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -87,7 +82,7 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should go to the preview', () => {
     spyOn(component.openPreview, 'emit');
-    component.goToPreview(mockWorkflowExecution, basicPluginExecution);
+    component.goToPreview('1', basicPluginExecution);
     expect(component.openPreview.emit).toHaveBeenCalled();
   });
 });

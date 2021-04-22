@@ -6,9 +6,10 @@ import {
   MockWorkflowService
 } from '../../_mocked';
 
+import { PluginExecutionOverview } from '../../_models';
+
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-
 import { OngoingexecutionsComponent } from '.';
 
 describe('OngoingexecutionsComponent', () => {
@@ -43,9 +44,9 @@ describe('OngoingexecutionsComponent', () => {
 
   it('should get the plugin status class', () => {
     expect(
-      component.getPluginStatusClass({
+      component.getPluginStatusClass(({
         pluginStatus: 'XXX'
-      } as any)
+      } as unknown) as PluginExecutionOverview)
     ).toEqual('status-xxx');
   });
 

@@ -5,11 +5,10 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   PluginExecution,
+  PluginStatus,
   PreviewFilters,
   SimpleReportRequest,
-  TopologyName,
-  WorkflowExecution,
-  WorkflowOrPluginExecution
+  TopologyName
 } from '../../_models';
 
 @Component({
@@ -18,11 +17,17 @@ import {
   styleUrls: ['./executions-data-grid.component.scss']
 })
 export class ExecutionsDataGridComponent {
-  @Input() hasMore?: boolean;
-  @Input() applyHighlight?: boolean;
+  applyHighlight = false;
+  plugin: PluginExecution;
+
   @Input() applyStripe?: boolean;
-  @Input() plugin: PluginExecution;
-  @Input() wpe?: WorkflowOrPluginExecution;
+  @Input()
+  set pluginExecution(plugin: PluginExecution) {
+    this.plugin = plugin;
+    this.applyHighlight = plugin.pluginStatus === PluginStatus.RUNNING;
+  }
+
+  @Input() workflowExecutionId?: string;
   @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
   @ViewChild('gridDataTemplate', { static: true }) gridDataTemplate: TemplateRef<HTMLElement>;
@@ -40,13 +45,13 @@ export class ExecutionsDataGridComponent {
   /** goToPreview
   /* fire the preview event
   */
-  goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
+  goToPreview(executionId: string, pluginExecution: PluginExecution): void {
     const previewFilters: PreviewFilters = {
       baseFilter: {
-        executionId: execution.id,
+        executionId: executionId,
         pluginType: pluginExecution.pluginType
       },
-      baseStartedDate: execution.startedDate
+      baseStartedDate: pluginExecution.startedDate
     };
     this.openPreview.emit(previewFilters);
   }

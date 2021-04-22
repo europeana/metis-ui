@@ -69,12 +69,6 @@ describe('LastExecutionComponent', () => {
     expect(mockFn).toHaveBeenCalled();
   });
 
-  it('should get if the plugin is hightlighted', () => {
-    expect(1).toEqual(1);
-    expect(component.getPluginHighlighted(getPluginExecution(PluginStatus.RUNNING))).toBeTruthy();
-    expect(component.getPluginHighlighted(getPluginExecution(PluginStatus.FINISHED))).toBeFalsy();
-  });
-
   it('should get the plugin status', () => {
     expect(component.getPluginStatusClass(getPluginExecution(PluginStatus.FINISHED))).toEqual(
       'status-finished'

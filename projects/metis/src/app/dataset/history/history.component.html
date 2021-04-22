@@ -6,54 +6,51 @@
 ></app-notification>
 
 <div class="table-grid history">
-  <ng-container *ngFor="let wpe of allExecutions; trackBy: byId; let i = index">
-    <ng-container *ngIf="!wpe.pluginExecution && wpe.execution; let execution">
-      <div
-        class="head-text-wrapper"
-        (dblclick)="copyInformation('execution', execution.id, execution.ecloudDatasetId)"
-        title="{{ 'doubleClickToCopy' | translate }}"
-      >
-        <span class="head-text workflow">
-          <span class="head-prefix workflow">{{ 'workflowCreated' | translate }}</span>
-          {{ resetTemplateRowIndex() }}
-          <span class="head-date">
-            {{ execution.createdDate | date: 'dd/MM/yyyy' }}
-          </span>
-          {{ execution.createdDate | date: 'HH:mm' }}
-          <ng-container *ngIf="getCancelledBy(execution) | async as canceller">
-            <span class="head-prefix canceller">{{ 'cancelledBy' | translate }}</span>
-            {{ canceller }}
-          </ng-container>
+  <ng-container *ngFor="let wpe of allExecutions">
+    <div
+      class="head-text-wrapper"
+      (dblclick)="copyInformation('execution', wpe.id, wpe.ecloudDatasetId)"
+      title="{{ 'doubleClickToCopy' | translate }}"
+    >
+      <span class="head-text workflow">
+        <span class="head-prefix workflow">{{ 'workflowCreated' | translate }}</span>
+        <span class="head-date">
+          {{ wpe.createdDate | date: 'dd/MM/yyyy' }}
         </span>
-      </div>
+        {{ wpe.createdDate | date: 'HH:mm' }}
+        <ng-container *ngIf="getCancelledBy(wpe) | async as canceller">
+          <span class="head-prefix canceller">{{ 'cancelledBy' | translate }}</span>
+          {{ canceller }}
+        </ng-container>
+      </span>
+    </div>
 
-      <div class="grid-header small-title">
-        {{ 'workflowStep' | translate }}
-      </div>
-      <div
-        class="grid-header small-title"
-        i18n="label grid header processed @@labelGridHeaderProcessed"
-      >
-        {{ 'processedRecords' | translate }}
-      </div>
-      <div class="grid-header small-title">
-        {{ 'startTime' | translate }}
-      </div>
-      <div class="grid-header small-title">
-        {{ 'endTime' | translate }}
-      </div>
-      <div class="grid-header small-title">
-        {{ 'actions' | translate }}
-      </div>
-    </ng-container>
+    <div class="grid-header small-title">
+      {{ 'workflowStep' | translate }}
+    </div>
+    <div
+      class="grid-header small-title"
+      i18n="label grid header processed @@labelGridHeaderProcessed"
+    >
+      {{ 'processedRecords' | translate }}
+    </div>
+    <div class="grid-header small-title">
+      {{ 'startTime' | translate }}
+    </div>
+    <div class="grid-header small-title">
+      {{ 'endTime' | translate }}
+    </div>
+    <div class="grid-header small-title">
+      {{ 'actions' | translate }}
+    </div>
 
-    <ng-container *ngIf="wpe.pluginExecution">
+    <ng-container *ngFor="let pe of wpe.metisPlugins; let i = index">
       <app-executions-grid-data
         #dataWrapper
         id="app-executions-grid-data"
-        [applyStripe]="rowIsStripe()"
-        [plugin]="wpe.pluginExecution"
-        [wpe]="wpe"
+        [applyStripe]="i % 2 > 0"
+        [pluginExecution]="pe"
+        [workflowExecutionId]="wpe.id"
         (openPreview)="goToPreview($event)"
         (setReportMsg)="openFailReport($event)"
       ></app-executions-grid-data>

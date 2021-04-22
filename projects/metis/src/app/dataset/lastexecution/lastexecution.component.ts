@@ -4,7 +4,6 @@ import {
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
-  PluginStatus,
   Report,
   SimpleReportRequest,
   WorkflowExecution
@@ -47,15 +46,6 @@ export class LastExecutionComponent {
   */
   openFailReport(req: SimpleReportRequest): void {
     this.setReportMsg.emit(req);
-  }
-
-  /** getPluginHighlighted
-  /* template utility to determine if row should be highlighted
-  /* @param { PluginExecution } plugin - the plugin to evaluate
-  /* @return boolean
-  */
-  getPluginHighlighted(plugin: PluginExecution): boolean {
-    return plugin.pluginStatus === PluginStatus.RUNNING;
   }
 
   /** getPluginStatusClass
