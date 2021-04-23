@@ -71,15 +71,6 @@ export class HistoryComponent extends SubscriptionManager {
     }
   }
 
-  /** rowIsStripe
-  /* Increments templateRowIndex variable and returns its modulus of 2
-  /* @return boolean
-  */
-  rowIsStripe(): boolean {
-    this.templateRowIndex++;
-    return this.templateRowIndex % 2 === 0;
-  }
-
   /** returnAllExecutions
   /* - load the execution data
   /* - update the hasMore variable
