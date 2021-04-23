@@ -29,6 +29,13 @@ describe('LastExecutionComponent', () => {
     fixture.detectChanges();
   });
 
+  const getPluginExecution = (status: PluginStatus): PluginExecution => {
+    return ({
+      pluginStatus: status,
+      executionProgress: { errors: 0 }
+    } as unknown) as PluginExecution;
+  };
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -63,12 +70,9 @@ describe('LastExecutionComponent', () => {
   });
 
   it('should get the plugin status', () => {
-    expect(
-      component.getPluginStatusClass(({
-        pluginStatus: PluginStatus.FINISHED,
-        executionProgress: { errors: 0 }
-      } as unknown) as PluginExecution)
-    ).toEqual('status-finished');
+    expect(component.getPluginStatusClass(getPluginExecution(PluginStatus.FINISHED))).toEqual(
+      'status-finished'
+    );
   });
 
   it('should open a simple report', () => {

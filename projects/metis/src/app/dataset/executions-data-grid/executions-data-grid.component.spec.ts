@@ -73,8 +73,16 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should copy something to the clipboard', () => {
     component.plugin = basicPluginExecution;
-    fixture.detectChanges();
     component.copyInformation('plugin', '1', '2');
     expect(component.contentCopied).toBe(true);
+    component.contentCopied = false;
+    component.copyInformation('plugin', '1');
+    expect(component.contentCopied).toBe(true);
+  });
+
+  it('should go to the preview', () => {
+    spyOn(component.openPreview, 'emit');
+    component.goToPreview('1', basicPluginExecution);
+    expect(component.openPreview.emit).toHaveBeenCalled();
   });
 });

@@ -1,18 +1,20 @@
+$space-sibling-buttons: 1em;
+
 .table-grid.last-execution {
   display: none;
 }
 
-.date-and-time:empty,
-.status-label,
-.time {
-  color: #ccc;
+.date-and-time:empty::after {
+  content: '—';
+  display: block;
+  text-align: left;
+  width: 9em;
 }
 
-.date-and-time:empty::after {
-  content: '--';
-  display: block;
-  text-align: center;
-  width: 9em;
+.table-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .grid-footer {
@@ -41,13 +43,9 @@
   }
 }
 
-.svg-icon-report::before {
-  transform: translate(0%, -10%);
-}
-
 .table-grid {
   background: $offwhite;
-  color: $gray-light;
+  color: $near-black;
   font-size: $font-size-metis-grid;
 
   .date-and-time {
@@ -74,30 +72,17 @@
     right: 2em;
   }
 
-  .sub-header {
-    grid-column: 1/6;
-    margin-top: 2em;
-  }
-
   .table-grid-footer {
     display: inline-block;
     grid-column: 1/6;
     text-align: center;
   }
 
-  .table-grid-header {
+  .grid-header {
     background: $white;
+    color: $grey-3;
     display: none;
-    font-weight: bold;
-    padding: 0.5rem;
-
-    &::first-letter {
-      text-transform: uppercase;
-    }
-  }
-
-  .time {
-    margin-left: 0.4em;
+    padding: 0.5rem 1em;
   }
 
   .totals + .date-and-time {
@@ -111,10 +96,15 @@
     align-self: center;
     background: $white;
     display: inline-block;
+    font-weight: 600;
     height: 100%;
     min-height: 3em;
     padding: 0.5em 1em;
     width: 100%;
+  }
+
+  .time {
+    font-weight: 400;
   }
 }
 
@@ -123,10 +113,15 @@
 }
 
 @media all and (min-width: $bp-med) {
+  .table-btn {
+    justify-content: flex-start;
+  }
+
   .table-grid {
     display: grid;
     grid-template-columns: 3fr 2fr 2fr 2fr 1fr auto;
 
+    .button-placeholder,
     .date-and-time {
       width: auto;
       &:empty {
@@ -138,18 +133,15 @@
       top: auto;
     }
 
-    .table-grid-header {
+    .grid-header {
       display: block;
     }
 
-    .date-header {
-      justify-content: space-around;
-      text-align: center;
-    }
-
-    .date-and-time,
-    .buttonplaceholder {
+    .button-placeholder,
+    .date-and-time {
+      align-items: flex-start;
       flex-direction: column;
+      justify-content: space-around;
     }
 
     .plugin-name.mobile {
@@ -169,44 +161,70 @@
 }
 
 @media all and (min-width: $bp-large) {
+
   .table-grid {
     grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
 
-    .date-header {
-      text-align: left;
+    .date-and-time,
+    .button-placeholder {
+      align-items: center;
+      flex-direction: row;
+      justify-content: flex-start;
     }
 
-    .date-and-time,
-    .buttonplaceholder {
-      flex-direction: row;
+    .button-placeholder .table-btn + .table-btn {
+      margin-left: $space-sibling-buttons;
     }
+
+    .time {
+      margin-left: 0.4em;
+    }
+
   }
 }
 
 @media all and (min-width: $bp-xl) {
+
   .table-grid {
     grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
 
-    .date-header {
-      text-align: center;
+    .date-and-time,
+    .button-placeholder {
+      align-items: flex-start;
+      flex-direction: column;
+      justify-content: space-around;
     }
 
-    .date-and-time,
-    .buttonplaceholder {
-      flex-direction: column;
+    .button-placeholder {
+      .table-btn + .table-btn {
+        margin-left: 0;
+      }
+    }
+
+    .time {
+      margin-left: 0;
     }
   }
 }
 
 @media all and (min-width: $bp-xxl) {
+
   .table-grid {
-    .date-header {
-      text-align: left;
+    .date-and-time,
+    .button-placeholder {
+      align-items: center;
+      flex-direction: row;
+      justify-content: flex-start;
     }
 
-    .date-and-time,
-    .buttonplaceholder {
-      flex-direction: row;
+    .button-placeholder {
+      .table-btn + .table-btn {
+        margin-left: $space-sibling-buttons;
+      }
+    }
+
+    .time {
+      margin-left: 0.4em;
     }
   }
 }

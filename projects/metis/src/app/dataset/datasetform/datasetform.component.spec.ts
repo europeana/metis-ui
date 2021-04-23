@@ -28,8 +28,6 @@ describe('DatasetformComponent', () => {
   const newId = 'some_id';
 
   const configureTestbed = (errorMode = false): void => {
-    console.log('errorMode ' + errorMode);
-
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, ReactiveFormsModule],
       declarations: [DatasetformComponent, createMockPipe('translate')],

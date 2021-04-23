@@ -50,6 +50,8 @@ export class LastExecutionComponent {
 
   /** getPluginStatusClass
   /* calculate which css class to use
+  /* @param { PluginExecution } plugin - the plugin to evaluate
+  /* @return string
   */
   getPluginStatusClass(plugin: PluginExecution): string {
     return statusClassFromPlugin(plugin, this.currentPlugin);

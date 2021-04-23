@@ -91,7 +91,7 @@ context('metis-ui', () => {
     });
 
     it('should show the last executions to have run', () => {
-      cy.get('.executions-grid .grid-header').should('have.length', expectedHeaderCount);
+      cy.get('.executions-grid .grid-header-underlined').should('have.length', expectedHeaderCount);
       cy.get('.executions-grid .row-start').contains('Dataset_1');
       cy.get('.executions-grid .row-start').should('have.length', expectedRowCount);
       cy.get('.executions-grid .grid-cell').should(

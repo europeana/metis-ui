@@ -1,12 +1,17 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
 
 $width-orb: 3em;
 
-.buttonplaceholder {
+.button-placeholder {
   &:empty {
     display: none;
   }
+}
+
+.highlighted {
+  box-shadow: inset 3px 0 0 0 $eu-jade;
 }
 
 .orb-status {
@@ -19,9 +24,17 @@ $width-orb: 3em;
   }
 }
 
+.stripey {
+  background-color: $grey-1;
+}
+
 .table-btn,
 .table-grid {
   color: $gray-light;
+}
+
+.table-button {
+  grid-column: 1/6;
 }
 
 .table-btn {
@@ -50,10 +63,8 @@ $width-orb: 3em;
   width: calc(100% - #{$width-orb});
 }
 
-// reversal is here
 @media all and (min-width: $bp-med) {
-  .buttonplaceholder {
-    justify-content: center;
+  .button-placeholder {
     white-space: nowrap;
     &:empty {
       display: flex;
@@ -85,10 +96,21 @@ $width-orb: 3em;
 }
 
 .xml-icon {
-  font-size: 130%;
-  font-weight: bold;
-  line-height: 1rem;
-  margin-left: 0.4em;
-  margin-right: 0.2em;
-  transform: translateY(-10%);
+  background: svg-url-icon-xml('#{$near-black}') center no-repeat;
+  display: inline-block;
+  height: 16px;
+  margin-right: 6px;
+  width: 16px;
+}
+
+.svg-icon-report {
+  display: flex;
+  padding-left: 0;
+  margin-right: 6px;
+
+  &::before {
+    height: 16px;
+    position: static;
+    width: 16px;
+  }
 }

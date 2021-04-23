@@ -250,3 +250,22 @@
     }
   }
 }
+
+/* from Zeplin */
+
+.table-button {
+  align-content: center;
+  border: solid 1px $grey-3;
+  color: $near-black;
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+
+  &:active,
+  &:hover {
+    color: $near-black;
+  }
+  &:active {
+    border: 2px solid $eu-jade;
+  }
+}

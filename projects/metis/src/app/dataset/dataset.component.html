@@ -124,7 +124,7 @@
       ></app-preview>
       <app-history
         *ngIf="activeTab === 'log'"
-        [datasetData]="datasetData"
+        [datasetId]="datasetData.datasetId"
         [lastExecutionData]="lastExecutionData"
         (setReportMsg)="setReportMsg($event)"
         (setPreviewFilters)="previewFilters = $event"

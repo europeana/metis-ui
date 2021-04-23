@@ -9,7 +9,8 @@
     padding: 1em 0 0 1em;
   }
 
-  .grid-header {
+  .grid-header-underlined {
+    color: $grey-3;
     display: none;
     @media (min-width: $bp-med) {
       display: block;

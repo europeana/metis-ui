@@ -6,44 +6,51 @@
 ></app-notification>
 
 <div class="table-grid history">
-  <div class="table-grid-header">
-    {{ 'workflowStep' | translate }}
-  </div>
-  <div class="table-grid-header">
-    {{ 'processedRecords' | translate }}
-  </div>
-  <div class="table-grid-header date-header">
-    {{ 'startTime' | translate }}
-  </div>
-  <div class="table-grid-header date-header">
-    {{ 'endTime' | translate }}
-  </div>
-  <div class="table-grid-header"></div>
-
-  <ng-container *ngFor="let wpe of allExecutions; trackBy: byId">
+  <ng-container *ngFor="let wpe of allExecutions">
     <div
-      *ngIf="!wpe.pluginExecution && wpe.execution; let execution"
-      class="sub-header workflow-head"
+      class="head-text-wrapper"
+      (dblclick)="copyInformation('execution', wpe.id, wpe.ecloudDatasetId)"
+      title="{{ 'doubleClickToCopy' | translate }}"
     >
-      <div
-        class="head-text"
-        (dblclick)="copyInformation('execution', execution.id, execution.ecloudDatasetId)"
-        title="{{ 'doubleClickToCopy' | translate }}"
-      >
-        <span class="head-prefix">{{ 'workflowCreated' | translate }}</span>
-        {{ execution.createdDate | date: 'dd/MM/yyyy HH:mm' }}
-        <div class="head-right" *ngIf="getCancelledBy(execution) | async as canceller">
-          <span class="head-prefix">{{ 'cancelledBy' | translate }}</span>
+      <span class="head-text workflow">
+        <span class="head-prefix workflow">{{ 'workflowCreated' | translate }}</span>
+        <span class="head-date">
+          {{ wpe.createdDate | date: 'dd/MM/yyyy' }}
+        </span>
+        {{ wpe.createdDate | date: 'HH:mm' }}
+        <ng-container *ngIf="getCancelledBy(wpe) | async as canceller">
+          <span class="head-prefix canceller">{{ 'cancelledBy' | translate }}</span>
           {{ canceller }}
-        </div>
-      </div>
+        </ng-container>
+      </span>
     </div>
 
-    <ng-container *ngIf="wpe.pluginExecution; let plugin">
+    <div class="grid-header small-title">
+      {{ 'workflowStep' | translate }}
+    </div>
+    <div
+      class="grid-header small-title"
+      i18n="label grid header processed @@labelGridHeaderProcessed"
+    >
+      {{ 'processedRecords' | translate }}
+    </div>
+    <div class="grid-header small-title">
+      {{ 'startTime' | translate }}
+    </div>
+    <div class="grid-header small-title">
+      {{ 'endTime' | translate }}
+    </div>
+    <div class="grid-header small-title">
+      {{ 'actions' | translate }}
+    </div>
+
+    <ng-container *ngFor="let pe of wpe.metisPlugins; let i = index">
       <app-executions-grid-data
         #dataWrapper
-        [plugin]="wpe.pluginExecution"
-        [wpe]="wpe"
+        id="app-executions-grid-data"
+        [applyStripe]="i % 2 > 0"
+        [pluginExecution]="pe"
+        [workflowExecutionId]="wpe.id"
         (openPreview)="goToPreview($event)"
         (setReportMsg)="openFailReport($event)"
       ></app-executions-grid-data>
@@ -59,7 +66,12 @@
     You've reached the limit of the number of executions that can be displayed ({{ maxResults }})
   </span>
 
-  <span *ngIf="hasMore" class="table-grid-footer" (click)="loadNextPage()">
-    <a class="load-more-btn">{{ 'loadMore' | translate }}</a>
-  </span>
+  <a
+    *ngIf="hasMore"
+    class="table-button"
+    (click)="loadNextPage()"
+    [ngClass]="{ 'is-loading': isLoading }"
+  >
+    {{ 'loadMore' | translate }}<span class="workflow-icon"></span>
+  </a>
 </div>

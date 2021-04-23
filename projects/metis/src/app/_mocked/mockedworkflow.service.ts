@@ -600,6 +600,13 @@ export class MockWorkflowService {
   }
 
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error('mock getCompletedDatasetExecutionsUptoPage throws error'));
+        })
+      );
+    }
     return of({ results: mockWorkflowExecutionResults.results, more: false }).pipe(delay(1));
   }
 

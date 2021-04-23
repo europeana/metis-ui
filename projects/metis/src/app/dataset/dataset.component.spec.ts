@@ -304,7 +304,7 @@ describe('Dataset Component', () => {
       expect(component.notification).toBeFalsy();
       component.beginPolling();
       component.loadData();
-      tick();
+      tick(1);
 
       expect(component.notification).toBeTruthy();
       expect(component.notification!.type).toBe(NotificationType.ERROR);

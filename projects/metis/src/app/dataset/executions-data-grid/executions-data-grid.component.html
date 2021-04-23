@@ -1,7 +1,12 @@
-<ng-template #gridDataTemplate>
-  <ng-template #empty_date><span class="date-and-time"></span></ng-template>
+<ng-template #gridDataTemplate id="gridDataTemplate">
+  <ng-template #empty_date
+    ><span class="date-and-time" [ngClass]="{ stripey: applyStripe }"></span
+  ></ng-template>
 
-  <span class="table-grid-row-start">
+  <span
+    class="table-grid-row-start"
+    [ngClass]="{ stripey: applyStripe, highlighted: applyHighlight }"
+  >
     <span
       class="orb-status labelled status-{{ plugin.pluginStatus.toLowerCase() }} {{
         plugin.pluginType.toLowerCase()
@@ -11,7 +16,7 @@
     ></span>
     <span class="plugin-name desktop">{{ plugin.pluginType | renameWorkflow }}</span>
   </span>
-  <span class="totals">
+  <span class="totals" [ngClass]="{ stripey: applyStripe }">
     <span *ngIf="plugin.executionProgress">
       {{ plugin.executionProgress.processedRecords - plugin.executionProgress.errors }}
       <span class="errors" *ngIf="plugin.executionProgress.errors > 0"
@@ -27,19 +32,27 @@
     <span class="plugin-name mobile">{{ plugin.pluginType | renameWorkflow }}</span>
   </span>
 
-  <span class="date-and-time" *ngIf="plugin.startedDate; else empty_date">
+  <span
+    class="date-and-time"
+    *ngIf="plugin.startedDate; else empty_date"
+    [ngClass]="{ stripey: applyStripe }"
+  >
     <span class="date">{{ plugin.startedDate | date: 'dd/MM/yyyy' }}</span>
     <span class="time"> {{ plugin.startedDate | date: 'HH:mm' }}</span>
   </span>
 
-  <span class="date-and-time" *ngIf="plugin.finishedDate; else empty_date">
+  <span
+    class="date-and-time"
+    *ngIf="plugin.finishedDate; else empty_date"
+    [ngClass]="{ stripey: applyStripe }"
+  >
     <span class="date">{{ plugin.finishedDate | date: 'dd/MM/yyyy' }}</span>
     <span class="time"> {{ plugin.finishedDate | date: 'HH:mm' }}</span>
   </span>
-  <span class="buttonplaceholder">
+  <span class="button-placeholder" [ngClass]="{ stripey: applyStripe }">
     <a
       *ngIf="plugin.failMessage || plugin.hasReport"
-      class="table-btn svg-icon-report"
+      class="table-btn"
       (click)="
         openFailReport(
           plugin.hasReport ? plugin.topologyName : undefined,
@@ -48,11 +61,11 @@
         )
       "
     >
-      {{ 'report' | translate }}
+      <span class="svg-icon-report"></span> {{ 'report' | translate }}
     </a>
-    <ng-container *ngIf="wpe && plugin.canDisplayRawXml">
-      <a class="table-btn" (click)="goToPreview(wpe.execution, plugin)"
-        ><span class="xml-icon">&#8249;&#8250;</span> XML</a
+    <ng-container *ngIf="workflowExecutionId && plugin.canDisplayRawXml">
+      <a class="table-btn" (click)="goToPreview(workflowExecutionId, plugin)"
+        ><span class="xml-icon"></span> XML</a
       >
     </ng-container>
   </span>

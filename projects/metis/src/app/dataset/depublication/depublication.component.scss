@@ -71,12 +71,6 @@
   margin: 2em 0;
   overflow: hidden;
   padding: 0.5em 1em;
-
-  .grid-header {
-    background: $white;
-    display: none;
-    font-weight: bold;
-  }
 }
 
 .indicator-saving {
@@ -97,8 +91,4 @@
   display: flex;
   justify-content: space-between;
   margin: 1em 0;
-}
-
-.depublications-grid .grid-header {
-  display: block;
 }

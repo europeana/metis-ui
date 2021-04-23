@@ -3,7 +3,7 @@ $offwhite: #f1f1ee;
 
 $gray-lightest: #f8f8f8;
 $gray-almost-lightest: #dedede;
-$gray-lighter: #ccc;
+$gray-lighter: #cccccc;
 $gray-light: #777;
 $gray-med: #4d4d4d;
 $gray-hero: #e7e7e7;
@@ -20,7 +20,9 @@ $eu-light-blue: #9ad3f2;
 $eu-light-blue-orb: #79b2e3;
 $eu-blue-link: #1a8ac7;
 
-$eu-jade: #37b98b;
+$eu-jade: #219d31;
+$eu-jade-classic: #37b98b;
+
 $eu-jade-light: #71c07b;
 $eu-jade-dark: #197324;
 $eu-jade-darker: #135116;
@@ -45,11 +47,20 @@ $font-primary: 'Open Sans', 'Arial', sans-serif;
 $font-secondary: 'Ubuntu', 'Arial', sans-serif;
 
 $font-size-slightly-smaller: 0.875em;
-$font-size-metis-grid: 0.8125rem;
+$font-size-metis-grid: 12px;
 $font-size-sm: 0.75em;
 $font-size-med: 1.2em;
 $font-size-large: 1.6em;
 $base-font-multiplier: 1;
+
+/* Zeplin styleguide colours */
+
+$grey-1: #EBEBE9;
+$grey-2: $gray-lighter;
+$grey-3: #999999;
+$light-green: #bde2c2;
+$near-black: $gray-med;
+$yellow: #ffae00;
 
 /* Brand colours */
 $brand-facebook: #03539e;
