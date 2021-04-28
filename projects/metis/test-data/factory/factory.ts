@@ -124,6 +124,7 @@ function getExecutionProgress(conf: PluginRunConf): ExecutionProgress {
   return {
     expectedRecords: conf.numExpected,
     processedRecords: conf.numDone,
+    deletedRecords: conf.numDeleted,
     progressPercentage:
       conf.numDone && conf.numExpected ? (conf.numDone / conf.numExpected) * 100 : '',
     errors: conf.numErr,
@@ -183,6 +184,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
 
       const prc = {
         numExpected: wConf.expectedRecords,
+        numDeleted: pluginExecutionIsHarvest(pe) && wConf.deletedRecords ? wConf.deletedRecords : 0,
         numDone: 0,
         numErr: peErrors
       };
@@ -245,17 +247,11 @@ function generatePluginMetadata(pType: PluginType): PluginMetadata {
   return {
     pluginType: pType,
     enabled: true,
-    url:
-      pType === PluginType.OAIPMH_HARVEST
-        ? 'https://oaipmh.com'
-        : pType === PluginType.HTTP_HARVEST
-        ? 'https://harvest.com'
-        : undefined,
+    url: pType === PluginType.OAIPMH_HARVEST ? 'https://oaipmh.com' : 'https://harvest.com',
     metadataFormat: pType === PluginType.OAIPMH_HARVEST ? 'edm' : undefined,
     setSpec: pType === PluginType.OAIPMH_HARVEST ? 'setSpec' : undefined,
     incrementalHarvest: pType === PluginType.OAIPMH_HARVEST ? true : undefined,
-    customXslt: pType === PluginType.TRANSFORMATION ? false : undefined,
-    conf: {}
+    customXslt: pType === PluginType.TRANSFORMATION ? false : undefined
   } as PluginMetadata;
 }
 
@@ -396,7 +392,8 @@ datasetXs = ((): Array<DatasetX> => {
           unfinished: {
             index: 4,
             status: PluginStatus.CANCELLED
-          }
+          },
+          deletedRecords: 200
         },
         metisPluginsMetadata: fullSequenceTypesHTTP.slice(0, 7).map((type: PluginType) => {
           return generatePluginMetadata(type);
