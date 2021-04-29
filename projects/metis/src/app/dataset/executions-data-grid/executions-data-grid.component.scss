@@ -41,6 +41,9 @@ $width-orb: 3em;
   align-items: center;
   margin-left: auto;
   width: 8em;
+  &:hover {
+    color: $eu-jade;
+  }
 }
 
 .table-grid-row-start {
@@ -112,5 +115,14 @@ $width-orb: 3em;
     height: 16px;
     position: static;
     width: 16px;
+  }
+}
+
+.table-btn:hover {
+  .svg-icon-report::before {
+    background-image: svg-url-icon-report-filled('#{$eu-jade}');
+  }
+  .xml-icon{
+    background: svg-url-icon-xml('#{$eu-jade}') center no-repeat;
   }
 }

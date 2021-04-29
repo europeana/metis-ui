@@ -158,16 +158,20 @@ export class WorkflowHeaderComponent implements AfterViewInit {
       this.isDragging = true;
       e.dataTransfer.setData('metisHeaderOrb', 'true');
       const n = this.ghost.nativeElement.cloneNode();
+      const width = 24;
+
       n.style.border = '3px solid #71c07b';
       n.style.boxSizing = 'border-box';
       n.style.left = '-10000px';
       n.style.transform = 'scale(1)';
       n.style.backgroundSize = 'contain';
-      n.style.height = '40px';
+
+      n.style.height = `${width}px`;
       n.style.position = 'relative';
-      n.style.width = '40px';
+      n.style.width = `${width}px`;
+
       document.body.appendChild(n);
-      e.dataTransfer.setDragImage(n, 20, 20);
+      e.dataTransfer.setDragImage(n, width / 2, width / 2);
       this.ghostClone = n;
     }
   }
