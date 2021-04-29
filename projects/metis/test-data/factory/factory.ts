@@ -142,7 +142,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
   const workflowExecution = {
     id: executionId,
     datasetId: workflow.datasetId,
-
+    isIncremental: wConf.deletedRecords ? true : false,
     workflowStatus: WorkflowStatus.INQUEUE,
     ecloudDatasetId: 'e-cloud-dataset-id',
 
