@@ -3,7 +3,7 @@
  *
  **/
 import { Observable, of, throwError } from 'rxjs';
-import { ModalDialog } from '../_models';
+import { ModalDialog } from '../_models/modal-dialog';
 
 export class MockModalConfirmService {
   errorMode = false;

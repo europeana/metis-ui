@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { environment } from '../environments/environment';
 import { CancellationRequest } from './_models';

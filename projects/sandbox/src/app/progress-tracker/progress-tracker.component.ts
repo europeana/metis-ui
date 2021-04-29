@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Dataset, DatasetStatus, ProgressByStep, StepStatus, StepStatusClass } from '../_models';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
 
 @Component({

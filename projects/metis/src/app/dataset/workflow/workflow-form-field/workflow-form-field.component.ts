@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ProtocolType } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
 

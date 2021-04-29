@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { ModalDialog, ModalDialogButtonDefinition } from '../_models';
-import { ModalConfirmService } from '../_services';
+import { ModalDialog, ModalDialogButtonDefinition } from '../_models/modal-dialog';
+import { ModalConfirmService } from '../_services/modal-confirm.service';
 
 @Component({
   selector: 'lib-modal',

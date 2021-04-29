@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ModalDialog } from '../_models';
+import { ModalDialog } from '../_models/modal-dialog';
 
 @Injectable({ providedIn: 'root' })
 export class ModalConfirmService {
