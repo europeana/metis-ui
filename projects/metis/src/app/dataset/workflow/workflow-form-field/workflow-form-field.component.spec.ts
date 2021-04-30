@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { DragType, PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
-
 import { WorkflowFormFieldComponent } from '.';
 
 describe('WorkflowFormFieldComponent', () => {
@@ -58,10 +57,9 @@ describe('WorkflowFormFieldComponent', () => {
     expect(component.setLinkCheck.emit).toHaveBeenCalled();
   });
 
-  it('should emit events when the field changes', () => {
-    const fName = 'name';
-    spyOn(component.fieldChanged, 'emit');
-    component.onFieldChanged(fName);
-    expect(component.fieldChanged.emit).toHaveBeenCalledWith(fName);
+  it('should scroll elements into view', () => {
+    spyOn(component.pluginElement.nativeElement, 'scrollIntoView');
+    component.scrollToInput();
+    expect(component.pluginElement.nativeElement.scrollIntoView).toHaveBeenCalled();
   });
 });

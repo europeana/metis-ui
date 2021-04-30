@@ -42,11 +42,4 @@ export class WorkflowFormFieldComponent {
     }
     return !(this.workflowForm.get(this.conf.name) as FormControl).value;
   }
-
-  /** onFieldChanged
-  /* emits fieldChanged event
-  */
-  onFieldChanged(fieldName: string): void {
-    this.fieldChanged.emit(fieldName);
-  }
 }
