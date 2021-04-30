@@ -72,7 +72,8 @@ describe('WorkflowComponent', () => {
       };
     }) as unknown;
     component.inputFields = inputs as QueryList<WorkflowFormFieldComponent>;
-    component.inputFields.toArray = () => inputs as Array<WorkflowFormFieldComponent>;
+    component.inputFields.toArray = (): Array<WorkflowFormFieldComponent> =>
+      inputs as Array<WorkflowFormFieldComponent>;
     fixture.detectChanges();
   };
 
@@ -178,7 +179,7 @@ describe('WorkflowComponent', () => {
       setComponentInputFields();
 
       expect(getIndexDragged()).toBe(-1);
-      let testTargetIndex = 4;
+      const testTargetIndex = 4;
       component.addLinkCheck(pluginData, testTargetIndex, false);
       expect(getIndexDragged()).toEqual(testTargetIndex + 1);
 
