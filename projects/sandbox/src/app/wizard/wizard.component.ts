@@ -252,6 +252,7 @@ export class WizardComponent extends DataPollingComponent {
 
       this.isBusyProgress = true;
       this.clearDataPollers();
+      ctrl.setValue('');
 
       this.createNewDataPoller(
         apiSettings.interval,
@@ -260,7 +261,6 @@ export class WizardComponent extends DataPollingComponent {
           return this.sandbox.requestProgress(idToTrack);
         },
         (progressInfo: Dataset) => {
-          ctrl.setValue('');
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;
           if (this.progressComplete()) {
@@ -269,6 +269,7 @@ export class WizardComponent extends DataPollingComponent {
           this.resetBusy();
         },
         (err: HttpErrorResponse) => {
+          ctrl.setValue(idToTrack);
           this.error = err;
           this.resetBusy();
           return err;
@@ -294,7 +295,7 @@ export class WizardComponent extends DataPollingComponent {
             form.value.country,
             form.value.language,
             this.fileFormName,
-            form.get(this.fileFormName)!.value
+            (form.get(this.fileFormName) as FormControl).value
           )
           .subscribe(
             (res: SubmissionResponseData) => {
