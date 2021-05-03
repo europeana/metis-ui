@@ -7,13 +7,10 @@ import { reduce } from 'rxjs/operators';
 /** getUnsubscribable
 /* export Subscription utility
 */
-export function getUnsubscribable(undef?: boolean): Subscription {
-  return (undef
-    ? undefined
-    : ({
-        unsubscribe: jasmine.createSpy('unsubscribe')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)) as Subscription;
+export function getUnsubscribable(): Subscription {
+  return ({
+    unsubscribe: jasmine.createSpy('unsubscribe')
+  } as unknown) as Subscription;
 }
 
 /** getCodeMirrorEditors

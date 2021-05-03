@@ -41,7 +41,13 @@ const fullSequenceTypesHTTP = Object.values(PluginType).filter((pType: PluginTyp
 });
 
 function pluginExecutionIsHarvest(pe: PluginExecution): boolean {
-  return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].indexOf(pe.pluginType) > -1;
+  return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(pe.pluginType);
+}
+
+function pluginExecutionCanHaveDeleted(pe: PluginExecution): boolean {
+  return (
+    pluginExecutionIsHarvest(pe) || [PluginType.PUBLISH, PluginType.PREVIEW].includes(pe.pluginType)
+  );
 }
 
 function pluginExecutionQueuesNext(status: PluginStatus): boolean {
@@ -184,7 +190,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
 
       const prc = {
         numExpected: wConf.expectedRecords,
-        numDeleted: pluginExecutionIsHarvest(pe) && wConf.deletedRecords ? wConf.deletedRecords : 0,
+        numDeleted: pluginExecutionCanHaveDeleted(pe) && wConf.deletedRecords ? wConf.deletedRecords : 0,
         numDone: 0,
         numErr: peErrors
       };
