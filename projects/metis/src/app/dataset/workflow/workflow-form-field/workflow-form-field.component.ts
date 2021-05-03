@@ -13,7 +13,6 @@ export class WorkflowFormFieldComponent {
   @Input() conf: WorkflowFieldData;
   @Input() index: number;
   @Input() workflowForm: FormGroup;
-  @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 

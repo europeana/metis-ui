@@ -452,7 +452,7 @@ describe('WorkflowComponent', () => {
       component.extractWorkflowParamsEnabled(testWorkflowData);
       expect(component.workflowForm.value.pluginType).toBe(pluginType);
 
-      plugin.name = 'IGNORED';
+      plugin.pluginType = 'IGNORED' as 'TRANSFORMATION';
       component.extractWorkflowParamsEnabled(testWorkflowData);
       expect(component.workflowForm.value.pluginType).toBe(pluginType);
     });
