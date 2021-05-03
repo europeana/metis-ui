@@ -4,6 +4,8 @@
   "peerDependencies": {
     "@angular/common": "^10.2.4",
     "@angular/core": "^10.2.4",
+    "@angular/forms": "^10.2.4",
+    "@ctrl/ngx-codemirror": "^4.1.0",
     "rxjs": "^6.6.3"
   },
   "dependencies": {
