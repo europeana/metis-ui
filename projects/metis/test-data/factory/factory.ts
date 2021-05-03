@@ -190,7 +190,8 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
 
       const prc = {
         numExpected: wConf.expectedRecords,
-        numDeleted: pluginExecutionCanHaveDeleted(pe) && wConf.deletedRecords ? wConf.deletedRecords : 0,
+        numDeleted:
+          pluginExecutionCanHaveDeleted(pe) && wConf.deletedRecords ? wConf.deletedRecords : 0,
         numDone: 0,
         numErr: peErrors
       };
