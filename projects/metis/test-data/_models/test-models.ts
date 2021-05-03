@@ -31,6 +31,7 @@ export interface WorkflowXRunConf {
   expectedRecords: number;
   numExecutions?: number;
   unfinished?: UnfinishedPlugin;
+  deletedRecords?: number;
 }
 
 export interface WorkflowX extends Workflow {
@@ -45,6 +46,7 @@ export interface DatasetX extends Dataset {
 
 export interface PluginRunConf {
   numExpected: number;
+  numDeleted: number;
   numDone: number;
   numErr: number;
 }

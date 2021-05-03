@@ -41,7 +41,13 @@ const fullSequenceTypesHTTP = Object.values(PluginType).filter((pType: PluginTyp
 });
 
 function pluginExecutionIsHarvest(pe: PluginExecution): boolean {
-  return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].indexOf(pe.pluginType) > -1;
+  return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(pe.pluginType);
+}
+
+function pluginExecutionCanHaveDeleted(pe: PluginExecution): boolean {
+  return (
+    pluginExecutionIsHarvest(pe) || [PluginType.PUBLISH, PluginType.PREVIEW].includes(pe.pluginType)
+  );
 }
 
 function pluginExecutionQueuesNext(status: PluginStatus): boolean {
@@ -124,6 +130,7 @@ function getExecutionProgress(conf: PluginRunConf): ExecutionProgress {
   return {
     expectedRecords: conf.numExpected,
     processedRecords: conf.numDone,
+    deletedRecords: conf.numDeleted,
     progressPercentage:
       conf.numDone && conf.numExpected ? (conf.numDone / conf.numExpected) * 100 : '',
     errors: conf.numErr,
@@ -141,7 +148,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
   const workflowExecution = {
     id: executionId,
     datasetId: workflow.datasetId,
-
+    isIncremental: wConf.deletedRecords ? true : false,
     workflowStatus: WorkflowStatus.INQUEUE,
     ecloudDatasetId: 'e-cloud-dataset-id',
 
@@ -183,6 +190,8 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
 
       const prc = {
         numExpected: wConf.expectedRecords,
+        numDeleted:
+          pluginExecutionCanHaveDeleted(pe) && wConf.deletedRecords ? wConf.deletedRecords : 0,
         numDone: 0,
         numErr: peErrors
       };
@@ -245,17 +254,11 @@ function generatePluginMetadata(pType: PluginType): PluginMetadata {
   return {
     pluginType: pType,
     enabled: true,
-    url:
-      pType === PluginType.OAIPMH_HARVEST
-        ? 'https://oaipmh.com'
-        : pType === PluginType.HTTP_HARVEST
-        ? 'https://harvest.com'
-        : undefined,
+    url: pType === PluginType.OAIPMH_HARVEST ? 'https://oaipmh.com' : 'https://harvest.com',
     metadataFormat: pType === PluginType.OAIPMH_HARVEST ? 'edm' : undefined,
     setSpec: pType === PluginType.OAIPMH_HARVEST ? 'setSpec' : undefined,
     incrementalHarvest: pType === PluginType.OAIPMH_HARVEST ? true : undefined,
-    customXslt: pType === PluginType.TRANSFORMATION ? false : undefined,
-    conf: {}
+    customXslt: pType === PluginType.TRANSFORMATION ? false : undefined
   } as PluginMetadata;
 }
 
@@ -396,7 +399,8 @@ datasetXs = ((): Array<DatasetX> => {
           unfinished: {
             index: 4,
             status: PluginStatus.CANCELLED
-          }
+          },
+          deletedRecords: 200
         },
         metisPluginsMetadata: fullSequenceTypesHTTP.slice(0, 7).map((type: PluginType) => {
           return generatePluginMetadata(type);
