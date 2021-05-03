@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^10.2.4",
-    "@angular/core": "^10.2.4"
+    "@angular/core": "^10.2.4",
+    "rxjs": "^6.6.3"
   },
   "dependencies": {
-    "rxjs": "^7.0.0",
     "tslib": "^2.0.0"
   }
 }
