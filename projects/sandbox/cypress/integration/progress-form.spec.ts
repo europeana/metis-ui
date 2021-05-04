@@ -45,20 +45,6 @@ context('Sandbox', () => {
       cy.get(selPortalLinks).should('have.length', 1);
     });
 
-    it('should clear the input only on successful submits', () => {
-      const errorVal = '400';
-      cy.get(selectorInput)
-        .clear()
-        .type('1');
-      cy.get(selectorSubmit).click();
-      cy.get(selectorInput).should('have.value', '');
-      cy.get(selectorInput)
-        .clear()
-        .type(errorVal);
-      cy.get(selectorSubmit).click();
-      cy.get(selectorInput).should('have.value', errorVal);
-    });
-
     it('should show network errors', () => {
       cy.get(selectorError).should('have.length', 0);
       cy.get(selectorInput)

@@ -260,7 +260,6 @@ export class WizardComponent extends DataPollingComponent {
           return this.sandbox.requestProgress(idToTrack);
         },
         (progressInfo: Dataset) => {
-          ctrl.setValue('');
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;
           if (this.progressComplete()) {
@@ -294,7 +293,7 @@ export class WizardComponent extends DataPollingComponent {
             form.value.country,
             form.value.language,
             this.fileFormName,
-            form.get(this.fileFormName)!.value
+            (form.get(this.fileFormName) as FormControl).value
           )
           .subscribe(
             (res: SubmissionResponseData) => {
