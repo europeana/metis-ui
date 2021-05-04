@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { createMockPipe, MockErrorService, MockWorkflowService } from '../../_mocked';
-import { PluginExecution, PluginStatus, PluginType } from '../../_models';
+import { OAIHarvestPluginMetadata, PluginExecution, PluginStatus, PluginType } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 import { ExecutionsDataGridComponent } from '.';
@@ -21,8 +21,12 @@ describe('ExecutionsDataGridComponent', () => {
       enabled: true,
       customXslt: false
     },
-    pluginType: PluginType.VALIDATION_EXTERNAL
+    pluginType: PluginType.TRANSFORMATION
   };
+
+  const incrementalPluginExecution = Object.assign({}, basicPluginExecution);
+  incrementalPluginExecution.pluginType = PluginType.OAIPMH_HARVEST;
+  (incrementalPluginExecution.pluginMetadata as OAIHarvestPluginMetadata).incrementalHarvest = true;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -46,6 +50,26 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should apply the highlight when the PluginExecution is set ', () => {
+    component.pluginExecution = basicPluginExecution;
+    expect(component.applyHighlight).toBeFalsy();
+
+    const runningExecution = Object.assign({}, basicPluginExecution);
+    runningExecution.pluginStatus = PluginStatus.RUNNING;
+    component.pluginExecution = runningExecution;
+    expect(component.applyHighlight).toBeTruthy();
+  });
+
+  it('should detect if plugin is harvest', () => {
+    expect(component.pluginIsHarvest(basicPluginExecution)).toBeFalsy();
+    expect(component.pluginIsHarvest(incrementalPluginExecution)).toBeTruthy();
+  });
+
+  it('should detect if harvest is incremental', () => {
+    expect(component.harvestIsIncremental(basicPluginExecution)).toBeFalsy();
+    expect(component.harvestIsIncremental(incrementalPluginExecution)).toBeTruthy();
   });
 
   it('should open a report', () => {
@@ -73,10 +97,10 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should copy something to the clipboard', () => {
     component.plugin = basicPluginExecution;
-    component.copyInformation('plugin', '1', '2');
+    component.copyInformation('1', '2');
     expect(component.contentCopied).toBe(true);
     component.contentCopied = false;
-    component.copyInformation('plugin', '1');
+    component.copyInformation('1');
     expect(component.contentCopied).toBe(true);
   });
 

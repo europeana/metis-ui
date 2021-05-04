@@ -4,8 +4,10 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
+  OAIHarvestPluginMetadata,
   PluginExecution,
   PluginStatus,
+  PluginType,
   PreviewFilters,
   SimpleReportRequest,
   TopologyName
@@ -19,7 +21,6 @@ import {
 export class ExecutionsDataGridComponent {
   applyHighlight = false;
   plugin: PluginExecution;
-
   @Input() applyStripe?: boolean;
   @Input()
   set pluginExecution(plugin: PluginExecution) {
@@ -36,10 +37,35 @@ export class ExecutionsDataGridComponent {
 
   /** copyInformation
   /* copy current execution data to the clipboard
+  /* @param { string } id - the id to copy
+  /* @param { string } extId - the external id to copy
   */
-  copyInformation(type: string, id: string, extId = ''): void {
-    copyExecutionAndTaskId(type, extId, id);
+  copyInformation(id: string, extId = ''): void {
+    copyExecutionAndTaskId('plugin', extId, id);
     this.contentCopied = true;
+  }
+
+  /** pluginIsHarvest
+  /* template utility for harvest plugin detection
+  /* @param { PluginExecution } pluginExecution - the PluginExecution to evaluate
+  /* @return boolean
+  */
+  pluginIsHarvest(pluginExecution: PluginExecution): boolean {
+    return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(
+      pluginExecution.pluginType
+    );
+  }
+
+  /** harvestIsIncremental
+  /* template utility for incremental harvest detection
+  /* @param { PluginExecution } pluginExecution - the PluginExecution to evaluate
+  /* @return boolean
+  */
+  harvestIsIncremental(pluginExecution: PluginExecution): boolean {
+    return (
+      this.pluginIsHarvest(pluginExecution) &&
+      !!((pluginExecution.pluginMetadata as unknown) as OAIHarvestPluginMetadata).incrementalHarvest
+    );
   }
 
   /** goToPreview
