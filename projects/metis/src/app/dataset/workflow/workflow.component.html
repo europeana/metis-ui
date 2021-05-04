@@ -7,7 +7,6 @@
             [conf]="conf"
             [index]="i"
             [workflowForm]="workflowForm"
-            (fieldChanged)="workflowStepAllowed()"
             (setLinkCheck)="setLinkCheck($event)"
           ></app-workflow-form-field>
         </ng-container>
@@ -37,6 +36,7 @@
           </button>
           <app-loading-button
             classes="submit"
+            data-e2e="save-workflow"
             [disabled]="!workflowForm.valid || !workflowForm.dirty"
             [isLoading]="isSaving"
             [title]="'save' | translate"
@@ -44,7 +44,6 @@
             (click)="onSubmit()"
           ></app-loading-button>
         </div>
-
         <div
           class="form-group form-group-btns user-profile-edit-btns"
           *ngIf="!newWorkflow && !workflowForm.dirty && !isSaving"

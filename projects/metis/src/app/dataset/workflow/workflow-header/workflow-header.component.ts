@@ -7,9 +7,15 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { DragType, EventDragDT, WorkflowFieldData, WorkflowFieldDataName } from '../../../_models';
+import {
+  DragType,
+  EventDragDT,
+  ParameterFieldName,
+  WorkflowFieldData,
+  WorkflowFieldDataName
+} from '../../../_models';
 
 @Component({
   selector: 'app-workflow-header',
@@ -40,6 +46,15 @@ export class WorkflowHeaderComponent implements AfterViewInit {
       const ctrl = this.workflowForm.get(plugin) as FormControl;
       ctrl.setValue(!ctrl.value);
       this.workflowForm.markAsDirty();
+    }
+    if (plugin === 'pluginHARVEST') {
+      const ctrl = this.workflowForm.get(ParameterFieldName.pluginType) as FormControl;
+      if (this.workflowForm.value.pluginHARVEST) {
+        ctrl.setValidators([Validators.required]);
+      } else {
+        ctrl.clearValidators();
+      }
+      ctrl.updateValueAndValidity();
     }
   }
 

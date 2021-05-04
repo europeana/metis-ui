@@ -10,15 +10,6 @@ function getHistoryRow(index: number): Cypress.Chainable {
   return cy.get('.table-grid.last-execution .table-grid-row-start').eq(index);
 }
 
-function checkPluginStatus(name: string, enabled: boolean): void {
-  const input = cy
-    .get('.plugin')
-    .contains(name)
-    .closest('.plugin')
-    .find('input');
-  input.should(enabled ? 'be.checked' : 'not.be.checked');
-}
-
 context('metis-ui', () => {
   describe('dataset page', () => {
     afterEach(() => {
@@ -72,62 +63,6 @@ context('metis-ui', () => {
       checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/' + expectedId);
     });
   });
-
-  describe('dataset workflow', () => {
-    const fieldsOnlyHTTP = ['#url'];
-    const fieldsOnlyOAI = ['#incremental-harvest', '#harvest-url', '#setspec', '#metadata-format'];
-
-    beforeEach(() => {
-      setupDatasetPage('workflow', 1);
-    });
-
-    afterEach(() => {
-      cleanupUser();
-    });
-
-    it('should show the workflow', () => {
-      checkPluginStatus('Import', true);
-      checkPluginStatus('Validate (EDM external)', true);
-      checkPluginStatus('Transform', true);
-      checkPluginStatus('Validate (EDM internal)', true);
-      checkPluginStatus('Normalise', true);
-      checkPluginStatus('Enrich', false);
-      checkPluginStatus('Process Media', false);
-      checkPluginStatus('Preview', false);
-      checkPluginStatus('Publish', false);
-    });
-
-    describe('HTTP Harvest', () => {
-      beforeEach(() => {
-        setupDatasetPage('workflow', 1);
-      });
-
-      it('should show the appropriate fields', () => {
-        fieldsOnlyHTTP.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 1);
-        });
-        fieldsOnlyOAI.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 0);
-        });
-      });
-    });
-
-    describe('OAI Harvest', () => {
-      beforeEach(() => {
-        setupDatasetPage('workflow', 0);
-      });
-
-      it('should show the appropriate fields', () => {
-        fieldsOnlyOAI.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 1);
-        });
-        fieldsOnlyHTTP.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 0);
-        });
-      });
-    });
-  });
-  // TODO: mapping
 
   describe('dataset log', () => {
     afterEach(() => {
