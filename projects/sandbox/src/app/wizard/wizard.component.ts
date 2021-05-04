@@ -252,7 +252,6 @@ export class WizardComponent extends DataPollingComponent {
 
       this.isBusyProgress = true;
       this.clearDataPollers();
-      ctrl.setValue('');
 
       this.createNewDataPoller(
         apiSettings.interval,
@@ -269,7 +268,6 @@ export class WizardComponent extends DataPollingComponent {
           this.resetBusy();
         },
         (err: HttpErrorResponse) => {
-          ctrl.setValue(idToTrack);
           this.error = err;
           this.resetBusy();
           return err;
