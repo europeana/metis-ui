@@ -100,7 +100,7 @@ context('metis-ui', () => {
         .contains('Validate (EDM external)');
       cy.get('.table-grid.history .plugin-name.desktop')
         .eq(6)
-        .contains('Import HTTP');
+        .contains('Import OAI-PMH');
     });
 
     it('should show the user who cancelled an execution', () => {

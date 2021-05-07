@@ -381,7 +381,8 @@ datasetXs = ((): Array<DatasetX> => {
           unfinished: {
             index: 2,
             status: PluginStatus.RUNNING
-          }
+          },
+          deletedRecords: 0
         },
         metisPluginsMetadata: [
           generatePluginMetadata(PluginType.HTTP_HARVEST),
@@ -402,7 +403,7 @@ datasetXs = ((): Array<DatasetX> => {
           },
           deletedRecords: 200
         },
-        metisPluginsMetadata: fullSequenceTypesHTTP.slice(0, 7).map((type: PluginType) => {
+        metisPluginsMetadata: fullSequenceTypesOAIPMH.slice(0, 7).map((type: PluginType) => {
           return generatePluginMetadata(type);
         })
       }

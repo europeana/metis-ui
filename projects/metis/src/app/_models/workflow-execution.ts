@@ -25,6 +25,7 @@ export enum TaskState {
 }
 
 export interface ExecutionProgressBasic {
+  deletedRecords?: number;
   expectedRecords: number;
   processedRecords: number;
   progressPercentage: number;
