@@ -269,3 +269,57 @@
     border: 2px solid $eu-jade;
   }
 }
+
+.button-filled,
+.button-outline {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 2px;
+  display: inline-block;
+  font-size: 0.875em;
+  font-weight: bold;
+  margin: 0 0.6rem;
+
+  &:disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.button-filled {
+  background: $eu-jade;
+  border-color: $eu-jade;
+  color: $white;
+
+  &:hover {
+    background: $eu-jade-dark;
+    border-color: $eu-jade-dark;
+  }
+
+  &:active {
+    border-color: $eu-jade;
+  }
+
+  &:disabled {
+    background: $eu-light-jade;
+  }
+}
+
+.button-outline {
+  background: $white;
+  border-color: $eu-jade;
+  color: $eu-jade;
+
+  &:hover {
+    background: $eu-jade;
+    color: $white;
+  }
+
+  &:active {
+    background: $eu-jade-dark;
+  }
+
+  &:disabled {
+    color: $eu-light-jade;
+  }
+}

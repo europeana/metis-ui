@@ -27,7 +27,7 @@
 
           <button
             type="button"
-            class="reset-btn"
+            class="button-outline"
             *ngIf="!newWorkflow"
             [disabled]="isSaving || !workflowForm.dirty"
             (click)="reset()"
@@ -35,7 +35,7 @@
             {{ 'reset' | translate }}
           </button>
           <app-loading-button
-            classes="submit"
+            classes="submit button-filled"
             data-e2e="save-workflow"
             [disabled]="!workflowForm.valid || !workflowForm.dirty"
             [isLoading]="isSaving"
@@ -56,7 +56,7 @@
           <div class="spacer"></div>
 
           <app-loading-button
-            classes="submit"
+            classes="submit button-filled"
             [disabled]="isRunning()"
             [isLoading]="isStarting"
             [title]="'runWorkflow' | translate"

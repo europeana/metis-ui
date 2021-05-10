@@ -27,7 +27,7 @@
 
 <div class="depublication-ctrls">
   <button
-    class="btn-delete"
+    class="btn-delete button-filled"
     [disabled]="depublicationSelections.length === 0"
     (click)="deleteDepublications()"
     title="Remove record ids from the list below"
@@ -121,7 +121,7 @@
             </div>
           </div>
           <button
-            class="submit-form"
+            class="button-filled submit-form"
             type="submit"
             [disabled]="!(formFile.valid && formFile.dirty)"
           >
@@ -153,7 +153,7 @@
             </div>
           </div>
           <button
-            class="submit-form"
+            class="button-filled submit-form"
             type="submit"
             [disabled]="!(formRawText.valid && formRawText.dirty)"
           >

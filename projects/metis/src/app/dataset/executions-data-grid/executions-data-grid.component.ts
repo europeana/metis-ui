@@ -63,6 +63,7 @@ export class ExecutionsDataGridComponent {
   */
   harvestIsIncremental(pluginExecution: PluginExecution): boolean {
     return (
+      pluginExecution.pluginMetadata &&
       this.pluginIsHarvest(pluginExecution) &&
       !!((pluginExecution.pluginMetadata as unknown) as OAIHarvestPluginMetadata).incrementalHarvest
     );

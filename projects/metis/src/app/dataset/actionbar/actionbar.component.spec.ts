@@ -22,6 +22,7 @@ describe('ActionbarComponent', () => {
       declarations: [
         ActionbarComponent,
         createMockPipe('translate'),
+        createMockPipe('renameStatus'),
         createMockPipe('renameWorkflow')
       ],
       providers: [{ provide: WorkflowService, useClass: MockWorkflowService }]
