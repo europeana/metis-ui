@@ -209,26 +209,6 @@
   justify-content: center;
   width: 30rem;
 
-  button {
-    background: $eu-jade;
-    border: 1px solid $eu-jade;
-    margin-left: 1rem;
-    transition: background-color 0.5s ease;
-
-    &:hover,
-    &.active {
-      background: $white;
-      color: $eu-jade;
-    }
-
-    &:active,
-    &:focus {
-      background: $eu-jade;
-      box-shadow: none;
-      color: $white;
-    }
-  }
-
   .btn-padding {
     .btn {
       background: transparent;
