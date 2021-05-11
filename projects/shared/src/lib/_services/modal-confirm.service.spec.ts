@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { ModalDialog } from '../_models/modal-dialog';
 import { ModalConfirmService } from './modal-confirm.service';
 
@@ -19,14 +20,18 @@ describe('Modal Confirm Service', () => {
 
   it('should open', () => {
     const id = '1';
-    const spy = jasmine.createSpy();
     const modal = ({
       id: id,
-      open: spy
+      open: () => {
+        return of(true);
+      }
     } as unknown) as ModalDialog;
-
+    spyOn(modal, 'open').and.callThrough();
     service.add(modal);
-    service.open(modal.id);
-    expect(spy).toHaveBeenCalled();
+    service
+      .open(modal.id)
+      .subscribe()
+      .unsubscribe();
+    expect(modal.open).toHaveBeenCalled();
   });
 });
