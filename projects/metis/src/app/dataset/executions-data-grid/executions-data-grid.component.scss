@@ -79,6 +79,13 @@ $width-orb: 3em;
   width: 8em;
   &:hover {
     color: $eu-jade;
+
+    .svg-icon-report::before {
+      background-image: svg-url-icon-report-filled('#{$eu-jade}');
+    }
+    .xml-icon {
+      background: svg-url-icon-xml('#{$eu-jade}') center no-repeat;
+    }
   }
 }
 
@@ -151,14 +158,5 @@ $width-orb: 3em;
     height: 16px;
     position: static;
     width: 16px;
-  }
-}
-
-.table-btn:hover {
-  .svg-icon-report::before {
-    background-image: svg-url-icon-report-filled('#{$eu-jade}');
-  }
-  .xml-icon {
-    background: svg-url-icon-xml('#{$eu-jade}') center no-repeat;
   }
 }
