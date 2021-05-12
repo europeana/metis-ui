@@ -18,9 +18,7 @@
     <span class="plugin-name desktop"
       >{{ plugin.pluginType | renameWorkflow }}
       <ng-container *ngIf="pluginIsHarvest(plugin)">
-        <span
-          *ngIf="harvestIsIncremental(plugin); else harvest_full"
-          class="pill-harvest incremental"
+        <span *ngIf="isIncremental; else harvest_full" class="pill-harvest incremental"
           >Incr. H.</span
         >
       </ng-container>
@@ -38,7 +36,7 @@
           ? plugin.executionProgress.expectedRecords
           : ('unknown' | translate)
       }}
-      <ng-container *ngIf="harvestIsIncremental(plugin)">
+      <ng-container *ngIf="isIncremental">
         /
         <span style="color:red;" *ngIf="plugin.executionProgress.deletedRecords; else zero">
           {{ plugin.executionProgress.deletedRecords }}
@@ -47,7 +45,7 @@
     </span>
     <span class="plugin-name mobile"
       >{{ plugin.pluginType | renameWorkflow }}
-      <span *ngIf="harvestIsIncremental(plugin); else harvest_full" class="pill-harvest incremental"
+      <span *ngIf="isIncremental; else harvest_full" class="pill-harvest incremental"
         >Incr. H.</span
       >
     </span>

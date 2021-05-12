@@ -9,12 +9,7 @@ import { SharedModule } from 'shared';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
-import {
-  RenameStatusPipe,
-  RenameWorkflowPipe,
-  TranslatePipe,
-  TRANSLATION_PROVIDERS
-} from './_translate';
+import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
 import { AppComponent } from './app.component';
 import {
   DashboardactionsComponent,
@@ -117,7 +112,6 @@ import { ThemeSelectorComponent } from './theme-selector';
     ThemeSelectorComponent,
     TranslatePipe,
     XmlPipe,
-    RenameStatusPipe,
     RenameWorkflowPipe,
     GridrowComponent,
     ExecutionsgridComponent,

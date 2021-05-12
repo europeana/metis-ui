@@ -49,6 +49,7 @@
         #dataWrapper
         id="app-executions-grid-data"
         [applyStripe]="i % 2 > 0"
+        [isIncremental]="wpe.isIncremental"
         [pluginExecution]="pe"
         [workflowExecutionId]="wpe.id"
         (openPreview)="goToPreview($event)"

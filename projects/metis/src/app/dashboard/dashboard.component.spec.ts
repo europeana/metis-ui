@@ -67,12 +67,6 @@ describe('DashboardComponent', () => {
           progressPercentage: 50,
           errors: 5
         },
-        pluginMetadata: {
-          pluginType: PluginType.OAIPMH_HARVEST,
-          url: 'example.com',
-          setSpec: 'test',
-          metadataFormat: 'edm'
-        },
         topologyName: 'oai_harvest'
       };
       fixture.detectChanges();

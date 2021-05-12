@@ -4,7 +4,6 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
-  OAIHarvestPluginMetadata,
   PluginExecution,
   PluginStatus,
   PluginType,
@@ -22,6 +21,7 @@ export class ExecutionsDataGridComponent {
   applyHighlight = false;
   plugin: PluginExecution;
   @Input() applyStripe?: boolean;
+  @Input() isIncremental?: boolean;
   @Input()
   set pluginExecution(plugin: PluginExecution) {
     this.plugin = plugin;
@@ -53,19 +53,6 @@ export class ExecutionsDataGridComponent {
   pluginIsHarvest(pluginExecution: PluginExecution): boolean {
     return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(
       pluginExecution.pluginType
-    );
-  }
-
-  /** harvestIsIncremental
-  /* template utility for incremental harvest detection
-  /* @param { PluginExecution } pluginExecution - the PluginExecution to evaluate
-  /* @return boolean
-  */
-  harvestIsIncremental(pluginExecution: PluginExecution): boolean {
-    return (
-      pluginExecution.pluginMetadata &&
-      this.pluginIsHarvest(pluginExecution) &&
-      !!((pluginExecution.pluginMetadata as unknown) as OAIHarvestPluginMetadata).incrementalHarvest
     );
   }
 

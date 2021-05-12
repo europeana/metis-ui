@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { createMockPipe, MockErrorService, MockWorkflowService } from '../../_mocked';
-import { OAIHarvestPluginMetadata, PluginExecution, PluginStatus, PluginType } from '../../_models';
+import { PluginExecution, PluginStatus, PluginType } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 import { ExecutionsDataGridComponent } from '.';
@@ -15,18 +15,11 @@ describe('ExecutionsDataGridComponent', () => {
     failMessage: 'failed',
     hasReport: true,
     topologyName: 'validation',
-    pluginMetadata: {
-      pluginType: PluginType.TRANSFORMATION,
-      mocked: false,
-      enabled: true,
-      customXslt: false
-    },
     pluginType: PluginType.TRANSFORMATION
   };
 
-  const incrementalPluginExecution = Object.assign({}, basicPluginExecution);
-  incrementalPluginExecution.pluginType = PluginType.OAIPMH_HARVEST;
-  (incrementalPluginExecution.pluginMetadata as OAIHarvestPluginMetadata).incrementalHarvest = true;
+  const OAIPMHPluginExecution = Object.assign({}, basicPluginExecution);
+  OAIPMHPluginExecution.pluginType = PluginType.OAIPMH_HARVEST;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -64,12 +57,7 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should detect if plugin is harvest', () => {
     expect(component.pluginIsHarvest(basicPluginExecution)).toBeFalsy();
-    expect(component.pluginIsHarvest(incrementalPluginExecution)).toBeTruthy();
-  });
-
-  it('should detect if harvest is incremental', () => {
-    expect(component.harvestIsIncremental(basicPluginExecution)).toBeFalsy();
-    expect(component.harvestIsIncremental(incrementalPluginExecution)).toBeTruthy();
+    expect(component.pluginIsHarvest(OAIPMHPluginExecution)).toBeTruthy();
   });
 
   it('should open a report', () => {
