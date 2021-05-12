@@ -3,8 +3,7 @@ import { DocumentTitleService } from '../../_services';
 
 @Component({
   selector: 'app-newdataset',
-  templateUrl: './newdataset.component.html',
-  styleUrls: ['./newdataset.component.scss']
+  templateUrl: './newdataset.component.html'
 })
 export class NewDatasetComponent implements OnInit {
   constructor(private readonly documentTitleService: DocumentTitleService) {}
