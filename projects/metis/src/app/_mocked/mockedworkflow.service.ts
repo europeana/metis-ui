@@ -302,11 +302,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.VALIDATION_EXTERNAL,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.INQUEUE,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -333,11 +328,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.NORMALIZATION,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.RUNNING,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -364,11 +354,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.NORMALIZATION,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.FAILED,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -395,11 +380,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: 'NORMALIZATION',
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.CANCELLED,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -426,11 +406,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.NORMALIZATION,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.FINISHED,
           externalTaskId: '123',
           topologyName: 'normalization',

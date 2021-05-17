@@ -49,17 +49,8 @@
 }
 
 .submit-form {
-  background: $eu-jade;
-  color: $white;
   display: block;
   margin: 1em 0 0 auto;
-
-  &:disabled {
-    background: $white;
-    border: 1px solid $eu-jade;
-    color: $eu-jade;
-    cursor: not-allowed;
-  }
 }
 
 .depublications-grid {

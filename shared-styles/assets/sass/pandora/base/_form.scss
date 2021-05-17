@@ -202,6 +202,7 @@ app-workflow-form-field-harvest {
 }
 
 /* buttons */
+
 .form-fields .form-group-btns {
   button {
     padding: 0.8rem 3rem;
@@ -213,31 +214,6 @@ app-workflow-form-field-harvest {
 .form-fields .form-group-btns {
   display: flex;
   justify-content: center;
-
-  button {
-    background: $eu-jade;
-    border: 1px solid $eu-jade;
-    border-radius: 2px;
-    color: $white;
-    display: inline-block;
-    font-size: 0.875em;
-    font-weight: bold;
-    margin: 0 0.6rem;
-
-    &:disabled {
-      background: $eu-light-jade;
-      cursor: not-allowed;
-    }
-  }
-
-  button.reset-btn {
-    background-color: $white;
-    color: $eu-jade;
-
-    &:disabled {
-      color: $eu-light-jade;
-    }
-  }
 
   .svg-icon-spin-inbutton {
     padding-left: 1.25rem;

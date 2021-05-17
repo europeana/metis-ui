@@ -1,5 +1,3 @@
-import { PluginMetadata } from './plugin-metadata';
-
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
   OAIPMH_HARVEST = 'OAIPMH_HARVEST',
@@ -80,7 +78,6 @@ export interface PluginExecutionBasic {
 export interface PluginExecution extends PluginExecutionBasic {
   id: string;
   executionProgress?: ExecutionProgress;
-  pluginMetadata: PluginMetadata;
   topologyName: TopologyName;
   canDisplayRawXml?: boolean;
   hasReport?: boolean;
@@ -132,6 +129,7 @@ export interface PluginAvailabilityList {
 export interface WorkflowExecution {
   id: string;
   datasetId: string;
+  isIncremental?: boolean;
   ecloudDatasetId?: string;
   workflowPriority?: number;
   workflowStatus: WorkflowStatus;
