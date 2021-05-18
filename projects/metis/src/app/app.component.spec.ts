@@ -79,6 +79,9 @@ describe('AppComponent', () => {
       app.handleRouterEvent({} as RouterEvent);
       expect(app.bodyClass).toBeFalsy();
 
+      app.handleRouterEvent(({ url: undefined } as unknown) as RouterEvent);
+      expect(app.bodyClass).not.toBe('home');
+
       app.handleRouterEvent({ url: '/' } as RouterEvent);
       expect(app.bodyClass).toBe('home');
       expect(app.loggedIn).toBe(true);

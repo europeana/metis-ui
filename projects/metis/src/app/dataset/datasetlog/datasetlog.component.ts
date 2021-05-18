@@ -5,7 +5,7 @@ import { filter, map, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
-import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
+import { PluginExecution, SubTaskInfo } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -92,10 +92,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
       () => {
         return of(this.getProcessedCount()).pipe(
           map((val) => {
-            if (isPluginCompleted(this.showPluginLog) && this.subs.length > 0) {
-              this.cleanup();
-              return 0;
-            }
             if (val <= 1) {
               this.isFirstLoading = false;
               this.showWindowOutput(undefined);

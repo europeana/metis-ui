@@ -80,15 +80,18 @@ export class ReportSimpleComponent {
   /* - copies report to clipboard
   *  - clears notification
   */
-  copyReport(): void {
-    const element = this.contentRef.nativeElement;
-    window.getSelection()?.removeAllRanges();
-    const range = document.createRange();
-    range.selectNode(element);
-    window.getSelection()?.addRange(range);
-    document.execCommand('copy');
-    window.getSelection()?.removeAllRanges();
-    this.notification = successNotification(this.translate.instant('reportCopied'));
+  copyReport(win = window): void {
+    const selection = win.getSelection();
+    if (selection) {
+      const element = this.contentRef.nativeElement;
+      selection.removeAllRanges();
+      const range = document.createRange();
+      range.selectNode(element);
+      selection.addRange(range);
+      document.execCommand('copy');
+      selection.removeAllRanges();
+      this.notification = successNotification(this.translate.instant('reportCopied'));
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
