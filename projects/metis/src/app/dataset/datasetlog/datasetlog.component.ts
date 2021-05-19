@@ -86,7 +86,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   */
   startPolling(): void {
     this.cleanup();
-
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       () => {

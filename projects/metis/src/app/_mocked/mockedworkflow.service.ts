@@ -719,6 +719,13 @@ export class MockWorkflowService {
   }
 
   getLogs(): Observable<SubTaskInfo[]> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error('mock getLogs throws error'));
+        })
+      );
+    }
     return of(mockLogs).pipe(delay(1));
   }
 

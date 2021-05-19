@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { apiSettings } from '../../../environments/apisettings';
 import { createMockPipe, mockDataset, mockHarvestData } from '../../_mocked';
-import { HarvestData } from '../../_models';
+import { DatasetDepublicationStatus, HarvestData } from '../../_models';
 
 import { GeneralinfoComponent } from '.';
 
@@ -22,6 +22,10 @@ describe('GeneralinfoComponent', () => {
     fixture.detectChanges();
   });
 
+  const getEmptyHarvestData = (): HarvestData => {
+    return ({} as unknown) as HarvestData;
+  };
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -39,19 +43,35 @@ describe('GeneralinfoComponent', () => {
     expect(component.buttonClassPreview).toBe('');
   });
 
-  it('should set button classes according to data', () => {
-    component.harvestPublicationData = ({
-      lastPreviewRecordsReadyForViewing: true,
-      lastPublishedRecordsReadyForViewing: true
-    } as unknown) as HarvestData;
+  it('should set disabled classes according to data', () => {
+    const data = getEmptyHarvestData();
+    (data.lastPreviewRecordsReadyForViewing = true),
+      (data.lastPublishedRecordsReadyForViewing = true);
+    component.harvestPublicationData = data;
     fixture.detectChanges();
     expect(component.buttonClassPreview).not.toBe(component.disabledBtnClass);
 
-    component.harvestPublicationData = ({
-      lastPreviewRecordsReadyForViewing: false,
-      lastPublishedRecordsReadyForViewing: false
-    } as unknown) as HarvestData;
+    (data.lastPreviewRecordsReadyForViewing = false),
+      (data.lastPublishedRecordsReadyForViewing = false);
+    component.harvestPublicationData = data;
     fixture.detectChanges();
     expect(component.buttonClassPreview).toBe(component.disabledBtnClass);
+  });
+
+  it('should set the current depublication status message', () => {
+    component.harvestPublicationData = (undefined as unknown) as HarvestData;
+    fixture.detectChanges();
+    expect(component.currentDepublicationStatusMessage).toBeFalsy();
+
+    const data = getEmptyHarvestData();
+    data.publicationStatus = DatasetDepublicationStatus.DEPUBLISHED;
+    component.harvestPublicationData = data;
+    fixture.detectChanges();
+    expect(component.currentDepublicationStatusMessage).toEqual('depublished');
+
+    data.publicationStatus = DatasetDepublicationStatus.PUBLISHED;
+    component.harvestPublicationData = data;
+    fixture.detectChanges();
+    expect(component.currentDepublicationStatusMessage).toEqual('published');
   });
 });
