@@ -5,7 +5,7 @@ import { filter, map, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
-import { PluginExecution, SubTaskInfo } from '../../_models';
+import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
