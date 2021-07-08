@@ -254,7 +254,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - get and show samples based on plugin
   *  - loads historyVersions based on plugin
   */
-  getXMLSamples(plugin: PluginType, prefilling?: boolean): void {
+  getXMLSamples(plugin: PluginType, prefilling = false): void {
     if (!prefilling) {
       this.onClickedOutside();
       this.allSampleComparisons = [];

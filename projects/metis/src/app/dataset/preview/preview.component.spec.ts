@@ -298,7 +298,7 @@ describe('PreviewComponent', () => {
       });
 
       expect(component.expandedSample).toEqual(undefined);
-      component.getXMLSamples(PluginType.NORMALIZATION, false);
+      component.getXMLSamples(PluginType.NORMALIZATION);
       tick(1);
       expect(component.expandedSample).toEqual(undefined);
     }));
@@ -532,7 +532,7 @@ describe('PreviewComponent', () => {
 
       fixture.detectChanges();
       component.isLoadingSamples = true;
-      component.getXMLSamples(PluginType.NORMALIZATION, false);
+      component.getXMLSamples(PluginType.NORMALIZATION);
       tick(1);
       fixture.detectChanges();
       expect(component.isLoadingSamples).toBeFalsy();

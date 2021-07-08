@@ -16,6 +16,6 @@ export class LoadAnimationComponent {
         resourcesToLoad.push(key);
       }
     });
-    this.message = 'Loading ' + resourcesToLoad.join(', ') + '...';
+    this.message = `Loading ${resourcesToLoad.join(', ')}...`;
   }
 }
