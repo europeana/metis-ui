@@ -341,7 +341,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
+          .setPublicationFile(this._datasetId, (form.get('depublicationFile') as FormControl).value)
           .subscribe(
             () => {
               this.refreshPolling();
@@ -473,11 +473,11 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
+          .setPublicationInfo(this._datasetId, (form.get('recordIds') as FormControl).value.trim())
           .subscribe(
             () => {
               this.refreshPolling();
-              form.get('recordIds')!.reset();
+              (form.get('recordIds') as FormControl).reset();
               this.closeDialogs();
               this.isSaving = false;
             },
