@@ -75,7 +75,9 @@ context('metis-ui', () => {
 
     it('should show the indexing_deleted_records status', () => {
       getHistoryRow(2).contains('Transform');
-      getHistoryRow(2).get('.status-identifying_deleted_records').should('have.length', 1);
+      getHistoryRow(2)
+        .get('.status-identifying_deleted_records')
+        .should('have.length', 1);
     });
   });
 

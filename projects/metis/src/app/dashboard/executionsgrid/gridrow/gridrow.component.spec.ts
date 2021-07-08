@@ -12,7 +12,7 @@ function makePluginExecutionOverview(status: string): PluginExecutionOverview {
   } as any) as PluginExecutionOverview;
 }
 
-fdescribe('GridrowComponent', () => {
+describe('GridrowComponent', () => {
   let component: GridrowComponent;
   let fixture: ComponentFixture<GridrowComponent>;
 

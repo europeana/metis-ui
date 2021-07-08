@@ -239,16 +239,13 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     }).length > 0
   ) {
     workflowExecution.workflowStatus = WorkflowStatus.RUNNING;
-  }
-  else if (
-     plugins.filter((pe) => {
-       return pe.pluginStatus === PluginStatus.IDENTIFYING_DELETED_RECORDS;
-     }).length === plugins.length
-   )
-   {
-     workflowExecution.workflowStatus = WorkflowStatus.RUNNING;
-   }
-   else if (
+  } else if (
+    plugins.filter((pe) => {
+      return pe.pluginStatus === PluginStatus.IDENTIFYING_DELETED_RECORDS;
+    }).length === plugins.length
+  ) {
+    workflowExecution.workflowStatus = WorkflowStatus.RUNNING;
+  } else if (
     plugins.filter((pe) => {
       return pe.pluginStatus === PluginStatus.FINISHED;
     }).length === plugins.length
