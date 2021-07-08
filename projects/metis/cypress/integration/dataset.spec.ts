@@ -64,6 +64,21 @@ context('metis-ui', () => {
     });
   });
 
+  describe('dataset edit', () => {
+    afterEach(() => {
+      cleanupUser();
+    });
+
+    beforeEach(() => {
+      setupDatasetPage('edit', 3);
+    });
+
+    it('should show the indexing_deleted_records status', () => {
+      getHistoryRow(2).contains('Transform');
+      getHistoryRow(2).get('.status-identifying_deleted_records').should('have.length', 1);
+    });
+  });
+
   describe('dataset log', () => {
     afterEach(() => {
       cleanupUser();

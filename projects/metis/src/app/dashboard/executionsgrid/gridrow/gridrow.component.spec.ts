@@ -12,7 +12,7 @@ function makePluginExecutionOverview(status: string): PluginExecutionOverview {
   } as any) as PluginExecutionOverview;
 }
 
-describe('GridrowComponent', () => {
+fdescribe('GridrowComponent', () => {
   let component: GridrowComponent;
   let fixture: ComponentFixture<GridrowComponent>;
 
@@ -41,6 +41,11 @@ describe('GridrowComponent', () => {
     expect(component.getPluginStatusClass(peFinished)).toEqual('status-finished');
     const peRunning = makePluginExecutionOverview(PluginStatus.RUNNING);
     expect(component.getPluginStatusClass(peRunning)).toEqual('status-running');
+
+    const peIdentifyDeleted = makePluginExecutionOverview(PluginStatus.IDENTIFYING_DELETED_RECORDS);
+    expect(component.getPluginStatusClass(peIdentifyDeleted)).toEqual(
+      'status-identifying_deleted_records'
+    );
   });
 
   it('should expand when clicked', () => {

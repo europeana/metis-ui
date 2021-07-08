@@ -42,6 +42,11 @@ $orb-size-small-half: 0.75em;
   &.status-cleaning {
     background: $color-status-cleaning;
   }
+  &.status-identifying_deleted_records {
+    background: $color-status-running;
+    border: 1px solid $color-status-finished;
+    color: $near-black;
+  }
   &.status-failed {
     background: $color-status-failed;
   }
