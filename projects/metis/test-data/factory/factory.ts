@@ -56,7 +56,8 @@ function pluginExecutionQueuesNext(status: PluginStatus): boolean {
       PluginStatus.INQUEUE,
       PluginStatus.PENDING,
       PluginStatus.RUNNING,
-      PluginStatus.CLEANING
+      PluginStatus.CLEANING,
+      PluginStatus.IDENTIFYING_DELETED_RECORDS
     ].indexOf(status) > -1
   );
 }
@@ -240,6 +241,12 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
     workflowExecution.workflowStatus = WorkflowStatus.RUNNING;
   } else if (
     plugins.filter((pe) => {
+      return pe.pluginStatus === PluginStatus.IDENTIFYING_DELETED_RECORDS;
+    }).length === plugins.length
+  ) {
+    workflowExecution.workflowStatus = WorkflowStatus.RUNNING;
+  } else if (
+    plugins.filter((pe) => {
       return pe.pluginStatus === PluginStatus.FINISHED;
     }).length === plugins.length
   ) {
@@ -406,6 +413,25 @@ datasetXs = ((): Array<DatasetX> => {
         metisPluginsMetadata: fullSequenceTypesOAIPMH.slice(0, 7).map((type: PluginType) => {
           return generatePluginMetadata(type);
         })
+      }
+    ],
+    [
+      {
+        conf: {
+          expectedRecords: 209,
+          unfinished: {
+            index: 2,
+            status: PluginStatus.IDENTIFYING_DELETED_RECORDS
+          },
+          deletedRecords: 0
+        },
+        metisPluginsMetadata: [
+          generatePluginMetadata(PluginType.HTTP_HARVEST),
+          generatePluginMetadata(PluginType.VALIDATION_EXTERNAL),
+          generatePluginMetadata(PluginType.TRANSFORMATION),
+          generatePluginMetadata(PluginType.VALIDATION_INTERNAL),
+          generatePluginMetadata(PluginType.NORMALIZATION)
+        ]
       }
     ]
   ]; // END CONF

@@ -66,7 +66,10 @@ describe('DatasetlogComponent', () => {
       expect(component.logMessages).toBeFalsy();
       spyOn(component, 'startPolling').and.callThrough();
       let peCopy = Object.assign({}, mockPluginExecution);
-      peCopy = Object.assign(peCopy, { executionProgress: false, pluginStatus: PluginStatus.FINISHED });
+      peCopy = Object.assign(peCopy, {
+        executionProgress: false,
+        pluginStatus: PluginStatus.FINISHED
+      });
       component.showPluginLog = peCopy;
       tick(1);
       expect(component.startPolling).toHaveBeenCalledTimes(1);
@@ -83,7 +86,7 @@ describe('DatasetlogComponent', () => {
       expect(component.logMessages).toBeTruthy();
 
       const logCopy = Object.assign({}, mockLogs);
-      component.showWindowOutput(Object.assign(logCopy, {length: 0} ));
+      component.showWindowOutput(Object.assign(logCopy, { length: 0 }));
       expect(component.logMessages).toBeFalsy();
     });
 
@@ -107,7 +110,6 @@ describe('DatasetlogComponent', () => {
   });
 
   describe('Error handling', () => {
-
     beforeEach(async(() => {
       configureTestingModule(true);
     }));
