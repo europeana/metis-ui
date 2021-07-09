@@ -48,7 +48,7 @@ describe('status class from plugin', () => {
   it('should return "status-identifying_deleted_records" for plugins with status IDENTIFYING_DELETED_RECORDS', () => {
     expect(
       statusClassFromPlugin(makePluginExecution(PluginStatus.IDENTIFYING_DELETED_RECORDS))
-    ).toEqual('identifying_deleted_records');
+    ).toEqual('status-identifying_deleted_records');
   });
 
   it('should return "status-failed" for plugins with status FAILED', () => {
