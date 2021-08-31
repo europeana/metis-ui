@@ -21,7 +21,7 @@
     <app-executions-grid-data
       #dataWrapper
       [pluginExecution]="plugin"
-      [isIncremental]="lastExecutionData && lastExecutionData.isIncremental"
+      [isIncremental]="isIncremental"
       (setReportMsg)="openFailReport($event)"
       [applyStripe]="i % 2 === 1"
     ></app-executions-grid-data>
