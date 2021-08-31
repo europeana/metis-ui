@@ -20,9 +20,13 @@ export class LastExecutionComponent {
   report?: Report;
   pluginExecutions: PluginExecution[] = [];
   currentPlugin?: PluginExecution;
+  isIncremental = false;
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
+    if (value) {
+      this.isIncremental = value.isIncremental;
+    }
     if (value) {
       if (isWorkflowCompleted(value)) {
         this.currentPlugin = undefined;
