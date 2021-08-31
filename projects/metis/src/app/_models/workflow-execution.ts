@@ -130,7 +130,7 @@ export interface PluginAvailabilityList {
 export interface WorkflowExecution {
   id: string;
   datasetId: string;
-  isIncremental?: boolean;
+  isIncremental: boolean;
   ecloudDatasetId?: string;
   workflowPriority?: number;
   workflowStatus: WorkflowStatus;
