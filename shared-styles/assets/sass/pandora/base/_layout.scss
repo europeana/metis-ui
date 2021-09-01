@@ -11,7 +11,7 @@
   min-height: calc(100vh - 55rem);
 
   @media (min-width: $bp-small-3) {
-    margin: $fixed-header-height 0;
+    margin: $fixed-header-height 0 2rem 0;
   }
 }
 

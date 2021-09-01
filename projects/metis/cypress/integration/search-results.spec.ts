@@ -3,7 +3,7 @@ import { checkAHref, setupUser } from '../support/helpers';
 context('metis-ui', () => {
   describe('search results', () => {
     const expectedRowCount = 2;
-    const expectedRowCountMoreLoaded = 3;
+    const expectedRowCountMoreLoaded = 4;
     const expectedHeaderCount = 5;
 
     beforeEach(() => {
@@ -18,14 +18,14 @@ context('metis-ui', () => {
       cy.get('.search').should('have.length', 1);
     });
 
-    it('should show the reults', () => {
+    it('should show the results', () => {
       cy.get('.grid-cell').should('have.length', 0);
       cy.get('.search-string').type('set');
       cy.get('.search').click();
       cy.get('.grid-cell').should('have.length', expectedHeaderCount * expectedRowCount);
     });
 
-    it('should load more reults', () => {
+    it('should load more results', () => {
       cy.get('.grid-cell').should('have.length', 0);
       cy.get('.search-string').type('set');
       cy.get('.search').click();

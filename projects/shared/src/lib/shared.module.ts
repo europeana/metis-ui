@@ -8,11 +8,13 @@ import { ModalConfirmService } from './_services/modal-confirm.service';
 import { SubscriptionManager } from './subscription-manager/subscription.manager';
 import { ProtocolFieldSetComponent } from './form/protocol-field-set/protocol-field-set.component';
 import { FileUploadComponent } from './form/file-upload/file-upload.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
     DataPollingComponent,
     FileUploadComponent,
+    FooterComponent,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent
@@ -22,6 +24,7 @@ import { FileUploadComponent } from './form/file-upload/file-upload.component';
   exports: [
     DataPollingComponent,
     FileUploadComponent,
+    FooterComponent,
     ModalConfirmComponent,
     SubscriptionManager,
     ProtocolFieldSetComponent

@@ -100,7 +100,7 @@
           <span *ngIf="pi.progress.expectedRecords > 0">
             {{ pi.progress.processedRecords }} / {{ pi.progress.expectedRecords }}
             <span class="inline-block" *ngIf="pi.progress.deletedRecords">
-            / {{ pi.progress.deletedRecords }}
+              / {{ pi.progress.deletedRecords }}
             </span>
           </span>
           <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="error-count">

@@ -1,6 +1,7 @@
 <app-header [loggedIn]="loggedIn" class="page-{{ bodyClass }}"></app-header>
 <div class="pusher pusher-{{ bodyClass }}">
   <div class="metis-main-content"><router-outlet></router-outlet></div>
+  <lib-footer></lib-footer>
 </div>
 <lib-modal id="{{ modalConfirmId }}" title="{{ 'cancel' | translate }}">
   <ng-container *ngIf="cancellationRequest">
