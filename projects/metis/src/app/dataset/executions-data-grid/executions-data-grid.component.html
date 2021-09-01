@@ -3,7 +3,6 @@
     ><span class="date-and-time" [ngClass]="{ stripey: applyStripe }"></span
   ></ng-template>
   <ng-template #harvest_full><span class="pill-harvest full">Full Pro</span></ng-template>
-  <ng-template #zero>0</ng-template>
   <span
     class="table-grid-row-start"
     [ngClass]="{ stripey: applyStripe, highlighted: applyHighlight }"
@@ -36,9 +35,9 @@
           ? plugin.executionProgress.expectedRecords
           : ('unknown' | translate)
       }}
-      <ng-container *ngIf="isIncremental">
+      <ng-container *ngIf="isIncremental && plugin.executionProgress.deletedRecords">
         /
-        <span style="color:red;" *ngIf="plugin.executionProgress.deletedRecords; else zero">
+        <span style="color:red;">
           {{ plugin.executionProgress.deletedRecords }}
         </span>
       </ng-container>

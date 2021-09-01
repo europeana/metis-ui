@@ -203,3 +203,10 @@ export function getCurrentPluginIndex(workflow: WorkflowExecution): number {
 export function getCurrentPlugin(workflow: WorkflowExecution): PluginExecution {
   return workflow.metisPlugins[getCurrentPluginIndex(workflow)];
 }
+
+export function executionsIncludeDeleted(pluginExecutions: Array<PluginExecution>): boolean {
+  return !!pluginExecutions.find((pe: PluginExecution) => {
+    const ep = pe.executionProgress;
+    return ep && typeof ep.deletedRecords !== 'undefined' && ep.deletedRecords > 0;
+  });
+}

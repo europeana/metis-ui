@@ -32,7 +32,11 @@
       class="grid-header small-title"
       i18n="label grid header processed @@labelGridHeaderProcessed"
     >
-      {{ 'processedRecords' | translate }}
+      {{
+        executionsIncludeDeleted(wpe.metisPlugins)
+          ? ('processedRecordsDeleted' | translate)
+          : ('processedRecords' | translate)
+      }}
     </div>
     <div class="grid-header small-title">
       {{ 'startTime' | translate }}
