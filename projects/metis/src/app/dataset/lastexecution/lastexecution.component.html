@@ -5,7 +5,9 @@
     {{ 'workflowStep' | translate }}
   </div>
   <div class="grid-header small-title">
-    {{ 'processedRecords' | translate }}
+    {{
+      containsDeleted ? ('processedRecordsDeleted' | translate) : ('processedRecords' | translate)
+    }}
   </div>
   <div class="grid-header small-title">
     {{ 'startTime' | translate }}

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { statusClassFromPlugin } from '../../_helpers';
 import {
+  executionsIncludeDeleted,
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
@@ -21,13 +22,12 @@ export class LastExecutionComponent {
   pluginExecutions: PluginExecution[] = [];
   currentPlugin?: PluginExecution;
   isIncremental = false;
+  containsDeleted = false;
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
     if (value) {
       this.isIncremental = value.isIncremental;
-    }
-    if (value) {
       if (isWorkflowCompleted(value)) {
         this.currentPlugin = undefined;
       } else {
@@ -35,6 +35,7 @@ export class LastExecutionComponent {
       }
       this.pluginExecutions = value.metisPlugins.slice();
       this.pluginExecutions.reverse();
+      this.containsDeleted = executionsIncludeDeleted(this.pluginExecutions);
     }
   }
 

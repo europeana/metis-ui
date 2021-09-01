@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { SubscriptionManager } from 'shared';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
+  executionsIncludeDeleted,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
@@ -28,6 +29,8 @@ import { ErrorService, WorkflowService } from '../../_services';
   styleUrls: ['./history.component.scss']
 })
 export class HistoryComponent extends SubscriptionManager {
+  public executionsIncludeDeleted = executionsIncludeDeleted;
+
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
@@ -83,7 +86,7 @@ export class HistoryComponent extends SubscriptionManager {
         .getCompletedDatasetExecutionsUptoPage(this.datasetId, this.currentPage)
         .subscribe(
           ({ results, more, maxResultCountReached }) => {
-            results.forEach((execution) => {
+            results.forEach((execution: WorkflowExecution) => {
               this.workflows.getReportsForExecution(execution);
               execution.metisPlugins.reverse();
             });
