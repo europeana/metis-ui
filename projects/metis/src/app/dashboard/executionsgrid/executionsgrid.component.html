@@ -12,7 +12,9 @@
     {{ 'workflows' | translate }}
   </span>
   <span class="grid-header-underlined small-title">
-    {{ 'processedRecords' | translate }}
+    {{
+      containsDeleted ? ('processedRecordsDeleted' | translate) : ('processedRecords' | translate)
+    }}
   </span>
   <span class="grid-header-underlined small-title">
     {{ 'startTime' | translate }}
