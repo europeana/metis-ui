@@ -111,10 +111,10 @@
   </div>
 </div>
 
-<div>
+<div class="banner-wrapper">
   <section class="banner">
+    <h2 *ngIf="bannerheading">{{ bannerheading }}</h2>
     <div class="lc">
-      <h2 *ngIf="bannerheading">{{ bannerheading }}</h2>
       <div class="banner-info">
         <p *ngIf="bannertext">{{ bannertext }}</p>
       </div>
@@ -123,4 +123,5 @@
       </div>
     </div>
   </section>
+  <lib-footer></lib-footer>
 </div>
