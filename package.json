@@ -74,13 +74,15 @@
     "npm": ">=6.14.5"
   },
   "dependencies": {
-    "@angular/common": "^10.2.4",
-    "@angular/core": "^10.2.4",
-    "@angular/forms": "^10.2.4",
-    "@angular/localize": "^10.2.4",
-    "@angular/platform-browser": "^10.2.4",
-    "@angular/platform-browser-dynamic": "^10.2.4",
-    "@angular/router": "^10.2.4",
+    "@angular/common": "^12.2.6",
+    "@angular/compiler": "^12.2.6",
+    "@angular/compiler-cli": "^12.2.6",
+    "@angular/core": "^12.2.6",
+    "@angular/forms": "^12.2.6",
+    "@angular/localize": "^12.2.6",
+    "@angular/platform-browser": "^12.2.6",
+    "@angular/platform-browser-dynamic": "^12.2.6",
+    "@angular/router": "^12.2.6",
     "@ctrl/ngx-codemirror": "^4.1.0",
     "codemirror": "^5.59.0",
     "core-js": "^2.6.12",
@@ -88,11 +90,11 @@
     "rxjs": "^6.6.3",
     "tslib": "^2.0.0",
     "vkbeautify": "^0.99.3",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1100.7",
-    "@angular/language-service": "^10.2.4",
+    "@angular/language-service": "^12.2.6",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@cypress/webpack-preprocessor": "^4.1.5",
