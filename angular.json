@@ -17,7 +17,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "outputPath": "projects/metis/dist/metis",
             "index": "projects/metis/src/index.html",
             "main": "projects/metis/src/main.ts",
@@ -30,11 +29,16 @@
             },
             "assets": ["projects/metis/src/assets", "projects/metis/src/favicon.ico"],
             "styles": ["projects/metis/src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
-              "aot": true,
               "budgets": [
                 {
                   "type": "anyComponentStyle",
@@ -62,7 +66,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -115,7 +120,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "outputPath": "projects/sandbox/dist/sandbox",
             "index": "projects/sandbox/src/index.html",
             "main": "projects/sandbox/src/main.ts",
@@ -127,11 +131,16 @@
             "stylePreprocessorOptions": {
               "includePaths": ["shared-styles"]
             },
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
-              "aot": true,
               "fileReplacements": [
                 {
                   "replace": "projects/sandbox/src/environments/environment.ts",
@@ -171,7 +180,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
