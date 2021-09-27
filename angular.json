@@ -42,13 +42,17 @@
               "budgets": [
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "100kb"
                 }
               ],
               "buildOptimizer": true,
               "extractLicenses": true,
               "namedChunks": false,
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "fonts": { "inline": true },
+                "styles": { "minify": true, "inlineCritical": false }
+              },
               "outputHashing": "all",
               "sourceMap": false
             },
@@ -56,7 +60,7 @@
               "budgets": [
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
+                  "maximumWarning": "100kb"
                 }
               ],
               "fileReplacements": [
