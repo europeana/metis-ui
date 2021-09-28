@@ -2,7 +2,7 @@
   <ng-template #empty_date
     ><span class="date-and-time" [ngClass]="{ stripey: applyStripe }"></span
   ></ng-template>
-  <ng-template #harvest_full><span class="pill-harvest full">Full Pro</span></ng-template>
+  <ng-template #harvest_full><span class="pill-harvest full">Full Processing</span></ng-template>
   <span
     class="table-grid-row-start"
     [ngClass]="{ stripey: applyStripe, highlighted: applyHighlight }"
@@ -18,7 +18,7 @@
       >{{ plugin.pluginType | renameWorkflow }}
       <ng-container *ngIf="pluginIsHarvest(plugin)">
         <span *ngIf="isIncremental; else harvest_full" class="pill-harvest incremental"
-          >Incr. H.</span
+          >Incremental Processing</span
         >
       </ng-container>
     </span>
