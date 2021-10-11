@@ -101,6 +101,14 @@ describe('dataset service', () => {
     subXSLT2.unsubscribe();
   }));
 
+  it('should search', fakeAsync(() => {
+    expect(service.search('x', 0)).toBeTruthy();
+  }));
+
+  it('should get the paginated search results', fakeAsync(() => {
+    expect(service.getSearchResultsUptoPage('x', 0)).toBeTruthy();
+  }));
+
   it('should transform samples', fakeAsync(() => {
     const subTransform1 = service
       .getTransform('9783', mockXmlSamples, 'custom')

@@ -135,7 +135,6 @@ describe('WizardComponent', () => {
       expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
       tick(1);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(2);
-      expect(component.formProgress.value.idToTrack).toBeFalsy();
 
       // clear and re-submit
 

@@ -1,7 +1,17 @@
-import { PluginType } from '../../../../shared/src/lib/_models';
-import { PluginMetadata } from './plugin-metadata';
-
-export { PluginType };
+export enum PluginType {
+  HTTP_HARVEST = 'HTTP_HARVEST',
+  OAIPMH_HARVEST = 'OAIPMH_HARVEST',
+  VALIDATION_EXTERNAL = 'VALIDATION_EXTERNAL',
+  TRANSFORMATION = 'TRANSFORMATION',
+  VALIDATION_INTERNAL = 'VALIDATION_INTERNAL',
+  NORMALIZATION = 'NORMALIZATION',
+  ENRICHMENT = 'ENRICHMENT',
+  MEDIA_PROCESS = 'MEDIA_PROCESS',
+  PREVIEW = 'PREVIEW',
+  PUBLISH = 'PUBLISH',
+  DEPUBLISH = 'DEPUBLISH',
+  LINK_CHECKING = 'LINK_CHECKING'
+}
 
 export enum TaskState {
   PENDING = 'PENDING',
@@ -13,6 +23,7 @@ export enum TaskState {
 }
 
 export interface ExecutionProgressBasic {
+  deletedRecords?: number;
   expectedRecords: number;
   processedRecords: number;
   progressPercentage: number;
@@ -32,6 +43,7 @@ export interface DatasetExecutionProgress {
 export enum PluginStatus {
   INQUEUE = 'INQUEUE',
   CLEANING = 'CLEANING',
+  IDENTIFYING_DELETED_RECORDS = 'IDENTIFYING_DELETED_RECORDS',
   PENDING = 'PENDING',
   REINDEX_TO_PREVIEW = 'REINDEX_TO_PREVIEW',
   REINDEX_TO_PUBLISH = 'REINDEX_TO_PUBLISH',
@@ -67,7 +79,6 @@ export interface PluginExecutionBasic {
 export interface PluginExecution extends PluginExecutionBasic {
   id: string;
   executionProgress?: ExecutionProgress;
-  pluginMetadata: PluginMetadata;
   topologyName: TopologyName;
   canDisplayRawXml?: boolean;
   hasReport?: boolean;
@@ -119,6 +130,7 @@ export interface PluginAvailabilityList {
 export interface WorkflowExecution {
   id: string;
   datasetId: string;
+  isIncremental: boolean;
   ecloudDatasetId?: string;
   workflowPriority?: number;
   workflowStatus: WorkflowStatus;
@@ -133,11 +145,6 @@ export interface WorkflowExecution {
   datasetName?: string;
   currentPlugin?: PluginExecution;
   currentPluginIndex?: number;
-}
-
-export interface WorkflowOrPluginExecution {
-  execution: WorkflowExecution;
-  pluginExecution?: PluginExecution;
 }
 
 export interface DatasetOverviewExecution {
@@ -195,4 +202,11 @@ export function getCurrentPluginIndex(workflow: WorkflowExecution): number {
 
 export function getCurrentPlugin(workflow: WorkflowExecution): PluginExecution {
   return workflow.metisPlugins[getCurrentPluginIndex(workflow)];
+}
+
+export function executionsIncludeDeleted(pluginExecutions: Array<PluginExecution>): boolean {
+  return !!pluginExecutions.find((pe: PluginExecution) => {
+    const ep = pe.executionProgress;
+    return ep && typeof ep.deletedRecords !== 'undefined' && ep.deletedRecords > 0;
+  });
 }

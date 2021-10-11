@@ -8,18 +8,18 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
-  Dataset,
+  executionsIncludeDeleted,
   httpErrorNotification,
   isWorkflowCompleted,
   Notification,
   PreviewFilters,
   Report,
   SimpleReportRequest,
-  WorkflowExecution,
-  WorkflowOrPluginExecution
+  WorkflowExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
@@ -29,6 +29,8 @@ import { ErrorService, WorkflowService } from '../../_services';
   styleUrls: ['./history.component.scss']
 })
 export class HistoryComponent extends SubscriptionManager {
+  public executionsIncludeDeleted = executionsIncludeDeleted;
+
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
@@ -37,21 +39,22 @@ export class HistoryComponent extends SubscriptionManager {
     super();
   }
 
-  @Input() datasetData: Dataset;
-
+  @Input() datasetId: string;
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
 
   notification?: Notification;
   currentPage = 0;
-  allExecutions: Array<WorkflowOrPluginExecution> = [];
+  allExecutions: Array<WorkflowExecution> = [];
   hasMore = false;
+  isLoading = false;
   report?: Report;
   contentCopied = false;
   maxResults = 0;
   maxResultsReached = false;
   lastExecutionId?: string;
   lastExecutionIsCompleted?: boolean;
+  templateRowIndex = 0;
 
   @Input()
   set lastExecutionData(lastExecution: WorkflowExecution | undefined) {
@@ -77,29 +80,26 @@ export class HistoryComponent extends SubscriptionManager {
   /* - update the hasMore variable
   */
   returnAllExecutions(): void {
+    this.isLoading = true;
     this.subs.push(
       this.workflows
-        .getCompletedDatasetExecutionsUptoPage(this.datasetData.datasetId, this.currentPage)
+        .getCompletedDatasetExecutionsUptoPage(this.datasetId, this.currentPage)
         .subscribe(
           ({ results, more, maxResultCountReached }) => {
-            this.allExecutions = [];
-
-            results.forEach((execution) => {
+            results.forEach((execution: WorkflowExecution) => {
               this.workflows.getReportsForExecution(execution);
               execution.metisPlugins.reverse();
-
-              this.allExecutions.push({ execution });
-              execution.metisPlugins.forEach((pluginExecution) => {
-                this.allExecutions.push({ execution, pluginExecution });
-              });
             });
+            this.allExecutions = results;
             this.hasMore = more;
+            this.isLoading = false;
             this.maxResultsReached = !!maxResultCountReached;
             this.maxResults = results.length;
           },
           (err: HttpErrorResponse) => {
             const error = this.errors.handleError(err);
             this.notification = httpErrorNotification(error);
+            this.isLoading = false;
           }
         )
     );
@@ -130,20 +130,13 @@ export class HistoryComponent extends SubscriptionManager {
     this.contentCopied = true;
   }
 
-  /** byId
-  /* retrieve plugin execution or the execution id
-  */
-  byId(_: number, item: WorkflowOrPluginExecution): string {
-    return item.pluginExecution ? item.pluginExecution.id : item.execution.id;
-  }
-
   /** goToPreview
   /* - emit the setPreviewFilters event
   /* - redirect to the preview
   */
   goToPreview(previewData: PreviewFilters): void {
     this.setPreviewFilters.emit(previewData);
-    this.router.navigate(['/dataset/preview/' + this.datasetData.datasetId]);
+    this.router.navigate(['/dataset/preview/' + this.datasetId]);
   }
 
   /** getCancelledBy

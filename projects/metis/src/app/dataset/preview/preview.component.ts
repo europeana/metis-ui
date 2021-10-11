@@ -14,6 +14,7 @@ import { EditorConfiguration } from 'codemirror';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
 import {
@@ -253,7 +254,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - get and show samples based on plugin
   *  - loads historyVersions based on plugin
   */
-  getXMLSamples(plugin: PluginType, prefilling?: boolean): void {
+  getXMLSamples(plugin: PluginType, prefilling = false): void {
     if (!prefilling) {
       this.onClickedOutside();
       this.allSampleComparisons = [];

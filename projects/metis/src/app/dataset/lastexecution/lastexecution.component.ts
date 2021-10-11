@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { statusClassFromPlugin } from '../../_helpers';
 import {
+  executionsIncludeDeleted,
   getCurrentPlugin,
   isWorkflowCompleted,
   PluginExecution,
@@ -20,10 +21,13 @@ export class LastExecutionComponent {
   report?: Report;
   pluginExecutions: PluginExecution[] = [];
   currentPlugin?: PluginExecution;
+  isIncremental = false;
+  containsDeleted = false;
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
     if (value) {
+      this.isIncremental = value.isIncremental;
       if (isWorkflowCompleted(value)) {
         this.currentPlugin = undefined;
       } else {
@@ -31,6 +35,7 @@ export class LastExecutionComponent {
       }
       this.pluginExecutions = value.metisPlugins.slice();
       this.pluginExecutions.reverse();
+      this.containsDeleted = executionsIncludeDeleted(this.pluginExecutions);
     }
   }
 
@@ -50,6 +55,8 @@ export class LastExecutionComponent {
 
   /** getPluginStatusClass
   /* calculate which css class to use
+  /* @param { PluginExecution } plugin - the plugin to evaluate
+  /* @return string
   */
   getPluginStatusClass(plugin: PluginExecution): string {
     return statusClassFromPlugin(plugin, this.currentPlugin);

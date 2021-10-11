@@ -1,6 +1,7 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
-.grid-header {
+.grid-header-underlined {
+  color: $grey-3;
   cursor: pointer;
   display: block;
 

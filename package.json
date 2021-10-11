@@ -1,6 +1,6 @@
 {
   "name": "metis-ui",
-  "version": "3.0.1-development",
+  "version": "5",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -63,7 +63,7 @@
     "dist-any": "ng build ${npm_config_project} --progress=false --prod && npm run dist-copy-conf --project=${npm_config_project} && cp -R projects/${npm_config_project}/dist/${npm_config_project}/. dist",
     "dist-metis": "npm run dist-any --project=metis",
     "dist-sandbox": "npm run dist-any --project=sandbox",
-    "dist-shared": "ng build --project=shared --prod && mv dist/shared projects/shared/dist",
+    "dist-shared": "ng build --project=shared --prod && cp -r dist/shared projects/shared/dist",
     "dist": "npm run dist-metis",
     "i18n": "ng xi18n --output-path locale --out-file messages.en-GB.xlf",
     "lite": "test -d ./dist && lite-server --baseDir=./dist || echo '(run dist first)'"
@@ -126,7 +126,7 @@
     "ng-packagr": "^10.1.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
-    "tar": "^4.4.8",
+    "tar": "^4.4.18",
     "ts-loader": "^5.3.3",
     "typescript": "^3.9.7",
     "wallaby-webpack": "^3.9.16",

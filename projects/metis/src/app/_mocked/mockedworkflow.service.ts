@@ -293,6 +293,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.INQUEUE,
+      isIncremental: false,
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
@@ -302,11 +303,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.VALIDATION_EXTERNAL,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.INQUEUE,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -324,6 +320,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.RUNNING,
+      isIncremental: false,
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
@@ -333,11 +330,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.NORMALIZATION,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.RUNNING,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -355,6 +347,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.FAILED,
+      isIncremental: false,
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
@@ -364,11 +357,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.NORMALIZATION,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.FAILED,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -386,6 +374,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.CANCELLED,
+      isIncremental: false,
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
@@ -395,11 +384,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: 'NORMALIZATION',
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.CANCELLED,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -417,6 +401,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       id: '253453453',
       datasetId: '5323465',
       workflowStatus: WorkflowStatus.FINISHED,
+      isIncremental: false,
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
@@ -426,11 +411,6 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
           id: '432552345',
           startedDate: novemberFifth,
           updatedDate: novemberFifth,
-          pluginMetadata: {
-            pluginType: PluginType.NORMALIZATION,
-            mocked: true,
-            enabled: false
-          },
           pluginStatus: PluginStatus.FINISHED,
           externalTaskId: '123',
           topologyName: 'normalization',
@@ -600,6 +580,13 @@ export class MockWorkflowService {
   }
 
   getCompletedDatasetExecutionsUptoPage(): Observable<MoreResults<WorkflowExecution>> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error('mock getCompletedDatasetExecutionsUptoPage throws error'));
+        })
+      );
+    }
     return of({ results: mockWorkflowExecutionResults.results, more: false }).pipe(delay(1));
   }
 
@@ -737,6 +724,13 @@ export class MockWorkflowService {
   }
 
   getLogs(): Observable<SubTaskInfo[]> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error('mock getLogs throws error'));
+        })
+      );
+    }
     return of(mockLogs).pipe(delay(1));
   }
 

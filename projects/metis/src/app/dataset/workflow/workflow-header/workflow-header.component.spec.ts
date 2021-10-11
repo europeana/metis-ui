@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
-import { DragDT, DragType, EventDragDT, PluginType } from '../../../_models';
+import { DragDT, DragType, EventDragDT, ParameterFieldName, PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
 
 import { WorkflowHeaderComponent } from '.';
@@ -107,11 +107,11 @@ describe('WorkflowHeaderComponent', () => {
       pluginType: true
     });
     component.setWorkflowForm(fGroup);
-    component.togglePlugin('pluginType');
+    component.togglePlugin(ParameterFieldName.pluginType);
     expect(component.workflowForm.value.pluginType).toBeFalsy();
     component.togglePlugin('pluginLINK_CHECKING');
     expect(component.workflowForm.value.pluginType).toBeFalsy();
-    component.togglePlugin('pluginType');
+    component.togglePlugin(ParameterFieldName.pluginType);
     expect(component.workflowForm.value.pluginType).toBeTruthy();
   });
 

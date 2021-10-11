@@ -45,7 +45,7 @@ app-tab-headers {
     }
   }
 
-  @media (min-width: $bp-med) {
+  @media (min-width: $bp-large) {
     border-bottom: 5px solid $eu-jade;
     border-top: 5px solid $white;
     display: flex;

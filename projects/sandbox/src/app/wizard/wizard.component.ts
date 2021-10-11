@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -259,7 +260,6 @@ export class WizardComponent extends DataPollingComponent {
           return this.sandbox.requestProgress(idToTrack);
         },
         (progressInfo: Dataset) => {
-          ctrl.setValue('');
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;
           if (this.progressComplete()) {
@@ -293,7 +293,7 @@ export class WizardComponent extends DataPollingComponent {
             form.value.country,
             form.value.language,
             this.fileFormName,
-            form.get(this.fileFormName)!.value
+            (form.get(this.fileFormName) as FormControl).value
           )
           .subscribe(
             (res: SubmissionResponseData) => {

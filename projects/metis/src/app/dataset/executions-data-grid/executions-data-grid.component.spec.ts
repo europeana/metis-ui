@@ -15,14 +15,11 @@ describe('ExecutionsDataGridComponent', () => {
     failMessage: 'failed',
     hasReport: true,
     topologyName: 'validation',
-    pluginMetadata: {
-      pluginType: PluginType.TRANSFORMATION,
-      mocked: false,
-      enabled: true,
-      customXslt: false
-    },
-    pluginType: PluginType.VALIDATION_EXTERNAL
+    pluginType: PluginType.TRANSFORMATION
   };
+
+  const OAIPMHPluginExecution = Object.assign({}, basicPluginExecution);
+  OAIPMHPluginExecution.pluginType = PluginType.OAIPMH_HARVEST;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -46,6 +43,21 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should apply the highlight when the PluginExecution is set ', () => {
+    component.pluginExecution = basicPluginExecution;
+    expect(component.applyHighlight).toBeFalsy();
+
+    const runningExecution = Object.assign({}, basicPluginExecution);
+    runningExecution.pluginStatus = PluginStatus.RUNNING;
+    component.pluginExecution = runningExecution;
+    expect(component.applyHighlight).toBeTruthy();
+  });
+
+  it('should detect if plugin is harvest', () => {
+    expect(component.pluginIsHarvest(basicPluginExecution)).toBeFalsy();
+    expect(component.pluginIsHarvest(OAIPMHPluginExecution)).toBeTruthy();
   });
 
   it('should open a report', () => {
@@ -73,8 +85,16 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should copy something to the clipboard', () => {
     component.plugin = basicPluginExecution;
-    fixture.detectChanges();
-    component.copyInformation('plugin', '1', '2');
+    component.copyInformation('1', '2');
     expect(component.contentCopied).toBe(true);
+    component.contentCopied = false;
+    component.copyInformation('1');
+    expect(component.contentCopied).toBe(true);
+  });
+
+  it('should go to the preview', () => {
+    spyOn(component.openPreview, 'emit');
+    component.goToPreview('1', basicPluginExecution);
+    expect(component.openPreview.emit).toHaveBeenCalled();
   });
 });

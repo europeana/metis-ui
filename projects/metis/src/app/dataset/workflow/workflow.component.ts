@@ -11,6 +11,7 @@ import {
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import {
   Dataset,
@@ -66,7 +67,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   newWorkflow = true;
   workflowForm: FormGroup;
   isSaving = false;
-  gapInSequence = false;
 
   newNotification: Notification;
   saveNotification: Notification;
@@ -228,15 +228,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         });
       }
     });
-
     this.workflowForm = this.fb.group(formGroupConf, {
-      validator: () => {
-        if (this.gapInSequence) {
+      validator: (): { [key: string]: boolean } | null => {
+        if (this.inputFields && this.hasGapInSequence(this.inputFields.toArray())) {
           return { gapInSequence: true };
         }
         return null;
       }
     });
+
     this.updateRequired();
   }
 
@@ -314,11 +314,9 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     }
 
     const validateTimer = timer(10).subscribe(() => {
-      let fieldsArray: Array<WorkflowFormFieldComponent> | undefined = undefined;
       if (this.inputFields) {
-        fieldsArray = this.inputFields.toArray();
+        this.hasGapInSequence(this.inputFields.toArray());
       }
-      this.workflowStepAllowed(fieldsArray);
       this.workflowForm.updateValueAndValidity();
       validateTimer.unsubscribe();
     });
@@ -330,11 +328,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   updateRequired(): void {
     this.subs.push(
       this.workflowForm.valueChanges.subscribe(() => {
-        let fieldsArray: Array<WorkflowFormFieldComponent> | undefined = undefined;
-        if (this.inputFields) {
-          fieldsArray = this.inputFields.toArray();
-        }
-        this.workflowStepAllowed(fieldsArray);
         const ctrlLinkChecking = this.workflowForm.get('pluginLINK_CHECKING') as FormControl;
         if (ctrlLinkChecking.value === true) {
           ctrlLinkChecking.setValidators([Validators.required]);
@@ -343,28 +336,31 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     );
   }
 
-  /** workflowStepAllowed
-  /* make step before and after available for selection
+  /** hasGapInSequence
+  /* Detects if gap present among values of an array of WorkflowFormFieldComponent objects
+  /* Sets the conf.error flag for items within a gap
+  /*
+  /* @param { Array<WorkflowFormFieldComponent> } fieldsArray - the array to assess
+  /* @returns { boolean }
   */
-  workflowStepAllowed(fieldsArray?: Array<WorkflowFormFieldComponent>): void {
-    if (fieldsArray) {
-      const tTotal = fieldsArray.filter((item) => {
-        return this.workflowForm.value[item.conf.name];
-      }).length;
+  hasGapInSequence(fieldsArray: Array<WorkflowFormFieldComponent>): boolean {
+    const tTotal = fieldsArray.filter((item) => {
+      return this.workflowForm.value[item.conf.name];
+    }).length;
 
-      let tCount = 0;
-      this.gapInSequence = false;
+    let tCount = 0;
+    let result = false;
 
-      fieldsArray.forEach((item) => {
-        item.conf.error = false;
-        if (this.workflowForm.value[item.conf.name]) {
-          tCount++;
-        } else if (tCount > 0 && tCount < tTotal) {
-          item.conf.error = true;
-          this.gapInSequence = true;
-        }
-      });
-    }
+    fieldsArray.forEach((item) => {
+      item.conf.error = false;
+      if (this.workflowForm.value[item.conf.name]) {
+        tCount++;
+      } else if (tCount > 0 && tCount < tTotal) {
+        item.conf.error = true;
+        result = true;
+      }
+    });
+    return result;
   }
 
   /** clearForm
@@ -421,12 +417,13 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
           this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
           this.workflowForm.controls.pluginHARVEST.setValue(true);
         } else {
-          const ctrl = this.workflowForm.controls['plugin' + thisWorkflow.pluginType];
+          const ctrl = this.workflowForm.controls[
+            'plugin' + thisWorkflow.pluginType
+          ] as FormControl;
           if (ctrl) {
-            // non-harvest settings can be set generically
             ctrl.setValue(true);
-            this.extractPluginParamsExtra(thisWorkflow);
           }
+          this.extractPluginParamsExtra(thisWorkflow);
         }
       }
     }
@@ -610,7 +607,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         return this.saveNotification;
       }
     } else {
-      if (this.gapInSequence) {
+      if (this.hasGapInSequence(this.inputFields.toArray())) {
         return this.gapInSequenceNotification;
       } else {
         return this.invalidNotification;

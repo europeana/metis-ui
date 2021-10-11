@@ -141,6 +141,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   preview: 'Preview',
   processingHistory: 'Processing history',
   processedRecords: 'Processed / records',
+  processedRecordsDeleted: 'Processed / records / deleted',
   provider: 'Provider',
   published: 'Published',
   rawXml: 'Raw XML',

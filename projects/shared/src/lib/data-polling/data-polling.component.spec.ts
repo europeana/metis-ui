@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { DataPollingComponent, PollingSubjectAccesor } from './';
+import { DataPollingComponent, PollingSubjectAccesor } from './data-polling.component';
 
 describe('DataPollingComponent', () => {
   // intervals

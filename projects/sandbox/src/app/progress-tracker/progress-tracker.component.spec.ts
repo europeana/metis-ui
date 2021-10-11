@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDataset } from '../_mocked';
 import { DatasetStatus, ProgressByStep, StepStatus } from '../_models';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
 describe('ProgressTrackerComponent', () => {

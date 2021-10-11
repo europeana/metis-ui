@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { SubscriptionManager } from '.';
+import { SubscriptionManager } from './subscription.manager';
 
 /** getUnsubscribable
 /* Subscription utility

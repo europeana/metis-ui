@@ -209,26 +209,6 @@
   justify-content: center;
   width: 30rem;
 
-  button {
-    background: $eu-jade;
-    border: 1px solid $eu-jade;
-    margin-left: 1rem;
-    transition: background-color 0.5s ease;
-
-    &:hover,
-    &.active {
-      background: $white;
-      color: $eu-jade;
-    }
-
-    &:active,
-    &:focus {
-      background: $eu-jade;
-      box-shadow: none;
-      color: $white;
-    }
-  }
-
   .btn-padding {
     .btn {
       background: transparent;
@@ -248,5 +228,114 @@
       display: block;
       font-size: 0.7em;
     }
+  }
+}
+
+/* from Zeplin */
+
+.table-button {
+  align-content: center;
+  border: solid 1px $grey-3;
+  color: $near-black;
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+
+  &:active,
+  &:hover {
+    color: $near-black;
+  }
+  &:active {
+    border: 2px solid $eu-jade;
+  }
+}
+
+.button-filled,
+.button-outline {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 2px;
+  display: inline-block;
+  font-size: 0.875em;
+  font-weight: bold;
+  margin: 0 0.6rem;
+
+  &:disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.button-filled {
+  background: $eu-jade;
+  border-color: $eu-jade;
+  color: $white;
+
+  &:hover {
+    background: $eu-jade-dark;
+    border-color: $eu-jade-dark;
+  }
+
+  &:active {
+    border-color: $eu-jade;
+  }
+
+  &:disabled {
+    background: $eu-light-jade;
+  }
+}
+
+.button-outline {
+  background: $white;
+  border-color: $eu-jade;
+  color: $eu-jade;
+
+  &:hover {
+    background: $eu-jade;
+    color: $white;
+  }
+
+  &:active {
+    background: $eu-jade-dark;
+  }
+
+  &:disabled {
+    color: $eu-light-jade;
+  }
+}
+
+.pill-harvest {
+  background-position: 2px center;
+  background-repeat: no-repeat;
+  background-size: 14px;
+
+  border: 1px solid $eu-jade;
+  border-radius: 10px;
+  color: $eu-jade;
+
+  display: inline-block;
+  height: 18px;
+  line-height: 16px;
+
+  margin-left: 4px;
+  padding-left: 20px;
+  padding-right: 4px;
+
+  white-space: nowrap;
+
+  &.errors {
+    color: $eu-red;
+    background-image: svg-url-icon-warning($eu-red);
+    background-position: 4px center;
+    background-size: 14px 12px;
+    border-color: $eu-red;
+  }
+
+  &.full {
+    background-image: svg-url-icon-harvest-full($eu-jade);
+  }
+
+  &.incremental {
+    background-image: svg-url-icon-harvest-incremental($eu-jade);
   }
 }

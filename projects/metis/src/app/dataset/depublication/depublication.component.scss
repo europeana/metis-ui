@@ -49,17 +49,8 @@
 }
 
 .submit-form {
-  background: $eu-jade;
-  color: $white;
   display: block;
   margin: 1em 0 0 auto;
-
-  &:disabled {
-    background: $white;
-    border: 1px solid $eu-jade;
-    color: $eu-jade;
-    cursor: not-allowed;
-  }
 }
 
 .depublications-grid {
@@ -71,12 +62,6 @@
   margin: 2em 0;
   overflow: hidden;
   padding: 0.5em 1em;
-
-  .grid-header {
-    background: $white;
-    display: none;
-    font-weight: bold;
-  }
 }
 
 .indicator-saving {
@@ -97,8 +82,4 @@
   display: flex;
   justify-content: space-between;
   margin: 1em 0;
-}
-
-.depublications-grid .grid-header {
-  display: block;
 }

@@ -9,11 +9,33 @@
       (dblclick)="copyInformation('plugin', currentExternalTaskId || '', currentPlugin!.id)"
       >{{ currentPluginName! | renameWorkflow }}</strong
     >
-    {{
-      (currentStatus == 'CANCELLED' ? ('cancelledBy' | translate) + ' ' + cancelledBy : '') ||
-        currentStatus ||
-        '' | uppercase
-    }}
+    <ng-container [ngSwitch]="currentStatus">
+      <ng-container
+        *ngSwitchCase="PluginStatus.CANCELLED"
+        i18n="pluginStatus@@pluginStatusCancelled"
+      >
+        Cancelled by {{ cancelledBy }}
+      </ng-container>
+      <ng-container *ngSwitchCase="PluginStatus.INQUEUE" i18n="pluginStatus@@pluginStatusInQueue">
+        In Queue
+      </ng-container>
+      <ng-container
+        *ngSwitchCase="PluginStatus.REINDEX_TO_PREVIEW"
+        i18n="pluginStatus@@pluginStatusReindexToPreview"
+      >
+        Re-index to preview
+      </ng-container>
+      <ng-container
+        *ngSwitchCase="PluginStatus.REINDEX_TO_PUBLISH"
+        i18n="pluginStatus@@pluginStatusReindexToPublish"
+      >
+        Re-index to publish
+      </ng-container>
+      <ng-container *ngSwitchDefault>
+        <!-- CLEANING, PENDING, RUNNING, FINISHED, FAILED -->
+        {{ currentStatus || '' | titlecase }}</ng-container
+      >
+    </ng-container>
   </div>
   <!-- show progress bar -->
   <div class="progress">
@@ -73,7 +95,7 @@
       </li>
       <li class="nav-ctrl" *ngIf="isCompleted">
         <a class="nav-btn newaction-btn" (click)="beginWorkflow()">
-          <span>{{ 'runWorkflow' | translate }}</span>
+          <span class="icon-workflow">{{ 'runWorkflow' | translate }}</span>
         </a>
       </li>
     </ul>

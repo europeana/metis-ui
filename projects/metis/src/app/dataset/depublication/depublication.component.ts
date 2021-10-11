@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ModalConfirmService } from 'shared';
 import {
   DatasetDepublicationInfo,
@@ -56,7 +57,7 @@ export class DepublicationComponent extends DataPollingComponent {
   optionsOpenDepublish = false;
   pollingRefresh: Subject<boolean>;
   sortHeaderGroupConf = {
-    cssClass: 'grid-header',
+    cssClass: 'grid-header-underlined small-title',
     items: [
       {},
       {
@@ -340,7 +341,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationFile(this._datasetId, form.get('depublicationFile')!.value)
+          .setPublicationFile(this._datasetId, (form.get('depublicationFile') as FormControl).value)
           .subscribe(
             () => {
               this.refreshPolling();
@@ -472,11 +473,11 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationInfo(this._datasetId, form.get('recordIds')!.value.trim())
+          .setPublicationInfo(this._datasetId, (form.get('recordIds') as FormControl).value.trim())
           .subscribe(
             () => {
               this.refreshPolling();
-              form.get('recordIds')!.reset();
+              (form.get('recordIds') as FormControl).reset();
               this.closeDialogs();
               this.isSaving = false;
             },

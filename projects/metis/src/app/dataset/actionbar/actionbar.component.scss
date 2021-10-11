@@ -1,5 +1,24 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+
+$border-radius: 8px;
+
+.icon-workflow {
+  position: relative;
+  margin-left: 24px;
+
+  &::before {
+    background: svg-url-icon-workflow('#{$white}', 1) center no-repeat;
+    content: '';
+    display: inline-block;
+    height: 16px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-24px, -50%);
+    width: 16px;
+  }
+}
 
 .workflow-selector {
   max-height: 10rem;
@@ -23,6 +42,10 @@
     }
   }
 
+  .date {
+    font-weight: 600;
+  }
+
   .datetime {
     font-size: $font-size-metis-grid;
     text-align: center;
@@ -41,10 +64,9 @@
 }
 
 .svg-icon-report {
-  padding: 0.25rem 0.5rem;
-  &::before {
-    height: 1.25rem;
-    transform: translate(-85%, 28%);
+  display: flex;
+  span {
+    padding-left: 6px;
   }
 }
 
@@ -86,6 +108,9 @@ nav {
     &:hover {
       background: $offwhite;
       border-radius: $border-radius;
+      .icon-workflow::before {
+        background: svg-url-icon-workflow('#{$eu-jade}', 1) center no-repeat;
+      }
     }
   }
 
@@ -116,7 +141,21 @@ nav {
   }
 }
 
-@media (min-width: $bp-small-3) {
+@media (min-width: $bp-med) {
+  .dataset-actionbar {
+    display: flex;
+
+    .datetime {
+      padding-right: 0.5rem;
+    }
+
+    .status {
+      padding-left: 0.75rem;
+      padding-right: 1.5rem;
+      text-align: left;
+    }
+  }
+
   .nav-ctrls {
     flex-direction: row;
     justify-content: space-evenly;
@@ -130,22 +169,6 @@ nav {
           margin-right: 0;
         }
       }
-    }
-  }
-}
-
-@media (min-width: $bp-med) {
-  .dataset-actionbar {
-    display: flex;
-
-    .datetime {
-      padding-right: 0.5rem;
-    }
-
-    .status {
-      padding-left: 0.75rem;
-      padding-right: 1.5rem;
-      text-align: left;
     }
   }
 

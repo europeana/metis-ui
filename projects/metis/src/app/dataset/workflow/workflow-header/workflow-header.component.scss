@@ -95,7 +95,7 @@ $border-colour-shortcuts: #dbd9d9;
   display: block;
   height: 4px;
   position: absolute;
-  width: 1.5em;
+  width: 1em;
 }
 
 .steps.all-highlighted .orb-status:not(.ghost) {
@@ -156,8 +156,8 @@ $border-colour-shortcuts: #dbd9d9;
 
     &::after {
       background-repeat: no-repeat;
-      height: 2.4em;
-      transform: scale(0.85) translate(7%, -44%);
+      height: 1.3em;
+      transform: translate(12%, -48%);
     }
   }
 }

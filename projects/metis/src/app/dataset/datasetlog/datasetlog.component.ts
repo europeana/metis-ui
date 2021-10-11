@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
@@ -85,7 +86,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   */
   startPolling(): void {
     this.cleanup();
-
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       () => {

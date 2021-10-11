@@ -48,18 +48,18 @@
       </span>
 
       <span *ngIf="dsExecution.executionProgress.currentPluginProgress.expectedRecords > 0">
-        {{ dsExecution.executionProgress.currentPluginProgress.processedRecords }} /
+        {{ dsExecution.executionProgress.currentPluginProgress.processedRecords }}
+        <span
+          *ngIf="
+            dsExecution.executionProgress.currentPluginProgress.errors &&
+            dsExecution.executionProgress.currentPluginProgress.errors > 0
+          "
+          class="pill-harvest errors"
+        >
+          {{ dsExecution.executionProgress.currentPluginProgress.errors }}
+        </span>
+        /
         {{ dsExecution.executionProgress.currentPluginProgress.expectedRecords }}
-      </span>
-
-      <span
-        *ngIf="
-          dsExecution.executionProgress.currentPluginProgress.errors &&
-          dsExecution.executionProgress.currentPluginProgress.errors > 0
-        "
-        class="br error-count"
-      >
-        {{ dsExecution.executionProgress.currentPluginProgress.errors }}
       </span>
     </span>
   </span>
@@ -80,6 +80,8 @@
     </span>
   </span>
 
+  <!-- Expanded section -->
+
   <ng-container *ngIf="expanded">
     <ng-container *ngFor="let pi of dsExecution.execution.plugins; last as isLastsub">
       <span class="grid-sub start labelled-orb">
@@ -96,10 +98,14 @@
             {{ 'unknown' | translate }}
           </span>
           <span *ngIf="pi.progress.expectedRecords > 0">
-            {{ pi.progress.processedRecords }} / {{ pi.progress.expectedRecords }}
-          </span>
-          <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="error-count">
-            {{ pi.progress.errors }}
+            {{ pi.progress.processedRecords }}
+            <span *ngIf="pi.progress.errors && pi.progress.errors > 0" class="pill-harvest errors">
+              {{ pi.progress.errors }}
+            </span>
+            / {{ pi.progress.expectedRecords }}
+            <span class="inline-block" *ngIf="pi.progress.deletedRecords">
+              / {{ pi.progress.deletedRecords }}
+            </span>
           </span>
         </span>
       </span>

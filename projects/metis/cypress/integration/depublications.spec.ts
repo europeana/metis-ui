@@ -158,7 +158,7 @@ context('metis-ui', () => {
     });
 
     describe('checkboxes', () => {
-      const selCheckAll = '.grid-header [type="checkbox"]';
+      const selCheckAll = '.grid-header-underlined [type="checkbox"]';
 
       it('should check all checkboxes', () => {
         cy.wait(1000);

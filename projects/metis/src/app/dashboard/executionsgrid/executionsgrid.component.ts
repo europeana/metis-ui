@@ -14,9 +14,10 @@ import {
   ViewChildren
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
-import { DatasetOverview, MoreResults } from '../../_models';
+import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 import { GridrowComponent } from './gridrow';
@@ -28,6 +29,7 @@ import { GridrowComponent } from './gridrow';
 })
 export class ExecutionsgridComponent extends DataPollingComponent
   implements AfterViewInit, OnDestroy {
+  containsDeleted = false;
   dsOverview: DatasetOverview[];
   selectedDsId = '';
   isLoading = true;
@@ -37,6 +39,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
   maxResultsReached = false;
   overviewParams = '';
   pollingRefresh: Subject<boolean>;
+  idsWithDeleted: Array<string> = [];
 
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
@@ -96,6 +99,14 @@ export class ExecutionsgridComponent extends DataPollingComponent
       this.isLoading = false;
       this.isLoadingMore = false;
       this.maxResultsReached = !!res.maxResultCountReached;
+
+      res.results.forEach((dsExecution: DatasetOverview) => {
+        dsExecution.execution.plugins.forEach((peo: PluginExecutionOverview) => {
+          if (peo.progress && peo.progress.deletedRecords) {
+            this.idsWithDeleted.push(dsExecution.execution.id);
+          }
+        });
+      });
     };
 
     const fnError = (err: HttpErrorResponse): false | HttpErrorResponse => {
@@ -123,6 +134,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
     this.rows.forEach((r) => {
       r.expanded = false;
     });
+    this.containsDeleted = this.idsWithDeleted.includes(selectedDsId);
     this.selectedSet.emit(selectedDsId);
   }
 }

@@ -247,7 +247,7 @@
 
         <button
           type="button"
-          class="reset-btn"
+          class="button-outline"
           *ngIf="isNew"
           [disabled]="isSaving"
           (click)="cancel()"
@@ -256,7 +256,7 @@
         </button>
         <button
           type="button"
-          class="reset-btn"
+          class="button-outline"
           *ngIf="!isNew"
           [disabled]="isSaving || !datasetForm.dirty"
           (click)="reset()"
@@ -264,7 +264,7 @@
           {{ 'reset' | translate }}
         </button>
         <app-loading-button
-          classes="submit"
+          classes="submit button-filled"
           [disabled]="!datasetForm.valid || !datasetForm.dirty"
           [isLoading]="isSaving"
           [title]="(isNew ? 'create' : 'save') | translate"

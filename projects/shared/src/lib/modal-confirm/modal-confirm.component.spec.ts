@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ModalConfirmService } from '../_services';
-import { ModalConfirmComponent } from '.';
+import { ModalConfirmService } from '../_services/modal-confirm.service';
+import { ModalConfirmComponent } from './modal-confirm.component';
 
 describe('ModalConfirmComponent', () => {
   let component: ModalConfirmComponent;

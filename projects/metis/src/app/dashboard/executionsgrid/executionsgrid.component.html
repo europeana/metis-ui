@@ -5,19 +5,21 @@
 ></app-filter-ops>
 
 <div *ngIf="dsOverview" class="executions-grid">
-  <span class="grid-header">
+  <span class="grid-header-underlined small-title">
     {{ 'datasetName' | translate }}
   </span>
-  <span class="grid-header">
+  <span class="grid-header-underlined small-title">
     {{ 'workflows' | translate }}
   </span>
-  <span class="grid-header">
-    {{ 'processedRecords' | translate }}
+  <span class="grid-header-underlined small-title">
+    {{
+      containsDeleted ? ('processedRecordsDeleted' | translate) : ('processedRecords' | translate)
+    }}
   </span>
-  <span class="grid-header">
+  <span class="grid-header-underlined small-title">
     {{ 'startTime' | translate }}
   </span>
-  <span class="grid-header last-header">
+  <span class="grid-header-underlined small-title last-header">
     {{ 'endTime' | translate }}
   </span>
   <ng-container *ngFor="let dsExecution of dsOverview">

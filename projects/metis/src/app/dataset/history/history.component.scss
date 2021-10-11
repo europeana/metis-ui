@@ -1,7 +1,12 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $width-orb: 3em;
+
+#app-executions-grid-data {
+  display: none;
+}
 
 .head-prefix {
   display: none;
@@ -10,23 +15,55 @@ $width-orb: 3em;
   }
 }
 
+.table-grid {
+  // override _grid.scss
+  grid-template-columns: 2fr 2fr 2fr 2fr 1fr;
+}
+
 @media all and (min-width: $bp-med) {
   .head-prefix {
     display: inline-block;
   }
 }
 
-.workflow-head {
-  position: relative;
+.grid-header {
+  margin-bottom: 3px;
+  position: sticky;
+  top: 7rem;
+  z-index: 1;
+}
 
-  .head-whitespace {
-    height: 1.5rem;
+.head-text {
+  border-bottom: 1px solid $grey-2;
+  padding-bottom: 0.45rem;
+
+  .head-prefix.canceller {
+    background: svg-url-icon-person('#{$eu-jade}', 0.5) 4px center / 14px no-repeat;
+    margin-left: 1rem;
+    padding-left: 1.75em;
   }
 
-  .head-text {
-    background-color: $eu-jade;
-    color: $white;
-    padding: 0.5rem;
+  .head-prefix.workflow {
+    background: svg-url-icon-workflow('#{$eu-jade}', 0.5) 0 center / 16px no-repeat;
+    padding-left: 1.75em;
+  }
+}
+
+.head-text-wrapper {
+  background-color: $white;
+  grid-column: 1/6;
+  padding: 0.5rem 1em;
+  position: sticky;
+  top: $fixed-header-height;
+  z-index: 1;
+
+  &:not(:first-child) {
+    margin-top: 2em;
+  }
+
+  .head-date {
+    color: $near-black;
+    font-weight: bold;
   }
 
   .head-right {
@@ -38,6 +75,28 @@ $width-orb: 3em;
   }
 }
 
-.tooltip {
-  display: inline-block;
+.table-button {
+  align-content: center;
+  display: flex;
+  grid-column: 1/6;
+  margin-top: 38px;
+
+  .workflow-icon {
+    background-image: svg-url-icon-workflow('#{$eu-jade}', 0.5);
+    background-position: 0 center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    margin-left: 7px;
+    width: 16px;
+  }
+  &:hover {
+    .workflow-icon {
+      background-image: svg-url-icon-workflow('#{$eu-jade}', 1);
+    }
+  }
+  &.is-loading {
+    .workflow-icon {
+      background-image: svg-url-icon-spin('#{$eu-jade}');
+    }
+  }
 }

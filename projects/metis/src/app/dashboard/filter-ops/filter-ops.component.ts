@@ -155,7 +155,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
     then.setDate(now.getDate() - val);
     now.setDate(now.getDate() + 1);
 
-    return '&fromDate=' + then.toISOString() + '&toDate=' + now.toISOString();
+    return `&fromDate=${then.toISOString()}&toDate=${now.toISOString()}`;
   }
 
   /** hide
@@ -185,7 +185,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
         if (paramName === 'toDate') {
           date.setDate(date.getDate() + 1);
         }
-        res += '&' + (paramName ? paramName : paramNameFallback) + '=' + date.toISOString();
+        res += `&${paramName ? paramName : paramNameFallback}=${date.toISOString()}`;
       }
     }
     return res;
@@ -203,7 +203,7 @@ export class FilterOpsComponent implements FilterExecutionProvider {
           if (entry[0] === 'DATE') {
             paramString += this.getDateParamString(fpv.name, entry[0], fpv.value);
           } else {
-            paramString += '&' + (fpv.name ? fpv.name : entry[0]) + '=' + fpv.value;
+            paramString += `&${fpv.name ? fpv.name : entry[0]}=${fpv.value}`;
           }
         });
       }

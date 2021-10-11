@@ -47,7 +47,6 @@ export interface TransformationPluginMetadata {
   pluginType: 'TRANSFORMATION';
   mocked?: boolean;
   enabled?: boolean;
-
   customXslt: boolean;
 }
 

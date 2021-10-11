@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
-import { ProtocolType } from '../../_models';
-import { SubscriptionManager } from '../../subscription-manager';
+import { ProtocolType } from '../../_models/shared-models';
+import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
 
 @Component({
   selector: 'lib-protocol-field-set',
@@ -12,7 +12,6 @@ import { SubscriptionManager } from '../../subscription-manager';
 export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;
   @Input() protocolSwitchField: string;
-  @Output() fieldChanged: EventEmitter<string> = new EventEmitter();
 
   ZIP = ProtocolType.ZIP_UPLOAD;
   HTTP = ProtocolType.HTTP_HARVEST;
@@ -111,7 +110,6 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
           this.setFormValidators('url', [Validators.required, harvestValidator]);
           break;
       }
-      this.fieldChanged.emit();
     };
     this.subs.push(this.form.valueChanges.subscribe(fn));
     fn();

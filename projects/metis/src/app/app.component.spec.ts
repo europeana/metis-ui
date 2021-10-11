@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmComponent, ModalConfirmService } from 'shared';
 import { AppComponent } from '.';
 import {
@@ -78,6 +79,9 @@ describe('AppComponent', () => {
       app.handleRouterEvent({} as RouterEvent);
       expect(app.bodyClass).toBeFalsy();
 
+      app.handleRouterEvent(({ url: undefined } as unknown) as RouterEvent);
+      expect(app.bodyClass).not.toBe('home');
+
       app.handleRouterEvent({ url: '/' } as RouterEvent);
       expect(app.bodyClass).toBe('home');
       expect(app.loggedIn).toBe(true);
@@ -145,7 +149,7 @@ describe('AppComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should shoe  a workflow', () => {
+    it('should show a workflow', () => {
       spyOn(errors, 'handleError').and.callThrough();
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();

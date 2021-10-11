@@ -1,6 +1,11 @@
 <span *ngFor="let part of parts">
-  <a *ngIf="part.isLink" [href]="normaliseHref(part.content)" class="text-link" target="_blank">{{
-    part.content
-  }}</a>
+  <a
+    *ngIf="part.isLink"
+    [href]="normaliseHref(part.content)"
+    class="text-link"
+    target="_blank"
+    rel="noopener"
+    >{{ part.content }}</a
+  >
   <span *ngIf="!part.isLink">{{ part.content }}</span>
 </span>

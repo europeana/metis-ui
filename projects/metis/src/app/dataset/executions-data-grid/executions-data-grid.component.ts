@@ -5,11 +5,11 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
   PluginExecution,
+  PluginStatus,
+  PluginType,
   PreviewFilters,
   SimpleReportRequest,
-  TopologyName,
-  WorkflowExecution,
-  WorkflowOrPluginExecution
+  TopologyName
 } from '../../_models';
 
 @Component({
@@ -18,10 +18,17 @@ import {
   styleUrls: ['./executions-data-grid.component.scss']
 })
 export class ExecutionsDataGridComponent {
-  @Input() hasMore?: boolean;
+  applyHighlight = false;
+  plugin: PluginExecution;
+  @Input() applyStripe?: boolean;
+  @Input() isIncremental?: boolean;
+  @Input()
+  set pluginExecution(plugin: PluginExecution) {
+    this.plugin = plugin;
+    this.applyHighlight = plugin.pluginStatus === PluginStatus.RUNNING;
+  }
 
-  @Input() plugin: PluginExecution;
-  @Input() wpe?: WorkflowOrPluginExecution;
+  @Input() workflowExecutionId?: string;
   @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();
   @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
   @ViewChild('gridDataTemplate', { static: true }) gridDataTemplate: TemplateRef<HTMLElement>;
@@ -30,22 +37,35 @@ export class ExecutionsDataGridComponent {
 
   /** copyInformation
   /* copy current execution data to the clipboard
+  /* @param { string } id - the id to copy
+  /* @param { string } extId - the external id to copy
   */
-  copyInformation(type: string, id: string, extId = ''): void {
-    copyExecutionAndTaskId(type, extId, id);
+  copyInformation(id: string, extId = ''): void {
+    copyExecutionAndTaskId('plugin', extId, id);
     this.contentCopied = true;
+  }
+
+  /** pluginIsHarvest
+  /* template utility for harvest plugin detection
+  /* @param { PluginExecution } pluginExecution - the PluginExecution to evaluate
+  /* @return boolean
+  */
+  pluginIsHarvest(pluginExecution: PluginExecution): boolean {
+    return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(
+      pluginExecution.pluginType
+    );
   }
 
   /** goToPreview
   /* fire the preview event
   */
-  goToPreview(execution: WorkflowExecution, pluginExecution: PluginExecution): void {
+  goToPreview(executionId: string, pluginExecution: PluginExecution): void {
     const previewFilters: PreviewFilters = {
       baseFilter: {
-        executionId: execution.id,
+        executionId: executionId,
         pluginType: pluginExecution.pluginType
       },
-      baseStartedDate: execution.startedDate
+      baseStartedDate: pluginExecution.startedDate
     };
     this.openPreview.emit(previewFilters);
   }

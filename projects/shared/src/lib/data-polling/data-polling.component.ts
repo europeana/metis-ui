@@ -8,8 +8,8 @@
  **/
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
-import { delayWhen, filter, merge, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, merge, Observable, Subject, Subscription, timer } from 'rxjs';
+import { delayWhen, filter, switchMap, tap } from 'rxjs/operators';
 import { SubscriptionManager } from '../subscription-manager/subscription.manager';
 
 export interface DataPollerInfo {
@@ -202,9 +202,8 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
       pollContext: 0
     });
 
-    this.allPollingInfo[pollContextIndex].subscription = loadTrigger
+    this.allPollingInfo[pollContextIndex].subscription = merge(loadTrigger, pollRefresh)
       .pipe(
-        merge(pollRefresh), // user events come into the stream here
         switchMap(() => {
           return fnServiceCall();
         }),

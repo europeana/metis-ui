@@ -10,15 +10,6 @@ function getHistoryRow(index: number): Cypress.Chainable {
   return cy.get('.table-grid.last-execution .table-grid-row-start').eq(index);
 }
 
-function checkPluginStatus(name: string, enabled: boolean): void {
-  const input = cy
-    .get('.plugin')
-    .contains(name)
-    .closest('.plugin')
-    .find('input');
-  input.should(enabled ? 'be.checked' : 'not.be.checked');
-}
-
 context('metis-ui', () => {
   describe('dataset page', () => {
     afterEach(() => {
@@ -49,7 +40,7 @@ context('metis-ui', () => {
       cy.get('@dd').contains(lastPublished);
 
       cy.get('.dataset-actionbar .status').as('status');
-      cy.get('@status').contains('FINISHED');
+      cy.get('@status').contains('Finished');
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
       cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 11);
@@ -61,7 +52,7 @@ context('metis-ui', () => {
     });
 
     it('should show the tabs', () => {
-      cy.get('.tabs .tab-title').as('tabTitle');
+      cy.get('.tabs .pre-title').as('tabTitle');
       checkAHref(
         cy.get('@tabTitle').contains('Dataset Information'),
         '/dataset/edit/' + expectedId
@@ -73,62 +64,22 @@ context('metis-ui', () => {
     });
   });
 
-  describe('dataset workflow', () => {
-    const fieldsOnlyHTTP = ['#url'];
-    //const fieldsOnlyOAI = ['#incremental-harvest', '#harvest-url', '#setspec', '#metadata-format'];
-    const fieldsOnlyOAI = ['#harvest-url', '#setspec', '#metadata-format'];
-
-    beforeEach(() => {
-      setupDatasetPage('workflow', 1);
-    });
-
+  describe('dataset edit', () => {
     afterEach(() => {
       cleanupUser();
     });
 
-    it('should show the workflow', () => {
-      checkPluginStatus('Import', true);
-      checkPluginStatus('Validate (EDM external)', true);
-      checkPluginStatus('Transform', true);
-      checkPluginStatus('Validate (EDM internal)', true);
-      checkPluginStatus('Normalise', true);
-      checkPluginStatus('Enrich', false);
-      checkPluginStatus('Process Media', false);
-      checkPluginStatus('Preview', false);
-      checkPluginStatus('Publish', false);
+    beforeEach(() => {
+      setupDatasetPage('edit', 3);
     });
 
-    describe('HTTP Harvest', () => {
-      beforeEach(() => {
-        setupDatasetPage('workflow', 1);
-      });
-
-      it('should show the appropriate fields', () => {
-        fieldsOnlyHTTP.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 1);
-        });
-        fieldsOnlyOAI.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 0);
-        });
-      });
-    });
-
-    describe('OAI Harvest', () => {
-      beforeEach(() => {
-        setupDatasetPage('workflow', 0);
-      });
-
-      it('should show the appropriate fields', () => {
-        fieldsOnlyOAI.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 1);
-        });
-        fieldsOnlyHTTP.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 0);
-        });
-      });
+    it('should show the indexing_deleted_records status', () => {
+      getHistoryRow(2).contains('Transform');
+      getHistoryRow(2)
+        .get('.status-identifying_deleted_records')
+        .should('have.length', 1);
     });
   });
-  // TODO: mapping
 
   describe('dataset log', () => {
     afterEach(() => {
@@ -166,11 +117,11 @@ context('metis-ui', () => {
         .contains('Validate (EDM external)');
       cy.get('.table-grid.history .plugin-name.desktop')
         .eq(6)
-        .contains('Import HTTP');
+        .contains('Import OAI-PMH');
     });
 
     it('should show the user who cancelled an execution', () => {
-      cy.get('.table-grid.history .head-right')
+      cy.get('.table-grid.history .head-text.workflow')
         .eq(0)
         .contains('Valentine');
     });
