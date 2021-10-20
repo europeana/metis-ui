@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-//import { of } from 'rxjs';
+import { of } from 'rxjs';
 
 import {
   createMockPipe,
@@ -19,7 +19,7 @@ import {
   PluginMetadata,
   PluginType,
   successNotification,
-  //Workflow,
+  Workflow,
   WorkflowExecution,
   WorkflowFieldData,
   workflowFormFieldConf,
@@ -293,7 +293,6 @@ describe('WorkflowComponent', () => {
       expect(fields[2].conf.currentlyViewed).toBeFalsy();
     });
 
-    /*
     it('should enable the incremental-harvesting field', fakeAsync(() => {
       const getField = (): FormControl => {
         return component.workflowForm.get('incrementalHarvest') as FormControl;
@@ -319,7 +318,6 @@ describe('WorkflowComponent', () => {
       component.enableIncrementalHarvestingFieldIfAvailable(component.workflowData as Workflow);
       expect(getField().disabled).toBeFalsy();
     }));
-    */
 
     it('should format the form values', () => {
       let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
