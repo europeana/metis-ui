@@ -94,7 +94,7 @@
           [protocolForm]="formUpload"
           [protocolSwitchField]="'uploadProtocol'"
           visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
-          disabledProtocols="[EnumProtocolType.OAIPMH_HARVEST]"
+          disabledProtocols="[EnumProtocolType.HTTP_HARVEST EnumProtocolType.OAIPMH_HARVEST]"
           [fileFormName]="fileFormName"
         >
         </lib-protocol-field-set>
