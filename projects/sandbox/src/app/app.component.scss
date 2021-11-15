@@ -1,6 +1,6 @@
 #footer {
-  bottom: 0;
-  position: absolute;
+  position: sticky;
+  top: calc(100% - 6.75rem);
 }
 
 #wizard {
