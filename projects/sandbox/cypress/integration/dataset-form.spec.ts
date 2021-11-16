@@ -1,4 +1,13 @@
 context('Sandbox', () => {
+  const classActive = 'is-active';
+  const classSet = 'is-set';
+
+  const setStep = (step: number): void => {
+    cy.get(`.wizard-status li:nth-child(${step}) a`).click();
+    cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
+    cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
+  };
+
   const uploadFile = (fileName: string, fileType = '', selector: string): void => {
     cy.get(selector).then((subject) => {
       cy.fixture(fileName, 'base64')
@@ -133,14 +142,6 @@ context('Sandbox', () => {
     });
 
     it('should flag when a step is complete', () => {
-      const classActive = 'is-active';
-      const classSet = 'is-set';
-      const setStep = (step: number): void => {
-        cy.get(`.wizard-status li:nth-child(${step}) a`).click();
-        cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
-        cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
-      };
-
       cy.get(selectorInputName).type(testDatasetName);
       cy.get('.wizard-status li:nth-child(1) a').should('have.class', classSet);
 
@@ -162,7 +163,11 @@ context('Sandbox', () => {
     });
 
     it('should flag when a step is invalid', () => {
+      setStep(4);
+      cy.get(selectorFieldErrors).should('have.length', 1);
+      cy.get(selectorInputTrackId).type('1');
       cy.get(selectorFieldErrors).should('have.length', 0);
+      setStep(1);
       cy.get(selectorInputName).type(' ');
       cy.get(selectorFieldErrors).should('have.length', 1);
     });
