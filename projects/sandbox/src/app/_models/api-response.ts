@@ -1,7 +1,9 @@
 export interface SubmissionResponseData {
-  body?: {
-    'dataset-id': string;
-    'records-to-process': number;
-    'duplicate-records': number;
-  };
+  'dataset-id': string;
+  'records-to-process': number;
+  'duplicate-records': number;
+}
+
+export interface SubmissionResponseDataWrapped {
+  body?: SubmissionResponseData;
 }

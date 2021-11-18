@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
-import { Dataset, FieldOption, SubmissionResponseData } from '../_models';
+import {
+  Dataset,
+  FieldOption,
+  SubmissionResponseData,
+  SubmissionResponseDataWrapped
+} from '../_models';
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
@@ -53,20 +58,29 @@ export class SandboxService {
     datasetName: string,
     country: string,
     language: string,
-    fileFormName: string,
-    file: File
-  ): Observable<SubmissionResponseData> {
-    const url = `${apiSettings.apiHost}/dataset/${datasetName}/process?country=${country}&language=${language}`;
-    const formData = new FormData();
-    formData.append(fileFormName, file);
+    fileFormName?: string,
+    file?: File,
+    harvestUrl?: string
+  ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
+    const harvestType = harvestUrl ? 'harvestByUrl' : 'harvestByFile';
+    const urlParameter = harvestUrl ? '&url=' + encodeURIComponent(harvestUrl) : '';
+    const url = `${apiSettings.apiHost}/dataset/${datasetName}/${harvestType}?country=${country}&language=${language}${urlParameter}`;
 
-    return this.http.post<SubmissionResponseData>(url, formData, {
-      observe: 'events',
-      params: {
-        clientFilename: file.name,
-        mimeType: file.type
-      },
-      reportProgress: true
-    }) as Observable<SubmissionResponseData>;
+    const formData = new FormData();
+    if (fileFormName && file) {
+      formData.append(fileFormName, file);
+      return this.http.post<SubmissionResponseDataWrapped>(url, formData, {
+        observe: 'events',
+        params: {
+          clientFilename: file.name,
+          mimeType: file.type
+        },
+        reportProgress: true
+      }) as Observable<SubmissionResponseDataWrapped>;
+    } else {
+      return this.http.post<SubmissionResponseData>(url, formData) as Observable<
+        SubmissionResponseData
+      >;
+    }
   }
 }
