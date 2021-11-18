@@ -48,7 +48,7 @@ export class WizardComponent extends DataPollingComponent {
     },
     {
       stepType: WizardStepType.PROTOCOL_SELECT,
-      fields: ['uploadProtocol', 'dataset']
+      fields: ['uploadProtocol', 'dataset', 'url']
     },
     {
       stepType: WizardStepType.PROGRESS_TRACK,
@@ -86,6 +86,7 @@ export class WizardComponent extends DataPollingComponent {
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
       uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
+      url: ['', [Validators.required]],
       dataset: ['', [Validators.required]]
     });
 

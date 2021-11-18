@@ -124,6 +124,13 @@ select {
   }
 }
 
+.wizard-section {
+  display: none;
+  &.active {
+    display: block;
+  }
+}
+
 .wizard-status {
   display: flex;
   justify-content: space-evenly;
