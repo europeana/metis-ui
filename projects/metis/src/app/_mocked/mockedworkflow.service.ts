@@ -525,7 +525,9 @@ export const mockHarvestData: HarvestData = {
   lastPublishedRecords: 842,
   lastPublishedRecordsReadyForViewing: true,
   lastHarvestedDate: '2018-03-30T13:53:04.762Z',
-  lastHarvestedRecords: 842
+  lastHarvestedRecords: 842,
+  totalPreviewRecords: 842,
+  totalPublishedRecords: 842
 };
 
 export const mockLogs = [

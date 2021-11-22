@@ -16,7 +16,8 @@ export interface HarvestData {
   lastDepublishedRecords?: number;
   lastPublishedRecords: number;
   lastPublishedRecordsReadyForViewing: boolean;
-
   lastHarvestedDate: string;
   lastHarvestedRecords: number;
+  totalPreviewRecords: number;
+  totalPublishedRecords: number;
 }
