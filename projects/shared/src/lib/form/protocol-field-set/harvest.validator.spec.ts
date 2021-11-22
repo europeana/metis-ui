@@ -11,6 +11,7 @@ describe('harvest validator', () => {
   it('should accept urls', () => {
     expect(harvestValidator(makeControl('http://example.com'))).toBe(null);
     expect(harvestValidator(makeControl('https://europeana.eu/data/set/test'))).toBe(null);
+    expect(harvestValidator(makeControl('ftp://example.com'))).toBe(null);
   });
 
   it('should not accept urls with query params', () => {
