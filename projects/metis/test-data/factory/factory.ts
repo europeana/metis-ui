@@ -347,7 +347,9 @@ export function information(informationId?: string): HarvestData {
       lastDepublishedRecords: 0,
       lastPublishedRecordsReadyForViewing: false,
       lastHarvestedDate: '',
-      lastHarvestedRecords: 0
+      lastHarvestedRecords: 0,
+      totalPreviewRecords: 0,
+      totalPublishedRecords: 0
     } as HarvestData;
   }
 }
