@@ -61,7 +61,7 @@
   </div>
   <div class="wizard-content">
     <form [formGroup]="formUpload">
-      <div *ngIf="currentStepIndex === 0" class="form-group">
+      <div [ngClass]="{ active: currentStepIndex === 0 }" class="form-group wizard-section">
         <label for="name" i18n="name label">Name</label>
         <input id="name" formControlName="name" autocomplete="off" />
         <span class="field-errors" *ngIf="formUpload.get('name')?.errors?.invalid">
@@ -71,7 +71,7 @@
         </span>
       </div>
 
-      <div *ngIf="currentStepIndex === 1" class="form-group">
+      <div [ngClass]="{ active: currentStepIndex === 1 }" class="form-group wizard-section">
         <label for="country" i18n="country label">Country</label>
         <select id="country" formControlName="country">
           <option *ngFor="let option of countryList" [ngValue]="option.name">{{
@@ -80,7 +80,7 @@
         </select>
       </div>
 
-      <div *ngIf="currentStepIndex === 1" class="form-group">
+      <div [ngClass]="{ active: currentStepIndex === 1 }" class="form-group wizard-section">
         <label for="language" i18n="language label">Language</label>
         <select id="language" formControlName="language">
           <option *ngFor="let option of languageList" [ngValue]="option.name">{{
@@ -89,19 +89,24 @@
         </select>
       </div>
 
-      <div *ngIf="currentStepIndex === 2" class="form-group">
+      <div [ngClass]="{ active: currentStepIndex === 2 }" class="form-group wizard-section">
         <lib-protocol-field-set
           [protocolForm]="formUpload"
           [protocolSwitchField]="'uploadProtocol'"
           visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
-          disabledProtocols="[EnumProtocolType.HTTP_HARVEST EnumProtocolType.OAIPMH_HARVEST]"
+          disabledProtocols="[EnumProtocolType.OAIPMH_HARVEST]"
           [fileFormName]="fileFormName"
         >
         </lib-protocol-field-set>
       </div>
     </form>
 
-    <form *ngIf="currentStepIndex === 3" [formGroup]="formProgress" (ngSubmit)="onSubmitProgress()">
+    <form
+      [ngClass]="{ active: currentStepIndex === 3 }"
+      [formGroup]="formProgress"
+      (ngSubmit)="onSubmitProgress()"
+      class="wizard-section"
+    >
       <sb-progress-tracker
         *ngIf="progressData"
         [progressData]="progressData"

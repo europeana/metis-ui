@@ -13,8 +13,14 @@
     <dd>{{ datasetData.provider }}</dd>
     <dt *ngIf="datasetData.dataProvider">{{ 'dataProvider' | translate }}</dt>
     <dd *ngIf="datasetData.dataProvider">{{ datasetData.dataProvider }}</dd>
+
     <dt>{{ 'numberPublished' | translate }}</dt>
-    <dd>{{ lastPublishedRecords ? lastPublishedRecords : ('notPublished' | translate) }}</dd>
+    <dd>
+      {{
+        displayNumberOfItemsPublished ? displayNumberOfItemsPublished : ('notPublished' | translate)
+      }}
+    </dd>
+
     <dt>{{ 'lastPublished' | translate }}</dt>
     <dd>
       {{

@@ -3,6 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockDataset, MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
@@ -41,6 +43,7 @@ describe('WizardComponent', () => {
     (component.formUpload.get('country') as FormControl).setValue('Greece');
     (component.formUpload.get('language') as FormControl).setValue('Greek');
     (component.formUpload.get('dataset') as FormControl).setValue(testFile);
+    (component.formUpload.get('url') as FormControl).setValue('http://x');
     expect(component.formUpload.valid).toBeTruthy();
   };
 
@@ -80,21 +83,31 @@ describe('WizardComponent', () => {
     });
 
     it('should tell if the steps are complete', () => {
+      const form = component.formUpload;
+
       expect(component.stepIsComplete(0)).toBeFalsy();
-      (component.formUpload.get('name') as FormControl).setValue('A');
+      (form.get('name') as FormControl).setValue('A');
       expect(component.stepIsComplete(0)).toBeTruthy();
-      (component.formUpload.get('name') as FormControl).setValue(' ');
+      (form.get('name') as FormControl).setValue(' ');
       expect(component.stepIsComplete(0)).toBeFalsy();
 
       expect(component.stepIsComplete(1)).toBeFalsy();
-      (component.formUpload.get('country') as FormControl).setValue('Greece');
-      (component.formUpload.get('language') as FormControl).setValue('Greek');
+      (form.get('country') as FormControl).setValue('Greece');
+      (form.get('language') as FormControl).setValue('Greek');
       expect(component.stepIsComplete(1)).toBeTruthy();
 
       expect(component.stepIsComplete(2)).toBeFalsy();
-      (component.formUpload.get('dataset') as FormControl).setValue(testFile);
-      expect(component.stepIsComplete(2)).toBeTruthy();
 
+      (form.get('uploadProtocol') as FormControl).setValue(ProtocolType.ZIP_UPLOAD);
+      (form.get('dataset') as FormControl).setValue(testFile);
+
+      (component.formUpload.get('uploadProtocol') as FormControl).setValue(
+        ProtocolType.HTTP_HARVEST
+      );
+      (form.get('url') as FormControl).setValue('http://x');
+
+      fixture.detectChanges();
+      expect(component.stepIsComplete(2)).toBeTruthy();
       expect(component.stepIsComplete(3)).toBeFalsy();
       (component.formProgress.get('idToTrack') as FormControl).setValue('1');
       expect(component.stepIsComplete(3)).toBeTruthy();
@@ -120,9 +133,7 @@ describe('WizardComponent', () => {
       assertSubmittable(false);
       fillUploadForm();
       assertSubmittable(true);
-
       (component.formUpload.get('country') as FormControl).setValue(null);
-
       assertSubmittable(false);
     });
 
@@ -258,6 +269,7 @@ describe('WizardComponent', () => {
     it('should handle upload form errors', fakeAsync(() => {
       expect(component.error).toBeFalsy();
       fillUploadForm();
+      expect(component.error).toBeFalsy();
       component.onSubmitDataset();
       tick(1);
       expect(component.error).toBeTruthy();
@@ -272,6 +284,7 @@ describe('WizardComponent', () => {
       fillUploadForm();
       component.onSubmitDataset();
       tick(1);
+
       expect(component.isBusy).toBeTruthy();
       expect(component.error).toBeFalsy();
       tick(component.resetBusyDelay);

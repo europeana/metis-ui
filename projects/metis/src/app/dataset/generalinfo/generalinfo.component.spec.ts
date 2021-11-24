@@ -30,6 +30,24 @@ describe('GeneralinfoComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should compute the displayNumberOfItemsPublished', () => {
+    expect(component.displayNumberOfItemsPublished).toBeFalsy();
+    expect(mockHarvestData.lastPublishedRecords).toEqual(842);
+
+    component.harvestPublicationData = mockHarvestData;
+
+    expect(component.lastPublishedRecords).toEqual(842);
+    expect(component.displayNumberOfItemsPublished).toEqual(842);
+
+    let newData = Object.assign(mockHarvestData, { totalPublishedRecords: 10 });
+    component.harvestPublicationData = newData;
+    expect(component.displayNumberOfItemsPublished).toEqual(10);
+
+    newData = Object.assign(mockHarvestData, { totalPublishedRecords: -1 });
+    component.harvestPublicationData = newData;
+    expect(component.displayNumberOfItemsPublished).toEqual(842);
+  });
+
   it('should try to find publication data', () => {
     component.harvestPublicationData = mockHarvestData;
     fixture.detectChanges();

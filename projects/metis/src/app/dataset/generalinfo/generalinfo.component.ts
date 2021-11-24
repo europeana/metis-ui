@@ -18,10 +18,13 @@ export class GeneralinfoComponent {
   lastDepublishedRecords?: number;
   lastPublishedRecords?: number;
   lastPublishedDate?: string;
+  totalPreviewRecords?: number;
+  totalPublishedRecords?: number;
   viewPreview?: string;
   buttonClassPreview = this.disabledBtnClass;
   viewCollections?: string;
   buttonClassCollections = this.disabledBtnClass;
+  displayNumberOfItemsPublished: number;
 
   private _harvestPublicationData: HarvestData;
 
@@ -41,6 +44,13 @@ export class GeneralinfoComponent {
       this.lastDepublishedRecords = value.lastDepublishedRecords;
       this.lastPublishedRecords = value.lastPublishedRecords;
       this.lastPublishedDate = value.lastPublishedDate;
+      this.totalPublishedRecords = value.totalPublishedRecords;
+      this.totalPreviewRecords = value.totalPreviewRecords;
+      this.displayNumberOfItemsPublished = this.totalPublishedRecords;
+
+      if (this.displayNumberOfItemsPublished === -1) {
+        this.displayNumberOfItemsPublished = this.lastPublishedRecords;
+      }
 
       if (value.lastPreviewRecordsReadyForViewing) {
         this.viewPreview =

@@ -11,6 +11,7 @@ import {
   FieldOption,
   FixedLengthArray,
   SubmissionResponseData,
+  SubmissionResponseDataWrapped,
   WizardStep,
   WizardStepType
 } from '../_models';
@@ -48,7 +49,7 @@ export class WizardComponent extends DataPollingComponent {
     },
     {
       stepType: WizardStepType.PROTOCOL_SELECT,
-      fields: ['uploadProtocol', 'dataset']
+      fields: ['uploadProtocol', 'dataset', 'url']
     },
     {
       stepType: WizardStepType.PROGRESS_TRACK,
@@ -86,6 +87,7 @@ export class WizardComponent extends DataPollingComponent {
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
       uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
+      url: ['', [Validators.required]],
       dataset: ['', [Validators.required]]
     });
 
@@ -277,6 +279,18 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   /**
+   * onDataSubmissionComplete
+   * sets the idToTrack value in the progress form
+   * submits the progress form
+   * sets currentStepIndex to its max value
+   **/
+  onDataSubmissionComplete(): void {
+    (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
+    this.onSubmitProgress();
+    this.currentStepIndex = this.wizardConf.length - 1;
+  }
+
+  /**
    * onSubmitDataset
    * Submits the formUpload data if valid
    **/
@@ -293,16 +307,24 @@ export class WizardComponent extends DataPollingComponent {
             form.value.country,
             form.value.language,
             this.fileFormName,
-            (form.get(this.fileFormName) as FormControl).value
+            (form.get(this.fileFormName) as FormControl).value,
+            form.value.url
           )
           .subscribe(
-            (res: SubmissionResponseData) => {
+            (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
               this.resetBusy();
+
+              // treat as SubmissionResponseDataWrapped
+              res = (res as unknown) as SubmissionResponseDataWrapped;
+
               if (res.body) {
                 this.trackDatasetId = res.body['dataset-id'];
-                (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
-                this.onSubmitProgress();
-                this.currentStepIndex = this.wizardConf.length - 1;
+                this.onDataSubmissionComplete();
+                console.log('response has body >>> ' + this.trackDatasetId);
+              } else if (form.value.url) {
+                this.trackDatasetId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
+                this.onDataSubmissionComplete();
+                console.log('response has NO body >>> ' + this.trackDatasetId);
               }
             },
             (err: HttpErrorResponse): void => {

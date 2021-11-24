@@ -1,7 +1,13 @@
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import { mockDataset } from '.';
-import { Dataset, DatasetStatus, FieldOption, SubmissionResponseData } from '../_models';
+import {
+  Dataset,
+  DatasetStatus,
+  FieldOption,
+  SubmissionResponseData,
+  SubmissionResponseDataWrapped
+} from '../_models';
 
 export const mockCountries = [
   {
@@ -77,7 +83,7 @@ export class MockSandboxService {
     language: string,
     fileFormName: string,
     file: File
-  ): Observable<SubmissionResponseData> {
+  ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
     console.log(
       `mock submitDataset(${datasetName}, ${country}, ${language}, ${fileFormName}, ${!!file})`
     );
