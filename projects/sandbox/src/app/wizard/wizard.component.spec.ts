@@ -123,6 +123,18 @@ describe('WizardComponent', () => {
       expect(component.stepIsComplete(0)).toBeFalsy();
     });
 
+    it('should validate conditionally', () => {
+      const ctrlFile = component.formUpload.get(component.xsltFileFormName) as FormControl;
+      const ctrlCB = component.formUpload.get('sendXSLT') as FormControl;
+
+      component.updateConditionalXSLValidator();
+      expect(ctrlFile.valid).toBeTruthy();
+
+      ctrlCB.setValue(true);
+      component.updateConditionalXSLValidator();
+      expect(ctrlFile.valid).toBeFalsy();
+    });
+
     it('should tell if the steps are submittable', () => {
       const assertSubmittable = (value: boolean): void => {
         Array.from(Array(3).keys()).forEach((i: number) => {

@@ -51,14 +51,14 @@ export class SandboxService {
   /*  @param {string} datasetName - the datasetName url parameter
   /*  @param {string} country - the country url parameter
   /*  @param {string} language - the language url parameter
-  /*  @param {string} fileFormName - the name of the file data
+  /*  @param {string} zipFileFormName - the name of the file data
   /*  @param {File} file - zip file of records
   */
   submitDataset(
     datasetName: string,
     country: string,
     language: string,
-    fileFormName?: string,
+    zipFileFormName?: string,
     file?: File,
     harvestUrl?: string
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
@@ -67,8 +67,8 @@ export class SandboxService {
     const url = `${apiSettings.apiHost}/dataset/${datasetName}/${harvestType}?country=${country}&language=${language}${urlParameter}`;
 
     const formData = new FormData();
-    if (fileFormName && file) {
-      formData.append(fileFormName, file);
+    if (zipFileFormName && file) {
+      formData.append(zipFileFormName, file);
       return this.http.post<SubmissionResponseDataWrapped>(url, formData, {
         observe: 'events',
         params: {

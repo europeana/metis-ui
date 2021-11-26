@@ -81,11 +81,11 @@ export class MockSandboxService {
     datasetName: string,
     country: string,
     language: string,
-    fileFormName: string,
+    zipFileFormName: string,
     file: File
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
     console.log(
-      `mock submitDataset(${datasetName}, ${country}, ${language}, ${fileFormName}, ${!!file})`
+      `mock submitDataset(${datasetName}, ${country}, ${language}, ${zipFileFormName}, ${!!file})`
     );
     if (this.errorMode) {
       return timer(1).pipe(

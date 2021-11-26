@@ -95,9 +95,24 @@
           [protocolSwitchField]="'uploadProtocol'"
           visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
           disabledProtocols="[EnumProtocolType.OAIPMH_HARVEST]"
-          [fileFormName]="fileFormName"
+          [fileFormName]="zipFileFormName"
         >
         </lib-protocol-field-set>
+        Custom XSLT
+        <input
+          type="checkbox"
+          (change)="updateConditionalXSLValidator()"
+          [formGroup]="formUpload"
+          formControlName="sendXSLT"
+        />
+        <div [ngClass]="{ hidden: !formUpload.value.sendXSLT }">
+          <lib-file-upload
+            [formControlName]="xsltFileFormName"
+            [form]="formUpload"
+            [acceptedTypes]="'.xsl'"
+            ngDefaultControl
+          ></lib-file-upload>
+        </div>
       </div>
     </form>
 

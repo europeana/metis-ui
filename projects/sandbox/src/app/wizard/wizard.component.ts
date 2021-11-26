@@ -24,7 +24,8 @@ import { SandboxService } from '../_services';
 })
 export class WizardComponent extends DataPollingComponent {
   error: HttpErrorResponse | undefined;
-  fileFormName = 'dataset';
+  zipFileFormName = 'dataset';
+  xsltFileFormName = 'xsltFile';
   formProgress: FormGroup;
   formUpload: FormGroup;
   resetBusyDelay = 1000;
@@ -49,7 +50,7 @@ export class WizardComponent extends DataPollingComponent {
     },
     {
       stepType: WizardStepType.PROTOCOL_SELECT,
-      fields: ['uploadProtocol', 'dataset', 'url']
+      fields: ['uploadProtocol', 'dataset', 'url', 'sendXSLT', this.xsltFileFormName]
     },
     {
       stepType: WizardStepType.PROGRESS_TRACK,
@@ -88,8 +89,10 @@ export class WizardComponent extends DataPollingComponent {
       language: ['', [Validators.required]],
       uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
       url: ['', [Validators.required]],
-      dataset: ['', [Validators.required]]
+      dataset: ['', [Validators.required]],
+      sendXSLT: ['']
     });
+    this.formUpload.addControl(this.xsltFileFormName, new FormControl(''));
 
     this.subs.push(
       merge(this.formProgress.valueChanges, this.formUpload.valueChanges).subscribe(() => {
@@ -134,6 +137,28 @@ export class WizardComponent extends DataPollingComponent {
       }
     }
     return null;
+  }
+
+  /**
+   * updateConditionalXSLValidator
+   * Removes or adds the required validator in formUpload for the 'xsltFile' depending on the value of 'sendXSLT'
+   **/
+  updateConditionalXSLValidator(): void {
+    const fn = (): void => {
+      const ctrlFile = this.formUpload.get(this.xsltFileFormName);
+      const ctrl = this.formUpload.get('sendXSLT');
+
+      if (ctrl && ctrlFile) {
+        if (ctrl.value) {
+          ctrlFile.setValidators([Validators.required]);
+        } else {
+          ctrlFile.setValidators(null);
+        }
+        ctrlFile.updateValueAndValidity({ onlySelf: false, emitEvent: false });
+      }
+    };
+    this.subs.push(this.formUpload.valueChanges.subscribe(fn));
+    fn();
   }
 
   /**
@@ -306,8 +331,8 @@ export class WizardComponent extends DataPollingComponent {
             form.value.name,
             form.value.country,
             form.value.language,
-            this.fileFormName,
-            (form.get(this.fileFormName) as FormControl).value,
+            this.zipFileFormName,
+            (form.get(this.zipFileFormName) as FormControl).value,
             form.value.url
           )
           .subscribe(
