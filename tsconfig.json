@@ -7,7 +7,6 @@
   "compilerOptions": {
     "declaration": false,
     "downlevelIteration": true,
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es2017", "dom"],
     "module": "es2020",
