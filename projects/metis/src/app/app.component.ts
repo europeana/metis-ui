@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { HostListener } from '@angular/core';
+
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
@@ -7,7 +9,7 @@ import { filter, switchMap, tap } from 'rxjs/operators';
 import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
 import { environment } from '../environments/environment';
 import { CancellationRequest } from './_models';
-import { AuthenticationService, ErrorService, WorkflowService } from './_services';
+import { AuthenticationService, ClickService, ErrorService, WorkflowService } from './_services';
 
 @Component({
   selector: 'app-root',
@@ -27,9 +29,19 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly errors: ErrorService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly clickService: ClickService
   ) {
     super();
+  }
+
+  /** documentClick
+   * - global document click handler
+   * - push the clicked element to the clickService
+   **/
+  @HostListener('document:click', ['$event'])
+  documentClick(event: { target: HTMLElement }): void {
+    this.clickService.documentClickedTarget.next(event.target);
   }
 
   /**

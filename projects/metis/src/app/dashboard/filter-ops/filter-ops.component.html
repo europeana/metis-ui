@@ -1,6 +1,6 @@
 <div class="filter-ops">
   <app-load-title title="{{ title }}" [isLoading]="isLoading"></app-load-title>
-  <ul class="filter" (clickOutside)="hide()">
+  <ul class="filter" appClickAware (clickOutside)="hide()">
     <li class="dropdown arrow-right">
       <a
         (click)="toggle()"
