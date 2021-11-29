@@ -1,3 +1,4 @@
+import { FormGroup } from '@angular/forms';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import { mockDataset } from '.';
@@ -78,14 +79,11 @@ export class MockSandboxService {
   }
 
   submitDataset(
-    datasetName: string,
-    country: string,
-    language: string,
-    zipFileFormName: string,
-    file: File
+    form: FormGroup,
+    fileNames: Array<string>
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
     console.log(
-      `mock submitDataset(${datasetName}, ${country}, ${language}, ${zipFileFormName}, ${!!file})`
+      `mock submitDataset(${form.value.name}, ${form.value.country}, ${form.value.language}, ${form.value.url}, ${fileNames})`
     );
     if (this.errorMode) {
       return timer(1).pipe(

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -47,34 +48,34 @@ export class SandboxService {
   }
 
   /** submitDataset
-  /*  attach file to form and post
-  /*  @param {string} datasetName - the datasetName url parameter
-  /*  @param {string} country - the country url parameter
-  /*  @param {string} language - the language url parameter
-  /*  @param {string} zipFileFormName - the name of the file data
-  /*  @param {File} file - zip file of records
+  /*  attach file data to form and post
+  /*  @param {FormGroup} FormGroup - the user-filled data
+  /*  @param {Array<string>} fileNames - the names of the files
   */
   submitDataset(
-    datasetName: string,
-    country: string,
-    language: string,
-    zipFileFormName?: string,
-    file?: File,
-    harvestUrl?: string
+    form: FormGroup,
+    fileNames: Array<string>
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
+    console.log(!!FormControl || !!fileNames);
+    const harvestUrl = form.value.url;
     const harvestType = harvestUrl ? 'harvestByUrl' : 'harvestByFile';
     const urlParameter = harvestUrl ? '&url=' + encodeURIComponent(harvestUrl) : '';
-    const url = `${apiSettings.apiHost}/dataset/${datasetName}/${harvestType}?country=${country}&language=${language}${urlParameter}`;
+    const url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}?country=${form.value.country}&language=${form.value.language}${urlParameter}`;
 
     const formData = new FormData();
-    if (zipFileFormName && file) {
-      formData.append(zipFileFormName, file);
+    let fileAppended = false;
+
+    fileNames.forEach((fileName: string) => {
+      const file = (form.get(fileName) as FormControl).value;
+      if (file) {
+        formData.append(fileName, file);
+        fileAppended = true;
+      }
+    });
+
+    if (fileAppended) {
       return this.http.post<SubmissionResponseDataWrapped>(url, formData, {
         observe: 'events',
-        params: {
-          clientFilename: file.name,
-          mimeType: file.type
-        },
         reportProgress: true
       }) as Observable<SubmissionResponseDataWrapped>;
     } else {

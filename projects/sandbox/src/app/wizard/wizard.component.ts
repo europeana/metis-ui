@@ -293,6 +293,7 @@ export class WizardComponent extends DataPollingComponent {
             this.clearDataPollers();
           }
           this.resetBusy();
+          this.error = undefined;
         },
         (err: HttpErrorResponse) => {
           this.error = err;
@@ -326,37 +327,28 @@ export class WizardComponent extends DataPollingComponent {
       form.disable();
       this.isBusy = true;
       this.subs.push(
-        this.sandbox
-          .submitDataset(
-            form.value.name,
-            form.value.country,
-            form.value.language,
-            this.zipFileFormName,
-            (form.get(this.zipFileFormName) as FormControl).value,
-            form.value.url
-          )
-          .subscribe(
-            (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-              this.resetBusy();
+        this.sandbox.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe(
+          (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+            this.resetBusy();
 
-              // treat as SubmissionResponseDataWrapped
-              res = (res as unknown) as SubmissionResponseDataWrapped;
+            // treat as SubmissionResponseDataWrapped
+            res = (res as unknown) as SubmissionResponseDataWrapped;
 
-              if (res.body) {
-                this.trackDatasetId = res.body['dataset-id'];
-                this.onDataSubmissionComplete();
-                console.log('response has body >>> ' + this.trackDatasetId);
-              } else if (form.value.url) {
-                this.trackDatasetId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
-                this.onDataSubmissionComplete();
-                console.log('response has NO body >>> ' + this.trackDatasetId);
-              }
-            },
-            (err: HttpErrorResponse): void => {
-              this.error = err;
-              this.resetBusy();
+            if (res.body) {
+              this.trackDatasetId = res.body['dataset-id'];
+              this.onDataSubmissionComplete();
+              console.log('response has body >>> ' + this.trackDatasetId);
+            } else if (form.value.url) {
+              this.trackDatasetId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
+              this.onDataSubmissionComplete();
+              console.log('response has NO body >>> ' + this.trackDatasetId);
             }
-          )
+          },
+          (err: HttpErrorResponse): void => {
+            this.error = err;
+            this.resetBusy();
+          }
+        )
       );
     }
   }

@@ -50,6 +50,7 @@ export interface DatasetInfo {
   'dataset-name': string;
   country: string;
   language: string;
+  'xslt-transformed': boolean;
 }
 
 export interface Dataset {

@@ -98,13 +98,14 @@
           [fileFormName]="zipFileFormName"
         >
         </lib-protocol-field-set>
-        Custom XSLT
-        <input
-          type="checkbox"
-          (change)="updateConditionalXSLValidator()"
-          [formGroup]="formUpload"
-          formControlName="sendXSLT"
-        />
+        <label>
+          <input
+            type="checkbox"
+            (change)="updateConditionalXSLValidator()"
+            [formGroup]="formUpload"
+            formControlName="sendXSLT"
+          />Apply XSLT transformation
+        </label>
         <div [ngClass]="{ hidden: !formUpload.value.sendXSLT }">
           <lib-file-upload
             [formControlName]="xsltFileFormName"
@@ -131,6 +132,9 @@
 
       <div class="form-group">
         <label i18n="track id label">Enter the id of a dataset to track </label>
+
+        <span class="xsl-icon"></span>
+
         <div class="submit-track-id">
           <input formControlName="idToTrack" data-e2e="idToTrack" autofocus autocomplete="off" />
           <button

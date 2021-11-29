@@ -9,6 +9,13 @@
     ><span class="title-id">{{ datasetId }}</span>
   </h2>
 
+  <ul *ngIf="info['xslt-transformed']">
+    <li class="container-h">
+      <span class="xsl-icon"></span>
+      <span>xsl-transformed</span>
+    </li>
+  </ul>
+
   <div class="info" class="data-summary">
     <ul>
       <li *ngIf="info['creation-date']" data-e2e="creation-date">
