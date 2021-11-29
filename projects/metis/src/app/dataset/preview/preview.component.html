@@ -7,6 +7,7 @@
   <div class="filter-wrapper">
     <ul
       class="filter"
+      appClickAware
       (clickOutside)="onClickedOutside()"
       [ngClass]="{ unbordered: allWorkflowExecutions.length === 0 }"
     >
