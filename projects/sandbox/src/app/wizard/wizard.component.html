@@ -104,7 +104,7 @@
             (change)="updateConditionalXSLValidator()"
             [formGroup]="formUpload"
             formControlName="sendXSLT"
-          />Apply XSLT transformation
+          />Apply XSL transformation to harvested records
         </label>
         <div [ngClass]="{ hidden: !formUpload.value.sendXSLT }">
           <lib-file-upload
