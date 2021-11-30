@@ -36,9 +36,11 @@ context('Sandbox', () => {
     const selectorInputName = '#name';
     const selectorInputLanguage = '#language';
     const selectorInputTrackId = '[data-e2e="idToTrack"]';
-    const selectorInputZipFile = '[type="file"]';
+    const selectorInputZipFile = '[type="file"][accept=".zip"]';
+    const selectorInputXSLFile = '[type="file"][accept=".xsl"]';
     const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
     const selectorProgress = '.progress-title';
+    const selectorSendXSLT = '[formControlName="sendXSLT"]';
     const testDatasetName = 'Test_dataset_1';
 
     beforeEach(() => {
@@ -170,6 +172,14 @@ context('Sandbox', () => {
       setStep(1);
       cy.get(selectorInputName).type(' ');
       cy.get(selectorFieldErrors).should('have.length', 1);
+    });
+
+    it('should conditionally enable the XSLT field', () => {
+      setStep(3);
+      cy.get(selectorInputXSLFile).should('have.length', 1);
+      cy.get(selectorInputXSLFile).should('not.be.visible');
+      cy.get(selectorSendXSLT).click();
+      cy.get(selectorInputXSLFile).should('be.visible');
     });
 
     it('should track the progress on submit', () => {

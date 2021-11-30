@@ -7,7 +7,7 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
@@ -30,7 +30,6 @@ describe('DepublicationComponent', () => {
   let errors: ErrorService;
 
   const interval = 5000;
-  const formBuilder: FormBuilder = new FormBuilder();
   const recordId = 'BibliographicResource_1000126221328';
 
   const addFormFieldData = (): void => {
@@ -51,8 +50,7 @@ describe('DepublicationComponent', () => {
           provide: DepublicationService,
           useClass: errorMode ? MockDepublicationServiceErrors : MockDepublicationService
         },
-        { provide: ErrorService, useClass: MockErrorService },
-        { provide: FormBuilder, useValue: formBuilder }
+        { provide: ErrorService, useClass: MockErrorService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

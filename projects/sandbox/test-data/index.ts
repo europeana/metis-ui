@@ -112,7 +112,8 @@ new (class extends TestDataServer {
         'dataset-id': datasetId,
         'dataset-name': datasetName ? datasetName : 'GeneratedName',
         country: country ? country : 'GeneratedCountry',
-        language: language ? language : 'GeneratedLanguage'
+        language: language ? language : 'GeneratedLanguage',
+        'xslt-transformed': country === 'Greece'
       }
     };
   }

@@ -22,7 +22,16 @@ $eu-jade-slightly-dark: #1ea072;
   .title-id {
     font-weight: normal;
     margin-left: auto;
+    padding-left: 0.5em;
   }
+  .title-name {
+    word-break: break-all;
+  }
+}
+
+.container-h {
+  display: flex;
+  flex-direction: row;
 }
 
 .data-summary {
@@ -149,6 +158,14 @@ $eu-jade-slightly-dark: #1ea072;
 }
 .warn {
   background: $eu-yellow;
+}
+
+.xsl-icon {
+  background: svg-url-icon-xml('#{$eu-jade-dark}') center no-repeat;
+  display: block;
+  height: 26px;
+  margin-right: 3px;
+  width: 16px;
 }
 
 .step-label {
