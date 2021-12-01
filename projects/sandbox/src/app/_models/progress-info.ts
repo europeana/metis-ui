@@ -50,7 +50,8 @@ export interface DatasetInfo {
   'dataset-name': string;
   country: string;
   language: string;
-  'xslt-transformed': boolean;
+  'xslt-transformed'?: boolean;
+  'record-limit-exceeded'?: boolean;
 }
 
 export interface Dataset {

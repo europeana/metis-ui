@@ -88,6 +88,7 @@
   [ngStyle]="{ display: isProtocolFile() ? 'block' : 'none' }"
 >
   <lib-file-upload
+    #fileUpload
     [formControlName]="fileFormName"
     [form]="form"
     [acceptedTypes]="'.zip'"

@@ -1,9 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent, ProtocolType } from 'shared';
+import {
+  DataPollingComponent,
+  FileUploadComponent,
+  ProtocolFieldSetComponent,
+  ProtocolType
+} from 'shared';
+
 import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
@@ -23,6 +29,10 @@ import { SandboxService } from '../_services';
   styleUrls: ['./wizard.component.scss']
 })
 export class WizardComponent extends DataPollingComponent {
+  @ViewChild(ProtocolFieldSetComponent, { static: true })
+  protocolFields: ProtocolFieldSetComponent;
+  @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
+
   error: HttpErrorResponse | undefined;
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';
@@ -208,6 +218,12 @@ export class WizardComponent extends DataPollingComponent {
       const form = this.getFormGroup(this.wizardConf[stepIndex]);
       if (form.disabled) {
         form.enable();
+        if (this.protocolFields) {
+          this.protocolFields.clearFileValue();
+        }
+        if (this.xslFileField) {
+          this.xslFileField.clearFileValue();
+        }
         this.buildForms();
       }
     }

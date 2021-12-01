@@ -1,3 +1,17 @@
+import { fillUploadForm, uploadFile } from '../support/helpers';
+import {
+  selectorBtnNext,
+  selectorBtnSubmitData,
+  selectorErrors,
+  selectorInputCountry,
+  selectorInputLanguage,
+  selectorInputName,
+  selectorInputTrackId,
+  selectorInputZipFile,
+  selectorLinkDatasetForm,
+  selectorProgressTitle
+} from '../support/selectors';
+
 context('Sandbox', () => {
   const classActive = 'is-active';
   const classSet = 'is-set';
@@ -8,38 +22,12 @@ context('Sandbox', () => {
     cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
   };
 
-  const uploadFile = (fileName: string, fileType = '', selector: string): void => {
-    cy.get(selector).then((subject) => {
-      cy.fixture(fileName, 'base64')
-        .then(Cypress.Blob.base64StringToBlob)
-        .then((blob) => {
-          const el = subject[0] as HTMLInputElement;
-          const testFile = new File([blob], fileName, { type: fileType });
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(testFile);
-          el.files = dataTransfer.files;
-          cy.wrap(subject).trigger('change', { force: true });
-          console.log(el.files);
-        });
-    });
-  };
-
   describe('Dataset Form', () => {
     let currentStep = 1;
 
-    const selectorBtnNext = '.next';
     const selectorBtnPrevious = '.previous';
-    const selectorBtnSubmit = '[data-e2e="submit-upload"]';
-    const selectorErrors = '.errors';
     const selectorFieldErrors = '.field-errors';
-    const selectorInputCountry = '#country';
-    const selectorInputName = '#name';
-    const selectorInputLanguage = '#language';
-    const selectorInputTrackId = '[data-e2e="idToTrack"]';
-    const selectorInputZipFile = '[type="file"][accept=".zip"]';
     const selectorInputXSLFile = '[type="file"][accept=".xsl"]';
-    const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
-    const selectorProgress = '.progress-title';
     const selectorSendXSLT = '[formControlName="sendXSLT"]';
     const testDatasetName = 'Test_dataset_1';
 
@@ -53,15 +41,6 @@ context('Sandbox', () => {
       cy.get(selectorLinkDatasetForm).should('have.length', 0);
       cy.get(selectorInputName).should('be.visible');
     });
-
-    const fillUploadForm = (): void => {
-      cy.get(selectorInputName).type(testDatasetName);
-      cy.get(selectorBtnNext).click();
-      cy.get(selectorInputCountry).select('Greece');
-      cy.get(selectorInputLanguage).select('Greek');
-      cy.get(selectorBtnNext).click();
-      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
-    };
 
     const navigateSteps = (
       fnFwd: () => void,
@@ -183,16 +162,16 @@ context('Sandbox', () => {
     });
 
     it('should track the progress on submit', () => {
-      cy.get(selectorProgress).should('have.length', 0);
-      fillUploadForm();
-      cy.get(selectorBtnSubmit).click();
-      cy.get(selectorProgress).should('have.length', 1);
+      cy.get(selectorProgressTitle).should('have.length', 0);
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
+      cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorErrors).should('have.length', 0);
     });
 
     it('should allow full navigation of both forms after submit', () => {
-      fillUploadForm();
-      cy.get(selectorBtnSubmit).click();
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
       cy.get(`.wizard-status li:nth-child(1) a`).click();
       navigateSteps(
         () => {
@@ -206,8 +185,8 @@ context('Sandbox', () => {
     });
 
     it('should re-enable the disabled form after submit', () => {
-      fillUploadForm();
-      cy.get(selectorBtnSubmit).click();
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
       cy.get(`.wizard-status li:first-child a`).click();
       cy.get(selectorInputName).should('be.disabled');
       cy.get(`.wizard-status li:nth-child(2) a`).click();

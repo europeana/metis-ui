@@ -91,6 +91,7 @@
 
       <div [ngClass]="{ active: currentStepIndex === 2 }" class="form-group wizard-section">
         <lib-protocol-field-set
+          #protocolFields
           [protocolForm]="formUpload"
           [protocolSwitchField]="'uploadProtocol'"
           visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
@@ -108,6 +109,7 @@
         </label>
         <div [ngClass]="{ hidden: !formUpload.value.sendXSLT }">
           <lib-file-upload
+            #xslFileField
             [formControlName]="xsltFileFormName"
             [form]="formUpload"
             [acceptedTypes]="'.xsl'"

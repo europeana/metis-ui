@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
 import { ProtocolType } from '../../_models/shared-models';
 import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
+import { FileUploadComponent } from '../file-upload/file-upload.component';
 
 @Component({
   selector: 'lib-protocol-field-set',
@@ -12,6 +13,8 @@ import { SubscriptionManager } from '../../subscription-manager/subscription.man
 export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;
   @Input() protocolSwitchField: string;
+
+  @ViewChild('fileUpload', { static: false }) fileUpload: FileUploadComponent;
 
   ZIP = ProtocolType.ZIP_UPLOAD;
   HTTP = ProtocolType.HTTP_HARVEST;
@@ -76,6 +79,13 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
         ctrl.updateValueAndValidity({ onlySelf: false, emitEvent: false });
       }
     });
+  }
+
+  /** clearFileValue
+  /* calls clearFileValue on the fileUpload component
+  */
+  clearFileValue(): void {
+    this.fileUpload.clearFileValue();
   }
 
   /** setFormValidators
