@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -15,6 +15,7 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
 })
 export class FileUploadComponent implements ControlValueAccessor {
   onChange: Function;
+  @ViewChild('fileUpload', { static: false }) fileUpload: ElementRef;
 
   @Input() acceptedTypes: string;
   @Input() form: FormGroup;
@@ -28,8 +29,15 @@ export class FileUploadComponent implements ControlValueAccessor {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   constructor(private readonly host: ElementRef<HTMLInputElement>) {}
 
-  /** writeValue
+  /** clearFileValue
   /*  clear file input
+  */
+  clearFileValue(): void {
+    this.fileUpload.nativeElement.value = '';
+  }
+
+  /** writeValue
+  /*  default implementaion of ControlValueAccessor.writeValue
   */
   writeValue(): void {
     this.host.nativeElement.value = '';

@@ -1,0 +1,10 @@
+export const selectorInputZipFile = '[type="file"][accept=".zip"]';
+export const selectorBtnNext = '.next';
+export const selectorBtnSubmitData = '[data-e2e="submit-upload"]';
+export const selectorErrors = '.errors';
+export const selectorInputName = '#name';
+export const selectorInputCountry = '#country';
+export const selectorInputLanguage = '#language';
+export const selectorInputTrackId = '[data-e2e="idToTrack"]';
+export const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
+export const selectorProgressTitle = '.progress-title';

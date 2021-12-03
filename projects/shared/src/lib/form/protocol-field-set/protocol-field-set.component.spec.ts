@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';
@@ -19,7 +20,8 @@ describe('ProtocolFieldSetComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [ProtocolFieldSetComponent],
-      providers: [{ provide: FormBuilder, useValue: formBuilder }]
+      providers: [{ provide: FormBuilder, useValue: formBuilder }],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));
 

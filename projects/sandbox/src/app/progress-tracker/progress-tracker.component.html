@@ -78,7 +78,7 @@
         <span class="step-label">{{ item.step }}</span>
       </span>
       <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
-      <span>
+      <span class="container-h">
         <a
           *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
           class="link-internal"
@@ -89,6 +89,16 @@
         <ng-template #conditionalWrap
           ><ng-content></ng-content
           ><span *ngIf="item.fail" class="errors">{{ item.fail }}</span></ng-template
+        >
+
+        <span
+          class="warn-limit"
+          *ngIf="i === 0 && progressData['dataset-info']['record-limit-exceeded']"
+          title="Some of the uploaded records were not processed."
+          data-e2e="warn-limit-reached"
+        >
+          <span class="warn-limit-icon"></span>
+          1000 imported</span
         >
       </span>
       <span class="grid-cell-errors">
