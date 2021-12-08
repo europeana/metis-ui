@@ -49,18 +49,27 @@ export class SandboxService {
 
   /** submitDataset
   /*  attach file data to form and post
-  /*  @param {FormGroup} FormGroup - the user-filled data
-  /*  @param {Array<string>} fileNames - the names of the files
+  /*  @param {FormGroup} form - the user-filled data
+  /*  @param {Array<string>} fileNames - the names of files to append
   */
   submitDataset(
     form: FormGroup,
     fileNames: Array<string>
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
-    console.log(!!FormControl || !!fileNames);
     const harvestUrl = form.value.url;
-    const harvestType = harvestUrl ? 'harvestByUrl' : 'harvestByFile';
-    const urlParameter = harvestUrl ? '&url=' + encodeURIComponent(harvestUrl) : '';
-    const url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}?country=${form.value.country}&language=${form.value.language}${urlParameter}`;
+    const harvestUrlOAI = form.value.harvestUrl;
+
+    const sendUrl = harvestUrl ? harvestUrl : harvestUrlOAI ? harvestUrlOAI : '';
+    const harvestType = harvestUrl
+      ? 'harvestByUrl'
+      : harvestUrlOAI
+      ? 'harvestOaiPmh'
+      : 'harvestByFile';
+    const urlParameter = sendUrl.length > 0 ? '&url=' + encodeURIComponent(sendUrl) : '';
+    const oaiParameters = harvestUrlOAI
+      ? `&metadataformat=${form.value.metadataFormat}&setspec=${form.value.setSpec}`
+      : '';
+    const url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
 
     const formData = new FormData();
     let fileAppended = false;
