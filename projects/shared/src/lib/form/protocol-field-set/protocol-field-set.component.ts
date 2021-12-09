@@ -13,6 +13,7 @@ import { FileUploadComponent } from '../file-upload/file-upload.component';
 export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;
   @Input() protocolSwitchField: string;
+  @Input() incrementalEnabled = true;
 
   @ViewChild('fileUpload', { static: false }) fileUpload: FileUploadComponent;
 

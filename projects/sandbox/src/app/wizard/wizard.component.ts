@@ -60,7 +60,16 @@ export class WizardComponent extends DataPollingComponent {
     },
     {
       stepType: WizardStepType.PROTOCOL_SELECT,
-      fields: ['uploadProtocol', 'dataset', 'url', 'sendXSLT', this.xsltFileFormName]
+      fields: [
+        'uploadProtocol',
+        'dataset',
+        'url',
+        'sendXSLT',
+        this.xsltFileFormName,
+        'harvestUrl',
+        'setSpec',
+        'metadataFormat'
+      ]
     },
     {
       stepType: WizardStepType.PROGRESS_TRACK,
@@ -100,6 +109,9 @@ export class WizardComponent extends DataPollingComponent {
       uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
       url: ['', [Validators.required]],
       dataset: ['', [Validators.required]],
+      harvestUrl: ['', [Validators.required]],
+      setSpec: [''],
+      metadataFormat: [''],
       sendXSLT: ['']
     });
     this.formUpload.addControl(this.xsltFileFormName, new FormControl(''));
@@ -354,7 +366,7 @@ export class WizardComponent extends DataPollingComponent {
               this.trackDatasetId = res.body['dataset-id'];
               this.onDataSubmissionComplete();
               console.log('response has body >>> ' + this.trackDatasetId);
-            } else if (form.value.url) {
+            } else if (form.value.url || form.value.harvestUrl) {
               this.trackDatasetId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
               this.onDataSubmissionComplete();
               console.log('response has NO body >>> ' + this.trackDatasetId);

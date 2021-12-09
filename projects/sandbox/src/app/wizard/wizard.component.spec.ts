@@ -44,6 +44,7 @@ describe('WizardComponent', () => {
     (component.formUpload.get('language') as FormControl).setValue('Greek');
     (component.formUpload.get('dataset') as FormControl).setValue(testFile);
     (component.formUpload.get('url') as FormControl).setValue('http://x');
+    (component.formUpload.get('harvestUrl') as FormControl).setValue('http://x');
     expect(component.formUpload.valid).toBeTruthy();
   };
 
@@ -104,10 +105,14 @@ describe('WizardComponent', () => {
       (component.formUpload.get('uploadProtocol') as FormControl).setValue(
         ProtocolType.HTTP_HARVEST
       );
+      expect(component.stepIsComplete(2)).toBeFalsy();
+
       (form.get('url') as FormControl).setValue('http://x');
+      (form.get('harvestUrl') as FormControl).setValue('http://x');
 
       fixture.detectChanges();
       expect(component.stepIsComplete(2)).toBeTruthy();
+
       expect(component.stepIsComplete(3)).toBeFalsy();
       (component.formProgress.get('idToTrack') as FormControl).setValue('1');
       expect(component.stepIsComplete(3)).toBeTruthy();
