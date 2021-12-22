@@ -38,19 +38,22 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';
   formProgress: FormGroup;
+  formRecord: FormGroup;
   formUpload: FormGroup;
   resetBusyDelay = 1000;
   isBusy = false;
   isBusyProgress = false;
+  isBusyReport = false;
   isPolling = false;
   orbsHidden = true;
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData: Dataset;
   trackDatasetId: string;
+  trackRecordId: string;
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
-  wizardConf: FixedLengthArray<WizardStep, 4> = [
+  wizardConf: FixedLengthArray<WizardStep, 5> = [
     {
       stepType: WizardStepType.SET_NAME,
       fields: ['name']
@@ -75,9 +78,18 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     {
       stepType: WizardStepType.PROGRESS_TRACK,
       fields: ['idToTrack']
+    },
+    {
+      stepType: WizardStepType.REPORT,
+      fields: ['recordToTrack']
     }
   ];
-  currentStepIndex = this.wizardConf.length - 1;
+
+  stepIndexProgress = this.wizardConf.findIndex((step) => {
+    return step.stepType === WizardStepType.PROGRESS_TRACK;
+  });
+
+  currentStepIndex = this.stepIndexProgress;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -119,6 +131,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   buildForms(): void {
     this.formProgress = this.fb.group({
       idToTrack: ['', [Validators.required, this.validateDatasetId]]
+    });
+
+    this.formRecord = this.fb.group({
+      recordToTrack: ['', [Validators.required, this.validateDatasetId]]
     });
 
     this.formUpload = this.fb.group({
@@ -210,9 +226,13 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns FormGroup
    **/
   getFormGroup(stepConf: WizardStep): FormGroup {
-    return stepConf.stepType === WizardStepType.PROGRESS_TRACK
-      ? this.formProgress
-      : this.formUpload;
+    if (stepConf.stepType === WizardStepType.PROGRESS_TRACK) {
+      return this.formProgress;
+    } else if (stepConf.stepType === WizardStepType.REPORT) {
+      return this.formRecord;
+    } else {
+      return this.formUpload;
+    }
   }
 
   /**
@@ -226,6 +246,48 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
+   * getStepIsSubmitted
+   *
+   * Template utility for setting 'submitted-orb' class on the step orbs
+   * @param { number } stepIndex - the WizardStep index
+   *
+   * @returns boolean
+   **/
+  getStepIsSubmitted(step: WizardStep): boolean {
+    if (
+      [
+        WizardStepType.SET_NAME,
+        WizardStepType.SET_LANG_LOCATION,
+        WizardStepType.PROTOCOL_SELECT
+      ].includes(step.stepType) &&
+      this.formUpload.disabled
+    ) {
+      return true;
+    } else if (step.stepType === WizardStepType.REPORT && !!this.trackRecordId) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * getStepIsIndicator
+   *
+   * Template utility for setting 'indicator-orb' class on the step orbs
+   * @param { number } stepIndex - the WizardStep index
+   *
+   * @returns boolean
+   **/
+  getStepIsIndicator(stepIndex: number): boolean {
+    if (this.getIsProgressTrack(stepIndex)) {
+      return true;
+    }
+    if (this.wizardConf[stepIndex].stepType === WizardStepType.REPORT) {
+      return !!this.trackRecordId;
+    }
+    return this.formUpload.disabled;
+  }
+
+  /**
    * getIsProgressTrack
    * Returns if the WizardStep at the given conf index's stepType is PROGRESS_TRACK
    *
@@ -234,6 +296,38 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   getIsProgressTrack(stepIndex: number): boolean {
     return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
+  }
+
+  /**
+   * getIsRecordTrack
+   * Returns if the WizardStep at the given conf index's stepType is REPORT
+   *
+   * @param { number } stepIndex - the config index to evaluate
+   * @returns boolean
+   **/
+  getIsRecordTrack(stepIndex: number): boolean {
+    return this.wizardConf[stepIndex].stepType === WizardStepType.REPORT;
+  }
+
+  /**
+   * getIsProgressTrackOrReport
+   * Returns true if the WizardStep at currentIndex is PROGRESS_TRACK in REPORT
+   *
+   * @returns boolean
+   **/
+  getIsProgressTrackOrReport(stepIndex?: number): boolean {
+    const index = stepIndex ? stepIndex : this.currentStepIndex;
+    return this.getIsRecordTrack(index) || this.getIsProgressTrack(index);
+  }
+
+  /**
+   * getRecordFormVisible
+   * Returns true if trackDatasetId is defined and if the WizardStep at currentIndex is PROGRESS_TRACK in REPORT
+   *
+   * @returns boolean
+   **/
+  getRecordFormVisible(): boolean {
+    return !!this.trackDatasetId && this.getIsProgressTrackOrReport();
   }
 
   /**
@@ -258,7 +352,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.buildForms();
       }
     }
-    this.orbsHidden = false;
+    if (stepIndex < this.stepIndexProgress) {
+      this.orbsHidden = false;
+    }
     this.currentStepIndex = stepIndex;
   }
 
@@ -269,10 +365,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns boolean
    **/
   canGoToPrevious(): boolean {
-    if ([1, 2].includes(this.currentStepIndex)) {
+    if (this.currentStepIndex > 0 && this.currentStepIndex < this.stepIndexProgress) {
       return true;
     }
-    return this.currentStepIndex === 3 && this.formUpload.disabled;
+    return this.currentStepIndex === this.stepIndexProgress && this.formUpload.disabled;
   }
 
   /**
@@ -282,10 +378,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns boolean
    **/
   canGoToNext(): boolean {
-    if (this.currentStepIndex === 2) {
+    if (this.currentStepIndex === this.stepIndexProgress - 1) {
       return this.formUpload.disabled;
     } else {
-      return this.currentStepIndex < this.wizardConf.length - 1;
+      return this.currentStepIndex < this.stepIndexProgress;
     }
   }
 
@@ -298,6 +394,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const sub = timer(this.resetBusyDelay).subscribe(() => {
       this.isBusy = false;
       this.isBusyProgress = false;
+      this.isBusyReport = false;
       this.isPolling = false;
       sub.unsubscribe();
     });
@@ -310,6 +407,22 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   progressComplete(): boolean {
     return this.progressData && this.progressData.status === DatasetStatus.COMPLETED;
+  }
+
+  /**
+   * onSubmitRecord
+   * Submits the formRecord data if valid
+   *
+   **/
+  onSubmitRecord(): void {
+    this.trackRecordId = this.formRecord.value.recordToTrack;
+    this.isBusyReport = true;
+
+    const fn = (): void => {
+      this.isBusyReport = false;
+    };
+
+    setTimeout(fn, 1000);
   }
 
   /**
@@ -360,7 +473,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   fillAndSubmitProgressForm(): void {
     (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
     this.onSubmitProgress();
-    this.currentStepIndex = this.wizardConf.length - 1;
+    this.currentStepIndex = this.stepIndexProgress;
   }
 
   /**

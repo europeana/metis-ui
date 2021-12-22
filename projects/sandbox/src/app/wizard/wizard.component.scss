@@ -186,6 +186,7 @@ select {
   }
 
   &.progress-orb::before,
+  &.report-orb::before,
   &.submitted-orb::before {
     background: svg-url-icon-tick('#{$white}') center 75% / 75% no-repeat $eu-jade-light;
   }
@@ -295,6 +296,21 @@ select {
     &.progress-orb:active::after {
       background-image: svg-url-icon-dataset('#{$eu-light-orange}');
     }
+
+    &.report-orb::after {
+      background: svg-url-icon-report('#{$white}') center / 1.5rem no-repeat;
+      content: '';
+      height: 100%;
+      width: 100%;
+    }
+
+    &.report-orb:hover::after {
+      background-image: svg-url-icon-report('#000');
+    }
+
+    &.report-orb:active::after {
+      background-image: svg-url-icon-report('#{$eu-light-orange}');
+    }
   }
 
   &.is-active.is-set {
@@ -317,10 +333,11 @@ select {
 }
 
 .orbs-hidden {
-  .orb-container:not(.progress-orb-container) .orb-status.labelled {
+  .orb-container:not(.progress-orb-container, .report-orb-container) .orb-status.labelled {
     display: none;
   }
 
+  .report-orb-container,
   .progress-orb-container {
     flex-basis: 100%;
     text-align: center;

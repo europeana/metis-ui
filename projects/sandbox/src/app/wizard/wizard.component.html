@@ -26,6 +26,9 @@
         >
           Track Dataset Processing
         </ng-container>
+        <ng-container *ngSwitchCase="EnumWizardStepType.REPORT" i18n="upload step title@@report">
+          Record Report
+        </ng-container>
       </label>
     </ng-container>
 
@@ -34,7 +37,9 @@
         *ngFor="let stepConf of wizardConf; let i = index"
         class="orb-container"
         [ngClass]="{
-          'progress-orb-container': stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK
+          'progress-orb-container': getIsProgressTrack(i),
+          'report-orb-container': getIsRecordTrack(i),
+          hidden: getIsRecordTrack(i) && !trackRecordId
         }"
       >
         <a
@@ -43,15 +48,17 @@
             'is-set': stepIsComplete(i),
             'is-active': currentStepIndex === i,
             'orb-square': getStepIsSubmittable(stepConf),
-            'progress-orb': stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK,
-            'indicator-orb':
-              stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK || this.formUpload.disabled,
-            'submitted-orb':
-              this.formUpload.disabled && stepConf.stepType !== EnumWizardStepType.PROGRESS_TRACK,
-            spinner:
-              stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK ? isBusyProgress : isBusy,
+            'progress-orb': getIsProgressTrack(i),
+            'report-orb': getIsRecordTrack(i),
+            'indicator-orb': getStepIsIndicator(i),
+            'submitted-orb': getStepIsSubmitted(stepConf),
+            spinner: getIsProgressTrack(i)
+              ? isBusyProgress
+              : getIsRecordTrack(i)
+              ? isBusyReport
+              : isBusy,
             'indicate-complete': progressComplete(),
-            'indicate-polling': isPolling && stepConf.stepType === EnumWizardStepType.PROGRESS_TRACK
+            'indicate-polling': isPolling && getIsProgressTrack(i)
           }"
           class="orb-status labelled"
           [attr.data-label]="i + 1"
@@ -61,7 +68,12 @@
   </div>
   <div class="wizard-content">
     <form [formGroup]="formUpload">
-      <div [ngClass]="{ active: currentStepIndex === 0 }" class="form-group wizard-section">
+      <div
+        [ngClass]="{
+          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_NAME
+        }"
+        class="form-group wizard-section"
+      >
         <label for="name" i18n="name label">Name</label>
         <input id="name" formControlName="name" autocomplete="off" />
         <span class="field-errors" *ngIf="formUpload.get('name')?.errors?.invalid">
@@ -71,7 +83,12 @@
         </span>
       </div>
 
-      <div [ngClass]="{ active: currentStepIndex === 1 }" class="form-group wizard-section">
+      <div
+        [ngClass]="{
+          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_LANG_LOCATION
+        }"
+        class="form-group wizard-section"
+      >
         <label for="country" i18n="country label">Country</label>
         <select id="country" formControlName="country">
           <option *ngFor="let option of countryList" [ngValue]="option.name">{{
@@ -80,7 +97,12 @@
         </select>
       </div>
 
-      <div [ngClass]="{ active: currentStepIndex === 1 }" class="form-group wizard-section">
+      <div
+        [ngClass]="{
+          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_LANG_LOCATION
+        }"
+        class="form-group wizard-section"
+      >
         <label for="language" i18n="language label">Language</label>
         <select id="language" formControlName="language">
           <option *ngFor="let option of languageList" [ngValue]="option.name">{{
@@ -89,7 +111,12 @@
         </select>
       </div>
 
-      <div [ngClass]="{ active: currentStepIndex === 2 }" class="form-group wizard-section">
+      <div
+        [ngClass]="{
+          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROTOCOL_SELECT
+        }"
+        class="form-group wizard-section"
+      >
         <lib-protocol-field-set
           #protocolFields
           [protocolForm]="formUpload"
@@ -120,7 +147,9 @@
     </form>
 
     <form
-      [ngClass]="{ active: currentStepIndex === 3 }"
+      [ngClass]="{
+        active: getIsProgressTrack(currentStepIndex)
+      }"
       [formGroup]="formProgress"
       (ngSubmit)="onSubmitProgress()"
       class="wizard-section"
@@ -157,8 +186,40 @@
       </div>
     </form>
 
+    <div
+      [ngClass]="{ active: getIsRecordTrack(currentStepIndex) }"
+      [formGroup]="formRecord"
+      class="wizard-section"
+    >
+      <div class="form-group">
+        Hello!
+        <br />
+        <br />
+        The report for {{ trackRecordId }} will go here
+      </div>
+    </div>
+
+    <form [formGroup]="formRecord" *ngIf="getRecordFormVisible()" (ngSubmit)="onSubmitRecord()">
+      <div class="form-group">
+        <label i18n="track id label">Enter the id of a record</label>
+        <div class="submit-track-id">
+          <input formControlName="recordToTrack" data-e2e="recordToTrack" autocomplete="off" />
+          <button
+            [ngClass]="{ hidden: false }"
+            [disabled]="!formRecord.valid"
+            class="submit"
+            i18n="report button|submits the record id button@@submitRecordId"
+            data-e2e="submitRecord"
+            type="submit"
+          >
+            report
+          </button>
+        </div>
+      </div>
+    </form>
+
     <form class="buttons" [formGroup]="formUpload">
-      <ng-container *ngIf="getIsProgressTrack(currentStepIndex)">
+      <ng-container *ngIf="getIsProgressTrackOrReport()">
         <label class="inline-text" i18n="create link link@@createLinkInternal"
           >Or
           <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
@@ -167,7 +228,7 @@
         >
       </ng-container>
       <button
-        [ngClass]="{ hidden: orbsHidden || getIsProgressTrack(currentStepIndex) }"
+        [ngClass]="{ hidden: orbsHidden || getIsProgressTrackOrReport(currentStepIndex) }"
         [disabled]="!formUpload.valid"
         data-e2e="submit-upload"
         class="submit"
