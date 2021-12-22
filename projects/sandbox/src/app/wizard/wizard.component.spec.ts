@@ -2,7 +2,9 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
+import { ActivatedRoute, Params } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BehaviorSubject, of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
@@ -18,13 +20,19 @@ describe('WizardComponent', () => {
   const testFile = new File([], 'file.zip', { type: 'zip' });
 
   const configureTestbed = (errorMode = false): void => {
+    const params = new BehaviorSubject({} as Params);
+
     TestBed.configureTestingModule({
       declarations: [WizardComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule],
+      imports: [HttpClientTestingModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
         {
           provide: SandboxService,
           useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: { params: params }
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

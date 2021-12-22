@@ -51,6 +51,22 @@ context('Sandbox', () => {
       cy.get(selPortalLinks).should('have.length', 1);
     });
 
+    it('should show the complete progress on navigation', () => {
+      cy.get(selectorProgressTitle).should('have.length', 0);
+      cy.get(selectorProgressTitleComplete).should('have.length', 0);
+      cy.get(selCountryLang).should('have.length', 0);
+      cy.get(selCreationDate).should('have.length', 0);
+      cy.get(selPortalLinks).should('have.length', 0);
+
+      cy.visit('/1');
+
+      cy.get(selectorProgressTitle).should('have.length', 1);
+      cy.get(selectorProgressTitleComplete).should('have.length', 1);
+      cy.get(selCountryLang).should('have.length', 1);
+      cy.get(selCreationDate).should('have.length', 1);
+      cy.get(selPortalLinks).should('have.length', 1);
+    });
+
     it('should show network errors', () => {
       cy.get(selectorErrors).should('have.length', 0);
       cy.get(selectorInputTrackId)

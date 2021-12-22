@@ -1,5 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -28,7 +29,7 @@ import { SandboxService } from '../_services';
   templateUrl: './wizard.component.html',
   styleUrls: ['./wizard.component.scss']
 })
-export class WizardComponent extends DataPollingComponent {
+export class WizardComponent extends DataPollingComponent implements OnInit {
   @ViewChild(ProtocolFieldSetComponent, { static: true })
   protocolFields: ProtocolFieldSetComponent;
   @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
@@ -78,7 +79,11 @@ export class WizardComponent extends DataPollingComponent {
   ];
   currentStepIndex = this.wizardConf.length - 1;
 
-  constructor(private readonly fb: FormBuilder, private readonly sandbox: SandboxService) {
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly sandbox: SandboxService,
+    private readonly route: ActivatedRoute
+  ) {
     super();
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
@@ -91,6 +96,20 @@ export class WizardComponent extends DataPollingComponent {
       })
     );
     this.buildForms();
+  }
+
+  /**
+   * ngOnInit
+   * handle route parameters
+   **/
+  ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      const preloadId = params.id;
+      if (preloadId) {
+        this.trackDatasetId = preloadId;
+        this.fillAndSubmitProgressForm();
+      }
+    });
   }
 
   /**
@@ -333,12 +352,12 @@ export class WizardComponent extends DataPollingComponent {
   }
 
   /**
-   * onDataSubmissionComplete
+   * fillAndSubmitProgressForm
    * sets the idToTrack value in the progress form
    * submits the progress form
    * sets currentStepIndex to its max value
    **/
-  onDataSubmissionComplete(): void {
+  fillAndSubmitProgressForm(): void {
     (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
     this.onSubmitProgress();
     this.currentStepIndex = this.wizardConf.length - 1;
@@ -364,11 +383,11 @@ export class WizardComponent extends DataPollingComponent {
 
             if (res.body) {
               this.trackDatasetId = res.body['dataset-id'];
-              this.onDataSubmissionComplete();
+              this.fillAndSubmitProgressForm();
               console.log('response has body >>> ' + this.trackDatasetId);
             } else if (form.value.url || form.value.harvestUrl) {
               this.trackDatasetId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
-              this.onDataSubmissionComplete();
+              this.fillAndSubmitProgressForm();
               console.log('response has NO body >>> ' + this.trackDatasetId);
             }
           },
