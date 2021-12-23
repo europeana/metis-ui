@@ -44,6 +44,16 @@ export enum DatasetStatus {
   'IN_PROGRESS' = 'in progress'
 }
 
+export enum ReportStatus {
+  'COMPLETED' = 'completed',
+  'IN_PROGRESS' = 'in progress'
+}
+
+export interface Report {
+  status: ReportStatus;
+  summary: string;
+}
+
 export interface DatasetInfo {
   'creation-date': string;
   'dataset-id': string;

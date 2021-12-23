@@ -18,6 +18,8 @@ import {
   DatasetStatus,
   FieldOption,
   FixedLengthArray,
+  Report,
+  ReportStatus,
   SubmissionResponseData,
   SubmissionResponseDataWrapped,
   WizardStep,
@@ -50,6 +52,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData?: Dataset;
+  report?: Report;
   trackDatasetId?: string;
   trackRecordId?: string;
   countryList: Array<FieldOption>;
@@ -118,9 +121,14 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      const preloadId = params.id;
-      if (preloadId) {
-        this.trackDatasetId = preloadId;
+      const preloadDatasetId = params.id;
+      const preloadRecordId = params.recordId;
+      if (preloadDatasetId && preloadRecordId) {
+        this.trackDatasetId = preloadDatasetId;
+        this.trackRecordId = preloadRecordId;
+        this.fillAndSubmitRecordForm();
+      } else if (preloadDatasetId) {
+        this.trackDatasetId = preloadDatasetId;
         this.fillAndSubmitProgressForm();
       } else {
         this.setStep(this.stepIndexProgress, true);
@@ -143,10 +151,17 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         const ids = url.split('/').filter((s: string) => {
           return s.length > 0;
         });
-        if (ids.length > 0) {
+        if (ids.length === 1) {
           this.trackDatasetId = ids[0];
           (this.formProgress.get('idToTrack') as FormControl).setValue(ids[0]);
           this.onSubmitProgress();
+        }
+        if (ids.length === 2) {
+          this.trackDatasetId = ids[0];
+          this.trackRecordId = ids[1];
+          (this.formProgress.get('idToTrack') as FormControl).setValue(ids[0]);
+          (this.formRecord.get('recordToTrack') as FormControl).setValue(ids[1]);
+          this.onSubmitRecord();
         }
       }
     });
@@ -339,7 +354,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
   /**
    * getIsProgressTrackOrReport
-   * Returns true if the WizardStep at currentIndex is PROGRESS_TRACK in REPORT
+   * Returns true if the WizardStep at currentStepIndex is PROGRESS_TRACK in REPORT
    *
    * @returns boolean
    **/
@@ -350,7 +365,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
   /**
    * getRecordFormVisible
-   * Returns true if trackDatasetId is defined and if the WizardStep at currentIndex is PROGRESS_TRACK in REPORT
+   * Returns true if trackDatasetId is defined and if the WizardStep at currentStepIndex is PROGRESS_TRACK in REPORT
    *
    * @returns boolean
    **/
@@ -434,19 +449,48 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
+   * reportComplete
+   * Template utility to determine if the report is complete
+   *
+   **/
+  reportComplete(): boolean {
+    return !!this.report && this.report.status === ReportStatus.COMPLETED;
+  }
+
+  /**
    * onSubmitRecord
    * Submits the formRecord data if valid
    *
    **/
-  onSubmitRecord(): void {
-    this.trackRecordId = this.formRecord.value.recordToTrack;
-    this.isBusyReport = true;
+  onSubmitRecord(updateLocation = false): void {
+    const form = this.formRecord;
 
-    const fn = (): void => {
-      this.isBusyReport = false;
-    };
+    if (form.valid) {
+      this.trackRecordId = this.formRecord.value.recordToTrack;
+      this.trackDatasetId = this.formProgress.value.idToTrack;
+      this.isBusyReport = true;
 
-    setTimeout(fn, 1000);
+      if (updateLocation) {
+        const newPath = `/${this.trackDatasetId}/${this.trackRecordId}`;
+
+        // avoid pushing duplicate states to history
+        if (this.location.path() !== newPath) {
+          this.location.go(newPath);
+        }
+      }
+
+      this.currentStepIndex = this.wizardConf.length - 1;
+
+      const fn = (): void => {
+        this.report = {
+          status: ReportStatus.COMPLETED,
+          summary: 'report summary goes here'
+        } as Report;
+        this.isBusyReport = false;
+      };
+
+      setTimeout(fn, 1000);
+    }
   }
 
   /**
@@ -485,7 +529,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             const newPath = `/${this.trackDatasetId}`;
             // avoid pushing duplicate states to history
             if (this.location.path() !== newPath) {
-              this.location.go(`/${this.trackDatasetId}`);
+              this.location.go(newPath);
             }
           }
         },
@@ -508,6 +552,19 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
     this.onSubmitProgress(true);
     this.currentStepIndex = this.stepIndexProgress;
+  }
+
+  /**
+   * fillAndSubmitRecordForm
+   * sets the recordToTrack value in the record form
+   * submits the record form
+   * sets currentStepIndex to the report
+   **/
+  fillAndSubmitRecordForm(): void {
+    (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
+    (this.formRecord.get('recordToTrack') as FormControl).setValue(this.trackRecordId);
+    this.onSubmitRecord(true);
+    this.currentStepIndex = this.wizardConf.length - 1;
   }
 
   /**

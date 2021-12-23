@@ -57,7 +57,9 @@
               : getIsRecordTrack(i)
               ? isBusyReport
               : isBusy,
-            'indicate-complete': progressComplete(),
+            'indicate-complete':
+              (getIsProgressTrack(i) && progressComplete()) ||
+              (getIsRecordTrack(i) && reportComplete()),
             'indicate-polling': isPolling && getIsProgressTrack(i)
           }"
           class="orb-status labelled"
@@ -196,10 +198,14 @@
         <br />
         <br />
         The report for {{ trackRecordId }} will go here
+        <br />
+        <span *ngIf="report">
+          {{ report.summary }}
+        </span>
       </div>
     </div>
 
-    <form [formGroup]="formRecord" *ngIf="getRecordFormVisible()" (ngSubmit)="onSubmitRecord()">
+    <form [formGroup]="formRecord" *ngIf="getRecordFormVisible()" (ngSubmit)="onSubmitRecord(true)">
       <div class="form-group">
         <label i18n="track id label">Enter the id of a record</label>
         <div class="submit-track-id">
@@ -220,12 +226,27 @@
 
     <form class="buttons" [formGroup]="formUpload">
       <ng-container *ngIf="getIsProgressTrackOrReport()">
-        <label class="inline-text" i18n="create link link@@createLinkInternal"
-          >Or
-          <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
-            >create a new dataset</a
-          ></label
-        >
+        <ul>
+          <li *ngIf="getIsRecordTrack(currentStepIndex)">
+            <label class="inline-text"
+              >Or
+              <a
+                class="link-internal"
+                (click)="fillAndSubmitProgressForm()"
+                data-e2e="link-track-form"
+                >track a dataset</a
+              ></label
+            >
+          </li>
+          <li>
+            <label class="inline-text" i18n="create link link@@createLinkInternal"
+              >Or
+              <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
+                >create a new dataset</a
+              ></label
+            >
+          </li>
+        </ul>
       </ng-container>
       <button
         [ngClass]="{ hidden: orbsHidden || getIsProgressTrackOrReport(currentStepIndex) }"
