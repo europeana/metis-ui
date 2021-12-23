@@ -332,7 +332,7 @@ select {
   }
 }
 
-.orbs-hidden {
+.dataset-orbs-hidden {
   .orb-container:not(.progress-orb-container, .report-orb-container) .orb-status.labelled {
     display: none;
   }

@@ -240,10 +240,10 @@ describe('WizardComponent', () => {
       const form = component.formUpload;
 
       spyOn(form, 'enable');
-      expect(component.orbsHidden).toBeTruthy();
+      expect(component.datasetOrbsHidden).toBeTruthy();
       expect(component.currentStepIndex).toEqual(3);
       component.setStep(0);
-      expect(component.orbsHidden).toBeFalsy();
+      expect(component.datasetOrbsHidden).toBeFalsy();
       expect(component.currentStepIndex).toEqual(0);
       expect(form.enable).not.toHaveBeenCalled();
       component.setStep(0, true);

@@ -48,7 +48,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   isBusyProgress = false;
   isBusyReport = false;
   isPolling = false;
-  orbsHidden = true;
+  datasetOrbsHidden = true;
+  progressOrbHidden = false;
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData?: Dataset;
@@ -126,6 +127,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       if (preloadDatasetId && preloadRecordId) {
         this.trackDatasetId = preloadDatasetId;
         this.trackRecordId = preloadRecordId;
+        this.progressOrbHidden = true;
         this.fillAndSubmitRecordForm();
       } else if (preloadDatasetId) {
         this.trackDatasetId = preloadDatasetId;
@@ -375,7 +377,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
   /**
    * setStep
-   * Sets the currentStepIndex and sets orbsHidden to false.
+   * Sets the currentStepIndex and sets datasetOrbsHidden to false.
    * Optionally resets the form
    *
    * @param { number } stepIndex - the value to set
@@ -392,8 +394,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       }
     }
     if (stepIndex < this.stepIndexProgress) {
-      this.orbsHidden = false;
+      this.datasetOrbsHidden = false;
     }
+    this.progressOrbHidden = false;
     this.currentStepIndex = stepIndex;
   }
 
@@ -552,6 +555,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
     this.onSubmitProgress(true);
     this.currentStepIndex = this.stepIndexProgress;
+    this.progressOrbHidden = false;
   }
 
   /**

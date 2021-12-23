@@ -1,5 +1,5 @@
 <div class="wizard">
-  <div class="wizard-head" [ngClass]="{ 'orbs-hidden': orbsHidden }">
+  <div class="wizard-head" [ngClass]="{ 'dataset-orbs-hidden': datasetOrbsHidden }">
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <label *ngIf="currentStepIndex === i">
         <ng-container
@@ -39,7 +39,8 @@
         [ngClass]="{
           'progress-orb-container': getIsProgressTrack(i),
           'report-orb-container': getIsRecordTrack(i),
-          hidden: getIsRecordTrack(i) && !trackRecordId
+          hidden:
+            (getIsRecordTrack(i) && !trackRecordId) || (getIsProgressTrack(i) && progressOrbHidden)
         }"
       >
         <a
@@ -249,7 +250,7 @@
         </ul>
       </ng-container>
       <button
-        [ngClass]="{ hidden: orbsHidden || getIsProgressTrackOrReport(currentStepIndex) }"
+        [ngClass]="{ hidden: datasetOrbsHidden || getIsProgressTrackOrReport(currentStepIndex) }"
         [disabled]="!formUpload.valid"
         data-e2e="submit-upload"
         class="submit"
@@ -259,7 +260,7 @@
         Submit
       </button>
 
-      <div [ngClass]="{ hidden: orbsHidden }">
+      <div [ngClass]="{ hidden: datasetOrbsHidden }">
         <button
           class="orb-status labelled previous"
           [ngClass]="{ hidden: !canGoToPrevious() }"
