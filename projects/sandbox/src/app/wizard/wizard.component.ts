@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Location, PopStateEvent } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -48,9 +49,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   orbsHidden = true;
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
-  progressData: Dataset;
-  trackDatasetId: string;
-  trackRecordId: string;
+  progressData?: Dataset;
+  trackDatasetId?: string;
+  trackRecordId?: string;
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
   wizardConf: FixedLengthArray<WizardStep, 5> = [
@@ -94,7 +95,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   constructor(
     private readonly fb: FormBuilder,
     private readonly sandbox: SandboxService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly location: Location
   ) {
     super();
     this.subs.push(
@@ -120,6 +122,32 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       if (preloadId) {
         this.trackDatasetId = preloadId;
         this.fillAndSubmitProgressForm();
+      } else {
+        this.setStep(this.stepIndexProgress, true);
+      }
+    });
+
+    // capture "back" and "forward" events
+    this.location.subscribe((state: PopStateEvent) => {
+      const url = state.url;
+      if (url === '') {
+        // clear the data, form data, pollers / set step to progress
+        this.progressData = undefined;
+        this.trackDatasetId = '';
+        this.trackRecordId = '';
+        this.buildForms();
+        this.clearDataPollers();
+        this.setStep(this.stepIndexProgress, true);
+      } else if (url) {
+        // parse the url, set form data and submit
+        const ids = url.split('/').filter((s: string) => {
+          return s.length > 0;
+        });
+        if (ids.length > 0) {
+          this.trackDatasetId = ids[0];
+          (this.formProgress.get('idToTrack') as FormControl).setValue(ids[0]);
+          this.onSubmitProgress();
+        }
       }
     });
   }
@@ -263,10 +291,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.formUpload.disabled
     ) {
       return true;
-    } else if (step.stepType === WizardStepType.REPORT && !!this.trackRecordId) {
-      return true;
+    } else if (step.stepType === WizardStepType.REPORT) {
+      return !!this.trackRecordId;
     }
-    return false;
+    return !!this.trackDatasetId;
   }
 
   /**
@@ -343,12 +371,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       const form = this.getFormGroup(this.wizardConf[stepIndex]);
       if (form.disabled) {
         form.enable();
-        if (this.protocolFields) {
-          this.protocolFields.clearFileValue();
-        }
-        if (this.xslFileField) {
-          this.xslFileField.clearFileValue();
-        }
+        this.protocolFields.clearFileValue();
+        this.xslFileField.clearFileValue();
         this.buildForms();
       }
     }
@@ -406,7 +430,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    *
    **/
   progressComplete(): boolean {
-    return this.progressData && this.progressData.status === DatasetStatus.COMPLETED;
+    return !!this.progressData && this.progressData.status === DatasetStatus.COMPLETED;
   }
 
   /**
@@ -430,7 +454,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * Submits the formProgress data if valid
    *
    **/
-  onSubmitProgress(): void {
+  onSubmitProgress(updateLocation = false): void {
     const form = this.formProgress;
 
     if (form.valid) {
@@ -449,11 +473,21 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         (progressInfo: Dataset) => {
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;
+
           if (this.progressComplete()) {
             this.clearDataPollers();
+            this.resetBusy();
           }
-          this.resetBusy();
+
           this.error = undefined;
+
+          if (updateLocation) {
+            const newPath = `/${this.trackDatasetId}`;
+            // avoid pushing duplicate states to history
+            if (this.location.path() !== newPath) {
+              this.location.go(`/${this.trackDatasetId}`);
+            }
+          }
         },
         (err: HttpErrorResponse) => {
           this.error = err;
@@ -467,12 +501,12 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   /**
    * fillAndSubmitProgressForm
    * sets the idToTrack value in the progress form
-   * submits the progress form
-   * sets currentStepIndex to its max value
+   * submits the progress form (flags to update window location)
+   * sets currentStepIndex to track the progress
    **/
   fillAndSubmitProgressForm(): void {
     (this.formProgress.get('idToTrack') as FormControl).setValue(this.trackDatasetId);
-    this.onSubmitProgress();
+    this.onSubmitProgress(true);
     this.currentStepIndex = this.stepIndexProgress;
   }
 
@@ -497,11 +531,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             if (res.body) {
               this.trackDatasetId = res.body['dataset-id'];
               this.fillAndSubmitProgressForm();
-              console.log('response has body >>> ' + this.trackDatasetId);
             } else if (form.value.url || form.value.harvestUrl) {
               this.trackDatasetId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
               this.fillAndSubmitProgressForm();
-              console.log('response has NO body >>> ' + this.trackDatasetId);
             }
           },
           (err: HttpErrorResponse): void => {

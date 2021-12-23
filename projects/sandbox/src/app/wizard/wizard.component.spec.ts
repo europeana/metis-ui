@@ -6,7 +6,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ProtocolType } from 'shared';
+import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockDataset, MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
@@ -18,12 +18,11 @@ describe('WizardComponent', () => {
   let fixture: ComponentFixture<WizardComponent>;
   let sandbox: SandboxService;
   const testFile = new File([], 'file.zip', { type: 'zip' });
+  const params = new BehaviorSubject({} as Params);
 
   const configureTestbed = (errorMode = false): void => {
-    const params = new BehaviorSubject({} as Params);
-
     TestBed.configureTestingModule({
-      declarations: [WizardComponent],
+      declarations: [FileUploadComponent, ProtocolFieldSetComponent, WizardComponent],
       imports: [HttpClientTestingModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
         {
@@ -43,6 +42,7 @@ describe('WizardComponent', () => {
   const b4Each = (): void => {
     fixture = TestBed.createComponent(WizardComponent);
     component = fixture.componentInstance;
+    params.next({});
     fixture.detectChanges();
   };
 
@@ -62,6 +62,13 @@ describe('WizardComponent', () => {
 
     it('should create', () => {
       expect(component).toBeTruthy();
+    });
+
+    it('should subscribe to parameter changes', () => {
+      expect(component.trackDatasetId).toBeFalsy();
+      params.next({ id: '1' });
+      fixture.detectChanges();
+      expect(component.trackDatasetId).toBeTruthy();
     });
 
     it('should get the form group', () => {
@@ -162,6 +169,27 @@ describe('WizardComponent', () => {
       assertSubmittable(false);
     });
 
+    it('should tell if the steps are submitted', () => {
+      const conf = component.wizardConf;
+      [0, 1, 2].forEach((n: number) => {
+        expect(component.getStepIsSubmitted(conf[n])).toBeFalsy();
+      });
+      component.formUpload.disable();
+      [0, 1, 2].forEach((n: number) => {
+        expect(component.getStepIsSubmitted(conf[n])).toBeTruthy();
+      });
+
+      component.trackDatasetId = undefined;
+      expect(component.getStepIsSubmitted(conf[3])).toBeFalsy();
+      component.trackDatasetId = '123';
+      expect(component.getStepIsSubmitted(conf[3])).toBeTruthy();
+
+      component.trackRecordId = undefined;
+      expect(component.getStepIsSubmitted(conf[4])).toBeFalsy();
+      component.trackRecordId = '123';
+      expect(component.getStepIsSubmitted(conf[4])).toBeTruthy();
+    });
+
     it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
       spyOn(component, 'clearDataPollers');
       component.onSubmitProgress();
@@ -210,6 +238,7 @@ describe('WizardComponent', () => {
 
     it('should set the step', () => {
       const form = component.formUpload;
+
       spyOn(form, 'enable');
       expect(component.orbsHidden).toBeTruthy();
       expect(component.currentStepIndex).toEqual(3);
