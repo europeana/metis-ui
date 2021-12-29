@@ -1,6 +1,7 @@
-import { fillUploadForm } from '../support/helpers';
+import { fillProgressForm, fillUploadForm } from '../support/helpers';
 import {
   selectorBtnSubmitData,
+  selectorBtnSubmitProgress,
   selectorErrors,
   selectorInputTrackId,
   selectorLinkDatasetForm,
@@ -14,7 +15,6 @@ context('Sandbox', () => {
       cy.visit('/');
     });
 
-    const selectorSubmit = '[data-e2e="submitProgress"]';
     const selectorProgressTitleComplete = selectorProgressTitle + '.complete';
     const selReachedDataLimit = '[data-e2e="warn-limit-reached"]';
     const selectorWarnPresent = '.orb-status.labelled.warn';
@@ -30,8 +30,8 @@ context('Sandbox', () => {
 
     it('should show the input and submit button', () => {
       cy.get(selectorInputTrackId).should('have.length', 1);
-      cy.get(selectorSubmit).should('have.length', 1);
-      cy.get(selectorSubmit).should('be.disabled');
+      cy.get(selectorBtnSubmitProgress).should('have.length', 1);
+      cy.get(selectorBtnSubmitProgress).should('be.disabled');
     });
 
     it('should show the complete progress on submit', () => {
@@ -40,10 +40,9 @@ context('Sandbox', () => {
       cy.get(selCountryLang).should('have.length', 0);
       cy.get(selCreationDate).should('have.length', 0);
       cy.get(selPortalLinks).should('have.length', 0);
-      cy.get(selectorInputTrackId)
-        .clear()
-        .type('1');
-      cy.get(selectorSubmit).click();
+
+      fillProgressForm('1');
+
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleComplete).should('have.length', 1);
       cy.get(selCountryLang).should('have.length', 1);
@@ -69,53 +68,36 @@ context('Sandbox', () => {
 
     it('should show network errors', () => {
       cy.get(selectorErrors).should('have.length', 0);
-      cy.get(selectorInputTrackId)
-        .clear()
-        .type('404');
-      cy.get(selectorSubmit).click();
-      cy.get(selectorSubmit).should('have.length', 1);
-      cy.get(selectorInputTrackId)
-        .clear()
-        .type('500');
+      fillProgressForm('404');
+      cy.get(selectorBtnSubmitProgress).should('have.length', 1);
+      cy.get(selectorInputTrackId).clear();
       cy.get(selectorErrors).should('have.length', 0);
-      cy.get(selectorSubmit).click();
+      fillProgressForm('500');
       cy.get(selectorErrors).should('have.length', 1);
     });
 
     it('should show the progress success', () => {
       cy.get(selectorSuccessPresent).should('have.length', 0);
-      cy.get(selectorInputTrackId)
-        .clear()
-        .type('100');
-      cy.get(selectorSubmit).click();
+      fillProgressForm('100');
       cy.get(selectorSuccessPresent).should('have.length', 9);
     });
 
     it('should show the progress warn', () => {
       cy.get(selectorWarnPresent).should('have.length', 0);
-      cy.get(selectorInputTrackId)
-        .clear()
-        .type('910');
-      cy.get(selectorSubmit).click();
+      fillProgressForm('910');
       cy.get(selectorWarnPresent).should('have.length', 9);
     });
 
     it('should show the progress fail', () => {
       cy.get(selectorFailPresent).should('have.length', 0);
-      cy.get(selectorInputTrackId)
-        .clear()
-        .type('101');
-      cy.get(selectorSubmit).click();
+      fillProgressForm('101');
       cy.get(selectorFailPresent).should('have.length', 9);
     });
 
     it('should show the progress errors', () => {
       cy.get(selectorErrorLink).should('have.length', 0);
       cy.get(selectorModalDisplay).should('not.be.visible');
-      cy.get(selectorInputTrackId)
-        .clear()
-        .type('10118');
-      cy.get(selectorSubmit).click();
+      fillProgressForm('10118');
       cy.get(selectorErrorLink).should('have.length', 1);
       cy.get(selectorErrorLink).click();
       cy.get(selectorModalDisplay).should('be.visible');

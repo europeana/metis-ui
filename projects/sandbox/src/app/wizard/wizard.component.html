@@ -32,42 +32,12 @@
       </label>
     </ng-container>
 
-    <ul class="wizard-status">
-      <li
-        *ngFor="let stepConf of wizardConf; let i = index"
-        class="orb-container"
-        [ngClass]="{
-          'progress-orb-container': getIsProgressTrack(i),
-          'report-orb-container': getIsRecordTrack(i),
-          hidden:
-            (getIsRecordTrack(i) && !trackRecordId) || (getIsProgressTrack(i) && progressOrbHidden)
-        }"
-      >
-        <a
-          (click)="setStep(i)"
-          [ngClass]="{
-            'is-set': stepIsComplete(i),
-            'is-active': currentStepIndex === i,
-            'orb-square': getStepIsSubmittable(stepConf),
-            'progress-orb': getIsProgressTrack(i),
-            'report-orb': getIsRecordTrack(i),
-            'indicator-orb': getStepIsIndicator(i),
-            'submitted-orb': getStepIsSubmitted(stepConf),
-            spinner: getIsProgressTrack(i)
-              ? isBusyProgress
-              : getIsRecordTrack(i)
-              ? isBusyReport
-              : isBusy,
-            'indicate-complete':
-              (getIsProgressTrack(i) && progressComplete()) ||
-              (getIsRecordTrack(i) && reportComplete()),
-            'indicate-polling': isPolling && getIsProgressTrack(i)
-          }"
-          class="orb-status labelled"
-          [attr.data-label]="i + 1"
-        ></a>
-      </li>
-    </ul>
+    <sb-navigation-orbs
+      [count]="wizardConf.length"
+      [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
+      [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
+      (clickEvent)="setStep($event)"
+    ></sb-navigation-orbs>
   </div>
   <div class="wizard-content">
     <form [formGroup]="formUpload">
@@ -161,7 +131,7 @@
         *ngIf="progressData"
         [progressData]="progressData"
         [datasetId]="trackDatasetId"
-        [isLoading]="isPolling"
+        [isLoading]="isPollingProgress"
       ></sb-progress-tracker>
 
       <div class="form-group">
@@ -193,17 +163,9 @@
       [ngClass]="{ active: getIsRecordTrack(currentStepIndex) }"
       [formGroup]="formRecord"
       class="wizard-section"
+      *ngIf="recordReport"
     >
-      <div class="form-group">
-        Hello!
-        <br />
-        <br />
-        The report for {{ trackRecordId }} will go here
-        <br />
-        <span *ngIf="report">
-          {{ report.summary }}
-        </span>
-      </div>
+      <sb-record-report [report]="recordReport"></sb-record-report>
     </div>
 
     <form [formGroup]="formRecord" *ngIf="getRecordFormVisible()" (ngSubmit)="onSubmitRecord(true)">
@@ -234,7 +196,7 @@
               <a
                 class="link-internal"
                 (click)="fillAndSubmitProgressForm()"
-                data-e2e="link-track-form"
+                data-e2e="link-progress-form"
                 >track a dataset</a
               ></label
             >
@@ -262,12 +224,12 @@
 
       <div [ngClass]="{ hidden: datasetOrbsHidden }">
         <button
-          class="orb-status labelled previous"
+          class="nav-orb labelled previous"
           [ngClass]="{ hidden: !canGoToPrevious() }"
           (click)="setStep(currentStepIndex - 1)"
         ></button>
         <button
-          class="orb-status labelled next"
+          class="nav-orb labelled next"
           [ngClass]="{ hidden: !canGoToNext() }"
           (click)="setStep(currentStepIndex + 1)"
         ></button>

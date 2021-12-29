@@ -1,0 +1,11 @@
+<ul class="wizard-status">
+  <li *ngFor="let step of steps" class="orb-container" [ngClass]="fnClassMapOuter(step)">
+    <a
+      (click)="clicked(step)"
+      [ngClass]="fnClassMapInner(step)"
+      class="nav-orb labelled"
+      [attr.data-label]="step + 1"
+      [attr.data-indicator]="_indicatorAttributes[step]"
+    ></a>
+  </li>
+</ul>

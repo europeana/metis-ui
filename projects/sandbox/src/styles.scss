@@ -38,6 +38,8 @@ $textcolour_highlight: $accent;
 @import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
+@import 'orbs';
+
 a {
   color: $eu-jade-dark;
   &.link-internal {
@@ -72,6 +74,30 @@ label {
 
 .header-wrapper header {
   height: $fixed-header-height;
+}
+
+.hidden {
+  display: none;
+}
+
+.portal-links {
+  a {
+    position: relative;
+    &::after {
+      background-image: svg-url-icon-external('#{$eu-jade-classic}');
+      background-repeat: no-repeat;
+      content: '';
+      display: block;
+      position: absolute;
+      height: 1em;
+      right: -1.35em;
+      top: 0.2em;
+      width: 1em;
+    }
+    &:hover::after {
+      background-image: svg-url-icon-external('#{$eu-jade-darkest}');
+    }
+  }
 }
 
 .wizard input[type='file'] {

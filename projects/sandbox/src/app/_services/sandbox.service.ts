@@ -6,6 +6,7 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
   FieldOption,
+  RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -36,6 +37,15 @@ export class SandboxService {
   getLanguages(): Observable<Array<FieldOption>> {
     const url = `${apiSettings.apiHost}/dataset/languages`;
     return this.http.get<Array<FieldOption>>(url);
+  }
+
+  /** getRecordReport
+  /*
+  /* request a record report from the server
+  */
+  getRecordReport(id: string): Observable<RecordReport> {
+    const url = `${apiSettings.apiHost}/record/${id}`;
+    return this.http.get<RecordReport>(url);
   }
 
   /** requestProgress
@@ -69,7 +79,8 @@ export class SandboxService {
     const oaiParameters = harvestUrlOAI
       ? `&metadataformat=${form.value.metadataFormat}&setspec=${form.value.setSpec}`
       : '';
-    const url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
+    let url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}`;
+    url += `?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
 
     const formData = new FormData();
     let fileAppended = false;

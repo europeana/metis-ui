@@ -43,23 +43,6 @@ $eu-jade-slightly-dark: #1ea072;
 .portal-links {
   margin-right: 1rem;
   text-align: right;
-  a {
-    position: relative;
-    &::after {
-      background-image: svg-url-icon-external('#{$eu-jade-classic}');
-      background-repeat: no-repeat;
-      content: '';
-      display: block;
-      position: absolute;
-      height: 1em;
-      right: -1.35em;
-      top: 0.2em;
-      width: 1em;
-    }
-    &:hover::after {
-      background-image: svg-url-icon-external('#{$eu-jade-darkest}');
-    }
-  }
 }
 
 .wrapper {

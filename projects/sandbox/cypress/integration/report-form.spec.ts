@@ -1,4 +1,10 @@
-import { selectorLinkDatasetForm } from '../support/selectors';
+import {
+  selectorBtnSubmitRecord,
+  selectorInputRecordId,
+  selectorLinkDatasetForm,
+  selectorLinkProgressForm,
+  selectorProgressOrb
+} from '../support/selectors';
 
 context('Sandbox', () => {
   describe('Report Form', () => {
@@ -7,15 +13,12 @@ context('Sandbox', () => {
       cy.visit('/1/2');
     });
 
-    const selectorSubmit = '[data-e2e="submitRecord"]';
-    const selectorInputRecordId = '[data-e2e="recordToTrack"]';
-    const selectorLinkTrackForm = '[data-e2e="link-track-form"]';
-    const selectorProgressOrb = '.orb-status.progress-orb';
-    const selectorDatasetOrb = '.wizard-status .orb-status:not(.progress-orb, .report-orb)';
+    const force = { force: true };
+    const selectorDatasetOrb = '.wizard-status .nav-orb:not(.progress-orb, .report-orb)';
 
     it('should show the input and submit button', () => {
-      cy.get(selectorSubmit).should('have.length', 1);
-      cy.get(selectorSubmit).should('not.be.disabled');
+      cy.get(selectorBtnSubmitRecord).should('have.length', 1);
+      cy.get(selectorBtnSubmitRecord).should('not.be.disabled');
       cy.get(selectorInputRecordId).should('have.value', '2');
     });
 
@@ -23,24 +26,34 @@ context('Sandbox', () => {
       cy.get(selectorProgressOrb)
         .filter(':visible')
         .should('have.length', 0);
-      cy.get(selectorLinkTrackForm).click();
-      cy.get(selectorLinkTrackForm).should('have.length', 0);
+      cy.get(selectorLinkProgressForm)
+        .scrollIntoView()
+        .should('be.visible');
+      cy.wait(500);
+      cy.get(selectorLinkProgressForm)
+        .scrollIntoView()
+        .click(force);
+      cy.get(selectorLinkProgressForm).should('have.length', 0);
       cy.get(selectorProgressOrb)
         .filter(':visible')
         .should('have.length', 1);
     });
 
-    it('should link to the datset form', () => {
+    it('should link to the dataset form (without opening the progress form)', () => {
       cy.get(selectorProgressOrb)
         .filter(':visible')
         .should('have.length', 0);
       cy.get(selectorDatasetOrb)
         .filter(':visible')
         .should('have.length', 0);
+
+      cy.scrollTo('bottom');
+      cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
+
       cy.get(selectorProgressOrb)
         .filter(':visible')
-        .should('have.length', 1);
+        .should('have.length', 0);
       cy.get(selectorDatasetOrb)
         .filter(':visible')
         .should('have.length', 3);

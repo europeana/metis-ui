@@ -1,8 +1,12 @@
 import {
   selectorBtnNext,
+  selectorBtnSubmitProgress,
+  selectorBtnSubmitRecord,
   selectorInputCountry,
   selectorInputLanguage,
   selectorInputName,
+  selectorInputRecordId,
+  selectorInputTrackId,
   selectorInputZipFile
 } from '../support/selectors';
 
@@ -29,4 +33,23 @@ export const fillUploadForm = (testDatasetName: string): void => {
   cy.get(selectorInputLanguage).select('Greek');
   cy.get(selectorBtnNext).click();
   uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+};
+
+export const fillProgressForm = (id: string): void => {
+  cy.get(selectorInputTrackId)
+    .clear()
+    .type(id);
+  cy.get(selectorBtnSubmitProgress).click();
+};
+
+export const fillRecordForm = (id: string): void => {
+  cy.get(selectorInputRecordId)
+    .scrollIntoView()
+    .should('be.visible');
+  cy.wait(500);
+
+  cy.get(selectorInputRecordId)
+    .clear()
+    .type(id);
+  cy.get(selectorBtnSubmitRecord).click();
 };
