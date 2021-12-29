@@ -15,7 +15,7 @@ context('Sandbox', () => {
       cy.visit('/');
     });
 
-    const selectorProgressTitleComplete = selectorProgressTitle + '.complete';
+    const selectorProgressTitleComplete = selectorProgressTitle + ' .tick';
     const selReachedDataLimit = '[data-e2e="warn-limit-reached"]';
     const selectorWarnPresent = '.orb-status.labelled.warn';
     const selectorFailPresent = '.orb-status.labelled.fail';
