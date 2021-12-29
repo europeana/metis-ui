@@ -10,12 +10,14 @@ import {
   SubmissionResponseData
 } from '../src/app/_models';
 import { ProgressByStepStatus, TimedTarget } from './models/models';
+import { ReportGenerator } from './report-generator';
 
 new (class extends TestDataServer {
   serverName = 'sandbox';
   errorCodes: Array<string>;
   newId = 0;
   timedTargets: Map<string, TimedTarget> = new Map<string, TimedTarget>();
+  reportGenerator: ReportGenerator;
 
   /**
    * constructor
@@ -25,6 +27,8 @@ new (class extends TestDataServer {
    **/
   constructor() {
     super();
+
+    this.reportGenerator = new ReportGenerator();
 
     const generateRange = (start: number, end: number): Array<string> => {
       return [...Array(1 + end - start).keys()].map((v: number) => {
@@ -333,6 +337,20 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
+        const regxRecord = route.match(/\/record\/([A-Za-z0-9_]+)$/);
+        if (regxRecord) {
+          const recordId = parseInt(regxRecord[1]);
+          const report = this.reportGenerator.generateReport(recordId);
+          if (recordId > 999) {
+            setTimeout(() => {
+              response.end(report);
+            }, recordId);
+          } else {
+            response.end(report);
+          }
+          return;
+        }
+
         const regxDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
         if (!regxDataset) {
           this.handle404(route, response);
