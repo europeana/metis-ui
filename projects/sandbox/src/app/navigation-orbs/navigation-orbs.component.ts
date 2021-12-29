@@ -3,15 +3,21 @@ import { ClassMap } from '../_models';
 
 @Component({
   selector: 'sb-navigation-orbs',
-  templateUrl: './navigation-orbs.component.html'
+  templateUrl: './navigation-orbs.component.html',
+  styleUrls: ['./navigation-orbs.component.scss']
 })
 export class NavigationOrbsComponent {
+  collapsed = false;
+  @Input() index = 0;
   steps: Array<number>;
   _indicatorAttributes: { [details: string]: string } = {};
 
   @Input()
-  set count(count: string) {
-    this.steps = new Array(parseInt(count)).fill(null).map((_: number, num: number) => {
+  set count(count: number) {
+    if (count > 5) {
+      this.collapsed = true;
+    }
+    this.steps = new Array(count).fill(null).map((_: number, num: number) => {
       return num;
     });
   }
@@ -33,5 +39,14 @@ export class NavigationOrbsComponent {
 
   clicked(index: number): void {
     this.clickEvent.emit(index);
+  }
+
+  clickedNext(): void {
+    this.index++;
+    this.clickEvent.emit(this.index);
+  }
+  clickedPrev(): void {
+    this.index--;
+    this.clickEvent.emit(this.index);
   }
 }

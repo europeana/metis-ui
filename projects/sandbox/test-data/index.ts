@@ -272,6 +272,7 @@ new (class extends TestDataServer {
     const route = request.url as string;
     if (request.method === 'POST') {
       const regRes = route.match(/\/dataset\/(\S+)\//);
+
       if (regRes) {
         this.newId++;
 
@@ -337,9 +338,10 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
-        const regxRecord = route.match(/\/record\/([A-Za-z0-9_]+)$/);
-        if (regxRecord) {
-          const recordId = parseInt(regxRecord[1]);
+        const regRes = route.match(/\/dataset\/([A-Za-z0-9_]+)\/record\?recordId=([A-Za-z0-9_]+)/);
+
+        if (regRes) {
+          const recordId = parseInt(regRes[2]);
           const report = this.reportGenerator.generateReport(recordId);
           if (recordId > 999) {
             setTimeout(() => {
