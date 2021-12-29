@@ -136,10 +136,7 @@
 
       <div class="form-group">
         <label i18n="track id label">Enter the id of a dataset to track </label>
-
-        <span class="xsl-icon"></span>
-
-        <div class="submit-track-id">
+        <div class="submit-id-ctrls">
           <input formControlName="idToTrack" data-e2e="idToTrack" autofocus autocomplete="off" />
           <button
             type="submit"
@@ -171,7 +168,7 @@
     <form [formGroup]="formRecord" *ngIf="getRecordFormVisible()" (ngSubmit)="onSubmitRecord(true)">
       <div class="form-group">
         <label i18n="track id label">Enter the id of a record</label>
-        <div class="submit-track-id">
+        <div class="submit-id-ctrls">
           <input formControlName="recordToTrack" data-e2e="recordToTrack" autocomplete="off" />
           <button
             [ngClass]="{ hidden: false }"

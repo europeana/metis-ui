@@ -1,0 +1,420 @@
+<div class="record-report">
+  <ng-template #tickedItem let-itemVal="itemVal">
+    <span
+      class="report-value"
+      [ngClass]="{
+        'error-message': !itemVal,
+        tick: itemVal
+      }"
+    >
+      {{ itemVal }}
+    </span>
+  </ng-template>
+
+  <ng-template #stringList let-list="list">
+    <ul class="code">
+      <li *ngFor="let item of list">{{ item }}</li>
+    </ul>
+  </ng-template>
+
+  <ng-template #mediaResourceTechMetadata let-data="data">
+    <span class="report-sub-header">
+      Resource Url
+    </span>
+    <span class="report-value portal-links" *ngFor="let url of [data.resourceUrl]">
+      <a [href]="url" target="_blank">{{ url }}</a>
+    </span>
+
+    <span class="report-sub-header">
+      Media Type
+    </span>
+    <span class="report-value">
+      {{ data.mediaType }}
+    </span>
+
+    <span class="report-sub-header">
+      Element Link Type
+    </span>
+    <span class="report-value">
+      {{ data.elementLinkType }}
+    </span>
+
+    <span class="report-sub-header">
+      Image Resolution
+    </span>
+    <span class="report-value">
+      {{ data.imageResolution }}
+    </span>
+
+    <span class="report-sub-header">
+      Vertical Resolution
+    </span>
+    <span class="report-value">
+      {{ data.verticalResolution }}
+    </span>
+
+    <span class="report-sub-header">
+      Licence Type
+    </span>
+    <span class="report-value">
+      {{ data.licenceType }}
+    </span>
+  </ng-template>
+
+  <span class="report-header">Record Tier Calculation Summary</span>
+  <span class="report-grid">
+    <span class="report-sub-header">
+      Europeana Record Id
+    </span>
+    <span class="report-value">
+      {{ _report.recordTierCalculationSummary.europeanaRecordId }}
+    </span>
+    <span class="report-sub-header">
+      Provider Record Id
+    </span>
+    <span class="report-value">
+      {{ _report.recordTierCalculationSummary.providerRecordId }}
+    </span>
+    <span class="report-sub-header">
+      <a
+        *ngIf="visibleTier !== 0; else conditionalWrapCT"
+        class="link-internal"
+        (click)="setView(0)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapCT"></ng-container>
+      </a>
+      <ng-template #conditionalWrapCT
+        ><ng-content></ng-content><span>Content Tier</span></ng-template
+      >
+    </span>
+    <span class="report-value">
+      <a
+        *ngIf="visibleTier !== 0; else conditionalWrapCTVal"
+        class="link-internal"
+        (click)="setView(0)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapCTVal"></ng-container>
+      </a>
+      <ng-template #conditionalWrapCTVal
+        ><ng-content></ng-content
+        ><span>{{ _report.recordTierCalculationSummary.contentTier }}</span></ng-template
+      >
+    </span>
+    <span class="report-sub-header">
+      <a
+        *ngIf="visibleTier !== 1; else conditionalWrapMetadata"
+        class="link-internal"
+        (click)="setView(1)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapMetadata"></ng-container>
+      </a>
+      <ng-template #conditionalWrapMetadata
+        ><ng-content></ng-content><span>Metadata Tier</span></ng-template
+      >
+    </span>
+    <span class="report-value">
+      <a
+        *ngIf="visibleTier !== 1; else conditionalWrapMetadataVal"
+        class="link-internal"
+        (click)="setView(1)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapMetadataVal"></ng-container>
+      </a>
+      <ng-template #conditionalWrapMetadataVal
+        ><ng-content></ng-content
+        ><span>{{ _report.recordTierCalculationSummary.metadataTier }}</span></ng-template
+      >
+    </span>
+    <span class="report-sub-header">
+      Portal Link
+    </span>
+    <span
+      class="report-value portal-links"
+      *ngFor="let url of [_report.recordTierCalculationSummary.portalLink]"
+    >
+      <a [href]="url" target="_blank">{{ url }}</a>
+    </span>
+    <span class="report-sub-header">
+      Harvested Record Link
+    </span>
+    <span
+      class="report-value portal-links"
+      *ngFor="let url of [_report.recordTierCalculationSummary.harvestedRecordLink]"
+    >
+      <a [href]="url" target="_blank">{{ url }}</a>
+    </span>
+  </span>
+  <!-- end summary grid -->
+
+  <span class="separator-line">
+    <sb-navigation-orbs
+      [count]="2"
+      [fnClassMapInner]="getOrbConfigInner.bind(this)"
+      (clickEvent)="setView($event)"
+      [indicatorAttributes]="[
+        _report.recordTierCalculationSummary.contentTier,
+        _report.recordTierCalculationSummary.metadataTier
+      ]"
+    ></sb-navigation-orbs>
+  </span>
+
+  <ng-container *ngIf="visibleTier === 0">
+    <span class="report-header">Content Tier Breakdown</span>
+
+    <span class="report-grid">
+      <span class="report-sub-header">
+        Record Type
+      </span>
+      <span class="report-value">
+        {{ _report.contentTierBreakdown.recordType }}
+      </span>
+
+      <span class="report-sub-header">
+        License Type
+      </span>
+      <span class="report-value">
+        {{ _report.contentTierBreakdown.licenseType }}
+      </span>
+
+      <span class="report-sub-header">
+        Thumbnail Available
+      </span>
+
+      <ng-content
+        *ngTemplateOutlet="
+          tickedItem;
+          context: { itemVal: _report.contentTierBreakdown.thumbnailAvailable }
+        "
+      ></ng-content>
+
+      <span class="report-sub-header">
+        Landing Page Available
+      </span>
+
+      <ng-content
+        *ngTemplateOutlet="
+          tickedItem;
+          context: { itemVal: _report.contentTierBreakdown.landingPageAvailable }
+        "
+      ></ng-content>
+
+      <span class="report-sub-header">
+        Embeddable Media Available
+      </span>
+
+      <ng-content
+        *ngTemplateOutlet="
+          tickedItem;
+          context: { itemVal: _report.contentTierBreakdown.embeddableMediaAvailable }
+        "
+      ></ng-content>
+    </span>
+    <!-- end content tier general grid -->
+
+    <!-- Media Tech Data -->
+
+    <ng-container
+      *ngIf="_report.contentTierBreakdown.mediaResourceTechnicalMetadataList; let techData"
+    >
+      <span class="separator-line">
+        <sb-navigation-orbs
+          [count]="techData.length"
+          [index]="visibleMedia"
+          [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
+          (clickEvent)="setMedia($event)"
+        ></sb-navigation-orbs>
+      </span>
+
+      <span class="report-header">
+        <ng-template #indexInput>
+          <input
+            #inputMediaIndex
+            (blur)="changeMediaIndex($event)"
+            class="media-index"
+            [max]="techData.length"
+            min="1"
+            [ngModel]="visibleMedia + 1"
+            (change)="changeMediaIndex($event)"
+            [ngStyle]="{
+              width: ((inputMediaIndex.value + 1 + '').length + 1.5) * 0.55 + 'em'
+            }"
+            type="number"
+          />
+        </ng-template>
+        Media Resource Technical Metadata (<span *ngIf="!mediaCollapsed; else indexInput">{{
+          visibleMedia + 1
+        }}</span>
+        of {{ techData.length }})
+      </span>
+
+      <span
+        class="report-grid"
+        *ngFor="let data of techData; let i = index"
+        [ngClass]="{ hidden: visibleMedia !== i }"
+      >
+        <ng-container *ngIf="visibleMedia === i">
+          <ng-content
+            *ngTemplateOutlet="mediaResourceTechMetadata; context: { data: data }"
+          ></ng-content>
+        </ng-container>
+      </span>
+    </ng-container>
+
+    <span class="separator-line"> </span>
+
+    <span class="report-header">
+      Processing Errors List
+    </span>
+
+    <span class="error-grid report-grid limited-list">
+      <ng-container *ngFor="let error of _report.contentTierBreakdown.processingErrorsList">
+        <span class="error-message">{{ error.errorCode }}</span>
+        <span class="code">{{ error.errorMessage }}</span>
+      </ng-container>
+    </span>
+  </ng-container>
+
+  <ng-container *ngIf="visibleTier === 1">
+    <span class="report-header">Metadata Tier Breakdown</span>
+
+    <span class="separator-line">
+      <sb-navigation-orbs
+        [count]="3"
+        [fnClassMapInner]="getOrbConfigInnerMetadata.bind(this)"
+        [indicatorAttributes]="[
+          _report.metadataTierBreakdown.languageBreakdown.metadataTier,
+          _report.metadataTierBreakdown.languageBreakdown.metadataTier,
+          _report.metadataTierBreakdown.languageBreakdown.metadataTier
+        ]"
+        (clickEvent)="setMetadata($event)"
+      ></sb-navigation-orbs>
+    </span>
+
+    <ng-container *ngIf="visibleMetadata === 0">
+      <span class="report-header">
+        Language Breakdown
+      </span>
+
+      <span class="report-grid">
+        <ng-container
+          *ngFor="let languageBreakdown of [_report.metadataTierBreakdown.languageBreakdown]"
+        >
+          <span class="report-sub-header">
+            Metadata Tier
+          </span>
+          <span class="report-value">
+            {{ languageBreakdown.metadataTier }}
+          </span>
+
+          <span class="report-sub-header">
+            Potential Language Qualified Elements
+          </span>
+          <span class="report-value">
+            {{ languageBreakdown.potentialLanguageQualifiedElements }}
+          </span>
+
+          <span class="report-sub-header">
+            Actual Language Qualified Elements
+          </span>
+          <span class="report-value">
+            {{ languageBreakdown.actualLanguageQualifiedElements }} ({{
+              languageBreakdown.actualLanguageQualifiedElementsPercentage
+            }}%)
+          </span>
+
+          <span class="report-sub-header">
+            Actual Language Unqualified Elements ({{
+              languageBreakdown.actualLanguageUnqualifiedElements
+            }})
+          </span>
+
+          <span class="report-value limited-list">
+            <ng-content
+              *ngTemplateOutlet="
+                stringList;
+                context: {
+                  list: languageBreakdown.actualLanguageUnqualifiedElementsList
+                }
+              "
+            ></ng-content>
+          </span>
+        </ng-container>
+      </span>
+    </ng-container>
+
+    <ng-container *ngIf="visibleMetadata === 1">
+      <span class="report-header">
+        Enabling Elements
+      </span>
+
+      <span class="report-grid">
+        <ng-container
+          *ngFor="let enablingElements of [_report.metadataTierBreakdown.enablingElements]"
+        >
+          <span class="report-sub-header">
+            Metadata Tier
+          </span>
+          <span class="report-value">
+            {{ enablingElements.metadataTier }}
+          </span>
+
+          <span class="report-sub-header">
+            Distinct Enabling Elements ({{ enablingElements.distinctEnablingElements }})
+          </span>
+          <span class="report-value">
+            {{ enablingElements.distinctEnablingElementsList }}
+          </span>
+
+          <span class="report-sub-header">
+            Metadata Groups ({{ enablingElements.metadataGroups }})
+          </span>
+          <span class="report-value limited-list">
+            <ng-content
+              *ngTemplateOutlet="stringList; context: { list: enablingElements.metadataGroupsList }"
+            ></ng-content>
+          </span>
+        </ng-container>
+      </span>
+    </ng-container>
+
+    <ng-container *ngIf="visibleMetadata === 2">
+      <span class="report-header">
+        Contextual Classes
+      </span>
+
+      <span class="report-grid">
+        <ng-container
+          *ngFor="let contextualClasses of [_report.metadataTierBreakdown.contextualClasses]"
+        >
+          <span class="report-sub-header">
+            Metadata Tier
+          </span>
+          <span class="report-value">
+            {{ contextualClasses.metadataTier }}
+          </span>
+
+          <span class="report-sub-header">
+            Complete Contextual Resources (CCR)
+          </span>
+          <span class="report-value">
+            {{ contextualClasses.completeContextualResources }}
+          </span>
+
+          <span class="report-sub-header">
+            Distinct Classes of CCR ({{
+              contextualClasses.distinctClassesOfCompleteContextualResources
+            }})
+          </span>
+          <span class="report-value limited-list">
+            <ng-content
+              *ngTemplateOutlet="
+                stringList;
+                context: { list: contextualClasses.distinctClassesList }
+              "
+            ></ng-content>
+          </span>
+        </ng-container>
+      </span>
+    </ng-container>
+  </ng-container>
+</div>

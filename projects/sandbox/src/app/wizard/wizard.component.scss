@@ -34,57 +34,7 @@ select {
   width: 100%;
 }
 
-.wizard button {
-  background: $eu-jade-classic;
-  border-radius: $wizard-border-radius;
-  font-weight: bold;
-
-  &.next,
-  &.previous {
-    padding: 0;
-    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
-    &::after {
-      content: '\25B2';
-      transform-origin: top;
-    }
-  }
-  &:hover {
-    background-color: $white;
-    color: $eu-jade-darker;
-  }
-  &:active {
-    border-color: $eu-light-orange;
-    color: $eu-light-orange;
-  }
-
-  &.next::after {
-    left: 1rem;
-    transform: rotate(90deg);
-  }
-  &.previous::after {
-    left: -1rem;
-    transform: rotate(270deg);
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.5);
-  }
-
-  &.submit {
-    &:hover {
-      box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-      text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
-    }
-
-    &[disabled] {
-      cursor: default;
-      background: $gray-lighter;
-      border-color: $gray-light;
-      color: $gray-light;
-      pointer-events: none;
-    }
-  }
-}
-
-.wizard,
-.wizard button {
+.wizard {
   border: 1px solid $eu-jade-dark;
 }
 
@@ -127,9 +77,10 @@ select {
   }
 }
 
-.submit-track-id {
+.submit-id-ctrls {
   display: flex;
   button {
+    flex-basis: 5.75em;
     margin-left: 0.5rem;
     text-shadow: none;
     white-space: nowrap;

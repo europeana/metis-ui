@@ -82,11 +82,11 @@ describe('WizardComponent', () => {
 
     it('should reset the busy flags', fakeAsync(() => {
       component.isBusy = true;
-      component.isPolling = true;
+      component.isPollingProgress = true;
       component.resetBusy();
       tick(component.resetBusyDelay);
       expect(component.isBusy).toBeFalsy();
-      expect(component.isPolling).toBeFalsy();
+      expect(component.isPollingProgress).toBeFalsy();
     }));
 
     it('should tell if the progress is complete', () => {

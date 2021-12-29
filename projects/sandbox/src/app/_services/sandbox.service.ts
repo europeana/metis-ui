@@ -40,12 +40,17 @@ export class SandboxService {
   }
 
   /** getRecordReport
-  /*
-  /* request a record report from the server
-  */
-  getRecordReport(id: string): Observable<RecordReport> {
-    const url = `${apiSettings.apiHost}/record/${id}`;
-    return this.http.get<RecordReport>(url);
+   *
+   * request a record report from the server
+   * /dataset/{id}/record
+   */
+  getRecordReport(
+    datasetId: string,
+    recordId: string /* TODO: recordIdType */
+  ): Observable<RecordReport> {
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}/record`;
+    const paramString = `recordId=${recordId}&recordIdType=PROVIDER_ID`;
+    return this.http.get<RecordReport>(`${url}?${paramString}`);
   }
 
   /** requestProgress

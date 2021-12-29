@@ -1,0 +1,109 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.code {
+  font-family: courier;
+}
+
+.error-grid.report-grid {
+  grid-template-columns: auto auto;
+  grid-template-columns: minmax(2em, 1fr) 20fr;
+}
+
+.limited-list {
+  max-height: 5em;
+  overflow-y: auto;
+  padding: 0 1em;
+
+  &::-webkit-scrollbar-track {
+    border: 1px solid $eu-jade-light;
+  }
+  &::-webkit-scrollbar {
+    background-color: $eu-light-jade-classic;
+  }
+  &::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 9px rgba(55, 185, 139, 0.75);
+    border: 2px solid transparent;
+    // this doesn't work due to a bug in chrome
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-thumb,
+  &::-webkit-scrollbar-track {
+    border-radius: 5px;
+    cursor: pointer !important;
+  }
+
+  li {
+    list-style: disc;
+  }
+}
+
+.media-index {
+  background: $eu-light-jade-classic;
+  border: 0;
+  color: $eu-jade-dark;
+  font-weight: bold;
+  display: inline-block;
+  padding: 0;
+
+  outline: 0;
+  box-shadow: none;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    background: $eu-light-jade-classic
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=)
+      no-repeat center center;
+    border-left: 1px solid $eu-jade;
+    border-right: 1px solid $eu-jade;
+    bottom: 0;
+    opacity: 0.5;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 16px;
+  }
+}
+
+.report-grid {
+  color: $eu-jade-dark;
+  column-gap: 1.75em;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 12px;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.record-report {
+  margin-bottom: 36px;
+}
+
+.report-header,
+.report-sub-header {
+  color: $eu-jade-dark;
+}
+
+.report-header {
+  font-weight: bold;
+}
+
+.separator-line {
+  background: $eu-jade-light;
+  display: block;
+  height: 1px;
+  margin: 1.6em 0;
+
+  &:not(:empty) {
+    margin: 50px 0;
+  }
+
+  > * {
+    position: relative;
+    top: -1.5em;
+  }
+}

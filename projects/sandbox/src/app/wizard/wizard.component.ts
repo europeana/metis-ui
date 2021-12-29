@@ -226,11 +226,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   buildForms(): void {
     this.formProgress = this.fb.group({
-      idToTrack: ['', [Validators.required, this.validateDatasetId]]
+      idToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
     });
 
     this.formRecord = this.fb.group({
-      recordToTrack: ['', [Validators.required, this.validateDatasetId]]
+      recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
     });
 
     this.formUpload = this.fb.group({
@@ -267,6 +267,27 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     if (val) {
       const matches = `${val}`.match(/[0-9]+/);
       if (!matches || matches[0] !== val) {
+        return { invalid: true };
+      }
+    }
+
+    if (this.formProgress && this.formRecord) {
+      if (control === this.formProgress.get('idToTrack')) {
+        this.formRecord.controls['recordToTrack'].updateValueAndValidity();
+      }
+    }
+    return null;
+  }
+
+  validateRecordId(control: FormControl): { [key: string]: boolean } | null {
+    const val = control.value;
+    if (val) {
+      const idError = this.validateDatasetId(control);
+      if (idError) {
+        return idError;
+      }
+      const datasetIdCtrl = this.formProgress.get('idToTrack') as FormControl;
+      if (!(datasetIdCtrl.value && datasetIdCtrl.valid)) {
         return { invalid: true };
       }
     }
@@ -577,7 +598,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.isPollingRecord = true;
 
       this.subs.push(
-        this.sandbox.getRecordReport(`${this.trackRecordId}`).subscribe(
+        this.sandbox.getRecordReport(`${this.trackDatasetId}`, `${this.trackRecordId}`).subscribe(
           (report: RecordReport) => {
             this.recordReport = report;
             this.resetBusy();
@@ -590,7 +611,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       );
 
       if (updateLocation) {
-        console.log('onSubmitRecord calls updateLocation');
         this.updateLocation();
       }
       this.currentStepIndex = this.wizardConf.length - 1;
