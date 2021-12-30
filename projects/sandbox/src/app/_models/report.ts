@@ -40,7 +40,7 @@ interface ContentTierBreakdown {
   landingPageAvailable: boolean;
   embeddableMediaAvailable: boolean;
   mediaResourceTechnicalMetadataList: Array<MediaDataItem>;
-  processingErrorsList: Array<ProcessingError>;
+  processingErrorsList?: Array<ProcessingError>;
 }
 
 interface LanguageBreakdown {

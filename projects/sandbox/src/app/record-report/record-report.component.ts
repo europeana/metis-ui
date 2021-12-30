@@ -59,8 +59,6 @@ export class RecordReportComponent {
         mediaItem.cssClass = 'orb-media-3d';
       } else if (mediaItem.mediaType.match(/image/)) {
         mediaItem.cssClass = 'orb-media-image';
-      } else if (mediaItem.mediaType.match(/3d/)) {
-        mediaItem.cssClass = 'orb-media-3d';
       } else if (mediaItem.mediaType.match(/audio/)) {
         mediaItem.cssClass = 'orb-media-audio';
       } else if (mediaItem.mediaType.match(/text/)) {

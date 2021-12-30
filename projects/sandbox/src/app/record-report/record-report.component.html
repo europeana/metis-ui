@@ -260,18 +260,20 @@
       </span>
     </ng-container>
 
-    <span class="separator-line"> </span>
+    <ng-container *ngIf="_report.contentTierBreakdown.processingErrorsList; let errors">
+      <span class="separator-line"> </span>
 
-    <span class="report-header">
-      Processing Errors List
-    </span>
+      <span class="report-header">
+        Processing Errors List
+      </span>
 
-    <span class="error-grid report-grid limited-list">
-      <ng-container *ngFor="let error of _report.contentTierBreakdown.processingErrorsList">
-        <span class="error-message">{{ error.errorCode }}</span>
-        <span class="code">{{ error.errorMessage }}</span>
-      </ng-container>
-    </span>
+      <span class="error-grid report-grid limited-list">
+        <ng-container *ngFor="let error of errors">
+          <span class="error-message">{{ error.errorCode }}</span>
+          <span class="code">{{ error.errorMessage }}</span>
+        </ng-container>
+      </span>
+    </ng-container>
   </ng-container>
 
   <ng-container *ngIf="visibleTier === 1">

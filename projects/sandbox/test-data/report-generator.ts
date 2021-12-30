@@ -1,3 +1,4 @@
+import { mockMediaResources } from '../src/app/_mocked/mocked-record-report';
 import { LicenseType, RecordReport, RecordType } from '../src/app/_models';
 
 export class ReportGenerator {
@@ -28,51 +29,8 @@ export class ReportGenerator {
     }
   ];
 
-  mediaResources = [
-    {
-      resourceUrl: 'https://text-resource-url.com',
-      mediaType: 'text/text',
-      elementLinkType: 'edm:isShownBy',
-      imageResolution: '1 kilobytes',
-      verticalResolution: '16 pixels',
-      licenceType: LicenseType.RESTRICTED
-    },
-    {
-      resourceUrl: 'https://3d-resource-url.com',
-      mediaType: 'image/3d',
-      elementLinkType: 'edm:isShownBy',
-      imageResolution: '33.8 megapixel',
-      verticalResolution: '128 pixels',
-      licenceType: LicenseType.RESTRICTED
-    },
-    {
-      resourceUrl: 'https://audio-resource-url.com',
-      mediaType: 'audio/mp3',
-      elementLinkType: 'edm:isShownBy',
-      imageResolution: '28.3 megapixel',
-      verticalResolution: '0 pixels',
-      licenceType: LicenseType.OPEN
-    },
-    {
-      resourceUrl: 'https://image-resource-url.com',
-      mediaType: 'image/jpeg',
-      elementLinkType: 'edm:isShownBy',
-      imageResolution: '91.12 megapixel',
-      verticalResolution: '480 pixels',
-      licenceType: LicenseType.RESTRICTED
-    },
-    {
-      resourceUrl: 'https://video-resource-url.com',
-      mediaType: 'video/mpeg',
-      elementLinkType: 'edm:isShownBy',
-      imageResolution: '5 megapixel',
-      verticalResolution: '320 pixels',
-      licenceType: LicenseType.RESTRICTED
-    }
-  ];
-
   generateReport = (id: number): string => {
-    let media = this.mediaResources;
+    let media = mockMediaResources;
     let errors = this.errorList;
     let errorMode = false;
 
@@ -107,7 +65,7 @@ export class ReportGenerator {
         landingPageAvailable: !errorMode,
         embeddableMediaAvailable: !errorMode,
         mediaResourceTechnicalMetadataList: media,
-        processingErrorsList: errors
+        processingErrorsList: id === 0 ? undefined : errors
       },
       metadataTierBreakdown: {
         languageBreakdown: {
