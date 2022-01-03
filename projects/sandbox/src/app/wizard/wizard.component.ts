@@ -199,9 +199,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.buildForms();
         this.clearDataPollers();
         this.setStep(this.stepIndexProgress, true);
-      } else if (url) {
+      } else {
         // parse the url, set form data and submit
-        const ids = url.split('/').filter((s: string) => {
+        const ids = `${url}`.split('/').filter((s: string) => {
           return s.length > 0;
         });
         if (ids.length === 1) {

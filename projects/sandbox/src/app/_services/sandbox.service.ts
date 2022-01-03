@@ -91,9 +91,9 @@ export class SandboxService {
     let fileAppended = false;
 
     fileNames.forEach((fileName: string) => {
-      const file = (form.get(fileName) as FormControl).value;
+      const file = form.get(fileName) as FormControl;
       if (file) {
-        formData.append(fileName, file);
+        formData.append(fileName, file.value);
         fileAppended = true;
       }
     });

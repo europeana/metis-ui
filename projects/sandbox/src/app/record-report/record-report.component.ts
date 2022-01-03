@@ -65,6 +65,8 @@ export class RecordReportComponent {
         mediaItem.cssClass = 'orb-media-text';
       } else if (mediaItem.mediaType.match(/video/)) {
         mediaItem.cssClass = 'orb-media-video';
+      } else {
+        mediaItem.cssClass = 'orb-media-unknown';
       }
     });
   }

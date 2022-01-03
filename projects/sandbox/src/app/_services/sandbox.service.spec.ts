@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockCountries, mockDataset, mockLanguages, mockRecordReport } from '../_mocked';
@@ -75,17 +75,47 @@ describe('sandbox service', () => {
     const name = 'Test Name';
     const country = 'Scotland';
     const language = 'EN';
+    const metadataFormat = 'XXX';
+    const setSpec = 'yyy';
     const url = 'http://xyz.com';
 
-    const form = formBuilder.group({
+    const form1 = formBuilder.group({
       name: [name, []],
       country: [country, []],
       language: [language, []],
       url: [url, []]
     });
 
-    const sub = service
-      .submitDataset(form, [])
+    const form2 = formBuilder.group({
+      name: [name, []],
+      country: [country, []],
+      language: [language, []]
+    });
+    form2.addControl('xsltFile', new FormControl(''));
+
+    const form3 = formBuilder.group({
+      name: [name, []],
+      country: [country, []],
+      language: [language, []],
+      harvestUrl: [url, []],
+      metadataFormat: [metadataFormat, []],
+      setSpec: [setSpec, []]
+    });
+
+    const sub1 = service
+      .submitDataset(form1, [])
+      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+        expect(response).toBeTruthy();
+      });
+
+    const sub2 = service
+      .submitDataset(form2, ['xsltFile', 'does-not-exist'])
+      .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
+        expect(response).toBeTruthy();
+      });
+
+    const sub3 = service
+      .submitDataset(form3, [])
       .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         expect(response).toBeTruthy();
       });
@@ -98,8 +128,25 @@ describe('sandbox service', () => {
         )}`
       )
       .body(new FormData())
-      .send(form);
+      .send(form1);
 
-    sub.unsubscribe();
+    mockHttp
+      .expect('POST', `/dataset/${name}/harvestByFile?country=${country}&language=${language}`)
+      .body(new FormData())
+      .send(form2);
+
+    mockHttp
+      .expect(
+        'POST',
+        `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}&metadataformat=${metadataFormat}&setspec=${setSpec}&url=${encodeURIComponent(
+          url
+        )}`
+      )
+      .body(new FormData())
+      .send(form3);
+
+    sub1.unsubscribe();
+    sub2.unsubscribe();
+    sub3.unsubscribe();
   });
 });

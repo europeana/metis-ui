@@ -1,10 +1,10 @@
 import { mockMediaResources } from '../src/app/_mocked/mocked-record-report';
-import { LicenseType, RecordReport, RecordType } from '../src/app/_models';
+import { LicenseType, MediaDataItem, RecordReport, RecordType } from '../src/app/_models';
 
 export class ReportGenerator {
   errorList = [
     {
-      errorMessage: 'Null Pointer Exceception somewhere in the processing.',
+      errorMessage: 'Null Pointer Exception somewhere in the processing.',
       errorCode: 404
     },
     {
@@ -30,8 +30,8 @@ export class ReportGenerator {
   ];
 
   generateReport = (id: number): string => {
-    let media = mockMediaResources;
-    let errors = this.errorList;
+    let media = JSON.parse(JSON.stringify(mockMediaResources));
+    let errors = this.errorList.slice();
     let errorMode = false;
 
     const ctVals = [0, 1, 2, 3, 4];
@@ -45,7 +45,10 @@ export class ReportGenerator {
     } else if (id % 2 === 0) {
       media = media.slice(0, 1);
       errors = errors.slice(0, 2);
-    } else if (id % 13 === 0) {
+    } else if (id === 13) {
+      media.forEach((item: MediaDataItem) => {
+        item.mediaType = '';
+      });
       errorMode = true;
     }
 

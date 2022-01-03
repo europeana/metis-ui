@@ -312,6 +312,12 @@ $orb-border-radius: 1.5em;
       background-image: svg-url-icon-media-video('#{$eu-light-orange}');
     }
 
+    // UNKNOWN
+
+    &.orb-media-unknown::after {
+      content: '?';
+    }
+
     // Speech bubble
 
     &.language-orb::after {

@@ -82,7 +82,7 @@ describe('RecordReportComponent', () => {
 
     expect(`${component.techData[0].cssClass}`).toEqual('undefined');
     component.setOrbMediaIcons();
-    expect(`${component.techData[0].cssClass}`).toEqual('undefined');
+    expect(`${component.techData[0].cssClass}`).toEqual('orb-media-unknown');
 
     component.techData = techData;
 

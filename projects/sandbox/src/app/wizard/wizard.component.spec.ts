@@ -46,13 +46,17 @@ describe('WizardComponent', () => {
     fixture.detectChanges();
   };
 
-  const fillUploadForm = (): void => {
+  const fillUploadForm = (useHarvestUrl = false): void => {
     (component.formUpload.get('name') as FormControl).setValue('A');
     (component.formUpload.get('country') as FormControl).setValue('Greece');
     (component.formUpload.get('language') as FormControl).setValue('Greek');
     (component.formUpload.get('dataset') as FormControl).setValue(testFile);
-    (component.formUpload.get('url') as FormControl).setValue('http://x');
-    (component.formUpload.get('harvestUrl') as FormControl).setValue('http://x');
+
+    if (useHarvestUrl) {
+      (component.formUpload.get('harvestUrl') as FormControl).setValue('http://x');
+    } else {
+      (component.formUpload.get('url') as FormControl).setValue('http://x');
+    }
     expect(component.formUpload.valid).toBeTruthy();
   };
 
@@ -69,6 +73,11 @@ describe('WizardComponent', () => {
       params.next({ id: '1' });
       fixture.detectChanges();
       expect(component.trackDatasetId).toBeTruthy();
+      expect(component.trackRecordId).toBeFalsy();
+
+      params.next({ id: '1', recordId: '2' });
+      expect(component.trackDatasetId).toBeTruthy();
+      expect(component.trackRecordId).toBeTruthy();
     });
 
     it('should get the form group', () => {
@@ -153,6 +162,14 @@ describe('WizardComponent', () => {
       ctrlCB.setValue(true);
       component.updateConditionalXSLValidator();
       expect(ctrlFile.valid).toBeFalsy();
+
+      ctrlCB.setValue(false);
+      component.updateConditionalXSLValidator();
+      expect(ctrlFile.valid).toBeTruthy();
+
+      component.formUpload.removeControl('sendXSLT');
+      component.updateConditionalXSLValidator();
+      expect(ctrlFile.valid).toBeTruthy();
     });
 
     it('should tell if the steps are submittable', () => {
@@ -208,22 +225,66 @@ describe('WizardComponent', () => {
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
       tick(1);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+
+      // with location update
+
+      component.onSubmitProgress(true);
+      tick(1);
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(5);
+      component.onSubmitProgress(true);
+      tick(1);
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(6);
+
       component.cleanup();
       tick(apiSettings.interval);
     }));
 
-    it('should submit the dataset form', fakeAsync(() => {
+    it('should submit the dataset form (url)', fakeAsync(() => {
       expect(component.isBusy).toBeFalsy();
       component.onSubmitDataset();
       expect(component.isBusy).toBeFalsy();
-      fillUploadForm();
+      fillUploadForm(false);
       component.onSubmitDataset();
       tick(1);
       expect(component.isBusy).toBeTruthy();
       expect(component.trackDatasetId).toBeTruthy();
+
       component.cleanup();
       tick(apiSettings.interval);
     }));
+
+    it('should get the outer orb config', () => {
+      Object.keys(new Array(5).fill(null)).forEach((i: string) => {
+        expect(component.getNavOrbConfigOuter(parseInt(i))).toBeTruthy();
+      });
+    });
+
+    it('should get the outer orb config', () => {
+      Object.keys(new Array(5).fill(null)).forEach((i: string) => {
+        expect(component.getNavOrbConfigInner(parseInt(i))).toBeTruthy();
+      });
+      expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeFalsy();
+      component.isPollingProgress = true;
+      expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeTruthy();
+
+      expect(component.getNavOrbConfigInner(4)['indicate-polling']).toBeFalsy();
+      component.isPollingRecord = true;
+      expect(component.getNavOrbConfigInner(4)['indicate-polling']).toBeTruthy();
+    });
+
+    it('should get if the step is progress or report', () => {
+      component.currentStepIndex = 0;
+      expect(component.getIsRecordTrack(0)).toEqual(false);
+      expect(component.getIsProgressTrack(0)).toEqual(false);
+      expect(component.getIsProgressTrackOrReport(0)).toEqual(false);
+      expect(component.getIsProgressTrackOrReport()).toEqual(false);
+      expect(component.getIsProgressTrackOrReport(3)).toEqual(true);
+      expect(component.getIsProgressTrackOrReport(4)).toEqual(true);
+      component.currentStepIndex = 3;
+      expect(component.getIsProgressTrackOrReport()).toEqual(true);
+      component.currentStepIndex = 4;
+      expect(component.getIsProgressTrackOrReport()).toEqual(true);
+    });
 
     it('should get if the step is submittable', () => {
       component.setStep(0);
@@ -251,6 +312,10 @@ describe('WizardComponent', () => {
       form.disable();
       component.setStep(0, true);
       expect(form.enable).toHaveBeenCalled();
+
+      spyOn(component, 'updateLocation');
+      component.setStep(4);
+      expect(component.updateLocation).toHaveBeenCalled();
     });
 
     it('should calculate if it can go to the previous step', () => {
@@ -287,6 +352,35 @@ describe('WizardComponent', () => {
       [' 1', '1 ', ' 1 ', '1 1', 'a', '@', '_', '-'].forEach((val: string) => {
         expect(component.validateDatasetId(frmCtrl(val))).toBeTruthy();
       });
+    });
+
+    it('should validate the record id', () => {
+      const recordId = component.formRecord.get('recordToTrack') as FormControl;
+      const datasetId = component.formProgress.get('idToTrack') as FormControl;
+
+      ['0', '1'].forEach((val: string) => {
+        recordId.setValue(val);
+        expect(component.validateRecordId(recordId)).toBeTruthy();
+      });
+
+      datasetId.setValue('1 1'); // invalid related
+
+      ['0', '1'].forEach((val: string) => {
+        recordId.setValue(val);
+        expect(component.validateRecordId(recordId)).toBeTruthy();
+      });
+
+      datasetId.setValue('1'); // valid related
+
+      ['0', '1'].forEach((val: string) => {
+        recordId.setValue(val);
+        expect(component.validateRecordId(recordId)).toBeFalsy();
+      });
+
+      recordId.setValue('1 1'); // invalid
+      expect(component.validateRecordId(recordId)).toBeTruthy();
+
+      expect(component.validateRecordId(({} as any) as FormControl)).toBeFalsy();
     });
 
     it('should validate the dataset name', () => {
@@ -343,6 +437,35 @@ describe('WizardComponent', () => {
       expect(component.error).toBeFalsy();
       tick(component.resetBusyDelay);
       expect(component.isBusy).toBeFalsy();
+      component.cleanup();
+      tick(apiSettings.interval);
+    }));
+
+    it('should handle upload form errors (harvest url)', fakeAsync(() => {
+      spyOn(sandbox, 'submitDataset').and.callFake(() => {
+        return of({});
+      });
+      fillUploadForm(true);
+      component.onSubmitDataset();
+      tick(1);
+
+      expect(component.isBusy).toBeTruthy();
+      expect(component.error).toBeFalsy();
+      tick(component.resetBusyDelay);
+      expect(component.isBusy).toBeFalsy();
+      component.cleanup();
+      tick(apiSettings.interval);
+    }));
+
+    it('should handle record form errors', fakeAsync(() => {
+      expect(component.error).toBeFalsy();
+      component.onSubmitRecord();
+      expect(component.error).toBeFalsy();
+      (component.formProgress.get('idToTrack') as FormControl).setValue('1');
+      (component.formRecord.get('recordToTrack') as FormControl).setValue('2');
+      component.onSubmitRecord();
+      tick(1);
+      expect(component.error).toBeTruthy();
       component.cleanup();
       tick(apiSettings.interval);
     }));
