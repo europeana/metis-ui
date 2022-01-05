@@ -37,7 +37,12 @@ export class HeaderComponent {
   /* return whether the /profile route is active
   */
   userIconActive(): boolean {
-    return this.router.isActive('/profile', false);
+    return this.router.isActive('/profile', {
+      paths: 'subset',
+      queryParams: 'subset',
+      fragment: 'ignored',
+      matrixParams: 'ignored'
+    });
   }
 
   /** gotoProfile
