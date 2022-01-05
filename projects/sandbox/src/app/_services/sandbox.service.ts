@@ -6,6 +6,7 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
   FieldOption,
+  RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -36,6 +37,17 @@ export class SandboxService {
   getLanguages(): Observable<Array<FieldOption>> {
     const url = `${apiSettings.apiHost}/dataset/languages`;
     return this.http.get<Array<FieldOption>>(url);
+  }
+
+  /** getRecordReport
+   *
+   * request a record report from the server
+   * /dataset/{id}/record
+   */
+  getRecordReport(datasetId: string, recordId: string): Observable<RecordReport> {
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}/record`;
+    const paramString = `recordId=${recordId}&recordIdType=PROVIDER_ID`;
+    return this.http.get<RecordReport>(`${url}?${paramString}`);
   }
 
   /** requestProgress
@@ -69,15 +81,16 @@ export class SandboxService {
     const oaiParameters = harvestUrlOAI
       ? `&metadataformat=${form.value.metadataFormat}&setspec=${form.value.setSpec}`
       : '';
-    const url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
+    let url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}`;
+    url += `?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
 
     const formData = new FormData();
     let fileAppended = false;
 
     fileNames.forEach((fileName: string) => {
-      const file = (form.get(fileName) as FormControl).value;
+      const file = form.get(fileName) as FormControl;
       if (file) {
-        formData.append(fileName, file);
+        formData.append(fileName, file.value);
         fileAppended = true;
       }
     });

@@ -1,11 +1,12 @@
 import { FormGroup } from '@angular/forms';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
-import { mockDataset } from '.';
+import { mockDataset, mockRecordReport } from '.';
 import {
   Dataset,
   DatasetStatus,
   FieldOption,
+  RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
 } from '../_models';
@@ -63,6 +64,17 @@ export class MockSandboxService {
    **/
   getLanguages(): Observable<Array<FieldOption>> {
     return of(mockLanguages);
+  }
+
+  getRecordReport(_: string, __: string): Observable<RecordReport> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getRecordReport throws error`));
+        })
+      );
+    }
+    return of(mockRecordReport).pipe(delay(1));
   }
 
   requestProgress(_: string): Observable<Dataset> {

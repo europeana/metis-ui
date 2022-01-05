@@ -1,11 +1,6 @@
 <div class="form-group" *ngIf="progressData['dataset-info']; let info">
-  <h2
-    class="progress-title"
-    title="({{ progressData.status }})"
-    [ngClass]="{ complete: isComplete() }"
-    i18n="progress title"
-  >
-    <span class="title-name">{{ info['dataset-name'] }}</span
+  <h2 class="progress-title" title="({{ progressData.status }})" i18n="progress title">
+    <span class="title-name" [ngClass]="{ tick: isComplete() }">{{ info['dataset-name'] }}</span
     ><span class="title-id">{{ datasetId }}</span>
   </h2>
 

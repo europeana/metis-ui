@@ -15,6 +15,7 @@ import {
 context('Sandbox', () => {
   const classActive = 'is-active';
   const classSet = 'is-set';
+  const force = { force: true };
 
   const setStep = (step: number): void => {
     cy.get(`.wizard-status li:nth-child(${step}) a`).click();
@@ -135,7 +136,7 @@ context('Sandbox', () => {
       setStep(3);
 
       uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
-      cy.get(selectorInputZipFile).trigger('change', { force: true });
+      cy.get(selectorInputZipFile).trigger('change', force);
       cy.get('.wizard-status li:nth-child(3) a').should('have.class', classSet);
 
       setStep(4);
@@ -169,10 +170,24 @@ context('Sandbox', () => {
       cy.get(selectorErrors).should('have.length', 0);
     });
 
-    it('should allow full navigation of both forms after submit', () => {
+    it('should update the page url on submit', () => {
+      cy.location('pathname').should('not.match', /\d/);
       fillUploadForm(testDatasetName);
       cy.get(selectorBtnSubmitData).click();
-      cy.get(`.wizard-status li:nth-child(1) a`).click();
+      cy.location('pathname').should('match', /\d/);
+    });
+
+    it('should allow full navigation of both forms after submit', () => {
+      // submit a dataset
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
+
+      // confirm the redirect
+      cy.url().should('match', /\d+\/\d+/);
+
+      // confirm the form is navigable
+
+      cy.get(`.wizard-status li:first-child() a`).click();
       navigateSteps(
         () => {
           cy.get(selectorBtnNext).click();
@@ -185,8 +200,17 @@ context('Sandbox', () => {
     });
 
     it('should re-enable the disabled form after submit', () => {
+      // submit a dataset
       fillUploadForm(testDatasetName);
       cy.get(selectorBtnSubmitData).click();
+
+      // confirm the redirect
+      cy.url().should('match', /\d+\/\d+/);
+
+      // confirm the form is disabled
+
+      cy.get(`.wizard-status li:first-child a`).should('have.length', 1);
+
       cy.get(`.wizard-status li:first-child a`).click();
       cy.get(selectorInputName).should('be.disabled');
       cy.get(`.wizard-status li:nth-child(2) a`).click();
@@ -195,7 +219,18 @@ context('Sandbox', () => {
       cy.get(`.wizard-status li:nth-child(3) a`).click();
       cy.get(selectorInputZipFile).should('be.disabled');
       cy.get(`.wizard-status li:nth-child(4) a`).click();
-      cy.get(selectorLinkDatasetForm).click({ force: true });
+
+      // create a new dataset
+
+      // we cant use "force" after a redirect: cypress error (reading 'parent') so scroll down
+      cy.get(selectorLinkDatasetForm)
+        .scrollIntoView()
+        .should('be.visible');
+      cy.wait(500);
+      cy.get(selectorLinkDatasetForm).click();
+
+      // confirm the form is not disabled
+
       cy.get(selectorInputName).should('not.be.disabled');
       cy.get(`.wizard-status li:nth-child(2) a`).click();
       cy.get(selectorInputCountry).should('not.be.disabled');
