@@ -4,7 +4,11 @@ export enum LicenseType {
 }
 
 export enum RecordType {
+  '3D' = '3d',
   'AUDIO' = 'audio',
+  'IMAGE' = 'image',
+  'TEXT' = 'text',
+  'VIDEO' = 'video',
   'OTHER' = 'other'
 }
 

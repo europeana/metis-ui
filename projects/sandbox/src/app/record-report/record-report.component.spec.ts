@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RecordReportComponent } from './record-report.component';
 import { mockRecordReport } from '../_mocked';
-import { MediaDataItem } from '../_models';
+import { DisplayedMetaTier, DisplayedTier, MediaDataItem } from '../_models';
 
 describe('RecordReportComponent', () => {
   let component: RecordReportComponent;
@@ -102,14 +102,24 @@ describe('RecordReportComponent', () => {
   });
 
   it('should set the metadata', () => {
-    expect(component.visibleMetadata).toEqual(0);
+    expect(component.visibleMetadata).toEqual(DisplayedMetaTier.LANGUAGE);
     component.setMetadata(1);
-    expect(component.visibleMetadata).toEqual(1);
+    expect(component.visibleMetadata).toEqual(DisplayedMetaTier.ELEMENTS);
   });
 
   it('should set the media', () => {
-    expect(component.visibleTier).toEqual(0);
-    component.setView(1);
-    expect(component.visibleTier).toEqual(1);
+    expect(component.visibleTier).toEqual(DisplayedTier.CONTENT);
+    component.setView(DisplayedTier.METADATA);
+    expect(component.visibleTier).toEqual(DisplayedTier.METADATA);
+  });
+
+  it('should reset the index tracking variable', () => {
+    component.visibleMedia = 123;
+    component.visibleMetadata = DisplayedMetaTier.CLASSES;
+    component.visibleTier = DisplayedTier.METADATA;
+    component.report = mockRecordReport;
+    expect(component.visibleMedia).toEqual(0);
+    expect(component.visibleMetadata as number).toEqual(DisplayedMetaTier.LANGUAGE);
+    expect(component.visibleTier as number).toEqual(DisplayedTier.CONTENT);
   });
 });

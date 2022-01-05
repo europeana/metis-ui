@@ -1,5 +1,12 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { ClassMap, MediaDataItem, RecordReport } from '../_models';
+import {
+  ClassMap,
+  DisplayedMetaTier,
+  DisplayedTier,
+  MediaDataItem,
+  RecordReport
+} from '../_models';
+import { NavigationOrbsComponent } from '../navigation-orbs';
 
 @Component({
   selector: 'sb-record-report',
@@ -10,9 +17,12 @@ export class RecordReportComponent {
   _report: RecordReport;
 
   mediaCollapsed = false;
-  maxMediaItems = 5;
 
   techData: Array<MediaDataItem>;
+
+  visibleTier: DisplayedTier = DisplayedTier.CONTENT;
+  visibleMedia = 0;
+  visibleMetadata: DisplayedMetaTier = DisplayedMetaTier.LANGUAGE;
 
   @ViewChild('inputMediaIndex') inputMediaIndex: ElementRef;
 
@@ -20,13 +30,13 @@ export class RecordReportComponent {
   set report(report: RecordReport) {
     this._report = report;
     this.techData = this._report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
-    this.mediaCollapsed = this.techData.length > this.maxMediaItems;
+    this.mediaCollapsed = this.techData.length > NavigationOrbsComponent.maxOrbsUncollapsed;
     this.setOrbMediaIcons();
-  }
 
-  visibleTier = 0;
-  visibleMedia = 0;
-  visibleMetadata = 0;
+    this.visibleTier = DisplayedTier.CONTENT;
+    this.visibleMedia = 0;
+    this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
+  }
 
   changeMediaIndex(event: KeyboardEvent): void {
     const input = event.target as HTMLInputElement;
@@ -45,9 +55,9 @@ export class RecordReportComponent {
 
   getOrbConfigInner(i: number): ClassMap {
     return {
-      'content-tier-orb': i === 0,
+      'content-tier-orb': i === DisplayedTier.CONTENT,
       'is-active': this.visibleTier === i,
-      'metadata-tier-orb': i === 1,
+      'metadata-tier-orb': i === DisplayedTier.METADATA,
       'indicator-orb': true,
       'indicate-tier': true
     };
@@ -82,9 +92,9 @@ export class RecordReportComponent {
       'is-active': this.visibleMetadata === i,
       'indicator-orb': true,
       'indicate-tier': true,
-      'language-orb': i === 0,
-      'element-orb': i === 1,
-      'classes-orb': i === 2
+      'language-orb': i === DisplayedMetaTier.LANGUAGE,
+      'element-orb': i === DisplayedMetaTier.ELEMENTS,
+      'classes-orb': i === DisplayedMetaTier.CLASSES
     };
   }
 

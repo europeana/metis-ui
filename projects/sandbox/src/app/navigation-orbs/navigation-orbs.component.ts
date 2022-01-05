@@ -7,6 +7,7 @@ import { ClassMap } from '../_models';
   styleUrls: ['./navigation-orbs.component.scss']
 })
 export class NavigationOrbsComponent {
+  static maxOrbsUncollapsed: number = 5;
   collapsed = false;
   @Input() index = 0;
   steps: Array<number>;
@@ -14,9 +15,7 @@ export class NavigationOrbsComponent {
 
   @Input()
   set count(count: number) {
-    if (count > 5) {
-      this.collapsed = true;
-    }
+    this.collapsed = count > NavigationOrbsComponent.maxOrbsUncollapsed;
     this.steps = new Array(count).fill(null).map((_: number, num: number) => {
       return num;
     });
