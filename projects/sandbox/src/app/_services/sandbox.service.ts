@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { ProtocolType } from 'shared';
+
 import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
@@ -68,19 +70,22 @@ export class SandboxService {
     form: FormGroup,
     fileNames: Array<string>
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
-    const harvestUrl = form.value.url;
-    const harvestUrlOAI = form.value.harvestUrl;
+    const protocol = form.value.uploadProtocol;
+    let sendUrl = '';
+    let harvestType = 'harvestByFile';
+    let oaiParameters = '';
 
-    const sendUrl = harvestUrl ? harvestUrl : harvestUrlOAI ? harvestUrlOAI : '';
-    const harvestType = harvestUrl
-      ? 'harvestByUrl'
-      : harvestUrlOAI
-      ? 'harvestOaiPmh'
-      : 'harvestByFile';
+    if (protocol === ProtocolType.HTTP_HARVEST) {
+      sendUrl = form.value.url;
+      harvestType = 'harvestByUrl';
+    } else if (protocol === ProtocolType.OAIPMH_HARVEST) {
+      sendUrl = form.value.harvestUrl;
+      harvestType = 'harvestOaiPmh';
+      oaiParameters = `&metadataformat=${form.value.metadataFormat}&setspec=${form.value.setSpec}`;
+    }
+
     const urlParameter = sendUrl.length > 0 ? '&url=' + encodeURIComponent(sendUrl) : '';
-    const oaiParameters = harvestUrlOAI
-      ? `&metadataformat=${form.value.metadataFormat}&setspec=${form.value.setSpec}`
-      : '';
+
     let url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}`;
     url += `?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
 

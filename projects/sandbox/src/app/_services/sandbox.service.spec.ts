@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormControl } from '@angular/forms';
-import { MockHttp } from 'shared';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ProtocolType, MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockCountries, mockDataset, mockLanguages, mockRecordReport } from '../_mocked';
 import {
@@ -79,35 +79,30 @@ describe('sandbox service', () => {
     const setSpec = 'yyy';
     const url = 'http://xyz.com';
 
-    const form1 = formBuilder.group({
-      name: [name, []],
-      country: [country, []],
-      language: [language, []],
-      url: [url, []]
-    });
+    const getForm = (protocol: ProtocolType): FormGroup => {
+      const res = formBuilder.group({
+        name: [name, []],
+        country: [country, []],
+        language: [language, []],
+        harvestUrl: [url, []],
+        metadataFormat: [metadataFormat, []],
+        setSpec: [setSpec, []],
+        uploadProtocol: [protocol, []],
+        url: [url, []]
+      });
+      res.addControl('xsltFile', new FormControl(''));
+      return res;
+    };
 
-    const form2 = formBuilder.group({
-      name: [name, []],
-      country: [country, []],
-      language: [language, []]
-    });
-    form2.addControl('xsltFile', new FormControl(''));
-
-    const form3 = formBuilder.group({
-      name: [name, []],
-      country: [country, []],
-      language: [language, []],
-      harvestUrl: [url, []],
-      metadataFormat: [metadataFormat, []],
-      setSpec: [setSpec, []]
-    });
+    const form1 = getForm(ProtocolType.HTTP_HARVEST);
+    const form2 = getForm(ProtocolType.ZIP_UPLOAD);
+    const form3 = getForm(ProtocolType.OAIPMH_HARVEST);
 
     const sub1 = service
       .submitDataset(form1, [])
       .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         expect(response).toBeTruthy();
       });
-
     const sub2 = service
       .submitDataset(form2, ['xsltFile', 'does-not-exist'])
       .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
@@ -134,7 +129,6 @@ describe('sandbox service', () => {
       .expect('POST', `/dataset/${name}/harvestByFile?country=${country}&language=${language}`)
       .body(new FormData())
       .send(form2);
-
     mockHttp
       .expect(
         'POST',
