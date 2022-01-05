@@ -7,7 +7,7 @@ import { ClassMap } from '../_models';
   styleUrls: ['./navigation-orbs.component.scss']
 })
 export class NavigationOrbsComponent {
-  static maxOrbsUncollapsed: number = 5;
+  static maxOrbsUncollapsed = 5;
   collapsed = false;
   @Input() index = 0;
   steps: Array<number>;
