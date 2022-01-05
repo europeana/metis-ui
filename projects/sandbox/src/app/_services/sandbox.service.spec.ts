@@ -108,7 +108,6 @@ describe('sandbox service', () => {
       .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
         expect(response).toBeTruthy();
       });
-
     const sub3 = service
       .submitDataset(form3, [])
       .subscribe((response: SubmissionResponseData | SubmissionResponseDataWrapped) => {
@@ -124,7 +123,6 @@ describe('sandbox service', () => {
       )
       .body(new FormData())
       .send(form1);
-
     mockHttp
       .expect('POST', `/dataset/${name}/harvestByFile?country=${country}&language=${language}`)
       .body(new FormData())
