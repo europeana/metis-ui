@@ -80,7 +80,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
             confirm: ['', Validators.required]
           },
           {
-            validator: MatchPasswordValidator
+            validators: MatchPasswordValidator
           }
         )
       });

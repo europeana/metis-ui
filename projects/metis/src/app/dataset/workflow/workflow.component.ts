@@ -227,7 +227,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       }
     });
     this.workflowForm = this.fb.group(formGroupConf, {
-      validator: (): { [key: string]: boolean } | null => {
+      validators: (): { [key: string]: boolean } | null => {
         if (this.inputFields && this.hasGapInSequence(this.inputFields.toArray())) {
           return { gapInSequence: true };
         }
