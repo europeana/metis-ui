@@ -40,6 +40,7 @@ new (class extends TestDataServer {
 
     const fn = (): void => {
       this.timedTargets.forEach((tgt: TimedTarget) => {
+        tgt.timesCalled += 1;
         this.makeProgress(tgt);
       });
     };
@@ -136,8 +137,10 @@ new (class extends TestDataServer {
     const info = timedTarget.datasetInfo;
     if (info['processed-records'] === info['total-records']) {
       info.status = DatasetStatus.COMPLETED;
-      info['portal-preview'] = 'this-collection/that-dataset/preview';
-      info['portal-publish'] = 'this-collection/that-dataset/publish';
+      if (timedTarget.timesCalled >= 5) {
+        info['portal-preview'] = 'this-collection/that-dataset/preview';
+        info['portal-publish'] = 'this-collection/that-dataset/publish';
+      }
       return;
     }
     info['processed-records'] += 1;
@@ -237,7 +240,8 @@ new (class extends TestDataServer {
         error: parseInt(paddedId[3]),
         statusTargets: statusTargets
       },
-      datasetInfo: datasetInfo
+      datasetInfo: datasetInfo,
+      timesCalled: 0
     });
   }
 
