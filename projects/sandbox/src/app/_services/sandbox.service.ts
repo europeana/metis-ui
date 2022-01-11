@@ -106,9 +106,7 @@ export class SandboxService {
         reportProgress: true
       }) as Observable<SubmissionResponseDataWrapped>;
     } else {
-      return this.http.post<SubmissionResponseData>(url, formData) as Observable<
-        SubmissionResponseData
-      >;
+      return this.http.post<SubmissionResponseData>(url, formData);
     }
   }
 }

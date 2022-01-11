@@ -51,14 +51,6 @@ describe('ProgressTrackerComponent', () => {
       expect(modalConfirms.open).toHaveBeenCalled();
     });
 
-    it('should report if links are available', () => {
-      expect(component.hasLinks()).toBeTruthy();
-      mockDataset['portal-preview'] = undefined;
-      expect(component.hasLinks()).toBeTruthy();
-      mockDataset['portal-publish'] = undefined;
-      expect(component.hasLinks()).toBeFalsy();
-    });
-
     it('should report if complete', () => {
       expect(component.isComplete()).toBeTruthy();
       mockDataset.status = DatasetStatus.IN_PROGRESS;
