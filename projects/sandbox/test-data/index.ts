@@ -49,7 +49,7 @@ new (class extends TestDataServer {
   /**
    * handle404
    *
-   * Handles 404 errors by displaying a message
+   * Handles 404 errors by setting the response status code and ending it with a message
    *
    * @param {string} route - the invalid route
    * @param {ServerResponse} response - the response object
@@ -60,6 +60,7 @@ new (class extends TestDataServer {
     const urlPOST = '/dataset/my-dataset-name/process' + urlParams;
     const urlGET = '/dataset/1';
     this.headerText(response);
+    response.statusCode = 404;
     response.end(
       super.get404() +
         `<br/><br/>You came <b><a href="${route}">here</a></b> but you need a correct url
@@ -270,6 +271,19 @@ new (class extends TestDataServer {
    **/
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
     const route = request.url as string;
+
+    if (request.method === 'OPTIONS') {
+      response.setHeader(
+        'Access-Control-Allow-Headers',
+        'authorization,X-Requested-With,content-type'
+      );
+      response.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,POST,PUT,DELETE,OPTIONS');
+      response.setHeader('Access-Control-Max-Age', '1800');
+      response.setHeader('Allow', 'GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH');
+      response.setHeader('Connection', 'Keep-Alive');
+      response.end();
+      return;
+    }
     if (request.method === 'POST') {
       const regRes = route.match(/\/dataset\/(\S+)\//);
 
@@ -342,13 +356,18 @@ new (class extends TestDataServer {
 
         if (regRes) {
           const recordId = parseInt(regRes[2]);
-          const report = this.reportGenerator.generateReport(recordId);
-          if (recordId > 999) {
-            setTimeout(() => {
-              response.end(report);
-            }, recordId);
+
+          if (recordId === 404) {
+            this.handle404(route, response);
           } else {
-            response.end(report);
+            const report = this.reportGenerator.generateReport(recordId);
+            if (recordId > 999) {
+              setTimeout(() => {
+                response.end(report);
+              }, recordId);
+            } else {
+              response.end(report);
+            }
           }
           return;
         }
