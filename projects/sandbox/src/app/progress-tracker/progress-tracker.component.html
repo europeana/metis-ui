@@ -21,18 +21,14 @@
 
     <ul class="portal-links">
       <li>
-        <ng-template #empty
-          ><span
-            class="pending"
-            title="A review URL will be generated when the dataset has finished processing"
-            >view preview</span
-          ></ng-template
-        >
         <a
-          *ngIf="progressData['portal-preview']; let link; else: empty"
-          class="pending "
           [ngClass]="{ pending: !progressData['portal-preview'] }"
-          href="{{ progressData['portal-preview'] }}"
+          [attr.href]="progressData['portal-preview']"
+          [attr.title]="
+            progressData['portal-preview']
+              ? ''
+              : 'A review URL will be generated when the dataset has finished processing'
+          "
           i18n="progress link link@@progressLinkPreview"
           target="_blank"
           rel="noopener"
@@ -40,18 +36,15 @@
         >
       </li>
       <li>
-        <ng-template #empty
-          ><span
-            class="pending"
-            title="A review URL will be generated when the dataset has finished processing"
-            >view publish</span
-          ></ng-template
-        >
         <a
-          *ngIf="progressData['portal-publish']; let link; else: empty"
           [ngClass]="{ pending: !progressData['portal-publish'] }"
-          href="{{ progressData['portal-publish'] }}"
-          i18n="progress link link@@progressLinkPublish"
+          [attr.href]="progressData['portal-publish']"
+          [attr.title]="
+            progressData['portal-publish']
+              ? ''
+              : 'A review URL will be generated when the dataset has finished processing'
+          "
+          i18n="progress link link@@progressLinkPreview"
           target="_blank"
           rel="noopener"
           >view publish</a

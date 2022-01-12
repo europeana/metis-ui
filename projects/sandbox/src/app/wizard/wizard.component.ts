@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators, ValidationErrors } fro
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
+import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   DataPollingComponent,
@@ -547,14 +548,28 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
       this.isBusyProgress = true;
       this.isBusyProgressLinks = true;
-      this.clearDataPollers();
-
       this.isPollingProgress = true;
+
+      this.clearDataPollers();
 
       this.createNewDataPoller(
         apiSettings.interval,
         (): Observable<Dataset> => {
-          return this.sandbox.requestProgress(idToTrack);
+          return this.sandbox.requestProgress(idToTrack).pipe(
+            // temporary removal of back-end info
+
+            map((dataset: Dataset) => {
+              const nullString =
+                'A review URL will be generated when the dataset has finished processing';
+              if (dataset['portal-preview'] === nullString) {
+                delete dataset['portal-preview'];
+              }
+              if (dataset['portal-publish'] === nullString) {
+                delete dataset['portal-publish'];
+              }
+              return dataset;
+            })
+          );
         },
         (progressInfo: Dataset) => {
           this.progressData = progressInfo;
