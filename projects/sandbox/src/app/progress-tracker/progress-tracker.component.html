@@ -18,20 +18,33 @@
       </li>
       <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
     </ul>
-    <ul *ngIf="hasLinks()" class="portal-links">
-      <li *ngIf="progressData['portal-preview']; let link">
+
+    <ul class="portal-links">
+      <li>
         <a
-          href="{{ link }}"
+          [ngClass]="{ pending: !progressData['portal-preview'] }"
+          [attr.href]="progressData['portal-preview']"
+          [attr.title]="
+            progressData['portal-preview']
+              ? ''
+              : 'A review URL will be generated when the dataset has finished processing'
+          "
           i18n="progress link link@@progressLinkPreview"
           target="_blank"
           rel="noopener"
           >view preview</a
         >
       </li>
-      <li *ngIf="progressData['portal-publish']; let link">
+      <li>
         <a
-          href="{{ link }}"
-          i18n="progress link link@@progressLinkPublish"
+          [ngClass]="{ pending: !progressData['portal-publish'] }"
+          [attr.href]="progressData['portal-publish']"
+          [attr.title]="
+            progressData['portal-publish']
+              ? ''
+              : 'A review URL will be generated when the dataset has finished processing'
+          "
+          i18n="progress link link@@progressLinkPreview"
           target="_blank"
           rel="noopener"
           >view publish</a

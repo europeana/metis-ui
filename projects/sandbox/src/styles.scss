@@ -86,23 +86,44 @@ label {
 
 .portal-links {
   a {
-    position: relative;
     display: inline-block;
     word-break: break-all;
 
     &::after {
       background-image: svg-url-icon-external('#{$eu-jade-classic}');
-      background-repeat: no-repeat;
-      content: '';
-      display: block;
-      position: absolute;
-      height: 1em;
       right: -1.35em;
-      top: 0.425em;
-      width: 1em;
     }
     &:hover::after {
       background-image: svg-url-icon-external('#{$eu-jade-darkest}');
+    }
+  }
+
+  a,
+  .pending {
+    position: relative;
+    &::after {
+      background-repeat: no-repeat;
+      content: '';
+      display: block;
+      height: 1em;
+      top: 0.425em;
+      position: absolute;
+      width: 1em;
+    }
+  }
+
+  a {
+    transition: 0.5s ease-in-out color;
+  }
+
+  .pending {
+    color: $eu-jade-disabled;
+    cursor: default;
+    &::after,
+    &:hover::after {
+      background-image: svg-url-icon-spin('#{$eu-jade-classic}');
+      background-size: 0.85em;
+      right: -1.2em;
     }
   }
 }

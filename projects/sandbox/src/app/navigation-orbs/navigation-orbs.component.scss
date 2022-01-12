@@ -2,7 +2,7 @@
 
 .disabled {
   border-color: $eu-jade-light;
-  background-color: #7ed4b6;
+  background-color: $eu-jade-disabled;
   pointer-events: none;
   &::after {
     opacity: 0.35;

@@ -56,15 +56,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
-   * hasLinks
-   * Template utility to detect if links are available
-   * @returns boolean
-   **/
-  hasLinks(): boolean {
-    return !!this.progressData['portal-preview'] || !!this.progressData['portal-publish'];
-  }
-
-  /**
    * isComplete
    * Template utility to detect if processing is complete
    * @returns boolean

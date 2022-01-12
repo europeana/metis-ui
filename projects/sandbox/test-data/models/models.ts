@@ -17,4 +17,5 @@ export enum ProgressByStepStatus {
 export interface TimedTarget {
   progressBurndown: ProgressBurndown;
   datasetInfo: Dataset;
+  timesCalled: number;
 }

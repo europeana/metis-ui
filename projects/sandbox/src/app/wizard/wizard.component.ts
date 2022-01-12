@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { merge, Observable, timer } from 'rxjs';
+import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   DataPollingComponent,
@@ -46,6 +47,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   resetBusyDelay = 1000;
   isBusy = false;
   isBusyProgress = false;
+  isBusyProgressLinks = false;
   isBusyReport = false;
   isPollingProgress = false;
   isPollingRecord = false;
@@ -147,6 +149,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const stepConf = this.wizardConf[i];
     const isProgressTrack = this.getIsProgressTrack(i);
     const isRecordTrack = this.getIsRecordTrack(i);
+    const isLoading =
+      (isProgressTrack && this.isBusyProgress) ||
+      (isRecordTrack && this.isBusyReport) ||
+      this.isBusy;
     return {
       'is-set': this.stepIsComplete(i),
       'is-active': this.currentStepIndex === i,
@@ -155,11 +161,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       'report-orb': isRecordTrack,
       'indicator-orb': this.getStepIsIndicator(i),
       'submitted-orb': this.getStepIsSubmitted(stepConf),
-      spinner: isProgressTrack
-        ? this.isBusyProgress
-        : isRecordTrack
-        ? this.isBusyReport
-        : this.isBusy,
+      spinner: isLoading,
       'indicate-complete':
         (!isRecordTrack && this.progressComplete()) || (isRecordTrack && !!this.recordReport),
       'indicate-polling':
@@ -262,7 +264,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { FormControl } control - the control to validate
    * @returns null or a code-keyed boolean
    **/
-  validateDatasetId(control: FormControl): { [key: string]: boolean } | null {
+  validateDatasetId(control: FormControl): ValidationErrors | null {
     const val = control.value;
     if (val) {
       const matches = `${val}`.match(/[0-9]+/);
@@ -279,7 +281,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     return null;
   }
 
-  validateRecordId(control: FormControl): { [key: string]: boolean } | null {
+  validateRecordId(control: FormControl): ValidationErrors | null {
     const val = control.value;
     if (val) {
       const idError = this.validateDatasetId(control);
@@ -302,7 +304,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { FormControl } control - the control to validate
    * @returns null or a code-keyed boolean
    **/
-  validateDatasetName(control: FormControl): { [key: string]: boolean } | null {
+  validateDatasetName(control: FormControl): ValidationErrors | null {
     const val = control.value;
     if (val) {
       const matches = `${val}`.match(/[a-zA-Z0-9_]+/);
@@ -545,21 +547,41 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       const idToTrack = ctrl.value;
 
       this.isBusyProgress = true;
+      this.isBusyProgressLinks = true;
+      this.isPollingProgress = true;
+
       this.clearDataPollers();
 
       this.createNewDataPoller(
         apiSettings.interval,
         (): Observable<Dataset> => {
-          this.isPollingProgress = true;
-          return this.sandbox.requestProgress(idToTrack);
+          return this.sandbox.requestProgress(idToTrack).pipe(
+            // temporary removal of back-end info
+
+            map((dataset: Dataset) => {
+              const nullString =
+                'A review URL will be generated when the dataset has finished processing';
+              if (dataset['portal-preview'] === nullString) {
+                delete dataset['portal-preview'];
+              }
+              if (dataset['portal-publish'] === nullString) {
+                delete dataset['portal-publish'];
+              }
+              return dataset;
+            })
+          );
         },
         (progressInfo: Dataset) => {
           this.progressData = progressInfo;
           this.trackDatasetId = idToTrack;
 
           if (this.progressComplete()) {
-            this.clearDataPollers();
             this.resetBusy();
+
+            if (this.progressData['portal-preview'] && this.progressData['portal-publish']) {
+              this.isBusyProgressLinks = false;
+              this.clearDataPollers();
+            }
           }
 
           this.error = undefined;
