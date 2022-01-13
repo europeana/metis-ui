@@ -361,7 +361,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('should format missing url parameters as a blank string', () => {
-      let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
+      const result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
       const httpHarvestConf = result.metisPluginsMetadata.filter(
         (x) => x.pluginType === 'HTTP_HARVEST'
       )[0] as HarvestPluginMetadataBase;
