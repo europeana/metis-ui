@@ -9,6 +9,7 @@ import {
   MockErrorService,
   mockFirstPageResults,
   mockHarvestData,
+  mockHistoryVersion,
   mockLogs,
   mockReport,
   mockReportAvailability,
@@ -22,17 +23,19 @@ import {
   mockXmlSamples
 } from '../_mocked';
 import {
+  HistoryVersion,
   IncrementalHarvestingAllowedResult,
   PluginAvailabilityList,
   PluginType,
   ReportAvailability,
-  WorkflowExecution
+  WorkflowExecution,
+  WorkflowStatus
 } from '../_models';
 import { TranslateService } from '../_translate';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
-describe('workflow service', () => {
+describe('Workflow Service', () => {
   let mockHttp: MockHttp;
   let service: WorkflowService;
 
@@ -313,6 +316,22 @@ describe('workflow service', () => {
     sub.unsubscribe();
   });
 
+  it('should get all executions (ongoing)', () => {
+    const sub1 = service.getAllExecutionsUptoPage(0, true).subscribe((results) => {
+      expect(results).toBeTruthy();
+    });
+
+    mockHttp
+      .expect(
+        'GET',
+        '/orchestrator/workflows/executions/' +
+          '?orderField=CREATED_DATE&ascending=false&nextPage=0' +
+          '&workflowStatus=INQUEUE&workflowStatus=RUNNING'
+      )
+      .send({ results: mockWorkflowExecutionResults.results, more: false });
+    sub1.unsubscribe();
+  });
+
   it('should get all executions', () => {
     const sub1 = service.getAllExecutionsCollectingPages(false).subscribe((results) => {
       expect(results).toEqual(
@@ -507,5 +526,53 @@ describe('workflow service', () => {
       datasetId: '11',
       datasetName: 'The Name'
     });
+  });
+
+  it('should get the version history', () => {
+    const execId = '123';
+    const pluginType = PluginType.HTTP_HARVEST;
+
+    const sub = service
+      .getVersionHistory(execId, pluginType)
+      .subscribe((versions: Array<HistoryVersion>) => {
+        expect(versions).toEqual(mockHistoryVersion.evolutionSteps);
+      });
+
+    mockHttp
+      .expect('GET', `/orchestrator/workflows/evolution/${execId}/${pluginType}`)
+      .send(mockHistoryVersion);
+    sub.unsubscribe();
+  });
+
+  it('should get the workflow cancelled-by', () => {
+    const cancelledWorkflow = Object.assign({}, mockWorkflowExecution);
+    cancelledWorkflow.cancelledBy = '1';
+    cancelledWorkflow.workflowStatus = WorkflowStatus.CANCELLED;
+
+    const sub1 = service
+      .getWorkflowCancelledBy(cancelledWorkflow)
+      .subscribe((res: string | undefined) => {
+        expect(res).toEqual('mocked test');
+      });
+
+    cancelledWorkflow.cancelledBy = 'SYSTEM_MINUTE_CAP_EXPIRE';
+
+    const sub2 = service
+      .getWorkflowCancelledBy(cancelledWorkflow)
+      .subscribe((res: string | undefined) => {
+        expect(res).toEqual('en:systemTimeout');
+      });
+
+    cancelledWorkflow.cancelledBy = undefined;
+
+    const sub3 = service
+      .getWorkflowCancelledBy(cancelledWorkflow)
+      .subscribe((res: string | undefined) => {
+        expect(res).toEqual(undefined);
+      });
+
+    sub1.unsubscribe();
+    sub2.unsubscribe();
+    sub3.unsubscribe();
   });
 });

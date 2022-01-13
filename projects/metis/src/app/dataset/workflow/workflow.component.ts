@@ -497,7 +497,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
             ParameterFieldName.metadataFormat,
             ParameterFieldName.setSpec
           ];
-          const paramsHTTP: ParameterField = [ParameterFieldName.url];
+          const paramsHTTP: ParameterField = [
+            ParameterFieldName.url,
+            ParameterFieldName.incrementalHarvest
+          ];
           const dataHTTP = this.formatFormValue(
             PluginType.HTTP_HARVEST,
             paramsHTTP,
