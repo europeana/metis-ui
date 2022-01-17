@@ -7,7 +7,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     elementLinkType: 'edm:isShownBy',
     imageResolution: '1 kilobytes',
     verticalResolution: '16 pixels',
-    licenceType: LicenseType.RESTRICTED
+    licenseType: LicenseType.RESTRICTED
   },
   {
     resourceUrl: 'https://3d-resource-url.com',
@@ -15,7 +15,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     elementLinkType: 'edm:isShownBy',
     imageResolution: '33.8 megapixel',
     verticalResolution: '128 pixels',
-    licenceType: LicenseType.RESTRICTED
+    licenseType: LicenseType.RESTRICTED
   },
   {
     resourceUrl: 'https://audio-resource-url.com',
@@ -23,7 +23,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     elementLinkType: 'edm:isShownBy',
     imageResolution: '28.3 megapixel',
     verticalResolution: '0 pixels',
-    licenceType: LicenseType.OPEN
+    licenseType: LicenseType.OPEN
   },
   {
     resourceUrl: 'https://image-resource-url.com',
@@ -31,7 +31,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     elementLinkType: 'edm:isShownBy',
     imageResolution: '91.12 megapixel',
     verticalResolution: '480 pixels',
-    licenceType: LicenseType.RESTRICTED
+    licenseType: LicenseType.RESTRICTED
   },
   {
     resourceUrl: 'https://video-resource-url.com',
@@ -39,7 +39,7 @@ export const mockMediaResources: Array<MediaDataItem> = [
     elementLinkType: 'edm:isShownBy',
     imageResolution: '5 megapixel',
     verticalResolution: '320 pixels',
-    licenceType: LicenseType.RESTRICTED
+    licenseType: LicenseType.RESTRICTED
   }
 ];
 
@@ -49,7 +49,7 @@ export const mockRecordReport: RecordReport = {
     providerRecordId: 'providerRecordId',
     contentTier: '4',
     metadataTier: 'C',
-    portalLink: 'https://example.com',
+    portalRecordLink: 'https://example.com',
     harvestedRecordLink: 'https://example.com'
   },
   contentTierBreakdown: {

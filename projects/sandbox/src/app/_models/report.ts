@@ -17,7 +17,7 @@ interface RecordTierCalculationSummary {
   providerRecordId: string;
   contentTier: string;
   metadataTier: string;
-  portalLink: string;
+  portalRecordLink: string;
   harvestedRecordLink: string;
 }
 
@@ -27,7 +27,7 @@ export interface MediaDataItem {
   elementLinkType: string;
   imageResolution: string;
   verticalResolution: string;
-  licenceType: LicenseType;
+  licenseType: LicenseType;
 
   cssClass?: string;
 }

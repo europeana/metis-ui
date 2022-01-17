@@ -57,7 +57,7 @@
       Licence Type
     </span>
     <span class="report-value">
-      {{ data.licenceType }}
+      {{ data.licenseType }}
     </span>
   </ng-template>
 
@@ -130,7 +130,7 @@
     </span>
     <span
       class="report-value portal-links"
-      *ngFor="let url of [_report.recordTierCalculationSummary.portalLink]"
+      *ngFor="let url of [_report.recordTierCalculationSummary.portalRecordLink]"
     >
       <a [href]="url" target="_blank">{{ url }}</a>
     </span>
