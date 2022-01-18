@@ -6,6 +6,7 @@ import {
   DatasetOverview,
   HarvestData,
   HistoryVersion,
+  HistoryVersions,
   MoreResults,
   NodePathStatistics,
   PluginAvailabilityList,
@@ -44,6 +45,10 @@ export const mockHistoryVersions: Array<HistoryVersion> = [
     pluginType: PluginType.TRANSFORMATION
   }
 ];
+
+export const mockHistoryVersion: HistoryVersions = {
+  evolutionSteps: mockHistoryVersions
+};
 
 export const mockWorkflow: Workflow = {
   datasetId: '1',

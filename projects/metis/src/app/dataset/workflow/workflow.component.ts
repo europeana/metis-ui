@@ -377,6 +377,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     for (const thisWorkflow of workflow.metisPluginsMetadata) {
       if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
+        this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
       } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
         this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
@@ -497,7 +498,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
             ParameterFieldName.metadataFormat,
             ParameterFieldName.setSpec
           ];
-          const paramsHTTP: ParameterField = [ParameterFieldName.url];
+          const paramsHTTP: ParameterField = [
+            ParameterFieldName.url,
+            ParameterFieldName.incrementalHarvest
+          ];
           const dataHTTP = this.formatFormValue(
             PluginType.HTTP_HARVEST,
             paramsHTTP,

@@ -18,7 +18,8 @@ function checkPluginStatus(name: string, enabled: boolean): void {
 context('metis-ui', () => {
   describe('Workflow Form', () => {
     const fieldsOnlyHTTP = ['#url'];
-    const fieldsOnlyOAI = ['#incremental-harvest', '#harvest-url', '#setspec', '#metadata-format'];
+    const fieldsOnlyOAI = ['#harvest-url', '#setspec', '#metadata-format'];
+    const fieldsBoth = ['#incremental-harvest'];
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
@@ -56,6 +57,9 @@ context('metis-ui', () => {
       });
 
       it('should show the appropriate fields', () => {
+        fieldsBoth.forEach((selector: string) => {
+          cy.get(selector).should('have.length', 1);
+        });
         fieldsOnlyHTTP.forEach((selector: string) => {
           cy.get(selector).should('have.length', 1);
         });
@@ -71,6 +75,9 @@ context('metis-ui', () => {
       });
 
       it('should show the appropriate fields', () => {
+        fieldsBoth.forEach((selector: string) => {
+          cy.get(selector).should('have.length', 1);
+        });
         fieldsOnlyOAI.forEach((selector: string) => {
           cy.get(selector).should('have.length', 1);
         });

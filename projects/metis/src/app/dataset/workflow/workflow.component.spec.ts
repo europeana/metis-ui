@@ -14,6 +14,7 @@ import {
 import {
   DragType,
   HarvestPluginMetadataBase,
+  IncrementalHarvestPluginMetadata,
   NotificationType,
   OAIHarvestPluginMetadata,
   PluginMetadata,
@@ -226,7 +227,7 @@ describe('WorkflowComponent', () => {
       component.onHeaderSynchronised();
       expect(component.rearrange).not.toHaveBeenCalled();
 
-      const testWorkflowData = Object.assign({}, workflowData);
+      const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
       component.workflowData = testWorkflowData;
       component.onHeaderSynchronised();
       expect(component.rearrange).toHaveBeenCalledWith(3, true);
@@ -298,7 +299,7 @@ describe('WorkflowComponent', () => {
         return component.workflowForm.get('incrementalHarvest') as FormControl;
       };
 
-      const testWorkflowData = Object.assign({}, workflowData);
+      const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
       testWorkflowData.metisPluginsMetadata = testWorkflowData.metisPluginsMetadata.slice(0, 1);
 
       component.workflowData = testWorkflowData;
@@ -319,6 +320,38 @@ describe('WorkflowComponent', () => {
       expect(getField().disabled).toBeFalsy();
     }));
 
+    it('should send the incremental-harvesting field', fakeAsync(() => {
+      let result = component.formatFormValues();
+
+      expect(
+        (result.metisPluginsMetadata.filter((x) => {
+          return x.pluginType === PluginType.OAIPMH_HARVEST;
+        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+      ).toBeFalsy();
+
+      expect(
+        (result.metisPluginsMetadata.filter((x) => {
+          return x.pluginType === PluginType.HTTP_HARVEST;
+        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+      ).toBeFalsy();
+
+      const field = component.workflowForm.get('incrementalHarvest') as FormControl;
+      field.setValue(true);
+      result = component.formatFormValues();
+
+      expect(
+        (result.metisPluginsMetadata.filter((x) => {
+          return x.pluginType === PluginType.OAIPMH_HARVEST;
+        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+      ).toBeTruthy();
+
+      expect(
+        (result.metisPluginsMetadata.filter((x) => {
+          return x.pluginType === PluginType.HTTP_HARVEST;
+        })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
+      ).toBeTruthy();
+    }));
+
     it('should format the form values', () => {
       let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
       expect(result.metisPluginsMetadata.length).toBeGreaterThan(1);
@@ -328,7 +361,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('should format missing url parameters as a blank string', () => {
-      let result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
+      const result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
       const httpHarvestConf = result.metisPluginsMetadata.filter(
         (x) => x.pluginType === 'HTTP_HARVEST'
       )[0] as HarvestPluginMetadataBase;
@@ -337,7 +370,6 @@ describe('WorkflowComponent', () => {
       )[0] as OAIHarvestPluginMetadata;
       expect(oaipmhHarvestConf.url).toEqual('');
       expect(httpHarvestConf.url).toEqual('');
-      result = component.formatFormValues();
     });
 
     it('should reset', () => {
@@ -431,7 +463,7 @@ describe('WorkflowComponent', () => {
 
     it('should extract the workflow params (always)', () => {
       const httpUrl = 'HTTP_URL';
-      const testWorkflowData = Object.assign({}, workflowData);
+      const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
       const plugin = testWorkflowData.metisPluginsMetadata[0];
       plugin.pluginType = 'HTTP_HARVEST';
       (plugin as HarvestPluginMetadataBase).url = httpUrl;
@@ -441,7 +473,7 @@ describe('WorkflowComponent', () => {
 
     it('should extract the workflow params (enabled)', () => {
       const pluginType = 'HTTP_HARVEST';
-      const testWorkflowData = Object.assign({}, workflowData);
+      const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
       const plugin = testWorkflowData.metisPluginsMetadata[0];
       plugin.pluginType = pluginType;
       plugin.enabled = false;
