@@ -75,20 +75,16 @@ export const mockRecordReport: RecordReport = {
       potentialLanguageQualifiedElements: 42,
       actualLanguageQualifiedElements: 34,
       actualLanguageQualifiedElementsPercentage: 81,
-      actualLanguageUnqualifiedElements: 8,
       actualLanguageUnqualifiedElementsList: ['dc:creator', 'edm:currentLocation'],
       metadataTier: 'C'
     },
     enablingElements: {
-      distinctEnablingElements: 7,
       distinctEnablingElementsList: ['dc:creator', 'edm:currentLocation'],
-      metadataGroups: 2,
       metadataGroupsList: ['Agent, Place'],
       metadataTier: 'C'
     },
     contextualClasses: {
       completeContextualResources: 5,
-      distinctClassesOfCompleteContextualResources: 2,
       distinctClassesList: ['edm:TimeSpan', 'edm:Place'],
       metadataTier: 'C'
     }

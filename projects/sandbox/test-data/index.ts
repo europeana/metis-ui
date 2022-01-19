@@ -356,7 +356,9 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
-        const regRes = route.match(/\/dataset\/[A-Za-z0-9_]+\/record\?recordId=(\S+)&\S+/);
+        const regRes = route.match(
+          /\/dataset\/[A-Za-z0-9_]+\/record\/compute-tier-calculation\?recordId=(\S+)&\S+/
+        );
 
         if (regRes) {
           let recordIdUnparsed = regRes[1];
