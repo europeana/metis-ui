@@ -326,7 +326,7 @@
 
           <span class="report-sub-header">
             Actual Language Unqualified Elements ({{
-              languageBreakdown.actualLanguageUnqualifiedElements
+              languageBreakdown.actualLanguageUnqualifiedElementsList.length
             }})
           </span>
 
@@ -361,14 +361,14 @@
           </span>
 
           <span class="report-sub-header">
-            Distinct Enabling Elements ({{ enablingElements.distinctEnablingElements }})
+            Distinct Enabling Elements ({{ enablingElements.distinctEnablingElementsList.length }})
           </span>
           <span class="report-value">
             {{ enablingElements.distinctEnablingElementsList }}
           </span>
 
           <span class="report-sub-header">
-            Metadata Groups ({{ enablingElements.metadataGroups }})
+            Metadata Groups ({{ enablingElements.metadataGroupsList.length }})
           </span>
           <span class="report-value limited-list">
             <ng-content
@@ -403,9 +403,7 @@
           </span>
 
           <span class="report-sub-header">
-            Distinct Classes of CCR ({{
-              contextualClasses.distinctClassesOfCompleteContextualResources
-            }})
+            Distinct Classes of CCR ({{ contextualClasses.distinctClassesList.length }})
           </span>
           <span class="report-value limited-list">
             <ng-content

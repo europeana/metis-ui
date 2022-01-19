@@ -47,8 +47,8 @@ export class SandboxService {
    * /dataset/{id}/record
    */
   getRecordReport(datasetId: string, recordId: string): Observable<RecordReport> {
-    const url = `${apiSettings.apiHost}/dataset/${datasetId}/record`;
-    const paramString = `recordId=${recordId}&recordIdType=PROVIDER_ID`;
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}/record/compute-tier-calculation`;
+    const paramString = `recordId=${recordId}&recordIdType=EUROPEANA_ID`;
     return this.http.get<RecordReport>(`${url}?${paramString}`);
   }
 

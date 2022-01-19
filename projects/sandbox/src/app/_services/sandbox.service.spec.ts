@@ -58,7 +58,10 @@ describe('sandbox service', () => {
       expect(report).toEqual(mockRecordReport);
     });
     mockHttp
-      .expect('GET', `/dataset/${datasetId}/record?recordId=${recordId}&recordIdType=PROVIDER_ID`)
+      .expect(
+        'GET',
+        `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}&recordIdType=EUROPEANA_ID`
+      )
       .send(mockRecordReport);
     sub.unsubscribe();
   });

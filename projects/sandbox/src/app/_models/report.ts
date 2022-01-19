@@ -51,22 +51,18 @@ interface LanguageBreakdown {
   potentialLanguageQualifiedElements: number;
   actualLanguageQualifiedElements: number;
   actualLanguageQualifiedElementsPercentage: number;
-  actualLanguageUnqualifiedElements: number;
   actualLanguageUnqualifiedElementsList: Array<string>;
   metadataTier: string;
 }
 
 interface EnablingElements {
-  distinctEnablingElements: number;
   distinctEnablingElementsList: Array<string>;
-  metadataGroups: number;
   metadataGroupsList: Array<string>;
   metadataTier: string;
 }
 
 interface ContextualClasses {
   completeContextualResources: number;
-  distinctClassesOfCompleteContextualResources: number;
   distinctClassesList: Array<string>;
   metadataTier: string;
 }
