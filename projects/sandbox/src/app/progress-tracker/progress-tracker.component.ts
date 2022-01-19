@@ -21,12 +21,20 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
-   * getFormattedDate
-   * Template utility to format the progressData creationDate as a local string
+   * getFormattedCreationDate
+   * Template utility to format the progressData creationDate as dd/mm/yyyy, hh:mm:ss
    * @returns string
    **/
-  getFormattedDate(): string {
-    return new Date(parseInt(this.progressData['dataset-info']['creation-date'])).toLocaleString();
+  getFormattedCreationDate(): string {
+    const padNumber = (n: number): string => {
+      return n < 10 ? `0${n}` : `${n}`;
+    };
+    const date = new Date(this.progressData['dataset-info']['creation-date']);
+    const rTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(padNumber).join(':');
+    const rDate = [date.getDate(), date.getMonth() + 1, date.getFullYear()]
+      .map(padNumber)
+      .join('/');
+    return `${rDate}, ${rTime}`;
   }
 
   /**
