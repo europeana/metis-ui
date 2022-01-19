@@ -37,8 +37,9 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should get the formatted date', () => {
-      expect(component.getFormattedDate()).toEqual('4/8/2021, 2:51:52 PM');
+    it('should get the formatted creation date', () => {
+      console.log(component.progressData['dataset-info']['creation-date']);
+      expect(component.getFormattedCreationDate()).toEqual('19/01/2022, 15:21:09');
     });
 
     it('should open the modal', () => {
