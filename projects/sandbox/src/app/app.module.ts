@@ -6,10 +6,8 @@ import { SharedModule } from 'shared';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
 import { HrefCopyDirective } from './_directives';
 import { CopyableLinkItemComponent } from './copyable-link-item';
-
 import { NavigationOrbsComponent } from './navigation-orbs';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
