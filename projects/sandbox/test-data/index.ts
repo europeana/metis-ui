@@ -114,7 +114,7 @@ new (class extends TestDataServer {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
       'dataset-info': {
-        'creation-date': `${new Date().getTime()}`,
+        'creation-date': `${new Date().toISOString()}`,
         'dataset-id': datasetId,
         'dataset-name': datasetName ? datasetName : 'GeneratedName',
         country: country ? country : 'GeneratedCountry',
@@ -138,8 +138,8 @@ new (class extends TestDataServer {
     if (info['processed-records'] === info['total-records']) {
       info.status = DatasetStatus.COMPLETED;
       if (timedTarget.timesCalled >= 5) {
-        info['portal-preview'] = 'this-collection/that-dataset/preview';
-        info['portal-publish'] = 'this-collection/that-dataset/publish';
+        info['portal-preview'] = 'http://this-collection/that-dataset/preview';
+        info['portal-publish'] = 'http://this-collection/that-dataset/publish';
       }
       return;
     }

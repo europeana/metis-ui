@@ -38,7 +38,8 @@ $textcolour_highlight: $accent;
 @import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
-@import 'orbs';
+@import 'assets/sass/orbs';
+@import 'assets/sass/links';
 
 a {
   color: $eu-jade-dark;
@@ -82,50 +83,6 @@ label {
 
 .hidden {
   display: none;
-}
-
-.portal-links {
-  a {
-    display: inline-block;
-    word-break: break-all;
-
-    &::after {
-      background-image: svg-url-icon-external('#{$eu-jade-classic}');
-      right: -1.35em;
-    }
-    &:hover::after {
-      background-image: svg-url-icon-external('#{$eu-jade-darkest}');
-    }
-  }
-
-  a,
-  .pending {
-    position: relative;
-    &::after {
-      background-repeat: no-repeat;
-      content: '';
-      display: block;
-      height: 1em;
-      top: 0.425em;
-      position: absolute;
-      width: 1em;
-    }
-  }
-
-  a {
-    transition: 0.5s ease-in-out color;
-  }
-
-  .pending {
-    color: $eu-jade-disabled;
-    cursor: default;
-    &::after,
-    &:hover::after {
-      background-image: svg-url-icon-spin('#{$eu-jade-classic}');
-      background-size: 0.85em;
-      right: -1.2em;
-    }
-  }
 }
 
 .wizard button {
