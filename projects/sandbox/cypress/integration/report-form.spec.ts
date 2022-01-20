@@ -1,3 +1,4 @@
+import { fillRecordForm } from '../support/helpers';
 import {
   selectorBtnSubmitRecord,
   selectorInputRecordId,
@@ -10,12 +11,12 @@ context('Sandbox', () => {
   describe('Report Form', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/1/2');
+      cy.visit('/1?recordId=2');
     });
 
     const force = { force: true };
-    const selectorDatasetOrb = '.wizard-status .nav-orb:not(.progress-orb, .report-orb)';
-
+    const selectorDatasetOrb = '.nav-orb:not(.progress-orb, .report-orb)';
+    const selectorOrbsHidden = '.dataset-orbs-hidden';
     const selectorContentTierOrb = '.content-tier-orb';
     const selectorMetadataTierOrb = '.metadata-tier-orb';
 
@@ -58,7 +59,7 @@ context('Sandbox', () => {
     it('should show the processing errors conditionally', () => {
       const selectorErrors = '.error-grid.report-grid';
       cy.get(selectorErrors).should('have.length', 1);
-      cy.visit('/1/0');
+      cy.visit('/1?recordId=0');
       cy.wait(200);
       cy.get(selectorErrors).should('have.length', 0);
     });
@@ -81,23 +82,16 @@ context('Sandbox', () => {
     });
 
     it('should link to the dataset form (without opening the progress form)', () => {
-      cy.get(selectorProgressOrb)
-        .filter(':visible')
-        .should('have.length', 0);
-      cy.get(selectorDatasetOrb)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(`.progress-orb-container:not(.hidden)`).should('have.length', 0);
+      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 3);
+      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 3);
 
       cy.scrollTo('bottom');
       cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
 
-      cy.get(selectorProgressOrb)
-        .filter(':visible')
-        .should('have.length', 0);
-      cy.get(selectorDatasetOrb)
-        .filter(':visible')
-        .should('have.length', 3);
+      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 0);
+      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 3);
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {
@@ -119,7 +113,7 @@ context('Sandbox', () => {
     });
 
     it('should navigate by multiple media orbs when there are 5 or less media items', () => {
-      cy.visit('/1/1');
+      cy.visit('/1?recordId=1');
       cy.scrollTo(0, 200);
       cy.wait(200);
 
@@ -143,7 +137,7 @@ context('Sandbox', () => {
     });
 
     it('should navigate with buttons when there are more than 5 media items', () => {
-      cy.visit('/1/100');
+      cy.visit('/1?recordId=100');
       cy.scrollTo(0, 200);
       cy.wait(200);
 
@@ -172,7 +166,7 @@ context('Sandbox', () => {
     });
 
     it('should navigate with an input when there are more than 5 media items', () => {
-      cy.visit('/1/100');
+      cy.visit('/1?recordId=100');
       cy.scrollTo(0, 200);
       cy.wait(200);
 
@@ -243,6 +237,19 @@ context('Sandbox', () => {
 
       cy.get(selectorClassesOrb).click();
       checkSingleActiveItem(allMediaOrbs, selectorClassesOrb);
+    });
+
+    it('should correctly encode and decode url parameters', () => {
+      cy.visit('/1');
+      const url = 'http://some-url.com';
+      const otherUrl = 'http://some-other-url.com';
+
+      fillRecordForm(url);
+      cy.location('search').should('not.equal', `?recordId=${url}`);
+      cy.location('search').should('equal', `?recordId=${encodeURIComponent(url)}`);
+
+      cy.visit(`/1?recordId=${encodeURIComponent(otherUrl)}`);
+      cy.get(selectorInputRecordId).should('have.value', otherUrl);
     });
   });
 });

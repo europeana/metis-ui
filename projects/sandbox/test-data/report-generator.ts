@@ -58,7 +58,7 @@ export class ReportGenerator {
         providerRecordId: `${id}-provider`,
         contentTier: `${ctVal}`,
         metadataTier: mdVal,
-        portalLink: 'https://portal.link',
+        portalRecordLink: 'https://portal.link',
         harvestedRecordLink: 'https://harvest-record/XXXDDDaaaaabbbbbccccc/record-url.link'
       },
       contentTierBreakdown: {
@@ -75,7 +75,6 @@ export class ReportGenerator {
           potentialLanguageQualifiedElements: 42,
           actualLanguageQualifiedElements: 34,
           actualLanguageQualifiedElementsPercentage: 81,
-          actualLanguageUnqualifiedElements: 8,
           actualLanguageUnqualifiedElementsList: [
             'dc:creator',
             'edm:currentLocation',
@@ -87,7 +86,6 @@ export class ReportGenerator {
           metadataTier: mdVal
         },
         enablingElements: {
-          distinctEnablingElements: 7,
           distinctEnablingElementsList: [
             'dc:creator',
             'edm:currentLocation',
@@ -96,13 +94,11 @@ export class ReportGenerator {
             'the',
             'other'
           ],
-          metadataGroups: 2,
           metadataGroupsList: ['Agent', 'Place', 'this', 'that', 'the', 'other'],
           metadataTier: mdVal
         },
         contextualClasses: {
           completeContextualResources: 5,
-          distinctClassesOfCompleteContextualResources: 2,
           distinctClassesList: ['edm:TimeSpan', 'edm:Place', 'this', 'that', 'the', 'other'],
           metadataTier: mdVal
         }

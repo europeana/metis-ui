@@ -4,10 +4,6 @@ import { WizardComponent } from './wizard';
 
 const routes: Routes = [
   {
-    path: ':id/:recordId',
-    component: WizardComponent
-  },
-  {
     path: ':id',
     component: WizardComponent
   },

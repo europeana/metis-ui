@@ -19,6 +19,7 @@ describe('WizardComponent', () => {
   let sandbox: SandboxService;
   const testFile = new File([], 'file.zip', { type: 'zip' });
   const params = new BehaviorSubject({} as Params);
+  const queryParams = new BehaviorSubject({} as Params);
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -31,7 +32,7 @@ describe('WizardComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: { params: params }
+          useValue: { params: params, queryParams: queryParams }
         }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -75,7 +76,9 @@ describe('WizardComponent', () => {
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeFalsy();
 
-      params.next({ id: '1', recordId: '2' });
+      params.next({ id: '1' });
+      queryParams.next({ recordId: '2' });
+
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
     });

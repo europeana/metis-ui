@@ -43,12 +43,10 @@ export const fillProgressForm = (id: string): void => {
 };
 
 export const fillRecordForm = (id: string): void => {
-  cy.get(selectorInputRecordId)
-    .scrollIntoView()
-    .should('be.visible');
+  cy.scrollTo('bottom');
   cy.wait(500);
-
   cy.get(selectorInputRecordId)
+    .should('be.visible')
     .clear()
     .type(id);
   cy.get(selectorBtnSubmitRecord).click();

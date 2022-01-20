@@ -356,10 +356,17 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
-        const regRes = route.match(/\/dataset\/([A-Za-z0-9_]+)\/record\?recordId=([A-Za-z0-9_]+)/);
+        const regRes = route.match(
+          /\/dataset\/[A-Za-z0-9_]+\/record\/compute-tier-calculation\?recordId=(\S+)&\S+/
+        );
 
         if (regRes) {
-          const recordId = parseInt(regRes[2]);
+          let recordIdUnparsed = regRes[1];
+          let recordId = parseInt(recordIdUnparsed);
+
+          if (isNaN(recordId)) {
+            recordId = recordIdUnparsed.length;
+          }
 
           if (recordId === 404) {
             this.handle404(route, response);
