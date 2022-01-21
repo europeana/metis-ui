@@ -15,14 +15,15 @@
     display: inline;
   }
 
-  .copied {
+  .msg-copied {
     display: none;
   }
+
   &.copied {
-    .copied {
+    .msg-copied {
       display: inline;
     }
-    :not(.copied) {
+    .msg-copy {
       display: none;
     }
   }
