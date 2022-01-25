@@ -1,0 +1,86 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.copy {
+  display: none;
+  font-size: 8px;
+  font-weight: bold;
+  padding-right: 4px;
+  position: absolute;
+  right: 100%;
+  white-space: nowrap;
+
+  &:hover {
+    color: $eu-jade-darkest;
+    display: inline;
+  }
+
+  .msg-copied {
+    display: none;
+  }
+
+  &.copied {
+    .msg-copied {
+      display: inline;
+    }
+    .msg-copy {
+      display: none;
+    }
+  }
+}
+
+.copy,
+.external-link {
+  word-break: break-all;
+}
+
+.copyable-link-item {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.external-link {
+  position: relative;
+  &::after {
+    background-repeat: no-repeat;
+    content: '';
+    display: block;
+    height: 1em;
+    top: 0.425em;
+    position: absolute;
+    width: 1em;
+  }
+}
+
+.external-link {
+  display: inline-block;
+  transition: 0.5s ease-in-out color;
+  &::after {
+    background-image: svg-url-icon-external('#{$eu-jade-classic}');
+    right: -1.35em;
+  }
+
+  &:hover {
+    &::after {
+      background-image: svg-url-icon-external('#{$eu-jade-darkest}');
+    }
+    & + .copy {
+      display: inline;
+    }
+  }
+
+  &.pending {
+    color: $eu-jade-disabled;
+    cursor: default;
+    &::after,
+    &:hover::after {
+      background-image: svg-url-icon-spin('#{$eu-jade-classic}');
+      background-size: 0.85em;
+      right: -1.2em;
+    }
+    &:hover {
+      color: $eu-jade-disabled;
+    }
+  }
+}

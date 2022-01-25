@@ -1,0 +1,21 @@
+<span class="copyable-link-item">
+  <a
+    class="external-link"
+    [ngClass]="{ pending: !href }"
+    [attr.href]="href"
+    [attr.title]="href"
+    target="_blank"
+    rel="noopener"
+  >
+    <ng-container [ngTemplateOutlet]="labelRef"></ng-container>
+  </a>
+  <a
+    *ngIf="href"
+    appHrefCopy
+    #hrefCopy="hrefCopy"
+    class="copy"
+    (click)="hrefCopy.copy(href)"
+    [ngClass]="{ copied: hrefCopy.copied }"
+    ><span class="msg-copy">copy</span><span class="msg-copied">copied!</span></a
+  >
+</span>

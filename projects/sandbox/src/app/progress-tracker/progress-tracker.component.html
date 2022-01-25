@@ -21,34 +21,22 @@
 
     <ul class="portal-links">
       <li>
-        <a
-          [ngClass]="{ pending: !progressData['portal-preview'] }"
-          [attr.href]="progressData['portal-preview']"
-          [attr.title]="
-            progressData['portal-preview']
-              ? ''
-              : 'A review URL will be generated when the dataset has finished processing'
-          "
-          i18n="progress link link@@progressLinkPreview"
-          target="_blank"
-          rel="noopener"
-          >view preview</a
+        <ng-template #labelRefPreview
+          ><span i18n="progress link link@@progressLinkPreview">view preview</span></ng-template
         >
+        <sb-copyable-link-item
+          [href]="progressData['portal-preview']"
+          [labelRef]="labelRefPreview"
+        ></sb-copyable-link-item>
       </li>
       <li>
-        <a
-          [ngClass]="{ pending: !progressData['portal-publish'] }"
-          [attr.href]="progressData['portal-publish']"
-          [attr.title]="
-            progressData['portal-publish']
-              ? ''
-              : 'A review URL will be generated when the dataset has finished processing'
-          "
-          i18n="progress link link@@progressLinkPreview"
-          target="_blank"
-          rel="noopener"
-          >view publish</a
+        <ng-template #labelRefPublish
+          ><span i18n="progress link link@@progressLinkPublish">view publish</span></ng-template
         >
+        <sb-copyable-link-item
+          [href]="progressData['portal-publish']"
+          [labelRef]="labelRefPublish"
+        ></sb-copyable-link-item>
       </li>
     </ul>
   </div>
@@ -95,7 +83,6 @@
           <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
         </a>
         <ng-template #conditionalWrap
-          ><ng-content></ng-content
           ><span *ngIf="item.fail" class="errors">{{ item.fail }}</span></ng-template
         >
 

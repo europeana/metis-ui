@@ -58,8 +58,8 @@ export class ReportGenerator {
         providerRecordId: `${id}-provider`,
         contentTier: `${ctVal}`,
         metadataTier: mdVal,
-        portalRecordLink: 'https://portal.link',
-        harvestedRecordLink: 'https://harvest-record/XXXDDDaaaaabbbbbccccc/record-url.link'
+        portalRecordLink: 'https://portal.record.link',
+        harvestedRecordLink: 'https://harvest.record.link'
       },
       contentTierBreakdown: {
         recordType: RecordType.AUDIO,

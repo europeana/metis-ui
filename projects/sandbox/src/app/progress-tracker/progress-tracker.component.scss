@@ -30,8 +30,10 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .portal-links {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
   margin-right: 1rem;
-  text-align: right;
 }
 
 .wrapper {

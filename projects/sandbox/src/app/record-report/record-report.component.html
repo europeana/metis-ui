@@ -21,8 +21,14 @@
     <span class="report-sub-header">
       Resource Url
     </span>
-    <span class="report-value portal-links" *ngFor="let url of [data.resourceUrl]">
-      <a [href]="url" target="_blank">{{ url }}</a>
+    <span class="report-value">
+      <ng-template #labelRefResource
+        ><span i18n="progress link link@@progressLinkPreview">resource</span></ng-template
+      >
+      <sb-copyable-link-item
+        [labelRef]="labelRefResource"
+        [href]="data.resourceUrl"
+      ></sb-copyable-link-item>
     </span>
 
     <span class="report-sub-header">
@@ -83,9 +89,7 @@
       >
         <ng-container *ngTemplateOutlet="conditionalWrapCT"></ng-container>
       </a>
-      <ng-template #conditionalWrapCT
-        ><ng-content></ng-content><span>Content Tier</span></ng-template
-      >
+      <ng-template #conditionalWrapCT><span>Content Tier</span></ng-template>
     </span>
     <span class="report-value">
       <a
@@ -96,7 +100,6 @@
         <ng-container *ngTemplateOutlet="conditionalWrapCTVal"></ng-container>
       </a>
       <ng-template #conditionalWrapCTVal
-        ><ng-content></ng-content
         ><span>{{ _report.recordTierCalculationSummary.contentTier }}</span></ng-template
       >
     </span>
@@ -108,9 +111,7 @@
       >
         <ng-container *ngTemplateOutlet="conditionalWrapMetadata"></ng-container>
       </a>
-      <ng-template #conditionalWrapMetadata
-        ><ng-content></ng-content><span>Metadata Tier</span></ng-template
-      >
+      <ng-template #conditionalWrapMetadata><span>Metadata Tier</span></ng-template>
     </span>
     <span class="report-value">
       <a
@@ -121,28 +122,33 @@
         <ng-container *ngTemplateOutlet="conditionalWrapMetadataVal"></ng-container>
       </a>
       <ng-template #conditionalWrapMetadataVal
-        ><ng-content></ng-content
         ><span>{{ _report.recordTierCalculationSummary.metadataTier }}</span></ng-template
       >
     </span>
     <span class="report-sub-header">
-      Portal Link
+      Links
     </span>
-    <span
-      class="report-value portal-links"
-      *ngFor="let url of [_report.recordTierCalculationSummary.portalRecordLink]"
-    >
-      <a [href]="url" target="_blank">{{ url }}</a>
-    </span>
-    <span class="report-sub-header">
-      Harvested Record Link
-    </span>
-    <span
-      class="report-value portal-links"
-      *ngFor="let url of [_report.recordTierCalculationSummary.harvestedRecordLink]"
-    >
-      <a [href]="url" target="_blank">{{ url }}</a>
-    </span>
+
+    <ul class="report-value" *ngFor="let summary of [_report.recordTierCalculationSummary]">
+      <li>
+        <ng-template #labelRefPortal
+          ><span i18n="record link link@@recordLinkPortal">portal record</span></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPortal"
+          [href]="summary.portalRecordLink"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
+        <ng-template #labelRefHarvest
+          ><span i18n="record link link@@recordLinkHarvest">harvest record</span></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefHarvest"
+          [href]="summary.harvestedRecordLink"
+        ></sb-copyable-link-item>
+      </li>
+    </ul>
   </span>
   <!-- end summary grid -->
 
