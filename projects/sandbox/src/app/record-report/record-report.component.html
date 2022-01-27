@@ -56,7 +56,10 @@
       <span class="report-sub-header">
         Element Link Types
       </span>
-      <span class="report-value limited-list">
+      <span
+        class="report-value limited-list"
+        [ngClass]="{ 'multiple-entries': linkTypes.length > 1 }"
+      >
         <ng-content *ngTemplateOutlet="stringList; context: { list: linkTypes }"></ng-content>
       </span>
     </ng-container>
@@ -375,7 +378,10 @@
               Actual Language Unqualified Elements ({{ unqualifiedList.length }})
             </span>
 
-            <span class="report-value limited-list">
+            <span
+              class="report-value limited-list boxed"
+              [ngClass]="{ 'multiple-entries': unqualifiedList.length > 1 }"
+            >
               <ng-content
                 *ngTemplateOutlet="
                   stringList;
@@ -410,7 +416,10 @@
             <span class="report-sub-header">
               Distinct Enabling Elements ({{ distinctList.length }})
             </span>
-            <span class="report-value limited-list boxed">
+            <span
+              class="report-value limited-list boxed"
+              [ngClass]="{ 'multiple-entries': distinctList.length > 1 }"
+            >
               <ng-content
                 *ngTemplateOutlet="stringList; context: { list: distinctList }"
               ></ng-content>
@@ -419,7 +428,10 @@
 
           <ng-container *ngIf="enablingElements.metadataGroupsList; let groupsList">
             <span class="report-sub-header"> Metadata Groups ({{ groupsList.length }}) </span>
-            <span class="report-value limited-list boxed">
+            <span
+              class="report-value limited-list boxed"
+              [ngClass]="{ 'multiple-entries': groupsList.length > 1 }"
+            >
               <ng-content
                 *ngTemplateOutlet="stringList; context: { list: groupsList }"
               ></ng-content>
@@ -456,7 +468,10 @@
             <span class="report-sub-header">
               Distinct Classes of CCR ({{ classesList.length }})
             </span>
-            <span class="report-value limited-list">
+            <span
+              class="report-value limited-list boxed"
+              [ngClass]="{ 'multiple-entries': classesList.length > 1 }"
+            >
               <ng-content
                 *ngTemplateOutlet="stringList; context: { list: classesList }"
               ></ng-content>
