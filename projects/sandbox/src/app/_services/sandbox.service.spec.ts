@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ProtocolType, MockHttp } from 'shared';
+import { MockHttp, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { mockCountries, mockDataset, mockLanguages, mockRecordReport } from '../_mocked';
 import {
@@ -133,9 +133,11 @@ describe('sandbox service', () => {
     mockHttp
       .expect(
         'POST',
-        `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}&metadataformat=${metadataFormat}&setspec=${setSpec}&url=${encodeURIComponent(
-          url
-        )}`
+        [
+          `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}`,
+          `&metadataformat=${metadataFormat}&setspec=${setSpec}`,
+          `&url=${encodeURIComponent(url)}`
+        ].join('')
       )
       .body(new FormData())
       .send(form3);

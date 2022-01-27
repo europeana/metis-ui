@@ -361,7 +361,7 @@ new (class extends TestDataServer {
         );
 
         if (regRes) {
-          let recordIdUnparsed = regRes[1];
+          const recordIdUnparsed = regRes[1];
           let recordId = parseInt(recordIdUnparsed);
 
           if (isNaN(recordId)) {

@@ -48,7 +48,7 @@ describe('RecordReportComponent', () => {
     component.changeMediaIndex(keyEvent(2));
     expect(component.visibleMedia).toEqual(1);
 
-    component.changeMediaIndex(keyEvent(('xxx' as any) as number));
+    component.changeMediaIndex(keyEvent(('xxx' as unknown) as number));
     expect(component.visibleMedia).toEqual(0);
   });
 
@@ -78,7 +78,7 @@ describe('RecordReportComponent', () => {
 
     const techData = component.techData.slice();
 
-    component.techData = [({ mediaType: 'xxx' } as any) as MediaDataItem];
+    component.techData = [({ mediaType: 'xxx' } as unknown) as MediaDataItem];
 
     expect(`${component.techData[0].cssClass}`).toEqual('undefined');
     component.setOrbMediaIcons();
