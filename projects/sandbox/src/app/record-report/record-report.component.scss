@@ -5,16 +5,34 @@
   font-family: Courier, courier new, serif;
 }
 
-.error-grid.report-grid {
-  grid-template-columns: auto auto;
-  grid-template-columns: minmax(2em, 1fr) 20fr;
+.processing-errors {
+  margin-top: 12px;
+
+  .error-message {
+    list-style: disc;
+  }
+
+  .limited-list {
+    font-size: 14px;
+  }
+
+  .error-message,
+  .limited-list {
+    margin-left: 1.25em;
+  }
 }
 
 .limited-list {
-  max-height: 5em;
+  max-height: 5.6em;
+  overflow-y: hidden;
   overflow-y: auto;
   padding: 0 1em;
+  word-break: break-word;
 
+  &.boxed {
+    border: 1px solid $eu-jade-disabled;
+    margin-bottom: 1em;
+  }
   &::-webkit-scrollbar-track {
     border: 1px solid $eu-jade-light;
   }

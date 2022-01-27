@@ -1,31 +1,43 @@
 import { mockMediaResources } from '../src/app/_mocked/mocked-record-report';
-import { LicenseType, MediaDataItem, RecordReport, RecordType } from '../src/app/_models';
+import { LicenseType, MediaDataItem, RecordMediaType, RecordReport } from '../src/app/_models';
 
 export class ReportGenerator {
+  stacktrace = [
+    'eu.europeana.metis.sandbox.common.exception.RecordValidationException:',
+    'Record: [Missing record identifier for EDM record] Node: [null] Message:',
+    '[java.net.MalformedURLException: no protocol: ]\n\t at',
+    'eu.europeana.metis.sandbox.service.workflow.ExternalValidationServiceImpl',
+    '.validate(ExternalValidationServiceImpl.java:43)\n\tat',
+    'eu.europeana.metis.sandbox.consumer.workflow.CreatedConsumer',
+    '.lambda$validateExternal$0(CreatedConsumer.java:32)\n\tat',
+    'eu.europeana.metis.sandbox.consumer.workflow.StepConsumer.consume',
+    '(StepConsumer.java:35)'
+  ].join(' ');
+
   errorList = [
     {
       errorMessage: 'Null Pointer Exception somewhere in the processing.',
-      errorCode: 404
+      stacktrace: this.stacktrace
     },
     {
       errorMessage: 'Large error: very dangerous.',
-      errorCode: 405
+      stacktrace: this.stacktrace
     },
     {
-      errorMessage: 'Stacktrace.',
-      errorCode: 406
+      errorMessage: 'Message..',
+      stacktrace: this.stacktrace
     },
     {
       errorMessage: 'Nerdy stuff.',
-      errorCode: 503
+      stacktrace: this.stacktrace
     },
     {
       errorMessage: 'Levis.',
-      errorCode: 501
+      stacktrace: this.stacktrace
     },
     {
       errorMessage: 'Another Stacktrace',
-      errorCode: 500
+      stacktrace: this.stacktrace
     }
   ];
 
@@ -62,7 +74,7 @@ export class ReportGenerator {
         harvestedRecordLink: 'https://harvest.record.link'
       },
       contentTierBreakdown: {
-        recordType: RecordType.AUDIO,
+        recordType: RecordMediaType.AUDIO,
         licenseType: LicenseType.OPEN,
         thumbnailAvailable: !errorMode,
         landingPageAvailable: !errorMode,

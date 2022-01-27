@@ -4,6 +4,7 @@ import {
   DisplayedMetaTier,
   DisplayedTier,
   MediaDataItem,
+  RecordMediaType,
   RecordReport
 } from '../_models';
 import { NavigationOrbsComponent } from '../navigation-orbs';
@@ -26,10 +27,14 @@ export class RecordReportComponent {
 
   @ViewChild('inputMediaIndex') inputMediaIndex: ElementRef;
 
+  get report(): RecordReport {
+    return this._report;
+  }
+
   @Input()
   set report(report: RecordReport) {
     this._report = report;
-    this.techData = this._report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
+    this.techData = this.report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
     this.mediaCollapsed = this.techData.length > NavigationOrbsComponent.maxOrbsUncollapsed;
     this.setOrbMediaIcons();
 
@@ -65,15 +70,15 @@ export class RecordReportComponent {
 
   setOrbMediaIcons(): void {
     this.techData.forEach((mediaItem: MediaDataItem) => {
-      if (mediaItem.mediaType.match(/3d/)) {
+      if (mediaItem.mediaType === RecordMediaType.THREE_D) {
         mediaItem.cssClass = 'orb-media-3d';
-      } else if (mediaItem.mediaType.match(/image/)) {
+      } else if (mediaItem.mediaType === RecordMediaType.IMAGE) {
         mediaItem.cssClass = 'orb-media-image';
-      } else if (mediaItem.mediaType.match(/audio/)) {
+      } else if (mediaItem.mediaType === RecordMediaType.AUDIO) {
         mediaItem.cssClass = 'orb-media-audio';
-      } else if (mediaItem.mediaType.match(/text/)) {
+      } else if (mediaItem.mediaType === RecordMediaType.TEXT) {
         mediaItem.cssClass = 'orb-media-text';
-      } else if (mediaItem.mediaType.match(/video/)) {
+      } else if (mediaItem.mediaType === RecordMediaType.VIDEO) {
         mediaItem.cssClass = 'orb-media-video';
       } else {
         mediaItem.cssClass = 'orb-media-unknown';
@@ -88,10 +93,11 @@ export class RecordReportComponent {
   }
 
   getOrbConfigInnerMetadata(i: number): ClassMap {
+    const indication = !!this.report.metadataTierBreakdown.languageBreakdown.metadataTier;
     return {
       'is-active': this.visibleMetadata === i,
-      'indicator-orb': true,
-      'indicate-tier': true,
+      'indicator-orb': indication,
+      'indicate-tier': indication,
       'language-orb': i === DisplayedMetaTier.LANGUAGE,
       'element-orb': i === DisplayedMetaTier.ELEMENTS,
       'classes-orb': i === DisplayedMetaTier.CLASSES

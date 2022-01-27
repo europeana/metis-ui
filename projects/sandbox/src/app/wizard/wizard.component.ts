@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, Validators, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { combineLatest, merge, Observable, timer } from 'rxjs';

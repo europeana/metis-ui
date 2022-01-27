@@ -383,7 +383,7 @@ describe('WizardComponent', () => {
       recordId.setValue('1 1'); // invalid
       expect(component.validateRecordId(recordId)).toBeTruthy();
 
-      expect(component.validateRecordId(({} as any) as FormControl)).toBeFalsy();
+      expect(component.validateRecordId(({} as unknown) as FormControl)).toBeFalsy();
     });
 
     it('should validate the dataset name', () => {

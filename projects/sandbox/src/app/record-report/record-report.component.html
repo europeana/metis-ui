@@ -39,24 +39,42 @@
     </span>
 
     <span class="report-sub-header">
-      Element Link Type
+      Mime Type
     </span>
     <span class="report-value">
-      {{ data.elementLinkType }}
+      {{ data.mimeType }}
     </span>
 
     <span class="report-sub-header">
-      Image Resolution
+      Media Tier
+    </span>
+    <span class="report-value">
+      {{ data.mediaTier }}
+    </span>
+
+    <ng-container *ngIf="data.elementLinkTypes; let linkTypes">
+      <span class="report-sub-header">
+        Element Link Types
+      </span>
+      <span class="report-value limited-list">
+        <ng-content *ngTemplateOutlet="stringList; context: { list: linkTypes }"></ng-content>
+      </span>
+    </ng-container>
+
+    <span class="report-sub-header">
+      Image Resolution (Tier)
     </span>
     <span class="report-value">
       {{ data.imageResolution }}
+      <span *ngIf="data.imageResolutionTier; let val"> ({{ val }}) </span>
     </span>
 
     <span class="report-sub-header">
-      Vertical Resolution
+      Vertical Resolution (Tier)
     </span>
     <span class="report-value">
       {{ data.verticalResolution }}
+      <span *ngIf="data.verticalResolutionTier; let val"> ({{ val }}) </span>
     </span>
 
     <span class="report-sub-header">
@@ -69,18 +87,28 @@
 
   <span class="report-header">Record Tier Calculation Summary</span>
   <span class="report-grid">
-    <span class="report-sub-header">
-      Europeana Record Id
-    </span>
-    <span class="report-value">
-      {{ _report.recordTierCalculationSummary.europeanaRecordId }}
-    </span>
-    <span class="report-sub-header">
-      Provider Record Id
-    </span>
-    <span class="report-value">
-      {{ _report.recordTierCalculationSummary.providerRecordId }}
-    </span>
+    <ng-container
+      *ngIf="report.recordTierCalculationSummary.europeanaRecordId; let europeanaRecordId"
+    >
+      <span class="report-sub-header">
+        Europeana Record Id
+      </span>
+      <span class="report-value">
+        {{ europeanaRecordId }}
+      </span>
+    </ng-container>
+
+    <ng-container
+      *ngIf="report.recordTierCalculationSummary.providerRecordId; let providerRecordId"
+    >
+      <span class="report-sub-header">
+        Provider Record Id
+      </span>
+      <span class="report-value">
+        {{ providerRecordId }}
+      </span>
+    </ng-container>
+
     <span class="report-sub-header">
       <a
         *ngIf="visibleTier !== 0; else conditionalWrapCT"
@@ -100,7 +128,7 @@
         <ng-container *ngTemplateOutlet="conditionalWrapCTVal"></ng-container>
       </a>
       <ng-template #conditionalWrapCTVal
-        ><span>{{ _report.recordTierCalculationSummary.contentTier }}</span></ng-template
+        ><span>{{ report.recordTierCalculationSummary.contentTier }}</span></ng-template
       >
     </span>
     <span class="report-sub-header">
@@ -122,14 +150,14 @@
         <ng-container *ngTemplateOutlet="conditionalWrapMetadataVal"></ng-container>
       </a>
       <ng-template #conditionalWrapMetadataVal
-        ><span>{{ _report.recordTierCalculationSummary.metadataTier }}</span></ng-template
+        ><span>{{ report.recordTierCalculationSummary.metadataTier }}</span></ng-template
       >
     </span>
     <span class="report-sub-header">
       Links
     </span>
 
-    <ul class="report-value" *ngFor="let summary of [_report.recordTierCalculationSummary]">
+    <ul class="report-value" *ngFor="let summary of [report.recordTierCalculationSummary]">
       <li>
         <ng-template #labelRefPortal
           ><span i18n="record link link@@recordLinkPortal">portal record</span></ng-template
@@ -158,8 +186,8 @@
       [fnClassMapInner]="getOrbConfigInner.bind(this)"
       (clickEvent)="setView($event)"
       [indicatorAttributes]="[
-        _report.recordTierCalculationSummary.contentTier,
-        _report.recordTierCalculationSummary.metadataTier
+        report.recordTierCalculationSummary.contentTier,
+        report.recordTierCalculationSummary.metadataTier
       ]"
     ></sb-navigation-orbs>
   </span>
@@ -168,19 +196,23 @@
     <span class="report-header">Content Tier Breakdown</span>
 
     <span class="report-grid">
-      <span class="report-sub-header">
-        Record Type
-      </span>
-      <span class="report-value">
-        {{ _report.contentTierBreakdown.recordType }}
-      </span>
+      <ng-container *ngIf="report.contentTierBreakdown.recordType; let recordType">
+        <span class="report-sub-header">
+          Record Type
+        </span>
+        <span class="report-value">
+          {{ recordType }}
+        </span>
+      </ng-container>
 
-      <span class="report-sub-header">
-        License Type
-      </span>
-      <span class="report-value">
-        {{ _report.contentTierBreakdown.licenseType }}
-      </span>
+      <ng-container *ngIf="report.contentTierBreakdown.licenseType; let licenseType">
+        <span class="report-sub-header">
+          License Type
+        </span>
+        <span class="report-value">
+          {{ licenseType }}
+        </span>
+      </ng-container>
 
       <span class="report-sub-header">
         Thumbnail Available
@@ -189,7 +221,7 @@
       <ng-content
         *ngTemplateOutlet="
           tickedItem;
-          context: { itemVal: _report.contentTierBreakdown.thumbnailAvailable }
+          context: { itemVal: report.contentTierBreakdown.thumbnailAvailable }
         "
       ></ng-content>
 
@@ -200,7 +232,7 @@
       <ng-content
         *ngTemplateOutlet="
           tickedItem;
-          context: { itemVal: _report.contentTierBreakdown.landingPageAvailable }
+          context: { itemVal: report.contentTierBreakdown.landingPageAvailable }
         "
       ></ng-content>
 
@@ -211,7 +243,7 @@
       <ng-content
         *ngTemplateOutlet="
           tickedItem;
-          context: { itemVal: _report.contentTierBreakdown.embeddableMediaAvailable }
+          context: { itemVal: report.contentTierBreakdown.embeddableMediaAvailable }
         "
       ></ng-content>
     </span>
@@ -220,7 +252,7 @@
     <!-- Media Tech Data -->
 
     <ng-container
-      *ngIf="_report.contentTierBreakdown.mediaResourceTechnicalMetadataList; let techData"
+      *ngIf="report.contentTierBreakdown.mediaResourceTechnicalMetadataList; let techData"
     >
       <span class="separator-line">
         <sb-navigation-orbs
@@ -266,19 +298,25 @@
       </span>
     </ng-container>
 
-    <ng-container *ngIf="_report.contentTierBreakdown.processingErrorsList; let errors">
-      <span class="separator-line"> </span>
-
-      <span class="report-header">
-        Processing Errors List
-      </span>
-
-      <span class="error-grid report-grid limited-list">
-        <ng-container *ngFor="let error of errors">
-          <span class="error-message">{{ error.errorCode }}</span>
-          <span class="code">{{ error.errorMessage }}</span>
-        </ng-container>
-      </span>
+    <ng-container *ngIf="report.contentTierBreakdown.processingErrorsList; let errors">
+      <ng-container *ngIf="errors.length > 0">
+        <span class="separator-line"> </span>
+        <span class="report-header">
+          Processing Errors List
+        </span>
+        <ul class="processing-errors">
+          <li *ngFor="let error of errors">
+            <ul>
+              <li class="error-message report-header code">
+                {{ error.errorMessage }}
+              </li>
+              <li class="limited-list boxed code">
+                {{ error.stacktrace }}
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </ng-container>
     </ng-container>
   </ng-container>
 
@@ -290,9 +328,9 @@
         [count]="3"
         [fnClassMapInner]="getOrbConfigInnerMetadata.bind(this)"
         [indicatorAttributes]="[
-          _report.metadataTierBreakdown.languageBreakdown.metadataTier,
-          _report.metadataTierBreakdown.languageBreakdown.metadataTier,
-          _report.metadataTierBreakdown.languageBreakdown.metadataTier
+          report.metadataTierBreakdown.languageBreakdown.metadataTier,
+          report.metadataTierBreakdown.languageBreakdown.metadataTier,
+          report.metadataTierBreakdown.languageBreakdown.metadataTier
         ]"
         (clickEvent)="setMetadata($event)"
       ></sb-navigation-orbs>
@@ -305,7 +343,7 @@
 
       <span class="report-grid">
         <ng-container
-          *ngFor="let languageBreakdown of [_report.metadataTierBreakdown.languageBreakdown]"
+          *ngFor="let languageBreakdown of [report.metadataTierBreakdown.languageBreakdown]"
         >
           <span class="report-sub-header">
             Metadata Tier
@@ -330,22 +368,24 @@
             }}%)
           </span>
 
-          <span class="report-sub-header">
-            Actual Language Unqualified Elements ({{
-              languageBreakdown.actualLanguageUnqualifiedElementsList.length
-            }})
-          </span>
+          <ng-container
+            *ngIf="languageBreakdown.actualLanguageUnqualifiedElementsList; let unqualifiedList"
+          >
+            <span class="report-sub-header">
+              Actual Language Unqualified Elements ({{ unqualifiedList.length }})
+            </span>
 
-          <span class="report-value limited-list">
-            <ng-content
-              *ngTemplateOutlet="
-                stringList;
-                context: {
-                  list: languageBreakdown.actualLanguageUnqualifiedElementsList
-                }
-              "
-            ></ng-content>
-          </span>
+            <span class="report-value limited-list">
+              <ng-content
+                *ngTemplateOutlet="
+                  stringList;
+                  context: {
+                    list: unqualifiedList
+                  }
+                "
+              ></ng-content>
+            </span>
+          </ng-container>
         </ng-container>
       </span>
     </ng-container>
@@ -357,7 +397,7 @@
 
       <span class="report-grid">
         <ng-container
-          *ngFor="let enablingElements of [_report.metadataTierBreakdown.enablingElements]"
+          *ngFor="let enablingElements of [report.metadataTierBreakdown.enablingElements]"
         >
           <span class="report-sub-header">
             Metadata Tier
@@ -366,21 +406,25 @@
             {{ enablingElements.metadataTier }}
           </span>
 
-          <span class="report-sub-header">
-            Distinct Enabling Elements ({{ enablingElements.distinctEnablingElementsList.length }})
-          </span>
-          <span class="report-value">
-            {{ enablingElements.distinctEnablingElementsList }}
-          </span>
+          <ng-container *ngIf="enablingElements.distinctEnablingElementsList; let distinctList">
+            <span class="report-sub-header">
+              Distinct Enabling Elements ({{ distinctList.length }})
+            </span>
+            <span class="report-value limited-list boxed">
+              <ng-content
+                *ngTemplateOutlet="stringList; context: { list: distinctList }"
+              ></ng-content>
+            </span>
+          </ng-container>
 
-          <span class="report-sub-header">
-            Metadata Groups ({{ enablingElements.metadataGroupsList.length }})
-          </span>
-          <span class="report-value limited-list">
-            <ng-content
-              *ngTemplateOutlet="stringList; context: { list: enablingElements.metadataGroupsList }"
-            ></ng-content>
-          </span>
+          <ng-container *ngIf="enablingElements.metadataGroupsList; let groupsList">
+            <span class="report-sub-header"> Metadata Groups ({{ groupsList.length }}) </span>
+            <span class="report-value limited-list boxed">
+              <ng-content
+                *ngTemplateOutlet="stringList; context: { list: groupsList }"
+              ></ng-content>
+            </span>
+          </ng-container>
         </ng-container>
       </span>
     </ng-container>
@@ -392,7 +436,7 @@
 
       <span class="report-grid">
         <ng-container
-          *ngFor="let contextualClasses of [_report.metadataTierBreakdown.contextualClasses]"
+          *ngFor="let contextualClasses of [report.metadataTierBreakdown.contextualClasses]"
         >
           <span class="report-sub-header">
             Metadata Tier
@@ -408,17 +452,16 @@
             {{ contextualClasses.completeContextualResources }}
           </span>
 
-          <span class="report-sub-header">
-            Distinct Classes of CCR ({{ contextualClasses.distinctClassesList.length }})
-          </span>
-          <span class="report-value limited-list">
-            <ng-content
-              *ngTemplateOutlet="
-                stringList;
-                context: { list: contextualClasses.distinctClassesList }
-              "
-            ></ng-content>
-          </span>
+          <ng-container *ngIf="contextualClasses.distinctClassesList; let classesList">
+            <span class="report-sub-header">
+              Distinct Classes of CCR ({{ classesList.length }})
+            </span>
+            <span class="report-value limited-list">
+              <ng-content
+                *ngTemplateOutlet="stringList; context: { list: classesList }"
+              ></ng-content>
+            </span>
+          </ng-container>
         </ng-container>
       </span>
     </ng-container>

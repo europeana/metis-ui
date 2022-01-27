@@ -1,42 +1,54 @@
-import { LicenseType, MediaDataItem, RecordReport, RecordType } from '../_models';
+import { LicenseType, MediaDataItem, RecordMediaType, RecordReport } from '../_models';
 
 export const mockMediaResources: Array<MediaDataItem> = [
   {
     resourceUrl: 'https://text-resource-url.com',
-    mediaType: 'text/text',
-    elementLinkType: 'edm:isShownBy',
+    mediaTier: 2,
+    mediaType: RecordMediaType.TEXT,
+    mimeType: 'mime 1',
+    elementLinkTypes: ['edm:isShownBy'],
     imageResolution: '1 kilobytes',
     verticalResolution: '16 pixels',
     licenseType: LicenseType.RESTRICTED
   },
   {
     resourceUrl: 'https://3d-resource-url.com',
-    mediaType: 'image/3d',
-    elementLinkType: 'edm:isShownBy',
+    mediaTier: 1,
+    mediaType: RecordMediaType.THREE_D,
+    mimeType: 'mime 2',
+    elementLinkTypes: ['edm:isShownBy'],
     imageResolution: '33.8 megapixel',
     verticalResolution: '128 pixels',
     licenseType: LicenseType.RESTRICTED
   },
   {
     resourceUrl: 'https://audio-resource-url.com',
-    mediaType: 'audio/mp3',
-    elementLinkType: 'edm:isShownBy',
+    mediaTier: 4,
+    mediaType: RecordMediaType.AUDIO,
+    mimeType: 'mime 3',
+    elementLinkTypes: ['edm:isShownBy'],
     imageResolution: '28.3 megapixel',
     verticalResolution: '0 pixels',
     licenseType: LicenseType.OPEN
   },
   {
     resourceUrl: 'https://image-resource-url.com',
-    mediaType: 'image/jpeg',
-    elementLinkType: 'edm:isShownBy',
+    mediaTier: 3,
+    mediaType: RecordMediaType.IMAGE,
+    mimeType: 'mime 4',
+    elementLinkTypes: ['edm:isShownBy'],
     imageResolution: '91.12 megapixel',
+    imageResolutionTier: 1,
     verticalResolution: '480 pixels',
+    verticalResolutionTier: 2,
     licenseType: LicenseType.RESTRICTED
   },
   {
     resourceUrl: 'https://video-resource-url.com',
-    mediaType: 'video/mpeg',
-    elementLinkType: 'edm:isShownBy',
+    mediaTier: 2,
+    mediaType: RecordMediaType.VIDEO,
+    mimeType: 'mime 5',
+    elementLinkTypes: ['edm:isShownBy'],
     imageResolution: '5 megapixel',
     verticalResolution: '320 pixels',
     licenseType: LicenseType.RESTRICTED
@@ -53,7 +65,7 @@ export const mockRecordReport: RecordReport = {
     harvestedRecordLink: 'https://example.com'
   },
   contentTierBreakdown: {
-    recordType: RecordType.AUDIO,
+    recordType: RecordMediaType.AUDIO,
     licenseType: LicenseType.OPEN,
     thumbnailAvailable: true,
     landingPageAvailable: true,
@@ -62,11 +74,11 @@ export const mockRecordReport: RecordReport = {
     processingErrorsList: [
       {
         errorMessage: 'Error1',
-        errorCode: 404
+        stacktrace: 'And on and on it goes'
       },
       {
         errorMessage: 'Error2',
-        errorCode: 500
+        stacktrace: 'And on and on it goes'
       }
     ]
   },

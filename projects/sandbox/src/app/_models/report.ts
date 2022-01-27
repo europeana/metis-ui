@@ -3,13 +3,13 @@ export enum LicenseType {
   'RESTRICTED' = 'restricted'
 }
 
-export enum RecordType {
-  '3D' = '3d',
-  'AUDIO' = 'audio',
-  'IMAGE' = 'image',
-  'TEXT' = 'text',
-  'VIDEO' = 'video',
-  'OTHER' = 'other'
+export enum RecordMediaType {
+  'THREE_D' = '3D',
+  'AUDIO' = 'AUDIO',
+  'IMAGE' = 'IMAGE',
+  'TEXT' = 'TEXT',
+  'VIDEO' = 'VIDEO',
+  'OTHER' = 'OTHER'
 }
 
 interface RecordTierCalculationSummary {
@@ -23,22 +23,25 @@ interface RecordTierCalculationSummary {
 
 export interface MediaDataItem {
   resourceUrl: string;
+  mediaTier?: number;
   mediaType: string;
-  elementLinkType: string;
-  imageResolution: string;
-  verticalResolution: string;
-  licenseType: LicenseType;
-
+  mimeType?: string;
+  elementLinkTypes?: Array<string>;
+  imageResolution?: string;
+  imageResolutionTier?: number;
+  verticalResolution?: string;
+  verticalResolutionTier?: number;
+  licenseType?: LicenseType;
   cssClass?: string;
 }
 
 interface ProcessingError {
   errorMessage: string;
-  errorCode: number;
+  stacktrace: string;
 }
 
 interface ContentTierBreakdown {
-  recordType: RecordType;
+  recordType: RecordMediaType;
   licenseType: LicenseType;
   thumbnailAvailable: boolean;
   landingPageAvailable: boolean;
