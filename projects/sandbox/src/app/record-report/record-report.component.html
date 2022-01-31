@@ -7,7 +7,8 @@
         tick: itemVal
       }"
     >
-      {{ itemVal }}
+      <ng-container *ngIf="itemVal">Yes</ng-container>
+      <ng-container *ngIf="!itemVal">No</ng-container>
     </span>
   </ng-template>
 
@@ -197,8 +198,11 @@
 
   <ng-container *ngIf="visibleTier === 0">
     <span class="report-header">Content Tier Breakdown</span>
-
     <span class="report-grid">
+      <span class="report-description">
+        The content tier is the maximum value awarded to any linked media resource. This defining
+        media resource is listed below (if present)
+      </span>
       <ng-container *ngIf="report.contentTierBreakdown.recordType; let recordType">
         <span class="report-sub-header">
           Record Type
