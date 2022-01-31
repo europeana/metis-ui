@@ -7,8 +7,8 @@ export const mockMediaResources: Array<MediaDataItem> = [
     mediaType: RecordMediaType.TEXT,
     mimeType: 'mime 1',
     elementLinkTypes: ['edm:isShownBy'],
-    imageResolution: '1 kilobytes',
-    verticalResolution: '16 pixels',
+    imageResolution: 1,
+    verticalResolution: 16,
     licenseType: LicenseType.RESTRICTED
   },
   {
@@ -17,8 +17,8 @@ export const mockMediaResources: Array<MediaDataItem> = [
     mediaType: RecordMediaType.THREE_D,
     mimeType: 'mime 2',
     elementLinkTypes: ['edm:isShownBy'],
-    imageResolution: '33.8 megapixel',
-    verticalResolution: '128 pixels',
+    imageResolution: 33232128,
+    verticalResolution: 128,
     licenseType: LicenseType.RESTRICTED
   },
   {
@@ -27,8 +27,8 @@ export const mockMediaResources: Array<MediaDataItem> = [
     mediaType: RecordMediaType.AUDIO,
     mimeType: 'mime 3',
     elementLinkTypes: ['edm:isShownBy'],
-    imageResolution: '28.3 megapixel',
-    verticalResolution: '0 pixels',
+    imageResolution: 28323213,
+    verticalResolution: 0,
     licenseType: LicenseType.OPEN
   },
   {
@@ -37,9 +37,9 @@ export const mockMediaResources: Array<MediaDataItem> = [
     mediaType: RecordMediaType.IMAGE,
     mimeType: 'mime 4',
     elementLinkTypes: ['edm:isShownBy'],
-    imageResolution: '91.12 megapixel',
+    imageResolution: 91231231312,
     imageResolutionTier: 1,
-    verticalResolution: '480 pixels',
+    verticalResolution: 480,
     verticalResolutionTier: 2,
     licenseType: LicenseType.RESTRICTED
   },
@@ -49,8 +49,8 @@ export const mockMediaResources: Array<MediaDataItem> = [
     mediaType: RecordMediaType.VIDEO,
     mimeType: 'mime 5',
     elementLinkTypes: ['edm:isShownBy'],
-    imageResolution: '5 megapixel',
-    verticalResolution: '320 pixels',
+    imageResolution: 52352343,
+    verticalResolution: 320,
     licenseType: LicenseType.RESTRICTED
   }
 ];

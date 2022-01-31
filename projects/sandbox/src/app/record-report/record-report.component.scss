@@ -7,6 +7,10 @@ $margin-v: 12px;
   font-family: Courier, courier new, serif;
 }
 
+.link-shortcut {
+  text-decoration: underline;
+}
+
 .processing-errors {
   margin-top: $margin-v;
 
@@ -115,6 +119,7 @@ $margin-v: 12px;
 }
 
 .report-header {
+  display: block;
   font-weight: bold;
 }
 

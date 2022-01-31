@@ -25,6 +25,8 @@ export class RecordReportComponent {
   visibleMedia = 0;
   visibleMetadata: DisplayedMetaTier = DisplayedMetaTier.LANGUAGE;
 
+  public RecordMediaType = RecordMediaType;
+
   @ViewChild('inputMediaIndex') inputMediaIndex: ElementRef;
 
   get report(): RecordReport {

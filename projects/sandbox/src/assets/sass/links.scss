@@ -5,9 +5,11 @@
   display: none;
   font-size: 8px;
   font-weight: bold;
+  height: 100%;
   padding-right: 4px;
   position: absolute;
   right: 100%;
+  top: 0.8em;
   white-space: nowrap;
 
   &:hover {
