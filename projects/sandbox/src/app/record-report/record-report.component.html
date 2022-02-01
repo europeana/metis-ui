@@ -1,4 +1,6 @@
 <div class="record-report">
+  <ng-template #emptyVal><span class="report-value" title="value unavailable">-</span></ng-template>
+
   <ng-template #tickedItem let-itemVal="itemVal">
     <span
       class="report-value"
@@ -7,7 +9,8 @@
         tick: itemVal
       }"
     >
-      {{ itemVal }}
+      <ng-container *ngIf="itemVal">Yes</ng-container>
+      <ng-container *ngIf="!itemVal">No</ng-container>
     </span>
   </ng-template>
 
@@ -21,35 +24,22 @@
     <span class="report-sub-header">
       Resource Url
     </span>
-    <span class="report-value">
-      <ng-template #labelRefResource
-        ><span i18n="progress link link@@progressLinkPreview">resource</span></ng-template
-      >
-      <sb-copyable-link-item
-        [labelRef]="labelRefResource"
-        [href]="data.resourceUrl"
-      ></sb-copyable-link-item>
+    <span class="report-value" *ngIf="data.resourceUrl; let val; else: emptyVal">
+      <a class="external-link" rel="noopener" target="_blank" [href]="val">{{ val }}</a>
     </span>
 
     <span class="report-sub-header">
       Media Type
     </span>
-    <span class="report-value">
-      {{ data.mediaType }}
+    <span class="report-value" *ngIf="data.mediaType; let val; else: emptyVal">
+      {{ val }}
     </span>
 
     <span class="report-sub-header">
       Mime Type
     </span>
-    <span class="report-value">
-      {{ data.mimeType }}
-    </span>
-
-    <span class="report-sub-header">
-      Media Tier
-    </span>
-    <span class="report-value">
-      {{ data.mediaTier }}
+    <span class="report-value" *ngIf="data.mimeType; let val; else: emptyVal">
+      {{ val }}
     </span>
 
     <ng-container *ngIf="data.elementLinkTypes; let linkTypes">
@@ -64,27 +54,51 @@
       </span>
     </ng-container>
 
-    <span class="report-sub-header">
-      Image Resolution (Tier)
-    </span>
-    <span class="report-value">
-      {{ data.imageResolution }}
-      <span *ngIf="data.imageResolutionTier; let val"> ({{ val }}) </span>
-    </span>
+    <ng-container *ngIf="[RecordMediaType.IMAGE, RecordMediaType.TEXT].includes(data.mediaType)">
+      <span class="report-sub-header" data-e2e="image-resolution">
+        Image Resolution
+      </span>
+      <span class="report-value" *ngIf="data.imageResolution; let val; else: emptyVal">
+        {{ val | number: '1.0-0' }} pixels</span
+      >
 
-    <span class="report-sub-header">
-      Vertical Resolution (Tier)
-    </span>
-    <span class="report-value">
-      {{ data.verticalResolution }}
-      <span *ngIf="data.verticalResolutionTier; let val"> ({{ val }}) </span>
-    </span>
+      <span class="report-sub-header">
+        Image Resolution Tier
+      </span>
+
+      <span class="report-value" *ngIf="data.imageResolutionTier; let val; else: emptyVal">
+        {{ val }}
+      </span>
+    </ng-container>
+
+    <ng-container *ngIf="RecordMediaType.VIDEO === data.mediaType">
+      <span class="report-sub-header" data-e2e="vertical-resolution">
+        Vertical Resolution
+      </span>
+      <span class="report-value" *ngIf="data.verticalResolution; let val; else: emptyVal">
+        {{ val }}
+      </span>
+
+      <span class="report-sub-header">
+        Vertical Resolution Tier
+      </span>
+      <span class="report-value" *ngIf="data.verticalResolutionTier; let val; else: emptyVal">
+        {{ val }} pixels</span
+      >
+    </ng-container>
 
     <span class="report-sub-header">
       Licence Type
     </span>
-    <span class="report-value">
-      {{ data.licenseType }}
+    <span class="report-value" *ngIf="data.licenseType; let val; else: emptyVal">
+      {{ val }}
+    </span>
+
+    <span class="report-sub-header">
+      Media Tier
+    </span>
+    <span class="report-value" *ngIf="data.mediaTier; let val; else: emptyVal">
+      {{ val }}
     </span>
   </ng-template>
 
@@ -115,7 +129,7 @@
     <span class="report-sub-header">
       <a
         *ngIf="visibleTier !== 0; else conditionalWrapCT"
-        class="link-internal"
+        class="link-shortcut"
         (click)="setView(0)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapCT"></ng-container>
@@ -125,7 +139,7 @@
     <span class="report-value">
       <a
         *ngIf="visibleTier !== 0; else conditionalWrapCTVal"
-        class="link-internal"
+        class="link-shortcut"
         (click)="setView(0)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapCTVal"></ng-container>
@@ -137,7 +151,7 @@
     <span class="report-sub-header">
       <a
         *ngIf="visibleTier !== 1; else conditionalWrapMetadata"
-        class="link-internal"
+        class="link-shortcut"
         (click)="setView(1)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapMetadata"></ng-container>
@@ -147,7 +161,7 @@
     <span class="report-value">
       <a
         *ngIf="visibleTier !== 1; else conditionalWrapMetadataVal"
-        class="link-internal"
+        class="link-shortcut"
         (click)="setView(1)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapMetadataVal"></ng-container>
@@ -163,7 +177,9 @@
     <ul class="report-value" *ngFor="let summary of [report.recordTierCalculationSummary]">
       <li>
         <ng-template #labelRefPortal
-          ><span i18n="record link link@@recordLinkPortal">portal record</span></ng-template
+          ><span i18n="record link link@@recordLinkPortal"
+            >record after processing (as published)</span
+          ></ng-template
         >
         <sb-copyable-link-item
           [labelRef]="labelRefPortal"
@@ -172,7 +188,9 @@
       </li>
       <li>
         <ng-template #labelRefHarvest
-          ><span i18n="record link link@@recordLinkHarvest">harvest record</span></ng-template
+          ><span i18n="record link link@@recordLinkHarvest"
+            >record before processing (as provided)</span
+          ></ng-template
         >
         <sb-copyable-link-item
           [labelRef]="labelRefHarvest"
@@ -197,18 +215,21 @@
 
   <ng-container *ngIf="visibleTier === 0">
     <span class="report-header">Content Tier Breakdown</span>
-
-    <span class="report-grid">
-      <ng-container *ngIf="report.contentTierBreakdown.recordType; let recordType">
+    <span class="report-grid" *ngFor="let contentTier of [report.contentTierBreakdown]">
+      <span class="report-description">
+        The content tier is the maximum value awarded to any linked media resource. This defining
+        media resource is listed below (if present)
+      </span>
+      <ng-container *ngIf="contentTier.recordType; let recordType">
         <span class="report-sub-header">
           Record Type
         </span>
-        <span class="report-value">
+        <span class="report-value" data-e2e="record-type">
           {{ recordType }}
         </span>
       </ng-container>
 
-      <ng-container *ngIf="report.contentTierBreakdown.licenseType; let licenseType">
+      <ng-container *ngIf="contentTier.licenseType; let licenseType">
         <span class="report-sub-header">
           License Type
         </span>
@@ -217,45 +238,60 @@
         </span>
       </ng-container>
 
-      <span class="report-sub-header">
-        Thumbnail Available
-      </span>
+      <ng-container *ngIf="contentTier.recordType === RecordMediaType.IMAGE">
+        <span class="report-sub-header" data-e2e="thumbnail-available">
+          Thumbnail Available
+        </span>
 
-      <ng-content
-        *ngTemplateOutlet="
-          tickedItem;
-          context: { itemVal: report.contentTierBreakdown.thumbnailAvailable }
+        <ng-content
+          *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.thumbnailAvailable }"
+        ></ng-content>
+      </ng-container>
+
+      <ng-container
+        *ngIf="
+          [RecordMediaType.AUDIO, RecordMediaType.TEXT, RecordMediaType.VIDEO].includes(
+            contentTier.recordType
+          )
         "
-      ></ng-content>
+      >
+        <span class="report-sub-header" data-e2e="landing-available">
+          Landing Page Available
+        </span>
+        <ng-content
+          *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.landingPageAvailable }"
+        ></ng-content>
+      </ng-container>
 
-      <span class="report-sub-header">
-        Landing Page Available
-      </span>
+      <ng-container
+        *ngIf="[RecordMediaType.AUDIO, RecordMediaType.VIDEO].includes(contentTier.recordType)"
+      >
+        <span class="report-sub-header" data-e2e="embed-available">
+          Embeddable Media Available
+        </span>
 
-      <ng-content
-        *ngTemplateOutlet="
-          tickedItem;
-          context: { itemVal: report.contentTierBreakdown.landingPageAvailable }
-        "
-      ></ng-content>
-
-      <span class="report-sub-header">
-        Embeddable Media Available
-      </span>
-
-      <ng-content
-        *ngTemplateOutlet="
-          tickedItem;
-          context: { itemVal: report.contentTierBreakdown.embeddableMediaAvailable }
-        "
-      ></ng-content>
+        <ng-content
+          *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.embeddableMediaAvailable }"
+        ></ng-content>
+      </ng-container>
     </span>
     <!-- end content tier general grid -->
 
     <!-- Media Tech Data -->
 
+    <ng-template #noMedia>
+      <span>
+        <span class="separator-line"></span>
+        <span class="report-header">No Media Available</span>
+      </span>
+    </ng-template>
+
     <ng-container
-      *ngIf="report.contentTierBreakdown.mediaResourceTechnicalMetadataList; let techData"
+      *ngIf="
+        report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
+        let techData;
+        else: noMedia
+      "
     >
       <span class="separator-line">
         <sb-navigation-orbs
@@ -325,6 +361,11 @@
 
   <ng-container *ngIf="visibleTier === 1">
     <span class="report-header">Metadata Tier Breakdown</span>
+
+    <span class="report-description">
+      The metadata tier is the minimum value awarded to any of the metadata tier dimensions that are
+      listed below.
+    </span>
 
     <span class="separator-line">
       <sb-navigation-orbs
@@ -481,4 +522,5 @@
       </span>
     </ng-container>
   </ng-container>
+  <span class="separator-line"></span>
 </div>

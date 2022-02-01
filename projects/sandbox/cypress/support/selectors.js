@@ -7,6 +7,7 @@ export const selectorErrors = '.errors';
 export const selectorInputName = '#name';
 export const selectorInputCountry = '#country';
 export const selectorInputLanguage = '#language';
+export const selectorInputMedia = '.record-report input[type="number"]';
 export const selectorInputRecordId = '[data-e2e="recordToTrack"]';
 export const selectorInputTrackId = '[data-e2e="idToTrack"]';
 export const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';

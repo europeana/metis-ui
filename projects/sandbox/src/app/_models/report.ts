@@ -1,6 +1,7 @@
 export enum LicenseType {
-  'OPEN' = 'open',
-  'RESTRICTED' = 'restricted'
+  'CLOSED' = 'CLOSED',
+  'OPEN' = 'OPEN',
+  'RESTRICTED' = 'RESTRICTED'
 }
 
 export enum RecordMediaType {
@@ -27,9 +28,9 @@ export interface MediaDataItem {
   mediaType: string;
   mimeType?: string;
   elementLinkTypes?: Array<string>;
-  imageResolution?: string;
+  imageResolution?: number;
   imageResolutionTier?: number;
-  verticalResolution?: string;
+  verticalResolution?: number;
   verticalResolutionTier?: number;
   licenseType?: LicenseType;
   cssClass?: string;

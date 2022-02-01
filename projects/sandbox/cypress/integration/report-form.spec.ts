@@ -1,6 +1,7 @@
 import { fillRecordForm } from '../support/helpers';
 import {
   selectorBtnSubmitRecord,
+  selectorInputMedia,
   selectorInputRecordId,
   selectorLinkDatasetForm,
   selectorLinkProgressForm,
@@ -11,7 +12,6 @@ context('Sandbox', () => {
   describe('Report Form', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/1?recordId=2');
     });
 
     const force = { force: true };
@@ -26,6 +26,7 @@ context('Sandbox', () => {
     const selectorMediaOrbImage = '.orb-media-image';
     const selectorMediaOrbText = '.orb-media-text';
     const selectorMediaOrbVideo = '.orb-media-video';
+    const selectorMediaOrbUnknown = '.orb-media-unknown';
 
     const allMediaOrbs = [
       selectorMediaOrbText,
@@ -51,20 +52,23 @@ context('Sandbox', () => {
     };
 
     it('should show the input and submit button', () => {
+      cy.visit('/1?recordId=2');
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
       cy.get(selectorBtnSubmitRecord).should('not.be.disabled');
       cy.get(selectorInputRecordId).should('have.value', '2');
     });
 
     it('should show the processing errors conditionally', () => {
-      const selectorErrors = '.error-grid.report-grid';
-      cy.get(selectorErrors).should('have.length', 1);
-      cy.visit('/1?recordId=0');
-      cy.wait(200);
+      cy.visit('/1?recordId=2');
+      const selectorErrors = '.processing-errors';
       cy.get(selectorErrors).should('have.length', 0);
+      cy.visit('/1?recordId=13');
+      cy.wait(200);
+      cy.get(selectorErrors).should('have.length', 1);
     });
 
     it('should link to the progress / track form', () => {
+      cy.visit('/1?recordId=2');
       cy.get(selectorProgressOrb)
         .filter(':visible')
         .should('have.length', 0);
@@ -82,6 +86,7 @@ context('Sandbox', () => {
     });
 
     it('should link to the dataset form (without opening the progress form)', () => {
+      cy.visit('/1?recordId=2');
       cy.get(`.progress-orb-container:not(.hidden)`).should('have.length', 0);
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 3);
       cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 3);
@@ -95,6 +100,7 @@ context('Sandbox', () => {
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {
+      cy.visit('/1?recordId=2');
       const selectorContentTierOrbActive = `${selectorContentTierOrb}.is-active`;
       const selectorMetadataTierOrbActive = `${selectorMetadataTierOrb}.is-active`;
 
@@ -120,11 +126,10 @@ context('Sandbox', () => {
       allMediaOrbs.forEach((sel: string) => {
         cy.get(sel).should('have.length', 1);
       });
-
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
-
-      cy.get(selectorMediaOrb3D).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
+
+      cy.get(selectorMediaOrbText).click();
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
       cy.get(selectorMediaOrbAudio).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
@@ -144,81 +149,84 @@ context('Sandbox', () => {
       const selectorMediaItemNext = '.record-report .next.nav-orb';
       const selectorMediaItemPrev = '.record-report .previous.nav-orb';
 
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
-
-      cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
       cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
       cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
+      cy.get(selectorMediaItemNext).click();
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
       cy.get(selectorMediaItemNext).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
+      cy.get(selectorMediaItemNext).click();
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbUnknown);
 
+      cy.get(selectorMediaItemPrev).click();
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
+      cy.get(selectorMediaItemPrev).click();
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
       cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
       cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
       cy.get(selectorMediaItemPrev).click();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
-      cy.get(selectorMediaItemPrev).click();
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
     });
 
     it('should navigate with an input when there are more than 5 media items', () => {
       cy.visit('/1?recordId=100');
       cy.scrollTo(0, 200);
       cy.wait(200);
+      cy.get(selectorInputMedia).should('have.length', 1);
 
-      const selectorMediaInput = '.record-report input[type="number"]';
-      cy.get(selectorMediaInput).should('have.length', 1);
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
 
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
-
-      cy.get(selectorMediaInput)
+      cy.get(selectorInputMedia)
         .clear()
         .type('2')
         .blur();
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
 
-      cy.get(selectorMediaInput)
+      cy.get(selectorInputMedia)
         .clear()
         .type('3')
         .blur();
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
 
-      cy.get(selectorMediaInput)
+      cy.get(selectorInputMedia)
         .clear()
         .type('4')
         .blur();
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorMediaInput)
+      cy.get(selectorInputMedia)
         .clear()
         .type('5')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
 
-      cy.get(selectorMediaInput)
+      cy.get(selectorInputMedia)
         .clear()
         .type('10')
         .blur();
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorMediaInput)
+      cy.get(selectorInputMedia)
         .clear()
         .type('100')
         .blur();
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorMediaInput)
+      cy.get(selectorInputMedia)
         .clear()
         .type('-100')
         .blur();
-      checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
+      checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
     });
 
     it('should toggle the metadataTier sub-sections', () => {
+      cy.visit('/1?recordId=2');
+
       const selectorLanguageOrb = '.language-orb';
       const selectorElementOrb = '.element-orb';
       const selectorClassesOrb = '.classes-orb';

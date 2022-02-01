@@ -356,22 +356,32 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
-        const regRes = route.match(
-          /\/dataset\/[A-Za-z0-9_]+\/record\/compute-tier-calculation\?recordId=(\S+)&\S+/
+        const regResRecord = route.match(
+          /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)&\S+/
         );
 
-        if (regRes) {
-          const recordIdUnparsed = regRes[1];
-          let recordId = parseInt(recordIdUnparsed);
+        if (regResRecord && regResRecord.length > 2) {
+          const recordIdUnparsed = decodeURIComponent(regResRecord[2]);
+          const recordId = parseInt(recordIdUnparsed);
 
           if (isNaN(recordId)) {
-            recordId = recordIdUnparsed.length;
+            // check for mismatches between europeana records and the parent dataset
+
+            const europeanaId = recordIdUnparsed.match(/^\/(\d)\/\S+/);
+            if (europeanaId) {
+              const recordDataset = parseInt(europeanaId[1]);
+              const datasetParam = parseInt(regResRecord[1]);
+              if (recordDataset !== datasetParam) {
+                this.handle404(route, response);
+                return;
+              }
+            }
           }
 
           if (recordId === 404) {
             this.handle404(route, response);
           } else {
-            const report = this.reportGenerator.generateReport(recordId);
+            const report = this.reportGenerator.generateReport(recordIdUnparsed);
             if (recordId > 999) {
               setTimeout(() => {
                 response.end(report);
@@ -383,11 +393,12 @@ new (class extends TestDataServer {
           return;
         }
 
-        const regxDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
-        if (!regxDataset) {
+        const regResDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
+
+        if (!regResDataset) {
           this.handle404(route, response);
         } else {
-          const id = regxDataset[1];
+          const id = regResDataset[1];
           if (this.errorCodes.indexOf(id) > -1) {
             response.statusCode = parseInt(id);
             response.end();
