@@ -79,27 +79,32 @@ export class ReportGenerator {
     return types[num % types.length];
   };
 
-  generateReport = (id: number): string => {
+  generateReport = (id: string): string => {
+    let idAsNumber = parseInt(id);
+    if (isNaN(idAsNumber)) {
+      idAsNumber = id.length;
+    }
+
     let media: Array<MediaDataItem> = [];
     let errors = this.errorList.slice();
     let errorMode = false;
 
     const ctVals = [0, 1, 2, 3, 4];
-    const ctVal = ctVals[id % ctVals.length];
+    const ctVal = ctVals[idAsNumber % ctVals.length];
 
     const mdVals = ['A', 'B', 'C', 'D'];
-    const mdVal = mdVals[id % mdVals.length];
+    const mdVal = mdVals[idAsNumber % mdVals.length];
 
-    if (id >= 100) {
+    if (idAsNumber >= 100) {
       media = this.generateMediaResources(10);
-    } else if (id % 2 === 0) {
+    } else if (idAsNumber % 2 === 0) {
       media = this.generateMediaResources(1);
       errors = errors.slice(0, 2);
     } else {
       media = this.generateMediaResources(5);
     }
 
-    if (id === 13) {
+    if (idAsNumber === 13) {
       media.forEach((item: MediaDataItem) => {
         item.mediaType = '';
       });
@@ -116,13 +121,13 @@ export class ReportGenerator {
         harvestedRecordLink: 'https://harvest.record.link'
       },
       contentTierBreakdown: {
-        recordType: this.generateType(id),
+        recordType: this.generateType(idAsNumber),
         licenseType: LicenseType.OPEN,
-        thumbnailAvailable: id % 4 === 0,
+        thumbnailAvailable: idAsNumber % 4 === 0,
         landingPageAvailable: !errorMode,
         embeddableMediaAvailable: !errorMode,
         mediaResourceTechnicalMetadataList: media,
-        processingErrorsList: id === 0 ? undefined : errors
+        processingErrorsList: idAsNumber === 0 ? undefined : errors
       },
       metadataTierBreakdown: {
         languageBreakdown: {
