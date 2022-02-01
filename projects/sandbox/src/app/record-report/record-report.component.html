@@ -1,4 +1,6 @@
 <div class="record-report">
+  <ng-template #emptyVal><span class="report-value" title="value unavailable">-</span></ng-template>
+
   <ng-template #tickedItem let-itemVal="itemVal">
     <span
       class="report-value"
@@ -22,24 +24,22 @@
     <span class="report-sub-header">
       Resource Url
     </span>
-    <span class="report-value">
-      <a class="external-link" rel="noopener" target="_blank" [href]="data.resourceUrl">{{
-        data.resourceUrl
-      }}</a>
+    <span class="report-value" *ngIf="data.resourceUrl; let val; else: emptyVal">
+      <a class="external-link" rel="noopener" target="_blank" [href]="val">{{ val }}</a>
     </span>
 
     <span class="report-sub-header">
       Media Type
     </span>
-    <span class="report-value">
-      {{ data.mediaType }}
+    <span class="report-value" *ngIf="data.mediaType; let val; else: emptyVal">
+      {{ val }}
     </span>
 
     <span class="report-sub-header">
       Mime Type
     </span>
-    <span class="report-value">
-      {{ data.mimeType }}
+    <span class="report-value" *ngIf="data.mimeType; let val; else: emptyVal">
+      {{ val }}
     </span>
 
     <ng-container *ngIf="data.elementLinkTypes; let linkTypes">
@@ -58,14 +58,16 @@
       <span class="report-sub-header" data-e2e="image-resolution">
         Image Resolution
       </span>
-      <span class="report-value"> {{ data.imageResolution | number: '1.0-0' }} pixels</span>
+      <span class="report-value" *ngIf="data.imageResolution; let val; else: emptyVal">
+        {{ val | number: '1.0-0' }} pixels</span
+      >
 
       <span class="report-sub-header">
         Image Resolution Tier
       </span>
 
-      <span class="report-value">
-        {{ data.imageResolutionTier }}
+      <span class="report-value" *ngIf="data.imageResolutionTier; let val; else: emptyVal">
+        {{ val }}
       </span>
     </ng-container>
 
@@ -73,28 +75,30 @@
       <span class="report-sub-header" data-e2e="vertical-resolution">
         Vertical Resolution
       </span>
-      <span class="report-value">
-        {{ data.verticalResolution }}
+      <span class="report-value" *ngIf="data.verticalResolution; let val; else: emptyVal">
+        {{ val }}
       </span>
 
       <span class="report-sub-header">
         Vertical Resolution Tier
       </span>
-      <span class="report-value"> {{ data.verticalResolutionTier }} pixels</span>
+      <span class="report-value" *ngIf="data.verticalResolutionTier; let val; else: emptyVal">
+        {{ val }} pixels</span
+      >
     </ng-container>
 
     <span class="report-sub-header">
       Licence Type
     </span>
-    <span class="report-value">
-      {{ data.licenseType }}
+    <span class="report-value" *ngIf="data.licenseType; let val; else: emptyVal">
+      {{ val }}
     </span>
 
     <span class="report-sub-header">
       Media Tier
     </span>
-    <span class="report-value">
-      {{ data.mediaTier }}
+    <span class="report-value" *ngIf="data.mediaTier; let val; else: emptyVal">
+      {{ val }}
     </span>
   </ng-template>
 
