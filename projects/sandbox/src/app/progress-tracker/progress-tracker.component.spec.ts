@@ -83,5 +83,13 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('');
     });
+
+    it('should toggle the exapnded-warning flag', () => {
+      expect(component.expandedWarning).toBeFalsy();
+      component.toggleExpandedWarning();
+      expect(component.expandedWarning).toBeTruthy();
+      component.toggleExpandedWarning();
+      expect(component.expandedWarning).toBeFalsy();
+    });
   });
 });

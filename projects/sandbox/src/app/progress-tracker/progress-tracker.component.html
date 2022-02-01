@@ -3,7 +3,6 @@
     <span class="title-name" [ngClass]="{ tick: isComplete() }">{{ info['dataset-name'] }}</span
     ><span class="title-id">{{ datasetId }}</span>
   </h2>
-
   <ul *ngIf="info['transformed-to-edm-external']">
     <li class="container-h">
       <span class="xsl-icon"></span>
@@ -13,7 +12,14 @@
 
   <div class="info" class="data-summary">
     <ul>
-      <li *ngIf="info['creation-date']" data-e2e="creation-date">
+      <li
+        data-e2e="creation-date"
+        class="creation-date"
+        [title]="
+          progressData['dataset-info']['record-limit-exceeded'] ? 'Some records not processed' : ''
+        "
+        [ngClass]="{ 'warning-icon': progressData['dataset-info']['record-limit-exceeded'] }"
+      >
         {{ getFormattedCreationDate() }}
       </li>
       <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
@@ -74,7 +80,7 @@
         <span class="step-label">{{ item.step }}</span>
       </span>
       <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
-      <span class="container-h">
+      <span class="step-fail container-h">
         <a
           *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
           class="link-internal"
@@ -84,16 +90,6 @@
         </a>
         <ng-template #conditionalWrap
           ><span *ngIf="item.fail" class="errors">{{ item.fail }}</span></ng-template
-        >
-
-        <span
-          class="warn-limit"
-          *ngIf="i === 0 && progressData['dataset-info']['record-limit-exceeded']"
-          title="Some of the uploaded records were not processed."
-          data-e2e="warn-limit-reached"
-        >
-          <span class="warn-limit-icon"></span>
-          1000 imported</span
         >
       </span>
       <span class="grid-cell-errors">
@@ -108,6 +104,22 @@
               item.errors.length
             }})</span
           ></a
+        >
+      </span>
+
+      <span
+        class="full-grid-width"
+        *ngIf="i === 0 && progressData['dataset-info']['record-limit-exceeded']"
+        data-e2e="warn-limit-reached"
+      >
+        <a
+          class="warning-icon warn-limit"
+          (click)="toggleExpandedWarning()"
+          title="If the dataset is too large then the remainder of the records is ignored"
+          >Some records not processed</a
+        >
+        <span class="warn-detail" *ngIf="expandedWarning"
+          >If the dataset is too large then the remainder of the records is ignored</span
         >
       </span>
     </ng-container>

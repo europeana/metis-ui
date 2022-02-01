@@ -110,5 +110,18 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitData).click();
       cy.get(selReachedDataLimit).should('have.length', 1);
     });
+
+    it('should expand and collapse the data warning', () => {
+      const selWarnDetail = '.warn-detail';
+      cy.get(selectorLinkDatasetForm).click();
+      fillUploadForm('Name_At_Least_Ten_Characters');
+      cy.get(selectorBtnSubmitData).click();
+      cy.get(selReachedDataLimit).should('have.length', 1);
+      cy.get(selWarnDetail).should('have.length', 0);
+      cy.get(`${selReachedDataLimit} a`).click();
+      cy.get(selWarnDetail).should('have.length', 1);
+      cy.get(`${selReachedDataLimit} a`).click();
+      cy.get(selWarnDetail).should('have.length', 0);
+    });
   });
 });

@@ -15,6 +15,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
+  expandedWarning = false;
 
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
@@ -26,10 +27,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns string
    **/
   getFormattedCreationDate(): string {
+    const dateData = this.progressData['dataset-info']['creation-date'];
+    if (!dateData) {
+      return '';
+    }
     const padNumber = (n: number): string => {
       return n < 10 ? `0${n}` : `${n}`;
     };
-    const date = new Date(this.progressData['dataset-info']['creation-date']);
+    const date = new Date(dateData);
     const rTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(padNumber).join(':');
     const rDate = [date.getDate(), date.getMonth() + 1, date.getFullYear()]
       .map(padNumber)
@@ -80,5 +85,13 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   showErrorsForStep(detailIndex: number): void {
     this.detailIndex = detailIndex;
     this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
+  }
+
+  /**
+   * toggleExpandedWarning
+   * Toggles this.expandedWarning
+   **/
+  toggleExpandedWarning() {
+    this.expandedWarning = !this.expandedWarning;
   }
 }
