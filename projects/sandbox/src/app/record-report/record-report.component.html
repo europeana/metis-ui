@@ -279,8 +279,19 @@
 
     <!-- Media Tech Data -->
 
+    <ng-template #noMedia>
+      <span>
+        <span class="separator-line"></span>
+        <span class="report-header">No Media Available</span>
+      </span>
+    </ng-template>
+
     <ng-container
-      *ngIf="report.contentTierBreakdown.mediaResourceTechnicalMetadataList; let techData"
+      *ngIf="
+        report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
+        let techData;
+        else: noMedia
+      "
     >
       <span class="separator-line">
         <sb-navigation-orbs
@@ -511,4 +522,5 @@
       </span>
     </ng-container>
   </ng-container>
+  <span class="separator-line"></span>
 </div>
