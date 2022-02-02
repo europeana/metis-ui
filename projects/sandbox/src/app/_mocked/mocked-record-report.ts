@@ -88,6 +88,7 @@ export const mockRecordReport: RecordReport = {
       actualLanguageQualifiedElements: 34,
       actualLanguageQualifiedElementsPercentage: 81,
       actualLanguageUnqualifiedElementsList: ['dc:creator', 'edm:currentLocation'],
+      qualifiedElementsWithoutLanguageList: ['this', 'that'],
       metadataTier: 'C'
     },
     enablingElements: {

@@ -56,6 +56,7 @@ interface LanguageBreakdown {
   actualLanguageQualifiedElements: number;
   actualLanguageQualifiedElementsPercentage: number;
   actualLanguageUnqualifiedElementsList: Array<string>;
+  qualifiedElementsWithoutLanguageList: Array<string>;
   metadataTier: string;
 }
 
