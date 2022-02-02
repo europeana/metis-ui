@@ -142,6 +142,7 @@ export class ReportGenerator {
             'the',
             'other'
           ],
+          qualifiedElementsWithoutLanguageList: ['this', 'that', 'the', 'other'],
           metadataTier: mdVal
         },
         enablingElements: {
