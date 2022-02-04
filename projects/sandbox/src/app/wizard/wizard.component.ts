@@ -612,6 +612,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           }
         },
         (err: HttpErrorResponse) => {
+          this.progressData = undefined;
           this.error = err;
           this.resetBusy();
           return err;
@@ -640,8 +641,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           (report: RecordReport) => {
             this.recordReport = report;
             this.resetBusy();
+            this.error = undefined;
           },
           (err: HttpErrorResponse): void => {
+            this.recordReport = undefined;
             this.error = err;
             this.resetBusy();
           }
