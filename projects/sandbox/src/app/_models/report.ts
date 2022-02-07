@@ -19,7 +19,6 @@ interface RecordTierCalculationSummary {
   contentTier: string;
   metadataTier: string;
   portalRecordLink: string;
-  harvestedRecordLink: string;
 }
 
 export interface MediaDataItem {

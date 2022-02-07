@@ -48,8 +48,7 @@ export class SandboxService {
    */
   getRecordReport(datasetId: string, recordId: string): Observable<RecordReport> {
     const url = `${apiSettings.apiHost}/dataset/${datasetId}/record/compute-tier-calculation`;
-    const paramString = `recordId=${recordId}&recordIdType=EUROPEANA_ID`;
-    return this.http.get<RecordReport>(`${url}?${paramString}`);
+    return this.http.get<RecordReport>(`${url}?recordId=${recordId}`);
   }
 
   /** requestProgress

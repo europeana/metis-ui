@@ -61,8 +61,7 @@ export const mockRecordReport: RecordReport = {
     providerRecordId: 'providerRecordId',
     contentTier: '4',
     metadataTier: 'C',
-    portalRecordLink: 'https://example.com',
-    harvestedRecordLink: 'https://example.com'
+    portalRecordLink: 'https://example.com'
   },
   contentTierBreakdown: {
     recordType: RecordMediaType.AUDIO,
