@@ -8,7 +8,12 @@ import { BehaviorSubject, of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { mockDataset, MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
+import {
+  mockDataset,
+  mockRecordReport,
+  MockSandboxService,
+  MockSandboxServiceErrors
+} from '../_mocked';
 import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
 import { SandboxService } from '../_services';
 import { WizardComponent } from './wizard.component';
@@ -407,11 +412,13 @@ describe('WizardComponent', () => {
     beforeEach(b4Each);
 
     it('should handle progress form errors', fakeAsync(() => {
+      component.progressData = mockDataset;
       expect(component.error).toBeFalsy();
       (component.formProgress.get('idToTrack') as FormControl).setValue('1');
       component.onSubmitProgress();
       tick(1);
       expect(component.error).toBeTruthy();
+      expect(component.progressData).toBeFalsy();
       expect(component.formProgress.value.idToTrack).toBeTruthy();
       component.cleanup();
       tick(apiSettings.interval);
@@ -461,6 +468,7 @@ describe('WizardComponent', () => {
     }));
 
     it('should handle record form errors', fakeAsync(() => {
+      component.recordReport = mockRecordReport;
       expect(component.error).toBeFalsy();
       component.onSubmitRecord();
       expect(component.error).toBeFalsy();
@@ -469,6 +477,7 @@ describe('WizardComponent', () => {
       component.onSubmitRecord();
       tick(1);
       expect(component.error).toBeTruthy();
+      expect(component.recordReport).toBeFalsy();
       component.cleanup();
       tick(apiSettings.interval);
     }));
