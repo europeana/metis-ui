@@ -117,8 +117,7 @@ export class ReportGenerator {
         providerRecordId: `${id}-provider`,
         contentTier: `${ctVal}`,
         metadataTier: mdVal,
-        portalRecordLink: 'https://portal.record.link',
-        harvestedRecordLink: 'https://harvest.record.link'
+        portalRecordLink: 'https://portal.record.link'
       },
       contentTierBreakdown: {
         recordType: this.generateType(idAsNumber),

@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { apiSettings } from '../../environments/apisettings';
 import {
   ClassMap,
   DisplayedMetaTier,
@@ -15,6 +16,7 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
   styleUrls: ['./record-report.component.scss']
 })
 export class RecordReportComponent {
+  public apiSettings = apiSettings;
   _report: RecordReport;
 
   mediaCollapsed = false;
@@ -43,6 +45,15 @@ export class RecordReportComponent {
     this.visibleTier = DisplayedTier.CONTENT;
     this.visibleMedia = 0;
     this.visibleMetadata = DisplayedMetaTier.LANGUAGE;
+  }
+
+  getDatasetId(): string {
+    const id = this.report.recordTierCalculationSummary.europeanaRecordId;
+    const idSplit = id.split('/');
+    if (idSplit.length > 2) {
+      return idSplit[1];
+    }
+    return '';
   }
 
   changeMediaIndex(event: KeyboardEvent): void {

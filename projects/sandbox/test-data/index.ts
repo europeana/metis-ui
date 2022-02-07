@@ -357,7 +357,7 @@ new (class extends TestDataServer {
         );
       } else {
         const regResRecord = route.match(
-          /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)&\S+/
+          /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/
         );
 
         if (regResRecord && regResRecord.length > 2) {
