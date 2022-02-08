@@ -1,8 +1,10 @@
 import { fillRecordForm } from '../support/helpers';
 import {
+  selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
   selectorInputMedia,
   selectorInputRecordId,
+  selectorInputDatasetId,
   selectorLinkDatasetForm,
   selectorLinkProgressForm,
   selectorProgressOrb
@@ -51,11 +53,14 @@ context('Sandbox', () => {
       cy.get(activeOrb + selectorActive).should('have.length', 1);
     };
 
-    it('should show the input and submit button', () => {
+    it('should show the inputs and submit buttons', () => {
       cy.visit('/1?recordId=2');
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
       cy.get(selectorBtnSubmitRecord).should('not.be.disabled');
+      cy.get(selectorBtnSubmitProgress).should('have.length', 1);
+      cy.get(selectorBtnSubmitProgress).should('not.be.disabled');
       cy.get(selectorInputRecordId).should('have.value', '2');
+      cy.get(selectorInputDatasetId).should('have.value', '1');
     });
 
     it('should show the processing errors conditionally', () => {

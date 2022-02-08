@@ -457,16 +457,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
-   * getRecordFormVisible
-   * Returns true if trackDatasetId is defined and if the WizardStep at currentStepIndex is PROGRESS_TRACK in REPORT
-   *
-   * @returns boolean
-   **/
-  getRecordFormVisible(): boolean {
-    return !!this.trackDatasetId && this.getIsProgressTrackOrReport();
-  }
-
-  /**
    * setStep
    * Sets the currentStepIndex and sets datasetOrbsHidden to false.
    * Optionally resets the form
@@ -608,6 +598,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             const splitPath = this.location.path().split('?');
             if (splitPath.length > 1 || splitPath[0] !== newPath) {
               this.location.go(newPath);
+              this.setStep(this.stepIndexProgress);
             }
           }
         },

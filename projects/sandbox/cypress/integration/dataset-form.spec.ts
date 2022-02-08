@@ -6,7 +6,7 @@ import {
   selectorInputCountry,
   selectorInputLanguage,
   selectorInputName,
-  selectorInputTrackId,
+  selectorInputDatasetId,
   selectorInputZipFile,
   selectorLinkDatasetForm,
   selectorProgressTitle
@@ -140,14 +140,14 @@ context('Sandbox', () => {
       cy.get('.wizard-status li:nth-child(3) a').should('have.class', classSet);
 
       setStep(4);
-      cy.get(selectorInputTrackId).type('1');
+      cy.get(selectorInputDatasetId).type('1');
       cy.get('.wizard-status li:nth-child(4) a').should('have.class', classSet);
     });
 
     it('should flag when a step is invalid', () => {
       setStep(4);
       cy.get(selectorFieldErrors).should('have.length', 1);
-      cy.get(selectorInputTrackId).type('1');
+      cy.get(selectorInputDatasetId).type('1');
       cy.get(selectorFieldErrors).should('have.length', 0);
       setStep(1);
       cy.get(selectorInputName).type(' ');

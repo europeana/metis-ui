@@ -25,6 +25,9 @@ describe('WizardComponent', () => {
   const testFile = new File([], 'file.zip', { type: 'zip' });
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
+  const formNameDatasetId = 'idToTrack';
+  const formNameRecordId = 'recordToTrack';
+
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -146,9 +149,9 @@ describe('WizardComponent', () => {
       expect(component.stepIsComplete(2)).toBeTruthy();
 
       expect(component.stepIsComplete(3)).toBeFalsy();
-      (component.formProgress.get('idToTrack') as FormControl).setValue('1');
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
       expect(component.stepIsComplete(3)).toBeTruthy();
-      (component.formProgress.get('idToTrack') as FormControl).setValue(' ');
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue(' ');
       expect(component.stepIsComplete(3)).toBeFalsy();
     });
 
@@ -219,7 +222,7 @@ describe('WizardComponent', () => {
       spyOn(component, 'clearDataPollers');
       component.onSubmitProgress();
       expect(component.clearDataPollers).not.toHaveBeenCalled();
-      (component.formProgress.get('idToTrack') as FormControl).setValue('1');
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
       component.onSubmitProgress();
       expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
       tick(1);
@@ -228,7 +231,7 @@ describe('WizardComponent', () => {
       // clear and re-submit
 
       spyOn(component, 'progressComplete').and.callFake(() => false);
-      (component.formProgress.get('idToTrack') as FormControl).setValue('1');
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
       component.onSubmitProgress();
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
       tick(1);
@@ -363,8 +366,8 @@ describe('WizardComponent', () => {
     });
 
     it('should validate the record id', () => {
-      const recordId = component.formRecord.get('recordToTrack') as FormControl;
-      const datasetId = component.formProgress.get('idToTrack') as FormControl;
+      const recordId = component.formRecord.get(formNameRecordId) as FormControl;
+      const datasetId = component.formProgress.get(formNameDatasetId) as FormControl;
 
       ['0', '1'].forEach((val: string) => {
         recordId.setValue(val);
@@ -414,7 +417,7 @@ describe('WizardComponent', () => {
     it('should handle progress form errors', fakeAsync(() => {
       component.progressData = mockDataset;
       expect(component.error).toBeFalsy();
-      (component.formProgress.get('idToTrack') as FormControl).setValue('1');
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
       component.onSubmitProgress();
       tick(1);
       expect(component.error).toBeTruthy();
@@ -472,8 +475,8 @@ describe('WizardComponent', () => {
       expect(component.error).toBeFalsy();
       component.onSubmitRecord();
       expect(component.error).toBeFalsy();
-      (component.formProgress.get('idToTrack') as FormControl).setValue('1');
-      (component.formRecord.get('recordToTrack') as FormControl).setValue('2');
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
+      (component.formRecord.get(formNameRecordId) as FormControl).setValue('2');
       component.onSubmitRecord();
       tick(1);
       expect(component.error).toBeTruthy();

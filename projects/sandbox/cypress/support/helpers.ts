@@ -6,7 +6,7 @@ import {
   selectorInputLanguage,
   selectorInputName,
   selectorInputRecordId,
-  selectorInputTrackId,
+  selectorInputDatasetId,
   selectorInputZipFile
 } from '../support/selectors';
 
@@ -36,7 +36,7 @@ export const fillUploadForm = (testDatasetName: string): void => {
 };
 
 export const fillProgressForm = (id: string): void => {
-  cy.get(selectorInputTrackId)
+  cy.get(selectorInputDatasetId)
     .clear()
     .type(id);
   cy.get(selectorBtnSubmitProgress).click();

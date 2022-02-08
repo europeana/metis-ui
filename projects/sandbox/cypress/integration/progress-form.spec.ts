@@ -3,7 +3,7 @@ import {
   selectorBtnSubmitData,
   selectorBtnSubmitProgress,
   selectorErrors,
-  selectorInputTrackId,
+  selectorInputDatasetId,
   selectorLinkDatasetForm,
   selectorProgressTitle
 } from '../support/selectors';
@@ -29,7 +29,7 @@ context('Sandbox', () => {
     const selCreationDate = '[data-e2e="creation-date"]';
 
     it('should show the input and submit button', () => {
-      cy.get(selectorInputTrackId).should('have.length', 1);
+      cy.get(selectorInputDatasetId).should('have.length', 1);
       cy.get(selectorBtnSubmitProgress).should('have.length', 1);
       cy.get(selectorBtnSubmitProgress).should('be.disabled');
     });
@@ -70,7 +70,7 @@ context('Sandbox', () => {
       cy.get(selectorErrors).should('have.length', 0);
       fillProgressForm('404');
       cy.get(selectorBtnSubmitProgress).should('have.length', 1);
-      cy.get(selectorInputTrackId).clear();
+      cy.get(selectorInputDatasetId).clear();
       cy.get(selectorErrors).should('have.length', 0);
       fillProgressForm('500');
       cy.get(selectorErrors).should('have.length', 1);
