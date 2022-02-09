@@ -542,6 +542,25 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
+   * getConnectClasses
+   *
+   **/
+  getConnectClasses(other: string): ClassMap {
+    const valD = this.formProgress.value.idToTrack;
+    const valR = this.formRecord.value.recordToTrack;
+    const match = valR.match(/\/(\d+)\/\S/);
+    const connect = valD.length && valR.length && match;
+    const res: ClassMap = {
+      connect: connect,
+      error: connect && match[1] !== valD
+    };
+    if (connect) {
+      res[other] = true;
+    }
+    return res;
+  }
+
+  /**
    * onSubmitProgress
    * Submits the formProgress data if valid
    *

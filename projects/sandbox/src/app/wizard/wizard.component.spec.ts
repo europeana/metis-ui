@@ -28,7 +28,6 @@ describe('WizardComponent', () => {
   const formNameDatasetId = 'idToTrack';
   const formNameRecordId = 'recordToTrack';
 
-
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
       declarations: [FileUploadComponent, ProtocolFieldSetComponent, WizardComponent],
@@ -89,6 +88,29 @@ describe('WizardComponent', () => {
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
+    });
+
+    it('should get the connect classes', () => {
+      let cClasses = component.getConnectClasses('top');
+      expect(cClasses.error).toBeFalsy();
+
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
+      fixture.detectChanges();
+      cClasses = component.getConnectClasses('top');
+      expect(cClasses.error).toBeFalsy();
+      expect(cClasses.top).toBeFalsy();
+
+      (component.formRecord.get(formNameRecordId) as FormControl).setValue('/1/23');
+      fixture.detectChanges();
+      cClasses = component.getConnectClasses('top');
+      expect(cClasses.error).toBeFalsy();
+      expect(cClasses.top).toBeTruthy();
+
+      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('2');
+      fixture.detectChanges();
+      cClasses = component.getConnectClasses('top');
+      expect(cClasses.error).toBeTruthy();
+      expect(cClasses.top).toBeTruthy();
     });
 
     it('should get the form group', () => {

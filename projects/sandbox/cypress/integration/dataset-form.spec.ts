@@ -4,9 +4,9 @@ import {
   selectorBtnSubmitData,
   selectorErrors,
   selectorInputCountry,
+  selectorInputDatasetId,
   selectorInputLanguage,
   selectorInputName,
-  selectorInputDatasetId,
   selectorInputZipFile,
   selectorLinkDatasetForm,
   selectorProgressTitle

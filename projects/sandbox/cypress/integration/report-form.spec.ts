@@ -2,9 +2,9 @@ import { fillRecordForm } from '../support/helpers';
 import {
   selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
+  selectorInputDatasetId,
   selectorInputMedia,
   selectorInputRecordId,
-  selectorInputDatasetId,
   selectorLinkDatasetForm,
   selectorLinkProgressForm,
   selectorProgressOrb
@@ -263,6 +263,23 @@ context('Sandbox', () => {
 
       cy.visit(`/1?recordId=${encodeURIComponent(otherUrl)}`);
       cy.get(selectorInputRecordId).should('have.value', otherUrl);
+    });
+
+    it('should indicate when the dataset id and record are connected / disconnected', () => {
+      const selConnected = '.submit-id-ctrls.connect';
+      const selConnectedError = `${selConnected}.error`;
+
+      cy.visit('/1?recordId=2');
+      cy.get(selConnected).should('have.length', 0);
+      cy.get(selConnectedError).should('have.length', 0);
+
+      cy.visit('/1?recordId=/1/23');
+      cy.get(selConnected).should('have.length', 2);
+      cy.get(selConnectedError).should('have.length', 0);
+
+      cy.visit('/1?recordId=/2/34');
+      cy.get(selConnected).should('have.length', 2);
+      cy.get(selConnectedError).should('have.length', 2);
     });
   });
 });

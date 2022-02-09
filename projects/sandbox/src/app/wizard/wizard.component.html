@@ -153,13 +153,16 @@
       class="wizard-section"
     >
       <div class="form-group">
-        <label i18n="track id label">Enter the id of a dataset to track </label>
-        <div class="submit-id-ctrls">
+        <label i18n="track id label" for="dataset-to-track"
+          >Enter the id of a dataset to track
+        </label>
+        <div class="submit-id-ctrls" [ngClass]="getConnectClasses('top')">
           <input
             formControlName="idToTrack"
             data-e2e="datasetIdToTrack"
             autofocus
             autocomplete="off"
+            id="dataset-to-track"
           />
           <button
             type="submit"
@@ -185,12 +188,13 @@
       (ngSubmit)="onSubmitRecord(true)"
     >
       <div class="form-group">
-        <label i18n="track id label">Enter the id of a record</label>
-        <div class="submit-id-ctrls">
+        <label i18n="track id label" for="record-to-track">Enter the id of a record</label>
+        <div class="submit-id-ctrls" [ngClass]="getConnectClasses('bottom')">
           <input
             formControlName="recordToTrack"
             data-e2e="recordToTrack"
             autocomplete="off"
+            id="record-to-track"
           />
           <button
             [ngClass]="{ hidden: false }"

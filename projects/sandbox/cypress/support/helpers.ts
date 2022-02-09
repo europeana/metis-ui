@@ -3,10 +3,10 @@ import {
   selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
   selectorInputCountry,
+  selectorInputDatasetId,
   selectorInputLanguage,
   selectorInputName,
   selectorInputRecordId,
-  selectorInputDatasetId,
   selectorInputZipFile
 } from '../support/selectors';
 
