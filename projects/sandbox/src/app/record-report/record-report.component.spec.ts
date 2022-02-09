@@ -28,6 +28,17 @@ describe('RecordReportComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should get the dataset id', () => {
+    const id = '321';
+    const report = JSON.parse(JSON.stringify(mockRecordReport));
+
+    report.recordTierCalculationSummary.europeanaRecordId = `/${id}/12345`;
+
+    expect(component.getDatasetId()).toEqual('');
+    component.report = report;
+    expect(component.getDatasetId()).toEqual(id);
+  });
+
   it('should handle keyboard events', () => {
     const keyEvent = (val: number): KeyboardEvent => {
       return ({ target: { value: val } } as unknown) as KeyboardEvent;

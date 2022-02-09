@@ -28,9 +28,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    **/
   getFormattedCreationDate(): string {
     const dateData = this.progressData['dataset-info']['creation-date'];
-    if (!dateData) {
-      return '';
-    }
     const padNumber = (n: number): string => {
       return n < 10 ? `0${n}` : `${n}`;
     };
@@ -91,7 +88,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * toggleExpandedWarning
    * Toggles this.expandedWarning
    **/
-  toggleExpandedWarning() {
+  toggleExpandedWarning(): void {
     this.expandedWarning = !this.expandedWarning;
   }
 }
