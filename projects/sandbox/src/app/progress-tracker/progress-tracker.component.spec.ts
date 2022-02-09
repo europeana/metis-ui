@@ -38,6 +38,7 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should get the formatted creation date', () => {
+      console.log(component.progressData['dataset-info']['creation-date']);
       expect(component.getFormattedCreationDate()).toEqual('19/01/2022, 15:21:09');
     });
 

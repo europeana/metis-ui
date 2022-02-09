@@ -38,9 +38,8 @@ $textcolour_highlight: $accent;
 @import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
-@import 'assets/sass/connections';
-@import 'assets/sass/links';
 @import 'assets/sass/orbs';
+@import 'assets/sass/links';
 
 a {
   color: $eu-jade-dark;

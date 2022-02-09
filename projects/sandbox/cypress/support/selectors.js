@@ -9,7 +9,7 @@ export const selectorInputCountry = '#country';
 export const selectorInputLanguage = '#language';
 export const selectorInputMedia = '.record-report input[type="number"]';
 export const selectorInputRecordId = '[data-e2e="recordToTrack"]';
-export const selectorInputDatasetId = '[data-e2e="datasetIdToTrack"]';
+export const selectorInputTrackId = '[data-e2e="idToTrack"]';
 export const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
 export const selectorLinkProgressForm = '[data-e2e="link-progress-form"]';
 export const selectorProgressOrb = '.nav-orb.progress-orb';

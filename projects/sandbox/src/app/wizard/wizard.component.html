@@ -133,37 +133,11 @@
         [datasetId]="trackDatasetId"
         [isLoading]="isPollingProgress"
       ></sb-progress-tracker>
-    </form>
 
-    <div
-      [ngClass]="{ active: getIsRecordTrack(currentStepIndex) }"
-      [formGroup]="formRecord"
-      class="wizard-section"
-      *ngIf="recordReport"
-    >
-      <sb-record-report [report]="recordReport"></sb-record-report>
-    </div>
-
-    <form
-      [ngClass]="{
-        active: getIsProgressTrackOrReport(currentStepIndex)
-      }"
-      [formGroup]="formProgress"
-      (ngSubmit)="onSubmitProgress(true)"
-      class="wizard-section"
-    >
       <div class="form-group">
-        <label i18n="track id label" for="dataset-to-track"
-          >Enter the id of a dataset to track
-        </label>
-        <div class="submit-id-ctrls" [ngClass]="getConnectClasses('top')">
-          <input
-            formControlName="idToTrack"
-            data-e2e="datasetIdToTrack"
-            autofocus
-            autocomplete="off"
-            id="dataset-to-track"
-          />
+        <label i18n="track id label">Enter the id of a dataset to track </label>
+        <div class="submit-id-ctrls">
+          <input formControlName="idToTrack" data-e2e="idToTrack" autofocus autocomplete="off" />
           <button
             type="submit"
             class="submit"
@@ -182,20 +156,20 @@
       </div>
     </form>
 
-    <form
+    <div
+      [ngClass]="{ active: getIsRecordTrack(currentStepIndex) }"
       [formGroup]="formRecord"
-      *ngIf="getIsProgressTrackOrReport()"
-      (ngSubmit)="onSubmitRecord(true)"
+      class="wizard-section"
+      *ngIf="recordReport"
     >
+      <sb-record-report [report]="recordReport"></sb-record-report>
+    </div>
+
+    <form [formGroup]="formRecord" *ngIf="getRecordFormVisible()" (ngSubmit)="onSubmitRecord(true)">
       <div class="form-group">
-        <label i18n="track id label" for="record-to-track">Enter the id of a record</label>
-        <div class="submit-id-ctrls" [ngClass]="getConnectClasses('bottom')">
-          <input
-            formControlName="recordToTrack"
-            data-e2e="recordToTrack"
-            autocomplete="off"
-            id="record-to-track"
-          />
+        <label i18n="track id label">Enter the id of a record</label>
+        <div class="submit-id-ctrls">
+          <input formControlName="recordToTrack" data-e2e="recordToTrack" autocomplete="off" />
           <button
             [ngClass]="{ hidden: false }"
             [disabled]="!formRecord.valid"

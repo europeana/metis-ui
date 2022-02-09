@@ -1,8 +1,6 @@
 import { fillRecordForm } from '../support/helpers';
 import {
-  selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
-  selectorInputDatasetId,
   selectorInputMedia,
   selectorInputRecordId,
   selectorLinkDatasetForm,
@@ -53,14 +51,11 @@ context('Sandbox', () => {
       cy.get(activeOrb + selectorActive).should('have.length', 1);
     };
 
-    it('should show the inputs and submit buttons', () => {
+    it('should show the input and submit button', () => {
       cy.visit('/1?recordId=2');
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
       cy.get(selectorBtnSubmitRecord).should('not.be.disabled');
-      cy.get(selectorBtnSubmitProgress).should('have.length', 1);
-      cy.get(selectorBtnSubmitProgress).should('not.be.disabled');
       cy.get(selectorInputRecordId).should('have.value', '2');
-      cy.get(selectorInputDatasetId).should('have.value', '1');
     });
 
     it('should show the processing errors conditionally', () => {
@@ -263,23 +258,6 @@ context('Sandbox', () => {
 
       cy.visit(`/1?recordId=${encodeURIComponent(otherUrl)}`);
       cy.get(selectorInputRecordId).should('have.value', otherUrl);
-    });
-
-    it('should indicate when the dataset id and record are connected / disconnected', () => {
-      const selConnected = '.submit-id-ctrls.connect';
-      const selConnectedError = `${selConnected}.error`;
-
-      cy.visit('/1?recordId=2');
-      cy.get(selConnected).should('have.length', 0);
-      cy.get(selConnectedError).should('have.length', 0);
-
-      cy.visit('/1?recordId=/1/23');
-      cy.get(selConnected).should('have.length', 2);
-      cy.get(selConnectedError).should('have.length', 0);
-
-      cy.visit('/1?recordId=/2/34');
-      cy.get(selConnected).should('have.length', 2);
-      cy.get(selConnectedError).should('have.length', 2);
     });
   });
 });
