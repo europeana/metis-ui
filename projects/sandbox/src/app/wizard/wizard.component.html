@@ -49,7 +49,7 @@
       >
         <label for="name" i18n="name label">Name</label>
         <input id="name" formControlName="name" autocomplete="off" />
-        <span class="field-errors" *ngIf="formUpload.get('name')?.errors?.invalid">
+        <span class="field-errors" *ngIf="formUpload.get('name')?.errors">
           <span class="errors" i18n="Field error@@invalidDatasetName"
             >Please provide a valid name</span
           >
@@ -158,8 +158,8 @@
         </label>
         <div class="submit-id-ctrls" [ngClass]="getConnectClasses('top')">
           <input
-            formControlName="idToTrack"
-            data-e2e="datasetIdToTrack"
+            formControlName="datasetToTrack"
+            data-e2e="datasetToTrack"
             autofocus
             autocomplete="off"
             id="dataset-to-track"
@@ -174,11 +174,13 @@
             track
           </button>
         </div>
-        <span class="field-errors" *ngIf="formProgress.get('idToTrack')?.errors; let errors">
-          <span class="errors" *ngIf="errors.invalid" i18n="Field error@@invalidTrackId"
-            >Please provide a valid id</span
-          >
-        </span>
+        <ng-container *ngIf="formProgress.get('datasetToTrack')?.errors; let errors">
+          <span class="field-errors" *ngIf="errors.invalid">
+            <span class="errors" i18n="Field error@@invalidDatasetId"
+              >Please provide a valid dataset id</span
+            >
+          </span>
+        </ng-container>
       </div>
     </form>
 
@@ -207,6 +209,13 @@
             report
           </button>
         </div>
+        <ng-container *ngIf="formRecord.get('recordToTrack')?.errors; let errors">
+          <span class="field-errors" *ngIf="errors.invalid; let errors">
+            <span class="errors" i18n="Field error@@invalidRecordId"
+              >Please provide a valid record id</span
+            >
+          </span>
+        </ng-container>
       </div>
     </form>
 
