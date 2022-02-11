@@ -79,19 +79,19 @@ context('Sandbox', () => {
     it('should show the progress success', () => {
       cy.get(selectorSuccessPresent).should('have.length', 0);
       fillProgressForm('100');
-      cy.get(selectorSuccessPresent).should('have.length', 9);
+      cy.get(selectorSuccessPresent).should('have.length', 10);
     });
 
     it('should show the progress warn', () => {
       cy.get(selectorWarnPresent).should('have.length', 0);
-      fillProgressForm('910');
-      cy.get(selectorWarnPresent).should('have.length', 9);
+      fillProgressForm('1010');
+      cy.get(selectorWarnPresent).should('have.length', 10);
     });
 
     it('should show the progress fail', () => {
       cy.get(selectorFailPresent).should('have.length', 0);
       fillProgressForm('101');
-      cy.get(selectorFailPresent).should('have.length', 9);
+      cy.get(selectorFailPresent).should('have.length', 10);
     });
 
     it('should show the progress errors', () => {
