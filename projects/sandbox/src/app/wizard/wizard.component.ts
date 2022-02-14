@@ -493,7 +493,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.updateLocation(true, false);
     } else {
       // record report
-      this.updateLocation();
+      this.updateLocation(true, true);
     }
     this.currentStepIndex = stepIndex;
   }
@@ -585,6 +585,16 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       const ctrl = this.formProgress.get('datasetToTrack') as FormControl;
       const datasetToTrack = ctrl.value;
 
+      this.trackDatasetId = idToTrack;
+
+      if (updateLocation) {
+        const newPath = `/${idToTrack}`;
+        const splitPath = this.location.path().split('?');
+        if (splitPath.length > 1 || splitPath[0] !== newPath) {
+          this.setStep(this.stepIndexProgress);
+        }
+      }
+
       this.isBusyProgress = true;
       this.isBusyProgressLinks = true;
       this.isPollingProgress = true;
@@ -611,8 +621,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         },
         (progressInfo: Dataset) => {
           this.progressData = progressInfo;
-          this.trackDatasetId = datasetToTrack;
-
           if (this.progressComplete()) {
             this.resetBusy();
 
@@ -621,18 +629,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
               this.clearDataPollers();
             }
           }
-
           this.error = undefined;
-
-          if (updateLocation) {
-            const newPath = `/${this.trackDatasetId}`;
-            // avoid pushing duplicate states to history
-            const splitPath = this.location.path().split('?');
-            if (splitPath.length > 1 || splitPath[0] !== newPath) {
-              this.location.go(newPath);
-              this.setStep(this.stepIndexProgress);
-            }
-          }
         },
         (err: HttpErrorResponse) => {
           this.progressData = undefined;
@@ -673,11 +670,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           }
         )
       );
-
       if (updateLocation) {
-        this.updateLocation();
+        this.setStep(this.wizardConf.length - 1);
       }
-      this.currentStepIndex = this.wizardConf.length - 1;
     }
   }
 
