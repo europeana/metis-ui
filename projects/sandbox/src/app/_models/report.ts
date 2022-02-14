@@ -51,11 +51,10 @@ interface ContentTierBreakdown {
 }
 
 interface LanguageBreakdown {
-  potentialLanguageQualifiedElements: number;
-  actualLanguageQualifiedElements: number;
-  actualLanguageQualifiedElementsPercentage: number;
-  actualLanguageUnqualifiedElementsList: Array<string>;
   qualifiedElementsWithoutLanguageList: Array<string>;
+  qualifiedElementsWithLanguagePercentage: number;
+  qualifiedElementsWithLanguage: number;
+  qualifiedElements: number;
   metadataTier: string;
 }
 

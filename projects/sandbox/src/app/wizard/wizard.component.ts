@@ -278,7 +278,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   validateDatasetId(control: FormControl): ValidationErrors | null {
     const val = control.value;
-    const enableRecordForm = (enable: boolean) => {
+    const enableRecordForm = (enable: boolean): void => {
       if (this.formRecord) {
         if (enable) {
           this.formRecord.enable();

@@ -83,11 +83,10 @@ export const mockRecordReport: RecordReport = {
   },
   metadataTierBreakdown: {
     languageBreakdown: {
-      potentialLanguageQualifiedElements: 42,
-      actualLanguageQualifiedElements: 34,
-      actualLanguageQualifiedElementsPercentage: 81,
-      actualLanguageUnqualifiedElementsList: ['dc:creator', 'edm:currentLocation'],
-      qualifiedElementsWithoutLanguageList: ['this', 'that'],
+      qualifiedElements: 42,
+      qualifiedElementsWithLanguage: 34,
+      qualifiedElementsWithLanguagePercentage: 81,
+      qualifiedElementsWithoutLanguageList: ['dc:creator', 'edm:currentLocation'],
       metadataTier: 'C'
     },
     enablingElements: {

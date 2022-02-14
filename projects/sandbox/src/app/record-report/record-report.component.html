@@ -394,89 +394,73 @@
         <ng-container
           *ngFor="let languageBreakdown of [report.metadataTierBreakdown.languageBreakdown]"
         >
-          <span class="report-sub-header">
-            Potential Language Qualified Elements
-          </span>
-          <span
-            class="report-value"
-            *ngIf="languageBreakdown.potentialLanguageQualifiedElements; let val; else: emptyVal"
-          >
-            {{ val }}
-          </span>
-
-          <span class="report-sub-header">
-            Actual Language Qualified Elements
-          </span>
-          <span
-            class="report-value"
-            *ngIf="languageBreakdown.actualLanguageQualifiedElements; let val; else: emptyVal"
-          >
-            {{ val }} ({{ languageBreakdown.actualLanguageQualifiedElementsPercentage }}%)
-          </span>
-
-          <ng-container
-            *ngFor="
-              let unqualifiedList of [languageBreakdown.actualLanguageUnqualifiedElementsList]
-            "
-          >
-            <span class="report-sub-header">Actual Language Unqualified Element Count</span>
-            <span class="report-value" *ngIf="unqualifiedList; else emptyVal">{{
-              unqualifiedList.length
-            }}</span>
+          <ng-container *ngIf="languageBreakdown.qualifiedElements; let val">
             <span class="report-sub-header">
-              Actual Language Unqualified Elements
+              Qualified Elements
             </span>
-            <span
-              *ngIf="unqualifiedList; else emptyVal"
-              class="report-value limited-list boxed"
-              [ngClass]="{ 'multiple-entries': unqualifiedList.length > 1 }"
-            >
-              <ng-content
-                *ngTemplateOutlet="
-                  stringList;
-                  context: {
-                    list: unqualifiedList
-                  }
-                "
-              ></ng-content>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="languageBreakdown.qualifiedElementsWithLanguage; let val">
+            <span class="report-sub-header">
+              Qualified Elements With Language
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="languageBreakdown.qualifiedElementsWithLanguagePercentage; let val">
+            <span class="report-sub-header">
+              Qualified Elements With Language Percentage
+            </span>
+            <span class="report-value"> {{ val | number: '2.2-2' }}% </span>
+          </ng-container>
+
+          <ng-container *ngIf="languageBreakdown.qualifiedElementsWithLanguage; let val">
+            <span class="report-sub-header">
+              Actual Language Qualified Elements
+            </span>
+            <span class="report-value">
+              {{ val }}
             </span>
           </ng-container>
 
           <ng-container
             *ngFor="let qualifiedList of [languageBreakdown.qualifiedElementsWithoutLanguageList]"
           >
-            <span class="report-sub-header">Qualified Elements Without Language Count</span>
-            <span class="report-value" *ngIf="qualifiedList; else emptyVal">{{
-              qualifiedList.length
-            }}</span>
-            <span class="report-sub-header">
-              Qualified Elements Without Language
-            </span>
-            <span
-              *ngIf="qualifiedList; else emptyVal"
-              class="report-value limited-list boxed"
-              [ngClass]="{ 'multiple-entries': qualifiedList.length > 1 }"
-            >
-              <ng-content
-                *ngTemplateOutlet="
-                  stringList;
-                  context: {
-                    list: qualifiedList
-                  }
-                "
-              ></ng-content>
-            </span>
+            <ng-container *ngIf="qualifiedList; let val">
+              <span class="report-sub-header">Qualified Elements Without Language Count</span>
+              <span class="report-value">{{ qualifiedList.length }}</span>
+              <span class="report-sub-header">
+                Qualified Elements Without Language
+              </span>
+              <span
+                class="report-value limited-list boxed"
+                [ngClass]="{ 'multiple-entries': qualifiedList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="
+                    stringList;
+                    context: {
+                      list: qualifiedList
+                    }
+                  "
+                ></ng-content>
+              </span>
+            </ng-container>
           </ng-container>
 
-          <span class="report-sub-header">
-            Awarded Tier for the Language Dimension
-          </span>
-          <span
-            class="report-value"
-            *ngIf="languageBreakdown.metadataTier; let val; else: emptyVal"
-          >
-            {{ val }}
-          </span>
+          <ng-container *ngIf="languageBreakdown.metadataTier; let val">
+            <span class="report-sub-header">
+              Awarded Tier for the Language Dimension
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
         </ng-container>
       </span>
     </ng-container>
@@ -493,47 +477,47 @@
           <ng-container
             *ngFor="let distinctList of [enablingElements.distinctEnablingElementsList]"
           >
-            <span class="report-sub-header">Distinct Enabling Metadata Element Count</span>
-            <span class="report-value" *ngIf="distinctList; else emptyVal">{{
-              distinctList.length
-            }}</span>
-            <span class="report-sub-header">
-              Distinct Enabling Metadata Elements
-            </span>
-            <span
-              *ngIf="distinctList; else emptyVal"
-              class="report-value limited-list boxed"
-              [ngClass]="{ 'multiple-entries': distinctList.length > 1 }"
-            >
-              <ng-content
-                *ngTemplateOutlet="stringList; context: { list: distinctList }"
-              ></ng-content>
-            </span>
+            <ng-container *ngIf="distinctList">
+              <span class="report-sub-header">Distinct Enabling Metadata Element Count</span>
+              <span class="report-value">{{ distinctList.length }}</span>
+              <span class="report-sub-header">
+                Distinct Enabling Metadata Elements
+              </span>
+              <span
+                class="report-value limited-list boxed"
+                [ngClass]="{ 'multiple-entries': distinctList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="stringList; context: { list: distinctList }"
+                ></ng-content>
+              </span>
+            </ng-container>
           </ng-container>
 
           <ng-container *ngFor="let groupsList of [enablingElements.metadataGroupsList]">
-            <span class="report-sub-header">Distinct Enabling Metadata Group Count</span>
-            <span class="report-value" *ngIf="groupsList; else emptyVal">{{
-              groupsList.length
-            }}</span>
-            <span class="report-sub-header">Distinct Enabling Metadata Groups</span>
-            <span
-              *ngIf="groupsList; else emptyVal"
-              class="report-value limited-list boxed"
-              [ngClass]="{ 'multiple-entries': groupsList.length > 1 }"
-            >
-              <ng-content
-                *ngTemplateOutlet="stringList; context: { list: groupsList }"
-              ></ng-content>
-            </span>
+            <ng-container *ngIf="groupsList">
+              <span class="report-sub-header">Distinct Enabling Metadata Group Count</span>
+              <span class="report-value">{{ groupsList.length }}</span>
+              <span class="report-sub-header">Distinct Enabling Metadata Groups</span>
+              <span
+                class="report-value limited-list boxed"
+                [ngClass]="{ 'multiple-entries': groupsList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="stringList; context: { list: groupsList }"
+                ></ng-content>
+              </span>
+            </ng-container>
           </ng-container>
 
-          <span class="report-sub-header">
-            Awarded Tier for the Enabling Elements Dimension
-          </span>
-          <span class="report-value" *ngIf="enablingElements.metadataTier; let val; else: emptyVal">
-            {{ val }}
-          </span>
+          <ng-container *ngIf="enablingElements.metadataTier; let val">
+            <span class="report-sub-header">
+              Awarded Tier for the Enabling Elements Dimension
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
         </ng-container>
       </span>
     </ng-container>
@@ -547,46 +531,45 @@
         <ng-container
           *ngFor="let contextualClasses of [report.metadataTierBreakdown.contextualClasses]"
         >
-          <span class="report-sub-header">
-            Referenced Contextual Resources
-          </span>
-          <span
-            class="report-value"
-            *ngIf="contextualClasses.completeContextualResources; let val; else: emptyVal"
-          >
-            {{ val }}
-          </span>
-
-          <ng-container *ngFor="let classesList of [contextualClasses.distinctClassesList]">
+          <ng-container *ngIf="contextualClasses.completeContextualResources; let val">
             <span class="report-sub-header">
-              Distinct Represented Contextual Class Count
+              Referenced Contextual Resources
             </span>
-            <span *ngIf="classesList; else emptyVal" class="report-value">
-              {{ classesList.length }}
-            </span>
-            <span class="report-sub-header">
-              Distinct Represented Contextual Classes
-            </span>
-            <span
-              *ngIf="classesList; else emptyVal"
-              class="report-value limited-list boxed"
-              [ngClass]="{ 'multiple-entries': classesList.length > 1 }"
-            >
-              <ng-content
-                *ngTemplateOutlet="stringList; context: { list: classesList }"
-              ></ng-content>
+            <span class="report-value">
+              {{ val }}
             </span>
           </ng-container>
 
-          <span class="report-sub-header">
-            Awarded Tier for the Contextual Classes Dimension
-          </span>
-          <span
-            class="report-value"
-            *ngIf="contextualClasses.metadataTier; let val; else: emptyVal"
-          >
-            {{ val }}
-          </span>
+          <ng-container *ngFor="let classesList of [contextualClasses.distinctClassesList]">
+            <ng-container *ngIf="classesList">
+              <span class="report-sub-header">
+                Distinct Represented Contextual Class Count
+              </span>
+              <span class="report-value">
+                {{ classesList.length }}
+              </span>
+              <span class="report-sub-header">
+                Distinct Represented Contextual Classes
+              </span>
+              <span
+                class="report-value limited-list boxed"
+                [ngClass]="{ 'multiple-entries': classesList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="stringList; context: { list: classesList }"
+                ></ng-content>
+              </span>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="contextualClasses.metadataTier; let val">
+            <span class="report-sub-header">
+              Awarded Tier for the Contextual Classes Dimension
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
         </ng-container>
       </span>
     </ng-container>
