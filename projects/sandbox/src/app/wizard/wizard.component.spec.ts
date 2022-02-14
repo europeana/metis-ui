@@ -25,7 +25,7 @@ describe('WizardComponent', () => {
   const testFile = new File([], 'file.zip', { type: 'zip' });
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
-  const formNameDatasetId = 'idToTrack';
+  const formNameDatasetId = 'datasetToTrack';
   const formNameRecordId = 'recordToTrack';
 
   const configureTestbed = (errorMode = false): void => {
@@ -111,6 +111,18 @@ describe('WizardComponent', () => {
       cClasses = component.getConnectClasses('top');
       expect(cClasses.error).toBeTruthy();
       expect(cClasses.top).toBeTruthy();
+
+      (component.formRecord.get(formNameRecordId) as FormControl).setValue('/2/23');
+      fixture.detectChanges();
+      cClasses = component.getConnectClasses('top');
+      expect(cClasses.error).toBeFalsy();
+      expect(cClasses.top).toBeTruthy();
+
+      (component.formRecord.get(formNameRecordId) as FormControl).setValue('/BBB/23');
+      fixture.detectChanges();
+      cClasses = component.getConnectClasses('top');
+      expect(cClasses.error).toBeFalsy();
+      expect(cClasses.top).toBeFalsy();
     });
 
     it('should get the form group', () => {
@@ -444,7 +456,7 @@ describe('WizardComponent', () => {
       tick(1);
       expect(component.error).toBeTruthy();
       expect(component.progressData).toBeFalsy();
-      expect(component.formProgress.value.idToTrack).toBeTruthy();
+      expect(component.formProgress.value.datasetToTrack).toBeTruthy();
       component.cleanup();
       tick(apiSettings.interval);
     }));
