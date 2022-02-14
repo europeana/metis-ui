@@ -146,12 +146,20 @@ context('Sandbox', () => {
 
     it('should flag when a step is invalid', () => {
       setStep(4);
-      cy.get(selectorFieldErrors).should('have.length', 1);
+      cy.get(selectorFieldErrors)
+        .filter(':visible')
+        .should('have.length', 0);
+
       cy.get(selectorInputDatasetId).type('1');
-      cy.get(selectorFieldErrors).should('have.length', 0);
+      cy.get(selectorFieldErrors)
+        .filter(':visible')
+        .should('have.length', 0);
+
       setStep(1);
       cy.get(selectorInputName).type(' ');
-      cy.get(selectorFieldErrors).should('have.length', 1);
+      cy.get(selectorFieldErrors)
+        .filter(':visible')
+        .should('have.length', 1);
     });
 
     it('should conditionally enable the XSLT field', () => {

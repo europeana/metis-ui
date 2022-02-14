@@ -53,6 +53,22 @@ context('Sandbox', () => {
       cy.get(activeOrb + selectorActive).should('have.length', 1);
     };
 
+    it('should be disabled if there is no dataset id or if the dataset id is invalid', () => {
+      cy.visit('/');
+      cy.get(selectorBtnSubmitRecord).should('have.length', 1);
+      cy.get(selectorInputRecordId).should('be.disabled');
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('1');
+      cy.get(selectorInputRecordId).should('not.be.disabled');
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('XXX');
+      cy.get(selectorInputRecordId).should('be.disabled');
+    });
+
     it('should show the inputs and submit buttons', () => {
       cy.visit('/1?recordId=2');
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
@@ -280,6 +296,27 @@ context('Sandbox', () => {
       cy.visit('/1?recordId=/2/34');
       cy.get(selConnected).should('have.length', 2);
       cy.get(selConnectedError).should('have.length', 2);
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('2');
+      cy.get(selConnected).should('have.length', 2);
+      cy.get(selConnectedError).should('have.length', 0);
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('XXX');
+      cy.get(selConnected).should('have.length', 0);
+
+      cy.get(selectorInputDatasetId)
+        .clear()
+        .type('2');
+      cy.get(selConnected).should('have.length', 2);
+
+      cy.get(selectorInputRecordId)
+        .clear()
+        .type('X X');
+      cy.get(selConnected).should('have.length', 0);
     });
   });
 });
