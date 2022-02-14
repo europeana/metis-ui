@@ -92,7 +92,7 @@ context('Sandbox', () => {
 
     it('should show the progress warn', () => {
       cy.get(selectorWarnPresent).should('have.length', 0);
-      fillProgressForm('1010');
+      fillProgressForm('110');
       cy.get(selectorWarnPresent).should('have.length', 10);
     });
 

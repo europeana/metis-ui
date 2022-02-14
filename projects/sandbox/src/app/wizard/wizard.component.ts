@@ -630,7 +630,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
               this.clearDataPollers();
             }
           }
-
           this.error = undefined;
         },
         (err: HttpErrorResponse) => {
@@ -672,7 +671,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           }
         )
       );
-
       if (updateLocation) {
         this.setStep(this.wizardConf.length - 1);
       }
