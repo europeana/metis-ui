@@ -14,8 +14,10 @@ context('Sandbox', () => {
     const selectorThumbnail = '[data-e2e=thumbnail-available]';
     const selectorThumbnailVal = `${selectorThumbnail} + .report-value`;
 
+    const selectorEmptyValue = '[data-e2e=empty-value]';
     const selectorImageResolution = '[data-e2e=image-resolution]';
     const selectorVerticalResolution = '[data-e2e=vertical-resolution]';
+    const selectorVerticalResolutionNotEmpty = `${selectorVerticalResolution} + :not(${selectorEmptyValue})`;
 
     it('should show reports for THREE_D', () => {
       cy.visit('/1?recordId=0');
@@ -24,6 +26,8 @@ context('Sandbox', () => {
       cy.get(selectorEmbed).should('have.length', 0);
       cy.get(selectorLanding).should('have.length', 0);
       cy.get(selectorThumbnail).should('have.length', 0);
+      cy.get(selectorImageResolution).should('have.length', 0);
+      cy.get(selectorVerticalResolution).should('have.length', 0);
     });
 
     it('should show reports for AUDIO', () => {
@@ -33,6 +37,8 @@ context('Sandbox', () => {
       cy.get(selectorEmbed).should('have.length', 1);
       cy.get(selectorLanding).should('have.length', 1);
       cy.get(selectorThumbnail).should('have.length', 0);
+      cy.get(selectorImageResolution).should('have.length', 0);
+      cy.get(selectorVerticalResolution).should('have.length', 0);
     });
 
     it('should show reports for IMAGE', () => {
@@ -54,6 +60,8 @@ context('Sandbox', () => {
         .contains('No')
         .should('have.length', 0);
       cy.get(selectorThumbnailVal).contains('Yes');
+      cy.get(selectorImageResolution).should('have.length', 1);
+      cy.get(selectorVerticalResolution).should('have.length', 0);
     });
 
     it('should show reports for TEXT', () => {
@@ -63,6 +71,8 @@ context('Sandbox', () => {
       cy.get(selectorEmbed).should('have.length', 0);
       cy.get(selectorLanding).should('have.length', 1);
       cy.get(selectorThumbnail).should('have.length', 0);
+      cy.get(selectorImageResolution).should('have.length', 1);
+      cy.get(selectorVerticalResolution).should('have.length', 0);
     });
 
     it('should show reports for VIDEO', () => {
@@ -71,46 +81,48 @@ context('Sandbox', () => {
 
       cy.get(selectorEmbed).should('have.length', 1);
       cy.get(selectorLanding).should('have.length', 1);
+      cy.get(selectorVerticalResolution).should('have.length', 1);
       cy.get(selectorThumbnail).should('have.length', 0);
+      cy.get(selectorImageResolution).should('have.length', 0);
     });
 
     it('should show reports for OTHER', () => {
       cy.visit('/1?recordId=5');
       cy.get(selectorRecordType).contains(RecordMediaType.OTHER);
       cy.get(selectorThumbnail).should('have.length', 0);
-    });
-
-    it('should show the image resolution field conditionally', () => {
-      cy.visit('/1?recordId=100');
-      cy.scrollTo(0, 200);
-      cy.wait(200);
-      cy.get(selectorInputMedia).should('have.length', 1);
-
-      const indexesWithIR = [3, 4];
-      [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
-        cy.get(selectorInputMedia)
-          .clear()
-          .type(`${mediaIndex}`)
-          .blur();
-        const expectedFieldCount = indexesWithIR.includes(mediaIndex) ? 1 : 0;
-        cy.get(selectorImageResolution).should('have.length', expectedFieldCount);
-      });
+      cy.get(selectorImageResolution).should('have.length', 0);
+      cy.get(selectorVerticalResolution).should('have.length', 0);
     });
 
     it('should show the vertical resolution field conditionally', () => {
-      cy.visit('/1?recordId=100');
+      cy.visit('/1?recordId=102'); // 3D record
       cy.scrollTo(0, 200);
       cy.wait(200);
-      cy.get(selectorInputMedia).should('have.length', 1);
 
-      const videoIndex = 5;
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
         cy.get(selectorInputMedia)
           .clear()
           .type(`${mediaIndex}`)
           .blur();
-        const expectedFieldCount = videoIndex === mediaIndex ? 1 : 0;
-        cy.get(selectorVerticalResolution).should('have.length', expectedFieldCount);
+        cy.get(selectorVerticalResolution).should('have.length', 0);
+      });
+
+      cy.visit('/1?recordId=100'); // video record
+      cy.scrollTo(0, 200);
+      cy.wait(200);
+
+      const indexesWithVideoValues = [2, 3, 4, 5];
+
+      [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
+        cy.get(selectorInputMedia)
+          .clear()
+          .type(`${mediaIndex}`)
+          .blur();
+
+        const expectedFieldCount = indexesWithVideoValues.includes(mediaIndex) ? 1 : 0;
+
+        cy.get(selectorVerticalResolution).should('have.length', 1);
+        cy.get(selectorVerticalResolutionNotEmpty).should('have.length', expectedFieldCount);
       });
     });
   });

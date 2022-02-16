@@ -1,5 +1,9 @@
 <div class="record-report">
-  <ng-template #emptyVal><span class="report-value" title="value unavailable">-</span></ng-template>
+  <ng-template #emptyVal
+    ><span data-e2e="empty-value" class="report-value" title="value unavailable"
+      >-</span
+    ></ng-template
+  >
 
   <ng-template #tickedItem let-itemVal="itemVal">
     <span
@@ -55,7 +59,13 @@
       </span>
     </ng-container>
 
-    <ng-container *ngIf="[RecordMediaType.IMAGE, RecordMediaType.TEXT].includes(data.mediaType)">
+    <ng-container
+      *ngIf="
+        [RecordMediaType.IMAGE, RecordMediaType.TEXT].includes(
+          report.contentTierBreakdown.recordType
+        )
+      "
+    >
       <span class="report-sub-header" data-e2e="image-resolution">
         Image Resolution
       </span>
@@ -72,19 +82,19 @@
       </span>
     </ng-container>
 
-    <ng-container *ngIf="RecordMediaType.VIDEO === data.mediaType">
+    <ng-container *ngIf="RecordMediaType.VIDEO === report.contentTierBreakdown.recordType">
       <span class="report-sub-header" data-e2e="vertical-resolution">
         Vertical Resolution
       </span>
       <span class="report-value" *ngIf="data.verticalResolution; let val; else: emptyVal">
-        {{ val }}
+        {{ val }} pixels
       </span>
 
       <span class="report-sub-header">
         Vertical Resolution Tier
       </span>
       <span class="report-value" *ngIf="data.verticalResolutionTier; let val; else: emptyVal">
-        {{ val }} pixels</span
+        {{ val }}</span
       >
     </ng-container>
 
