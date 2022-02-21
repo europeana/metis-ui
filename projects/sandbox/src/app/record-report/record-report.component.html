@@ -4,7 +4,11 @@
       >-</span
     ></ng-template
   >
-
+  <ng-template #zeroVal
+    ><span data-e2e="empty-value" class="report-value" title="value unavailable"
+      >0</span
+    ></ng-template
+  >
   <ng-template #tickedItem let-itemVal="itemVal">
     <span
       class="report-value"
@@ -51,7 +55,7 @@
         Element Link Types
       </span>
       <span
-        *ngIf="linkTypes; else emptyVal"
+        *ngIf="linkTypes && linkTypes.length > 0; else emptyVal"
         class="report-value limited-list"
         [ngClass]="{ 'multiple-entries': linkTypes.length > 1 }"
       >
@@ -187,17 +191,6 @@
 
     <ul class="report-value" *ngFor="let summary of [report.recordTierCalculationSummary]">
       <li>
-        <ng-template #labelRefPortal
-          ><span i18n="record link link@@recordLinkPortal"
-            >record after processing (as published)</span
-          ></ng-template
-        >
-        <sb-copyable-link-item
-          [labelRef]="labelRefPortal"
-          [href]="summary.portalRecordLink"
-        ></sb-copyable-link-item>
-      </li>
-      <li>
         <ng-template #labelRefHarvest
           ><span i18n="record link link@@recordLinkHarvest"
             >record before processing (as provided)</span
@@ -208,6 +201,17 @@
           href="{{ apiSettings.apiHost }}/dataset/{{ getDatasetId() }}/record?recordId={{
             summary.europeanaRecordId
           }}"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
+        <ng-template #labelRefPortal
+          ><span i18n="record link link@@recordLinkPortal"
+            >record after processing (as published)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPortal"
+          [href]="summary.portalRecordLink"
         ></sb-copyable-link-item>
       </li>
     </ul>
@@ -230,8 +234,8 @@
     <span class="report-header">Content Tier Breakdown</span>
     <span class="report-grid" *ngFor="let contentTier of [report.contentTierBreakdown]">
       <span class="report-description">
-        The content tier is the maximum value awarded to any linked media resource. This defining
-        media resource is listed below (if present)
+        The content tier is the maximum value awarded to any linked media resource. All the record’s
+        media resources are listed below.
       </span>
       <ng-container *ngIf="contentTier.recordType; let recordType">
         <span class="report-sub-header">
@@ -295,7 +299,7 @@
     <ng-template #noMedia>
       <span>
         <span class="separator-line"></span>
-        <span class="report-header">No Media Available</span>
+        <span class="report-header">No Media Resources Available</span>
       </span>
     </ng-template>
 
@@ -306,48 +310,50 @@
         else: noMedia
       "
     >
-      <span class="separator-line">
-        <sb-navigation-orbs
-          [count]="techData.length"
-          [index]="visibleMedia"
-          [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
-          (clickEvent)="setMedia($event)"
-        ></sb-navigation-orbs>
-      </span>
+      <ng-container *ngIf="techData.length > 0; else noMedia">
+        <span class="separator-line">
+          <sb-navigation-orbs
+            [count]="techData.length"
+            [index]="visibleMedia"
+            [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
+            (clickEvent)="setMedia($event)"
+          ></sb-navigation-orbs>
+        </span>
 
-      <span class="report-header">
-        <ng-template #indexInput>
-          <input
-            #inputMediaIndex
-            (blur)="changeMediaIndex($event)"
-            class="media-index"
-            [max]="techData.length"
-            min="1"
-            [ngModel]="visibleMedia + 1"
-            (change)="changeMediaIndex($event)"
-            [ngStyle]="{
-              width: ((inputMediaIndex.value + 1 + '').length + 1.5) * 0.55 + 'em'
-            }"
-            type="number"
-          />
-        </ng-template>
-        Media Resource Technical Metadata (<span *ngIf="!mediaCollapsed; else indexInput">{{
-          visibleMedia + 1
-        }}</span>
-        of {{ techData.length }})
-      </span>
+        <span class="report-header">
+          <ng-template #indexInput>
+            <input
+              #inputMediaIndex
+              (blur)="changeMediaIndex($event)"
+              class="media-index"
+              [max]="techData.length"
+              min="1"
+              [ngModel]="visibleMedia + 1"
+              (change)="changeMediaIndex($event)"
+              [ngStyle]="{
+                width: ((inputMediaIndex.value + 1 + '').length + 1.5) * 0.55 + 'em'
+              }"
+              type="number"
+            />
+          </ng-template>
+          Media Resource Technical Metadata (<span *ngIf="!mediaCollapsed; else indexInput">{{
+            visibleMedia + 1
+          }}</span>
+          of {{ techData.length }})
+        </span>
 
-      <span
-        class="report-grid"
-        *ngFor="let data of techData; let i = index"
-        [ngClass]="{ hidden: visibleMedia !== i }"
-      >
-        <ng-container *ngIf="visibleMedia === i">
-          <ng-content
-            *ngTemplateOutlet="mediaResourceTechMetadata; context: { data: data }"
-          ></ng-content>
-        </ng-container>
-      </span>
+        <span
+          class="report-grid"
+          *ngFor="let data of techData; let i = index"
+          [ngClass]="{ hidden: visibleMedia !== i }"
+        >
+          <ng-container *ngIf="visibleMedia === i">
+            <ng-content
+              *ngTemplateOutlet="mediaResourceTechMetadata; context: { data: data }"
+            ></ng-content>
+          </ng-container>
+        </span>
+      </ng-container>
     </ng-container>
 
     <ng-container *ngIf="report.contentTierBreakdown.processingErrorsList; let errors">
@@ -406,7 +412,7 @@
         >
           <ng-container *ngIf="languageBreakdown.qualifiedElements; let val">
             <span class="report-sub-header">
-              Qualified Elements
+              All language Qualifiable Elements
             </span>
             <span class="report-value">
               {{ val }}
@@ -415,31 +421,30 @@
 
           <ng-container *ngIf="languageBreakdown.qualifiedElementsWithLanguage; let val">
             <span class="report-sub-header">
-              Qualified Elements With Language
+              Elements with Language Qualifier
             </span>
             <span class="report-value">
               {{ val }}
+              <ng-container
+                *ngIf="languageBreakdown.qualifiedElementsWithLanguagePercentage; let val"
+              >
+                ({{ val | number: '2.2-2' }}%)
+              </ng-container>
             </span>
-          </ng-container>
-
-          <ng-container *ngIf="languageBreakdown.qualifiedElementsWithLanguagePercentage; let val">
-            <span class="report-sub-header">
-              Qualified Elements With Language Percentage
-            </span>
-            <span class="report-value"> {{ val | number: '2.2-2' }}% </span>
           </ng-container>
 
           <ng-container
             *ngFor="let qualifiedList of [languageBreakdown.qualifiedElementsWithoutLanguageList]"
           >
             <ng-container *ngIf="qualifiedList; let val">
-              <span class="report-sub-header">Qualified Elements Without Language Count</span>
+              <span class="report-sub-header">Elements without Language Qualifier Count</span>
               <span class="report-value">{{ qualifiedList.length }}</span>
               <span class="report-sub-header">
-                Qualified Elements Without Language
+                Elements without Language Qualifier
               </span>
               <span
                 class="report-value limited-list boxed"
+                *ngIf="qualifiedList.length > 0; else emptyVal"
                 [ngClass]="{ 'multiple-entries': qualifiedList.length > 1 }"
               >
                 <ng-content
@@ -486,6 +491,7 @@
               </span>
               <span
                 class="report-value limited-list boxed"
+                *ngIf="distinctList.length > 0; else emptyVal"
                 [ngClass]="{ 'multiple-entries': distinctList.length > 1 }"
               >
                 <ng-content
@@ -502,6 +508,7 @@
               <span class="report-sub-header">Distinct Enabling Metadata Groups</span>
               <span
                 class="report-value limited-list boxed"
+                *ngIf="groupsList.length > 0; else emptyVal"
                 [ngClass]="{ 'multiple-entries': groupsList.length > 1 }"
               >
                 <ng-content
@@ -532,10 +539,12 @@
         <ng-container
           *ngFor="let contextualClasses of [report.metadataTierBreakdown.contextualClasses]"
         >
-          <ng-container *ngIf="contextualClasses.completeContextualResources; let val">
-            <span class="report-sub-header">
-              Referenced Contextual Resources
-            </span>
+          <span class="report-sub-header">
+            Referenced Contextual Resources
+          </span>
+          <ng-container
+            *ngIf="contextualClasses.completeContextualResources; let val; else: zeroVal"
+          >
             <span class="report-value">
               {{ val }}
             </span>
@@ -554,6 +563,7 @@
               </span>
               <span
                 class="report-value limited-list boxed"
+                *ngIf="classesList.length > 0; else emptyVal"
                 [ngClass]="{ 'multiple-entries': classesList.length > 1 }"
               >
                 <ng-content
