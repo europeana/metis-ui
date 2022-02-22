@@ -268,7 +268,9 @@
       </div>
     </form>
     <div *ngIf="error" class="errors">
-      {{ error.statusText }}
+      <div class="heading">
+        {{ error.statusText }}
+      </div>
       <ul class="error-detail">
         <li>{{ error.message }}</li>
       </ul>
