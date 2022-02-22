@@ -47,7 +47,6 @@ context('Sandbox', () => {
           return sel !== activeOrb + selectorActive;
         })
         .forEach((sel: string) => {
-          console.log('test ' + sel);
           cy.get(sel).should('have.length', 0);
         });
       cy.get(activeOrb + selectorActive).should('have.length', 1);

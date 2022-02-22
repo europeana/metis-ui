@@ -80,31 +80,44 @@ export class ReportGenerator {
   };
 
   generateReport = (id: string): string => {
-    let idAsNumber = parseInt(id);
-    if (isNaN(idAsNumber)) {
-      idAsNumber = id.length;
+    let idAsInt = parseInt(id);
+    let idAsFloat = parseFloat(id);
+
+    if (isNaN(idAsInt)) {
+      idAsInt = id.length;
+    }
+    if (isNaN(idAsFloat)) {
+      idAsFloat = id.length;
     }
 
     let media: Array<MediaDataItem> = [];
     let errors = this.errorList.slice();
     let errorMode = false;
+    let listLimit = 9;
+
+    if (id.indexOf('.') > 0) {
+      // use the decimal part as the list limit
+      listLimit = parseInt(`${(parseFloat(idAsFloat.toFixed(1)) % 1) * 10}`);
+    }
 
     const ctVals = [0, 1, 2, 3, 4];
-    const ctVal = ctVals[idAsNumber % ctVals.length];
+    const ctVal = ctVals[idAsInt % ctVals.length];
 
     const mdVals = ['A', 'B', 'C', 'D'];
-    const mdVal = mdVals[idAsNumber % mdVals.length];
+    const mdVal = mdVals[idAsInt % mdVals.length];
 
-    if (idAsNumber >= 100) {
+    if (idAsInt === 0) {
+      media = [];
+    } else if (idAsInt >= 100) {
       media = this.generateMediaResources(10);
-    } else if (idAsNumber % 2 === 0) {
+    } else if (idAsInt % 2 === 0) {
       media = this.generateMediaResources(1);
       errors = errors.slice(0, 2);
     } else {
       media = this.generateMediaResources(5);
     }
 
-    if (idAsNumber === 13) {
+    if (idAsInt === 13) {
       media.forEach((item: MediaDataItem) => {
         item.mediaType = '';
       });
@@ -120,20 +133,23 @@ export class ReportGenerator {
         portalRecordLink: 'https://portal.record.link'
       },
       contentTierBreakdown: {
-        recordType: this.generateType(idAsNumber),
+        recordType: this.generateType(idAsInt),
         licenseType: LicenseType.OPEN,
-        thumbnailAvailable: idAsNumber % 4 === 0,
+        thumbnailAvailable: idAsInt % 4 === 0,
         landingPageAvailable: !errorMode,
         embeddableMediaAvailable: !errorMode,
         mediaResourceTechnicalMetadataList: media,
-        processingErrorsList: idAsNumber === 0 ? undefined : errors
+        processingErrorsList: idAsInt === 0 ? undefined : errors
       },
       metadataTierBreakdown: {
         languageBreakdown: {
           qualifiedElements: 42,
           qualifiedElementsWithLanguage: 34,
           qualifiedElementsWithLanguagePercentage: 81,
-          qualifiedElementsWithoutLanguageList: ['this', 'that', 'the', 'other'],
+          qualifiedElementsWithoutLanguageList: ['this', 'that', 'the', 'other'].slice(
+            0,
+            listLimit
+          ),
           metadataTier: mdVal
         },
         enablingElements: {
@@ -144,13 +160,19 @@ export class ReportGenerator {
             'that',
             'the',
             'other'
-          ],
-          metadataGroupsList: ['Agent', 'Place', 'this', 'that', 'the', 'other'],
+          ].slice(0, listLimit),
+          metadataGroupsList: ['Agent', 'Place', 'this', 'that', 'the', 'other'].slice(
+            0,
+            listLimit
+          ),
           metadataTier: mdVal
         },
         contextualClasses: {
           completeContextualResources: 5,
-          distinctClassesList: ['edm:TimeSpan', 'edm:Place', 'this', 'that', 'the', 'other'],
+          distinctClassesList: ['edm:TimeSpan', 'edm:Place', 'this', 'that', 'the', 'other'].slice(
+            0,
+            listLimit
+          ),
           metadataTier: mdVal
         }
       }
