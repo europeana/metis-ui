@@ -3,7 +3,7 @@ import { Location, PopStateEvent } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { combineLatest, merge, Observable, timer } from 'rxjs';
+import { combineLatest, Observable, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -21,12 +21,11 @@ import {
   FieldOption,
   FixedLengthArray,
   RecordReport,
-  SubmissionResponseData,
-  SubmissionResponseDataWrapped,
   WizardStep,
   WizardStepType
 } from '../_models';
 import { SandboxService } from '../_services';
+import { UploadComponent } from '../upload';
 
 @Component({
   selector: 'sb-wizard',
@@ -37,13 +36,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   @ViewChild(ProtocolFieldSetComponent, { static: true })
   protocolFields: ProtocolFieldSetComponent;
   @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
+  @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
 
   error: HttpErrorResponse | undefined;
-  zipFileFormName = 'dataset';
-  xsltFileFormName = 'xsltFile';
   formProgress: FormGroup;
   formRecord: FormGroup;
-  formUpload: FormGroup;
   resetBusyDelay = 1000;
   isBusy = false;
   isBusyProgress = false;
@@ -61,23 +58,18 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   trackRecordId?: string;
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
-  wizardConf: FixedLengthArray<WizardStep, 5> = [
+  wizardConf: FixedLengthArray<WizardStep, 3> = [
     {
-      stepType: WizardStepType.SET_NAME,
-      fields: ['name']
-    },
-    {
-      stepType: WizardStepType.SET_LANG_LOCATION,
-      fields: ['country', 'language']
-    },
-    {
-      stepType: WizardStepType.PROTOCOL_SELECT,
+      stepType: WizardStepType.UPLOAD,
       fields: [
+        'name',
+        'country',
+        'language',
         'uploadProtocol',
         'dataset',
         'url',
         'sendXSLT',
-        this.xsltFileFormName,
+        'xsltFile',
         'harvestUrl',
         'setSpec',
         'metadataFormat'
@@ -149,6 +141,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const stepConf = this.wizardConf[i];
     const isProgressTrack = this.getIsProgressTrack(i);
     const isRecordTrack = this.getIsRecordTrack(i);
+    const isUpload = this.getIsUpload(i);
     const isLoading =
       (isProgressTrack && this.isBusyProgress) ||
       (isRecordTrack && this.isBusyReport) ||
@@ -159,6 +152,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       'orb-square': this.getStepIsSubmittable(stepConf),
       'progress-orb': isProgressTrack,
       'report-orb': isRecordTrack,
+      'upload-orb': isUpload,
       'indicator-orb': this.getStepIsIndicator(i),
       'submitted-orb': this.getStepIsSubmitted(stepConf),
       spinner: isLoading,
@@ -246,24 +240,12 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     this.formRecord = this.fb.group({
       recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
     });
-
-    this.formUpload = this.fb.group({
-      name: ['', [Validators.required, this.validateDatasetName]],
-      country: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-      url: ['', [Validators.required]],
-      dataset: ['', [Validators.required]],
-      harvestUrl: ['', [Validators.required]],
-      setSpec: [''],
-      metadataFormat: [''],
-      sendXSLT: ['']
-    });
-    this.formUpload.addControl(this.xsltFileFormName, new FormControl(''));
-
     this.subs.push(
-      merge(this.formProgress.valueChanges, this.formUpload.valueChanges).subscribe(() => {
+      this.formProgress.valueChanges.subscribe(() => {
         this.error = undefined;
+        if (this.uploadComponent) {
+          this.uploadComponent.error = undefined;
+        }
       })
     );
   }
@@ -323,61 +305,21 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
-   * validateDatasetName
-   *
-   * form validator implementation for dataset name field
-   *
-   * @param { FormControl } control - the control to validate
-   * @returns null or a code-keyed boolean
-   **/
-  validateDatasetName(control: FormControl): ValidationErrors | null {
-    const val = control.value;
-    if (val) {
-      const matches = `${val}`.match(/[a-zA-Z0-9_]+/);
-      if (!matches || matches[0] !== val) {
-        return { invalid: true };
-      }
-    }
-    return null;
-  }
-
-  /**
-   * updateConditionalXSLValidator
-   * Removes or adds the required validator in formUpload for the 'xsltFile' depending on the value of 'sendXSLT'
-   **/
-  updateConditionalXSLValidator(): void {
-    const fn = (): void => {
-      const ctrlFile = this.formUpload.get(this.xsltFileFormName);
-      const ctrl = this.formUpload.get('sendXSLT');
-
-      if (ctrl && ctrlFile) {
-        if (ctrl.value) {
-          ctrlFile.setValidators([Validators.required]);
-        } else {
-          ctrlFile.setValidators(null);
-        }
-        ctrlFile.updateValueAndValidity({ onlySelf: false, emitEvent: false });
-      }
-    };
-    this.subs.push(this.formUpload.valueChanges.subscribe(fn));
-    fn();
-  }
-
-  /**
    * getFormGroup
    * Returns the correct form for the given WizardStep
    *
    * @param { WizardStep } stepConf - the config to evaluate
    * @returns FormGroup
    **/
-  getFormGroup(stepConf: WizardStep): FormGroup {
+  getFormGroup(stepConf: WizardStep): FormGroup | undefined {
     if (stepConf.stepType === WizardStepType.PROGRESS_TRACK) {
       return this.formProgress;
     } else if (stepConf.stepType === WizardStepType.REPORT) {
       return this.formRecord;
-    } else {
-      return this.formUpload;
+    } else if (this.uploadComponent) {
+      return this.uploadComponent.form;
     }
+    return undefined;
   }
 
   /**
@@ -387,7 +329,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns boolean
    **/
   getStepIsSubmittable(step: WizardStep): boolean {
-    return this.getFormGroup(step).valid;
+    const form = this.getFormGroup(step);
+    if (form) {
+      return form.valid;
+    }
+    return false;
   }
 
   /**
@@ -399,15 +345,12 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns boolean
    **/
   getStepIsSubmitted(step: WizardStep): boolean {
-    if (
-      [
-        WizardStepType.SET_NAME,
-        WizardStepType.SET_LANG_LOCATION,
-        WizardStepType.PROTOCOL_SELECT
-      ].includes(step.stepType) &&
-      this.formUpload.disabled
-    ) {
-      return true;
+    if (step.stepType === WizardStepType.UPLOAD) {
+      const uc = this.uploadComponent;
+      if (uc && uc.form) {
+        return uc.form.disabled;
+      }
+      return false;
     } else if (step.stepType === WizardStepType.REPORT) {
       return !!this.trackRecordId;
     }
@@ -429,7 +372,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     if (this.wizardConf[stepIndex].stepType === WizardStepType.REPORT) {
       return !!this.trackRecordId;
     }
-    return this.formUpload.disabled;
+    return this.uploadComponent && this.uploadComponent.form && this.uploadComponent.form.disabled;
   }
 
   /**
@@ -445,7 +388,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
   /**
    * getIsRecordTrack
-   * Returns if the WizardStep at the given conf index's stepType is REPORT
+   * Returns true if the WizardStep at the given conf index's stepType is REPORT
    *
    * @param { number } stepIndex - the config index to evaluate
    * @returns boolean
@@ -466,6 +409,17 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
+   * getIsUpload
+   * Returns true if the WizardStep at the given conf index's stepType is UPLOAD
+   *
+   * @param { number } stepIndex - the config index to evaluate
+   * @returns boolean
+   **/
+  getIsUpload(stepIndex: number): boolean {
+    return this.wizardConf[stepIndex].stepType === WizardStepType.UPLOAD;
+  }
+
+  /**
    * setStep
    * Sets the currentStepIndex and sets datasetOrbsHidden to false.
    * Optionally resets the form
@@ -476,11 +430,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   setStep(stepIndex: number, reset = false): void {
     if (reset) {
       const form = this.getFormGroup(this.wizardConf[stepIndex]);
-      if (form.disabled) {
+      if (form && form.disabled) {
         form.enable();
-        this.protocolFields.clearFileValue();
-        this.xslFileField.clearFileValue();
-        this.buildForms();
+        console.log('TODO - e2e test this funtionality');
+        this.uploadComponent.rebuildForm();
       }
     }
 
@@ -508,7 +461,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     if (this.currentStepIndex > 0 && this.currentStepIndex < this.stepIndexProgress) {
       return true;
     }
-    return this.currentStepIndex === this.stepIndexProgress && this.formUpload.disabled;
+    //return this.currentStepIndex === this.stepIndexProgress && this.formUpload.disabled;
+    // TODO... if we still need this
+    return this.currentStepIndex === this.stepIndexProgress;
   }
 
   /**
@@ -519,7 +474,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   canGoToNext(): boolean {
     if (this.currentStepIndex === this.stepIndexProgress - 1) {
-      return this.formUpload.disabled;
+      return false; // TODO this.formUpload.disabled;
     } else {
       return this.currentStepIndex < this.stepIndexProgress;
     }
@@ -687,9 +642,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   updateLocation(progress = true, record = true): void {
     let newPath = '';
-    if (progress) {
+    if (progress && this.trackDatasetId) {
       newPath += `/${this.trackDatasetId}`;
-      if (record) {
+      if (record && this.trackRecordId) {
         newPath += `?recordId=${this.trackRecordId}`;
       }
     }
@@ -698,6 +653,16 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     if (this.location.path() !== newPath) {
       this.location.go(newPath);
     }
+  }
+
+  setBusy(isBusy: boolean) {
+    this.isBusy = isBusy;
+  }
+
+  dataUploaded(datasetId: string): void {
+    this.resetBusy();
+    this.trackDatasetId = datasetId;
+    this.fillAndSubmitProgressForm();
   }
 
   /**
@@ -730,41 +695,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
-   * onSubmitDataset
-   * Submits the formUpload data if valid
-   **/
-  onSubmitDataset(): void {
-    const form = this.formUpload;
-
-    if (form.valid) {
-      form.disable();
-      this.isBusy = true;
-      this.subs.push(
-        this.sandbox.submitDataset(form, [this.zipFileFormName, this.xsltFileFormName]).subscribe(
-          (res: SubmissionResponseData | SubmissionResponseDataWrapped) => {
-            this.resetBusy();
-
-            // treat as SubmissionResponseDataWrapped
-            res = (res as unknown) as SubmissionResponseDataWrapped;
-
-            if (res.body) {
-              this.trackDatasetId = res.body['dataset-id'];
-              this.fillAndSubmitProgressForm();
-            } else if (form.value.url || form.value.harvestUrl) {
-              this.trackDatasetId = ((res as unknown) as SubmissionResponseData)['dataset-id'];
-              this.fillAndSubmitProgressForm();
-            }
-          },
-          (err: HttpErrorResponse): void => {
-            this.error = err;
-            this.resetBusy();
-          }
-        )
-      );
-    }
-  }
-
-  /**
    * stepIsComplete
    * Runs partial validation on this.formProgress and returns the validity
    *
@@ -775,6 +705,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const wStep = this.wizardConf[step];
     const fields = wStep.fields;
     const form = this.getFormGroup(wStep);
+    if (!form) {
+      return false;
+    }
     return !fields.find((f: string) => {
       const val = form.get(f) as FormControl;
       return !val.valid;

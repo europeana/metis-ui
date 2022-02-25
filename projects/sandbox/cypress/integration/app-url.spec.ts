@@ -4,13 +4,13 @@ import {
   selectorLinkDatasetForm,
   selectorLinkProgressForm,
   selectorProgressOrb,
-  selectorReportOrb
+  selectorReportOrb,
+  selectorUploadOrb
 } from '../support/selectors';
 
 context('Sandbox', () => {
   describe('App Urls', () => {
-    const clickFormLink = (progressForm = true): void => {
-      const selector = progressForm ? selectorLinkProgressForm : selectorLinkDatasetForm;
+    const clickFormLink = (selector: string): void => {
       cy.get(selector)
         .scrollIntoView()
         .should('be.visible');
@@ -40,7 +40,7 @@ context('Sandbox', () => {
     it('should remove a path section when the user clicks the track-dataset link', () => {
       cy.visit('/1?recordId=2');
       cy.location('pathname').should('equal', '/1');
-      clickFormLink();
+      clickFormLink(selectorLinkProgressForm);
       cy.location('pathname').should('equal', '/1');
       cy.location('search').should('have.length', 0);
     });
@@ -52,7 +52,7 @@ context('Sandbox', () => {
         .filter(':visible')
         .should('have.length', 0);
 
-      clickFormLink();
+      clickFormLink(selectorLinkProgressForm);
 
       cy.get(selectorProgressOrb)
         .filter(':visible')
@@ -71,22 +71,29 @@ context('Sandbox', () => {
       cy.location('search').should('have.length', 0);
 
       // expose dataset form orbs
-      clickFormLink(false);
-
+      clickFormLink(selectorLinkDatasetForm);
       cy.location('pathname').should('equal', '/');
       cy.location('search').should('have.length', 0);
 
-      cy.get(selectorProgressOrb).click();
+      cy.get(selectorUploadOrb)
+        .scrollIntoView()
+        .filter(':visible')
+        .should('have.length.gt', 0);
+
+      cy.get(selectorProgressOrb)
+        .scrollIntoView()
+        .filter(':visible')
+        .click({ force: true });
+
       cy.location('pathname').should('equal', '/1');
       cy.location('search').should('have.length', 0);
 
-      cy.get(selectorReportOrb).click();
+      cy.get(selectorReportOrb).click({ force: true });
       cy.location('pathname').should('equal', '/1');
       cy.location('search').should('equal', '?recordId=2');
 
-      const selOrbDatasetStepOne = '.wizard-head .orb-container:first-child';
-      cy.get(selOrbDatasetStepOne).should('have.length', 1);
-      cy.get(selOrbDatasetStepOne).click();
+      cy.get(selectorUploadOrb).should('have.length', 1);
+      cy.get(selectorUploadOrb).click({ force: true });
 
       cy.location('pathname').should('equal', '/');
       cy.location('search').should('have.length', 0);

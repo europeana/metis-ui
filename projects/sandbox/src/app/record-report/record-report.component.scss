@@ -126,19 +126,3 @@ $margin-v: 12px;
 .report-value {
   word-break: break-all;
 }
-
-.separator-line {
-  background: $eu-jade-light;
-  display: block;
-  height: 1px;
-  margin: 1.6em 0;
-
-  &:not(:empty) {
-    margin: 50px 0;
-  }
-
-  > * {
-    position: relative;
-    top: -1.5em;
-  }
-}

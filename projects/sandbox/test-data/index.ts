@@ -294,13 +294,20 @@ new (class extends TestDataServer {
       if (regRes) {
         this.newId++;
 
+        const datasetName = regRes[1].split('/')[0];
         const params = url.parse(route, true).query;
         const getParam = (name: string): string => {
           return params[name] as string;
         };
+
+        if (datasetName === '404') {
+          this.handle404(route, response);
+          return;
+        }
+
         const datasetInfo = this.initialiseDataset(
           `${this.newId}`,
-          regRes[1].split('/')[0],
+          datasetName,
           getParam('country'),
           getParam('language')
         );

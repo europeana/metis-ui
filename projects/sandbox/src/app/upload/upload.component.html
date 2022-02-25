@@ -1,0 +1,121 @@
+<form [formGroup]="form" [ngClass]="{ hidden: !showing }">
+  <!--
+  <span class="separator-line">
+    <sb-navigation-orbs
+      [count]="1"
+      [indicatorAttributes]="[
+        true
+      ]"
+    ></sb-navigation-orbs>
+  </span>
+-->
+
+  <div
+    ngClass="{
+      active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_NAME
+    }"
+    class="form-group wizard-section"
+  >
+    <label for="name" i18n="name label">Name</label>
+    <input id="name" formControlName="name" autocomplete="off" />
+    <span class="field-errors" *ngIf="form.get('name')?.errors">
+      <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
+    </span>
+  </div>
+
+  <!--
+  <span class="separator-line">
+    <sb-navigation-orbs
+      [count]="1"
+      [indicatorAttributes]="[
+        true
+      ]"
+    ></sb-navigation-orbs>
+  </span>
+-->
+
+  <div
+    ngClass="{
+      active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_LANG_LOCATION
+    }"
+    class="form-group wizard-section"
+  >
+    <label for="country" i18n="country label">Country</label>
+    <select id="country" formControlName="country">
+      <option *ngFor="let option of countryList" [ngValue]="option.name">{{
+        option.xmlValue
+      }}</option>
+    </select>
+  </div>
+
+  <div
+    ngClass="{
+      active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_LANG_LOCATION
+    }"
+    class="form-group wizard-section"
+  >
+    <label for="language" i18n="language label">Language</label>
+    <select id="language" formControlName="language">
+      <option *ngFor="let option of languageList" [ngValue]="option.name">{{
+        option.xmlValue
+      }}</option>
+    </select>
+  </div>
+
+  <!--
+  <span class="separator-line">
+    <sb-navigation-orbs
+      [count]="1"
+      [indicatorAttributes]="[
+        true
+      ]"
+    ></sb-navigation-orbs>
+  </span>
+-->
+
+  <div
+    ngClass="{
+      active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROTOCOL_SELECT
+    }"
+    class="form-group wizard-section"
+  >
+    <lib-protocol-field-set
+      #protocolFields
+      [protocolForm]="form"
+      [incrementalEnabled]="false"
+      [protocolSwitchField]="'uploadProtocol'"
+      visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
+      [fileFormName]="zipFileFormName"
+    >
+    </lib-protocol-field-set>
+    <label>
+      <input
+        type="checkbox"
+        (change)="updateConditionalXSLValidator()"
+        [formGroup]="form"
+        formControlName="sendXSLT"
+      />Apply XSL transformation to harvested records
+    </label>
+    <div [ngClass]="{ hidden: !form.value.sendXSLT }">
+      <lib-file-upload
+        #xslFileField
+        [formControlName]="xsltFileFormName"
+        [form]="form"
+        [acceptedTypes]="'.xsl'"
+        ngDefaultControl
+      ></lib-file-upload>
+    </div>
+  </div>
+
+  <button
+    [disabled]="!form.valid"
+    data-e2e="submit-upload"
+    class="submit"
+    (click)="onSubmitDataset()"
+    i18n="Submit button|uploads the dataset button@@submitDataset"
+  >
+    Submit
+  </button>
+
+  <sb-errors [error]="error"></sb-errors>
+</form>

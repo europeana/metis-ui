@@ -3,23 +3,12 @@
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <label *ngIf="currentStepIndex === i">
         <ng-container
-          *ngSwitchCase="EnumWizardStepType.SET_NAME"
-          i18n="upload step title@@enterName"
-        >
-          Enter a Dataset Name
-        </ng-container>
-        <ng-container
-          *ngSwitchCase="EnumWizardStepType.SET_LANG_LOCATION"
-          i18n="upload step title@@enterDetails"
-        >
-          Enter the Dataset Details
-        </ng-container>
-        <ng-container
-          *ngSwitchCase="EnumWizardStepType.PROTOCOL_SELECT"
+          *ngSwitchCase="EnumWizardStepType.UPLOAD"
           i18n="upload step title@@configureSource"
         >
           Configure the Data Source
         </ng-container>
+
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK"
           i18n="upload step title@@trackProcessing"
@@ -40,84 +29,12 @@
     ></sb-navigation-orbs>
   </div>
   <div class="wizard-content">
-    <form [formGroup]="formUpload">
-      <div
-        [ngClass]="{
-          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_NAME
-        }"
-        class="form-group wizard-section"
-      >
-        <label for="name" i18n="name label">Name</label>
-        <input id="name" formControlName="name" autocomplete="off" />
-        <span class="field-errors" *ngIf="formUpload.get('name')?.errors">
-          <span class="errors" i18n="Field error@@invalidDatasetName"
-            >Please provide a valid name</span
-          >
-        </span>
-      </div>
-
-      <div
-        [ngClass]="{
-          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_LANG_LOCATION
-        }"
-        class="form-group wizard-section"
-      >
-        <label for="country" i18n="country label">Country</label>
-        <select id="country" formControlName="country">
-          <option *ngFor="let option of countryList" [ngValue]="option.name">{{
-            option.xmlValue
-          }}</option>
-        </select>
-      </div>
-
-      <div
-        [ngClass]="{
-          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_LANG_LOCATION
-        }"
-        class="form-group wizard-section"
-      >
-        <label for="language" i18n="language label">Language</label>
-        <select id="language" formControlName="language">
-          <option *ngFor="let option of languageList" [ngValue]="option.name">{{
-            option.xmlValue
-          }}</option>
-        </select>
-      </div>
-
-      <div
-        [ngClass]="{
-          active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROTOCOL_SELECT
-        }"
-        class="form-group wizard-section"
-      >
-        <lib-protocol-field-set
-          #protocolFields
-          [protocolForm]="formUpload"
-          [incrementalEnabled]="false"
-          [protocolSwitchField]="'uploadProtocol'"
-          visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
-          [fileFormName]="zipFileFormName"
-        >
-        </lib-protocol-field-set>
-        <label>
-          <input
-            type="checkbox"
-            (change)="updateConditionalXSLValidator()"
-            [formGroup]="formUpload"
-            formControlName="sendXSLT"
-          />Apply XSL transformation to harvested records
-        </label>
-        <div [ngClass]="{ hidden: !formUpload.value.sendXSLT }">
-          <lib-file-upload
-            #xslFileField
-            [formControlName]="xsltFileFormName"
-            [form]="formUpload"
-            [acceptedTypes]="'.xsl'"
-            ngDefaultControl
-          ></lib-file-upload>
-        </div>
-      </div>
-    </form>
+    <sb-upload
+      [showing]="wizardConf[currentStepIndex].stepType === EnumWizardStepType.UPLOAD"
+      (notifySubmitted)="dataUploaded($event)"
+      (notifyBusy)="setBusy($event)"
+    >
+    </sb-upload>
 
     <form
       [ngClass]="{
@@ -219,61 +136,42 @@
       </div>
     </form>
 
-    <form class="buttons" [formGroup]="formUpload">
-      <ng-container *ngIf="getIsProgressTrackOrReport()">
-        <ul>
-          <li *ngIf="getIsRecordTrack(currentStepIndex)">
-            <label class="inline-text"
-              >Or
-              <a
-                class="link-internal"
-                (click)="fillAndSubmitProgressForm()"
-                data-e2e="link-progress-form"
-                >track a dataset</a
-              ></label
-            >
-          </li>
-          <li>
-            <label class="inline-text" i18n="create link link@@createLinkInternal"
-              >Or
-              <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
-                >create a new dataset</a
-              ></label
-            >
-          </li>
-        </ul>
-      </ng-container>
-      <button
-        [ngClass]="{ hidden: datasetOrbsHidden || getIsProgressTrackOrReport(currentStepIndex) }"
-        [disabled]="!formUpload.valid"
-        data-e2e="submit-upload"
-        class="submit"
-        (click)="onSubmitDataset()"
-        i18n="Submit button|uploads the dataset button@@submitDataset"
-      >
-        Submit
-      </button>
-
-      <div [ngClass]="{ hidden: datasetOrbsHidden }">
-        <button
-          class="nav-orb labelled previous"
-          [ngClass]="{ hidden: !canGoToPrevious() }"
-          (click)="setStep(currentStepIndex - 1)"
-        ></button>
-        <button
-          class="nav-orb labelled next"
-          [ngClass]="{ hidden: !canGoToNext() }"
-          (click)="setStep(currentStepIndex + 1)"
-        ></button>
-      </div>
-    </form>
-    <div *ngIf="error" class="errors">
-      <div class="heading">
-        {{ error.statusText }}
-      </div>
-      <ul class="error-detail">
-        <li>{{ error.message }}</li>
+    <ng-container *ngIf="getIsProgressTrackOrReport()">
+      <ul>
+        <li *ngIf="getIsRecordTrack(currentStepIndex)">
+          <label class="inline-text"
+            >Or
+            <a
+              class="link-internal"
+              (click)="fillAndSubmitProgressForm()"
+              data-e2e="link-progress-form"
+              >track a dataset</a
+            ></label
+          >
+        </li>
+        <li>
+          <label class="inline-text" i18n="create link link@@createLinkInternal"
+            >Or
+            <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
+              >create a new dataset</a
+            ></label
+          >
+        </li>
       </ul>
+    </ng-container>
+
+    <div [ngClass]="{ hidden: datasetOrbsHidden }">
+      <button
+        class="nav-orb labelled previous"
+        [ngClass]="{ hidden: !canGoToPrevious() }"
+        (click)="setStep(currentStepIndex - 1)"
+      ></button>
+      <button
+        class="nav-orb labelled next"
+        [ngClass]="{ hidden: !canGoToNext() }"
+        (click)="setStep(currentStepIndex + 1)"
+      ></button>
     </div>
+    <sb-errors [error]="error"></sb-errors>
   </div>
 </div>

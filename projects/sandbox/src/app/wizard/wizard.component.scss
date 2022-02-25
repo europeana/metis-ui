@@ -13,42 +13,6 @@ $wizard-border-radius: 1.5em;
   }
 }
 
-.errors {
-  background-color: $white;
-  border: 1px solid $eu-red;
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 0.75em;
-  padding: 0.5em;
-
-  .error-detail {
-    font-weight: normal;
-    list-style: disc;
-    margin-left: 16px;
-  }
-
-  .heading {
-    position: relative;
-    &::before {
-      content: '';
-      display: inline-block;
-      height: 12px;
-      width: 13px;
-      background: svg-url-icon-warning($eu-red) center no-repeat;
-      margin: 2px 2px 0 0;
-    }
-  }
-}
-
-.field-errors {
-  display: block;
-  margin-top: 1em;
-}
-
-select {
-  width: 100%;
-}
-
 .wizard {
   background-color: $eu-light-jade-classic;
   border: 1px solid $eu-jade-dark;

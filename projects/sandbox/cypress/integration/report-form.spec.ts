@@ -108,15 +108,15 @@ context('Sandbox', () => {
     it('should link to the dataset form (without opening the progress form)', () => {
       cy.visit('/1?recordId=2');
       cy.get(`.progress-orb-container:not(.hidden)`).should('have.length', 0);
-      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 3);
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 3);
+      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
+      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 1);
 
       cy.scrollTo('bottom');
       cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
 
       cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 0);
-      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 3);
+      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {

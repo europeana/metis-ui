@@ -4,6 +4,10 @@
 @import 'svg-icon-configuration';
 @import 'svg-icon-form-field-calendar';
 
+@function svg-url-icon-cloud($fill) {
+  @return url("data:image/svg+xml,%3Csvg version='1.0' xmlns='http://www.w3.org/2000/svg' fill='#{url-encode-color($fill)}' viewBox='0 0 512 389'%3E%3Cpath d='M295 1c-27 4-55 17-74 34l-5 5-9-2a100 100 0 0 0-127 82l-1 5-6 1c-32 9-58 34-68 65-3 12-4 18-4 32 0 11 0 15 2 23 10 36 36 63 73 73l10 2 57 1h58v67h110v-67h58l58-1 9-2a100 100 0 0 0 19-187c-11-5-10-4-11-9A134 134 0 0 0 294 1zm39 23a115 115 0 0 1 88 108v13l4 1c26 7 44 20 54 43 7 12 8 20 8 35 0 9 0 13-2 19-7 26-27 46-54 54-7 2-9 2-64 3h-57v-45h81l-68-68-68-68-68 68-69 68h82v45h-57c-55-1-57-1-64-3-28-8-48-28-55-56-3-11-3-28 0-39 4-17 14-31 26-41 11-9 22-13 43-17l6-1v-8c0-22 8-41 23-57a79 79 0 0 1 92-13l5 3 9-9c19-20 42-32 69-36 7-1 28 0 36 2zm-21 210h-25v133h-66V234h-25l-25-1 41-42 41-41 42 42 42 41-25 1z'%3E%3C/path%3E%3C/svg%3E");
+}
+
 @function svg-url-icon-tick($fill) {
   @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='#{url-encode-color($fill)}' viewBox='0 0 24 24'%3E%3Cpath d='M20.285 2L9 13.567 3.714 8.556 0 12.272 9 21 24 5.715z'%3E%3C/path%3E%3C/svg%3E");
 }
