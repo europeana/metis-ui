@@ -89,7 +89,7 @@
           <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
         </a>
         <ng-template #conditionalWrap
-          ><span *ngIf="item.fail" class="errors">{{ item.fail }}</span></ng-template
+          ><span *ngIf="item.fail" class="dataset-errors">{{ item.fail }}</span></ng-template
         >
       </span>
       <span class="grid-cell-errors">

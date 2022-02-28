@@ -159,19 +159,6 @@
         </li>
       </ul>
     </ng-container>
-
-    <div [ngClass]="{ hidden: datasetOrbsHidden }">
-      <button
-        class="nav-orb labelled previous"
-        [ngClass]="{ hidden: !canGoToPrevious() }"
-        (click)="setStep(currentStepIndex - 1)"
-      ></button>
-      <button
-        class="nav-orb labelled next"
-        [ngClass]="{ hidden: !canGoToNext() }"
-        (click)="setStep(currentStepIndex + 1)"
-      ></button>
-    </div>
     <sb-errors [error]="error"></sb-errors>
   </div>
 </div>

@@ -18,7 +18,7 @@
   >
     <label for="name" i18n="name label">Name</label>
     <input id="name" formControlName="name" autocomplete="off" />
-    <span class="field-errors" *ngIf="form.get('name')?.errors">
+    <span class="field-errors" *ngIf="form.get('name') && form.get('name')?.errors">
       <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
     </span>
   </div>
@@ -97,6 +97,7 @@
       />Apply XSL transformation to harvested records
     </label>
     <div [ngClass]="{ hidden: !form.value.sendXSLT }">
+      Please provide an XSLT transformation that converts your records to EDM (external)
       <lib-file-upload
         #xslFileField
         [formControlName]="xsltFileFormName"

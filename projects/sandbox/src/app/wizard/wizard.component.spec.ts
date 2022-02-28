@@ -365,34 +365,6 @@ describe('WizardComponent', () => {
       expect(component.updateLocation).toHaveBeenCalled();
     });
 
-    it('should calculate if it can go to the previous step', () => {
-      /*
-      component.setStep(3);
-      expect(component.canGoToPrevious()).toBeFalsy();
-      component.setStep(0);
-      expect(component.canGoToPrevious()).toBeFalsy();
-      component.setStep(1);
-      expect(component.canGoToPrevious()).toBeTruthy();
-      component.setStep(2);
-      expect(component.canGoToPrevious()).toBeTruthy();
-      component.setStep(3);
-      expect(component.canGoToPrevious()).toBeFalsy();
-      component.formUpload.disable();
-      expect(component.canGoToPrevious()).toBeTruthy();
-      */
-    });
-
-    it('should calculate if it can go to the next step', () => {
-      /*
-      component.setStep(0);
-      expect(component.canGoToNext()).toBeTruthy();
-      component.setStep(1);
-      expect(component.canGoToNext()).toBeTruthy();
-      component.setStep(2);
-      expect(component.canGoToNext()).toBeFalsy();
-      */
-    });
-
     it('should validate the dataset id', () => {
       const frmCtrl = (val: string): FormControl => {
         return ({ value: val } as unknown) as FormControl;

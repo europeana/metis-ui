@@ -432,7 +432,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       const form = this.getFormGroup(this.wizardConf[stepIndex]);
       if (form && form.disabled) {
         form.enable();
-        console.log('TODO - e2e test this funtionality');
         this.uploadComponent.rebuildForm();
       }
     }
@@ -449,35 +448,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.updateLocation(true, true);
     }
     this.currentStepIndex = stepIndex;
-  }
-
-  /**
-   * canGoToPrevious
-   * Template utility: returns navigation to previous step is possible
-   *
-   * @returns boolean
-   **/
-  canGoToPrevious(): boolean {
-    if (this.currentStepIndex > 0 && this.currentStepIndex < this.stepIndexProgress) {
-      return true;
-    }
-    //return this.currentStepIndex === this.stepIndexProgress && this.formUpload.disabled;
-    // TODO... if we still need this
-    return this.currentStepIndex === this.stepIndexProgress;
-  }
-
-  /**
-   * canGoToNext
-   * Template utility: returns navigation to next step is possible
-   *
-   * @returns boolean
-   **/
-  canGoToNext(): boolean {
-    if (this.currentStepIndex === this.stepIndexProgress - 1) {
-      return false; // TODO this.formUpload.disabled;
-    } else {
-      return this.currentStepIndex < this.stepIndexProgress;
-    }
   }
 
   /**

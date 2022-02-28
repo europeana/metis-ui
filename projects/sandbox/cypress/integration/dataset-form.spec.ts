@@ -41,11 +41,7 @@ context('Sandbox', () => {
       cy.get(selectorInputName).should('be.visible');
     });
 
-    const navigateSteps = (
-      fnFwd: () => void,
-      fnBack: () => void
-    ): void => {
-
+    const navigateSteps = (fnFwd: () => void, fnBack: () => void): void => {
       // Forwards
       cy.get(selectorInputName).should('be.visible');
       cy.get(selectorInputCountry).should('be.visible');

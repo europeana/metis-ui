@@ -43,6 +43,10 @@ $eu-jade-slightly-dark: #1ea072;
   justify-content: space-between;
 }
 
+.dataset-errors {
+  color: $eu-red;
+}
+
 .full-grid-width {
   grid-column: 1 / 5;
 }
