@@ -379,7 +379,9 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
         this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
       } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
-        this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
+        if (thisWorkflow.url) {
+          this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
+        }
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
         this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);

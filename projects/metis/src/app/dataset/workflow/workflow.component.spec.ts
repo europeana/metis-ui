@@ -466,6 +466,13 @@ describe('WorkflowComponent', () => {
       const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
       const plugin = testWorkflowData.metisPluginsMetadata[0];
       plugin.pluginType = 'HTTP_HARVEST';
+
+      // test null
+      delete plugin.url;
+      component.extractWorkflowParamsAlways(testWorkflowData);
+      expect(component.workflowForm.value.url).toBeFalsy();
+
+      // test valid
       (plugin as HarvestPluginMetadataBase).url = httpUrl;
       component.extractWorkflowParamsAlways(testWorkflowData);
       expect(component.workflowForm.value.url).toBe(httpUrl);
