@@ -200,11 +200,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     // capture "back" and "forward" events / sync with form data
     this.location.subscribe((state: PopStateEvent) => {
       const url = `${state.url}`;
-      const ids = url.split('/').filter((s: string) => {
-        return s.length > 0;
-      });
+      const ids = url.match(/\/dataset\/(\d+)/);
 
-      if (ids.length === 0) {
+      if (!ids || ids.length === 0) {
         // clear the data, form data, pollers / set step to progress
         this.progressData = undefined;
         this.trackDatasetId = '';
@@ -213,7 +211,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.clearDataPollers();
         this.setStep(this.stepIndexProgress, true);
       } else {
-        this.trackDatasetId = ids[0];
+        this.trackDatasetId = ids[1];
 
         const queryParamRegex = /\S+\?recordId=(\S+)/;
         const queryParamMatch: RegExpMatchArray | null = url.match(queryParamRegex);
@@ -513,9 +511,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.trackDatasetId = datasetToTrack;
 
       if (updateLocation) {
-        const newPath = `/${datasetToTrack}`;
+        const pathBase = 'dataset';
+        const newPath = `${pathBase}/${datasetToTrack}`;
         const splitPath = this.location.path().split('?');
-        if (splitPath.length > 1 || splitPath[0] !== newPath) {
+        if (splitPath.length > pathBase.length + 1 || splitPath[0] !== newPath) {
           this.setStep(this.stepIndexProgress);
         }
       }
@@ -613,7 +612,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   updateLocation(progress = true, record = true): void {
     let newPath = '';
     if (progress && this.trackDatasetId) {
-      newPath += `/${this.trackDatasetId}`;
+      newPath += `/dataset/${this.trackDatasetId}`;
       if (record && this.trackRecordId) {
         newPath += `?recordId=${this.trackRecordId}`;
       }

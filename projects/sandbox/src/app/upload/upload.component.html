@@ -18,11 +18,10 @@
   >
     <label for="name" i18n="name label">Name</label>
     <input id="name" formControlName="name" autocomplete="off" />
-    <span class="field-errors" *ngIf="form.get('name') && form.get('name')?.errors">
+    <span class="field-errors" *ngIf="form.value['name'].length > 0 && form.get('name')?.errors">
       <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
     </span>
   </div>
-
   <!--
   <span class="separator-line">
     <sb-navigation-orbs
@@ -33,7 +32,6 @@
     ></sb-navigation-orbs>
   </span>
 -->
-
   <div
     ngClass="{
       active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.SET_LANG_LOCATION
@@ -61,7 +59,6 @@
       }}</option>
     </select>
   </div>
-
   <!--
   <span class="separator-line">
     <sb-navigation-orbs
@@ -72,7 +69,6 @@
     ></sb-navigation-orbs>
   </span>
 -->
-
   <div
     ngClass="{
       active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROTOCOL_SELECT

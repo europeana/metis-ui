@@ -4,7 +4,7 @@ import { WizardComponent } from './wizard';
 
 const routes: Routes = [
   {
-    path: ':id',
+    path: 'dataset/:id',
     component: WizardComponent
   },
   {

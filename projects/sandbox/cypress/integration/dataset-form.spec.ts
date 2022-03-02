@@ -92,14 +92,10 @@ context('Sandbox', () => {
 
     it('should flag when a step is invalid', () => {
       setStep(2);
-      cy.get(selectorFieldErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorFieldErrors).should('have.length', 0);
 
       cy.get(selectorInputDatasetId).type('1');
-      cy.get(selectorFieldErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorFieldErrors).should('have.length', 0);
 
       setStep(1);
       cy.get(selectorInputName).type(' ');
@@ -136,10 +132,9 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitData).click();
 
       // confirm the redirect
-      cy.url().should('match', /\d+\/\d+/);
+      cy.url().should('match', /\d+\/\S+\d+/);
 
       // confirm the form is navigable
-
       cy.get(`.wizard-status li:first-child() a`).click();
 
       navigateSteps(
@@ -160,7 +155,7 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitData).click();
 
       // confirm the redirect
-      cy.url().should('match', /\d+\/\d+/);
+      cy.url().should('match', /\d+\/\S+\/\d+/);
 
       // confirm the form is disabled
       cy.get(`.wizard-status li:first-child a`).should('have.length', 1);

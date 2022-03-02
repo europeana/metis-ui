@@ -345,21 +345,19 @@ describe('WizardComponent', () => {
 */
 
     it('should set the step', () => {
-      //const form = component.formUpload;
-
-      spyOn(component.uploadComponent.form, 'enable');
+      const form = component.uploadComponent.form;
+      spyOn(form, 'enable');
       expect(component.datasetOrbsHidden).toBeTruthy();
       expect(component.currentStepIndex).toEqual(1);
       component.setStep(0);
       expect(component.datasetOrbsHidden).toBeFalsy();
       expect(component.currentStepIndex).toEqual(0);
-      expect(component.uploadComponent.form.enable).not.toHaveBeenCalled();
+      expect(form.enable).not.toHaveBeenCalled();
       component.setStep(0, true);
-      expect(component.uploadComponent.form.enable).not.toHaveBeenCalled();
-      component.uploadComponent.form.disable();
+      expect(form.enable).not.toHaveBeenCalled();
+      form.disable();
       component.setStep(0, true);
-      expect(component.uploadComponent.form.enable).toHaveBeenCalled();
-
+      expect(form.enable).toHaveBeenCalled();
       spyOn(component, 'updateLocation');
       component.setStep(4);
       expect(component.updateLocation).toHaveBeenCalled();
