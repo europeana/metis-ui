@@ -1,35 +1,35 @@
+import { fillUploadForm, uploadFile } from '../support/helpers';
+import {
+  selectorBtnNext,
+  selectorBtnSubmitData,
+  selectorErrors,
+  selectorInputCountry,
+  selectorInputDatasetId,
+  selectorInputLanguage,
+  selectorInputName,
+  selectorInputZipFile,
+  selectorLinkDatasetForm,
+  selectorProgressTitle
+} from '../support/selectors';
+
 context('Sandbox', () => {
-  const uploadFile = (fileName: string, fileType = '', selector: string): void => {
-    cy.get(selector).then((subject) => {
-      cy.fixture(fileName, 'base64')
-        .then(Cypress.Blob.base64StringToBlob)
-        .then((blob) => {
-          const el = subject[0] as HTMLInputElement;
-          const testFile = new File([blob], fileName, { type: fileType });
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(testFile);
-          el.files = dataTransfer.files;
-          cy.wrap(subject).trigger('change', { force: true });
-          console.log(el.files);
-        });
-    });
+  const classActive = 'is-active';
+  const classSet = 'is-set';
+  const force = { force: true };
+
+  const setStep = (step: number): void => {
+    cy.get(`.wizard-status li:nth-child(${step}) a`).click();
+    cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
+    cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
   };
 
   describe('Dataset Form', () => {
     let currentStep = 1;
 
-    const selectorBtnNext = '.next';
     const selectorBtnPrevious = '.previous';
-    const selectorBtnSubmit = '[data-e2e="submit-upload"]';
-    const selectorErrors = '.errors';
     const selectorFieldErrors = '.field-errors';
-    const selectorInputCountry = '#country';
-    const selectorInputName = '#name';
-    const selectorInputLanguage = '#language';
-    const selectorInputTrackId = '[data-e2e="idToTrack"]';
-    const selectorInputZipFile = '[type="file"]';
-    const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
-    const selectorProgress = '.progress-title';
+    const selectorInputXSLFile = '[type="file"][accept=".xsl"]';
+    const selectorSendXSLT = '[formControlName="sendXSLT"]';
     const testDatasetName = 'Test_dataset_1';
 
     beforeEach(() => {
@@ -42,15 +42,6 @@ context('Sandbox', () => {
       cy.get(selectorLinkDatasetForm).should('have.length', 0);
       cy.get(selectorInputName).should('be.visible');
     });
-
-    const fillUploadForm = (): void => {
-      cy.get(selectorInputName).type(testDatasetName);
-      cy.get(selectorBtnNext).click();
-      cy.get(selectorInputCountry).select('Greece');
-      cy.get(selectorInputLanguage).select('Greek');
-      cy.get(selectorBtnNext).click();
-      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
-    };
 
     const navigateSteps = (
       fnFwd: () => void,
@@ -133,14 +124,6 @@ context('Sandbox', () => {
     });
 
     it('should flag when a step is complete', () => {
-      const classActive = 'is-active';
-      const classSet = 'is-set';
-      const setStep = (step: number): void => {
-        cy.get(`.wizard-status li:nth-child(${step}) a`).click();
-        cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
-        cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
-      };
-
       cy.get(selectorInputName).type(testDatasetName);
       cy.get('.wizard-status li:nth-child(1) a').should('have.class', classSet);
 
@@ -153,32 +136,66 @@ context('Sandbox', () => {
       setStep(3);
 
       uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
-      cy.get(selectorInputZipFile).trigger('change', { force: true });
+      cy.get(selectorInputZipFile).trigger('change', force);
       cy.get('.wizard-status li:nth-child(3) a').should('have.class', classSet);
 
       setStep(4);
-      cy.get(selectorInputTrackId).type('1');
+      cy.get(selectorInputDatasetId).type('1');
       cy.get('.wizard-status li:nth-child(4) a').should('have.class', classSet);
     });
 
     it('should flag when a step is invalid', () => {
-      cy.get(selectorFieldErrors).should('have.length', 0);
+      setStep(4);
+      cy.get(selectorFieldErrors)
+        .filter(':visible')
+        .should('have.length', 0);
+
+      cy.get(selectorInputDatasetId).type('1');
+      cy.get(selectorFieldErrors)
+        .filter(':visible')
+        .should('have.length', 0);
+
+      setStep(1);
       cy.get(selectorInputName).type(' ');
-      cy.get(selectorFieldErrors).should('have.length', 1);
+      cy.get(selectorFieldErrors)
+        .filter(':visible')
+        .should('have.length', 1);
+    });
+
+    it('should conditionally enable the XSLT field', () => {
+      setStep(3);
+      cy.get(selectorInputXSLFile).should('have.length', 1);
+      cy.get(selectorInputXSLFile).should('not.be.visible');
+      cy.get(selectorSendXSLT).click();
+      cy.get(selectorInputXSLFile).should('be.visible');
     });
 
     it('should track the progress on submit', () => {
-      cy.get(selectorProgress).should('have.length', 0);
-      fillUploadForm();
-      cy.get(selectorBtnSubmit).click();
-      cy.get(selectorProgress).should('have.length', 1);
+      cy.get(selectorProgressTitle).should('have.length', 0);
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
+      cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorErrors).should('have.length', 0);
     });
 
+    it('should update the page url on submit', () => {
+      cy.location('pathname').should('not.match', /\d/);
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
+      cy.location('pathname').should('match', /\d/);
+    });
+
     it('should allow full navigation of both forms after submit', () => {
-      fillUploadForm();
-      cy.get(selectorBtnSubmit).click();
-      cy.get(`.wizard-status li:nth-child(1) a`).click();
+      // submit a dataset
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
+
+      // confirm the redirect
+      cy.url().should('match', /\d+\/\d+/);
+
+      // confirm the form is navigable
+
+      cy.get(`.wizard-status li:first-child() a`).click();
       navigateSteps(
         () => {
           cy.get(selectorBtnNext).click();
@@ -191,8 +208,17 @@ context('Sandbox', () => {
     });
 
     it('should re-enable the disabled form after submit', () => {
-      fillUploadForm();
-      cy.get(selectorBtnSubmit).click();
+      // submit a dataset
+      fillUploadForm(testDatasetName);
+      cy.get(selectorBtnSubmitData).click();
+
+      // confirm the redirect
+      cy.url().should('match', /\d+\/\d+/);
+
+      // confirm the form is disabled
+
+      cy.get(`.wizard-status li:first-child a`).should('have.length', 1);
+
       cy.get(`.wizard-status li:first-child a`).click();
       cy.get(selectorInputName).should('be.disabled');
       cy.get(`.wizard-status li:nth-child(2) a`).click();
@@ -201,7 +227,18 @@ context('Sandbox', () => {
       cy.get(`.wizard-status li:nth-child(3) a`).click();
       cy.get(selectorInputZipFile).should('be.disabled');
       cy.get(`.wizard-status li:nth-child(4) a`).click();
-      cy.get(selectorLinkDatasetForm).click({ force: true });
+
+      // create a new dataset
+
+      // we cant use "force" after a redirect: cypress error (reading 'parent') so scroll down
+      cy.get(selectorLinkDatasetForm)
+        .scrollIntoView()
+        .should('be.visible');
+      cy.wait(500);
+      cy.get(selectorLinkDatasetForm).click();
+
+      // confirm the form is not disabled
+
       cy.get(selectorInputName).should('not.be.disabled');
       cy.get(`.wizard-status li:nth-child(2) a`).click();
       cy.get(selectorInputCountry).should('not.be.disabled');

@@ -43,7 +43,7 @@
   >
   </app-search>
 
-  <ul class="filter" (clickOutside)="closeMenus()">
+  <ul class="filter" appClickAware (clickOutside)="closeMenus()">
     <li>
       <span class="indicator-saving" [ngClass]="{ showing: isSaving }"></span>
     </li>

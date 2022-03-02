@@ -37,8 +37,8 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should get the formatted date', () => {
-      expect(component.getFormattedDate()).toEqual('4/8/2021, 2:51:52 PM');
+    it('should get the formatted creation date', () => {
+      expect(component.getFormattedCreationDate()).toEqual('19/01/2022, 15:21:09');
     });
 
     it('should open the modal', () => {
@@ -49,14 +49,6 @@ describe('ProgressTrackerComponent', () => {
       });
       component.showErrorsForStep(1);
       expect(modalConfirms.open).toHaveBeenCalled();
-    });
-
-    it('should report if links are available', () => {
-      expect(component.hasLinks()).toBeTruthy();
-      mockDataset['portal-preview'] = undefined;
-      expect(component.hasLinks()).toBeTruthy();
-      mockDataset['portal-publish'] = undefined;
-      expect(component.hasLinks()).toBeFalsy();
     });
 
     it('should report if complete', () => {
@@ -89,6 +81,14 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass(StepStatus.PREVIEW)).toEqual('preview');
       expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('');
+    });
+
+    it('should toggle the exapnded-warning flag', () => {
+      expect(component.expandedWarning).toBeFalsy();
+      component.toggleExpandedWarning();
+      expect(component.expandedWarning).toBeTruthy();
+      component.toggleExpandedWarning();
+      expect(component.expandedWarning).toBeFalsy();
     });
   });
 });

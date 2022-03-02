@@ -43,7 +43,11 @@
   </div>
 </div>
 
-<div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">
+<div
+  class="form-group"
+  *ngIf="incrementalEnabled && (isProtocolOAIPMH() || isProtocolHTTP())"
+  [formGroup]="form"
+>
   <input type="checkbox" id="incremental-harvest" formControlName="incrementalHarvest" />
   <label
     for="incremental-harvest"
@@ -88,6 +92,7 @@
   [ngStyle]="{ display: isProtocolFile() ? 'block' : 'none' }"
 >
   <lib-file-upload
+    #fileUpload
     [formControlName]="fileFormName"
     [form]="form"
     [acceptedTypes]="'.zip'"

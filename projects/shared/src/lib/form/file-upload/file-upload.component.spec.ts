@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FileUploadComponent } from './file-upload.component';
@@ -11,7 +12,8 @@ describe('FileUploadComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [FileUploadComponent],
-      providers: [{ provide: FormBuilder, useValue: formBuilder }]
+      providers: [{ provide: FormBuilder, useValue: formBuilder }],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));
 

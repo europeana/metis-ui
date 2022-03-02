@@ -10,12 +10,14 @@ import {
   SubmissionResponseData
 } from '../src/app/_models';
 import { ProgressByStepStatus, TimedTarget } from './models/models';
+import { ReportGenerator } from './report-generator';
 
 new (class extends TestDataServer {
   serverName = 'sandbox';
   errorCodes: Array<string>;
   newId = 0;
   timedTargets: Map<string, TimedTarget> = new Map<string, TimedTarget>();
+  reportGenerator: ReportGenerator;
 
   /**
    * constructor
@@ -25,6 +27,8 @@ new (class extends TestDataServer {
    **/
   constructor() {
     super();
+
+    this.reportGenerator = new ReportGenerator();
 
     const generateRange = (start: number, end: number): Array<string> => {
       return [...Array(1 + end - start).keys()].map((v: number) => {
@@ -36,6 +40,7 @@ new (class extends TestDataServer {
 
     const fn = (): void => {
       this.timedTargets.forEach((tgt: TimedTarget) => {
+        tgt.timesCalled += 1;
         this.makeProgress(tgt);
       });
     };
@@ -45,7 +50,7 @@ new (class extends TestDataServer {
   /**
    * handle404
    *
-   * Handles 404 errors by displaying a message
+   * Handles 404 errors by setting the response status code and ending it with a message
    *
    * @param {string} route - the invalid route
    * @param {ServerResponse} response - the response object
@@ -56,6 +61,7 @@ new (class extends TestDataServer {
     const urlPOST = '/dataset/my-dataset-name/process' + urlParams;
     const urlGET = '/dataset/1';
     this.headerText(response);
+    response.statusCode = 404;
     response.end(
       super.get404() +
         `<br/><br/>You came <b><a href="${route}">here</a></b> but you need a correct url
@@ -108,11 +114,13 @@ new (class extends TestDataServer {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
       'dataset-info': {
-        'creation-date': `${new Date().getTime()}`,
+        'creation-date': `${new Date().toISOString()}`,
         'dataset-id': datasetId,
         'dataset-name': datasetName ? datasetName : 'GeneratedName',
         country: country ? country : 'GeneratedCountry',
-        language: language ? language : 'GeneratedLanguage'
+        language: language ? language : 'GeneratedLanguage',
+        'transformed-to-edm-external': country === 'Greece',
+        'record-limit-exceeded': !!(datasetName && datasetName.length > 10)
       }
     };
   }
@@ -129,8 +137,10 @@ new (class extends TestDataServer {
     const info = timedTarget.datasetInfo;
     if (info['processed-records'] === info['total-records']) {
       info.status = DatasetStatus.COMPLETED;
-      info['portal-preview'] = 'this-collection/that-dataset/preview';
-      info['portal-publish'] = 'this-collection/that-dataset/publish';
+      if (timedTarget.timesCalled >= 5) {
+        info['portal-preview'] = 'http://this-collection/that-dataset/preview';
+        info['portal-publish'] = 'http://this-collection/that-dataset/publish';
+      }
       return;
     }
     info['processed-records'] += 1;
@@ -230,7 +240,8 @@ new (class extends TestDataServer {
         error: parseInt(paddedId[3]),
         statusTargets: statusTargets
       },
-      datasetInfo: datasetInfo
+      datasetInfo: datasetInfo,
+      timesCalled: 0
     });
   }
 
@@ -264,8 +275,22 @@ new (class extends TestDataServer {
    **/
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
     const route = request.url as string;
+
+    if (request.method === 'OPTIONS') {
+      response.setHeader(
+        'Access-Control-Allow-Headers',
+        'authorization,X-Requested-With,content-type'
+      );
+      response.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,POST,PUT,DELETE,OPTIONS');
+      response.setHeader('Access-Control-Max-Age', '1800');
+      response.setHeader('Allow', 'GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH');
+      response.setHeader('Connection', 'Keep-Alive');
+      response.end();
+      return;
+    }
     if (request.method === 'POST') {
       const regRes = route.match(/\/dataset\/(\S+)\//);
+
       if (regRes) {
         this.newId++;
 
@@ -331,11 +356,49 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
-        const regxDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
-        if (!regxDataset) {
+        const regResRecord = route.match(
+          /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/
+        );
+
+        if (regResRecord && regResRecord.length > 2) {
+          const recordIdUnparsed = decodeURIComponent(regResRecord[2]);
+          const recordId = parseInt(recordIdUnparsed);
+
+          if (isNaN(recordId)) {
+            // check for mismatches between europeana records and the parent dataset
+
+            const europeanaId = recordIdUnparsed.match(/^\/(\d)\/\S+/);
+            if (europeanaId) {
+              const recordDataset = parseInt(europeanaId[1]);
+              const datasetParam = parseInt(regResRecord[1]);
+              if (recordDataset !== datasetParam) {
+                this.handle404(route, response);
+                return;
+              }
+            }
+          }
+
+          if (recordId === 404) {
+            this.handle404(route, response);
+          } else {
+            const report = this.reportGenerator.generateReport(recordIdUnparsed);
+            if (recordId > 999) {
+              setTimeout(() => {
+                response.end(report);
+              }, recordId);
+            } else {
+              response.end(report);
+            }
+          }
+          return;
+        }
+
+        const regResDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
+
+        if (!regResDataset) {
           this.handle404(route, response);
         } else {
-          const id = regxDataset[1];
+          const id = regResDataset[1];
           if (this.errorCodes.indexOf(id) > -1) {
             response.statusCode = parseInt(id);
             response.end();

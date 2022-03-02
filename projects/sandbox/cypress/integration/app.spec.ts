@@ -6,9 +6,9 @@ context('Sandbox', () => {
     });
 
     const selectorLogo = '.metis-logo .logo';
-    const selectorWizard = '#wizard';
+    const selectorWizard = '.wizard';
 
-    it('should show the hader and the wizard', () => {
+    it('should show the header and the wizard', () => {
       cy.get(selectorLogo).should('have.length', 1);
       cy.get(selectorWizard).should('have.length', 1);
     });

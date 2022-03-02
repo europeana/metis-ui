@@ -1,0 +1,589 @@
+<div class="record-report">
+  <ng-template #emptyVal
+    ><span data-e2e="empty-value" class="report-value" title="value unavailable"
+      >-</span
+    ></ng-template
+  >
+  <ng-template #zeroVal
+    ><span data-e2e="empty-value" class="report-value" title="value unavailable"
+      >0</span
+    ></ng-template
+  >
+  <ng-template #tickedItem let-itemVal="itemVal">
+    <span
+      class="report-value"
+      [ngClass]="{
+        'error-message': !itemVal,
+        tick: itemVal
+      }"
+    >
+      <ng-container *ngIf="itemVal">Yes</ng-container>
+      <ng-container *ngIf="!itemVal">No</ng-container>
+    </span>
+  </ng-template>
+
+  <ng-template #stringList let-list="list">
+    <ul class="code">
+      <li *ngFor="let item of list">{{ item }}</li>
+    </ul>
+  </ng-template>
+
+  <ng-template #mediaResourceTechMetadata let-data="data">
+    <span class="report-sub-header">
+      Resource Url
+    </span>
+    <span class="report-value" *ngIf="data.resourceUrl; let val; else: emptyVal">
+      <a class="external-link" rel="noopener" target="_blank" [href]="val">{{ val }}</a>
+    </span>
+
+    <span class="report-sub-header">
+      Media Type
+    </span>
+    <span class="report-value" *ngIf="data.mediaType; let val; else: emptyVal">
+      {{ val }}
+    </span>
+
+    <span class="report-sub-header">
+      Mime Type
+    </span>
+    <span class="report-value" *ngIf="data.mimeType; let val; else: emptyVal">
+      {{ val }}
+    </span>
+
+    <ng-container *ngFor="let linkTypes of [data.elementLinkTypes]">
+      <span class="report-sub-header">
+        Element Link Types
+      </span>
+      <span
+        *ngIf="linkTypes && linkTypes.length > 0; else emptyVal"
+        class="report-value limited-list"
+        [ngClass]="{ 'multiple-entries': linkTypes.length > 1 }"
+      >
+        <ng-content *ngTemplateOutlet="stringList; context: { list: linkTypes }"></ng-content>
+      </span>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        [RecordMediaType.IMAGE, RecordMediaType.TEXT].includes(
+          report.contentTierBreakdown.recordType
+        )
+      "
+    >
+      <span class="report-sub-header" data-e2e="image-resolution">
+        Image Resolution
+      </span>
+      <span class="report-value" *ngIf="data.imageResolution; let val; else: emptyVal">
+        {{ val | number: '1.0-0' }} pixels</span
+      >
+
+      <span class="report-sub-header">
+        Image Resolution Tier
+      </span>
+
+      <span class="report-value" *ngIf="data.imageResolutionTier; let val; else: emptyVal">
+        {{ val }}
+      </span>
+    </ng-container>
+
+    <ng-container *ngIf="RecordMediaType.VIDEO === report.contentTierBreakdown.recordType">
+      <span class="report-sub-header" data-e2e="vertical-resolution">
+        Vertical Resolution
+      </span>
+      <span class="report-value" *ngIf="data.verticalResolution; let val; else: emptyVal">
+        {{ val }} pixels
+      </span>
+
+      <span class="report-sub-header">
+        Vertical Resolution Tier
+      </span>
+      <span class="report-value" *ngIf="data.verticalResolutionTier; let val; else: emptyVal">
+        {{ val }}</span
+      >
+    </ng-container>
+
+    <span class="report-sub-header">
+      Licence Type
+    </span>
+    <span class="report-value" *ngIf="data.licenseType; let val; else: emptyVal">
+      {{ val }}
+    </span>
+
+    <span class="report-sub-header">
+      Media Tier
+    </span>
+    <span class="report-value" *ngIf="data.mediaTier; let val; else: emptyVal">
+      {{ val }}
+    </span>
+  </ng-template>
+
+  <span class="report-header">Record Tier Calculation Summary</span>
+  <span class="report-grid">
+    <ng-container
+      *ngIf="report.recordTierCalculationSummary.europeanaRecordId; let europeanaRecordId"
+    >
+      <span class="report-sub-header">
+        Europeana Record Id
+      </span>
+      <span class="report-value">
+        {{ europeanaRecordId }}
+      </span>
+    </ng-container>
+
+    <ng-container
+      *ngIf="report.recordTierCalculationSummary.providerRecordId; let providerRecordId"
+    >
+      <span class="report-sub-header">
+        Provider Record Id
+      </span>
+      <span class="report-value">
+        {{ providerRecordId }}
+      </span>
+    </ng-container>
+
+    <span class="report-sub-header">
+      <a
+        *ngIf="visibleTier !== 0; else conditionalWrapCT"
+        class="link-shortcut"
+        (click)="setView(0)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapCT"></ng-container>
+      </a>
+      <ng-template #conditionalWrapCT><span>Content Tier</span></ng-template>
+    </span>
+    <span class="report-value">
+      <a
+        *ngIf="visibleTier !== 0; else conditionalWrapCTVal"
+        class="link-shortcut"
+        (click)="setView(0)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapCTVal"></ng-container>
+      </a>
+      <ng-template #conditionalWrapCTVal
+        ><span>{{ report.recordTierCalculationSummary.contentTier }}</span></ng-template
+      >
+    </span>
+    <span class="report-sub-header">
+      <a
+        *ngIf="visibleTier !== 1; else conditionalWrapMetadata"
+        class="link-shortcut"
+        (click)="setView(1)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapMetadata"></ng-container>
+      </a>
+      <ng-template #conditionalWrapMetadata><span>Metadata Tier</span></ng-template>
+    </span>
+    <span class="report-value">
+      <a
+        *ngIf="visibleTier !== 1; else conditionalWrapMetadataVal"
+        class="link-shortcut"
+        (click)="setView(1)"
+      >
+        <ng-container *ngTemplateOutlet="conditionalWrapMetadataVal"></ng-container>
+      </a>
+      <ng-template #conditionalWrapMetadataVal
+        ><span>{{ report.recordTierCalculationSummary.metadataTier }}</span></ng-template
+      >
+    </span>
+    <span class="report-sub-header">
+      Links
+    </span>
+
+    <ul class="report-value" *ngFor="let summary of [report.recordTierCalculationSummary]">
+      <li>
+        <ng-template #labelRefHarvest
+          ><span i18n="record link link@@recordLinkHarvest"
+            >record before processing (as provided)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefHarvest"
+          href="{{ apiSettings.apiHost }}/dataset/{{ getDatasetId() }}/record?recordId={{
+            summary.europeanaRecordId
+          }}"
+        ></sb-copyable-link-item>
+      </li>
+      <li>
+        <ng-template #labelRefPortal
+          ><span i18n="record link link@@recordLinkPortal"
+            >record after processing (as published)</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [labelRef]="labelRefPortal"
+          [href]="summary.portalRecordLink"
+        ></sb-copyable-link-item>
+      </li>
+    </ul>
+  </span>
+  <!-- end summary grid -->
+
+  <span class="separator-line">
+    <sb-navigation-orbs
+      [count]="2"
+      [fnClassMapInner]="getOrbConfigInner.bind(this)"
+      (clickEvent)="setView($event)"
+      [indicatorAttributes]="[
+        report.recordTierCalculationSummary.contentTier,
+        report.recordTierCalculationSummary.metadataTier
+      ]"
+    ></sb-navigation-orbs>
+  </span>
+
+  <ng-container *ngIf="visibleTier === 0">
+    <span class="report-header">Content Tier Breakdown</span>
+    <span class="report-grid" *ngFor="let contentTier of [report.contentTierBreakdown]">
+      <span class="report-description">
+        The content tier is the maximum value awarded to any linked media resource. All the record’s
+        media resources are listed below.
+      </span>
+      <ng-container *ngIf="contentTier.recordType; let recordType">
+        <span class="report-sub-header">
+          Record Type
+        </span>
+        <span class="report-value" data-e2e="record-type">
+          {{ recordType }}
+        </span>
+      </ng-container>
+
+      <ng-container *ngIf="contentTier.licenseType; let licenseType">
+        <span class="report-sub-header">
+          License Type
+        </span>
+        <span class="report-value">
+          {{ licenseType }}
+        </span>
+      </ng-container>
+
+      <ng-container *ngIf="contentTier.recordType === RecordMediaType.IMAGE">
+        <span class="report-sub-header" data-e2e="thumbnail-available">
+          Thumbnail Available
+        </span>
+
+        <ng-content
+          *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.thumbnailAvailable }"
+        ></ng-content>
+      </ng-container>
+
+      <ng-container
+        *ngIf="
+          [RecordMediaType.AUDIO, RecordMediaType.TEXT, RecordMediaType.VIDEO].includes(
+            contentTier.recordType
+          )
+        "
+      >
+        <span class="report-sub-header" data-e2e="landing-available">
+          Landing Page Available
+        </span>
+        <ng-content
+          *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.landingPageAvailable }"
+        ></ng-content>
+      </ng-container>
+
+      <ng-container
+        *ngIf="[RecordMediaType.AUDIO, RecordMediaType.VIDEO].includes(contentTier.recordType)"
+      >
+        <span class="report-sub-header" data-e2e="embed-available">
+          Embeddable Media Available
+        </span>
+
+        <ng-content
+          *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.embeddableMediaAvailable }"
+        ></ng-content>
+      </ng-container>
+    </span>
+    <!-- end content tier general grid -->
+
+    <!-- Media Tech Data -->
+
+    <ng-template #noMedia>
+      <span>
+        <span class="separator-line"></span>
+        <span class="report-header">No Media Resources Available</span>
+      </span>
+    </ng-template>
+
+    <ng-container
+      *ngIf="
+        report.contentTierBreakdown.mediaResourceTechnicalMetadataList;
+        let techData;
+        else: noMedia
+      "
+    >
+      <ng-container *ngIf="techData.length > 0; else noMedia">
+        <span class="separator-line">
+          <sb-navigation-orbs
+            [count]="techData.length"
+            [index]="visibleMedia"
+            [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
+            (clickEvent)="setMedia($event)"
+          ></sb-navigation-orbs>
+        </span>
+
+        <span class="report-header">
+          <ng-template #indexInput>
+            <input
+              #inputMediaIndex
+              (blur)="changeMediaIndex($event)"
+              class="media-index"
+              [max]="techData.length"
+              min="1"
+              [ngModel]="visibleMedia + 1"
+              (change)="changeMediaIndex($event)"
+              [ngStyle]="{
+                width: ((inputMediaIndex.value + 1 + '').length + 1.5) * 0.55 + 'em'
+              }"
+              type="number"
+            />
+          </ng-template>
+          Media Resource Technical Metadata (<span *ngIf="!mediaCollapsed; else indexInput">{{
+            visibleMedia + 1
+          }}</span>
+          of {{ techData.length }})
+        </span>
+
+        <span
+          class="report-grid"
+          *ngFor="let data of techData; let i = index"
+          [ngClass]="{ hidden: visibleMedia !== i }"
+        >
+          <ng-container *ngIf="visibleMedia === i">
+            <ng-content
+              *ngTemplateOutlet="mediaResourceTechMetadata; context: { data: data }"
+            ></ng-content>
+          </ng-container>
+        </span>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="report.contentTierBreakdown.processingErrorsList; let errors">
+      <ng-container *ngIf="errors.length > 0">
+        <span class="separator-line"> </span>
+        <span class="report-header">
+          Processing Errors List
+        </span>
+        <ul class="processing-errors">
+          <li *ngFor="let error of errors">
+            <ul>
+              <li class="error-message report-header code">
+                {{ error.errorMessage }}
+              </li>
+              <li class="limited-list boxed code">
+                {{ error.stacktrace }}
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="visibleTier === 1">
+    <span class="report-header">Metadata Tier Breakdown</span>
+
+    <span class="report-grid">
+      <span class="report-description">
+        The metadata tier is the minimum value awarded to any of the metadata tier dimensions that
+        are listed below.
+      </span>
+    </span>
+
+    <span class="separator-line">
+      <sb-navigation-orbs
+        [count]="3"
+        [fnClassMapInner]="getOrbConfigInnerMetadata.bind(this)"
+        [indicatorAttributes]="[
+          report.metadataTierBreakdown.languageBreakdown.metadataTier,
+          report.metadataTierBreakdown.enablingElements.metadataTier,
+          report.metadataTierBreakdown.contextualClasses.metadataTier
+        ]"
+        (clickEvent)="setMetadata($event)"
+      ></sb-navigation-orbs>
+    </span>
+
+    <ng-container *ngIf="visibleMetadata === 0">
+      <span class="report-header">
+        Language Dimension
+      </span>
+
+      <span class="report-grid">
+        <ng-container
+          *ngFor="let languageBreakdown of [report.metadataTierBreakdown.languageBreakdown]"
+        >
+          <ng-container *ngIf="languageBreakdown.qualifiedElements; let val">
+            <span class="report-sub-header">
+              All language Qualifiable Elements
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="languageBreakdown.qualifiedElementsWithLanguage; let val">
+            <span class="report-sub-header">
+              Elements with Language Qualifier
+            </span>
+            <span class="report-value">
+              {{ val }}
+              <ng-container
+                *ngIf="languageBreakdown.qualifiedElementsWithLanguagePercentage; let val"
+              >
+                ({{ val | number: '2.2-2' }}%)
+              </ng-container>
+            </span>
+          </ng-container>
+
+          <ng-container
+            *ngFor="let qualifiedList of [languageBreakdown.qualifiedElementsWithoutLanguageList]"
+          >
+            <ng-container *ngIf="qualifiedList; let val">
+              <span class="report-sub-header">Elements without Language Qualifier Count</span>
+              <span class="report-value">{{ qualifiedList.length }}</span>
+              <span class="report-sub-header">
+                Elements without Language Qualifier
+              </span>
+              <span
+                class="report-value limited-list boxed"
+                *ngIf="qualifiedList.length > 0; else emptyVal"
+                [ngClass]="{ 'multiple-entries': qualifiedList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="
+                    stringList;
+                    context: {
+                      list: qualifiedList
+                    }
+                  "
+                ></ng-content>
+              </span>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="languageBreakdown.metadataTier; let val">
+            <span class="report-sub-header">
+              Awarded Tier for the Language Dimension
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </span>
+    </ng-container>
+
+    <ng-container *ngIf="visibleMetadata === 1">
+      <span class="report-header">
+        Enabling Elements Dimension
+      </span>
+
+      <span class="report-grid">
+        <ng-container
+          *ngFor="let enablingElements of [report.metadataTierBreakdown.enablingElements]"
+        >
+          <ng-container
+            *ngFor="let distinctList of [enablingElements.distinctEnablingElementsList]"
+          >
+            <ng-container *ngIf="distinctList">
+              <span class="report-sub-header">Distinct Enabling Metadata Element Count</span>
+              <span class="report-value">{{ distinctList.length }}</span>
+              <span class="report-sub-header">
+                Distinct Enabling Metadata Elements
+              </span>
+              <span
+                class="report-value limited-list boxed"
+                *ngIf="distinctList.length > 0; else emptyVal"
+                [ngClass]="{ 'multiple-entries': distinctList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="stringList; context: { list: distinctList }"
+                ></ng-content>
+              </span>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngFor="let groupsList of [enablingElements.metadataGroupsList]">
+            <ng-container *ngIf="groupsList">
+              <span class="report-sub-header">Distinct Enabling Metadata Group Count</span>
+              <span class="report-value">{{ groupsList.length }}</span>
+              <span class="report-sub-header">Distinct Enabling Metadata Groups</span>
+              <span
+                class="report-value limited-list boxed"
+                *ngIf="groupsList.length > 0; else emptyVal"
+                [ngClass]="{ 'multiple-entries': groupsList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="stringList; context: { list: groupsList }"
+                ></ng-content>
+              </span>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="enablingElements.metadataTier; let val">
+            <span class="report-sub-header">
+              Awarded Tier for the Enabling Elements Dimension
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </span>
+    </ng-container>
+
+    <ng-container *ngIf="visibleMetadata === 2">
+      <span class="report-header">
+        Contextual Classes Dimension
+      </span>
+
+      <span class="report-grid">
+        <ng-container
+          *ngFor="let contextualClasses of [report.metadataTierBreakdown.contextualClasses]"
+        >
+          <span class="report-sub-header">
+            Referenced Contextual Resources
+          </span>
+          <ng-container
+            *ngIf="contextualClasses.completeContextualResources; let val; else: zeroVal"
+          >
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
+
+          <ng-container *ngFor="let classesList of [contextualClasses.distinctClassesList]">
+            <ng-container *ngIf="classesList">
+              <span class="report-sub-header">
+                Distinct Represented Contextual Class Count
+              </span>
+              <span class="report-value">
+                {{ classesList.length }}
+              </span>
+              <span class="report-sub-header">
+                Distinct Represented Contextual Classes
+              </span>
+              <span
+                class="report-value limited-list boxed"
+                *ngIf="classesList.length > 0; else emptyVal"
+                [ngClass]="{ 'multiple-entries': classesList.length > 1 }"
+              >
+                <ng-content
+                  *ngTemplateOutlet="stringList; context: { list: classesList }"
+                ></ng-content>
+              </span>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="contextualClasses.metadataTier; let val">
+            <span class="report-sub-header">
+              Awarded Tier for the Contextual Classes Dimension
+            </span>
+            <span class="report-value">
+              {{ val }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </span>
+    </ng-container>
+  </ng-container>
+  <span class="separator-line"></span>
+</div>

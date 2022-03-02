@@ -1,9 +1,4 @@
 #footer {
-  bottom: 0;
-  position: absolute;
-}
-
-#wizard {
-  display: block;
-  margin-top: 7rem;
+  position: sticky;
+  top: calc(100% - 6.75rem);
 }

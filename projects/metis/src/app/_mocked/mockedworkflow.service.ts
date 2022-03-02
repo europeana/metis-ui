@@ -6,6 +6,7 @@ import {
   DatasetOverview,
   HarvestData,
   HistoryVersion,
+  HistoryVersions,
   MoreResults,
   NodePathStatistics,
   PluginAvailabilityList,
@@ -44,6 +45,10 @@ export const mockHistoryVersions: Array<HistoryVersion> = [
     pluginType: PluginType.TRANSFORMATION
   }
 ];
+
+export const mockHistoryVersion: HistoryVersions = {
+  evolutionSteps: mockHistoryVersions
+};
 
 export const mockWorkflow: Workflow = {
   datasetId: '1',
@@ -525,7 +530,9 @@ export const mockHarvestData: HarvestData = {
   lastPublishedRecords: 842,
   lastPublishedRecordsReadyForViewing: true,
   lastHarvestedDate: '2018-03-30T13:53:04.762Z',
-  lastHarvestedRecords: 842
+  lastHarvestedRecords: 842,
+  totalPreviewRecords: 842,
+  totalPublishedRecords: 842
 };
 
 export const mockLogs = [

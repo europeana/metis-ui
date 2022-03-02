@@ -15,7 +15,7 @@
               routerLinkActive="svg-icon-dashboard-active"
               class="link-to-dashboard svg-icon-dashboard"
             ></a>
-            <div class="metis-user" (clickOutside)="onClickedOutsideUser($event)">
+            <div class="metis-user" appClickAware (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"
                 ><span
                   class="svg-icon-loggedin-user {{

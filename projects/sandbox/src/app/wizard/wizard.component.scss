@@ -1,4 +1,3 @@
-@import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $wizard-border-radius: 1.5em;
@@ -15,13 +14,29 @@ $wizard-border-radius: 1.5em;
 }
 
 .errors {
+  background-color: $white;
+  border: 1px solid $eu-red;
+  font-size: 14px;
   font-weight: bold;
   margin-top: 0.75em;
+  padding: 0.5em;
 
   .error-detail {
     font-weight: normal;
     list-style: disc;
-    margin-left: 1em;
+    margin-left: 16px;
+  }
+
+  .heading {
+    position: relative;
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 12px;
+      width: 13px;
+      background: svg-url-icon-warning($eu-red) center no-repeat;
+      margin: 2px 2px 0 0;
+    }
   }
 }
 
@@ -30,73 +45,15 @@ $wizard-border-radius: 1.5em;
   margin-top: 1em;
 }
 
-.hidden {
-  display: none;
-}
-
 select {
   width: 100%;
-}
-
-.wizard button {
-  background: $eu-jade-classic;
-  border-radius: $wizard-border-radius;
-  font-weight: bold;
-
-  &.next,
-  &.previous {
-    padding: 0;
-    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
-    &::after {
-      content: '\25B2';
-      transform-origin: top;
-    }
-  }
-  &:hover {
-    background-color: $white;
-    color: $eu-jade-darker;
-  }
-  &:active {
-    border-color: $eu-light-orange;
-    color: $eu-light-orange;
-  }
-
-  &.next::after {
-    left: 1rem;
-    transform: rotate(90deg);
-  }
-  &.previous::after {
-    left: -1rem;
-    transform: rotate(270deg);
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.5);
-  }
-
-  &.submit {
-    &:hover {
-      box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-      text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
-    }
-
-    &[disabled] {
-      cursor: default;
-      background: $gray-lighter;
-      border-color: $gray-light;
-      color: $gray-light;
-      pointer-events: none;
-    }
-  }
-}
-
-.wizard,
-.wizard button {
-  border: 1px solid $eu-jade-dark;
 }
 
 .wizard {
   background-color: $eu-light-jade-classic;
   border: 1px solid $eu-jade-dark;
   border-radius: $wizard-border-radius;
-  margin: 1.5rem auto;
+  margin: 7rem auto 1.5rem auto;
   max-width: 50em;
   width: 80%;
 }
@@ -124,218 +81,17 @@ select {
   }
 }
 
-.wizard-status {
-  display: flex;
-  justify-content: space-evenly;
-  width: 100%;
-
-  li {
-    position: relative;
-    top: 2em;
+.wizard-section {
+  display: none;
+  &.active {
+    display: block;
   }
 }
 
-.orb-status {
-  background-color: $eu-jade-light;
-  border-color: $eu-jade-dark;
-  margin: 0;
-  transition: 0.3s ease-in border-radius;
-
-  &::after {
-    font-size: 1.25em;
-  }
-  &.next {
-    margin-left: 0.25em;
-  }
-}
-
-.orb-status.labelled {
-  border-radius: $wizard-border-radius;
-  height: 3em;
-  min-width: 3em;
-  width: 3em;
-
-  &::after {
-    content: attr(data-label);
-  }
-
-  &.orb-square {
-    border-radius: 0;
-  }
-
-  &.spinner::after {
-    content: '';
-  }
-
-  &.indicator-orb::before {
-    border: 1px solid $eu-jade-dark;
-    border-radius: 1em;
-    position: absolute;
-    left: 50%;
-    top: 100%;
-    transform: translate(-50%, -25%);
-    width: 1em;
-    height: 1em;
-  }
-
-  &.progress-orb::before,
-  &.submitted-orb::before {
-    background: svg-url-icon-tick('#{$white}') center 75% / 75% no-repeat $eu-jade-light;
-  }
-
-  &.is-set {
-    background-color: $eu-light-orange;
-    border-color: $white;
-    &:hover {
-      border-color: $eu-light-orange;
-    }
-    &.indicator-orb::before {
-      border-color: $white;
-      background-color: $eu-light-orange;
-    }
-    &.progress-orb::before {
-      background-image: svg-url-icon-tick('#{$white}');
-    }
-    &.indicator-orb:hover::before {
-      border-color: $eu-light-orange;
-      background-color: $white;
-    }
-    &.progress-orb:hover::before {
-      background-image: svg-url-icon-tick('#000');
-    }
-    &:active {
-      color: $eu-light-orange;
-    }
-    &.indicator-orb:active::before {
-      background-color: $white;
-    }
-    &.progress-orb:active::before {
-      background-image: svg-url-icon-tick('#{$eu-light-orange}');
-    }
-  }
-
-  &:hover {
-    background-color: $white;
-    box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-    &.indicator-orb::before {
-      background-color: $white;
-    }
-    &.progress-orb::before,
-    &.submitted-orb::before {
-      background-image: svg-url-icon-tick('#000');
-    }
-  }
-
-  &:active {
-    background-color: $white;
-    border-color: $eu-light-orange;
-    color: $eu-light-orange;
-
-    &.indicator-orb::before {
-      border-color: $eu-light-orange;
-    }
-    &.progress-orb::before,
-    &.submitted-orb::before {
-      background-image: svg-url-icon-tick('#{$eu-light-orange}');
-    }
-  }
-
-  &.is-active {
-    border-width: 2px;
-    border-color: $eu-yellow;
-    pointer-events: none;
-
-    &.indicator-orb::before {
-      border-color: $eu-yellow;
-      border-width: 2px;
-    }
-  }
-
-  &.spinner,
-  &.indicate-polling {
-    &.indicator-orb::before {
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    &.progress-orb::before,
-    &.submitted-orb::before {
-      background-image: svg-url-icon-spin('#{$white}');
-    }
-
-    &.progress-orb:hover::before,
-    &.submitted-orb:hover::before {
-      background-image: svg-url-icon-spin('#000');
-    }
-
-    &.progress-orb:active::before,
-    &.submitted-orb:active::before {
-      background-image: svg-url-icon-spin('#{$eu-light-orange}');
-    }
-  }
-
-  &:not(.spinner) {
-    &.progress-orb::after {
-      background: svg-url-icon-dataset('#{$white}') center / 1.75rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.progress-orb:hover::after {
-      background-image: svg-url-icon-dataset('#000');
-    }
-
-    &.progress-orb:active::after {
-      background-image: svg-url-icon-dataset('#{$eu-light-orange}');
-    }
-  }
-
-  &.is-active.is-set {
-    border-color: $white;
-    &:hover {
-      border-color: $eu-light-orange;
-    }
-    &::before {
-      border-color: $white;
-    }
-  }
-
-  &.indicate-complete,
-  &.indicate-polling,
-  &.spinner {
-    &::before {
-      content: '';
-    }
-  }
-}
-
-.orbs-hidden {
-  .orb-container:not(.progress-orb-container) .orb-status.labelled {
-    display: none;
-  }
-
-  .progress-orb-container {
-    flex-basis: 100%;
-    text-align: center;
-    .orb-status.is-active {
-      pointer-events: all;
-    }
-  }
-}
-
-.spinner {
-  background: svg-url-icon-spin('#{$white}') center / 2em no-repeat $eu-jade-light;
-  &:hover {
-    background-image: svg-url-icon-spin('#000');
-  }
-  &:active {
-    background-image: svg-url-icon-spin('#{$eu-light-orange}');
-  }
-}
-
-.submit-track-id {
+.submit-id-ctrls {
   display: flex;
   button {
+    flex-basis: 5.75em;
     margin-left: 0.5rem;
     text-shadow: none;
     white-space: nowrap;

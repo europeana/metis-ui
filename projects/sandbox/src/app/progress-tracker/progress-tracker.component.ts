@@ -15,18 +15,28 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
+  expandedWarning = false;
 
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
   }
 
   /**
-   * getFormattedDate
-   * Template utility to format the progressData creationDate as a local string
+   * getFormattedCreationDate
+   * Template utility to format the progressData creationDate as dd/mm/yyyy, hh:mm:ss
    * @returns string
    **/
-  getFormattedDate(): string {
-    return new Date(parseInt(this.progressData['dataset-info']['creation-date'])).toLocaleString();
+  getFormattedCreationDate(): string {
+    const dateData = this.progressData['dataset-info']['creation-date'];
+    const padNumber = (n: number): string => {
+      return n < 10 ? `0${n}` : `${n}`;
+    };
+    const date = new Date(dateData);
+    const rTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(padNumber).join(':');
+    const rDate = [date.getDate(), date.getMonth() + 1, date.getFullYear()]
+      .map(padNumber)
+      .join('/');
+    return `${rDate}, ${rTime}`;
   }
 
   /**
@@ -56,15 +66,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
-   * hasLinks
-   * Template utility to detect if links are available
-   * @returns boolean
-   **/
-  hasLinks(): boolean {
-    return !!this.progressData['portal-preview'] || !!this.progressData['portal-publish'];
-  }
-
-  /**
    * isComplete
    * Template utility to detect if processing is complete
    * @returns boolean
@@ -81,5 +82,13 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   showErrorsForStep(detailIndex: number): void {
     this.detailIndex = detailIndex;
     this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
+  }
+
+  /**
+   * toggleExpandedWarning
+   * Toggles this.expandedWarning
+   **/
+  toggleExpandedWarning(): void {
+    this.expandedWarning = !this.expandedWarning;
   }
 }

@@ -1,9 +1,6 @@
-import { AbstractControl, FormControl } from '@angular/forms';
+import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 
-/** MatchPasswordValidator
-/* export function for checking passwords match
-*/
-export function MatchPasswordValidator(ac: AbstractControl): undefined | null {
+export function MatchPasswordValidator(ac: AbstractControl): ValidationErrors | null {
   const getField = (fieldName: string): FormControl => {
     return ac.get(fieldName) as FormControl;
   };
@@ -13,11 +10,13 @@ export function MatchPasswordValidator(ac: AbstractControl): undefined | null {
   };
 
   if (getValue('password') !== getValue('confirm')) {
-    getField('confirm').setErrors({ MatchPasswordValidator: 'newnotmatch' });
-    return undefined;
+    const error = { MatchPasswordValidator: 'newnotmatch' };
+    getField('confirm').setErrors(error);
+    return error;
   } else if (getField('oldpassword') && getValue('oldpassword') === getValue('password')) {
-    getField('password').setErrors({ MatchPasswordValidator: 'oldsamenew' });
-    return undefined;
+    const error = { MatchPasswordValidator: 'oldsamenew' };
+    getField('password').setErrors(error);
+    return error;
   } else {
     return null;
   }
