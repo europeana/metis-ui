@@ -77,6 +77,32 @@ export class UploadComponent extends DataPollingComponent {
   }
 
   /**
+   * protocolIsValid
+   *
+   * partial form validation
+   *
+   * @returns boolean
+   **/
+  protocolIsValid(): boolean {
+    if (this.form) {
+      const protocolFieldNames = [
+        'uploadProtocol',
+        'url',
+        'dataset',
+        'harvestUrl',
+        'setSpec',
+        'metadataFormat',
+        'xsltFile'
+      ];
+      return !protocolFieldNames.find((f: string) => {
+        const val = this.form.get(f) as FormControl;
+        return !val.valid;
+      });
+    }
+    return false;
+  }
+
+  /**
    * validateDatasetName
    *
    * form validator implementation for dataset name field

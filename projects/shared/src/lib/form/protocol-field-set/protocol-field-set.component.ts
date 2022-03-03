@@ -14,7 +14,7 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;
   @Input() protocolSwitchField: string;
   @Input() incrementalEnabled = true;
-  @Input() labelClassMap: ClassMap = {};
+  @Input() labelRequiredFieldClassMap: ClassMap = { asterisked: true };
 
   @ViewChild('fileUpload', { static: false }) fileUpload: FileUploadComponent;
 

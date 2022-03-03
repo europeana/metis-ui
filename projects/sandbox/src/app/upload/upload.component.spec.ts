@@ -2,29 +2,21 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-
 import {
-  //mockDataset,
-  //mockRecordReport,
   MockSandboxService,
   MockSandboxServiceErrors
 } from '../_mocked';
-
 import { SandboxService } from '../_services';
 import { UploadComponent } from './';
-
 import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
   let fixture: ComponentFixture<UploadComponent>;
-  let sandbox: SandboxService;
 
   const testFile = new File([], 'file.zip', { type: 'zip' });
 
   const configureTestbed = (errorMode = false): void => {
-    console.log('erorrMOde = ' + errorMode + ', ProtocolType ' + ProtocolType);
-
     TestBed.configureTestingModule({
       declarations: [FileUploadComponent, ProtocolFieldSetComponent, UploadComponent],
       imports: [HttpClientTestingModule, ReactiveFormsModule],
@@ -36,7 +28,6 @@ describe('UploadComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-    sandbox = TestBed.inject(SandboxService);
   };
 
   const b4Each = (): void => {
@@ -62,28 +53,22 @@ describe('UploadComponent', () => {
       .join('\n');
   };
 
-  const fillUploadForm = (useHarvestUrl = false): void => {
+  const fillUploadForm = (protocolType = ProtocolType.HTTP_HARVEST): void => {
     (component.form.get('name') as FormControl).setValue('A');
     (component.form.get('country') as FormControl).setValue('Greece');
     (component.form.get('language') as FormControl).setValue('Greek');
     (component.form.get('dataset') as FormControl).setValue(testFile);
+    (component.form.get('name') as FormControl).setValue('A');
+    (component.form.get('uploadProtocol') as FormControl).setValue(protocolType);
 
-    // debug
-    /*
-    expect( (component.form.get('name') as FormControl).valid).toBeTruthy()
-    expect( (component.form.get('country') as FormControl).valid).toBeTruthy();
-    expect( (component.form.get('language') as FormControl).valid).toBeTruthy();
-    expect( (component.form.get('dataset') as FormControl).valid).toBeTruthy();
-    */
+    fixture.detectChanges();
 
-    console.log('useHarvestUrl ' + useHarvestUrl);
-
-    //if (useHarvestUrl) {
-    //  (component.form.get('harvestUrl') as FormControl).setValue('http://x');
-    //} else {
-    //  (component.form.get('url') as FormControl).setValue('http://x');
-    //}
-
+    if(protocolType === ProtocolType.OAIPMH_HARVEST){
+      (component.form.get('harvestUrl') as FormControl).setValue('http://x');
+      (component.form.get('metadataFormat') as FormControl).setValue('xxx');
+    } else if(protocolType === ProtocolType.HTTP_HARVEST){
+      (component.form.get('url') as FormControl).setValue('http://x');
+    }
     expect(getFormValidationErrors(component.form)).toEqual('');
     expect(component.form.valid).toBeTruthy();
   };
@@ -93,7 +78,6 @@ describe('UploadComponent', () => {
     beforeEach(b4Each);
 
     it('should create', () => {
-      console.log(!!sandbox);
       expect(component).toBeTruthy();
     });
 
@@ -122,6 +106,18 @@ describe('UploadComponent', () => {
         expect(component.validateDatasetName(frmCtrl(val))).toBeTruthy();
       });
     });
+
+    it('should validate the protocol', () => {
+      expect(component.protocolIsValid()).toBeFalsy();
+
+      component.form = (undefined as unknown) as FormGroup;
+      expect(component.protocolIsValid()).toBeFalsy();
+
+      component.rebuildForm();
+      fillUploadForm();
+      expect(component.protocolIsValid()).toBeTruthy();
+    });
+
   });
 
   describe('Error handling', () => {
@@ -153,6 +149,10 @@ describe('UploadComponent', () => {
 
     it('should handle upload form errors', fakeAsync(() => {
       expect(component.error).toBeFalsy();
+      component.onSubmitDataset();
+      tick(1);
+      expect(component.error).toBeFalsy();
+
       fillUploadForm();
       expect(component.error).toBeFalsy();
       component.onSubmitDataset();

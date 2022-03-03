@@ -6,7 +6,7 @@
           *ngSwitchCase="EnumWizardStepType.UPLOAD"
           i18n="upload step title@@configureSource"
         >
-          Configure the Data Source
+          Upload Dataset
         </ng-container>
 
         <ng-container
@@ -70,7 +70,10 @@
       class="wizard-section"
     >
       <div class="form-group">
-        <label i18n="track id label" for="dataset-to-track"
+        <label
+          i18n="track id label"
+          for="dataset-to-track"
+          [ngClass]="{ asterisked: !formProgress.valid, tick: formProgress.valid }"
           >Enter the id of a dataset to track
         </label>
         <div class="submit-id-ctrls" [ngClass]="getConnectClasses('top')">
@@ -107,7 +110,12 @@
       (ngSubmit)="onSubmitRecord(true)"
     >
       <div class="form-group">
-        <label i18n="track id label" for="record-to-track">Enter the id of a record</label>
+        <label
+          i18n="track id label"
+          for="record-to-track"
+          [ngClass]="{ asterisked: !formRecord.valid, tick: formRecord.valid }"
+          >Enter the id of a record</label
+        >
         <div class="submit-id-ctrls" [ngClass]="getConnectClasses('bottom')">
           <input
             formControlName="recordToTrack"

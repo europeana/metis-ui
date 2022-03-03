@@ -69,6 +69,10 @@ label {
   }
 }
 
+.asterisked::after {
+  content: ' *';
+}
+
 .errors,
 .error-message {
   background-color: $white;
@@ -141,6 +145,7 @@ label {
   height: 1em;
   content: '';
   display: inline-block;
+  left: 1px;
   position: relative;
   transform: scale(0.8);
   top: 0.175em;
