@@ -69,18 +69,18 @@ label {
   }
 }
 
+.errors,
 .error-message {
-  color: $eu-red;
-}
-
-.errors {
   background-color: $white;
   border: 1px solid $eu-red;
+  color: $eu-red;
   font-size: 14px;
   font-weight: bold;
   margin-top: 0.75em;
   padding: 0.5em;
+}
 
+.errors {
   .error-detail {
     font-weight: normal;
     list-style: disc;
@@ -100,7 +100,8 @@ label {
   }
 }
 
-.field-errors {
+.field-errors,
+.messages {
   display: block;
   margin-top: 1em;
 }

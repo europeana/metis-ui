@@ -14,7 +14,7 @@ $margin-v: 12px;
 .processing-errors {
   margin-top: $margin-v;
 
-  .error-message {
+  .error {
     list-style: disc;
   }
 
@@ -22,7 +22,7 @@ $margin-v: 12px;
     font-size: 14px;
   }
 
-  .error-message,
+  .error,
   .limited-list {
     margin-left: 1.25em;
   }
