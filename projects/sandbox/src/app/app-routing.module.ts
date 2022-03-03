@@ -8,6 +8,10 @@ const routes: Routes = [
     component: WizardComponent
   },
   {
+    path: 'new',
+    component: WizardComponent
+  },
+  {
     path: '',
     component: WizardComponent
   },

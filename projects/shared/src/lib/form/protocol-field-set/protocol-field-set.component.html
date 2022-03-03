@@ -1,5 +1,8 @@
 <div class="form-group" [formGroup]="form">
-  <label i18n="protocol label main@@protocolLabelMain">Harvest protocol *</label>
+  <label i18n="protocol label main@@protocolLabelMain" [ngClass]="labelClassMap"
+    >Harvest protocol *</label
+  >
+
   <div class="form-group-radios">
     <label
       *ngIf="isProtocolVisible(ZIP)"

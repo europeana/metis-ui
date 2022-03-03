@@ -72,7 +72,7 @@ context('Sandbox', () => {
 
       // expose dataset form orbs
       clickFormLink(selectorLinkDatasetForm);
-      cy.location('pathname').should('equal', '/');
+      cy.location('pathname').should('equal', '/new');
       cy.location('search').should('have.length', 0);
 
       cy.get(selectorUploadOrb)
@@ -95,7 +95,7 @@ context('Sandbox', () => {
       cy.get(selectorUploadOrb).should('have.length', 1);
       cy.get(selectorUploadOrb).click({ force: true });
 
-      cy.location('pathname').should('equal', '/');
+      cy.location('pathname').should('equal', '/new');
       cy.location('search').should('have.length', 0);
     });
 

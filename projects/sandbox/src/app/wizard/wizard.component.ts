@@ -7,6 +7,7 @@ import { combineLatest, Observable, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
+  ClassMap,
   DataPollingComponent,
   FileUploadComponent,
   ProtocolFieldSetComponent,
@@ -15,7 +16,6 @@ import {
 
 import { apiSettings } from '../../environments/apisettings';
 import {
-  ClassMap,
   Dataset,
   DatasetStatus,
   FieldOption,
@@ -193,6 +193,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           } else if (preloadDatasetId) {
             this.trackDatasetId = preloadDatasetId;
             this.fillAndSubmitProgressForm();
+          } else if (window.location.toString().match(/\/new$/)) {
+            this.setStep(0);
           }
         })
     );
@@ -616,6 +618,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       if (record && this.trackRecordId) {
         newPath += `?recordId=${this.trackRecordId}`;
       }
+    } else if (!progress && !record) {
+      newPath = 'new';
     }
 
     // avoid pushing duplicate states to history
@@ -624,10 +628,22 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     }
   }
 
-  setBusy(isBusy: boolean) {
+  /**
+   * setBusy
+   * sets the isBusy flag
+   *
+   * @param { boolean } isBusy - the value to set
+   **/
+  setBusy(isBusy: boolean): void {
     this.isBusy = isBusy;
   }
 
+  /**
+   * dataUploaded
+   * invoked when the upload form has been submitted
+   *
+   * @param { string } datasetId - the datset id
+   **/
   dataUploaded(datasetId: string): void {
     this.resetBusy();
     this.trackDatasetId = datasetId;
