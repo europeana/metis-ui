@@ -3,8 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'sb-errors',
-  templateUrl: './errors.component.html',
-  styleUrls: ['./errors.component.scss']
+  templateUrl: './errors.component.html'
 })
 export class ErrorsComponent {
   @Input() error: HttpErrorResponse | undefined;

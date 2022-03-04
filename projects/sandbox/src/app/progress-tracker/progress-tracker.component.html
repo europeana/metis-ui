@@ -27,17 +27,10 @@
 
     <ul class="portal-links">
       <li>
-        <ng-template #labelRefPreview
-          ><span i18n="progress link link@@progressLinkPreview">view preview</span></ng-template
-        >
-        <sb-copyable-link-item
-          [href]="progressData['portal-preview']"
-          [labelRef]="labelRefPreview"
-        ></sb-copyable-link-item>
-      </li>
-      <li>
         <ng-template #labelRefPublish
-          ><span i18n="progress link link@@progressLinkPublish">view publish</span></ng-template
+          ><span i18n="progress link link@@progressLinkPublish"
+            >view published records</span
+          ></ng-template
         >
         <sb-copyable-link-item
           [href]="progressData['portal-publish']"
@@ -77,9 +70,12 @@
     <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
       <span class="row-start">
         <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
-        <span class="step-label">{{ item.step }}</span>
+        <ng-template #stepLabel>
+          <span class="step-label">{{ item.step }}</span>
+        </ng-template>
+        <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
       </span>
-      <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
+      <span class="step-progress"> {{ item.success + item.fail }} / {{ item.total }} </span>
       <span class="step-fail container-h">
         <a
           *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"

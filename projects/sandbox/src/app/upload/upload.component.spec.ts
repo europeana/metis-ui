@@ -2,10 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import {
-  MockSandboxService,
-  MockSandboxServiceErrors
-} from '../_mocked';
+import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { SandboxService } from '../_services';
 import { UploadComponent } from './';
 import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
@@ -63,10 +60,10 @@ describe('UploadComponent', () => {
 
     fixture.detectChanges();
 
-    if(protocolType === ProtocolType.OAIPMH_HARVEST){
+    if (protocolType === ProtocolType.OAIPMH_HARVEST) {
       (component.form.get('harvestUrl') as FormControl).setValue('http://x');
       (component.form.get('metadataFormat') as FormControl).setValue('xxx');
-    } else if(protocolType === ProtocolType.HTTP_HARVEST){
+    } else if (protocolType === ProtocolType.HTTP_HARVEST) {
       (component.form.get('url') as FormControl).setValue('http://x');
     }
     expect(getFormValidationErrors(component.form)).toEqual('');
@@ -117,7 +114,6 @@ describe('UploadComponent', () => {
       fillUploadForm();
       expect(component.protocolIsValid()).toBeTruthy();
     });
-
   });
 
   describe('Error handling', () => {

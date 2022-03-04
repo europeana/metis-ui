@@ -89,6 +89,10 @@ $eu-jade-slightly-dark: #1ea072;
     margin-left: 2em;
   }
 
+  .step-progress {
+    text-align: right;
+  }
+
   .link-label {
     display: none;
   }
@@ -147,6 +151,21 @@ $eu-jade-slightly-dark: #1ea072;
   }
 }
 
+.running {
+  @keyframes borderPulse {
+    0% {
+      border: 1px solid #fff;
+    }
+    50% {
+      border: 1px solid $eu-jade-classic;
+    }
+    100% {
+      border: 1px solid #fff;
+    }
+  }
+  color: $eu-jade-classic;
+  animation: borderPulse 2000ms infinite;
+}
 .success {
   background: $eu-jade-classic;
 }

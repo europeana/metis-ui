@@ -1,16 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-
 import {
   DataPollingComponent,
   FileUploadComponent,
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
-
 import { FieldOption, SubmissionResponseData, SubmissionResponseDataWrapped } from '../_models';
-
 import { SandboxService } from '../_services';
 
 @Component({
@@ -51,15 +48,22 @@ export class UploadComponent extends DataPollingComponent {
     this.buildForm();
   }
 
+  /**
+   * rebuildForm
+   *
+   * invokes build form after clearing file inputs from previous submission
+   **/
   rebuildForm(): void {
-    // TODO: ViewChild needed for each of these
-    /*
     this.protocolFields.clearFileValue();
     this.xslFileField.clearFileValue();
-    */
     this.buildForm();
   }
 
+  /**
+   * buildForm
+   *
+   * build the form
+   **/
   buildForm(): void {
     this.form = new FormBuilder().group({
       name: ['', [Validators.required, this.validateDatasetName]],
