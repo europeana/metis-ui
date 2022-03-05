@@ -4,7 +4,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
@@ -22,7 +22,6 @@ import { WizardComponent } from './wizard.component';
 describe('WizardComponent', () => {
   let component: WizardComponent;
   let fixture: ComponentFixture<WizardComponent>;
-  let sandbox: SandboxService;
   const testFile = new File([], 'file.zip', { type: 'zip' });
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
@@ -50,7 +49,6 @@ describe('WizardComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-    sandbox = TestBed.inject(SandboxService);
   };
 
   const b4Each = (): void => {
@@ -152,9 +150,6 @@ describe('WizardComponent', () => {
       (form.get('name') as FormControl).setValue('A');
       expect(component.stepIsComplete(0)).toBeFalsy();
 
-      console.log(!!of);
-      console.log(!!sandbox);
-
       (form.get('country') as FormControl).setValue('Greece');
       (form.get('language') as FormControl).setValue('Greek');
       expect(component.stepIsComplete(0)).toBeFalsy();
@@ -205,52 +200,6 @@ describe('WizardComponent', () => {
       expect(component.stepIsComplete(2)).toBeTruthy();
     });
 
-    /*
-    it('should tell if the steps are submittable', () => {
-      //const assertSubmittable = (value: boolean): void => {
-      //  Array.from(Array(3).keys()).forEach((i: number) => {
-      //    expect(component.getStepIsSubmittable(component.wizardConf[i])).toEqual(value);
-      //  });
-      //};
-
-      //assertSubmittable(false);
-      expect(component.getStepIsSubmittable(component.wizardConf[i])).toEqual(false);
-      fillUploadForm();
-      //assertSubmittable(true);
-      expect(component.getStepIsSubmittable(component.wizardConf[i])).toEqual(true);
-      (component.formUpload.get('country') as FormControl).setValue(null);
-      assertSubmittable(false);
-    });
-*/
-
-    /*
-    it('should tell if the steps are submitted', () => {
-      const conf = component.wizardConf;
-      [0, 1, 2].forEach((n: number) => {
-        expect(component.getStepIsSubmitted(conf[n])).toBeFalsy();
-      });
-      component.formUpload.disable();
-      [0, 1, 2].forEach((n: number) => {
-        const res = component.getStepIsSubmitted(conf[n]);
-        if(n > 0){
-          expect(res).toBeFalsy();
-        }
-        else {
-          expect(res).toBeTruthy();
-        }
-      });
-
-      component.trackDatasetId = undefined;
-      expect(component.getStepIsSubmitted(conf[1])).toBeFalsy();
-      component.trackDatasetId = '123';
-      expect(component.getStepIsSubmitted(conf[1])).toBeTruthy();
-
-      component.trackRecordId = undefined;
-      expect(component.getStepIsSubmitted(conf[2])).toBeFalsy();
-      component.trackRecordId = '123';
-      expect(component.getStepIsSubmitted(conf[2])).toBeTruthy();
-    });
-*/
     it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
       spyOn(component, 'clearDataPollers');
       component.onSubmitProgress();
@@ -282,22 +231,6 @@ describe('WizardComponent', () => {
       component.cleanup();
       tick(apiSettings.interval);
     }));
-
-    /*
-    it('should submit the dataset form (url)', fakeAsync(() => {
-      expect(component.isBusy).toBeFalsy();
-      component.onSubmitDataset();
-      expect(component.isBusy).toBeFalsy();
-      fillUploadForm(false);
-      component.onSubmitDataset();
-      tick(1);
-      expect(component.isBusy).toBeTruthy();
-      expect(component.trackDatasetId).toBeTruthy();
-
-      component.cleanup();
-      tick(apiSettings.interval);
-    }));
-*/
 
     it('should get the outer orb config', () => {
       Object.keys(new Array(3).fill(null)).forEach((i: string) => {
@@ -331,26 +264,33 @@ describe('WizardComponent', () => {
       expect(component.getIsProgressTrackOrReport()).toEqual(true);
     });
 
-    /*
     it('should get if the step is submittable', () => {
+      const form = component.uploadComponent.form;
       component.setStep(0);
       const wizardStep = component.wizardConf[0];
       expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
-      const ctrl = component.formUpload.get('name') as FormControl;
-      ctrl.setValue('name');
+
+      (form.get('name') as FormControl).setValue('A');
       expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
-      fillUploadForm();
+
+      (form.get('country') as FormControl).setValue('Greece');
+      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
+
+      (form.get('language') as FormControl).setValue('Greek');
+      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
+
+      (form.get('dataset') as FormControl).setValue(testFile);
       expect(component.getStepIsSubmittable(wizardStep)).toEqual(true);
     });
-*/
 
-    it('should set the step', () => {
+    it('should set the step', fakeAsync(() => {
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
       expect(component.datasetOrbsHidden).toBeTruthy();
       expect(component.currentStepIndex).toEqual(1);
-      component.setStep(0);
+      component.setStep(0, false, false);
       expect(component.datasetOrbsHidden).toBeFalsy();
+      tick(1);
       expect(component.currentStepIndex).toEqual(0);
       expect(form.enable).not.toHaveBeenCalled();
       component.setStep(0, true);
@@ -358,10 +298,7 @@ describe('WizardComponent', () => {
       form.disable();
       component.setStep(0, true);
       expect(form.enable).toHaveBeenCalled();
-      spyOn(component, 'updateLocation');
-      component.setStep(4);
-      expect(component.updateLocation).toHaveBeenCalled();
-    });
+    }));
 
     it('should validate the dataset id', () => {
       const frmCtrl = (val: string): FormControl => {
@@ -424,50 +361,7 @@ describe('WizardComponent', () => {
       component.cleanup();
       tick(apiSettings.interval);
     }));
-    /*
-    it('should handle upload form errors', fakeAsync(() => {
-      expect(component.error).toBeFalsy();
-      fillUploadForm();
-      expect(component.error).toBeFalsy();
-      component.onSubmitDataset();
-      tick(1);
-      expect(component.error).toBeTruthy();
-      component.cleanup();
-      tick(apiSettings.interval);
-    }));
 
-    it('should handle upload form errors', fakeAsync(() => {
-      spyOn(sandbox, 'submitDataset').and.callFake(() => {
-        return of({});
-      });
-      fillUploadForm();
-      component.onSubmitDataset();
-      tick(1);
-
-      expect(component.isBusy).toBeTruthy();
-      expect(component.error).toBeFalsy();
-      tick(component.resetBusyDelay);
-      expect(component.isBusy).toBeFalsy();
-      component.cleanup();
-      tick(apiSettings.interval);
-    }));
-
-    it('should handle upload form errors (harvest url)', fakeAsync(() => {
-      spyOn(sandbox, 'submitDataset').and.callFake(() => {
-        return of({});
-      });
-      fillUploadForm(true);
-      component.onSubmitDataset();
-      tick(1);
-
-      expect(component.isBusy).toBeTruthy();
-      expect(component.error).toBeFalsy();
-      tick(component.resetBusyDelay);
-      expect(component.isBusy).toBeFalsy();
-      component.cleanup();
-      tick(apiSettings.interval);
-    }));
-*/
     it('should handle record form errors', fakeAsync(() => {
       component.recordReport = mockRecordReport;
       expect(component.error).toBeFalsy();

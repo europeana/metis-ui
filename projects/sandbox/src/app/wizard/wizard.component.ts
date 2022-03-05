@@ -194,7 +194,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             this.trackDatasetId = preloadDatasetId;
             this.fillAndSubmitProgressForm();
           } else if (window.location.toString().match(/\/new$/)) {
-            this.setStep(0);
+            this.setStep(0, false, false);
           }
         })
     );
@@ -211,7 +211,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.trackRecordId = '';
         this.buildForms();
         this.clearDataPollers();
-        this.setStep(this.stepIndexProgress, true);
+        this.setStep(this.stepIndexProgress, true, false);
       } else {
         this.trackDatasetId = ids[1];
 
@@ -423,11 +423,13 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * setStep
    * Sets the currentStepIndex and sets datasetOrbsHidden to false.
    * Optionally resets the form
+   * Optionally invokes this.updateLocation
    *
    * @param { number } stepIndex - the value to set
    * @param { boolean } reset - flag a reset
+   * @param { boolean } updateLocation - flag a location update
    **/
-  setStep(stepIndex: number, reset = false): void {
+  setStep(stepIndex: number, reset = false, updateLocation = true): void {
     if (reset) {
       const form = this.getFormGroup(this.wizardConf[stepIndex]);
       if (form && form.disabled) {
@@ -435,19 +437,21 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.uploadComponent.rebuildForm();
       }
     }
-
+    this.currentStepIndex = stepIndex;
     if (stepIndex < this.stepIndexProgress) {
       this.datasetOrbsHidden = false;
-      this.updateLocation(false, false);
+      if (updateLocation) {
+        this.updateLocation(false, false);
+      }
     } else if (stepIndex + 1 < this.wizardConf.length) {
       // initial enabling of progress tracker
       this.progressOrbHidden = false;
-      this.updateLocation(true, false);
-    } else {
-      // record report
+      if (updateLocation) {
+        this.updateLocation(true, false);
+      }
+    } else if (updateLocation) {
       this.updateLocation(true, true);
     }
-    this.currentStepIndex = stepIndex;
   }
 
   /**
@@ -619,7 +623,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         newPath += `?recordId=${this.trackRecordId}`;
       }
     } else if (!progress && !record) {
-      newPath = 'new';
+      if (this.currentStepIndex === 0) {
+        newPath = '/new';
+      }
     }
 
     // avoid pushing duplicate states to history
