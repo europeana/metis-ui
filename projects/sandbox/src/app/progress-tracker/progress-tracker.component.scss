@@ -3,28 +3,27 @@
 
 $eu-jade-slightly-dark: #1ea072;
 
-.creation-date {
-  align-items: center;
-  display: flex;
-  &.warning-icon {
-    position: relative;
-    &::before {
-      content: '';
-      height: 12px;
-      width: 13px;
-      background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
-      margin: 0 3px 0 2px;
+.header-info {
+  justify-content: space-between;
+  .creation-date {
+    align-items: center;
+    display: flex;
+    &.warning-icon {
+      position: relative;
+      &::before {
+        content: '';
+        height: 12px;
+        width: 13px;
+        background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+        margin: 0 3px 0 2px;
+      }
     }
   }
-}
-.progress-title {
-  color: $eu-jade-dark;
-  display: flex;
-
+  .progress-title {
+    color: $eu-jade-dark;
+    display: flex;
+  }
   .title-id {
-    font-weight: normal;
-    margin-left: auto;
-    padding-left: 0.5em;
     word-break: break-all;
   }
   .title-name {
@@ -52,10 +51,8 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .portal-links {
-  align-items: flex-end;
-  display: flex;
-  flex-direction: column;
-  margin-right: 1rem;
+  position: relative;
+  right: 1em;
 }
 
 .wrapper {
