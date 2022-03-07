@@ -248,6 +248,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         }
       })
     );
+    this.error = undefined;
   }
 
   /**

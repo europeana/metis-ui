@@ -78,6 +78,12 @@ export class UploadComponent extends DataPollingComponent {
       sendXSLT: [''],
       xsltFile: ['']
     });
+    this.subs.push(
+      this.form.valueChanges.subscribe(() => {
+        this.error = undefined;
+      })
+    );
+    this.error = undefined;
   }
 
   /**
