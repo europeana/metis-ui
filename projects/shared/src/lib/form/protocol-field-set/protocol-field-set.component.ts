@@ -1,7 +1,7 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
-import { ProtocolType } from '../../_models/shared-models';
+import { ClassMap, ProtocolType } from '../../_models/shared-models';
 import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 
@@ -14,6 +14,7 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() fileFormName: string;
   @Input() protocolSwitchField: string;
   @Input() incrementalEnabled = true;
+  @Input() labelRequiredFieldClassMap: ClassMap = { asterisked: true };
 
   @ViewChild('fileUpload', { static: false }) fileUpload: FileUploadComponent;
 

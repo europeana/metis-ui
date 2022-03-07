@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ClassMap } from '../_models';
+import { ClassMap } from 'shared';
 
 @Component({
   selector: 'sb-navigation-orbs',

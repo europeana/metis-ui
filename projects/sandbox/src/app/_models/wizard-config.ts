@@ -15,9 +15,7 @@ export interface FieldOption {
 }
 
 export enum WizardStepType {
-  SET_NAME = 'SET_NAME',
-  SET_LANG_LOCATION = 'SET_LANG_LOCATION',
-  PROTOCOL_SELECT = 'PROTOCOL_SELECT',
+  UPLOAD = 'UPLOAD',
   PROGRESS_TRACK = 'PROGRESS_TRACK',
   REPORT = 'REPORT'
 }

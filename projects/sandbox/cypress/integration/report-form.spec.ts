@@ -69,7 +69,7 @@ context('Sandbox', () => {
     });
 
     it('should show the inputs and submit buttons', () => {
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
       cy.get(selectorBtnSubmitRecord).should('not.be.disabled');
       cy.get(selectorBtnSubmitProgress).should('have.length', 1);
@@ -79,16 +79,16 @@ context('Sandbox', () => {
     });
 
     it('should show the processing errors conditionally', () => {
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
       const selectorErrors = '.processing-errors';
       cy.get(selectorErrors).should('have.length', 0);
-      cy.visit('/1?recordId=13');
+      cy.visit('/dataset/1?recordId=13');
       cy.wait(200);
       cy.get(selectorErrors).should('have.length', 1);
     });
 
     it('should link to the progress / track form', () => {
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
       cy.get(selectorProgressOrb)
         .filter(':visible')
         .should('have.length', 0);
@@ -106,21 +106,21 @@ context('Sandbox', () => {
     });
 
     it('should link to the dataset form (without opening the progress form)', () => {
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
       cy.get(`.progress-orb-container:not(.hidden)`).should('have.length', 0);
-      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 3);
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 3);
+      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
+      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 1);
 
       cy.scrollTo('bottom');
       cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
 
       cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 0);
-      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 3);
+      cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
       const selectorContentTierOrbActive = `${selectorContentTierOrb}.is-active`;
       const selectorMetadataTierOrbActive = `${selectorMetadataTierOrb}.is-active`;
 
@@ -139,7 +139,7 @@ context('Sandbox', () => {
     });
 
     it('should navigate by multiple media orbs when there are 5 or less media items', () => {
-      cy.visit('/1?recordId=1');
+      cy.visit('/dataset/1?recordId=1');
       cy.scrollTo(0, 200);
       cy.wait(200);
 
@@ -162,7 +162,7 @@ context('Sandbox', () => {
     });
 
     it('should navigate with buttons when there are more than 5 media items', () => {
-      cy.visit('/1?recordId=100');
+      cy.visit('/dataset/1?recordId=100');
       cy.scrollTo(0, 200);
       cy.wait(200);
 
@@ -194,7 +194,7 @@ context('Sandbox', () => {
     });
 
     it('should navigate with an input when there are more than 5 media items', () => {
-      cy.visit('/1?recordId=100');
+      cy.visit('/dataset/1?recordId=100');
       cy.scrollTo(0, 200);
       cy.wait(200);
       cy.get(selectorInputMedia).should('have.length', 1);
@@ -245,7 +245,7 @@ context('Sandbox', () => {
     });
 
     it('should toggle the metadataTier sub-sections', () => {
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
 
       const selectorLanguageOrb = '.language-orb';
       const selectorElementOrb = '.element-orb';
@@ -268,7 +268,7 @@ context('Sandbox', () => {
     });
 
     it('should correctly encode and decode url parameters', () => {
-      cy.visit('/1');
+      cy.visit('/dataset/1');
       const url = 'http://some-url.com';
       const otherUrl = 'http://some-other-url.com';
 
@@ -276,7 +276,7 @@ context('Sandbox', () => {
       cy.location('search').should('not.equal', `?recordId=${url}`);
       cy.location('search').should('equal', `?recordId=${encodeURIComponent(url)}`);
 
-      cy.visit(`/1?recordId=${encodeURIComponent(otherUrl)}`);
+      cy.visit(`/dataset/1?recordId=${encodeURIComponent(otherUrl)}`);
       cy.get(selectorInputRecordId).should('have.value', otherUrl);
     });
 
@@ -284,15 +284,15 @@ context('Sandbox', () => {
       const selConnected = '.submit-id-ctrls.connect';
       const selConnectedError = `${selConnected}.error`;
 
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
       cy.get(selConnected).should('have.length', 0);
       cy.get(selConnectedError).should('have.length', 0);
 
-      cy.visit('/1?recordId=/1/23');
+      cy.visit('/dataset/1?recordId=/1/23');
       cy.get(selConnected).should('have.length', 2);
       cy.get(selConnectedError).should('have.length', 0);
 
-      cy.visit('/1?recordId=/2/34');
+      cy.visit('/dataset/1?recordId=/2/34');
       cy.get(selConnected).should('have.length', 2);
       cy.get(selConnectedError).should('have.length', 2);
 

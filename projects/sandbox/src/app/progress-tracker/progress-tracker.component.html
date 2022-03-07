@@ -1,51 +1,55 @@
 <div class="form-group" *ngIf="progressData['dataset-info']; let info">
-  <h2 class="progress-title" title="({{ progressData.status }})" i18n="progress title">
-    <span class="title-name" [ngClass]="{ tick: isComplete() }">{{ info['dataset-name'] }}</span
-    ><span class="title-id">{{ datasetId }}</span>
-  </h2>
-  <ul *ngIf="info['transformed-to-edm-external']">
-    <li class="container-h">
-      <span class="xsl-icon"></span>
-      <span>xsl-transformed</span>
+  <ul class="header-info container-h">
+    <!-- left col -->
+    <li>
+      <ul>
+        <li class="container-h">
+          <h2 class="progress-title" title="({{ progressData.status }})" i18n="progress title">
+            <span class="title-name" [ngClass]="{ tick: isComplete() }">{{
+              info['dataset-name']
+            }}</span>
+          </h2>
+        </li>
+        <li class="container-h" *ngIf="info['transformed-to-edm-external']">
+          <span class="xsl-icon"></span>
+          <span>xsl-transformed</span>
+        </li>
+        <li
+          data-e2e="creation-date"
+          class="creation-date"
+          [title]="
+            progressData['dataset-info']['record-limit-exceeded']
+              ? 'Some records not processed'
+              : ''
+          "
+          [ngClass]="{ 'warning-icon': progressData['dataset-info']['record-limit-exceeded'] }"
+        >
+          {{ getFormattedCreationDate() }}
+        </li>
+        <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
+      </ul>
+    </li>
+
+    <!-- right col -->
+    <li style="text-align:right;">
+      <ul>
+        <li>
+          <h2 class="title-id">{{ datasetId }}</h2>
+        </li>
+        <li class="portal-links">
+          <ng-template #labelRefPublish
+            ><span i18n="progress link link@@progressLinkPublish"
+              >view published records</span
+            ></ng-template
+          >
+          <sb-copyable-link-item
+            [href]="progressData['portal-publish']"
+            [labelRef]="labelRefPublish"
+          ></sb-copyable-link-item>
+        </li>
+      </ul>
     </li>
   </ul>
-
-  <div class="info" class="data-summary">
-    <ul>
-      <li
-        data-e2e="creation-date"
-        class="creation-date"
-        [title]="
-          progressData['dataset-info']['record-limit-exceeded'] ? 'Some records not processed' : ''
-        "
-        [ngClass]="{ 'warning-icon': progressData['dataset-info']['record-limit-exceeded'] }"
-      >
-        {{ getFormattedCreationDate() }}
-      </li>
-      <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
-    </ul>
-
-    <ul class="portal-links">
-      <li>
-        <ng-template #labelRefPreview
-          ><span i18n="progress link link@@progressLinkPreview">view preview</span></ng-template
-        >
-        <sb-copyable-link-item
-          [href]="progressData['portal-preview']"
-          [labelRef]="labelRefPreview"
-        ></sb-copyable-link-item>
-      </li>
-      <li>
-        <ng-template #labelRefPublish
-          ><span i18n="progress link link@@progressLinkPublish">view publish</span></ng-template
-        >
-        <sb-copyable-link-item
-          [href]="progressData['portal-publish']"
-          [labelRef]="labelRefPublish"
-        ></sb-copyable-link-item>
-      </li>
-    </ul>
-  </div>
 </div>
 <div class="wrapper">
   <div>
@@ -77,9 +81,12 @@
     <ng-container *ngFor="let item of progressData['progress-by-step']; let i = index">
       <span class="row-start">
         <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
-        <span class="step-label">{{ item.step }}</span>
+        <ng-template #stepLabel>
+          <span class="step-label">{{ item.step }}</span>
+        </ng-template>
+        <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
       </span>
-      <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
+      <span class="step-progress"> {{ item.success + item.fail }} / {{ item.total }} </span>
       <span class="step-fail container-h">
         <a
           *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
@@ -89,7 +96,7 @@
           <ng-container *ngTemplateOutlet="conditionalWrap"></ng-container>
         </a>
         <ng-template #conditionalWrap
-          ><span *ngIf="item.fail" class="errors">{{ item.fail }}</span></ng-template
+          ><span *ngIf="item.fail" class="dataset-errors">{{ item.fail }}</span></ng-template
         >
       </span>
       <span class="grid-cell-errors">

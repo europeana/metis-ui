@@ -14,4 +14,5 @@ export const selectorLinkDatasetForm = '[data-e2e="link-dataset-form"]';
 export const selectorLinkProgressForm = '[data-e2e="link-progress-form"]';
 export const selectorProgressOrb = '.nav-orb.progress-orb';
 export const selectorReportOrb = '.nav-orb.report-orb';
+export const selectorUploadOrb = '.nav-orb.upload-orb';
 export const selectorProgressTitle = '.progress-title';

@@ -167,6 +167,21 @@ $orb-border-radius: 1.5em;
   }
 
   &:not(.spinner) {
+    &.upload-orb::after {
+      background: svg-url-icon-cloud('#{$white}') center / 2.25rem no-repeat;
+      content: '';
+      height: 100%;
+      width: 100%;
+    }
+
+    &.upload-orb:hover::after {
+      background-image: svg-url-icon-cloud('#000');
+    }
+
+    &.upload-orb:active::after {
+      background-image: svg-url-icon-cloud('#{$eu-light-orange}');
+    }
+
     &.progress-orb::after {
       background: svg-url-icon-dataset('#{$white}') center / 1.75rem no-repeat;
       content: '';

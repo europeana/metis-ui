@@ -57,7 +57,7 @@ context('Sandbox', () => {
       cy.get(selCreationDate).should('have.length', 0);
       cy.get(selPortalLinks).should('have.length', 0);
 
-      cy.visit('/1');
+      cy.visit('/dataset/1');
 
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleComplete).should('have.length', 1);
@@ -67,17 +67,13 @@ context('Sandbox', () => {
     });
 
     it('should show network errors', () => {
-      cy.get(selectorErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorErrors).should('have.length', 0);
       fillProgressForm('404');
       cy.get(selectorBtnSubmitProgress)
         .filter(':visible')
         .should('have.length', 1);
       cy.get(selectorInputDatasetId).clear();
-      cy.get(selectorErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorErrors).should('have.length', 0);
       fillProgressForm('500');
       cy.get(selectorErrors)
         .filter(':visible')

@@ -1,6 +1,5 @@
 import { fillUploadForm, uploadFile } from '../support/helpers';
 import {
-  selectorBtnNext,
   selectorBtnSubmitData,
   selectorErrors,
   selectorInputCountry,
@@ -26,7 +25,6 @@ context('Sandbox', () => {
   describe('Dataset Form', () => {
     let currentStep = 1;
 
-    const selectorBtnPrevious = '.previous';
     const selectorFieldErrors = '.field-errors';
     const selectorInputXSLFile = '[type="file"][accept=".xsl"]';
     const selectorSendXSLT = '[formControlName="sendXSLT"]';
@@ -43,71 +41,25 @@ context('Sandbox', () => {
       cy.get(selectorInputName).should('be.visible');
     });
 
-    const navigateSteps = (
-      fnFwd: () => void,
-      fnBack: () => void,
-      includeProgress = false
-    ): void => {
+    const navigateSteps = (fnFwd: () => void, fnBack: () => void): void => {
       // Forwards
-      cy.get(selectorBtnPrevious).should('not.be.visible');
-      cy.get(selectorBtnNext).should('be.visible');
       cy.get(selectorInputName).should('be.visible');
-      cy.get(selectorInputCountry).should('not.be.visible');
-      cy.get(selectorInputLanguage).should('not.be.visible');
-
-      fnFwd();
-
-      cy.get(selectorBtnPrevious).should('be.visible');
-      cy.get(selectorInputName).should('not.be.visible');
       cy.get(selectorInputCountry).should('be.visible');
       cy.get(selectorInputLanguage).should('be.visible');
-
-      fnFwd();
-
-      const notPrefixNext = includeProgress ? '' : 'not.';
-      cy.get(selectorBtnNext).should(`${notPrefixNext}be.visible`);
-      cy.get(selectorInputCountry).should('not.be.visible');
-      cy.get(selectorInputLanguage).should('not.be.visible');
       cy.get(selectorInputZipFile).should('be.visible');
 
-      if (includeProgress) {
-        fnFwd();
-
-        cy.get(selectorInputZipFile).should('not.be.visible');
-        cy.get(selectorBtnNext).should('not.be.visible');
-
-        // Backwards
-
-        fnBack();
-
-        cy.get(selectorBtnNext).should('be.visible');
-        cy.get(selectorInputZipFile).should('be.visible');
-      }
-
-      fnBack();
-
-      cy.get(selectorInputZipFile).should('not.be.visible');
-      cy.get(selectorInputCountry).should('be.visible');
-      cy.get(selectorInputLanguage).should('be.visible');
-
-      fnBack();
-
+      fnFwd();
+      cy.get(selectorInputName).should('not.be.visible');
       cy.get(selectorInputCountry).should('not.be.visible');
       cy.get(selectorInputLanguage).should('not.be.visible');
-      cy.get(selectorBtnPrevious).should('not.be.visible');
-      cy.get(selectorInputName).should('be.visible');
-    };
+      cy.get(selectorInputZipFile).should('not.be.visible');
 
-    it('should navigate the steps with the buttons', () => {
-      navigateSteps(
-        () => {
-          cy.get(selectorBtnNext).click();
-        },
-        () => {
-          cy.get(selectorBtnPrevious).click();
-        }
-      );
-    });
+      fnBack();
+      cy.get(selectorInputName).should('be.visible');
+      cy.get(selectorInputCountry).should('be.visible');
+      cy.get(selectorInputLanguage).should('be.visible');
+      cy.get(selectorInputZipFile).should('be.visible');
+    };
 
     it('should navigate the steps with the orbs', () => {
       currentStep = 1;
@@ -124,36 +76,26 @@ context('Sandbox', () => {
     });
 
     it('should flag when a step is complete', () => {
+      cy.get('.wizard-status li:nth-child(1) a').should('not.have.class', classSet);
       cy.get(selectorInputName).type(testDatasetName);
+      cy.get(selectorInputCountry).select('Greece');
+      cy.get(selectorInputLanguage).select('Greek');
+      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
+      cy.get(selectorInputZipFile).trigger('change', force);
       cy.get('.wizard-status li:nth-child(1) a').should('have.class', classSet);
 
       setStep(2);
-
-      cy.get(selectorInputCountry).select('Greece');
-      cy.get(selectorInputLanguage).select('Greek');
-      cy.get('.wizard-status li:nth-child(2) a').should('have.class', classSet);
-
-      setStep(3);
-
-      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
-      cy.get(selectorInputZipFile).trigger('change', force);
-      cy.get('.wizard-status li:nth-child(3) a').should('have.class', classSet);
-
-      setStep(4);
+      cy.get('.wizard-status li:nth-child(2) a').should('not.have.class', classSet);
       cy.get(selectorInputDatasetId).type('1');
-      cy.get('.wizard-status li:nth-child(4) a').should('have.class', classSet);
+      cy.get('.wizard-status li:nth-child(2) a').should('have.class', classSet);
     });
 
     it('should flag when a step is invalid', () => {
-      setStep(4);
-      cy.get(selectorFieldErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      setStep(2);
+      cy.get(selectorFieldErrors).should('have.length', 0);
 
       cy.get(selectorInputDatasetId).type('1');
-      cy.get(selectorFieldErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorFieldErrors).should('have.length', 0);
 
       setStep(1);
       cy.get(selectorInputName).type(' ');
@@ -163,7 +105,6 @@ context('Sandbox', () => {
     });
 
     it('should conditionally enable the XSLT field', () => {
-      setStep(3);
       cy.get(selectorInputXSLFile).should('have.length', 1);
       cy.get(selectorInputXSLFile).should('not.be.visible');
       cy.get(selectorSendXSLT).click();
@@ -191,19 +132,20 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitData).click();
 
       // confirm the redirect
-      cy.url().should('match', /\d+\/\d+/);
+      cy.url().should('match', /\d+\/\S+\d+/);
 
       // confirm the form is navigable
-
       cy.get(`.wizard-status li:first-child() a`).click();
+
       navigateSteps(
         () => {
-          cy.get(selectorBtnNext).click();
+          currentStep++;
+          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click();
         },
         () => {
-          cy.get(selectorBtnPrevious).click({ force: true });
-        },
-        true
+          currentStep--;
+          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click();
+        }
       );
     });
 
@@ -213,10 +155,9 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitData).click();
 
       // confirm the redirect
-      cy.url().should('match', /\d+\/\d+/);
+      cy.url().should('match', /\d+\/\S+\/\d+/);
 
       // confirm the form is disabled
-
       cy.get(`.wizard-status li:first-child a`).should('have.length', 1);
 
       cy.get(`.wizard-status li:first-child a`).click();
@@ -224,9 +165,9 @@ context('Sandbox', () => {
       cy.get(`.wizard-status li:nth-child(2) a`).click();
       cy.get(selectorInputCountry).should('be.disabled');
       cy.get(selectorInputLanguage).should('be.disabled');
-      cy.get(`.wizard-status li:nth-child(3) a`).click();
+      cy.get(`.wizard-status li:nth-child(1) a`).click();
       cy.get(selectorInputZipFile).should('be.disabled');
-      cy.get(`.wizard-status li:nth-child(4) a`).click();
+      cy.get(`.wizard-status li:nth-child(2) a`).click();
 
       // create a new dataset
 
@@ -240,10 +181,8 @@ context('Sandbox', () => {
       // confirm the form is not disabled
 
       cy.get(selectorInputName).should('not.be.disabled');
-      cy.get(`.wizard-status li:nth-child(2) a`).click();
       cy.get(selectorInputCountry).should('not.be.disabled');
       cy.get(selectorInputLanguage).should('not.be.disabled');
-      cy.get(`.wizard-status li:nth-child(3) a`).click();
       cy.get(selectorInputZipFile).should('not.be.disabled');
     });
   });
