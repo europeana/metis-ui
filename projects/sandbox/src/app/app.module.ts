@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HrefCopyDirective } from './_directives';
 import { CopyableLinkItemComponent } from './copyable-link-item';
-import { ErrorsComponent } from './errors';
+import { HttpErrorsComponent } from './http-errors';
 import { NavigationOrbsComponent } from './navigation-orbs';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
@@ -20,7 +20,7 @@ import { WizardComponent } from './wizard';
     AppComponent,
     HrefCopyDirective,
     CopyableLinkItemComponent,
-    ErrorsComponent,
+    HttpErrorsComponent,
     NavigationOrbsComponent,
     ProgressTrackerComponent,
     RecordReportComponent,
