@@ -29,6 +29,10 @@ Get the `npm` dependencies:
 
     npm install
 
+Build the shared library:
+
+    npm run build-shared
+
 ## Development server
 
 Run `npm start-metis` or just `npm start`for a dev server. Navigate to [http://localhost:4200/](http://localhost:4200/). The `(metis-ui)` app will automatically reload if you change any of the source files.
@@ -97,6 +101,12 @@ To run the cypress tests in development (watch mode), start the dev server in on
 ...and then run cypress in another window:
 
     npm run cypress
+
+### Accessibility tests (development)
+
+To run the accessibility tests:
+
+    npm run test:accessibility
 
 ### Template check (development)
 
