@@ -1,41 +1,93 @@
 import 'cypress-axe';
 
-context('Sandbox', () => {
-  describe('Accessibility', () => {
-    const injectAxe = () => {
-      /*
-       cy.injectAxe();
-       cy.injectAxe is currently broken. https://github.com/component-driven/cypress-axe/issues/82
-       (so use custom injection logic)
-      */
+context('Sandbox Accessibility', () => {
+  const checkZone = (selector: string): void => {
+    cy.get(selector).should('have.length', 1);
+    cy.checkA11y(selector);
+  };
 
-      cy.readFile('../../node_modules/axe-core/axe.min.js').then((source) => {
-        return cy.window({ log: false }).then((window) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (window as any).eval(source);
-        });
+  const injectAxe = (): void => {
+    // cy.injectAxe();
+    // cy.injectAxe is currently broken. https://github.com/component-driven/cypress-axe/issues/82
+    // (so use custom injection logic)
+
+    cy.readFile('../../node_modules/axe-core/axe.min.js').then((source) => {
+      return cy.window({ log: false }).then((window) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).eval(source);
       });
-    };
-
-    beforeEach(() => {
-      cy.server();
     });
+  };
 
-    it('Has no detectable a11y violations (upload page)', () => {
+  beforeEach(() => {
+    cy.server();
+  });
+
+  describe('Upload Page', () => {
+    beforeEach(() => {
       cy.visit('/new');
       injectAxe();
-      cy.checkA11y();
     });
 
-    it('Has no detectable a11y violations (progress page)', () => {
+    it('Has an accessible header', () => {
+      checkZone('header');
+    });
+
+    it('Has an accessible footer', () => {
+      checkZone('footer');
+    });
+
+    it('Has an accessible main', () => {
+      checkZone('main');
+    });
+
+    it('Has no detectable a11y violations', () => {
+      cy.checkA11y();
+    });
+  });
+
+  describe('Progress Page', () => {
+    beforeEach(() => {
       cy.visit('/');
       injectAxe();
-      cy.checkA11y();
     });
 
-    it('Has no detectable a11y violations (record report page)', () => {
+    it('Has an accessible header', () => {
+      checkZone('header');
+    });
+
+    it('Has an accessible footer', () => {
+      checkZone('footer');
+    });
+
+    it('Has an accessible main', () => {
+      checkZone('main');
+    });
+
+    it('Has no detectable a11y violations', () => {
+      cy.checkA11y();
+    });
+  });
+
+  describe('Record Report Pages', () => {
+    beforeEach(() => {
       cy.visit('/dataset/1?recordId=1');
       injectAxe();
+    });
+
+    it('Has an accessible header', () => {
+      checkZone('header');
+    });
+
+    it('Has an accessible footer', () => {
+      checkZone('footer');
+    });
+
+    it('Has an accessible main', () => {
+      checkZone('main');
+    });
+
+    it('Has no detectable a11y violations ( page)', () => {
       cy.checkA11y();
     });
   });

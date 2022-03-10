@@ -1,9 +1,8 @@
-import 'cypress-axe'
+import 'cypress-axe';
 
 context('Sandbox', () => {
   describe('Accessibility', () => {
-
-    const injectAxe = () => {
+    const injectAxe = (): void => {
       /*
        cy.injectAxe();
        cy.injectAxe is currently broken. https://github.com/component-driven/cypress-axe/issues/82
@@ -26,7 +25,6 @@ context('Sandbox', () => {
       cy.visit('/');
       injectAxe();
       cy.checkA11y();
-    })
-
+    });
   });
 });

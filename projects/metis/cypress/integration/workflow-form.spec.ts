@@ -17,6 +17,7 @@ function checkPluginStatus(name: string, enabled: boolean): void {
 
 context('metis-ui', () => {
   describe('Workflow Form', () => {
+    const force = { force: true };
     const fieldsOnlyHTTP = ['#url'];
     const fieldsOnlyOAI = ['#harvest-url', '#setspec', '#metadata-format'];
     const fieldsBoth = ['#incremental-harvest'];
@@ -42,12 +43,12 @@ context('metis-ui', () => {
     });
 
     it('should disable the save button when there are gaps in the step-sequence', () => {
-      cy.get('[data-e2e="save-workflow"] button').should('not.be.disabled');
+      cy.get('[data-e2e="save-workflow"] button').should('have.length', 0);
       cy.wait(500);
-      cy.get('.steps .validation_internal').click({ force: true });
+      cy.get('.steps .validation_internal').click(force);
       cy.get('[data-e2e="save-workflow"] button').should('be.disabled');
       cy.get('.notification').contains('Gaps are not allowed in the workflow sequence ');
-      cy.get('.steps .validation_internal').click({ force: true });
+      cy.get('.steps .validation_internal').click(force);
       cy.get('[data-e2e="save-workflow"] button').should('not.be.disabled');
     });
 

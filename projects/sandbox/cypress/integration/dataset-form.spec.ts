@@ -8,23 +8,24 @@ import {
   selectorInputName,
   selectorInputZipFile,
   selectorLinkDatasetForm,
-  selectorProgressTitle
+  selectorProgressOrb,
+  selectorProgressTitle,
+  selectorUploadOrb
 } from '../support/selectors';
 
 context('Sandbox', () => {
   const classActive = 'is-active';
   const classSet = 'is-set';
-  const force = { force: true };
 
   const setStep = (step: number): void => {
-    cy.get(`.wizard-status li:nth-child(${step}) a`).click();
+    cy.get(`.wizard-status li:nth-child(${step}) a`).click({ force: true });
     cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
     cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
   };
 
   describe('Dataset Form', () => {
     let currentStep = 1;
-
+    const force = { force: true };
     const selectorFieldErrors = '.field-errors';
     const selectorInputXSLFile = '[type="file"][accept=".xsl"]';
     const selectorSendXSLT = '[formControlName="sendXSLT"]';
@@ -66,11 +67,11 @@ context('Sandbox', () => {
       navigateSteps(
         () => {
           currentStep++;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click();
+          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
         },
         () => {
           currentStep--;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click();
+          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
         }
       );
     });
@@ -135,16 +136,16 @@ context('Sandbox', () => {
       cy.url().should('match', /\d+\/\S+\d+/);
 
       // confirm the form is navigable
-      cy.get(`.wizard-status li:first-child() a`).click();
+      cy.get(`.wizard-status li:first-child() a`).click(force);
 
       navigateSteps(
         () => {
           currentStep++;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click();
+          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
         },
         () => {
           currentStep--;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click();
+          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
         }
       );
     });
@@ -155,28 +156,28 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitData).click();
 
       // confirm the redirect
+
       cy.url().should('match', /\d+\/\S+\/\d+/);
 
       // confirm the form is disabled
-      cy.get(`.wizard-status li:first-child a`).should('have.length', 1);
 
-      cy.get(`.wizard-status li:first-child a`).click();
+      cy.get(selectorUploadOrb).should('have.length', 1);
+      cy.get(selectorUploadOrb)
+        .scrollIntoView()
+        .click(force);
       cy.get(selectorInputName).should('be.disabled');
-      cy.get(`.wizard-status li:nth-child(2) a`).click();
+      cy.get(selectorProgressOrb).click(force);
       cy.get(selectorInputCountry).should('be.disabled');
       cy.get(selectorInputLanguage).should('be.disabled');
-      cy.get(`.wizard-status li:nth-child(1) a`).click();
+      cy.get(selectorUploadOrb).click(force);
       cy.get(selectorInputZipFile).should('be.disabled');
-      cy.get(`.wizard-status li:nth-child(2) a`).click();
+      cy.get(selectorProgressOrb).click(force);
 
       // create a new dataset
 
-      // we cant use "force" after a redirect: cypress error (reading 'parent') so scroll down
       cy.get(selectorLinkDatasetForm)
         .scrollIntoView()
-        .should('be.visible');
-      cy.wait(500);
-      cy.get(selectorLinkDatasetForm).click();
+        .click(force);
 
       // confirm the form is not disabled
 

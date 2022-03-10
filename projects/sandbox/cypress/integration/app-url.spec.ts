@@ -61,12 +61,12 @@ context('Sandbox', () => {
       cy.location('pathname').should('equal', '/dataset/1');
       cy.location('search').should('have.length', 0);
 
-      cy.get(selectorReportOrb).click();
+      cy.get(selectorReportOrb).click({ force: true });
 
       cy.location('pathname').should('equal', '/dataset/1');
       cy.location('search').should('equal', '?recordId=2');
 
-      cy.get(selectorProgressOrb).click();
+      cy.get(selectorProgressOrb).click({ force: true });
       cy.location('pathname').should('equal', '/dataset/1');
       cy.location('search').should('have.length', 0);
 
