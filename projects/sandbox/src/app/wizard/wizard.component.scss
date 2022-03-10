@@ -28,7 +28,7 @@ $wizard-border-radius: 1.5em;
   border-radius: $wizard-border-radius $wizard-border-radius 0 0;
   color: $white;
 
-  label {
+  .header-text {
     font-size: 1.5em;
     text-align: center;
     top: 0.75em;

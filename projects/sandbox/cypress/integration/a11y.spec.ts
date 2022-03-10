@@ -1,8 +1,7 @@
-import 'cypress-axe'
+import 'cypress-axe';
 
 context('Sandbox', () => {
   describe('Accessibility', () => {
-
     const injectAxe = () => {
       /*
        cy.injectAxe();
@@ -26,19 +25,18 @@ context('Sandbox', () => {
       cy.visit('/new');
       injectAxe();
       cy.checkA11y();
-    })
+    });
 
     it('Has no detectable a11y violations (progress page)', () => {
       cy.visit('/');
       injectAxe();
       cy.checkA11y();
-    })
+    });
 
     it('Has no detectable a11y violations (record report page)', () => {
       cy.visit('/dataset/1?recordId=1');
       injectAxe();
       cy.checkA11y();
-    })
-
+    });
   });
 });

@@ -1,7 +1,7 @@
-<div class="wizard">
+<main class="wizard">
   <div class="wizard-head" [ngClass]="{ 'dataset-orbs-hidden': datasetOrbsHidden }">
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
-      <label *ngIf="currentStepIndex === i">
+      <h1 class="header-text" *ngIf="currentStepIndex === i">
         <ng-container
           *ngSwitchCase="EnumWizardStepType.UPLOAD"
           i18n="upload step title@@configureSource"
@@ -18,7 +18,7 @@
         <ng-container *ngSwitchCase="EnumWizardStepType.REPORT" i18n="upload step title@@report">
           Record Report
         </ng-container>
-      </label>
+      </h1>
     </ng-container>
 
     <sb-navigation-orbs
@@ -26,6 +26,7 @@
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       (clickEvent)="setStep($event)"
+      attr.aria-label="Wizard Step"
     ></sb-navigation-orbs>
   </div>
   <div class="wizard-content">
@@ -169,4 +170,4 @@
     </ng-container>
     <sb-http-errors [error]="error"></sb-http-errors>
   </div>
-</div>
+</main>
