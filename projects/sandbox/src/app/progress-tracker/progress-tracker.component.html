@@ -86,7 +86,7 @@
         </ng-template>
         <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
       </span>
-      <span class="step-progress"> {{ item.success + item.fail }} / {{ item.total }} </span>
+      <span class="step-progress"> {{ item.success + item.warn }} / {{ item.total }} </span>
       <span class="step-fail container-h">
         <a
           *ngIf="item.errors && item.errors.length > 0; else conditionalWrap"
