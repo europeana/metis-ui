@@ -127,12 +127,12 @@ context('Sandbox', () => {
       cy.get(selectorContentTierOrbActive).should('have.length', 1);
       cy.get(selectorMetadataTierOrbActive).should('have.length', 0);
 
-      cy.get(selectorMetadataTierOrb).click();
+      cy.get(selectorMetadataTierOrb).click(force);
 
       cy.get(selectorContentTierOrbActive).should('have.length', 0);
       cy.get(selectorMetadataTierOrbActive).should('have.length', 1);
 
-      cy.get(selectorContentTierOrb).click();
+      cy.get(selectorContentTierOrb).click(force);
 
       cy.get(selectorContentTierOrbActive).should('have.length', 1);
       cy.get(selectorMetadataTierOrbActive).should('have.length', 0);
@@ -148,16 +148,16 @@ context('Sandbox', () => {
       });
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
 
-      cy.get(selectorMediaOrbText).click();
+      cy.get(selectorMediaOrbText).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
-      cy.get(selectorMediaOrbAudio).click();
+      cy.get(selectorMediaOrbAudio).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
 
-      cy.get(selectorMediaOrbImage).click();
+      cy.get(selectorMediaOrbImage).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
 
-      cy.get(selectorMediaOrbVideo).click();
+      cy.get(selectorMediaOrbVideo).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
     });
 
@@ -170,26 +170,26 @@ context('Sandbox', () => {
       const selectorMediaItemPrev = '.record-report .previous.nav-orb';
 
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
-      cy.get(selectorMediaItemNext).click();
+      cy.get(selectorMediaItemNext).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
-      cy.get(selectorMediaItemNext).click();
+      cy.get(selectorMediaItemNext).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
-      cy.get(selectorMediaItemNext).click();
+      cy.get(selectorMediaItemNext).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
-      cy.get(selectorMediaItemNext).click();
+      cy.get(selectorMediaItemNext).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
-      cy.get(selectorMediaItemNext).click();
+      cy.get(selectorMediaItemNext).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbUnknown);
 
-      cy.get(selectorMediaItemPrev).click();
+      cy.get(selectorMediaItemPrev).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
-      cy.get(selectorMediaItemPrev).click();
+      cy.get(selectorMediaItemPrev).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
-      cy.get(selectorMediaItemPrev).click();
+      cy.get(selectorMediaItemPrev).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
-      cy.get(selectorMediaItemPrev).click();
+      cy.get(selectorMediaItemPrev).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
-      cy.get(selectorMediaItemPrev).click();
+      cy.get(selectorMediaItemPrev).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
     });
 
@@ -202,43 +202,43 @@ context('Sandbox', () => {
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
 
       cy.get(selectorInputMedia)
-        .clear()
+        .clear(force)
         .type('2')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbAudio);
 
       cy.get(selectorInputMedia)
-        .clear()
+        .clear(force)
         .type('3')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbImage);
 
       cy.get(selectorInputMedia)
-        .clear()
+        .clear(force)
         .type('4')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
       cy.get(selectorInputMedia)
-        .clear()
+        .clear(force)
         .type('5')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbVideo);
 
       cy.get(selectorInputMedia)
-        .clear()
+        .clear(force)
         .type('10')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
       cy.get(selectorInputMedia)
-        .clear()
+        .clear(force)
         .type('100')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrbText);
 
       cy.get(selectorInputMedia)
-        .clear()
+        .clear(force)
         .type('-100')
         .blur();
       checkSingleActiveItem(allMediaOrbs, selectorMediaOrb3D);
@@ -257,13 +257,13 @@ context('Sandbox', () => {
         cy.get(sel + selectorActive).should('have.length', 0);
       });
 
-      cy.get(selectorMetadataTierOrb).click();
+      cy.get(selectorMetadataTierOrb).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorLanguageOrb);
 
-      cy.get(selectorElementOrb).click();
+      cy.get(selectorElementOrb).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorElementOrb);
 
-      cy.get(selectorClassesOrb).click();
+      cy.get(selectorClassesOrb).click(force);
       checkSingleActiveItem(allMediaOrbs, selectorClassesOrb);
     });
 

@@ -95,13 +95,15 @@ context('Sandbox', () => {
     });
 
     it('should show the vertical resolution field conditionally', () => {
+      const force = { force: true };
+
       cy.visit('/dataset/1?recordId=102'); // 3D record
       cy.scrollTo(0, 200);
       cy.wait(200);
 
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
         cy.get(selectorInputMedia)
-          .clear()
+          .clear(force)
           .type(`${mediaIndex}`)
           .blur();
         cy.get(selectorVerticalResolution).should('have.length', 0);
@@ -115,7 +117,7 @@ context('Sandbox', () => {
 
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
         cy.get(selectorInputMedia)
-          .clear()
+          .clear(force)
           .type(`${mediaIndex}`)
           .blur();
 

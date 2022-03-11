@@ -100,10 +100,11 @@ context('Sandbox', () => {
 
     it('should show the progress errors', () => {
       cy.get(selectorErrorLink).should('have.length', 0);
-      cy.get(selectorModalDisplay).should('not.be.visible');
+      cy.get(selectorModalDisplay).should('have.length', 0);
       fillProgressForm('10118');
       cy.get(selectorErrorLink).should('have.length', 1);
       cy.get(selectorErrorLink).click();
+      cy.get(selectorModalDisplay).should('have.length', 1);
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
@@ -116,15 +117,16 @@ context('Sandbox', () => {
     });
 
     it('should expand and collapse the data warning', () => {
+      const force = { force: true };
       const selWarnDetail = '.warn-detail';
-      cy.get(selectorLinkDatasetForm).click();
+      cy.get(selectorLinkDatasetForm).click(force);
       fillUploadForm('Name_At_Least_Ten_Characters');
-      cy.get(selectorBtnSubmitData).click();
+      cy.get(selectorBtnSubmitData).click(force);
       cy.get(selReachedDataLimit).should('have.length', 1);
       cy.get(selWarnDetail).should('have.length', 0);
-      cy.get(`${selReachedDataLimit} a`).click();
+      cy.get(`${selReachedDataLimit} a`).click(force);
       cy.get(selWarnDetail).should('have.length', 1);
-      cy.get(`${selReachedDataLimit} a`).click();
+      cy.get(`${selReachedDataLimit} a`).click(force);
       cy.get(selWarnDetail).should('have.length', 0);
     });
   });
