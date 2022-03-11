@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
 import { ModalConfirmComponent } from './modal-confirm.component';
 
@@ -14,6 +14,11 @@ describe('ModalConfirmComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(ModalConfirmComponent);
     component = fixture.componentInstance;
+    component.modalWrapper = {
+      nativeElement: {
+        focus: () => {}
+      }
+    };
     modalConfirms = TestBed.inject(ModalConfirmService);
   });
 
@@ -26,6 +31,18 @@ describe('ModalConfirmComponent', () => {
     component.ngOnInit();
     expect(modalConfirms.add).toHaveBeenCalled();
   });
+
+  it('should handle keyDown events', fakeAsync(() => {
+    spyOn(component, 'close');
+    // eslint-disable-next-line rxjs/no-ignored-observable
+    component.open();
+    component.fnKeyDown({ key: 'Enter' } as KeyboardEvent);
+    tick(1);
+    expect(component.close).not.toHaveBeenCalled();
+    component.fnKeyDown({ key: 'Escape' } as KeyboardEvent);
+    tick(1);
+    expect(component.close).toHaveBeenCalled();
+  }));
 
   it('should open', () => {
     expect(component.show).toBeFalsy();
