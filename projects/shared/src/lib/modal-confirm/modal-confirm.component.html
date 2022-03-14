@@ -1,4 +1,4 @@
-<div class="modal-wrapper" *ngIf="show">
+<div class="modal-wrapper" *ngIf="show" #modalWrapper tabindex="0" (keydown)="fnKeyDown($event)">
   <div class="modal" [ngClass]="{ 'modal-small': isSmall }">
     <div class="head">{{ title }} <a class="btn-close" (click)="close(false)"></a></div>
     <div class="content content-autoscroll">

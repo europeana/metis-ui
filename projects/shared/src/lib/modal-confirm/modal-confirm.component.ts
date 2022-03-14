@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { ModalDialog, ModalDialogButtonDefinition } from '../_models/modal-dialog';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
@@ -13,6 +13,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() buttonText: string;
   @Input() buttons: Array<ModalDialogButtonDefinition>;
   @Input() isSmall = true;
+  @ViewChild('modalWrapper', { static: false }) modalWrapper: ElementRef;
 
   subConfirmResponse: Subject<boolean>;
   show = false;
@@ -35,11 +36,23 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     this.modalConfirms.remove(this.id);
   }
 
+  /** fnKeyDown
+  /*  close on 'Esc'
+  */
+  fnKeyDown(e: KeyboardEvent): void {
+    if (e.key === 'Escape') {
+      this.close(false);
+    }
+  }
+
   /** open
   /*  open this modal and return response Observable
   */
   open(): Observable<boolean> {
     this.show = true;
+    setTimeout(() => {
+      this.modalWrapper.nativeElement.focus();
+    }, 1);
     return this.subConfirmResponse;
   }
 
