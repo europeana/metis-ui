@@ -80,7 +80,7 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass(StepStatus.NORMALISE)).toEqual('normalization');
       expect(component.getLabelClass(StepStatus.PREVIEW)).toEqual('preview');
       expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
-      expect(component.getLabelClass('' as StepStatus)).toEqual('');
+      expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
     });
 
     it('should toggle the exapnded-warning flag', () => {
