@@ -20,7 +20,7 @@ context('Sandbox', () => {
     const selectorVerticalResolutionNotEmpty = `${selectorVerticalResolution} + :not(${selectorEmptyValue})`;
 
     it('should show reports for THREE_D', () => {
-      cy.visit('/1?recordId=0');
+      cy.visit('/dataset/1?recordId=0');
       cy.get(selectorRecordType).contains(RecordMediaType.THREE_D);
 
       cy.get(selectorEmbed).should('have.length', 0);
@@ -31,7 +31,7 @@ context('Sandbox', () => {
     });
 
     it('should show reports for AUDIO', () => {
-      cy.visit('/1?recordId=1');
+      cy.visit('/dataset/1?recordId=1');
       cy.get(selectorRecordType).contains(RecordMediaType.AUDIO);
 
       cy.get(selectorEmbed).should('have.length', 1);
@@ -42,7 +42,7 @@ context('Sandbox', () => {
     });
 
     it('should show reports for IMAGE', () => {
-      cy.visit('/1?recordId=2');
+      cy.visit('/dataset/1?recordId=2');
       cy.get(selectorRecordType).contains(RecordMediaType.IMAGE);
 
       cy.get(selectorEmbed).should('have.length', 0);
@@ -54,7 +54,7 @@ context('Sandbox', () => {
         .contains('Yes')
         .should('have.length', 0);
 
-      cy.visit('/1?recordId=8');
+      cy.visit('/dataset/1?recordId=8');
       cy.get(selectorThumbnail).should('have.length', 1);
       cy.get(selectorThumbnailVal)
         .contains('No')
@@ -65,7 +65,7 @@ context('Sandbox', () => {
     });
 
     it('should show reports for TEXT', () => {
-      cy.visit('/1?recordId=3');
+      cy.visit('/dataset/1?recordId=3');
       cy.get(selectorRecordType).contains(RecordMediaType.TEXT);
 
       cy.get(selectorEmbed).should('have.length', 0);
@@ -76,7 +76,7 @@ context('Sandbox', () => {
     });
 
     it('should show reports for VIDEO', () => {
-      cy.visit('/1?recordId=4');
+      cy.visit('/dataset/1?recordId=4');
       cy.get(selectorRecordType).contains(RecordMediaType.VIDEO);
 
       cy.get(selectorEmbed).should('have.length', 1);
@@ -87,7 +87,7 @@ context('Sandbox', () => {
     });
 
     it('should show reports for OTHER', () => {
-      cy.visit('/1?recordId=5');
+      cy.visit('/dataset/1?recordId=5');
       cy.get(selectorRecordType).contains(RecordMediaType.OTHER);
       cy.get(selectorThumbnail).should('have.length', 0);
       cy.get(selectorImageResolution).should('have.length', 0);
@@ -95,19 +95,21 @@ context('Sandbox', () => {
     });
 
     it('should show the vertical resolution field conditionally', () => {
-      cy.visit('/1?recordId=102'); // 3D record
+      const force = { force: true };
+
+      cy.visit('/dataset/1?recordId=102'); // 3D record
       cy.scrollTo(0, 200);
       cy.wait(200);
 
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
         cy.get(selectorInputMedia)
-          .clear()
+          .clear(force)
           .type(`${mediaIndex}`)
           .blur();
         cy.get(selectorVerticalResolution).should('have.length', 0);
       });
 
-      cy.visit('/1?recordId=100'); // video record
+      cy.visit('/dataset/1?recordId=100'); // video record
       cy.scrollTo(0, 200);
       cy.wait(200);
 
@@ -115,7 +117,7 @@ context('Sandbox', () => {
 
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
         cy.get(selectorInputMedia)
-          .clear()
+          .clear(force)
           .type(`${mediaIndex}`)
           .blur();
 

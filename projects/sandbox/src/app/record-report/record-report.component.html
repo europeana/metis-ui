@@ -13,7 +13,7 @@
     <span
       class="report-value"
       [ngClass]="{
-        'error-message': !itemVal,
+        false: !itemVal,
         tick: itemVal
       }"
     >
@@ -365,10 +365,10 @@
         <ul class="processing-errors">
           <li *ngFor="let error of errors">
             <ul>
-              <li class="error-message report-header code">
+              <li class="error report-header code">
                 {{ error.errorMessage }}
               </li>
-              <li class="limited-list boxed code">
+              <li class="limited-list boxed code" tabindex="0">
                 {{ error.stacktrace }}
               </li>
             </ul>
@@ -446,6 +446,7 @@
                 class="report-value limited-list boxed"
                 *ngIf="qualifiedList.length > 0; else emptyVal"
                 [ngClass]="{ 'multiple-entries': qualifiedList.length > 1 }"
+                tabindex="0"
               >
                 <ng-content
                   *ngTemplateOutlet="

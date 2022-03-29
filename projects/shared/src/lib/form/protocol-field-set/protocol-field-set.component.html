@@ -1,5 +1,8 @@
 <div class="form-group" [formGroup]="form">
-  <label i18n="protocol label main@@protocolLabelMain">Harvest protocol *</label>
+  <label i18n="protocol label main@@protocolLabelMain" [ngClass]="labelRequiredFieldClassMap"
+    >Harvest protocol</label
+  >
+
   <div class="form-group-radios">
     <label
       *ngIf="isProtocolVisible(ZIP)"
@@ -58,8 +61,12 @@
 </div>
 
 <div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">
-  <label for="harvest-url" i18n="protocol label harvest url@@protocolLabelHarvestUrl">
-    Harvest URL *</label
+  <label
+    for="harvest-url"
+    i18n="protocol label harvest url@@protocolLabelHarvestUrl"
+    [ngClass]="labelRequiredFieldClassMap"
+  >
+    Harvest URL</label
   >
   <input id="harvest-url" type="text" formControlName="harvestUrl" placeholder="harvest url" />
   <div class="messages" *ngIf="form.get('harvestUrl')!.errors && form.get('harvestUrl')!.dirty">
@@ -100,8 +107,11 @@
 </div>
 
 <div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">
-  <label for="metadata-format" i18n="protocol label metadata format@@protocolLabelMetadataFormat"
-    >Metadata format *</label
+  <label
+    for="metadata-format"
+    i18n="protocol label metadata format@@protocolLabelMetadataFormat"
+    [ngClass]="labelRequiredFieldClassMap"
+    >Metadata format</label
   >
   <input
     id="metadata-format"
@@ -112,7 +122,12 @@
 </div>
 
 <div class="form-group" *ngIf="isProtocolHTTP()" [formGroup]="form">
-  <label for="url" i18n="protocol label url@@protocolLabelUrl">Url *</label>
+  <label
+    for="url"
+    i18n="protocol label url@@protocolLabelUrl"
+    [ngClass]="labelRequiredFieldClassMap"
+    >Url</label
+  >
   <input id="url" type="text" formControlName="url" placeholder="url" />
 
   <div class="messages" *ngIf="form.get('url')!.errors && form.get('url')!.dirty">

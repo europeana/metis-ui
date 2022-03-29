@@ -69,8 +69,45 @@ label {
   }
 }
 
+.asterisked::after {
+  content: ' *';
+}
+
+.errors,
 .error-message {
+  background-color: $white;
+  border: 1px solid $eu-red;
   color: $eu-red;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 0.75em;
+  padding: 0.5em;
+}
+
+.errors {
+  .error-detail {
+    font-weight: normal;
+    list-style: disc;
+    margin-left: 16px;
+  }
+
+  .heading {
+    position: relative;
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 12px;
+      width: 13px;
+      background: svg-url-icon-warning($eu-red) center no-repeat;
+      margin: 2px 2px 0 0;
+    }
+  }
+}
+
+.field-errors,
+.messages {
+  display: block;
+  margin-top: 1em;
 }
 
 .form-group {
@@ -84,6 +121,34 @@ label {
 
 .hidden {
   display: none;
+}
+
+.separator-line {
+  background: $eu-jade-light;
+  display: block;
+  height: 1px;
+  margin: 1.6em 0;
+
+  &:not(:empty) {
+    margin: 50px 0;
+  }
+
+  > * {
+    position: relative;
+    top: -1.5em;
+  }
+}
+
+.tick::after {
+  background-image: svg-url-icon-tick('#{$eu-jade-classic}');
+  width: 1em;
+  height: 1em;
+  content: '';
+  display: inline-block;
+  left: 1px;
+  position: relative;
+  transform: scale(0.8);
+  top: 0.175em;
 }
 
 .wizard button {
@@ -126,6 +191,9 @@ label {
   }
 
   &.submit {
+    display: block;
+    margin-left: auto;
+
     &:hover {
       box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
       text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
@@ -139,17 +207,6 @@ label {
       pointer-events: none;
     }
   }
-}
-
-.tick::after {
-  background-image: svg-url-icon-tick('#{$eu-jade-classic}');
-  width: 1em;
-  height: 1em;
-  content: '';
-  display: inline-block;
-  position: relative;
-  transform: scale(0.8);
-  top: 0.175em;
 }
 
 .wizard input[type='file'] {

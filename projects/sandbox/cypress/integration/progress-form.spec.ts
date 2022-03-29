@@ -57,7 +57,7 @@ context('Sandbox', () => {
       cy.get(selCreationDate).should('have.length', 0);
       cy.get(selPortalLinks).should('have.length', 0);
 
-      cy.visit('/1');
+      cy.visit('/dataset/1');
 
       cy.get(selectorProgressTitle).should('have.length', 1);
       cy.get(selectorProgressTitleComplete).should('have.length', 1);
@@ -67,17 +67,13 @@ context('Sandbox', () => {
     });
 
     it('should show network errors', () => {
-      cy.get(selectorErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorErrors).should('have.length', 0);
       fillProgressForm('404');
       cy.get(selectorBtnSubmitProgress)
         .filter(':visible')
         .should('have.length', 1);
       cy.get(selectorInputDatasetId).clear();
-      cy.get(selectorErrors)
-        .filter(':visible')
-        .should('have.length', 0);
+      cy.get(selectorErrors).should('have.length', 0);
       fillProgressForm('500');
       cy.get(selectorErrors)
         .filter(':visible')
@@ -104,10 +100,11 @@ context('Sandbox', () => {
 
     it('should show the progress errors', () => {
       cy.get(selectorErrorLink).should('have.length', 0);
-      cy.get(selectorModalDisplay).should('not.be.visible');
+      cy.get(selectorModalDisplay).should('have.length', 0);
       fillProgressForm('10118');
       cy.get(selectorErrorLink).should('have.length', 1);
       cy.get(selectorErrorLink).click();
+      cy.get(selectorModalDisplay).should('have.length', 1);
       cy.get(selectorModalDisplay).should('be.visible');
     });
 
@@ -120,15 +117,16 @@ context('Sandbox', () => {
     });
 
     it('should expand and collapse the data warning', () => {
+      const force = { force: true };
       const selWarnDetail = '.warn-detail';
-      cy.get(selectorLinkDatasetForm).click();
+      cy.get(selectorLinkDatasetForm).click(force);
       fillUploadForm('Name_At_Least_Ten_Characters');
-      cy.get(selectorBtnSubmitData).click();
+      cy.get(selectorBtnSubmitData).click(force);
       cy.get(selReachedDataLimit).should('have.length', 1);
       cy.get(selWarnDetail).should('have.length', 0);
-      cy.get(`${selReachedDataLimit} a`).click();
+      cy.get(`${selReachedDataLimit} a`).click(force);
       cy.get(selWarnDetail).should('have.length', 1);
-      cy.get(`${selReachedDataLimit} a`).click();
+      cy.get(`${selReachedDataLimit} a`).click(force);
       cy.get(selWarnDetail).should('have.length', 0);
     });
   });

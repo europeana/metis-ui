@@ -1,0 +1,8 @@
+<div *ngIf="error" class="errors">
+  <div class="heading">
+    {{ error.statusText }}
+  </div>
+  <ul class="error-detail">
+    <li>{{ error.message }}</li>
+  </ul>
+</div>

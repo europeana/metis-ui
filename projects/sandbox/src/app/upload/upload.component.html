@@ -1,0 +1,104 @@
+<form [formGroup]="form" [ngClass]="{ hidden: !showing }">
+  <div class="form-group">
+    <label
+      for="name"
+      i18n="name label"
+      *ngFor="let isValid of [form.value['name'].length > 0 && !form.get('name')?.errors]"
+      [ngClass]="{
+        tick: isValid,
+        asterisked: !isValid
+      }"
+      >Name</label
+    >
+    <input id="name" formControlName="name" autocomplete="off" />
+    <span class="field-errors" *ngIf="form.value['name'].length > 0 && form.get('name')?.errors">
+      <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
+    </span>
+  </div>
+  <div class="form-group">
+    <label
+      for="country"
+      i18n="country label"
+      [ngClass]="{
+        tick: form.value['country'],
+        asterisked: !form.value['country']
+      }"
+      >Country</label
+    >
+    <select id="country" formControlName="country">
+      <option *ngFor="let option of countryList" [ngValue]="option.name">{{
+        option.xmlValue
+      }}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label
+      for="language"
+      i18n="language label"
+      [ngClass]="{
+        tick: form.value['language'],
+        asterisked: !form.value['language']
+      }"
+      >Language</label
+    >
+    <select id="language" formControlName="language">
+      <option *ngFor="let option of languageList" [ngValue]="option.name">{{
+        option.xmlValue
+      }}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <lib-protocol-field-set
+      #protocolFields
+      [protocolForm]="form"
+      [incrementalEnabled]="false"
+      [protocolSwitchField]="'uploadProtocol'"
+      visibleProtocols="[EnumProtocolType.ZIP_UPLOAD, EnumProtocolType.HTTP_HARVEST, EnumProtocolType.OAIPMH_HARVEST]"
+      [fileFormName]="zipFileFormName"
+      [labelRequiredFieldClassMap]="{
+        tick: protocolIsValid(),
+        asterisked: !protocolIsValid()
+      }"
+    >
+    </lib-protocol-field-set>
+    <label>
+      <input
+        type="checkbox"
+        (change)="updateConditionalXSLValidator()"
+        [formGroup]="form"
+        formControlName="sendXSLT"
+      />Records are not provided in the EDM (external) format
+    </label>
+    <div [ngClass]="{ hidden: !form.value.sendXSLT }">
+      <label
+        [ngClass]="{
+          tick: form.value['xsltFile'],
+          asterisked: !form.value['xsltFile']
+        }"
+      >
+        Please provide an XSLT transformation that converts your records to EDM (external)
+      </label>
+      <lib-file-upload
+        #xslFileField
+        [formControlName]="xsltFileFormName"
+        [form]="form"
+        [acceptedTypes]="'.xsl'"
+        ngDefaultControl
+      ></lib-file-upload>
+    </div>
+  </div>
+
+  <button
+    [disabled]="!form.valid"
+    data-e2e="submit-upload"
+    class="submit"
+    (click)="onSubmitDataset()"
+    i18n="Submit button|uploads the dataset button@@submitDataset"
+  >
+    Submit
+  </button>
+
+  <sb-http-errors [error]="error"></sb-http-errors>
+</form>

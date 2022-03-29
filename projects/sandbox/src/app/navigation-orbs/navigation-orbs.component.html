@@ -1,39 +1,41 @@
-<ul class="wizard-status">
-  <ng-template #orbItem let-itemIndex="itemIndex">
-    <a
-      (click)="clicked(itemIndex)"
-      [ngClass]="fnClassMapInner(itemIndex)"
-      class="nav-orb labelled"
-      [attr.data-label]="itemIndex + 1"
-      [attr.data-indicator]="_indicatorAttributes[itemIndex]"
-    ></a>
-  </ng-template>
+<nav>
+  <ul class="wizard-status">
+    <ng-template #orbItem let-itemIndex="itemIndex">
+      <a
+        (click)="clicked(itemIndex)"
+        [ngClass]="fnClassMapInner(itemIndex)"
+        class="nav-orb labelled"
+        [attr.data-label]="itemIndex + 1"
+        [attr.data-indicator]="_indicatorAttributes[itemIndex]"
+      ></a>
+    </ng-template>
 
-  <ng-template #showCollapsed>
-    <li>
-      <button
-        class="nav-orb labelled previous"
-        [ngClass]="{ disabled: index < 1 }"
-        [disabled]="index < 1"
-        (click)="clickedPrev()"
-      ></button>
-    </li>
-    <li class="orb-container" [ngClass]="fnClassMapOuter(index)">
-      <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: index }"></ng-content>
-    </li>
-    <li>
-      <button
-        class="nav-orb labelled next"
-        [ngClass]="{ disabled: index + 1 >= steps.length }"
-        [disabled]="index + 1 >= steps.length"
-        (click)="clickedNext()"
-      ></button>
-    </li>
-  </ng-template>
+    <ng-template #showCollapsed>
+      <li>
+        <button
+          class="nav-orb labelled previous"
+          [ngClass]="{ disabled: index < 1 }"
+          [disabled]="index < 1"
+          (click)="clickedPrev()"
+        ></button>
+      </li>
+      <li class="orb-container" [ngClass]="fnClassMapOuter(index)">
+        <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: index }"></ng-content>
+      </li>
+      <li>
+        <button
+          class="nav-orb labelled next"
+          [ngClass]="{ disabled: index + 1 >= steps.length }"
+          [disabled]="index + 1 >= steps.length"
+          (click)="clickedNext()"
+        ></button>
+      </li>
+    </ng-template>
 
-  <ng-container *ngIf="!collapsed; else showCollapsed">
-    <li *ngFor="let step of steps" class="orb-container" [ngClass]="fnClassMapOuter(step)">
-      <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: step }"></ng-content>
-    </li>
-  </ng-container>
-</ul>
+    <ng-container *ngIf="!collapsed; else showCollapsed">
+      <li *ngFor="let step of steps" class="orb-container" [ngClass]="fnClassMapOuter(step)">
+        <ng-content *ngTemplateOutlet="orbItem; context: { itemIndex: step }"></ng-content>
+      </li>
+    </ng-container>
+  </ul>
+</nav>

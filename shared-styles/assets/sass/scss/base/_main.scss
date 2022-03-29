@@ -19,12 +19,3 @@ body {
   word-break: normal;
   word-wrap: break-word;
 }
-
-main,
-[role='main'] {
-  @extend .cf;
-
-  &:not(.after-header-with-search) {
-    padding-top: $globalnavheight;
-  }
-}

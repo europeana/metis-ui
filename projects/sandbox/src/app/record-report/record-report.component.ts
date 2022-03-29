@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { ClassMap } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
-  ClassMap,
   DisplayedMetaTier,
   DisplayedTier,
   MediaDataItem,
