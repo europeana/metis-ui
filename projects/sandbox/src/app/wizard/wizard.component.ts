@@ -3,7 +3,7 @@ import { Location, PopStateEvent } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { combineLatest, Observable, timer } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
@@ -41,7 +41,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   error: HttpErrorResponse | undefined;
   formProgress: FormGroup;
   formRecord: FormGroup;
-  resetBusyDelay = 1000;
   isBusy = false;
   isBusyProgress = false;
   isBusyProgressLinks = false;
@@ -461,14 +460,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    *
    **/
   resetBusy(): void {
-    const sub = timer(this.resetBusyDelay).subscribe(() => {
-      this.isBusy = false;
-      this.isBusyProgress = false;
-      this.isBusyReport = false;
-      this.isPollingProgress = false;
-      this.isPollingRecord = false;
-      sub.unsubscribe();
-    });
+    this.isBusy = false;
+    this.isBusyProgress = false;
+    this.isBusyReport = false;
+    this.isPollingProgress = false;
+    this.isPollingRecord = false;
   }
 
   /**
@@ -525,7 +521,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           this.setStep(this.stepIndexProgress);
         }
       }
-
       this.isBusyProgress = true;
       this.isBusyProgressLinks = true;
       this.isPollingProgress = true;
