@@ -9,10 +9,11 @@ import { ClassMap } from 'shared';
 export class NavigationOrbsComponent {
   static maxOrbsUncollapsed = 5;
   collapsed = false;
-  @Input() index = 0;
   steps: Array<number>;
   _indicatorAttributes: { [details: string]: string } = {};
 
+  @Input() index = 0;
+  @Input() ariaLabel: string;
   @Input()
   set count(count: number) {
     this.collapsed = count > NavigationOrbsComponent.maxOrbsUncollapsed;

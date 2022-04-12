@@ -22,11 +22,11 @@
     </ng-container>
 
     <sb-navigation-orbs
+      ariaLabel="Wizard Step Navigation"
       [count]="wizardConf.length"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       (clickEvent)="setStep($event)"
-      attr.aria-label="Wizard Step"
     ></sb-navigation-orbs>
   </div>
   <div class="wizard-content">
