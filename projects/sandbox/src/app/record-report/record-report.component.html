@@ -220,6 +220,7 @@
 
   <span class="separator-line">
     <sb-navigation-orbs
+      ariaLabel="Tier Navigation"
       [count]="2"
       [fnClassMapInner]="getOrbConfigInner.bind(this)"
       (clickEvent)="setView($event)"
@@ -313,6 +314,7 @@
       <ng-container *ngIf="techData.length > 0; else noMedia">
         <span class="separator-line">
           <sb-navigation-orbs
+            ariaLabel="Media Navigation"
             [count]="techData.length"
             [index]="visibleMedia"
             [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
@@ -390,6 +392,7 @@
 
     <span class="separator-line">
       <sb-navigation-orbs
+        ariaLabel="Metadata Section Navigation"
         [count]="3"
         [fnClassMapInner]="getOrbConfigInnerMetadata.bind(this)"
         [indicatorAttributes]="[
