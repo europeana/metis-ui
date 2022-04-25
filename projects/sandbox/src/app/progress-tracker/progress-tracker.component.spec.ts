@@ -41,7 +41,7 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getFormattedCreationDate()).toEqual('19/01/2022, 15:21:09');
     });
 
-    it('should open the modal', () => {
+    it('should show the errors and warning modals', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(true);
         modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
@@ -49,6 +49,10 @@ describe('ProgressTrackerComponent', () => {
       });
       component.showErrorsForStep(1);
       expect(modalConfirms.open).toHaveBeenCalled();
+      component.showProcessingErrors();
+      expect(modalConfirms.open).toHaveBeenCalledTimes(2);
+      component.showIncompleteDataWarning();
+      expect(modalConfirms.open).toHaveBeenCalledTimes(3);
     });
 
     it('should report if complete', () => {

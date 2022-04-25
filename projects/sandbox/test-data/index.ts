@@ -138,7 +138,6 @@ new (class extends TestDataServer {
     if (info['processed-records'] === info['total-records']) {
       info.status = DatasetStatus.COMPLETED;
       if (timedTarget.timesCalled >= 5) {
-        info['portal-preview'] = 'http://this-collection/that-dataset/preview';
         info['portal-publish'] = 'http://this-collection/that-dataset/publish';
       }
       return;
@@ -205,6 +204,9 @@ new (class extends TestDataServer {
       response.end(JSON.stringify(timedTarget.datasetInfo));
     } else {
       const datasetInfo = this.initialiseDataset(this.ensureNumeric(id[0]));
+      if (id === '13') {
+        datasetInfo['error-type'] = 'The processing did not complete';
+      }
       this.addTimedTarget(id, datasetInfo);
       response.end(JSON.stringify(datasetInfo));
     }

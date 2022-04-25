@@ -3,6 +3,14 @@
 
 $eu-jade-slightly-dark: #1ea072;
 
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
 .header-info {
   justify-content: space-between;
   .creation-date {
@@ -67,6 +75,21 @@ $eu-jade-slightly-dark: #1ea072;
   transition: 0.5s ease-in-out opacity;
   &.showing {
     opacity: 1;
+  }
+}
+
+.preview-unavailable {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+
+  &::before {
+    content: '';
+    height: 13px;
+    width: 13px;
+    background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+    margin: -2px 3px 0 2px;
+    display: block;
   }
 }
 
