@@ -11,8 +11,6 @@ export const mockDataset = {
     language: 'He'
   },
   status: 'completed',
-  'portal-preview':
-    'https://metis-sandbox-preview-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
   'portal-publish':
     'https://metis-sandbox-publish-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
   'total-records': 4,

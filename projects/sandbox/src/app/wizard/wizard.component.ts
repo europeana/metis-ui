@@ -535,9 +535,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             map((dataset: Dataset) => {
               const nullString =
                 'A review URL will be generated when the dataset has finished processing';
-              if (dataset['portal-preview'] === nullString) {
-                delete dataset['portal-preview'];
-              }
               if (dataset['portal-publish'] === nullString) {
                 delete dataset['portal-publish'];
               }
@@ -551,7 +548,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           if (this.progressComplete()) {
             this.resetBusy();
 
-            if (this.progressData['portal-preview'] && this.progressData['portal-publish']) {
+            if (this.progressData['portal-publish']) {
               this.isBusyProgressLinks = false;
               this.clearDataPollers();
             }
