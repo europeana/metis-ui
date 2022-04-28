@@ -5,6 +5,9 @@ import {
   Dataset,
   DatasetStatus,
   FieldOption,
+  ProblemPattern,
+  ProblemPatternsDataset,
+  ProblemPatternQualityDimension,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData
@@ -404,9 +407,7 @@ new (class extends TestDataServer {
 
         const regResDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
 
-        if (!regResDataset) {
-          this.handle404(route, response);
-        } else {
+        if (regResDataset) {
           const id = regResDataset[1];
           if (this.errorCodes.indexOf(id) > -1) {
             response.statusCode = parseInt(id);
@@ -414,7 +415,56 @@ new (class extends TestDataServer {
           } else {
             this.handleId(response, id);
           }
+          return;
         }
+
+        // Problem Patterns
+
+        const regProblemPattern = route.match(/\/pattern-analysis\/([A-Za-z0-9_]+)\/get/);
+
+        if (regProblemPattern && regProblemPattern.length > 1) {
+          const id = parseInt(regProblemPattern[1]);
+          let problemPatternId = 0;
+
+          const generateProblem = (): ProblemPattern => {
+            problemPatternId = problemPatternId++;
+            return {
+              problemPatternDescription: {
+                problemPatternId: `P${problemPatternId}`,
+                problemPatternSeverity: 'WARNING',
+                problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
+              },
+              recordOccurrences: 1,
+              recordAnalysisList: [
+                {
+                  recordId: '/60/_urn_www_culture_si_images_pageid_15067',
+                  problemOccurrenceList: [
+                    {
+                      messageReport:
+                        'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard of the tobacna cultural quarter photo polona kumelj',
+                      affectedRecordIds: []
+                    }
+                  ]
+                }
+              ]
+            } as ProblemPattern;
+          };
+
+          if (route.indexOf('get-record-pattern-analysis') > -1) {
+            response.end(JSON.stringify([generateProblem()]));
+            return;
+          } else if (route.indexOf('get-dataset-pattern-analysis') > -1) {
+            const problemsDataset = {
+              datasetId: `${id}`,
+              executionStep: 'step',
+              executionTimestamp: 'timestamp',
+              problemPatternList: [generateProblem(), generateProblem(), generateProblem()]
+            } as ProblemPatternsDataset;
+            response.end(JSON.stringify(problemsDataset));
+            return;
+          }
+        }
+        this.handle404(route, response);
       }
     }
   }
