@@ -1,22 +1,40 @@
 <main class="wizard">
-  <div class="wizard-head" [ngClass]="{ 'dataset-orbs-hidden': datasetOrbsHidden }">
+  <div
+    class="wizard-head"
+    [ngClass]="{ 'dataset-orbs-hidden': hiddenOrbs[getStepIndex(EnumWizardStepType.UPLOAD)] }"
+  >
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <h1 class="header-text" *ngIf="currentStepIndex === i">
         <ng-container
           *ngSwitchCase="EnumWizardStepType.UPLOAD"
-          i18n="upload step title@@configureSource"
+          i18n="upload step title@@titleConfigureSource"
         >
           Upload Dataset
         </ng-container>
 
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK"
-          i18n="upload step title@@trackProcessing"
+          i18n="upload step title@@titleTrackProcessing"
         >
           Track Dataset Processing
         </ng-container>
-        <ng-container *ngSwitchCase="EnumWizardStepType.REPORT" i18n="upload step title@@report">
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.PROBLEMS_DATASET"
+          i18n="upload step title@@titleProblemsDataset"
+        >
+          Problem-Patterns (Dataset)
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.REPORT"
+          i18n="upload step title@@titleReport"
+        >
           Record Report
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="EnumWizardStepType.PROBLEMS_RECORD"
+          i18n="upload step title@@titleProblemsRecord"
+        >
+          Problem-Patterns (Record)
         </ng-container>
       </h1>
     </ng-container>
@@ -42,7 +60,7 @@
         active: getIsProgressTrack(currentStepIndex)
       }"
       [formGroup]="formProgress"
-      (ngSubmit)="onSubmitProgress(true)"
+      (ngSubmit)="onSubmitProgress($event.submitter.id, true)"
       class="wizard-section"
     >
       <sb-progress-tracker
@@ -64,10 +82,10 @@
 
     <form
       [ngClass]="{
-        active: getIsProgressTrackOrReport(currentStepIndex)
+        active: currentStepType !== EnumWizardStepType.UPLOAD
       }"
       [formGroup]="formProgress"
-      (ngSubmit)="onSubmitProgress(true)"
+      (ngSubmit)="onSubmitProgress($event.submitter.id, true)"
       class="wizard-section"
     >
       <div class="form-group">
@@ -87,12 +105,26 @@
           />
           <button
             type="submit"
-            class="submit"
+            class="submit-button"
+            [id]="ButtonAction.BTN_PROGRESS"
             [disabled]="!formProgress.valid"
             data-e2e="submitProgress"
             i18n="track button|submits the track id button@@submitTrackId"
           >
-            track
+            <span class="icon track"></span>
+            <span class="label">Track</span>
+          </button>
+
+          <button
+            [disabled]="!formProgress.valid"
+            class="submit-button"
+            [id]="ButtonAction.BTN_PROBLEMS"
+            i18n="dataset problems button|submits the dataset id button@@submitDatasetIdProblems"
+            data-e2e="submitDatasetProblems"
+            type="submit"
+          >
+            <span class="icon"></span>
+            <span class="label">Problem-Patterns</span>
           </button>
         </div>
         <ng-container *ngIf="formProgress.get('datasetToTrack')?.errors; let errors">
@@ -107,8 +139,8 @@
 
     <form
       [formGroup]="formRecord"
-      *ngIf="getIsProgressTrackOrReport()"
-      (ngSubmit)="onSubmitRecord(true)"
+      *ngIf="currentStepType !== EnumWizardStepType.UPLOAD"
+      (ngSubmit)="onSubmitRecord($event.submitter.id, true)"
     >
       <div class="form-group">
         <label
@@ -125,14 +157,26 @@
             id="record-to-track"
           />
           <button
-            [ngClass]="{ hidden: false }"
             [disabled]="!formRecord.valid"
-            class="submit"
+            class="submit-button"
+            [id]="ButtonAction.BTN_RECORD"
             i18n="report button|submits the record id button@@submitRecordId"
             data-e2e="submitRecord"
             type="submit"
           >
-            report
+            <span class="icon report"></span>
+            <span class="label">Report</span>
+          </button>
+          <button
+            [disabled]="!formRecord.valid"
+            class="submit-button"
+            [id]="ButtonAction.BTN_PROBLEMS"
+            i18n="report problems button|submits the record id button@@submitRecordIdProblems"
+            data-e2e="submitRecordProblems"
+            type="submit"
+          >
+            <span class="icon"></span>
+            <span class="label">Problem-Patterns</span>
           </button>
         </div>
         <ng-container *ngIf="formRecord.get('recordToTrack')?.errors; let errors">
@@ -145,14 +189,14 @@
       </div>
     </form>
 
-    <ng-container *ngIf="getIsProgressTrackOrReport()">
+    <ng-container *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
       <ul>
         <li *ngIf="getIsRecordTrack(currentStepIndex)">
           <label class="inline-text"
             >Or
             <a
               class="link-internal"
-              (click)="fillAndSubmitProgressForm()"
+              (click)="fillAndSubmitProgressForm(false, true)"
               data-e2e="link-progress-form"
               >track a dataset</a
             ></label

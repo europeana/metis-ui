@@ -17,7 +17,9 @@ export interface FieldOption {
 export enum WizardStepType {
   UPLOAD = 'UPLOAD',
   PROGRESS_TRACK = 'PROGRESS_TRACK',
-  REPORT = 'REPORT'
+  REPORT = 'REPORT',
+  PROBLEMS_DATASET = 'PROBLEMS_DATASET',
+  PROBLEMS_RECORD = 'PROBLEMS_RECORD'
 }
 
 export interface WizardStep {

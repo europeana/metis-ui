@@ -6,8 +6,8 @@ import {
   DatasetStatus,
   FieldOption,
   ProblemPattern,
-  ProblemPatternsDataset,
   ProblemPatternQualityDimension,
+  ProblemPatternsDataset,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData
@@ -441,7 +441,7 @@ new (class extends TestDataServer {
                   problemOccurrenceList: [
                     {
                       messageReport:
-                        'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard of the tobacna cultural quarter photo polona kumelj',
+                        'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard',
                       affectedRecordIds: []
                     }
                   ]

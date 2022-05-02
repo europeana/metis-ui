@@ -112,7 +112,7 @@ label {
 
 .form-group {
   color: $eu-jade-dark;
-  margin: 0 auto 1rem;
+  margin: 0 auto 12px;
 }
 
 .header-wrapper header {
@@ -188,24 +188,6 @@ label {
     left: -1rem;
     transform: rotate(270deg);
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.5);
-  }
-
-  &.submit {
-    display: block;
-    margin-left: auto;
-
-    &:hover {
-      box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-      text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
-    }
-
-    &[disabled] {
-      cursor: default;
-      background: $gray-lighter;
-      border-color: $gray-light;
-      color: $gray-light;
-      pointer-events: none;
-    }
   }
 }
 

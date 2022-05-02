@@ -54,13 +54,124 @@ $wizard-border-radius: 1.5em;
 
 .submit-id-ctrls {
   display: flex;
-  button {
-    flex-basis: 5.75em;
-    margin-left: 0.5rem;
-    text-shadow: none;
-    white-space: nowrap;
-  }
+  justify-content: space-between;
+
   input {
     min-width: 0;
+    max-width: 65%;
+  }
+}
+
+// submit buttons
+
+.submit-button {
+  align-items: center;
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-basis: 25%;
+  flex-direction: row;
+  margin-left: 0.5rem;
+  padding: 0;
+  text-shadow: none;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 0;
+    .icon {
+      outline: 1px solid $eu-light-orange;
+    }
+  }
+
+  & + .submit-button {
+    margin-left: 1rem;
+  }
+
+  .icon {
+    background-color: $eu-jade-classic;
+    background-image: svg-url-icon-lightbulb($white);
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center center;
+    border: 1px solid $eu-jade-dark;
+    border-radius: 1.5em;
+    display: inline-block;
+    height: 2.4rem;
+    padding: 0.5rem 1rem;
+    width: 2.4rem;
+  }
+
+  .icon.track {
+    background-image: svg-url-icon-dataset($white);
+  }
+
+  .icon.report {
+    background-image: svg-url-icon-record-report($white);
+    background-size: 45%;
+  }
+
+  .label {
+    color: $eu-jade-dark;
+    font-weight: bold;
+    margin-left: 6px;
+    white-space: nowrap;
+  }
+}
+
+.submit-button {
+  &:hover {
+    background: transparent;
+    .icon {
+      background-color: #fff;
+      background-image: svg-url-icon-lightbulb($eu-jade);
+    }
+    .icon.track {
+      background-image: svg-url-icon-dataset($eu-jade);
+    }
+    .icon.report {
+      background-image: svg-url-icon-record-report($eu-jade);
+    }
+    .label {
+      color: $eu-jade;
+    }
+  }
+
+  &:active:hover {
+    .icon {
+      background-image: svg-url-icon-lightbulb($eu-light-orange);
+      border-color: $eu-light-orange;
+    }
+    .icon.track {
+      background-image: svg-url-icon-dataset($eu-light-orange);
+    }
+    .icon.report {
+      background-image: svg-url-icon-record-report($eu-light-orange);
+    }
+    .label {
+      color: $eu-light-orange;
+    }
+  }
+
+  &[disabled] {
+    cursor: default;
+    pointer-events: none;
+    .icon {
+      background-image: svg-url-icon-lightbulb($gray-light);
+      background-color: transparent;
+      border-color: transparent;
+    }
+
+    .icon.track {
+      background-image: svg-url-icon-dataset($gray-light);
+    }
+
+    .icon.report {
+      background-image: svg-url-icon-record-report($gray-light);
+      background-size: 45%;
+    }
+
+    .label {
+      color: $gray-light;
+    }
   }
 }

@@ -145,66 +145,66 @@ describe('WizardComponent', () => {
       const form = component.uploadComponent.form;
 
       // STEP 0
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
       (form.get('name') as FormControl).setValue('A');
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
 
       (form.get('country') as FormControl).setValue('Greece');
       (form.get('language') as FormControl).setValue('Greek');
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
 
       (form.get('uploadProtocol') as FormControl).setValue(ProtocolType.HTTP_HARVEST);
       (form.get('url') as FormControl).setValue('http://x');
-      expect(component.stepIsComplete(0)).toBeTruthy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
 
       (form.get('name') as FormControl).setValue(' ');
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
 
       (form.get('name') as FormControl).setValue('A');
-      expect(component.stepIsComplete(0)).toBeTruthy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
 
       (form.get('uploadProtocol') as FormControl).setValue(ProtocolType.OAIPMH_HARVEST);
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
 
       (form.get('harvestUrl') as FormControl).setValue('http://x');
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
 
       (form.get('setSpec') as FormControl).setValue('X');
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
 
       (form.get('metadataFormat') as FormControl).setValue('X');
-      expect(component.stepIsComplete(0)).toBeTruthy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
 
       (form.get('uploadProtocol') as FormControl).setValue(ProtocolType.ZIP_UPLOAD);
-      expect(component.stepIsComplete(0)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
 
       (form.get('dataset') as FormControl).setValue(testFile);
-      expect(component.stepIsComplete(0)).toBeTruthy();
+      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
 
       // STEP 1
 
-      expect(component.stepIsComplete(1)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.PROGRESS_TRACK)).toBeFalsy();
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue(' ');
-      expect(component.stepIsComplete(1)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.PROGRESS_TRACK)).toBeFalsy();
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
-      expect(component.stepIsComplete(1)).toBeTruthy();
+      expect(component.stepIsComplete(WizardStepType.PROGRESS_TRACK)).toBeTruthy();
 
       // STEP 2
 
-      expect(component.stepIsComplete(2)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.REPORT)).toBeFalsy();
       (component.formRecord.get('recordToTrack') as FormControl).setValue(' ');
-      expect(component.stepIsComplete(2)).toBeFalsy();
+      expect(component.stepIsComplete(WizardStepType.REPORT)).toBeFalsy();
 
       (component.formRecord.get('recordToTrack') as FormControl).setValue('1');
-      expect(component.stepIsComplete(2)).toBeTruthy();
+      expect(component.stepIsComplete(WizardStepType.REPORT)).toBeTruthy();
     });
 
     it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
       spyOn(component, 'clearDataPollers');
-      component.onSubmitProgress();
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).not.toHaveBeenCalled();
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
-      component.onSubmitProgress();
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
       tick(1);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(2);
@@ -213,17 +213,17 @@ describe('WizardComponent', () => {
 
       spyOn(component, 'progressComplete').and.callFake(() => false);
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
-      component.onSubmitProgress();
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
       tick(1);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
 
       // with location update
 
-      component.onSubmitProgress(true);
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
       tick(1);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(5);
-      component.onSubmitProgress(true);
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
       tick(1);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(6);
 
@@ -245,21 +245,19 @@ describe('WizardComponent', () => {
       component.isPollingProgress = true;
       expect(component.getNavOrbConfigInner(1)['indicate-polling']).toBeTruthy();
 
-      expect(component.getNavOrbConfigInner(2)['indicate-polling']).toBeFalsy();
+      expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeFalsy();
       component.isPollingRecord = true;
-      expect(component.getNavOrbConfigInner(2)['indicate-polling']).toBeTruthy();
+      expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeTruthy();
     });
 
     it('should get if the step is progress or report', () => {
-      component.currentStepIndex = 0;
+      component.setStep(0, false, false);
       expect(component.getIsRecordTrack(0)).toEqual(false);
       expect(component.getIsProgressTrack(0)).toEqual(false);
-      expect(component.getIsProgressTrackOrReport(0)).toEqual(false);
       expect(component.getIsProgressTrackOrReport()).toEqual(false);
-      expect(component.getIsProgressTrackOrReport(2)).toEqual(true);
-      component.currentStepIndex = 1;
+      component.setStep(1, false, false);
       expect(component.getIsProgressTrackOrReport()).toEqual(true);
-      component.currentStepIndex = 2;
+      component.setStep(3, false, false);
       expect(component.getIsProgressTrackOrReport()).toEqual(true);
     });
 
@@ -285,10 +283,10 @@ describe('WizardComponent', () => {
     it('should set the step', fakeAsync(() => {
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
-      expect(component.datasetOrbsHidden).toBeTruthy();
+      expect(component.hiddenOrbs[0]).toBeTruthy();
       expect(component.currentStepIndex).toEqual(1);
       component.setStep(0, false, false);
-      expect(component.datasetOrbsHidden).toBeFalsy();
+      expect(component.hiddenOrbs[0]).toBeFalsy();
       tick(1);
       expect(component.currentStepIndex).toEqual(0);
       expect(form.enable).not.toHaveBeenCalled();
@@ -352,7 +350,7 @@ describe('WizardComponent', () => {
       component.progressData = mockDataset;
       expect(component.error).toBeFalsy();
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
-      component.onSubmitProgress();
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       tick(1);
       expect(component.error).toBeTruthy();
       expect(component.progressData).toBeFalsy();
@@ -364,11 +362,11 @@ describe('WizardComponent', () => {
     it('should handle record form errors', fakeAsync(() => {
       component.recordReport = mockRecordReport;
       expect(component.error).toBeFalsy();
-      component.onSubmitRecord();
+      component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
       expect(component.error).toBeFalsy();
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
       (component.formRecord.get(formNameRecordId) as FormControl).setValue('2');
-      component.onSubmitRecord();
+      component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
       tick(1);
       expect(component.error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();

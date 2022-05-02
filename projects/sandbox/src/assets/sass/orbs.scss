@@ -421,11 +421,12 @@ $orb-border-radius: 1.5em;
 }
 
 .dataset-orbs-hidden {
-  .orb-container:not(.progress-orb-container, .report-orb-container) .nav-orb.labelled {
+  .upload-orb {
     display: none;
   }
 
   .report-orb-container,
+  .problem-orb-container,
   .progress-orb-container {
     flex-basis: 100%;
     text-align: center;

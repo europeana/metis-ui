@@ -112,7 +112,6 @@ context('Sandbox', () => {
       cy.get(selectorInputRecordId).should('have.value', otherRecordId);
 
       // go back twice
-
       cy.go('back');
       cy.get(selectorInputRecordId).should('have.value', originalRecordId);
 
