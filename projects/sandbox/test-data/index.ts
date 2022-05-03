@@ -424,9 +424,10 @@ new (class extends TestDataServer {
 
         if (regProblemPattern && regProblemPattern.length > 1) {
           const id = parseInt(regProblemPattern[1]);
+
           let problemPatternId = 0;
 
-          const generateProblem = (): ProblemPattern => {
+          const generateProblem = (recordId?: string): ProblemPattern => {
             problemPatternId = problemPatternId++;
             return {
               problemPatternDescription: {
@@ -437,7 +438,7 @@ new (class extends TestDataServer {
               recordOccurrences: 1,
               recordAnalysisList: [
                 {
-                  recordId: '/60/_urn_www_culture_si_images_pageid_15067',
+                  recordId: recordId ? recordId : '/60/_urn_www_culture_si_images_pageid_15067',
                   problemOccurrenceList: [
                     {
                       messageReport:
@@ -451,13 +452,18 @@ new (class extends TestDataServer {
           };
 
           if (route.indexOf('get-record-pattern-analysis') > -1) {
-            response.end(JSON.stringify([generateProblem()]));
+            const recordId = route.match(/recordId=([A-Za-z0-9_]+)/);
+            if (recordId && recordId.length > 1) {
+              response.end(JSON.stringify([generateProblem(recordId[1])]));
+            } else {
+              response.end(JSON.stringify([generateProblem()]));
+            }
             return;
           } else if (route.indexOf('get-dataset-pattern-analysis') > -1) {
             const problemsDataset = {
               datasetId: `${id}`,
               executionStep: 'step',
-              executionTimestamp: 'timestamp',
+              executionTimestamp: `${new Date().toISOString()}`,
               problemPatternList: [generateProblem(), generateProblem(), generateProblem()]
             } as ProblemPatternsDataset;
             response.end(JSON.stringify(problemsDataset));
