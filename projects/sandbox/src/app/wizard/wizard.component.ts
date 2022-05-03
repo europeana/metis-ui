@@ -77,28 +77,30 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         'harvestUrl',
         'setSpec',
         'metadataFormat'
-      ]
+      ],
+      isHidden: true
     },
     {
       stepType: WizardStepType.PROGRESS_TRACK,
-      fields: ['datasetToTrack']
+      fields: ['datasetToTrack'],
+      isHidden: true
     },
     {
       stepType: WizardStepType.PROBLEMS_DATASET,
-      fields: []
+      fields: [],
+      isHidden: true
     },
     {
       stepType: WizardStepType.REPORT,
-      fields: ['recordToTrack']
+      fields: ['recordToTrack'],
+      isHidden: true
     },
     {
       stepType: WizardStepType.PROBLEMS_RECORD,
-      fields: []
+      fields: [],
+      isHidden: true
     }
   ];
-  hiddenOrbs = Array.from(Array(this.wizardConf.length).keys()).map(() => {
-    return true;
-  });
 
   currentStepIndex = this.getStepIndex(WizardStepType.PROGRESS_TRACK);
   currentStepType = WizardStepType.PROGRESS_TRACK;
@@ -139,7 +141,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       'progress-orb-container': isProgressTrack,
       'problem-orb-container': isProblem,
       'report-orb-container': isRecordTrack,
-      hidden: this.hiddenOrbs[i]
+      hidden: this.wizardConf[i].isHidden
     };
   }
 
@@ -168,9 +170,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const stepConf = this.wizardConf[i];
 
     return {
-      'is-set': this.stepIsComplete(stepConf.stepType),
       'is-active': this.currentStepType === stepConf.stepType,
-      'orb-square': this.getStepIsSubmittable(stepConf),
       'problem-orb': isProblemOrb,
       'progress-orb': isProgressTrack,
       'report-orb': isRecordTrack,
@@ -224,9 +224,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
               this.fillAndSubmitProgressForm(false);
             }
           } else if (window.location.toString().match(/\/new$/)) {
-            this.setStep(0, false, false);
+            this.setStep(this.getStepIndex(WizardStepType.UPLOAD), false, false);
           } else {
-            this.hiddenOrbs[this.getStepIndex(WizardStepType.PROGRESS_TRACK)] = false;
+            this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)].isHidden = false;
           }
         })
     );
@@ -349,10 +349,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       return this.formProgress;
     } else if (stepConf.stepType === WizardStepType.REPORT) {
       return this.formRecord;
-    } else if (this.uploadComponent) {
+    } else {
       return this.uploadComponent.form;
     }
-    return undefined;
   }
 
   /**
@@ -367,20 +366,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     return this.wizardConf.findIndex((step: WizardStep) => {
       return step.stepType === stepType;
     });
-  }
-
-  /**
-   * getStepIsSubmittable
-   *
-   * @param { WizardStep } step - the WizardStep to evaluate
-   * @returns boolean
-   **/
-  getStepIsSubmittable(step: WizardStep): boolean {
-    const form = this.getFormGroup(step);
-    if (form) {
-      return form.valid;
-    }
-    return false;
   }
 
   /**
@@ -480,7 +465,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
   /**
    * setStep
-   * Sets the currentStepIndex and hiddenOrbs
+   * Sets the currentStepIndex and isHidden values
    * Optionally resets the form
    * Optionally invokes this.updateLocation
    *
@@ -498,29 +483,25 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     }
     this.currentStepIndex = stepIndex;
     this.currentStepType = this.wizardConf[stepIndex].stepType;
+    this.wizardConf[stepIndex].isHidden = false;
 
     if (this.currentStepType === WizardStepType.UPLOAD) {
-      this.hiddenOrbs[this.getStepIndex(WizardStepType.UPLOAD)] = false;
       if (updateLocation) {
         this.updateLocation(false, false);
       }
     } else if (this.currentStepType === WizardStepType.PROGRESS_TRACK) {
-      this.hiddenOrbs[this.getStepIndex(WizardStepType.PROGRESS_TRACK)] = false;
       if (updateLocation) {
         this.updateLocation(true, false);
       }
     } else if (this.currentStepType === WizardStepType.REPORT) {
-      this.hiddenOrbs[this.getStepIndex(WizardStepType.REPORT)] = false;
       if (updateLocation) {
         this.updateLocation(true, true, false);
       }
     } else if (this.currentStepType === WizardStepType.PROBLEMS_DATASET) {
-      this.hiddenOrbs[this.getStepIndex(WizardStepType.PROBLEMS_DATASET)] = false;
       if (updateLocation) {
         this.updateLocation(true, false, true);
       }
-    } else if (this.currentStepType === WizardStepType.PROBLEMS_RECORD) {
-      this.hiddenOrbs[this.getStepIndex(WizardStepType.PROBLEMS_RECORD)] = false;
+    } else {
       if (updateLocation) {
         this.updateLocation(true, true, true);
       }
@@ -802,34 +783,12 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     let step: WizardStepType;
 
     if (problems) {
-      this.hiddenOrbs[this.getStepIndex(WizardStepType.PROBLEMS_RECORD)] = false;
+      this.wizardConf[this.currentStepIndex].isHidden = false;
       step = WizardStepType.PROBLEMS_RECORD;
     } else {
       step = WizardStepType.REPORT;
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
-  }
-
-  /**
-   * stepIsComplete
-   * Runs partial validation on this.formProgress and returns the validity
-   *
-   * @param { number } step - the index of the WizardStep to evaluate
-   * @returns boolean
-   **/
-  stepIsComplete(stepType: WizardStepType): boolean {
-    const wStep = this.wizardConf.find((step: WizardStep) => {
-      return step.stepType === stepType;
-    }) as WizardStep;
-    const fields = wStep.fields;
-    const form = this.getFormGroup(wStep);
-    if (!form) {
-      return false;
-    }
-    return !fields.find((f: string) => {
-      const val = form.get(f) as FormControl;
-      return !val.valid;
-    });
   }
 }

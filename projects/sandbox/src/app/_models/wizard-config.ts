@@ -25,4 +25,5 @@ export enum WizardStepType {
 export interface WizardStep {
   stepType: WizardStepType;
   fields: Array<string>;
+  isHidden: boolean;
 }

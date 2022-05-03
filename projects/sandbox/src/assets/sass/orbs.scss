@@ -51,10 +51,6 @@ $orb-border-radius: 1.5em;
     }
   }
 
-  &.orb-square {
-    border-radius: 0;
-  }
-
   &.spinner::after {
     content: '';
   }
@@ -70,15 +66,44 @@ $orb-border-radius: 1.5em;
     height: 1em;
   }
 
+  &.problem-orb::before,
   &.progress-orb::before,
   &.report-orb::before,
   &.submitted-orb::before {
     background: svg-url-icon-tick('#{$white}') center 75% / 75% no-repeat $eu-jade-light;
   }
 
-  &.is-set {
+  &:hover {
+    background-color: $white;
+    box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
+    &.indicator-orb::before {
+      background-color: $white;
+    }
+    &.progress-orb::before,
+    &.submitted-orb::before {
+      background-image: svg-url-icon-tick('#000');
+    }
+  }
+
+  &:active {
+    background-color: $white;
+    border-color: $eu-light-orange;
+    color: $eu-light-orange;
+
+    &.indicator-orb::before {
+      border-color: $eu-light-orange;
+      background-color: $white;
+    }
+    &.progress-orb::before,
+    &.submitted-orb::before {
+      background-image: svg-url-icon-tick('#{$eu-light-orange}');
+    }
+  }
+  &.is-active {
     background-color: $eu-light-orange;
     border-color: $white;
+    pointer-events: none;
+
     &:hover {
       border-color: $eu-light-orange;
     }
@@ -104,43 +129,6 @@ $orb-border-radius: 1.5em;
     }
     &.progress-orb:active::before {
       background-image: svg-url-icon-tick('#{$eu-light-orange}');
-    }
-  }
-
-  &:hover {
-    background-color: $white;
-    box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-    &.indicator-orb::before {
-      background-color: $white;
-    }
-    &.progress-orb::before,
-    &.submitted-orb::before {
-      background-image: svg-url-icon-tick('#000');
-    }
-  }
-
-  &:active {
-    background-color: $white;
-    border-color: $eu-light-orange;
-    color: $eu-light-orange;
-
-    &.indicator-orb::before {
-      border-color: $eu-light-orange;
-    }
-    &.progress-orb::before,
-    &.submitted-orb::before {
-      background-image: svg-url-icon-tick('#{$eu-light-orange}');
-    }
-  }
-
-  &.is-active {
-    border-width: 2px;
-    border-color: $eu-yellow;
-    pointer-events: none;
-
-    &.indicator-orb::before {
-      border-color: $eu-yellow;
-      border-width: 2px;
     }
   }
 
@@ -180,6 +168,21 @@ $orb-border-radius: 1.5em;
 
     &.upload-orb:active::after {
       background-image: svg-url-icon-cloud('#{$eu-light-orange}');
+    }
+
+    &.problem-orb::after {
+      background: svg-url-icon-lightbulb('#{$white}') center / 1.5rem no-repeat;
+      content: '';
+      height: 100%;
+      width: 100%;
+    }
+
+    &.problem-orb:hover::after {
+      background-image: svg-url-icon-lightbulb('#000');
+    }
+
+    &.problem-orb:active::after {
+      background-image: svg-url-icon-lightbulb('#{$eu-light-orange}');
     }
 
     &.progress-orb::after {
@@ -384,17 +387,6 @@ $orb-border-radius: 1.5em;
       background-image: svg-url-icon-classes('#{$eu-light-orange}');
     }
   }
-
-  &.is-active.is-set {
-    border-color: $white;
-    &:hover {
-      border-color: $eu-light-orange;
-    }
-    &::before {
-      border-color: $white;
-    }
-  }
-
   &.indicate-complete,
   &.indicate-polling,
   &.spinner {
@@ -425,9 +417,7 @@ $orb-border-radius: 1.5em;
     display: none;
   }
 
-  .report-orb-container,
-  .problem-orb-container,
-  .progress-orb-container {
+  .orb-container {
     flex-basis: 100%;
     text-align: center;
   }

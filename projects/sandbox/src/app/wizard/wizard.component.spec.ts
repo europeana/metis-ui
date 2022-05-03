@@ -6,7 +6,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
+import { FileUploadComponent, ProtocolFieldSetComponent } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
@@ -22,7 +22,6 @@ import { WizardComponent } from './wizard.component';
 describe('WizardComponent', () => {
   let component: WizardComponent;
   let fixture: ComponentFixture<WizardComponent>;
-  const testFile = new File([], 'file.zip', { type: 'zip' });
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
   const formNameDatasetId = 'datasetToTrack';
@@ -73,8 +72,18 @@ describe('WizardComponent', () => {
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeFalsy();
 
-      params.next({ id: '1' });
+      queryParams.next({ view: 'problems' });
+
+      expect(component.trackDatasetId).toBeTruthy();
+      expect(component.trackRecordId).toBeFalsy();
+
       queryParams.next({ recordId: '2' });
+
+      expect(component.trackDatasetId).toBeTruthy();
+      expect(component.trackRecordId).toBeTruthy();
+
+      params.next({ id: '1' });
+      queryParams.next({ recordId: '2', view: 'problems' });
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
@@ -122,6 +131,12 @@ describe('WizardComponent', () => {
       expect(component.getFormGroup({ stepType: WizardStepType.UPLOAD } as WizardStep)).toEqual(
         component.uploadComponent.form
       );
+      expect(component.getFormGroup({ stepType: WizardStepType.REPORT } as WizardStep)).toEqual(
+        component.formRecord
+      );
+      expect(
+        component.getFormGroup({ stepType: WizardStepType.PROBLEMS_DATASET } as WizardStep)
+      ).toEqual(component.uploadComponent.form);
     });
 
     it('should reset the busy flags', () => {
@@ -139,64 +154,6 @@ describe('WizardComponent', () => {
       expect(component.progressComplete()).toBeTruthy();
       component.progressData.status = DatasetStatus.IN_PROGRESS;
       expect(component.progressComplete()).toBeFalsy();
-    });
-
-    it('should tell if the steps are complete', () => {
-      const form = component.uploadComponent.form;
-
-      // STEP 0
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-      (form.get('name') as FormControl).setValue('A');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-
-      (form.get('country') as FormControl).setValue('Greece');
-      (form.get('language') as FormControl).setValue('Greek');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-
-      (form.get('uploadProtocol') as FormControl).setValue(ProtocolType.HTTP_HARVEST);
-      (form.get('url') as FormControl).setValue('http://x');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
-
-      (form.get('name') as FormControl).setValue(' ');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-
-      (form.get('name') as FormControl).setValue('A');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
-
-      (form.get('uploadProtocol') as FormControl).setValue(ProtocolType.OAIPMH_HARVEST);
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-
-      (form.get('harvestUrl') as FormControl).setValue('http://x');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-
-      (form.get('setSpec') as FormControl).setValue('X');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-
-      (form.get('metadataFormat') as FormControl).setValue('X');
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
-
-      (form.get('uploadProtocol') as FormControl).setValue(ProtocolType.ZIP_UPLOAD);
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeFalsy();
-
-      (form.get('dataset') as FormControl).setValue(testFile);
-      expect(component.stepIsComplete(WizardStepType.UPLOAD)).toBeTruthy();
-
-      // STEP 1
-
-      expect(component.stepIsComplete(WizardStepType.PROGRESS_TRACK)).toBeFalsy();
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue(' ');
-      expect(component.stepIsComplete(WizardStepType.PROGRESS_TRACK)).toBeFalsy();
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
-      expect(component.stepIsComplete(WizardStepType.PROGRESS_TRACK)).toBeTruthy();
-
-      // STEP 2
-
-      expect(component.stepIsComplete(WizardStepType.REPORT)).toBeFalsy();
-      (component.formRecord.get('recordToTrack') as FormControl).setValue(' ');
-      expect(component.stepIsComplete(WizardStepType.REPORT)).toBeFalsy();
-
-      (component.formRecord.get('recordToTrack') as FormControl).setValue('1');
-      expect(component.stepIsComplete(WizardStepType.REPORT)).toBeTruthy();
     });
 
     it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
@@ -261,33 +218,14 @@ describe('WizardComponent', () => {
       expect(component.getIsProgressTrackOrReport()).toEqual(true);
     });
 
-    it('should get if the step is submittable', () => {
+    it('should set the step', () => {
       const form = component.uploadComponent.form;
-      component.setStep(0);
-      const wizardStep = component.wizardConf[0];
-      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
-
-      (form.get('name') as FormControl).setValue('A');
-      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
-
-      (form.get('country') as FormControl).setValue('Greece');
-      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
-
-      (form.get('language') as FormControl).setValue('Greek');
-      expect(component.getStepIsSubmittable(wizardStep)).toEqual(false);
-
-      (form.get('dataset') as FormControl).setValue(testFile);
-      expect(component.getStepIsSubmittable(wizardStep)).toEqual(true);
-    });
-
-    it('should set the step', fakeAsync(() => {
-      const form = component.uploadComponent.form;
+      const conf = component.wizardConf;
       spyOn(form, 'enable');
-      expect(component.hiddenOrbs[0]).toBeTruthy();
+      expect(conf[0].isHidden).toBeTruthy();
       expect(component.currentStepIndex).toEqual(1);
       component.setStep(0, false, false);
-      expect(component.hiddenOrbs[0]).toBeFalsy();
-      tick(1);
+      expect(conf[0].isHidden).toBeFalsy();
       expect(component.currentStepIndex).toEqual(0);
       expect(form.enable).not.toHaveBeenCalled();
       component.setStep(0, true);
@@ -295,7 +233,31 @@ describe('WizardComponent', () => {
       form.disable();
       component.setStep(0, true);
       expect(form.enable).toHaveBeenCalled();
-    }));
+    });
+
+    it('should show the orbs', () => {
+      const conf = component.wizardConf;
+      expect(conf[0].isHidden).toBeTruthy();
+      expect(conf[1].isHidden).toBeFalsy();
+      expect(conf[2].isHidden).toBeTruthy();
+      expect(conf[3].isHidden).toBeTruthy();
+      expect(conf[4].isHidden).toBeTruthy();
+
+      component.setStep(0, false, false);
+      expect(conf[0].isHidden).toBeFalsy();
+
+      component.setStep(1, false, false);
+      expect(conf[1].isHidden).toBeFalsy();
+
+      component.setStep(2, false, false);
+      expect(conf[2].isHidden).toBeFalsy();
+
+      component.setStep(3, false, false);
+      expect(conf[3].isHidden).toBeFalsy();
+
+      component.setStep(4, false, false);
+      expect(conf[4].isHidden).toBeFalsy();
+    });
 
     it('should validate the dataset id', () => {
       const frmCtrl = (val: string): FormControl => {

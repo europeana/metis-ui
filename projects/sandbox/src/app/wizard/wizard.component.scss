@@ -154,6 +154,7 @@ $wizard-border-radius: 1.5em;
 
   &[disabled] {
     cursor: default;
+    opacity: 0.5;
     pointer-events: none;
     .icon {
       background-image: svg-url-icon-lightbulb($gray-light);

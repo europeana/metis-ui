@@ -1,7 +1,9 @@
 <main class="wizard">
   <div
     class="wizard-head"
-    [ngClass]="{ 'dataset-orbs-hidden': hiddenOrbs[getStepIndex(EnumWizardStepType.UPLOAD)] }"
+    [ngClass]="{
+      'dataset-orbs-hidden': wizardConf[getStepIndex(EnumWizardStepType.UPLOAD)].isHidden
+    }"
   >
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <h1 class="header-text" *ngIf="currentStepIndex === i">
