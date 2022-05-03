@@ -66,10 +66,7 @@ $orb-border-radius: 1.5em;
     height: 1em;
   }
 
-  &.problem-orb::before,
-  &.progress-orb::before,
-  &.report-orb::before,
-  &.submitted-orb::before {
+  &.indicator-orb:not([data-indicator])::before {
     background: svg-url-icon-tick('#{$white}') center 75% / 75% no-repeat $eu-jade-light;
   }
 
@@ -79,8 +76,7 @@ $orb-border-radius: 1.5em;
     &.indicator-orb::before {
       background-color: $white;
     }
-    &.progress-orb::before,
-    &.submitted-orb::before {
+    &:not([data-indicator])::before {
       background-image: svg-url-icon-tick('#000');
     }
   }
@@ -94,8 +90,7 @@ $orb-border-radius: 1.5em;
       border-color: $eu-light-orange;
       background-color: $white;
     }
-    &.progress-orb::before,
-    &.submitted-orb::before {
+    &.indicator-orb:not([data-indicator])::before {
       background-image: svg-url-icon-tick('#{$eu-light-orange}');
     }
   }
@@ -103,32 +98,12 @@ $orb-border-radius: 1.5em;
     background-color: $eu-light-orange;
     border-color: $white;
     pointer-events: none;
-
-    &:hover {
-      border-color: $eu-light-orange;
-    }
     &.indicator-orb::before {
       border-color: $white;
       background-color: $eu-light-orange;
     }
-    &.progress-orb::before {
+    &.indicator-orb:not([data-indicator])::before {
       background-image: svg-url-icon-tick('#{$white}');
-    }
-    &.indicator-orb:hover::before {
-      border-color: $eu-light-orange;
-      background-color: $white;
-    }
-    &.progress-orb:hover::before {
-      background-image: svg-url-icon-tick('#000');
-    }
-    &:active {
-      color: $eu-light-orange;
-    }
-    &.indicator-orb:active::before {
-      background-color: $white;
-    }
-    &.progress-orb:active::before {
-      background-image: svg-url-icon-tick('#{$eu-light-orange}');
     }
   }
 
@@ -138,18 +113,15 @@ $orb-border-radius: 1.5em;
       background-position: center;
       background-repeat: no-repeat;
     }
-    &.progress-orb::before,
-    &.submitted-orb::before {
+    &.indicator-orb:not([data-indicator])::before {
       background-image: svg-url-icon-spin('#{$white}');
     }
 
-    &.progress-orb:hover::before,
-    &.submitted-orb:hover::before {
+    &.indicator-orb:not([data-indicator]):hover::before {
       background-image: svg-url-icon-spin('#000');
     }
 
-    &.progress-orb:active::before,
-    &.submitted-orb:active::before {
+    &.indicator-orb:not([data-indicator]):active::before {
       background-image: svg-url-icon-spin('#{$eu-light-orange}');
     }
   }
@@ -387,8 +359,7 @@ $orb-border-radius: 1.5em;
       background-image: svg-url-icon-classes('#{$eu-light-orange}');
     }
   }
-  &.indicate-complete,
-  &.indicate-polling,
+  &.indicator-orb:not([data-indicator]),
   &.spinner {
     &::before {
       content: '';

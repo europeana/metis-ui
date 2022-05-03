@@ -65,29 +65,40 @@ describe('WizardComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should subscribe to parameter changes', () => {
+    it('should subscribe to parameter changes', fakeAsync(() => {
       expect(component.trackDatasetId).toBeFalsy();
       params.next({ id: '1' });
+      tick(1);
       fixture.detectChanges();
+
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeFalsy();
 
       queryParams.next({ view: 'problems' });
+      tick(1);
+      fixture.detectChanges();
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeFalsy();
 
       queryParams.next({ recordId: '2' });
+      tick(1);
+      fixture.detectChanges();
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
 
       params.next({ id: '1' });
       queryParams.next({ recordId: '2', view: 'problems' });
+      tick(1);
+      fixture.detectChanges();
 
       expect(component.trackDatasetId).toBeTruthy();
       expect(component.trackRecordId).toBeTruthy();
-    });
+
+      component.cleanup();
+      tick(apiSettings.interval);
+    }));
 
     it('should get the connect classes', () => {
       let cClasses = component.getConnectClasses('top');
@@ -140,10 +151,12 @@ describe('WizardComponent', () => {
     });
 
     it('should reset the busy flags', () => {
-      component.isBusy = true;
+      component.wizardConf[0].isBusy = true;
+      component.wizardConf[4].isBusy = true;
       component.isPollingProgress = true;
       component.resetBusy();
-      expect(component.isBusy).toBeFalsy();
+      expect(component.wizardConf[0].isBusy).toBeFalsy();
+      expect(component.wizardConf[4].isBusy).toBeFalsy();
       expect(component.isPollingProgress).toBeFalsy();
     });
 
@@ -205,17 +218,6 @@ describe('WizardComponent', () => {
       expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeFalsy();
       component.isPollingRecord = true;
       expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeTruthy();
-    });
-
-    it('should get if the step is progress or report', () => {
-      component.setStep(0, false, false);
-      expect(component.getIsRecordTrack(0)).toEqual(false);
-      expect(component.getIsProgressTrack(0)).toEqual(false);
-      expect(component.getIsProgressTrackOrReport()).toEqual(false);
-      component.setStep(1, false, false);
-      expect(component.getIsProgressTrackOrReport()).toEqual(true);
-      component.setStep(3, false, false);
-      expect(component.getIsProgressTrackOrReport()).toEqual(true);
     });
 
     it('should set the step', () => {
@@ -310,11 +312,11 @@ describe('WizardComponent', () => {
 
     it('should handle progress form errors', fakeAsync(() => {
       component.progressData = mockDataset;
-      expect(component.error).toBeFalsy();
+      expect(component.wizardConf[1].error).toBeFalsy();
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       tick(1);
-      expect(component.error).toBeTruthy();
+      expect(component.wizardConf[1].error).toBeTruthy();
       expect(component.progressData).toBeFalsy();
       expect(component.formProgress.value.datasetToTrack).toBeTruthy();
       component.cleanup();
@@ -322,15 +324,19 @@ describe('WizardComponent', () => {
     }));
 
     it('should handle record form errors', fakeAsync(() => {
+      const index = component.getStepIndex(WizardStepType.REPORT);
       component.recordReport = mockRecordReport;
-      expect(component.error).toBeFalsy();
+      expect(component.wizardConf[index].error).toBeFalsy();
+
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
-      expect(component.error).toBeFalsy();
+      expect(component.wizardConf[index].error).toBeFalsy();
+
       (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
       (component.formRecord.get(formNameRecordId) as FormControl).setValue('2');
+
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
       tick(1);
-      expect(component.error).toBeTruthy();
+      expect(component.wizardConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
       component.cleanup();
       tick(apiSettings.interval);

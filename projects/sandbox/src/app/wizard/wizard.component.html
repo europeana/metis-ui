@@ -24,7 +24,7 @@
           *ngSwitchCase="EnumWizardStepType.PROBLEMS_DATASET"
           i18n="upload step title@@titleProblemsDataset"
         >
-          Problem-Patterns (Dataset)
+          Problem Patterns (Dataset)
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumWizardStepType.REPORT"
@@ -36,7 +36,7 @@
           *ngSwitchCase="EnumWizardStepType.PROBLEMS_RECORD"
           i18n="upload step title@@titleProblemsRecord"
         >
-          Problem-Patterns (Record)
+          Problem Patterns (Record)
         </ng-container>
       </h1>
     </ng-container>
@@ -53,13 +53,13 @@
     <sb-upload
       [showing]="wizardConf[currentStepIndex].stepType === EnumWizardStepType.UPLOAD"
       (notifySubmitted)="dataUploaded($event)"
-      (notifyBusy)="setBusy($event)"
+      (notifyBusy)="setBusyUpload($event)"
     >
     </sb-upload>
 
     <form
       [ngClass]="{
-        active: getIsProgressTrack(currentStepIndex)
+        active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROGRESS_TRACK
       }"
       [formGroup]="formProgress"
       (ngSubmit)="onSubmitProgress($event.submitter.id, true)"
@@ -126,7 +126,7 @@
             type="submit"
           >
             <span class="icon"></span>
-            <span class="label">Problem-Patterns</span>
+            <span class="label">Problem Patterns</span>
           </button>
         </div>
         <ng-container *ngIf="formProgress.get('datasetToTrack')?.errors; let errors">
@@ -178,7 +178,7 @@
             type="submit"
           >
             <span class="icon"></span>
-            <span class="label">Problem-Patterns</span>
+            <span class="label">Problem Patterns</span>
           </button>
         </div>
         <ng-container *ngIf="formRecord.get('recordToTrack')?.errors; let errors">
@@ -214,6 +214,6 @@
         </li>
       </ul>
     </ng-container>
-    <sb-http-errors [error]="error"></sb-http-errors>
+    <sb-http-errors [error]="wizardConf[currentStepIndex].error"></sb-http-errors>
   </div>
 </main>

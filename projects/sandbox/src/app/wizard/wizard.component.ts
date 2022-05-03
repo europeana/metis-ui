@@ -20,6 +20,8 @@ import {
   DatasetStatus,
   FieldOption,
   FixedLengthArray,
+  ProblemPattern,
+  ProblemPatternsDataset,
   RecordReport,
   WizardStep,
   WizardStepType
@@ -46,18 +48,16 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
 
-  error: HttpErrorResponse | undefined;
   formProgress: FormGroup;
   formRecord: FormGroup;
-  isBusy = false;
-  isBusyProgress = false;
-  isBusyReport = false;
   isPollingProgress = false;
   isPollingRecord = false;
   EnumProtocolType = ProtocolType;
   EnumWizardStepType = WizardStepType;
   progressData?: Dataset;
   recordReport?: RecordReport;
+  problemPatternsDataset?: ProblemPatternsDataset;
+  problemPatternsRecord?: Array<ProblemPattern>;
   trackDatasetId?: string;
   trackRecordId?: string;
   countryList: Array<FieldOption>;
@@ -134,13 +134,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns ngClass-compatible Map
    **/
   getNavOrbConfigOuter(i: number): ClassMap {
-    const isProgressTrack = this.getIsProgressTrack(i);
     const isProblem = this.getIsProblem(i);
-    const isRecordTrack = this.getIsRecordTrack(i);
     return {
-      'progress-orb-container': isProgressTrack,
+      'progress-orb-container': this.wizardConf[i].stepType === WizardStepType.PROGRESS_TRACK,
       'problem-orb-container': isProblem,
-      'report-orb-container': isRecordTrack,
+      'report-orb-container': this.wizardConf[i].stepType === WizardStepType.REPORT,
       hidden: this.wizardConf[i].isHidden
     };
   }
@@ -158,15 +156,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.getStepIndex(WizardStepType.PROBLEMS_DATASET),
       this.getStepIndex(WizardStepType.PROBLEMS_RECORD)
     ].includes(i);
-    const isProgressTrack = this.getIsProgressTrack(i);
-    const isRecordTrack = this.getIsRecordTrack(i);
+    const isProgressTrack = this.wizardConf[i].stepType === WizardStepType.PROGRESS_TRACK;
+    const isRecordTrack = this.wizardConf[i].stepType === WizardStepType.REPORT;
     const isUpload = this.getIsUpload(i);
-
-    const isLoading =
-      (isProgressTrack && this.isBusyProgress) ||
-      (isRecordTrack && this.isBusyReport) ||
-      this.isBusy;
-
+    const isLoading = !!this.wizardConf[i].isBusy;
     const stepConf = this.wizardConf[i];
 
     return {
@@ -176,10 +169,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       'report-orb': isRecordTrack,
       'upload-orb': isUpload,
       'indicator-orb': this.getStepIsIndicator(i),
-      'submitted-orb': this.getStepIsSubmitted(stepConf),
       spinner: isLoading,
-      'indicate-complete':
-        (!isRecordTrack && this.progressComplete()) || (isRecordTrack && !!this.recordReport),
       'indicate-polling':
         (this.isPollingProgress && isProgressTrack) || (this.isPollingRecord && isRecordTrack)
     };
@@ -272,15 +262,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     this.formRecord = this.fb.group({
       recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
     });
-    this.subs.push(
-      this.formProgress.valueChanges.subscribe(() => {
-        this.error = undefined;
-        if (this.uploadComponent) {
-          this.uploadComponent.error = undefined;
-        }
-      })
-    );
-    this.error = undefined;
+
+    this.wizardConf.forEach((step: WizardStep) => {
+      step.error = undefined;
+      step.isBusy = false;
+    });
   }
 
   /**
@@ -369,27 +355,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
-   * getStepIsSubmitted
-   *
-   * Template utility for setting 'submitted-orb' class on the step orbs
-   * @param { number } stepIndex - the WizardStep index
-   *
-   * @returns boolean
-   **/
-  getStepIsSubmitted(step: WizardStep): boolean {
-    if (step.stepType === WizardStepType.UPLOAD) {
-      const uc = this.uploadComponent;
-      if (uc && uc.form) {
-        return uc.form.disabled;
-      }
-      return false;
-    } else if (step.stepType === WizardStepType.REPORT) {
-      return !!this.trackRecordId;
-    }
-    return !!this.trackDatasetId;
-  }
-
-  /**
    * getStepIsIndicator
    *
    * Template utility for setting 'indicator-orb' class on the step orbs
@@ -401,22 +366,14 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const step = this.wizardConf[stepIndex];
     if (step.stepType === WizardStepType.PROGRESS_TRACK) {
       return true;
-    }
-    if (step.stepType === WizardStepType.REPORT) {
+    } else if (step.stepType === WizardStepType.REPORT) {
       return !!this.trackRecordId;
+    } else if (step.stepType === WizardStepType.PROBLEMS_DATASET) {
+      return !!this.problemPatternsDataset;
+    } else if (step.stepType === WizardStepType.PROBLEMS_RECORD) {
+      return !!this.problemPatternsRecord;
     }
     return this.uploadComponent && this.uploadComponent.form && this.uploadComponent.form.disabled;
-  }
-
-  /**
-   * getIsProgressTrack
-   * Returns if the WizardStep at the given conf index's stepType is PROGRESS_TRACK
-   *
-   * @param { number } stepIndex - the config index to evaluate
-   * @returns boolean
-   **/
-  getIsProgressTrack(stepIndex: number): boolean {
-    return this.wizardConf[stepIndex].stepType === WizardStepType.PROGRESS_TRACK;
   }
 
   /**
@@ -428,16 +385,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   getIsRecordTrack(stepIndex: number): boolean {
     return this.wizardConf[stepIndex].stepType === WizardStepType.REPORT;
-  }
-
-  /**
-   * getIsProgressTrackOrReport
-   * Returns true if the stepType of the WizardStep at currentStepIndex is PROGRESS_TRACK in REPORT
-   *
-   * @returns boolean
-   **/
-  getIsProgressTrackOrReport(): boolean {
-    return [WizardStepType.PROGRESS_TRACK, WizardStepType.REPORT].includes(this.currentStepType);
   }
 
   /**
@@ -514,9 +461,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    *
    **/
   resetBusy(): void {
-    this.isBusy = false;
-    this.isBusyProgress = false;
-    this.isBusyReport = false;
+    this.wizardConf.forEach((step: WizardStep) => {
+      step.isBusy = false;
+    });
     this.isPollingProgress = false;
     this.isPollingRecord = false;
   }
@@ -553,16 +500,38 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     return res;
   }
 
+  /**
+   * submitDatasetProblemPatterns
+   * Submits the trackDatasetId (problem patterns)
+   **/
   submitDatasetProblemPatterns(): void {
-    console.log('submitDatasetProblemPatterns');
+    const confStep = this.wizardConf[this.getStepIndex(WizardStepType.PROBLEMS_DATASET)];
+    confStep.isBusy = true;
+
+    this.subs.push(
+      this.sandbox.getProblemPatternsDataset(`${this.trackDatasetId}`).subscribe(
+        (problemPatternsDataset: ProblemPatternsDataset) => {
+          this.problemPatternsDataset = problemPatternsDataset;
+          confStep.error = undefined;
+          confStep.isBusy = false;
+        },
+        (err: HttpErrorResponse) => {
+          this.problemPatternsDataset = undefined;
+          confStep.error = err;
+          this.resetBusy();
+          return err;
+        }
+      )
+    );
   }
 
   /**
    * submitDatasetProgress
-   *
+   * Submits the trackDatasetId
    **/
   submitDatasetProgress(): void {
-    this.isBusyProgress = true;
+    const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)];
+    stepConf.isBusy = true;
     this.isPollingProgress = true;
 
     this.clearDataPollers();
@@ -592,11 +561,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             this.clearDataPollers();
           }
         }
-        this.error = undefined;
+        stepConf.error = undefined;
       },
       (err: HttpErrorResponse) => {
         this.progressData = undefined;
-        this.error = err;
+        stepConf.error = err;
         this.resetBusy();
         return err;
       }
@@ -630,12 +599,40 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     }
   }
 
+  /**
+   * submitRecordProblemPatterns
+   * Submits the formRecord data (problem patterns)
+   **/
   submitRecordProblemPatterns(): void {
-    console.log('submitRecordProblemPatterns');
+    const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.PROBLEMS_RECORD)];
+    stepConf.isBusy = true;
+
+    this.subs.push(
+      this.sandbox
+        .getProblemPatternsRecord(`${this.trackDatasetId}`, `${this.trackRecordId}`)
+        .subscribe(
+          (problemPatternsRecord: Array<ProblemPattern>) => {
+            this.problemPatternsRecord = problemPatternsRecord;
+            stepConf.error = undefined;
+            stepConf.isBusy = false;
+          },
+          (err: HttpErrorResponse) => {
+            this.problemPatternsRecord = undefined;
+            stepConf.error = err;
+            this.resetBusy();
+            return err;
+          }
+        )
+    );
   }
 
+  /**
+   * submitRecordReport
+   * Submits the formRecord data
+   **/
   submitRecordReport(): void {
-    this.isBusyReport = true;
+    const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.REPORT)];
+    stepConf.isBusy = true;
     this.isPollingRecord = true;
 
     this.subs.push(
@@ -643,11 +640,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         (report: RecordReport) => {
           this.recordReport = report;
           this.resetBusy();
-          this.error = undefined;
+          stepConf.error = undefined;
         },
         (err: HttpErrorResponse): void => {
           this.recordReport = undefined;
-          this.error = err;
+          stepConf.error = err;
           this.resetBusy();
         }
       )
@@ -716,13 +713,13 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
-   * setBusy
-   * sets the isBusy flag
+   * setBusyUpload
+   * sets the "busy" flag in WizardConf
    *
    * @param { boolean } isBusy - the value to set
    **/
-  setBusy(isBusy: boolean): void {
-    this.isBusy = isBusy;
+  setBusyUpload(isBusy: boolean): void {
+    this.wizardConf[this.getStepIndex(WizardStepType.UPLOAD)].isBusy = isBusy;
   }
 
   /**
@@ -748,10 +745,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   fillAndSubmitProgressForm(problems: boolean, updateLocation = true): void {
     (this.formProgress.get('datasetToTrack') as FormControl).setValue(this.trackDatasetId);
-    this.onSubmitProgress(
-      problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
-      updateLocation
-    );
 
     let step: WizardStepType;
 
@@ -762,33 +755,38 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
+
+    this.onSubmitProgress(
+      problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_PROGRESS,
+      updateLocation
+    );
   }
 
   /**
    * fillAndSubmitRecordForm
-   * sets the recordToTrack value in the record form
-   * submits the record form
+   * sets the form values
    * sets currentStepIndex to the report
-   * @param { boolean } problems - flag if loading report or problem-patterns
-   * @param { true } updateLocation - flag onSubmitRecord to update url location
+   * submits the record form
+   * @param { boolean } problems - flag to load report or problem-patterns
+   * @param { true } updateLocation - flag to update url location
    **/
   fillAndSubmitRecordForm(problems: boolean, updateLocation = true): void {
     (this.formProgress.get('datasetToTrack') as FormControl).setValue(this.trackDatasetId);
     (this.formRecord.get('recordToTrack') as FormControl).setValue(this.trackRecordId);
-    this.onSubmitRecord(
-      problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
-      updateLocation
-    );
 
     let step: WizardStepType;
 
     if (problems) {
-      this.wizardConf[this.currentStepIndex].isHidden = false;
       step = WizardStepType.PROBLEMS_RECORD;
     } else {
       step = WizardStepType.REPORT;
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
+
+    this.onSubmitRecord(
+      problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
+      updateLocation
+    );
   }
 }

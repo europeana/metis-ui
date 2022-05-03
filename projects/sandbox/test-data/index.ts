@@ -390,8 +390,10 @@ new (class extends TestDataServer {
             }
           }
 
-          if (recordId === 404) {
-            this.handle404(route, response);
+          if (this.errorCodes.indexOf(`${recordId}`) > -1) {
+            response.statusCode = recordId;
+            response.end();
+            return;
           } else {
             const report = this.reportGenerator.generateReport(recordIdUnparsed);
             if (recordId > 999) {
@@ -423,7 +425,7 @@ new (class extends TestDataServer {
         const regProblemPattern = route.match(/\/pattern-analysis\/([A-Za-z0-9_]+)\/get/);
 
         if (regProblemPattern && regProblemPattern.length > 1) {
-          const id = parseInt(regProblemPattern[1]);
+          const id = regProblemPattern[1];
 
           let problemPatternId = 0;
 
@@ -453,13 +455,29 @@ new (class extends TestDataServer {
 
           if (route.indexOf('get-record-pattern-analysis') > -1) {
             const recordId = route.match(/recordId=([A-Za-z0-9_]+)/);
+
             if (recordId && recordId.length > 1) {
+              if (this.errorCodes.indexOf(recordId[1]) > -1) {
+                response.statusCode = parseInt(recordId[1]);
+                response.end();
+                return;
+              }
+              if (id && this.errorCodes.indexOf(id) > -1) {
+                response.statusCode = parseInt(id);
+                response.end();
+                return;
+              }
               response.end(JSON.stringify([generateProblem(recordId[1])]));
-            } else {
-              response.end(JSON.stringify([generateProblem()]));
+              return;
             }
+            response.end(JSON.stringify([generateProblem()]));
             return;
           } else if (route.indexOf('get-dataset-pattern-analysis') > -1) {
+            if (id && this.errorCodes.indexOf(id) > -1) {
+              response.statusCode = parseInt(id);
+              response.end();
+              return;
+            }
             const problemsDataset = {
               datasetId: `${id}`,
               executionStep: 'step',

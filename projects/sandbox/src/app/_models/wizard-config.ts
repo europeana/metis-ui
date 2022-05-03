@@ -1,3 +1,5 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' | 'unshift';
 
 export type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> = Pick<
@@ -26,4 +28,6 @@ export interface WizardStep {
   stepType: WizardStepType;
   fields: Array<string>;
   isHidden: boolean;
+  isBusy?: boolean;
+  error?: HttpErrorResponse;
 }
