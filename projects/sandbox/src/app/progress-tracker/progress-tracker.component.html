@@ -43,7 +43,13 @@
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
           <ng-template #conditionalWrapWarnLink
-            ><span>{{ getFormattedCreationDate() }}</span></ng-template
+            ><span>{{
+              formatDate(
+                progressData['dataset-info']['creation-date'],
+                'dd/mm/yyyy, HH:mm:ss',
+                'en-GB'
+              )
+            }}</span></ng-template
           >
         </li>
         <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>

@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Dataset, DatasetStatus, ProgressByStep, StepStatus, StepStatusClass } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -9,6 +10,8 @@ import { ModalConfirmService, SubscriptionManager } from 'shared';
   styleUrls: ['./progress-tracker.component.scss']
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
+  public formatDate = formatDate;
+
   @Input() progressData: Dataset;
   @Input() datasetId: number;
   @Input() isLoading: boolean;
@@ -21,24 +24,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
-  }
-
-  /**
-   * getFormattedCreationDate
-   * Template utility to format the progressData creationDate as dd/mm/yyyy, hh:mm:ss
-   * @returns string
-   **/
-  getFormattedCreationDate(): string {
-    const dateData = this.progressData['dataset-info']['creation-date'];
-    const padNumber = (n: number): string => {
-      return n < 10 ? `0${n}` : `${n}`;
-    };
-    const date = new Date(dateData);
-    const rTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(padNumber).join(':');
-    const rDate = [date.getDate(), date.getMonth() + 1, date.getFullYear()]
-      .map(padNumber)
-      .join('/');
-    return `${rDate}, ${rTime}`;
   }
 
   /**
