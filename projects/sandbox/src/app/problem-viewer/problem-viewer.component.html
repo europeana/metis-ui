@@ -1,4 +1,14 @@
 <div class="wrapper">
+  <!-- View Raw Checkbox -->
+  <ng-template #viewRawData>
+    <li class="toggle-view-raw" [ngClass]="{ 'fill-height': !!problemPatternsRecord }">
+      <input id="view-raw" type="checkbox" [(ngModel)]="viewRaw" />
+      <label for="view-raw" class="title">
+        view raw data
+      </label>
+    </li>
+  </ng-template>
+
   <!-- Description -->
   <ng-template #tmpDescription let-description="description">
     <div>
@@ -28,11 +38,10 @@
   <ng-template #tmpRecordAnalysisList let-analyses="analyses">
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
-        <li class="bold">
-          {{ analysis.recordId }}
-        </li>
-        <li class="analysis-item">
-          <a class="link-report" (click)="openLink(analysis.recordId)">View Report</a>
+        <li>
+          <a class="bold link-report link-internal" (click)="openLink(analysis.recordId)">
+            {{ analysis.recordId }}
+          </a>
         </li>
         <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
           <ng-content
@@ -83,17 +92,12 @@
       </li>
       <li>
         <ul>
-          <li>
-            <label class="title"
-              >view raw data
-              <input type="checkbox" [(ngModel)]="viewRaw" />
-            </label>
-          </li>
+          <ng-content *ngTemplateOutlet="viewRawData"></ng-content>
         </ul>
       </li>
     </div>
 
-    <div class="problem-viewer">
+    <div class="problem-viewer record">
       <ng-container *ngIf="!viewRaw">
         <ng-container *ngFor="let problemPattern of problemPatternsRecord">
           <ng-content
@@ -126,16 +130,11 @@
       <li>
         <ul>
           <li>
-            <h2 class="capitalise title">
+            <h3 class="capitalise title step">
               {{ ppd.executionStep }}
-            </h2>
+            </h3>
           </li>
-          <li>
-            <label class="title"
-              >view raw data
-              <input type="checkbox" [(ngModel)]="viewRaw" />
-            </label>
-          </li>
+          <ng-content *ngTemplateOutlet="viewRawData"></ng-content>
         </ul>
       </li>
     </div>

@@ -799,5 +799,4 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     this.trackRecordId = recordId;
     this.fillAndSubmitRecordForm(false);
   }
-
 }

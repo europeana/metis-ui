@@ -54,7 +54,6 @@ export class ProblemViewerComponent {
   }
 
   openLink(recordId: string): void {
-    console.log('open link... ' + recordId);
     this.openLinkEvent.emit(recordId);
   }
 }

@@ -6,6 +6,7 @@ import {
   DatasetStatus,
   FieldOption,
   ProblemPattern,
+  ProblemPatternId,
   ProblemPatternQualityDimension,
   ProblemPatternsDataset,
   ProgressByStep,
@@ -434,7 +435,7 @@ new (class extends TestDataServer {
             problemPatternId = problemPatternId++;
             return {
               problemPatternDescription: {
-                problemPatternId: `P${problemPatternId}`,
+                problemPatternId: `P${problemPatternId}` as ProblemPatternId,
                 problemPatternSeverity: 'WARNING',
                 problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
               },

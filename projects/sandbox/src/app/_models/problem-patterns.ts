@@ -1,16 +1,37 @@
+export enum ProblemPatternId {
+  P1 = 'P1',
+  P2 = 'P2',
+  P3 = 'P3',
+  P5 = 'P5',
+  P6 = 'P6',
+  P7 = 'P7',
+  P9 = 'P9',
+  P12 = 'P12'
+}
+
 export enum ProblemPatternSeverity {
   NOTICE = 'NOTICE',
-  WARNING = 'WARNING'
+  WARNING = 'WARNING',
+  ERROR = 'ERROR',
+  FATAL = 'FATAL'
 }
 
 export enum ProblemPatternQualityDimension {
   ACCURACY = 'ACCURACY',
+  AVAILABILITY = 'AVAILABILITY',
   COMPLETENESS = 'COMPLETENESS',
-  CONCISENESS = 'CONCISENESS'
+  CONCISENESS = 'CONCISENESS',
+  COMPLIANCE = 'COMPLIANCE',
+  CONSISTENCY = 'CONSISTENCY',
+  TIMELINESS = 'TIMELINESS',
+  LICENSING = 'LICENSING',
+  INTERLINKING = 'INTERLINKING',
+  UNDERSTANDABILITY = 'UNDERSTANDABILITY',
+  REPRESENTATIONAL = 'REPRESENTATIONAL'
 }
 
 export interface ProblemPatternDescription {
-  problemPatternId: string;
+  problemPatternId: ProblemPatternId;
   problemPatternSeverity: ProblemPatternSeverity;
   problemPatternQualityDimension: ProblemPatternQualityDimension;
 }

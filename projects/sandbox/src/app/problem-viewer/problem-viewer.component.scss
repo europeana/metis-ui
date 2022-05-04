@@ -1,6 +1,10 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+label {
+  padding-bottom: 0;
+}
+
 .analysis-list {
   margin-left: 2em;
   .analysis-item {
@@ -25,14 +29,16 @@
 }
 
 .link-report {
-  margin-left: 1em;
   &::before {
-    background: svg-url-icon-record-report($eu-jade-dark) center no-repeat;
+    background-repeat: no-repeat;
+    background-position: center 2px;
     content: '';
     display: inline-block;
-    height: 12px;
-    width: 13px;
-    margin: 0 3px 0 2px;
+    height: 14px;
+    width: 10px;
+  }
+  &:hover::before {
+    background-image: svg-url-icon-record-report($eu-jade-dark);
   }
 }
 
@@ -61,6 +67,12 @@
   padding: 0.5em;
 }
 
+.step {
+  $h2-height: 38px;
+  height: $h2-height;
+  line-height: $h2-height;
+}
+
 .title {
   color: $eu-jade-dark;
 }
@@ -69,8 +81,14 @@
   margin-left: 1em;
 }
 
-.orange {
-  color: $eu-orange;
+.toggle-view-raw {
+  display: flex;
+  align-items: center;
+
+  &.fill-height {
+    position: relative;
+    top: 9px;
+  }
 }
 
 .warning-icon {

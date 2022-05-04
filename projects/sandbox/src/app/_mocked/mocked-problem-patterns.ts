@@ -1,5 +1,6 @@
 import {
   ProblemPattern,
+  ProblemPatternId,
   ProblemPatternQualityDimension,
   ProblemPatternsDataset,
   ProblemPatternSeverity
@@ -12,7 +13,7 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
   problemPatternList: [
     {
       problemPatternDescription: {
-        problemPatternId: 'P0',
+        problemPatternId: ProblemPatternId.P5,
         problemPatternSeverity: ProblemPatternSeverity.WARNING,
         problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
       },
@@ -32,7 +33,7 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
     },
     {
       problemPatternDescription: {
-        problemPatternId: 'P0',
+        problemPatternId: ProblemPatternId.P1,
         problemPatternSeverity: ProblemPatternSeverity.WARNING,
         problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
       },
@@ -52,7 +53,7 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
     },
     {
       problemPatternDescription: {
-        problemPatternId: 'P0',
+        problemPatternId: ProblemPatternId.P2,
         problemPatternSeverity: ProblemPatternSeverity.WARNING,
         problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
       },
@@ -76,7 +77,7 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
 export const mockProblemPatternsRecord: Array<ProblemPattern> = [
   {
     problemPatternDescription: {
-      problemPatternId: 'P0',
+      problemPatternId: ProblemPatternId.P3,
       problemPatternSeverity: ProblemPatternSeverity.WARNING,
       problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
     },
