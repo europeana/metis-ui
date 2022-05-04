@@ -17,6 +17,8 @@ export interface ProblemPatternDescription {
 
 export interface ProblemOccurrence {
   messageReport: string;
+  messageReportError?: string;
+  messageReportCopy?: string;
   affectedRecordIds: Array<string>;
 }
 

@@ -74,6 +74,31 @@
     </form>
 
     <div
+      [ngClass]="{
+        active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROBLEMS_DATASET
+      }"
+      class="wizard-section"
+    >
+      <sb-problem-viewer
+        *ngIf="problemPatternsDataset"
+        [problemPatternsDataset]="problemPatternsDataset"
+        (openLinkEvent)="followProblemPatternLink($event)"
+      ></sb-problem-viewer>
+    </div>
+
+    <div
+      [ngClass]="{
+        active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROBLEMS_RECORD
+      }"
+      class="wizard-section"
+    >
+      <sb-problem-viewer
+        *ngIf="problemPatternsRecord"
+        [problemPatternsRecord]="problemPatternsRecord"
+      ></sb-problem-viewer>
+    </div>
+
+    <div
       [ngClass]="{ active: getIsRecordTrack(currentStepIndex) }"
       [formGroup]="formRecord"
       class="wizard-section"

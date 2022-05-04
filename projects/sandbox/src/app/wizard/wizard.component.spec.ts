@@ -301,6 +301,15 @@ describe('WizardComponent', () => {
 
       expect(component.validateRecordId(({} as unknown) as FormControl)).toBeFalsy();
     });
+
+    it('should follow the problem pattern link', () => {
+      const recordId = '/0/123';
+      spyOn(component, 'setStep');
+      spyOn(component, 'submitRecordReport');
+      component.followProblemPatternLink(recordId);
+      expect(component.setStep).toHaveBeenCalled();
+      expect(component.submitRecordReport).toHaveBeenCalled();
+    });
   });
 
   describe('Error handling', () => {

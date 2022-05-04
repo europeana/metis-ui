@@ -1,4 +1,4 @@
-<form [formGroup]="form" [ngClass]="{ hidden: !showing }">
+<form [formGroup]="form" [ngClass]="{ hidden: !showing }" (ngSubmit)="onSubmitDataset()">
   <div class="form-group">
     <label
       for="name"
@@ -91,13 +91,14 @@
   </div>
 
   <button
+    type="submit"
+    class="submit-button"
     [disabled]="!form.valid"
     data-e2e="submit-upload"
-    class="submit"
-    (click)="onSubmitDataset()"
     i18n="Submit button|uploads the dataset button@@submitDataset"
   >
-    Submit
+    <span class="icon upload"></span>
+    <span class="label">Submit</span>
   </button>
 
   <sb-http-errors [error]="error"></sb-http-errors>

@@ -365,9 +365,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   getStepIsIndicator(stepIndex: number): boolean {
     const step = this.wizardConf[stepIndex];
     if (step.stepType === WizardStepType.PROGRESS_TRACK) {
-      return true;
+      return !!this.progressData;
     } else if (step.stepType === WizardStepType.REPORT) {
-      return !!this.trackRecordId;
+      return !!this.recordReport;
     } else if (step.stepType === WizardStepType.PROBLEMS_DATASET) {
       return !!this.problemPatternsDataset;
     } else if (step.stepType === WizardStepType.PROBLEMS_RECORD) {
@@ -597,6 +597,17 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.submitDatasetProblemPatterns();
       }
     }
+  }
+
+  /**
+   * followProblemPatternLink
+   * Handles click on (internal) link
+   * @param { string } recordId - the record to open
+   **/
+  followProblemPatternLink(recordId: string): void {
+    (this.formRecord.get('recordToTrack') as FormControl).setValue(recordId);
+    this.setStep(this.getStepIndex(WizardStepType.REPORT));
+    this.submitRecordReport();
   }
 
   /**

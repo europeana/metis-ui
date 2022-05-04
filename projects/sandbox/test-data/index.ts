@@ -426,6 +426,7 @@ new (class extends TestDataServer {
 
         if (regProblemPattern && regProblemPattern.length > 1) {
           const id = regProblemPattern[1];
+          const idNumeric = parseInt(id);
 
           let problemPatternId = 0;
 
@@ -460,31 +461,41 @@ new (class extends TestDataServer {
               if (this.errorCodes.indexOf(recordId[1]) > -1) {
                 response.statusCode = parseInt(recordId[1]);
                 response.end();
-                return;
+              } else {
+                const result = JSON.stringify([generateProblem(recordId[1])]);
+                if (idNumeric > 999) {
+                  setTimeout(() => {
+                    response.end(result);
+                  }, idNumeric);
+                } else {
+                  response.end(result);
+                }
               }
-              if (id && this.errorCodes.indexOf(id) > -1) {
-                response.statusCode = parseInt(id);
-                response.end();
-                return;
-              }
-              response.end(JSON.stringify([generateProblem(recordId[1])]));
               return;
             }
+
             response.end(JSON.stringify([generateProblem()]));
             return;
           } else if (route.indexOf('get-dataset-pattern-analysis') > -1) {
             if (id && this.errorCodes.indexOf(id) > -1) {
-              response.statusCode = parseInt(id);
+              response.statusCode = idNumeric;
               response.end();
               return;
             }
             const problemsDataset = {
-              datasetId: `${id}`,
+              datasetId: id,
               executionStep: 'step',
               executionTimestamp: `${new Date().toISOString()}`,
               problemPatternList: [generateProblem(), generateProblem(), generateProblem()]
             } as ProblemPatternsDataset;
-            response.end(JSON.stringify(problemsDataset));
+
+            if (idNumeric > 999) {
+              setTimeout(() => {
+                response.end(JSON.stringify(problemsDataset));
+              }, idNumeric);
+            } else {
+              response.end(JSON.stringify(problemsDataset));
+            }
             return;
           }
         }

@@ -1,11 +1,86 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-.disabled {
-  border-color: $eu-jade-light;
-  background-color: $eu-jade-disabled;
-  pointer-events: none;
-  &::after {
-    opacity: 0.35;
-    text-shadow: -1px -1px 1px rgba(165, 228, 206, 0.1), 1px 1px 1px rgba(165, 228, 206, 0.5);
+.analysis-list {
+  margin-left: 2em;
+  .analysis-item {
+  }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.capitalise {
+  text-transform: capitalize;
+}
+
+.header-info {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  & > :last-child {
+    text-align: right;
+  }
+}
+
+.link-report {
+  margin-left: 1em;
+  &::before {
+    background: svg-url-icon-record-report($eu-jade-dark) center no-repeat;
+    content: '';
+    display: inline-block;
+    height: 12px;
+    width: 13px;
+    margin: 0 3px 0 2px;
+  }
+}
+
+.message-copy {
+  background-color: yellow;
+  font-style: italic;
+}
+
+.problem-occurence {
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+  padding: 0 1em;
+}
+
+.problem-pattern {
+  margin-bottom: 1em;
+}
+
+.problem-viewer {
+  background: #fff;
+  margin-bottom: 1em;
+  max-height: 28em;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 0.5em;
+}
+
+.title {
+  color: $eu-jade-dark;
+}
+
+.title-record-occurences {
+  margin-left: 1em;
+}
+
+.orange {
+  color: $eu-orange;
+}
+
+.warning-icon {
+  color: red;
+  &::before {
+    content: '';
+    display: inline-block;
+    height: 12px;
+    width: 13px;
+    background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+    margin: 0 3px 0 0;
   }
 }
