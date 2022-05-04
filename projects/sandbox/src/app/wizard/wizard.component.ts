@@ -600,17 +600,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
-   * followProblemPatternLink
-   * Handles click on (internal) link
-   * @param { string } recordId - the record to open
-   **/
-  followProblemPatternLink(recordId: string): void {
-    (this.formRecord.get('recordToTrack') as FormControl).setValue(recordId);
-    this.setStep(this.getStepIndex(WizardStepType.REPORT));
-    this.submitRecordReport();
-  }
-
-  /**
    * submitRecordProblemPatterns
    * Submits the formRecord data (problem patterns)
    **/
@@ -800,4 +789,15 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       updateLocation
     );
   }
+
+  /**
+   * followProblemPatternLink
+   * Handles click on (internal) link
+   * @param { string } recordId - the record to open
+   **/
+  followProblemPatternLink(recordId: string): void {
+    this.trackRecordId = recordId;
+    this.fillAndSubmitRecordForm(false);
+  }
+
 }
