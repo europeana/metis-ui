@@ -1,7 +1,8 @@
 import {
-  //selectorBtnNext,
+  selectorBtnSubmitDatasetProblems,
   selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
+  selectorBtnSubmitRecordProblems,
   selectorInputCountry,
   selectorInputDatasetId,
   selectorInputLanguage,
@@ -9,6 +10,8 @@ import {
   selectorInputRecordId,
   selectorInputZipFile
 } from '../support/selectors';
+
+const noScrollCheck = { ensureScrollable: false };
 
 export const uploadFile = (fileName: string, fileType = '', selector: string): void => {
   cy.get(selector).then((subject) => {
@@ -28,26 +31,32 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
 
 export const fillUploadForm = (testDatasetName: string): void => {
   cy.get(selectorInputName).type(testDatasetName);
-  //cy.get(selectorBtnNext).click();
   cy.get(selectorInputCountry).select('Greece');
   cy.get(selectorInputLanguage).select('Greek');
-  //cy.get(selectorBtnNext).click();
   uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
 };
 
-export const fillProgressForm = (id: string): void => {
+export const fillProgressForm = (id: string, problems = false): void => {
   cy.get(selectorInputDatasetId)
     .clear()
     .type(id);
-  cy.get(selectorBtnSubmitProgress).click();
+  if (problems) {
+    cy.get(selectorBtnSubmitDatasetProblems).click();
+  } else {
+    cy.get(selectorBtnSubmitProgress).click();
+  }
 };
 
-export const fillRecordForm = (id: string): void => {
-  cy.scrollTo('bottom');
+export const fillRecordForm = (id: string, problems = false): void => {
+  cy.scrollTo('bottom', noScrollCheck);
   cy.wait(500);
   cy.get(selectorInputRecordId)
     .should('be.visible')
     .clear()
     .type(id);
-  cy.get(selectorBtnSubmitRecord).click();
+  if (problems) {
+    cy.get(selectorBtnSubmitRecordProblems).click();
+  } else {
+    cy.get(selectorBtnSubmitRecord).click();
+  }
 };
