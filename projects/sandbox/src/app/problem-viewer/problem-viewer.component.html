@@ -1,11 +1,20 @@
 <div class="wrapper">
   <!-- View Raw Checkbox -->
-  <ng-template #viewRawData>
+  <ng-template #viewRawData let-isRecord="isRecord">
     <li class="toggle-view-raw" [ngClass]="{ 'fill-height': !!problemPatternsRecord }">
-      <input id="view-raw" type="checkbox" [(ngModel)]="viewRaw" />
-      <label for="view-raw" class="title">
+      <input [id]="'view-raw-' + isRecord" type="checkbox" [(ngModel)]="viewRaw" />
+      <label [for]="'view-raw-' + isRecord" class="title">
         view raw data
       </label>
+    </li>
+  </ng-template>
+
+  <!-- Internal Link -->
+  <ng-template #internalLinkItem let-recordId="recordId">
+    <li>
+      <a class="bold link-report link-internal" (click)="openLink(recordId)">
+        {{ recordId }}
+      </a>
     </li>
   </ng-template>
 
@@ -13,42 +22,59 @@
   <ng-template #tmpDescription let-description="description">
     <div>
       <span class="bold">{{ description.problemPatternId }}</span>
-      &nbsp;
-      <span class="warning-icon">{{ description.problemPatternSeverity }}</span>
-      {{ description.problemPatternQualityDimension }}
+      <span
+        class="warning-icon"
+        [ngClass]="{
+          warning: description.problemPatternSeverity === ProblemPatternSeverity.WARNING,
+          error: description.problemPatternSeverity === ProblemPatternSeverity.ERROR,
+          fatal: description.problemPatternSeverity === ProblemPatternSeverity.FATAL
+        }"
+        >{{ description.problemPatternSeverity }}</span
+      >
+      <span class="dimension italic">{{ description.problemPatternQualityDimension }}</span>
     </div>
   </ng-template>
 
   <!-- Problem Occurence -->
-  <ng-template #tmpProblemOccurenceListItem let-occurence="occurence">
-    <li class="problem-occurence">
-      <div *ngIf="occurence.affectedRecordIds.length > 0">
-        affectedRecordIds: {{ occurence.affectedRecordIds }}
-      </div>
-
-      <span class="bold"> {{ occurence.messageReportError }}:&nbsp;</span>
-
-      <span class="message-copy">
-        {{ occurence.messageReportCopy }}
-      </span>
-    </li>
+  <ng-template #tmpProblemOccurenceList let-occurence="occurence">
+    <ul class="problem-occurence list">
+      <li>
+        <span class="bold"> {{ occurence.messageReportError }}:&nbsp;</span>
+        <span class="italic message-copy">
+          {{ occurence.messageReportCopy }}
+        </span>
+      </li>
+      <li
+        class="list-opener"
+        *ngIf="occurence.affectedRecordIds.length > 0"
+        [ngClass]="{ 'is-open': occurence.affectedRecordIdsShowing }"
+      >
+        <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
+          Affected Record Ids
+        </a>
+      </li>
+      <li *ngIf="occurence.affectedRecordIds.length > 0">
+        <ul class="list" [ngClass]="{ closed: !occurence.affectedRecordIdsShowing }">
+          <ng-container *ngFor="let id of occurence.affectedRecordIds">
+            <ng-content
+              *ngTemplateOutlet="internalLinkItem; context: { recordId: id }"
+            ></ng-content>
+          </ng-container>
+        </ul>
+      </li>
+    </ul>
   </ng-template>
 
   <!-- Record Analysis List -->
   <ng-template #tmpRecordAnalysisList let-analyses="analyses">
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
-        <li>
-          <a class="bold link-report link-internal" (click)="openLink(analysis.recordId)">
-            {{ analysis.recordId }}
-          </a>
-        </li>
+        <ng-content
+          *ngTemplateOutlet="internalLinkItem; context: { recordId: analysis.recordId }"
+        ></ng-content>
         <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
           <ng-content
-            *ngTemplateOutlet="
-              tmpProblemOccurenceListItem;
-              context: { occurence: problemOccurrence }
-            "
+            *ngTemplateOutlet="tmpProblemOccurenceList; context: { occurence: problemOccurrence }"
           ></ng-content>
         </li>
       </ng-container>
@@ -86,15 +112,11 @@
       <li>
         <ul>
           <li>
-            <h2 class="title">Record</h2>
+            <h2 class="title">{{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}</h2>
           </li>
         </ul>
       </li>
-      <li>
-        <ul>
-          <ng-content *ngTemplateOutlet="viewRawData"></ng-content>
-        </ul>
-      </li>
+      <ng-content *ngTemplateOutlet="viewRawData; context: { isRecord: true }"></ng-content>
     </div>
 
     <div class="problem-viewer record">
@@ -134,7 +156,7 @@
               {{ ppd.executionStep }}
             </h3>
           </li>
-          <ng-content *ngTemplateOutlet="viewRawData"></ng-content>
+          <ng-content *ngTemplateOutlet="viewRawData; context: { isRecord: false }"></ng-content>
         </ul>
       </li>
     </div>

@@ -1,7 +1,9 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+input,
 label {
+  cursor: pointer;
   padding-bottom: 0;
 }
 
@@ -19,6 +21,12 @@ label {
   text-transform: capitalize;
 }
 
+.dimension {
+  &::before {
+    content: ' - ';
+  }
+}
+
 .header-info {
   display: flex;
   justify-content: space-between;
@@ -28,8 +36,13 @@ label {
   }
 }
 
+.italic {
+  font-style: italic;
+}
+
 .link-report {
   &::before {
+    background-image: svg-url-icon-record-report($eu-jade);
     background-repeat: no-repeat;
     background-position: center 2px;
     content: '';
@@ -40,18 +53,61 @@ label {
   &:hover::before {
     background-image: svg-url-icon-record-report($eu-jade-dark);
   }
+  &:active:hover::before {
+    background-image: svg-url-icon-record-report($eu-light-orange);
+  }
 }
 
 .message-copy {
-  background-color: yellow;
-  font-style: italic;
+  background-color: lemonchiffon;
+}
+
+.list {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  &.closed {
+    height: 0;
+  }
+}
+
+.list,
+.title-record-occurences {
+  padding-left: 1em;
+}
+
+.list-opener {
+  color: $eu-jade-dark;
+  display: block;
+  width: 100%;
+
+  &::after {
+    $transitionTime: 80ms;
+    content: '\25B6';
+    display: inline-block;
+    font-size: 12px;
+    left: 1px;
+    position: relative;
+    top: -2px;
+    transform: rotate(0deg);
+    transition: top ease-in-out $transitionTime, transform ease-in-out $transitionTime;
+  }
+
+  &:hover::after {
+    color: $eu-jade-darkest;
+    color: $eu-light-orange;
+  }
+
+  &.is-open::after {
+    top: 0;
+    transform: rotate(90deg);
+  }
 }
 
 .problem-occurence {
   display: flex;
   flex-direction: row;
   flex-flow: wrap;
-  padding: 0 1em;
 }
 
 .problem-pattern {
@@ -77,13 +133,10 @@ label {
   color: $eu-jade-dark;
 }
 
-.title-record-occurences {
-  margin-left: 1em;
-}
-
 .toggle-view-raw {
-  display: flex;
   align-items: center;
+  display: flex;
+  white-space: nowrap;
 
   &.fill-height {
     position: relative;
@@ -92,7 +145,9 @@ label {
 }
 
 .warning-icon {
-  color: red;
+  font-weight: bold;
+  margin-left: 6px;
+  text-transform: uppercase;
   &::before {
     content: '';
     display: inline-block;
@@ -100,5 +155,20 @@ label {
     width: 13px;
     background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
     margin: 0 3px 0 0;
+  }
+  &.warning {
+    &::before {
+      background: svg-url-icon-warning($eu-yellow) center no-repeat;
+    }
+  }
+  &.error {
+    &::before {
+      background: svg-url-icon-warning($eu-light-orange) center no-repeat;
+    }
+  }
+  &.fatal {
+    &::before {
+      background: svg-url-icon-warning($eu-red) center no-repeat;
+    }
   }
 }

@@ -41,6 +41,7 @@ export interface ProblemOccurrence {
   messageReportError?: string;
   messageReportCopy?: string;
   affectedRecordIds: Array<string>;
+  affectedRecordIdsShowing?: boolean;
 }
 
 export interface RecordAnalysis {

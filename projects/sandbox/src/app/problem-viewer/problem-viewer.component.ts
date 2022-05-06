@@ -3,6 +3,7 @@ import {
   ProblemOccurrence,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternSeverity,
   RecordAnalysis
 } from '../_models';
 import { formatDate } from '@angular/common';
@@ -14,6 +15,7 @@ import { formatDate } from '@angular/common';
 })
 export class ProblemViewerComponent {
   public formatDate = formatDate;
+  public ProblemPatternSeverity = ProblemPatternSeverity;
   datasetId: string;
   viewRaw = false;
   _problemPatternsDataset?: ProblemPatternsDataset;

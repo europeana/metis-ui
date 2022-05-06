@@ -25,9 +25,10 @@ export enum WizardStepType {
 }
 
 export interface WizardStep {
-  stepType: WizardStepType;
-  fields: Array<string>;
-  isHidden: boolean;
-  isBusy?: boolean;
   error?: HttpErrorResponse;
+  isBusy?: boolean;
+  isHidden: boolean;
+  lastLoadedIdDataset?: string;
+  lastLoadedIdRecord?: string;
+  stepType: WizardStepType;
 }
