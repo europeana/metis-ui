@@ -2,17 +2,6 @@
 
 $wizard-border-radius: 1.5em;
 
-.buttons {
-  display: flex;
-  margin-top: 1.25em;
-  justify-content: space-between;
-
-  align-content: center;
-  .inline-text {
-    align-self: center;
-  }
-}
-
 .wizard {
   background-color: $eu-light-jade-classic;
   border: 1px solid $eu-jade-dark;
@@ -59,5 +48,13 @@ $wizard-border-radius: 1.5em;
   input {
     min-width: 0;
     max-width: 65%;
+
+    & + button {
+      margin-left: 2em;
+    }
   }
+}
+
+.inline-texts {
+  margin-top: 2em;
 }

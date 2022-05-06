@@ -9,6 +9,7 @@ import {
   ProblemPatternId,
   ProblemPatternQualityDimension,
   ProblemPatternsDataset,
+  ProblemPatternSeverity,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData
@@ -271,6 +272,56 @@ new (class extends TestDataServer {
   }
 
   /**
+   * generateProblem
+   *
+   * @param ( string ) recordId
+   **/
+  generateProblem(datasetId: number, patternId: number, recordId?: string): ProblemPattern {
+    const severities = [
+      ProblemPatternSeverity.ERROR,
+      ProblemPatternSeverity.FATAL,
+      ProblemPatternSeverity.NOTICE,
+      ProblemPatternSeverity.WARNING
+    ];
+    const dimensions = [
+      ProblemPatternQualityDimension.ACCURACY,
+      ProblemPatternQualityDimension.AVAILABILITY,
+      ProblemPatternQualityDimension.COMPLETENESS,
+      ProblemPatternQualityDimension.CONCISENESS,
+      ProblemPatternQualityDimension.COMPLIANCE,
+      ProblemPatternQualityDimension.CONSISTENCY,
+      ProblemPatternQualityDimension.TIMELINESS,
+      ProblemPatternQualityDimension.LICENSING,
+      ProblemPatternQualityDimension.INTERLINKING,
+      ProblemPatternQualityDimension.UNDERSTANDABILITY,
+      ProblemPatternQualityDimension.REPRESENTATIONAL
+    ];
+
+    return {
+      problemPatternDescription: {
+        problemPatternId: `P${patternId}` as ProblemPatternId,
+        problemPatternSeverity: severities[patternId % severities.length],
+        problemPatternQualityDimension: dimensions[patternId % dimensions.length]
+      },
+      recordOccurrences: 1,
+      recordAnalysisList: [
+        {
+          recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
+          problemOccurrenceList: [
+            {
+              messageReport:
+                'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard',
+              affectedRecordIds: Object.keys(new Array(patternId % 5).fill(null)).map((i) => {
+                return `/${datasetId}/${patternId + i}`;
+              })
+            }
+          ]
+        }
+      ]
+    } as ProblemPattern;
+  }
+
+  /**
    * handleRequest
    *
    * Handles POST data and 404s.
@@ -429,41 +480,15 @@ new (class extends TestDataServer {
           const id = regProblemPattern[1];
           const idNumeric = parseInt(id);
 
-          let problemPatternId = 0;
-
-          const generateProblem = (recordId?: string): ProblemPattern => {
-            problemPatternId = problemPatternId++;
-            return {
-              problemPatternDescription: {
-                problemPatternId: `P${problemPatternId}` as ProblemPatternId,
-                problemPatternSeverity: 'WARNING',
-                problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
-              },
-              recordOccurrences: 1,
-              recordAnalysisList: [
-                {
-                  recordId: recordId ? recordId : '/60/_urn_www_culture_si_images_pageid_15067',
-                  problemOccurrenceList: [
-                    {
-                      messageReport:
-                        'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard',
-                      affectedRecordIds: []
-                    }
-                  ]
-                }
-              ]
-            } as ProblemPattern;
-          };
-
           if (route.indexOf('get-record-pattern-analysis') > -1) {
-            const recordId = route.match(/recordId=([A-Za-z0-9_]+)/);
+            const recordId = route.match(/recordId=([A-Za-z0-9_\-%]+)/);
 
             if (recordId && recordId.length > 1) {
               if (this.errorCodes.indexOf(recordId[1]) > -1) {
                 response.statusCode = parseInt(recordId[1]);
                 response.end();
               } else {
-                const result = JSON.stringify([generateProblem(recordId[1])]);
+                const result = JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
                 if (idNumeric > 999) {
                   setTimeout(() => {
                     response.end(result);
@@ -474,8 +499,7 @@ new (class extends TestDataServer {
               }
               return;
             }
-
-            response.end(JSON.stringify([generateProblem()]));
+            response.end(JSON.stringify([this.generateProblem(idNumeric, 1)]));
             return;
           } else if (route.indexOf('get-dataset-pattern-analysis') > -1) {
             if (id && this.errorCodes.indexOf(id) > -1) {
@@ -485,9 +509,11 @@ new (class extends TestDataServer {
             }
             const problemsDataset = {
               datasetId: id,
-              executionStep: 'step',
+              executionStep: `step ${id}`,
               executionTimestamp: `${new Date().toISOString()}`,
-              problemPatternList: [generateProblem(), generateProblem(), generateProblem()]
+              problemPatternList: Object.keys(new Array(15).fill(null)).map((i) => {
+                return this.generateProblem(idNumeric, parseInt(i));
+              })
             } as ProblemPatternsDataset;
 
             if (idNumeric > 999) {

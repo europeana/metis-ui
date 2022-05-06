@@ -51,7 +51,7 @@
   </div>
   <div class="wizard-content">
     <sb-upload
-      [showing]="wizardConf[currentStepIndex].stepType === EnumWizardStepType.UPLOAD"
+      [showing]="currentStepType === EnumWizardStepType.UPLOAD"
       (notifySubmitted)="dataUploaded($event)"
       (notifyBusy)="setBusyUpload($event)"
     >
@@ -59,7 +59,7 @@
 
     <form
       [ngClass]="{
-        active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROGRESS_TRACK
+        active: currentStepType === EnumWizardStepType.PROGRESS_TRACK
       }"
       [formGroup]="formProgress"
       (ngSubmit)="onSubmitProgress($event.submitter.id, true)"
@@ -75,7 +75,7 @@
 
     <div
       [ngClass]="{
-        active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROBLEMS_DATASET
+        active: currentStepType === EnumWizardStepType.PROBLEMS_DATASET
       }"
       class="wizard-section"
     >
@@ -88,18 +88,19 @@
 
     <div
       [ngClass]="{
-        active: wizardConf[currentStepIndex].stepType === EnumWizardStepType.PROBLEMS_RECORD
+        active: currentStepType === EnumWizardStepType.PROBLEMS_RECORD
       }"
       class="wizard-section"
     >
       <sb-problem-viewer
         *ngIf="problemPatternsRecord"
         [problemPatternsRecord]="problemPatternsRecord"
+        (openLinkEvent)="followProblemPatternLink($event)"
       ></sb-problem-viewer>
     </div>
 
     <div
-      [ngClass]="{ active: getIsRecordTrack(currentStepIndex) }"
+      [ngClass]="{ active: currentStepType === EnumWizardStepType.REPORT }"
       [formGroup]="formRecord"
       class="wizard-section"
       *ngIf="recordReport"
@@ -217,8 +218,8 @@
     </form>
 
     <ng-container *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
-      <ul>
-        <li *ngIf="getIsRecordTrack(currentStepIndex)">
+      <ul class="inline-texts">
+        <li *ngIf="currentStepType !== EnumWizardStepType.PROGRESS_TRACK">
           <label class="inline-text"
             >Or
             <a

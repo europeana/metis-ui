@@ -152,15 +152,13 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns ngClass-compatible Map
    **/
   getNavOrbConfigInner(i: number): ClassMap {
-    const isProblemOrb = [
-      this.getStepIndex(WizardStepType.PROBLEMS_DATASET),
-      this.getStepIndex(WizardStepType.PROBLEMS_RECORD)
-    ].includes(i);
-    const isProgressTrack = this.wizardConf[i].stepType === WizardStepType.PROGRESS_TRACK;
-    const isRecordTrack = this.wizardConf[i].stepType === WizardStepType.REPORT;
-    const isUpload = this.getIsUpload(i);
-    const isLoading = !!this.wizardConf[i].isBusy;
     const stepConf = this.wizardConf[i];
+    const isProblemOrb = [WizardStepType.PROBLEMS_DATASET, WizardStepType.PROBLEMS_RECORD].includes(
+      stepConf.stepType
+    );
+    const isProgressTrack = stepConf.stepType === WizardStepType.PROGRESS_TRACK;
+    const isRecordTrack = stepConf.stepType === WizardStepType.REPORT;
+    const isUpload = this.getIsUpload(i);
 
     return {
       'is-active': this.currentStepType === stepConf.stepType,
@@ -169,7 +167,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       'report-orb': isRecordTrack,
       'upload-orb': isUpload,
       'indicator-orb': this.getStepIsIndicator(i),
-      spinner: isLoading,
+      spinner: !!stepConf.isBusy,
       'indicate-polling':
         (this.isPollingProgress && isProgressTrack) || (this.isPollingRecord && isRecordTrack)
     };
@@ -374,17 +372,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       return !!this.problemPatternsRecord;
     }
     return this.uploadComponent && this.uploadComponent.form && this.uploadComponent.form.disabled;
-  }
-
-  /**
-   * getIsRecordTrack
-   * Returns true if the stepType of the WizardStep at the given index is REPORT
-   *
-   * @param { number } stepIndex - the config index to evaluate
-   * @returns boolean
-   **/
-  getIsRecordTrack(stepIndex: number): boolean {
-    return this.wizardConf[stepIndex].stepType === WizardStepType.REPORT;
   }
 
   /**

@@ -303,12 +303,12 @@ describe('WizardComponent', () => {
     });
 
     it('should follow the problem pattern link', () => {
-      const recordId = '/0/123';
-      spyOn(component, 'setStep');
+      const recordId = '/1/234';
+      spyOn(component, 'fillAndSubmitRecordForm');
       spyOn(component, 'submitRecordReport');
+      component.trackDatasetId = '1';
       component.followProblemPatternLink(recordId);
-      expect(component.setStep).toHaveBeenCalled();
-      expect(component.submitRecordReport).toHaveBeenCalled();
+      expect(component.fillAndSubmitRecordForm).toHaveBeenCalled();
     });
   });
 
