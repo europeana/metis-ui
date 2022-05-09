@@ -10,6 +10,8 @@ import { FileUploadComponent, ProtocolFieldSetComponent } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
+  mockProblemPatternsDataset,
+  mockProblemPatternsRecord,
   mockRecordReport,
   MockSandboxService,
   MockSandboxServiceErrors
@@ -26,6 +28,14 @@ describe('WizardComponent', () => {
   const queryParams = new BehaviorSubject({} as Params);
   const formNameDatasetId = 'datasetToTrack';
   const formNameRecordId = 'recordToTrack';
+
+  const setFormValueDataset = (val: string): void => {
+    (component.formProgress.get(formNameDatasetId) as FormControl).setValue(val);
+  };
+
+  const setFormValueRecord = (val: string): void => {
+    (component.formRecord.get(formNameRecordId) as FormControl).setValue(val);
+  };
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -100,35 +110,68 @@ describe('WizardComponent', () => {
       tick(apiSettings.interval);
     }));
 
+    it('should get if a step is an indicator', () => {
+      expect(component.getStepIsIndicator(0)).toBeFalsy();
+      expect(component.getStepIsIndicator(0)).toBeFalsy();
+
+      expect(component.getStepIsIndicator(1)).toBeFalsy();
+      component.progressData = Object.assign({}, mockDataset);
+      setFormValueDataset('1');
+      expect(component.getStepIsIndicator(1)).toBeFalsy();
+      component.wizardConf[1].lastLoadedIdDataset = '1';
+      expect(component.getStepIsIndicator(1)).toBeTruthy();
+
+      expect(component.getStepIsIndicator(2)).toBeFalsy();
+      component.problemPatternsDataset = mockProblemPatternsDataset;
+      expect(component.getStepIsIndicator(2)).toBeFalsy();
+      component.wizardConf[2].lastLoadedIdDataset = '1';
+      expect(component.getStepIsIndicator(2)).toBeTruthy();
+
+      expect(component.getStepIsIndicator(3)).toBeFalsy();
+      component.recordReport = mockRecordReport;
+      expect(component.getStepIsIndicator(3)).toBeFalsy();
+      component.wizardConf[3].lastLoadedIdDataset = '1';
+      component.wizardConf[3].lastLoadedIdRecord = '2';
+      expect(component.getStepIsIndicator(3)).toBeFalsy();
+      setFormValueRecord('2');
+      expect(component.getStepIsIndicator(3)).toBeTruthy();
+
+      expect(component.getStepIsIndicator(4)).toBeFalsy();
+      component.problemPatternsRecord = mockProblemPatternsRecord;
+      expect(component.getStepIsIndicator(4)).toBeFalsy();
+      component.wizardConf[4].lastLoadedIdDataset = '1';
+      component.wizardConf[4].lastLoadedIdRecord = '2';
+      expect(component.getStepIsIndicator(4)).toBeTruthy();
+    });
+
     it('should get the connect classes', () => {
       let cClasses = component.getConnectClasses('top');
       expect(cClasses.error).toBeFalsy();
-
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
+      setFormValueDataset('1');
       fixture.detectChanges();
       cClasses = component.getConnectClasses('top');
       expect(cClasses.error).toBeFalsy();
       expect(cClasses.top).toBeFalsy();
 
-      (component.formRecord.get(formNameRecordId) as FormControl).setValue('/1/23');
+      setFormValueRecord('/1/23');
       fixture.detectChanges();
       cClasses = component.getConnectClasses('top');
       expect(cClasses.error).toBeFalsy();
       expect(cClasses.top).toBeTruthy();
 
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('2');
+      setFormValueDataset('2');
       fixture.detectChanges();
       cClasses = component.getConnectClasses('top');
       expect(cClasses.error).toBeTruthy();
       expect(cClasses.top).toBeTruthy();
 
-      (component.formRecord.get(formNameRecordId) as FormControl).setValue('/2/23');
+      setFormValueRecord('/2/23');
       fixture.detectChanges();
       cClasses = component.getConnectClasses('top');
       expect(cClasses.error).toBeFalsy();
       expect(cClasses.top).toBeTruthy();
 
-      (component.formRecord.get(formNameRecordId) as FormControl).setValue('/BBB/23');
+      setFormValueRecord('/BBB/23');
       fixture.detectChanges();
       cClasses = component.getConnectClasses('top');
       expect(cClasses.error).toBeFalsy();
@@ -160,6 +203,19 @@ describe('WizardComponent', () => {
       expect(component.isPollingProgress).toBeFalsy();
     });
 
+    it('should set the busy flag for upload', () => {
+      expect(component.wizardConf[0].isBusy).toBeFalsy();
+      component.setBusyUpload(true);
+      expect(component.wizardConf[0].isBusy).toBeTruthy();
+    });
+
+    it('should set the trackDatasetId on upload success', () => {
+      const testId = '3';
+      expect(component.trackDatasetId).toBeFalsy();
+      component.dataUploaded(testId);
+      expect(component.trackDatasetId).toEqual(testId);
+    });
+
     it('should tell if the progress is complete', () => {
       expect(component.progressComplete()).toBeFalsy();
       component.progressData = Object.assign({}, mockDataset);
@@ -173,7 +229,7 @@ describe('WizardComponent', () => {
       spyOn(component, 'clearDataPollers');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).not.toHaveBeenCalled();
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
+      setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
       tick(1);
@@ -182,7 +238,7 @@ describe('WizardComponent', () => {
       // clear and re-submit
 
       spyOn(component, 'progressComplete').and.callFake(() => false);
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
+      setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
       tick(1);
@@ -322,7 +378,7 @@ describe('WizardComponent', () => {
     it('should handle progress form errors', fakeAsync(() => {
       component.progressData = mockDataset;
       expect(component.wizardConf[1].error).toBeFalsy();
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
+      setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       tick(1);
       expect(component.wizardConf[1].error).toBeTruthy();
@@ -340,8 +396,8 @@ describe('WizardComponent', () => {
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
       expect(component.wizardConf[index].error).toBeFalsy();
 
-      (component.formProgress.get(formNameDatasetId) as FormControl).setValue('1');
-      (component.formRecord.get(formNameRecordId) as FormControl).setValue('2');
+      setFormValueDataset('1');
+      setFormValueRecord('2');
 
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
       tick(1);
@@ -349,6 +405,23 @@ describe('WizardComponent', () => {
       expect(component.recordReport).toBeFalsy();
       component.cleanup();
       tick(apiSettings.interval);
+    }));
+
+    it('should handle problem pattern errors (dataset)', fakeAsync(() => {
+      expect(component.wizardConf[2].error).toBeFalsy();
+      component.trackDatasetId = '1';
+      component.submitDatasetProblemPatterns();
+      tick(1);
+      expect(component.wizardConf[2].error).toBeTruthy();
+    }));
+
+    it('should handle problem pattern errors (record)', fakeAsync(() => {
+      expect(component.wizardConf[4].error).toBeFalsy();
+      component.trackDatasetId = '1';
+      component.trackRecordId = '1/2';
+      component.submitRecordProblemPatterns();
+      tick(1);
+      expect(component.wizardConf[4].error).toBeTruthy();
     }));
   });
 });

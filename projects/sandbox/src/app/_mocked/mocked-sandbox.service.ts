@@ -121,11 +121,25 @@ export class MockSandboxService {
   }
 
   getProblemPatternsDataset(_: string): Observable<ProblemPatternsDataset> {
-    return of(mockProblemPatternsDataset);
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getProblemPatternsDataset throws error`));
+        })
+      );
+    }
+    return of(mockProblemPatternsDataset).pipe(delay(1));
   }
 
   getProblemPatternsRecord(_: string, __: string): Observable<Array<ProblemPattern>> {
-    return of(mockProblemPatternsRecord);
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getProblemPatternsRecord throws error`));
+        })
+      );
+    }
+    return of(mockProblemPatternsRecord).pipe(delay(1));
   }
 }
 

@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProblemViewerComponent } from '.';
+import { mockProblemPatternsDataset, mockProblemPatternsRecord } from '../_mocked';
 
 describe('ProblemViewerComponent', () => {
   let component: ProblemViewerComponent;
@@ -21,5 +22,37 @@ describe('ProblemViewerComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should split the error message (dataset)', () => {
+    const getFirstSplitFieldVal = (): string | undefined => {
+      return mockProblemPatternsDataset.problemPatternList[0].recordAnalysisList[0]
+        .problemOccurrenceList[0].messageReportError;
+    };
+    expect(component.problemPatternsDataset).toBeFalsy();
+    expect(getFirstSplitFieldVal()).toBeFalsy();
+    component.problemPatternsDataset = mockProblemPatternsDataset;
+    expect(getFirstSplitFieldVal()).toBeTruthy();
+    component.problemPatternsDataset = undefined;
+    expect(getFirstSplitFieldVal()).toBeTruthy();
+  });
+
+  it('should split the error message (records)', () => {
+    const getFirstSplitFieldVal = (): string | undefined => {
+      return mockProblemPatternsRecord[0].recordAnalysisList[0].problemOccurrenceList[0]
+        .messageReportError;
+    };
+    expect(component.problemPatternsRecord).toBeFalsy();
+    expect(getFirstSplitFieldVal()).toBeFalsy();
+    component.problemPatternsRecord = mockProblemPatternsRecord;
+    expect(getFirstSplitFieldVal()).toBeTruthy();
+    component.problemPatternsRecord = undefined;
+    expect(getFirstSplitFieldVal()).toBeTruthy();
+  });
+
+  it('should open the link', () => {
+    spyOn(component.openLinkEvent, 'emit');
+    component.openLink('x');
+    expect(component.openLinkEvent.emit).toHaveBeenCalled();
   });
 });

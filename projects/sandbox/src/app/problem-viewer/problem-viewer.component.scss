@@ -131,6 +131,10 @@ label {
 
 .title {
   color: $eu-jade-dark;
+  &.record-title {
+    margin-right: 1em;
+    word-break: break-all;
+  }
 }
 
 .toggle-view-raw {
