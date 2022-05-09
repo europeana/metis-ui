@@ -17,7 +17,8 @@ context('Sandbox', () => {
     });
 
     const force = { force: true };
-    const selectorDatasetOrb = '.nav-orb:not(.progress-orb, .report-orb)';
+    const noScrollCheck = { ensureScrollable: false };
+    const selectorDatasetOrb = '.upload-orb';
     const selectorOrbsHidden = '.dataset-orbs-hidden';
     const selectorContentTierOrb = '.content-tier-orb';
     const selectorMetadataTierOrb = '.metadata-tier-orb';
@@ -105,18 +106,18 @@ context('Sandbox', () => {
         .should('have.length', 1);
     });
 
-    it('should link to the dataset form (without opening the progress form)', () => {
+    it('should link the report to the dataset form (without opening the progress form)', () => {
       cy.visit('/dataset/1?recordId=2');
       cy.get(`.progress-orb-container:not(.hidden)`).should('have.length', 0);
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
       cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 1);
 
-      cy.scrollTo('bottom');
+      cy.scrollTo('bottom', noScrollCheck);
       cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
 
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 0);
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
+      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 0);
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {
@@ -140,7 +141,7 @@ context('Sandbox', () => {
 
     it('should navigate by multiple media orbs when there are 5 or less media items', () => {
       cy.visit('/dataset/1?recordId=1');
-      cy.scrollTo(0, 200);
+      cy.scrollTo(0, 200, noScrollCheck);
       cy.wait(200);
 
       allMediaOrbs.forEach((sel: string) => {
@@ -163,7 +164,7 @@ context('Sandbox', () => {
 
     it('should navigate with buttons when there are more than 5 media items', () => {
       cy.visit('/dataset/1?recordId=100');
-      cy.scrollTo(0, 200);
+      cy.scrollTo(0, 200, noScrollCheck);
       cy.wait(200);
 
       const selectorMediaItemNext = '.record-report .next.nav-orb';
@@ -195,7 +196,7 @@ context('Sandbox', () => {
 
     it('should navigate with an input when there are more than 5 media items', () => {
       cy.visit('/dataset/1?recordId=100');
-      cy.scrollTo(0, 200);
+      cy.scrollTo(0, 200, noScrollCheck);
       cy.wait(200);
       cy.get(selectorInputMedia).should('have.length', 1);
 

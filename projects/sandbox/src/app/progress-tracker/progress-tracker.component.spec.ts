@@ -37,10 +37,6 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should get the formatted creation date', () => {
-      expect(component.getFormattedCreationDate()).toEqual('19/01/2022, 15:21:09');
-    });
-
     it('should show the errors and warning modals', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(true);

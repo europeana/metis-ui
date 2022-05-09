@@ -1,0 +1,177 @@
+<div class="wrapper">
+  <!-- View Raw Checkbox -->
+  <ng-template #viewRawData let-isRecord="isRecord">
+    <li class="toggle-view-raw" [ngClass]="{ 'fill-height': !!problemPatternsRecord }">
+      <input [id]="'view-raw-' + isRecord" type="checkbox" [(ngModel)]="viewRaw" />
+      <label [for]="'view-raw-' + isRecord" class="title">
+        view raw data
+      </label>
+    </li>
+  </ng-template>
+
+  <!-- Internal Link -->
+  <ng-template #internalLinkItem let-recordId="recordId">
+    <li>
+      <a class="bold link-report link-internal" (click)="openLink(recordId)">
+        {{ recordId }}
+      </a>
+    </li>
+  </ng-template>
+
+  <!-- Description -->
+  <ng-template #tmpDescription let-description="description">
+    <div>
+      <span class="bold">{{ description.problemPatternId }}</span>
+      <span
+        class="warning-icon"
+        [ngClass]="{
+          warning: description.problemPatternSeverity === ProblemPatternSeverity.WARNING,
+          error: description.problemPatternSeverity === ProblemPatternSeverity.ERROR,
+          fatal: description.problemPatternSeverity === ProblemPatternSeverity.FATAL
+        }"
+        >{{ description.problemPatternSeverity }}</span
+      >
+      <span class="dimension italic">{{ description.problemPatternQualityDimension }}</span>
+    </div>
+  </ng-template>
+
+  <!-- Problem Occurence -->
+  <ng-template #tmpProblemOccurenceList let-occurence="occurence">
+    <ul class="problem-occurence list">
+      <li>
+        <span class="bold"> {{ occurence.messageReportError }}:&nbsp;</span>
+        <span class="italic message-copy">
+          {{ occurence.messageReportCopy }}
+        </span>
+      </li>
+      <li
+        class="list-opener"
+        *ngIf="occurence.affectedRecordIds.length > 0"
+        [ngClass]="{ 'is-open': occurence.affectedRecordIdsShowing }"
+      >
+        <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
+          Affected Record Ids
+        </a>
+      </li>
+      <li *ngIf="occurence.affectedRecordIds.length > 0">
+        <ul class="list" [ngClass]="{ closed: !occurence.affectedRecordIdsShowing }">
+          <ng-container *ngFor="let id of occurence.affectedRecordIds">
+            <ng-content
+              *ngTemplateOutlet="internalLinkItem; context: { recordId: id }"
+            ></ng-content>
+          </ng-container>
+        </ul>
+      </li>
+    </ul>
+  </ng-template>
+
+  <!-- Record Analysis List -->
+  <ng-template #tmpRecordAnalysisList let-analyses="analyses">
+    <ul class="analysis-list">
+      <ng-container *ngFor="let analysis of analyses">
+        <ng-content
+          *ngTemplateOutlet="internalLinkItem; context: { recordId: analysis.recordId }"
+        ></ng-content>
+        <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
+          <ng-content
+            *ngTemplateOutlet="tmpProblemOccurenceList; context: { occurence: problemOccurrence }"
+          ></ng-content>
+        </li>
+      </ng-container>
+    </ul>
+  </ng-template>
+
+  <!-- Problem Pattern (record) -->
+  <ng-template #tmpProblemPattern let-problemPattern="problemPattern">
+    <div class="problem-pattern">
+      <ng-content
+        *ngTemplateOutlet="
+          tmpDescription;
+          context: { description: problemPattern.problemPatternDescription }
+        "
+      ></ng-content>
+
+      <span class="title-record-occurences"
+        >Record Occurrences {{ problemPattern.recordOccurrences }}:</span
+      >
+      <ng-content
+        *ngTemplateOutlet="
+          tmpRecordAnalysisList;
+          context: { analyses: problemPattern.recordAnalysisList }
+        "
+      ></ng-content>
+    </div>
+  </ng-template>
+
+  <!-- END TEMPLATES -->
+
+  <!-- RECORD -->
+
+  <div *ngIf="problemPatternsRecord">
+    <div class="form-group header-info">
+      <li>
+        <ul>
+          <li>
+            <h2 class="title record-title">
+              {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
+            </h2>
+          </li>
+        </ul>
+      </li>
+      <ng-content *ngTemplateOutlet="viewRawData; context: { isRecord: true }"></ng-content>
+    </div>
+
+    <div class="problem-viewer record">
+      <ng-container *ngIf="!viewRaw">
+        <ng-container *ngFor="let problemPattern of problemPatternsRecord">
+          <ng-content
+            *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+          ></ng-content>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="viewRaw">
+        <pre>{{ problemPatternsRecord | json }}</pre>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- DATASET -->
+
+  <div *ngIf="problemPatternsDataset; let ppd">
+    <div class="form-group header-info">
+      <li>
+        <ul>
+          <li>
+            <h2 class="title">Dataset: {{ ppd.datasetId }}</h2>
+          </li>
+          <li>
+            <span class="title">
+              {{ formatDate(ppd.executionTimestamp, 'dd/mm/yyyy, HH:mm:ss', 'en-GB') }}
+            </span>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <ul>
+          <li>
+            <h3 class="capitalise title step">
+              {{ ppd.executionStep }}
+            </h3>
+          </li>
+          <ng-content *ngTemplateOutlet="viewRawData; context: { isRecord: false }"></ng-content>
+        </ul>
+      </li>
+    </div>
+
+    <div class="problem-viewer">
+      <ng-container *ngIf="!viewRaw">
+        <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
+          <ng-content
+            *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+          ></ng-content>
+        </ng-container>
+      </ng-container>
+      <pre *ngIf="viewRaw">{{ ppd | json }}</pre>
+    </div>
+  </div>
+</div>

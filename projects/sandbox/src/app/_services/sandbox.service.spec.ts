@@ -3,9 +3,18 @@ import { async, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MockHttp, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { mockCountries, mockDataset, mockLanguages, mockRecordReport } from '../_mocked';
+import {
+  mockCountries,
+  mockDataset,
+  mockLanguages,
+  mockProblemPatternsDataset,
+  mockProblemPatternsRecord,
+  mockRecordReport
+} from '../_mocked';
 import {
   FieldOption,
+  ProblemPattern,
+  ProblemPatternsDataset,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -142,5 +151,38 @@ describe('sandbox service', () => {
     sub1.unsubscribe();
     sub2.unsubscribe();
     sub3.unsubscribe();
+  });
+
+  it('should get the problem-patterns for datasets', () => {
+    const datasetId = '123';
+    const sub = service
+      .getProblemPatternsDataset(datasetId)
+      .subscribe((pp: ProblemPatternsDataset) => {
+        expect(pp).toEqual(mockProblemPatternsDataset);
+      });
+    mockHttp
+      .expect('GET', `/pattern-analysis/${datasetId}/get-dataset-pattern-analysis`)
+      .send(mockProblemPatternsDataset);
+    sub.unsubscribe();
+  });
+
+  it('should get the problem-patterns for records', () => {
+    console.log({} as ProblemPattern);
+    expect(true).toBeTruthy();
+
+    const datasetId = '123';
+    const recordId = '456';
+    const sub = service
+      .getProblemPatternsRecord(datasetId, recordId)
+      .subscribe((pp: Array<ProblemPattern>) => {
+        expect(pp).toEqual(mockProblemPatternsRecord);
+      });
+    mockHttp
+      .expect(
+        'GET',
+        `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
+      )
+      .send(mockProblemPatternsRecord);
+    sub.unsubscribe();
   });
 });
