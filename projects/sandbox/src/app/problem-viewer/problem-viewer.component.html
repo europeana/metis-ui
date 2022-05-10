@@ -1,7 +1,11 @@
 <div class="wrapper">
   <!-- View Raw Checkbox -->
+  <!-- prettier-ignore -->
   <ng-template #viewRawData let-isRecord="isRecord">
-    <li class="toggle-view-raw" [ngClass]="{ 'fill-height': !!problemPatternsRecord }">
+    <!-- //NOSONAR --><li
+                        class="toggle-view-raw"
+                        [ngClass]="{ 'fill-height': !!problemPatternsRecord }"
+                      >
       <input [id]="'view-raw-' + isRecord" type="checkbox" [(ngModel)]="viewRaw" />
       <label [for]="'view-raw-' + isRecord" class="title">
         view raw data
@@ -10,8 +14,9 @@
   </ng-template>
 
   <!-- Internal Link -->
+  <!-- prettier-ignore -->
   <ng-template #internalLinkItem let-recordId="recordId">
-    <li>
+    <!-- //NOSONAR --><li>
       <a class="bold link-report link-internal" (click)="openLink(recordId)">
         {{ recordId }}
       </a>
@@ -108,20 +113,17 @@
   <!-- RECORD -->
 
   <div *ngIf="problemPatternsRecord">
-    <div class="form-group header-info">
-      <li>
-        <ul>
-          <li>
-            <h2 class="title record-title">
-              {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
-            </h2>
-          </li>
-        </ul>
-      </li>
+    <ng-template #noProblems>
+      <h2 class="tick title no-problems-found">No Problem Patterns Found for Record</h2>
+    </ng-template>
+
+    <div *ngIf="problemPatternsRecord.length > 0; else noProblems" class="form-group header-info">
+      <h2 class="title record-title">
+        {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
+      </h2>
       <ng-content *ngTemplateOutlet="viewRawData; context: { isRecord: true }"></ng-content>
     </div>
-
-    <div class="problem-viewer record">
+    <div *ngIf="problemPatternsRecord.length > 0" class="problem-viewer record">
       <ng-container *ngIf="!viewRaw">
         <ng-container *ngFor="let problemPattern of problemPatternsRecord">
           <ng-content
@@ -138,7 +140,7 @@
   <!-- DATASET -->
 
   <div *ngIf="problemPatternsDataset; let ppd">
-    <div class="form-group header-info">
+    <ul class="form-group header-info">
       <li>
         <ul>
           <li>
@@ -151,7 +153,7 @@
           </li>
         </ul>
       </li>
-      <li>
+      <li class="right-aligned" *ngIf="ppd.problemPatternList.length > 0">
         <ul>
           <li>
             <h3 class="capitalise title step">
@@ -161,17 +163,24 @@
           <ng-content *ngTemplateOutlet="viewRawData; context: { isRecord: false }"></ng-content>
         </ul>
       </li>
-    </div>
-
-    <div class="problem-viewer">
-      <ng-container *ngIf="!viewRaw">
-        <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
-          <ng-content
-            *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
-          ></ng-content>
+    </ul>
+    <ng-template #problemViewer>
+      <div class="problem-viewer">
+        <ng-container *ngIf="!viewRaw">
+          <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
+            <ng-content
+              *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+            ></ng-content>
+          </ng-container>
         </ng-container>
-      </ng-container>
-      <pre *ngIf="viewRaw">{{ ppd | json }}</pre>
-    </div>
+        <pre *ngIf="viewRaw">{{ ppd | json }}</pre>
+      </div>
+    </ng-template>
+    <h2
+      class="tick title no-problems-found"
+      *ngIf="ppd.problemPatternList.length === 0; else problemViewer"
+    >
+      No Problem Patterns Found for Dataset
+    </h2>
   </div>
 </div>

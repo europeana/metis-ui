@@ -473,6 +473,7 @@ new (class extends TestDataServer {
         }
 
         // Problem Patterns
+        // (convention: only numerically-odd ids get non-empty results)
 
         const regProblemPattern = route.match(/\/pattern-analysis\/([A-Za-z0-9_]+)\/get/);
 
@@ -484,11 +485,16 @@ new (class extends TestDataServer {
             const recordId = route.match(/recordId=([A-Za-z0-9_\-%]+)/);
 
             if (recordId && recordId.length > 1) {
+              const recordIdNumeric = parseInt(recordId[1]);
+
               if (this.errorCodes.indexOf(recordId[1]) > -1) {
                 response.statusCode = parseInt(recordId[1]);
                 response.end();
               } else {
-                const result = JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
+                const result =
+                  recordIdNumeric % 2 === 0
+                    ? '[]'
+                    : JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
                 if (idNumeric > 999) {
                   setTimeout(() => {
                     response.end(result);
@@ -511,9 +517,12 @@ new (class extends TestDataServer {
               datasetId: id,
               executionStep: `step ${id}`,
               executionTimestamp: `${new Date().toISOString()}`,
-              problemPatternList: Object.keys(new Array(15).fill(null)).map((i) => {
-                return this.generateProblem(idNumeric, parseInt(i));
-              })
+              problemPatternList:
+                idNumeric % 2 === 0
+                  ? []
+                  : Object.keys(new Array(15).fill(null)).map((i) => {
+                      return this.generateProblem(idNumeric, parseInt(i));
+                    })
             } as ProblemPatternsDataset;
 
             if (idNumeric > 999) {
