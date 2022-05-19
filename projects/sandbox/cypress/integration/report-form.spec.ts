@@ -282,7 +282,7 @@ context('Sandbox', () => {
     });
 
     it('should indicate when the dataset id and record are connected / disconnected', () => {
-      const selConnected = '.submit-id-ctrls.connect';
+      const selConnected = '.connect';
       const selConnectedError = `${selConnected}.error`;
 
       cy.visit('/dataset/1?recordId=2');

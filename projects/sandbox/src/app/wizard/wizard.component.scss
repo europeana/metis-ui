@@ -2,6 +2,14 @@
 
 $wizard-border-radius: 1.5em;
 
+.inline-texts {
+  margin-top: 2em;
+}
+
+.field-wrapper + button {
+  margin-left: 2em;
+}
+
 .wizard {
   background-color: $eu-light-jade-classic;
   border: 1px solid $eu-jade-dark;
@@ -41,20 +49,26 @@ $wizard-border-radius: 1.5em;
   }
 }
 
-.submit-id-ctrls {
-  display: flex;
-  justify-content: space-between;
+@media (min-width: $bp-med) {
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(40%, 3fr) auto auto;
+    row-gap: 12px;
 
-  input {
-    min-width: 0;
-    max-width: 65%;
-
-    & + button {
+    & > .cell-button {
+      align-self: flex-end;
+      display: flex;
       margin-left: 2em;
+
+      & + .cell-button {
+        align-self: flex-end;
+        display: flex;
+        margin-left: 1em;
+      }
+    }
+
+    & > .cell-errors {
+      grid-column: 1/4;
     }
   }
-}
-
-.inline-texts {
-  margin-top: 2em;
 }
