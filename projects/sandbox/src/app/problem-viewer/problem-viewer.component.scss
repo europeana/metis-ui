@@ -130,16 +130,9 @@ label {
 
 .title {
   color: $eu-jade-dark;
+  word-break: break-all;
   &.record-title {
     margin-right: 1em;
-  }
-  &:not(.no-problems-found) {
-    word-break: break-all;
-  }
-  &.no-problems-found {
-    margin: 1em 0 1em 1em;
-    text-align: center;
-    white-space: nowrap;
   }
 }
 

@@ -86,6 +86,7 @@
       <sb-problem-viewer
         *ngIf="problemPatternsRecord"
         [problemPatternsRecord]="problemPatternsRecord"
+        [recordId]="trackRecordId"
         (openLinkEvent)="followProblemPatternLink($event)"
       ></sb-problem-viewer>
     </div>
