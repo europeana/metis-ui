@@ -86,8 +86,8 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     }
     if (
       this.router.isActive(url, {
-        paths: 'exact',
-        queryParams: 'exact',
+        paths: 'subset',
+        queryParams: 'subset',
         fragment: 'ignored',
         matrixParams: 'ignored'
       })
