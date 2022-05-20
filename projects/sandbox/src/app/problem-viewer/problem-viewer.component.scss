@@ -9,8 +9,6 @@ label {
 
 .analysis-list {
   margin-left: 2em;
-  .analysis-item {
-  }
 }
 
 .bold {
@@ -31,7 +29,8 @@ label {
   display: flex;
   justify-content: space-between;
   list-style: none;
-  & > :last-child {
+
+  .right-aligned {
     text-align: right;
   }
 }
@@ -106,8 +105,8 @@ label {
 
 .problem-occurence {
   display: flex;
-  flex-direction: row;
   flex-flow: wrap;
+  flex-direction: row;
 }
 
 .problem-pattern {
@@ -133,7 +132,14 @@ label {
   color: $eu-jade-dark;
   &.record-title {
     margin-right: 1em;
+  }
+  &:not(.no-problems-found) {
     word-break: break-all;
+  }
+  &.no-problems-found {
+    margin: 1em 0 1em 1em;
+    text-align: center;
+    white-space: nowrap;
   }
 }
 

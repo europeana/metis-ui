@@ -412,24 +412,16 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     this.currentStepType = this.wizardConf[stepIndex].stepType;
     this.wizardConf[stepIndex].isHidden = false;
 
-    if (this.currentStepType === WizardStepType.UPLOAD) {
-      if (updateLocation) {
+    if (updateLocation) {
+      if (this.currentStepType === WizardStepType.UPLOAD) {
         this.updateLocation(false, false);
-      }
-    } else if (this.currentStepType === WizardStepType.PROGRESS_TRACK) {
-      if (updateLocation) {
+      } else if (this.currentStepType === WizardStepType.PROGRESS_TRACK) {
         this.updateLocation(true, false);
-      }
-    } else if (this.currentStepType === WizardStepType.REPORT) {
-      if (updateLocation) {
+      } else if (this.currentStepType === WizardStepType.REPORT) {
         this.updateLocation(true, true, false);
-      }
-    } else if (this.currentStepType === WizardStepType.PROBLEMS_DATASET) {
-      if (updateLocation) {
+      } else if (this.currentStepType === WizardStepType.PROBLEMS_DATASET) {
         this.updateLocation(true, false, true);
-      }
-    } else {
-      if (updateLocation) {
+      } else {
         this.updateLocation(true, true, true);
       }
     }

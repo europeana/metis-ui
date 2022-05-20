@@ -75,7 +75,7 @@ context('Sandbox', () => {
     });
 
     it('should show the progress success', () => {
-      cy.get(selectorSuccessPresent).should('have.length', 0);
+      cy.get(selectorSuccessPresent).should('not.exist');
       fillProgressForm('100');
       cy.get(selectorSuccessPresent).should('have.length', 10);
     });

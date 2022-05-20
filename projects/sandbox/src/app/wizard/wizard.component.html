@@ -57,21 +57,12 @@
     >
     </sb-upload>
 
-    <form
-      [ngClass]="{
-        active: currentStepType === EnumWizardStepType.PROGRESS_TRACK
-      }"
-      [formGroup]="formProgress"
-      (ngSubmit)="onSubmitProgress($event.submitter.id, true)"
-      class="wizard-section"
-    >
-      <sb-progress-tracker
-        *ngIf="progressData"
-        [progressData]="progressData"
-        [datasetId]="trackDatasetId"
-        [isLoading]="isPollingProgress"
-      ></sb-progress-tracker>
-    </form>
+    <sb-progress-tracker
+      *ngIf="currentStepType === EnumWizardStepType.PROGRESS_TRACK && progressData"
+      [progressData]="progressData"
+      [datasetId]="trackDatasetId"
+      [isLoading]="isPollingProgress"
+    ></sb-progress-tracker>
 
     <div
       [ngClass]="{
@@ -108,114 +99,113 @@
       <sb-record-report [report]="recordReport"></sb-record-report>
     </div>
 
-    <form
-      [ngClass]="{
-        active: currentStepType !== EnumWizardStepType.UPLOAD
-      }"
-      [formGroup]="formProgress"
-      (ngSubmit)="onSubmitProgress($event.submitter.id, true)"
-      class="wizard-section"
-    >
-      <div class="form-group">
+    <div class="grid" *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
+      <span>
         <label
           i18n="track id label"
           for="dataset-to-track"
           [ngClass]="{ asterisked: !formProgress.valid, tick: formProgress.valid }"
           >Enter the id of a dataset to track
         </label>
-        <div class="submit-id-ctrls" [ngClass]="getConnectClasses('top')">
+        <span [formGroup]="formProgress" class="field-wrapper" [ngClass]="getConnectClasses('top')">
           <input
             formControlName="datasetToTrack"
             data-e2e="datasetToTrack"
             autofocus
             autocomplete="off"
             id="dataset-to-track"
+            (keyup.enter)="onSubmitProgress(ButtonAction.BTN_PROGRESS, true)"
+            (keyup.shift.enter)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
           />
-          <button
-            type="submit"
-            class="submit-button"
-            [id]="ButtonAction.BTN_PROGRESS"
-            [disabled]="!formProgress.valid"
-            data-e2e="submitProgress"
-            i18n="track button|submits the track id button@@submitTrackId"
-          >
-            <span class="icon track"></span>
-            <span class="label">Track</span>
-          </button>
+        </span>
+      </span>
+      <span class="cell-button">
+        <button
+          class="submit-button"
+          [disabled]="!formProgress.valid"
+          data-e2e="submitProgress"
+          i18n="track button|submits the track id button@@submitTrackId"
+          (click)="onSubmitProgress(ButtonAction.BTN_PROGRESS, true)"
+        >
+          <span class="icon track"></span>
+          <span class="label">Track</span>
+        </button>
+      </span>
+      <span class="cell-button">
+        <button
+          [disabled]="!formProgress.valid"
+          class="submit-button"
+          i18n="dataset problems button|submits the dataset id button@@submitDatasetIdProblems"
+          data-e2e="submitDatasetProblems"
+          (click)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
+        >
+          <span class="icon"></span>
+          <span class="label">Problem Patterns</span>
+        </button>
+      </span>
 
-          <button
-            [disabled]="!formProgress.valid"
-            class="submit-button"
-            [id]="ButtonAction.BTN_PROBLEMS"
-            i18n="dataset problems button|submits the dataset id button@@submitDatasetIdProblems"
-            data-e2e="submitDatasetProblems"
-            type="submit"
+      <ng-container *ngIf="formProgress.get('datasetToTrack')?.errors; let errors">
+        <span class="cell-errors field-errors" *ngIf="errors.invalid">
+          <span class="errors" i18n="Field error@@invalidDatasetId"
+            >Please provide a valid dataset id</span
           >
-            <span class="icon"></span>
-            <span class="label">Problem Patterns</span>
-          </button>
-        </div>
-        <ng-container *ngIf="formProgress.get('datasetToTrack')?.errors; let errors">
-          <span class="field-errors" *ngIf="errors.invalid">
-            <span class="errors" i18n="Field error@@invalidDatasetId"
-              >Please provide a valid dataset id</span
-            >
-          </span>
-        </ng-container>
-      </div>
-    </form>
+        </span>
+      </ng-container>
 
-    <form
-      [formGroup]="formRecord"
-      *ngIf="currentStepType !== EnumWizardStepType.UPLOAD"
-      (ngSubmit)="onSubmitRecord($event.submitter.id, true)"
-    >
-      <div class="form-group">
+      <span [ngClass]="getConnectClasses('bottom')">
         <label
           i18n="track id label"
           for="record-to-track"
           [ngClass]="{ asterisked: !formRecord.valid, tick: formRecord.valid }"
           >Enter the id of a record</label
         >
-        <div class="submit-id-ctrls" [ngClass]="getConnectClasses('bottom')">
+        <span [formGroup]="formRecord" class="field-wrapper">
           <input
             formControlName="recordToTrack"
             data-e2e="recordToTrack"
             autocomplete="off"
             id="record-to-track"
+            (keyup.enter)="onSubmitRecord(ButtonAction.BTN_RECORD, true)"
+            (keyup.shift.enter)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
           />
-          <button
-            [disabled]="!formRecord.valid"
-            class="submit-button"
-            [id]="ButtonAction.BTN_RECORD"
-            i18n="report button|submits the record id button@@submitRecordId"
-            data-e2e="submitRecord"
-            type="submit"
+        </span>
+      </span>
+      <span class="cell-button">
+        <button
+          [formGroup]="formRecord"
+          [disabled]="!formRecord.valid"
+          class="submit-button"
+          i18n="report button|submits the record id button@@submitRecordId"
+          data-e2e="submitRecord"
+          (click)="onSubmitRecord(ButtonAction.BTN_RECORD, true)"
+        >
+          <span class="icon report"></span>
+          <span class="label">Report</span>
+        </button>
+      </span>
+      <span class="cell-button">
+        <button
+          [formGroup]="formRecord"
+          [disabled]="!formRecord.valid"
+          class="submit-button"
+          i18n="report problems button|submits the record id button@@submitRecordIdProblems"
+          data-e2e="submitRecordProblems"
+          (click)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
+        >
+          <span class="icon"></span>
+          <span class="label">Problem Patterns</span>
+        </button>
+      </span>
+
+      <ng-container *ngIf="formRecord.get('recordToTrack')?.errors; let errors">
+        <span class="cell-errors field-errors" *ngIf="errors.invalid">
+          <span class="errors" i18n="Field error@@invalidRecordId"
+            >Please provide a valid record id</span
           >
-            <span class="icon report"></span>
-            <span class="label">Report</span>
-          </button>
-          <button
-            [disabled]="!formRecord.valid"
-            class="submit-button"
-            [id]="ButtonAction.BTN_PROBLEMS"
-            i18n="report problems button|submits the record id button@@submitRecordIdProblems"
-            data-e2e="submitRecordProblems"
-            type="submit"
-          >
-            <span class="icon"></span>
-            <span class="label">Problem Patterns</span>
-          </button>
-        </div>
-        <ng-container *ngIf="formRecord.get('recordToTrack')?.errors; let errors">
-          <span class="field-errors" *ngIf="errors.invalid; let errors">
-            <span class="errors" i18n="Field error@@invalidRecordId"
-              >Please provide a valid record id</span
-            >
-          </span>
-        </ng-container>
-      </div>
-    </form>
+        </span>
+      </ng-container>
+    </div>
+    <!-- end grid -->
 
     <ng-container *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
       <ul class="inline-texts">
