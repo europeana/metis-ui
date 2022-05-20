@@ -9,7 +9,7 @@ import {
 export const mockProblemPatternsDataset: ProblemPatternsDataset = {
   datasetId: '20',
   executionStep: 'step',
-  executionTimestamp: 'timestamp',
+  executionTimestamp: `${new Date().toISOString()}`,
   problemPatternList: [
     {
       problemPatternDescription: {

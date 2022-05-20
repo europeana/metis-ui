@@ -39,9 +39,9 @@ label {
   font-style: italic;
 }
 
-.link-report {
+.link-related {
   &::before {
-    background-image: svg-url-icon-record-report($eu-jade);
+    background-image: svg-url-icon-lightbulb($eu-jade);
     background-repeat: no-repeat;
     background-position: center 2px;
     content: '';
@@ -50,10 +50,10 @@ label {
     width: 10px;
   }
   &:hover::before {
-    background-image: svg-url-icon-record-report($eu-jade-dark);
+    background-image: svg-url-icon-lightbulb($eu-jade-dark);
   }
   &:active:hover::before {
-    background-image: svg-url-icon-record-report($eu-light-orange);
+    background-image: svg-url-icon-lightbulb($eu-light-orange);
   }
 }
 

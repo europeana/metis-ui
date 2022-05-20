@@ -84,9 +84,9 @@
       class="wizard-section"
     >
       <sb-problem-viewer
+        #problemViewerRecord
         *ngIf="problemPatternsRecord"
         [problemPatternsRecord]="problemPatternsRecord"
-        [recordId]="trackRecordId"
         (openLinkEvent)="followProblemPatternLink($event)"
       ></sb-problem-viewer>
     </div>
@@ -141,7 +141,7 @@
           (click)="onSubmitProgress(ButtonAction.BTN_PROBLEMS, true)"
         >
           <span class="icon"></span>
-          <span class="label">Field Warnings (Overview)</span>
+          <span class="label">Issues (Overview)</span>
         </button>
       </span>
 
@@ -194,7 +194,7 @@
           (click)="onSubmitRecord(ButtonAction.BTN_PROBLEMS, true)"
         >
           <span class="icon"></span>
-          <span class="label">Field Warnings (Record)</span>
+          <span class="label">Issues (Record)</span>
         </button>
       </span>
 

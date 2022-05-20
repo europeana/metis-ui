@@ -6,13 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import {
-  ClassMap,
-  DataPollingComponent,
-  FileUploadComponent,
-  ProtocolFieldSetComponent,
-  ProtocolType
-} from 'shared';
+import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -26,7 +20,9 @@ import {
   WizardStep,
   WizardStepType
 } from '../_models';
+
 import { SandboxService } from '../_services';
+import { ProblemViewerComponent } from '../problem-viewer';
 import { UploadComponent } from '../upload';
 
 enum ButtonAction {
@@ -43,9 +39,7 @@ enum ButtonAction {
 export class WizardComponent extends DataPollingComponent implements OnInit {
   public ButtonAction = ButtonAction;
 
-  @ViewChild(ProtocolFieldSetComponent, { static: true })
-  protocolFields: ProtocolFieldSetComponent;
-  @ViewChild(FileUploadComponent, { static: true }) xslFileField: FileUploadComponent;
+  @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
 
   formProgress: FormGroup;
@@ -593,6 +587,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             stepConf.isBusy = false;
             stepConf.lastLoadedIdDataset = this.trackDatasetId;
             stepConf.lastLoadedIdRecord = decodeURIComponent(`${this.trackRecordId}`);
+            setTimeout(() => {
+              this.problemViewerRecord.recordId = `${this.trackRecordId}`;
+            });
           },
           (err: HttpErrorResponse) => {
             this.problemPatternsRecord = undefined;
@@ -781,6 +778,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   followProblemPatternLink(recordId: string): void {
     this.trackRecordId = recordId;
-    this.fillAndSubmitRecordForm(false);
+    this.fillAndSubmitRecordForm(true);
   }
 }
