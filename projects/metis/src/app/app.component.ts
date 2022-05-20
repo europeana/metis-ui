@@ -84,7 +84,6 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     if (!url) {
       return;
     }
-
     if (
       this.router.isActive(url, {
         paths: 'subset',

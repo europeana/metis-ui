@@ -42,6 +42,8 @@ export class ProblemViewerComponent {
     return this._problemPatternsRecord;
   }
 
+  @Input() recordId: string;
+
   processProblemOccurrenceMessages(src: Array<ProblemPattern>): Array<ProblemPattern> {
     return src.map((pp: ProblemPattern) => {
       pp.recordAnalysisList.forEach((ra: RecordAnalysis) => {
