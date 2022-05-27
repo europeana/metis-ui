@@ -39,6 +39,9 @@ $wizard-border-radius: 1.5em;
   label {
     color: $eu-jade-dark;
     cursor: pointer;
+    &.tick {
+      white-space: nowrap;
+    }
   }
 }
 

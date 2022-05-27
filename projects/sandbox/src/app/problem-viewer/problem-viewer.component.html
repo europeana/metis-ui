@@ -3,9 +3,11 @@
   <!-- prettier-ignore -->
   <ng-template #internalLinkItem let-recordId="recordId">
     <!-- //NOSONAR --><li>
-      <a class="bold link-report link-internal" (click)="openLink(recordId)">
-        {{ recordId }}
-      </a>
+      <ng-container *ngIf="!problemPatternsRecord">
+        <a class="bold link-related link-internal" (click)="openLink(recordId)">
+          {{ recordId }}
+        </a>
+      </ng-container>
     </li>
   </ng-template>
 
@@ -99,13 +101,8 @@
   <!-- RECORD -->
 
   <div *ngIf="problemPatternsRecord">
-    <ul *ngIf="recordId" class="form-group header-info">
-      <li>
-        <h2 class="title">Record: {{ recordId }}</h2>
-      </li>
-    </ul>
-
     <ng-template #noProblems>
+      <h2 *ngIf="recordId" class="form-group title">Record: {{ recordId }}</h2>
       <h3 class="problem-viewer">
         <span class="tick">No Problem Patterns Found for Record</span>
       </h3>
@@ -113,7 +110,7 @@
 
     <div *ngIf="problemPatternsRecord.length > 0; else noProblems" class="form-group header-info">
       <h2 class="title record-title">
-        {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
+        Record: {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
       </h2>
     </div>
     <div *ngIf="problemPatternsRecord.length > 0" class="problem-viewer record">

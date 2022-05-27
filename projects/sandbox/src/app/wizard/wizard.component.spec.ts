@@ -18,6 +18,7 @@ import {
 } from '../_mocked';
 import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
 import { SandboxService } from '../_services';
+import { ProblemViewerComponent } from '../problem-viewer';
 import { UploadComponent } from '../upload';
 import { WizardComponent } from './wizard.component';
 
@@ -41,6 +42,7 @@ describe('WizardComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         FileUploadComponent,
+        ProblemViewerComponent,
         ProtocolFieldSetComponent,
         UploadComponent,
         WizardComponent
