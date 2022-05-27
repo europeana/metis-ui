@@ -25,6 +25,7 @@ describe('ProblemViewerComponent', () => {
   });
 
   it('should split the error message (dataset)', () => {
+    mockProblemPatternsDataset.problemPatternList[0].recordAnalysisList[0].problemOccurrenceList[0].messageReportError = undefined;
     const getFirstSplitFieldVal = (): string | undefined => {
       return mockProblemPatternsDataset.problemPatternList[0].recordAnalysisList[0]
         .problemOccurrenceList[0].messageReportError;
@@ -38,6 +39,8 @@ describe('ProblemViewerComponent', () => {
   });
 
   it('should split the error message (records)', () => {
+    mockProblemPatternsRecord[0].recordAnalysisList[0].problemOccurrenceList[0].messageReportError = undefined;
+
     const getFirstSplitFieldVal = (): string | undefined => {
       return mockProblemPatternsRecord[0].recordAnalysisList[0].problemOccurrenceList[0]
         .messageReportError;
