@@ -346,7 +346,7 @@ new (class extends TestDataServer {
       return;
     }
     if (request.method === 'POST') {
-      const regRes = route.match(/\/dataset\/(\S+)\//);
+      const regRes = /\/dataset\/(\S+)\//.exec(route);
 
       if (regRes) {
         this.newId++;
@@ -420,8 +420,8 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
-        const regResRecord = route.match(
-          /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/
+        const regResRecord = /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
+          route
         );
 
         if (regResRecord && regResRecord.length > 2) {
@@ -431,7 +431,7 @@ new (class extends TestDataServer {
           if (isNaN(recordId)) {
             // check for mismatches between europeana records and the parent dataset
 
-            const europeanaId = recordIdUnparsed.match(/^\/(\d)\/\S+/);
+            const europeanaId = /^\/(\d)\/\S+/.exec(recordIdUnparsed);
             if (europeanaId) {
               const recordDataset = parseInt(europeanaId[1]);
               const datasetParam = parseInt(regResRecord[1]);
@@ -459,7 +459,7 @@ new (class extends TestDataServer {
           return;
         }
 
-        const regResDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
+        const regResDataset = /\/dataset\/([A-Za-z0-9_]+)$/.exec(route);
 
         if (regResDataset) {
           const id = regResDataset[1];
@@ -475,14 +475,14 @@ new (class extends TestDataServer {
         // Problem Patterns
         // (convention: only numerically-odd ids get non-empty results)
 
-        const regProblemPattern = route.match(/\/pattern-analysis\/([A-Za-z0-9_]+)\/get/);
+        const regProblemPattern = /\/pattern-analysis\/([A-Za-z0-9_]+)\/get/.exec(route);
 
         if (regProblemPattern && regProblemPattern.length > 1) {
           const id = regProblemPattern[1];
           const idNumeric = parseInt(id);
 
           if (route.indexOf('get-record-pattern-analysis') > -1) {
-            const recordId = route.match(/recordId=([A-Za-z0-9_\-%]+)/);
+            const recordId = /recordId=([A-Za-z0-9_\-%]+)/.exec(route);
 
             if (recordId && recordId.length > 1) {
               const recordIdNumeric = parseInt(recordId[1]);

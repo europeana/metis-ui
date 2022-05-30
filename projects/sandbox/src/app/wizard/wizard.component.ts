@@ -188,7 +188,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             } else {
               this.fillAndSubmitProgressForm(false);
             }
-          } else if (window.location.toString().match(/\/new$/)) {
+          } else if (/\/new$/.exec(window.location.toString())) {
             this.setStep(this.getStepIndex(WizardStepType.UPLOAD), false, false);
           } else {
             this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)].isHidden = false;
@@ -199,7 +199,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     // capture "back" and "forward" events / sync with form data
     this.location.subscribe((state: PopStateEvent) => {
       const url = `${state.url}`;
-      const ids = url.match(/\/dataset\/(\d+)/);
+      const ids = /\/dataset\/(\d+)/.exec(url);
 
       if (!ids || ids.length === 0) {
         // clear the data, form data, pollers / set step to progress
@@ -213,9 +213,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       } else {
         this.trackDatasetId = ids[1];
         const regParamRecord = /\S+\?recordId=([^&]*)/;
-        const regParamProblems = /[\?&]view=problems/;
-        const matchParamRecord: RegExpMatchArray | null = url.match(regParamRecord);
-        const matchParamProblems = !!url.match(regParamProblems);
+        const regParamProblems = /[?&]view=problems/;
+        const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
+        const matchParamProblems = !!regParamProblems.exec(url);
         if (matchParamRecord) {
           this.trackRecordId = decodeURIComponent(matchParamRecord[1]);
           this.fillAndSubmitRecordForm(matchParamProblems);
@@ -267,7 +267,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     };
 
     if (val) {
-      const matches = `${val}`.match(/[0-9]+/);
+      const matches = /[0-9]+/.exec(`${val}`);
       if (!matches || matches[0] !== val) {
         enableRecordForm(false);
         return { invalid: true };
