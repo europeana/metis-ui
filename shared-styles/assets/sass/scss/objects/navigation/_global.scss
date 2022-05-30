@@ -65,6 +65,7 @@
 /* Whole site wrapper element for push effect */
 .pusher {
   height: 100%;
+  min-height: 100vh;
   position: relative;
 }
 
