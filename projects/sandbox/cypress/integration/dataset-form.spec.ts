@@ -82,7 +82,7 @@ context('Sandbox', () => {
       cy.get(selectorFieldErrors).should('have.length', 0);
 
       setStep(1);
-      cy.get(selectorInputName).type(' ');
+      cy.get(selectorInputName).type(' ', { scrollBehavior: false });
       cy.get(selectorFieldErrors)
         .filter(':visible')
         .should('have.length', 1);
