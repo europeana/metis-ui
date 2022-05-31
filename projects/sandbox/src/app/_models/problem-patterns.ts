@@ -34,12 +34,11 @@ export interface ProblemPatternDescription {
   problemPatternId: ProblemPatternId;
   problemPatternSeverity: ProblemPatternSeverity;
   problemPatternQualityDimension: ProblemPatternQualityDimension;
+  problemPatternTitle: string;
 }
 
 export interface ProblemOccurrence {
   messageReport: string;
-  messageReportError?: string;
-  messageReportCopy?: string;
   affectedRecordIds: Array<string>;
   affectedRecordIdsShowing?: boolean;
 }

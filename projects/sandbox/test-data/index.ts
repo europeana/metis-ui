@@ -297,11 +297,39 @@ new (class extends TestDataServer {
       ProblemPatternQualityDimension.REPRESENTATIONAL
     ];
 
+    const problemTitles = [
+      'Very short description',
+      'Very short title',
+      'Extremely long description',
+      'Extremely long title',
+      'Extremely long values',
+      'Missing description fields',
+      'Missing title fields',
+      'Equal(lower cased) title and description',
+      'Equal(upper cased) title and description',
+      'Equal title and description'
+    ];
+
+    const messageReportDescription = 'urbano dejanje 2015 the courtyard';
+    const messageReports = [
+      'description',
+      'title',
+      'A really, really, really, really, really, extremely long description...',
+      'A really, really, really, really, really, extremely long title...',
+      'A really, really, really, really, really, extremely long value',
+      '',
+      '',
+      messageReportDescription,
+      messageReportDescription.toUpperCase(),
+      messageReportDescription.charAt(0).toUpperCase() + messageReportDescription.slice(1)
+    ];
+
     return {
       problemPatternDescription: {
         problemPatternId: `P${patternId}` as ProblemPatternId,
         problemPatternSeverity: severities[patternId % severities.length],
-        problemPatternQualityDimension: dimensions[patternId % dimensions.length]
+        problemPatternQualityDimension: dimensions[patternId % dimensions.length],
+        problemPatternTitle: problemTitles[patternId % problemTitles.length]
       },
       recordOccurrences: 1,
       recordAnalysisList: [
@@ -309,8 +337,7 @@ new (class extends TestDataServer {
           recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
           problemOccurrenceList: [
             {
-              messageReport:
-                'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard',
+              messageReport: messageReports[patternId % messageReports.length],
               affectedRecordIds: Object.keys(new Array(patternId % 5).fill(null)).map((i) => {
                 return `/${datasetId}/${patternId + i}`;
               })
