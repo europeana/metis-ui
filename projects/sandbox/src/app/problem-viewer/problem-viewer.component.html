@@ -29,12 +29,14 @@
   </ng-template>
 
   <!-- Problem Occurence -->
-  <ng-template #tmpProblemOccurenceList let-occurence="occurence">
+  <ng-template #tmpProblemOccurenceList let-occurence="occurence" let-problemTitle="problemTitle">
     <ul class="problem-occurence list">
       <li>
-        <span class="bold"> {{ occurence.messageReportError }}:&nbsp;</span>
+        <span class="bold" [ngClass]="{ 'semi-colon': !!occurence.messageReport }">{{
+          problemTitle
+        }}</span>
         <span class="italic message-copy">
-          {{ occurence.messageReportCopy }}
+          {{ occurence.messageReport }}
         </span>
       </li>
       <li
@@ -59,7 +61,7 @@
   </ng-template>
 
   <!-- Record Analysis List -->
-  <ng-template #tmpRecordAnalysisList let-analyses="analyses">
+  <ng-template #tmpRecordAnalysisList let-analyses="analyses" let-problemTitle="problemTitle">
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
         <ng-content
@@ -67,7 +69,10 @@
         ></ng-content>
         <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
           <ng-content
-            *ngTemplateOutlet="tmpProblemOccurenceList; context: { occurence: problemOccurrence }"
+            *ngTemplateOutlet="
+              tmpProblemOccurenceList;
+              context: { occurence: problemOccurrence, problemTitle: problemTitle }
+            "
           ></ng-content>
         </li>
       </ng-container>
@@ -90,7 +95,10 @@
       <ng-content
         *ngTemplateOutlet="
           tmpRecordAnalysisList;
-          context: { analyses: problemPattern.recordAnalysisList }
+          context: {
+            analyses: problemPattern.recordAnalysisList,
+            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle
+          }
         "
       ></ng-content>
     </div>

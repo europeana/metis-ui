@@ -14,8 +14,9 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
     {
       problemPatternDescription: {
         problemPatternId: ProblemPatternId.P5,
+        problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS,
         problemPatternSeverity: ProblemPatternSeverity.WARNING,
-        problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
+        problemPatternTitle: 'Very short description'
       },
       recordOccurrences: 1,
       recordAnalysisList: [
@@ -35,7 +36,8 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
       problemPatternDescription: {
         problemPatternId: ProblemPatternId.P1,
         problemPatternSeverity: ProblemPatternSeverity.WARNING,
-        problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
+        problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS,
+        problemPatternTitle: 'Extremely long values'
       },
       recordOccurrences: 1,
       recordAnalysisList: [
@@ -43,8 +45,7 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
           recordId: '/60/_urn_www_culture_si_images_pageid_15067',
           problemOccurrenceList: [
             {
-              messageReport:
-                'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard',
+              messageReport: 'urbanooooo dejanjeeeee 20155555 theeeee courtyarddddd',
               affectedRecordIds: []
             }
           ]
@@ -55,7 +56,8 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
       problemPatternDescription: {
         problemPatternId: ProblemPatternId.P2,
         problemPatternSeverity: ProblemPatternSeverity.WARNING,
-        problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
+        problemPatternQualityDimension: ProblemPatternQualityDimension.ACCURACY,
+        problemPatternTitle: 'Equal(lower cased) title and description'
       },
       recordOccurrences: 1,
       recordAnalysisList: [
@@ -63,8 +65,7 @@ export const mockProblemPatternsDataset: ProblemPatternsDataset = {
           recordId: '/60/_urn_www_culture_si_images_pageid_15067',
           problemOccurrenceList: [
             {
-              messageReport:
-                'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard',
+              messageReport: 'urbano dejanje 2015 the courtyard',
               affectedRecordIds: []
             }
           ]
@@ -79,7 +80,8 @@ export const mockProblemPatternsRecord: Array<ProblemPattern> = [
     problemPatternDescription: {
       problemPatternId: ProblemPatternId.P3,
       problemPatternSeverity: ProblemPatternSeverity.WARNING,
-      problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS
+      problemPatternQualityDimension: ProblemPatternQualityDimension.CONCISENESS,
+      problemPatternTitle: 'Equal(lower cased) title and description'
     },
     recordOccurrences: 1,
     recordAnalysisList: [
@@ -87,8 +89,7 @@ export const mockProblemPatternsRecord: Array<ProblemPattern> = [
         recordId: '/60/_urn_www_culture_si_images_pageid_15067',
         problemOccurrenceList: [
           {
-            messageReport:
-              'Equal(lower cased) title and description: urbano dejanje 2015 the courtyard',
+            messageReport: 'urbano dejanje 2015 the courtyard',
             affectedRecordIds: []
           }
         ]

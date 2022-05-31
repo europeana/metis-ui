@@ -122,6 +122,10 @@ label {
   padding: 0.5em;
 }
 
+.semi-colon::after {
+  content: ':';
+}
+
 .step {
   $h2-height: 38px;
   height: $h2-height;
