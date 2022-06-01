@@ -84,7 +84,7 @@ export class GeneralinfoComponent {
   /* format urls to link and preview
   */
   escapeSolr(url: string): string {
-    const pattern = /([\!\*\+\-\=\<\>\&\|\(\)\[\]\{\}\^\~\?\:\\/"])/g;
+    const pattern = /([!*+\-=<>&|()[\]{}^~?:\\/"])/g;
     return url.replace(pattern, '\\$1');
   }
 }

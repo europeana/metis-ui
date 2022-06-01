@@ -3,7 +3,7 @@
 */
 export function PasswordStrength(p: string): number {
   let strength = 0;
-  const _regex = /[$-/:-?{-~!"^_`\[\]]/g;
+  const _regex = /[$-/:-?{-~!"^_`[\]]/g;
 
   const _lowerLetters = /[a-z]+/.test(p);
   const _upperLetters = /[A-Z]+/.test(p);
