@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-
 import { HarvestData, WorkflowExecution } from '../../_models';
 
 @Component({
@@ -8,25 +7,9 @@ import { HarvestData, WorkflowExecution } from '../../_models';
   styleUrls: ['./tabheaders.component.scss']
 })
 export class TabHeadersComponent {
-  harvestPublicationData: HarvestData;
-  activeTab: string;
-  lastExecutionData: WorkflowExecution;
-
-  @Input() disabled?: boolean;
+  @Input() activeTab: string;
   @Input() datasetId?: string;
-
-  @Input()
-  set harvestData(val: HarvestData) {
-    this.harvestPublicationData = val;
-  }
-
-  @Input()
-  set active(val: string) {
-    this.activeTab = val;
-  }
-
-  @Input()
-  set lastExecution(val: WorkflowExecution) {
-    this.lastExecutionData = val;
-  }
+  @Input() disabled?: boolean;
+  @Input() harvestData: HarvestData;
+  @Input() lastExecution: WorkflowExecution;
 }

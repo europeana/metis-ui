@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
@@ -31,9 +31,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   }
 
   /** ngOnInit
-  /* init of this component
+  /* set the title
   /* create the profile form
-  /* set translation language
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Profile');
@@ -100,12 +99,15 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   }
 
   /** onKeyupPassword
-  /* get password when keyup
+  /* set password variable to input value
   */
   onKeyupPassword(): void {
-    this.password = this.profileForm.controls.passwords.get('password')!.value;
+    this.password = (this.profileForm.controls.passwords.get('password') as FormControl).value;
   }
 
+  /** checkMatchingPasswords
+  /* set confirmPasswordError variable according to MatchPasswordValidator
+  */
   checkMatchingPasswords(): void {
     if (MatchPasswordValidator(this.profileForm.controls.passwords) !== null) {
       this.confirmPasswordError = true;
@@ -123,8 +125,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
-    const password = passwords.get('password')!.value;
-    const oldpassword = passwords.get('oldpassword')!.value;
+    const password = (passwords.get('password') as FormControl).value;
+    const oldpassword = (passwords.get('oldpassword') as FormControl).value;
 
     this.subs.push(
       this.authentication.updatePassword(password, oldpassword).subscribe(
@@ -149,7 +151,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   }
 
   /** onReloadProfile
-  /* get most accurate user data from zoho
+  /* load most accurate user data from zoho and handle result
   */
   onReloadProfile(): void {
     this.notification = undefined;

@@ -11,8 +11,8 @@
         (closed)="notification = undefined"
       ></app-notification>
       <div #contentRef>
-        <div *ngIf="message" [ngClass]="{ 'fail-message-separator': message && errors }">
-          {{ message }}
+        <div *ngIf="reportMsg" [ngClass]="{ 'fail-message-separator': errors }">
+          {{ reportMsg }}
         </div>
         <div *ngIf="errors">
           <ul *ngFor="let r of reportKeys(errors)">

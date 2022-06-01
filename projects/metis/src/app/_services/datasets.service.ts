@@ -57,7 +57,6 @@ export class DatasetsService {
         .get<any>(url, options)
         .pipe(
           map((data) => {
-            // TODO: fix any
             return type === 'default' ? data : data.xslt;
           })
         )

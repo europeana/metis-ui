@@ -498,6 +498,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * Submits the trackDatasetId
    **/
   submitDatasetProgress(): void {
+    const fieldNamePortalPublish = 'portal-publish';
     const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)];
     stepConf.isBusy = true;
     this.isPollingProgress = true;
@@ -511,9 +512,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           map((dataset: Dataset) => {
             const nullString =
               'A review URL will be generated when the dataset has finished processing';
-            if (dataset['portal-publish'] === nullString) {
+            if (dataset[fieldNamePortalPublish] === nullString) {
               console.log('delete portal publish copy');
-              delete dataset['portal-publish'];
+              delete dataset[fieldNamePortalPublish];
             }
             return dataset;
           })
@@ -526,8 +527,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
         if (this.progressComplete()) {
           this.resetBusy();
-
-          if (this.progressData['portal-publish']) {
+          if (this.progressData[fieldNamePortalPublish]) {
             this.clearDataPollers();
           }
         }

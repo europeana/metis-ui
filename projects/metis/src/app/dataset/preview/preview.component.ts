@@ -150,7 +150,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /* - populate a filter with plugins based on selected execution date
   *  - unsubscribe immediately if all plugins have completed
   */
-  addPluginsFilter(executionHistory: WorkflowExecutionHistory, prefilling?: boolean): void {
+  addPluginsFilter(executionHistory: WorkflowExecutionHistory, prefilling = false): void {
     this.isLoadingFilter = true;
     this.filterDateOpen = false;
     this.allPlugins = [];
@@ -212,11 +212,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   /** getXMLSamplesCompare
   /* - populate a filter with plugins based on selected plugin for XML comparison
   */
-  getXMLSamplesCompare(
-    plugin: PluginType,
-    workflowExecutionId: string,
-    prefilling?: boolean
-  ): void {
+  getXMLSamplesCompare(plugin: PluginType, workflowExecutionId: string, prefilling = false): void {
     if (!prefilling) {
       this.filterCompareOpen = false;
       this.previewFilters.comparisonFilter = {

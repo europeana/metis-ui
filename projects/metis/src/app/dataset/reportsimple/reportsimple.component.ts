@@ -33,6 +33,10 @@ export class ReportSimpleComponent {
     }
   }
 
+  get reportMsg(): string {
+    return this.message;
+  }
+
   /** reportErrors
   /* setter for the report errors:
   /* - checks if the specified errors is non-empty

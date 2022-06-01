@@ -22,7 +22,7 @@
   <ng-container *ngFor="let plugin of pluginExecutions; let i = index">
     <app-executions-grid-data
       #dataWrapper
-      [pluginExecution]="plugin"
+      [plugin]="plugin"
       [isIncremental]="isIncremental"
       (setReportMsg)="openFailReport($event)"
       [applyStripe]="i % 2 === 1"

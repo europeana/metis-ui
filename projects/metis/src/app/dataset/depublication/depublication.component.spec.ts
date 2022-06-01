@@ -293,16 +293,6 @@ describe('DepublicationComponent', () => {
       discardPeriodicTasks();
     }));
 
-    it('should set the total record count shadow variable', fakeAsync(() => {
-      const testVal = 10;
-      expect(component._totalRecordCount).toBeFalsy();
-      component.totalRecordCount = 0;
-      expect(component._totalRecordCount).toBeFalsy();
-      component.totalRecordCount = testVal;
-      tick();
-      expect(component._totalRecordCount).toEqual(testVal);
-    }));
-
     it('should process check events', () => {
       const checkEvent = {
         recordId: 'X',
