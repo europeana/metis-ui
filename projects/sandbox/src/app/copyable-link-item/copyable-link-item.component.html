@@ -11,11 +11,11 @@
   </a>
   <a
     *ngIf="href"
-    appHrefCopy
-    #hrefCopy="hrefCopy"
+    appTextCopy
+    #textCopy="textCopy"
     class="copy"
-    (click)="hrefCopy.copy(href)"
-    [ngClass]="{ copied: hrefCopy.copied }"
+    (click)="textCopy.copy(href)"
+    [ngClass]="{ copied: textCopy.copied }"
     ><span class="msg-copy">copy</span><span class="msg-copied">copied!</span></a
   >
 </span>

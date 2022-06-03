@@ -1,10 +1,10 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-  selector: '[appHrefCopy]',
-  exportAs: 'hrefCopy'
+  selector: '[appTextCopy]',
+  exportAs: 'textCopy'
 })
-export class HrefCopyDirective {
+export class TextCopyDirective {
   copied = false;
   timeToReset = 2000;
 

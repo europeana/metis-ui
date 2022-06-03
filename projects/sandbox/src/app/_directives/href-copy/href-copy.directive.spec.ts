@@ -2,29 +2,29 @@ import { Component, DebugElement } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { HrefCopyDirective } from '.';
+import { TextCopyDirective } from '.';
 
 @Component({
   template: `
-    <div class="cmp" appHrefCopy #hrefCopy="hrefCopy"></div>
+    <div class="cmp" appTextCopy #textCopy="textCopy"></div>
   `
 })
-class TestHrefCopyDirectiveComponent {
-  @ViewChild('hrefCopy') hrefCopy: HrefCopyDirective;
+class TestTextCopyDirectiveComponent {
+  @ViewChild('textCopy') textCopy: TextCopyDirective;
 }
-describe('HrefCopyDirective', () => {
-  let fixture: ComponentFixture<TestHrefCopyDirectiveComponent>;
-  let component: TestHrefCopyDirectiveComponent;
+describe('TextCopyDirective', () => {
+  let fixture: ComponentFixture<TestTextCopyDirectiveComponent>;
+  let component: TestTextCopyDirectiveComponent;
   let debugElement: DebugElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [HrefCopyDirective, TestHrefCopyDirectiveComponent]
+      declarations: [TextCopyDirective, TestTextCopyDirectiveComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TestHrefCopyDirectiveComponent);
+    fixture = TestBed.createComponent(TestTextCopyDirectiveComponent);
     debugElement = fixture.debugElement.query(By.css('.cmp'));
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -32,12 +32,12 @@ describe('HrefCopyDirective', () => {
   });
 
   it('should create', () => {
-    const copyInfo = component.hrefCopy;
+    const copyInfo = component.textCopy;
     expect(copyInfo).toBeTruthy();
   });
 
   it('should copy', () => {
-    const copyInfo = component.hrefCopy;
+    const copyInfo = component.textCopy;
     copyInfo.copy();
     expect(copyInfo.copied).toBeFalsy();
     copyInfo.copy('text');
@@ -45,7 +45,7 @@ describe('HrefCopyDirective', () => {
   });
 
   it('should reset', fakeAsync(() => {
-    const copyInfo = component.hrefCopy;
+    const copyInfo = component.textCopy;
     copyInfo.copy('text');
     expect(copyInfo.copied).toBeTruthy();
     tick(copyInfo.timeToReset);
