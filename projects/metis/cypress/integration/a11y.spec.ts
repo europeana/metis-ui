@@ -1,6 +1,6 @@
 import 'cypress-axe';
 
-context('Sandbox', () => {
+context('metis-ui', () => {
   describe('Accessibility', () => {
     const injectAxe = (): void => {
       /*

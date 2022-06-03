@@ -232,7 +232,7 @@ new (class extends TestDataServer {
       }
     }
 
-    regRes = route.match(/depublish\/record_ids\/[^\?+]*/);
+    regRes = route.match(/depublish\/record_ids\/[^?+]*/);
 
     if (regRes) {
       const params = url.parse(route, true).query;
@@ -491,7 +491,7 @@ new (class extends TestDataServer {
     }
 
     regRes = route.match(
-      /orchestrator\/proxies\/records\?workflowExecutionId=(\S+)\&pluginType=(\S+)\&nextPage/
+      /orchestrator\/proxies\/records\?workflowExecutionId=(\S+)&pluginType=(\S+)&nextPage/
     );
 
     if (regRes) {
@@ -509,7 +509,7 @@ new (class extends TestDataServer {
     }
 
     regRes = route.match(
-      /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)\&pluginType=(\S+)/
+      /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)&pluginType=(\S+)/
     );
 
     if (regRes) {

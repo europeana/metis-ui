@@ -45,14 +45,18 @@ describe('ExecutionsDataGridComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should apply the highlight when the PluginExecution is set ', () => {
-    component.pluginExecution = basicPluginExecution;
+  it('should apply the highlight when the PluginExecution is RUNNING', () => {
+    component.plugin = basicPluginExecution;
     expect(component.applyHighlight).toBeFalsy();
 
     const runningExecution = Object.assign({}, basicPluginExecution);
     runningExecution.pluginStatus = PluginStatus.RUNNING;
-    component.pluginExecution = runningExecution;
+    component.plugin = runningExecution;
     expect(component.applyHighlight).toBeTruthy();
+
+    runningExecution.pluginStatus = PluginStatus.FINISHED;
+    component.plugin = runningExecution;
+    expect(component.applyHighlight).toBeFalsy();
   });
 
   it('should detect if plugin is harvest', () => {

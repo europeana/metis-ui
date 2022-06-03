@@ -35,6 +35,6 @@ export class TextWithLinksComponent {
   /* removes dots and commas from the specified href string
   */
   public normaliseHref(href: string): string {
-    return href.replace(/[\.,]$/, '');
+    return href.replace(/[.,]$/, '');
   }
 }

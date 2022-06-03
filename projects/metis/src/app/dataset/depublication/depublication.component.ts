@@ -76,7 +76,6 @@ export class DepublicationComponent extends DataPollingComponent {
   };
   depublicationIsTriggerable: boolean;
   _datasetId: string;
-  _totalRecordCount?: number;
 
   constructor(
     private readonly modalConfirms: ModalConfirmService,
@@ -88,16 +87,6 @@ export class DepublicationComponent extends DataPollingComponent {
   }
 
   @Input() datasetName: string;
-
-  /** totalRecordCount
-  /* setter for shadow variable _totalRecordCount
-  */
-  @Input()
-  set totalRecordCount(count: number | undefined) {
-    if (count) {
-      this._totalRecordCount = count;
-    }
-  }
 
   /** datasetId
   /* setter for private variable _datasetId
