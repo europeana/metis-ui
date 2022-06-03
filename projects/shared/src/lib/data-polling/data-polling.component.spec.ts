@@ -38,7 +38,7 @@ describe('DataPollingComponent', () => {
       : jasmine.createSpy('fnPoll').and.callFake(() => of(true));
     fnProcess = jasmine.createSpy('fnProcess');
     fnError = jasmine.createSpy('fnError').and.callFake(() => false);
-    return component.createNewDataPoller(interval, fnPoll, fnProcess, fnError);
+    return component.createNewDataPoller(interval, fnPoll, false, fnProcess, fnError);
   };
 
   const runTicks = (from: number, count: number, interval: number): void => {
@@ -77,7 +77,7 @@ describe('DataPollingComponent', () => {
       const fnProcess2 = jasmine.createSpy('fnProcess');
       const fnError2 = jasmine.createSpy('fnError').and.callFake(() => false);
 
-      component.createNewDataPoller(interval * 2, fnPoll2, fnProcess2, fnError2);
+      component.createNewDataPoller(interval * 2, fnPoll2, false, fnProcess2, fnError2);
 
       runTicks(1, 4, interval);
       expect(fnPoll).toHaveBeenCalledTimes(5);

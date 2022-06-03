@@ -73,6 +73,7 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
       (): Observable<WorkflowExecution[]> => {
         return this.workflows.getAllExecutionsCollectingPages(true);
       },
+      false,
       (executions: WorkflowExecution[]) => {
         this.runningExecutions = executions;
         this.runningIsLoading = false;

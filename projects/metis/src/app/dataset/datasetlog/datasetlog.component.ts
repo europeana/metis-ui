@@ -115,6 +115,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
           })
         );
       },
+      false,
       (result: SubTaskInfo[]) => {
         this.isFirstLoading = false;
         this.showWindowOutput(result);

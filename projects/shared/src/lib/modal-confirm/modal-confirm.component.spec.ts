@@ -16,7 +16,8 @@ describe('ModalConfirmComponent', () => {
     component = fixture.componentInstance;
     component.modalWrapper = {
       nativeElement: {
-        focus: () => {}
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        focus: (): void => {}
       }
     };
     modalConfirms = TestBed.inject(ModalConfirmService);

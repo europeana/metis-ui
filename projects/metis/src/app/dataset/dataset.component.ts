@@ -123,6 +123,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       (): Observable<HarvestData> => {
         return this.workflows.getPublishedHarvestedData(this.datasetId);
       },
+      false,
       (resultHarvest: HarvestData): void => {
         this.harvestPublicationData = resultHarvest;
         this.harvestIsLoading = false;
@@ -140,6 +141,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       (): Observable<Workflow> => {
         return this.workflows.getWorkflowForDataset(this.datasetId);
       },
+      false,
       (workflow: Workflow): void => {
         this.workflowData = workflow;
         this.workflowIsLoading = false;
@@ -160,6 +162,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
           WorkflowExecution
         >;
       },
+      false,
       (execution: WorkflowExecution): void => {
         this.processLastExecutionData(execution);
       },
@@ -241,6 +244,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       () => {
         return this.datasets.getDataset(this.datasetId, true);
       },
+      false,
       (result) => {
         this.datasetData = result;
         this.datasetName = result.datasetName;
