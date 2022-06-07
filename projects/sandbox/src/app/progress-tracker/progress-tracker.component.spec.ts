@@ -37,6 +37,11 @@ describe('ProgressTrackerComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should format the error', () => {
+      const error = { type: 'Serious', message: 'hello', records: ['rec1'] };
+      expect(component.formatError(error)).toEqual(JSON.stringify(error, null, 4));
+    });
+
     it('should show the errors and warning modals', () => {
       spyOn(modalConfirms, 'open').and.callFake(() => {
         const res = of(true);

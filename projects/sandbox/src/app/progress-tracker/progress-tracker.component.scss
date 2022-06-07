@@ -63,6 +63,31 @@ $eu-jade-slightly-dark: #1ea072;
   right: 1em;
 }
 
+.error-item {
+  &:not(:first-child) {
+    padding-top: 16px;
+  }
+
+  &:not(:last-child)::after {
+    background: $eu-jade-classic;
+    content: '';
+    display: block;
+    height: 1px;
+    margin: auto;
+    margin-top: 16px;
+    opacity: 0.5;
+    width: 100%;
+  }
+}
+
+.sticky-item-header {
+  background: #fff;
+  padding-bottom: 4px;
+  position: sticky;
+  top: -1rem;
+  z-index: 1;
+}
+
 .wrapper {
   background-color: $white;
   margin-bottom: 1em;

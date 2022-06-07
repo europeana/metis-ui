@@ -1,6 +1,13 @@
 import { formatDate } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { Dataset, DatasetStatus, ProgressByStep, StepStatus, StepStatusClass } from '../_models';
+import {
+  Dataset,
+  DatasetStatus,
+  ProgressByStep,
+  ProgressError,
+  StepStatus,
+  StepStatusClass
+} from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
 
@@ -93,5 +100,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    **/
   toggleExpandedWarning(): void {
     this.expandedWarning = !this.expandedWarning;
+  }
+
+  formatError(e: ProgressError): string {
+    return JSON.stringify(e, null, 4);
   }
 }
