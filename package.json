@@ -65,7 +65,7 @@
     "start:ci-data-metis": "npm run start:ci-data-any --project=metis",
     "start:ci-data-sandbox": "npm run start:ci-data-any --project=sandbox",
     "start:ci-data": "npm run start:ci-data-metis",
-    "dist-copy-conf": "cp projects/${npm_config_project}/src/static/manifest.yml projects/${npm_config_project}/src/static/Staticfile projects/${npm_config_project}/src/static/nginx.conf projects/${npm_config_project}/dist/${npm_config_project}",
+    "dist-copy-conf": "cp projects/${npm_config_project}/src/static/manifest.yml projects/${npm_config_project}/src/static/Staticfile projects/${npm_config_project}/src/static/nginx.* projects/${npm_config_project}/dist/${npm_config_project}",
     "dist-any": "ng build ${npm_config_project} --progress=false --configuration production && npm run dist-copy-conf --project=${npm_config_project} && cp -R projects/${npm_config_project}/dist/${npm_config_project}/. dist",
     "dist-metis": "npm run dist-any --project=metis",
     "dist-sandbox": "npm run dist-any --project=sandbox",
