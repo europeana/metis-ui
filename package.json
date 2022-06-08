@@ -68,7 +68,7 @@
 
     "XXX___dist-copy-conf": "cp projects/${npm_config_project}/src/static/manifest.yml projects/${npm_config_project}/src/static/nginx.* projects/${npm_config_project}/dist/${npm_config_project}",
 
-    "dist-copy-conf": "cp projects/${npm_config_project}/src/static/nginx.* projects/${npm_config_project}/dist/${npm_config_project}",
+    "dist-copy-conf": "cp projects/${npm_config_project}/src/static/nginx.* projects/${npm_config_project}/dist",
 
 
     "XXX___dist-any": "ng build ${npm_config_project} --progress=false --configuration production && npm run dist-copy-conf --project=${npm_config_project} && cp -R projects/${npm_config_project}/dist/${npm_config_project}/. dist",
