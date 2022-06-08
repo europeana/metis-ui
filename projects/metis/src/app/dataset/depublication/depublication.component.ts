@@ -507,6 +507,7 @@ export class DepublicationComponent extends DataPollingComponent {
     this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCall,
+      false,
       fnDataProcess,
       this.errors.handleError
     ).getPollingSubject();

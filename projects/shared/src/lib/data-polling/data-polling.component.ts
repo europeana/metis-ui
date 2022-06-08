@@ -8,8 +8,8 @@
  **/
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy } from '@angular/core';
-import { BehaviorSubject, merge, Observable, Subject, Subscription, timer } from 'rxjs';
-import { delayWhen, filter, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, identity, merge, Observable, Subject, Subscription, timer } from 'rxjs';
+import { delayWhen, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
 import { SubscriptionManager } from '../subscription-manager/subscription.manager';
 
 export interface DataPollerInfo {
@@ -173,6 +173,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
   /** createNewDataPoller
    *  @param {number} interval - polling interval
    *  @param {() => Observable<T>} fnServiceCall - the data fetch function
+   *  @param {false | (prev: T, curr: T) => boolean} fnDistinctValues - optional function for distinct value detection
    *  @param {(result: T) => void} fnDataProcess - the data processing function
    *  @param {(err: HttpErrorResponse) => HttpErrorResponse | false} fnOnError - function to invoke on error
    *  - sets up polled data stream
@@ -182,6 +183,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
   createNewDataPoller<T>(
     interval: number,
     fnServiceCall: () => Observable<T>,
+    fnDistinctValues: false | ((prev: T, curr: T) => boolean),
     fnDataProcess: (result: T) => void,
     fnOnError?: (err: HttpErrorResponse) => HttpErrorResponse | false
   ): PollingSubjectAccesor {
@@ -217,6 +219,7 @@ export class DataPollingComponent extends SubscriptionManager implements OnDestr
           this.triggerDelay.next(conf); // queue next call in chain
         })
       )
+      .pipe(fnDistinctValues ? distinctUntilChanged(fnDistinctValues) : identity)
       .subscribe(fnDataProcess, fnOnError);
     return {
       getPollingSubject: (): Subject<boolean> => {

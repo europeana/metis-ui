@@ -49,6 +49,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
       (): Observable<boolean> => {
         return of(this.authentication.validatedUser());
       },
+      false,
       (result: boolean): void => {
         if (result) {
           this.redirectAfterLogin();

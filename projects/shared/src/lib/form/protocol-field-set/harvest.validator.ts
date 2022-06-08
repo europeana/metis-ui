@@ -8,7 +8,7 @@ export function harvestValidator(control: AbstractControl): ValidationErrors | n
     return { validParameter: true };
   }
 
-  const regex = /(http(s?)|ftp)\:\/\//g;
+  const regex = /(http(s?)|ftp):\/\//g;
   if (!regex.test(control.value)) {
     return { validUrl: true };
   }
