@@ -1,7 +1,0 @@
----
-applications:
-- name: sandbox-ui-angular-test
-  memory: 2048M
-  instances: 1
-  host: sandbox-ui-angular-test
-  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
