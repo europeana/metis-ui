@@ -46,6 +46,7 @@ interface ContentTierBreakdown {
   thumbnailAvailable: boolean;
   landingPageAvailable: boolean;
   embeddableMediaAvailable: boolean;
+  mediaResource3DAvailable: boolean;
   mediaResourceTechnicalMetadataList: Array<MediaDataItem>;
   processingErrorsList?: Array<ProcessingError>;
 }

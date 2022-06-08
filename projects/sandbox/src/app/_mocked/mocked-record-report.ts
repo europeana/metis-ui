@@ -69,6 +69,7 @@ export const mockRecordReport: RecordReport = {
     thumbnailAvailable: true,
     landingPageAvailable: true,
     embeddableMediaAvailable: true,
+    mediaResource3DAvailable: false,
     mediaResourceTechnicalMetadataList: mockMediaResources,
     processingErrorsList: [
       {
