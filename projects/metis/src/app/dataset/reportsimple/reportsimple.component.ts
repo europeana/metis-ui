@@ -103,8 +103,7 @@ export class ReportSimpleComponent {
     return o ? Object.keys(o) : [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  isObject(val: any): boolean {
+  isObject(val: unknown): boolean {
     return typeof val === 'object';
   }
 }

@@ -13,9 +13,15 @@ import {
   Language,
   Notification,
   PublicationFitness,
-  successNotification
+  successNotification,
+  User
 } from '../../_models';
-import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import {
+  AuthenticationService,
+  CountriesService,
+  DatasetsService,
+  ErrorService
+} from '../../_services';
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
@@ -26,7 +32,28 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   styleUrls: ['./datasetform.component.scss']
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
-  @Input() datasetData: Partial<Dataset>;
+  _datasetData: Partial<Dataset>;
+
+  @Input() set datasetData(data: Partial<Dataset>) {
+    this._datasetData = data;
+    if (!this.createdBy) {
+      const userId = data.createdByUserId;
+      if (userId) {
+        this.subs.push(
+          this.authenticationServer.getUserByUserId(userId).subscribe((user: User) => {
+            this.createdBy = `${user.firstName} ${user.lastName}`;
+          })
+        );
+      }
+    }
+  }
+
+  get datasetData(): Partial<Dataset> {
+    return this._datasetData;
+  }
+
+  createdBy: string;
+
   @Input() harvestPublicationData?: HarvestData;
   @Input() isNew: boolean;
 
@@ -58,6 +85,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   }
 
   constructor(
+    private readonly authenticationServer: AuthenticationService,
     private readonly countries: CountriesService,
     private readonly datasets: DatasetsService,
     private readonly router: Router,

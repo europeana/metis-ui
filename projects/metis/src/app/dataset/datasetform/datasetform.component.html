@@ -196,7 +196,7 @@
       </div>
       <div class="form-group" *ngIf="!isNew">
         <label class="dataset-label">{{ 'createdBy' | translate }}</label>
-        <span class="readonly-field">{{ datasetData.createdByUserId }}</span>
+        <span class="readonly-field">{{ createdBy }}</span>
       </div>
       <div *ngIf="!isNew && harvestPublicationData">
         <div class="form-group">

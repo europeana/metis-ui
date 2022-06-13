@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
   createMockPipe,
+  MockAuthenticationService,
   MockCountriesService,
   MockCountriesServiceErrors,
   mockDataset,
@@ -13,7 +14,12 @@ import {
   MockErrorService,
   MockTranslateService
 } from '../../_mocked';
-import { CountriesService, DatasetsService, ErrorService } from '../../_services';
+import {
+  AuthenticationService,
+  CountriesService,
+  DatasetsService,
+  ErrorService
+} from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { DatasetformComponent } from '.';
@@ -32,13 +38,14 @@ describe('DatasetformComponent', () => {
       imports: [RouterTestingModule, ReactiveFormsModule],
       declarations: [DatasetformComponent, createMockPipe('translate')],
       providers: [
-        {
-          provide: DatasetsService,
-          useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
-        },
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
         {
           provide: CountriesService,
           useClass: errorMode ? MockCountriesServiceErrors : MockCountriesService
+        },
+        {
+          provide: DatasetsService,
+          useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
         },
         { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService }
