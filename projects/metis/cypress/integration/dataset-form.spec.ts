@@ -81,7 +81,7 @@ context('metis-ui', () => {
         checkFormField('Dataset Name', 'Dataset_1');
         checkFormField('Provider', 'Europeana Provider');
         checkStaticField('Date Created', '19/02/2019 - 08:36');
-        checkStaticField('Created by', '123');
+        checkStaticField('Created by', 'Valentine Charles');
         checkStaticField('Last published', '19/02/2019 - 08:49');
         checkStaticField('Number of items published', '865');
         checkStaticField('Last date of harvest', '19/02/2019 - 08:41');

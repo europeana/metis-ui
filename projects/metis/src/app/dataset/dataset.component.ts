@@ -123,7 +123,10 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       (): Observable<HarvestData> => {
         return this.workflows.getPublishedHarvestedData(this.datasetId);
       },
-      false,
+      (prev: HarvestData, curr: HarvestData) => {
+        const compare = JSON.stringify(prev) === JSON.stringify(curr);
+        return compare;
+      },
       (resultHarvest: HarvestData): void => {
         this.harvestPublicationData = resultHarvest;
         this.harvestIsLoading = false;
