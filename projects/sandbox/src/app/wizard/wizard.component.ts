@@ -521,8 +521,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         );
       },
       (prev: Dataset, curr: Dataset) => {
-        const compare = JSON.stringify(prev) === JSON.stringify(curr);
-        return compare;
+        return JSON.stringify(prev) === JSON.stringify(curr);
       },
       (progressInfo: Dataset) => {
         this.progressData = progressInfo;

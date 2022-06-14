@@ -1,10 +1,98 @@
 <div class="wrapper">
+  <!-- Modal -->
+  <ng-template #tmpModal let-modalInstanceId="modalInstanceId">
+    <lib-modal
+      id="{{ modalInstanceId }}"
+      title="{{ visibleProblemPatternId }} - {{
+        problemPatternIdSeverities[visibleProblemPatternId]
+      }}"
+      [isSmall]="false"
+      [buttons]="[{ label: 'Close' }]"
+    >
+      <span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P1">
+          <span class="summary warning-icon warning">Systematic use of the same title</span>
+          <span class="explanation"
+            >This pattern is identified when multiple records are found within the dataset that have
+            the same <span class="dc-field">dc:title</span> value (ignoring case). If a record has
+            multiple titles, of which just one is duplicated in another record, this issue is still
+            raised.</span
+          >
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P2">
+          <span class="summary warning-icon error">Equal title and description fields</span>
+          <span class="explanation"
+            >This pattern is identified for a record when it has a
+            <span class="dc-field">dc:title</span> value that is equal to one of its
+            <span class="dc-field">dc:description</span> values. If a record has multiple titles, of
+            which just one is duplicated as a description, this issue is still raised.</span
+          >
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P3">
+          <span class="summary warning-icon fatal"
+            >Near-identical title and description fields</span
+          >
+          <span class="explanation"
+            >This pattern is identified for a record when it has a
+            <span class="dc-field">dc:title</span> value that is almost equal to one of its
+            <span class="dc-field">dc:description</span> values. If a record has multiple titles, of
+            which just one is similar to a description, this issue is still raised. This issue is
+            not raised if the title and the description are in fact identical, as this is covered by
+            pattern P2.</span
+          >
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P5">
+          <span class="summary warning-icon notice">Unrecognizable title</span>
+          <span class="explanation"
+            >This pattern is identified for a record if it has a
+            <span class="dc-field">dc:title</span> value that does not seem to be human-readable. If
+            there are more than 5 characters in the title that are not either alphanumeric or simple
+            spaces, this issue is raised. This pattern is also identified if a title fully contains
+            a <span class="dc-field">dc:identifier</span> value.</span
+          >
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P6">
+          <span class="summary warning-icon warning">Non-meaningful title</span>
+          <span class="explanation"
+            >This pattern is identified for a record if it has a
+            <span class="dc-field">dc:title</span> value that does not seem to be meaningful. If
+            there are less than 3 characters in the title, this issue is raised.</span
+          >
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P7">
+          <span class="summary warning-icon error">Missing description fields</span>
+          <span class="explanation"
+            >This pattern is identified for a record if it does not have any
+            <span class="dc-field">dc:description</span> values, or if all its descriptions are in
+            fact empty.</span
+          >
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P9">
+          <span class="summary warning-icon fatal">Very short description</span>
+          <span class="explanation"
+            >This pattern is identified for a record if it has a
+            <span class="dc-field">dc:description</span> value that is deemed too short. If the
+            description contains 50 characters or less, this issue is raised.</span
+          >
+        </span>
+        <span *ngIf="visibleProblemPatternId === ProblemPatternId.P12">
+          <span class="summary warning-icon notice">Extremely long values</span>
+          <span class="explanation"
+            >This pattern is identified for a record if it has a
+            <span class="dc-field">dc:title</span> value that is deemed too long. If the title
+            contains more than 70 characters, this issue is raised.</span
+          >
+        </span>
+      </span>
+    </lib-modal>
+  </ng-template>
+
   <!-- Internal Link -->
   <!-- prettier-ignore -->
   <ng-template #internalLinkItem let-recordId="recordId">
     <!-- //NOSONAR --><li>
       <ng-container *ngIf="!problemPatternsRecord">
-        <a class="bold link-related link-internal" (click)="openLink(recordId)">
+        <a class="bold link-related link-internal" (click)="openLink(recordId)" title="view record issues">
           {{ recordId }}
         </a>
       </ng-container>
@@ -13,19 +101,24 @@
 
   <!-- Description -->
   <ng-template #tmpDescription let-description="description">
-    <div>
+    <a
+      class="problem-header"
+      (click)="showDescriptionModal(description.problemPatternId)"
+      title="show problem detail"
+    >
       <span class="bold">{{ description.problemPatternId }}</span>
       <span
         class="warning-icon"
         [ngClass]="{
           warning: description.problemPatternSeverity === ProblemPatternSeverity.WARNING,
           error: description.problemPatternSeverity === ProblemPatternSeverity.ERROR,
-          fatal: description.problemPatternSeverity === ProblemPatternSeverity.FATAL
+          fatal: description.problemPatternSeverity === ProblemPatternSeverity.FATAL,
+          notice: description.problemPatternSeverity === ProblemPatternSeverity.NOTICE
         }"
         >{{ description.problemPatternSeverity }}</span
       >
       <span class="dimension italic">{{ description.problemPatternQualityDimension }}</span>
-    </div>
+    </a>
   </ng-template>
 
   <!-- Problem Occurence -->
@@ -109,6 +202,12 @@
   <!-- RECORD -->
 
   <div *ngIf="problemPatternsRecord">
+    <ng-container>
+      <ng-content
+        *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_record' }"
+      ></ng-content>
+    </ng-container>
+
     <ng-template #noProblems>
       <h2 *ngIf="recordId" class="form-group title">Record: {{ recordId }}</h2>
       <h3 class="problem-viewer">
@@ -135,6 +234,12 @@
   <!-- DATASET -->
 
   <div *ngIf="problemPatternsDataset; let ppd">
+    <ng-container>
+      <ng-content
+        *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_dataset' }"
+      ></ng-content>
+    </ng-container>
+
     <ul class="form-group header-info">
       <li>
         <ul>

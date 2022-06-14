@@ -1,6 +1,8 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+$problem-viewer-padding: 0.5em;
+
 input,
 label {
   cursor: pointer;
@@ -19,10 +21,28 @@ label {
   text-transform: capitalize;
 }
 
+.dc-field {
+  border: 2px solid lemonchiffon;
+}
+
+.dc-field,
+.message-copy {
+  background-color: lemonchiffon;
+}
+
 .dimension {
   &::before {
     content: ' - ';
   }
+}
+
+.explanation {
+  display: block;
+}
+
+.explanation,
+.summary {
+  text-align: center;
 }
 
 .header-info {
@@ -55,10 +75,6 @@ label {
   &:active:hover::before {
     background-image: svg-url-icon-lightbulb($eu-light-orange);
   }
-}
-
-.message-copy {
-  background-color: lemonchiffon;
 }
 
 .list {
@@ -103,6 +119,14 @@ label {
   }
 }
 
+.problem-header {
+  background-color: $white;
+  display: block;
+  position: sticky;
+  top: -$problem-viewer-padding;
+  z-index: 1;
+}
+
 .problem-occurence {
   display: flex;
   flex-flow: wrap;
@@ -119,7 +143,7 @@ label {
   max-height: 28em;
   overflow-y: scroll;
   overflow-x: hidden;
-  padding: 0.5em;
+  padding: $problem-viewer-padding;
 }
 
 .semi-colon::after {
@@ -130,6 +154,11 @@ label {
   $h2-height: 38px;
   height: $h2-height;
   line-height: $h2-height;
+}
+
+.summary {
+  display: block;
+  margin-bottom: 12px;
 }
 
 .title {
@@ -153,15 +182,18 @@ label {
 
 .warning-icon {
   font-weight: bold;
-  margin-left: 6px;
   text-transform: uppercase;
   &::before {
     content: '';
     display: inline-block;
     height: 12px;
     width: 13px;
-    background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
     margin: 0 3px 0 0;
+  }
+  &.notice {
+    &::before {
+      background: svg-url-icon-warning($eu-jade) center no-repeat;
+    }
   }
   &.warning {
     &::before {
@@ -177,5 +209,15 @@ label {
     &::before {
       background: svg-url-icon-warning($eu-red) center no-repeat;
     }
+  }
+  &:not(.summary) {
+    margin-left: 6px;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .explanation,
+  .summary {
+    text-align: left;
   }
 }
