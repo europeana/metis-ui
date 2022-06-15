@@ -2,6 +2,7 @@ context('Sandbox', () => {
   describe('Problem Patterns', () => {
     const force = { force: true };
     const selectorModalHeader = '.modal .head';
+    const selectorModalClose = `${selectorModalHeader} .btn-close`;
     const selectorProblemViewer = '.problem-viewer';
     const selectorProblemViewerHeader = `${selectorProblemViewer} .problem-header`;
     const selectorModalOpener = `${selectorProblemViewerHeader} a`;
@@ -13,7 +14,6 @@ context('Sandbox', () => {
 
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
     });
 
     const testErrorsShowing = (url: string, msg: string): void => {
@@ -34,9 +34,11 @@ context('Sandbox', () => {
         .should('have.length', 1);
     };
 
-    const testModalOpen = (url: string): void => {
-      cy.visit(url);
-      cy.get(selectorModalHeader).should('not.exist');
+    const testModalOpen = (url?: string): void => {
+      if (url) {
+        cy.visit(url);
+        cy.get(selectorModalHeader).should('not.exist');
+      }
       cy.get(selectorModalOpener)
         .first()
         .click(force);
@@ -89,7 +91,7 @@ context('Sandbox', () => {
     });
 
     describe('(linked-viewers)', () => {
-      it('should link dataset problem patterns to record problem patterns', () => {
+      it('should link the viewers', () => {
         cy.visit('/dataset/101?view=problems');
         cy.get(selectorLinkRelated)
           .first()
@@ -99,6 +101,31 @@ context('Sandbox', () => {
         cy.get(selectorLinkRelated)
           .filter(':visible')
           .should('not.exist');
+      });
+
+      it('should maintain separate modal instances', () => {
+        cy.visit('/dataset/101?view=problems');
+
+        Array.from({ length: 3 }).forEach((_) => {
+          // test modal dataset
+          testModalOpen();
+
+          // record
+          cy.get(selectorModalClose).click(force);
+          cy.get(selectorLinkRelated)
+            .first()
+            .click(force);
+
+          // test modal record
+          testModalOpen();
+
+          // back to dataset
+          cy.get('.nav-orb.problem-orb')
+            .first()
+            .click(force);
+          testModalOpen();
+          cy.get(selectorModalClose).click(force);
+        });
       });
     });
   });
