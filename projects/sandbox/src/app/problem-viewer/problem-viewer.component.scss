@@ -9,10 +9,6 @@ label {
   padding-bottom: 0;
 }
 
-.analysis-list {
-  margin-left: 2em;
-}
-
 .capitalise {
   text-transform: capitalize;
 }
@@ -26,6 +22,12 @@ label {
   }
 }
 
+.decorated-list,
+.explanation,
+.summary {
+  text-align: center;
+}
+
 .dimension {
   &::before {
     content: ' - ';
@@ -34,11 +36,6 @@ label {
 
 .explanation {
   display: block;
-}
-
-.explanation,
-.summary {
-  text-align: center;
 }
 
 .header-info {
@@ -83,7 +80,7 @@ label {
   }
 }
 
-.analysis-item,
+.analysis-list,
 .openable-list,
 .link-related,
 .list-opener,
@@ -233,6 +230,7 @@ q {
 }
 
 @media (min-width: $bp-large) {
+  .decorated-list,
   .explanation,
   .summary {
     text-align: left;

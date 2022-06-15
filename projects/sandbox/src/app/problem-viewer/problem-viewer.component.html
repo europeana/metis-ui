@@ -141,9 +141,12 @@
   <ng-template #tmpRecordAnalysisList let-analyses="analyses" let-problemTitle="problemTitle">
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
-        <ng-content
-          *ngTemplateOutlet="internalLinkItem; context: { recordId: analysis.recordId }"
-        ></ng-content>
+        <ng-container *ngIf="!problemPatternsRecord">
+          <ng-content
+            *ngTemplateOutlet="internalLinkItem; context: { recordId: analysis.recordId }"
+          ></ng-content>
+        </ng-container>
+
         <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
           <ng-content
             *ngTemplateOutlet="
@@ -177,7 +180,10 @@
         </a>
       </span>
 
-      <span class="title-record-occurences semi-colon" [ngPlural]="problemPattern.recordOccurrences"
+      <span
+        class="title-record-occurences semi-colon"
+        *ngIf="!problemPatternsRecord"
+        [ngPlural]="problemPattern.recordOccurrences"
         >Occurs in {{ problemPattern.recordOccurrences }}
         <ng-template ngPluralCase="=1">record</ng-template>
         <ng-template ngPluralCase="other">records</ng-template>
