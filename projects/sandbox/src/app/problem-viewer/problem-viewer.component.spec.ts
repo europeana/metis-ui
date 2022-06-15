@@ -2,7 +2,11 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
-import { ProblemPatternId } from '../_models';
+import {
+  ProblemPatternDescriptionBasic,
+  ProblemPatternId,
+  ProblemPatternSeverity
+} from '../_models';
 import { ProblemViewerComponent } from '.';
 
 describe('ProblemViewerComponent', () => {
@@ -34,6 +38,32 @@ describe('ProblemViewerComponent', () => {
     spyOn(component.openLinkEvent, 'emit');
     component.openLink('x');
     expect(component.openLinkEvent.emit).toHaveBeenCalled();
+  });
+
+  it('should get the warning classmap', () => {
+    const generateDescription = (
+      severity: ProblemPatternSeverity
+    ): ProblemPatternDescriptionBasic => {
+      return ({
+        problemPatternSeverity: severity
+      } as unknown) as ProblemPatternDescriptionBasic;
+    };
+
+    expect(
+      component.getWarningClassMap(generateDescription(ProblemPatternSeverity.WARNING)).warning
+    ).toBeTruthy();
+
+    expect(
+      component.getWarningClassMap(generateDescription(ProblemPatternSeverity.ERROR)).error
+    ).toBeTruthy();
+
+    expect(
+      component.getWarningClassMap(generateDescription(ProblemPatternSeverity.FATAL)).fatal
+    ).toBeTruthy();
+
+    expect(
+      component.getWarningClassMap(generateDescription(ProblemPatternSeverity.NOTICE)).notice
+    ).toBeTruthy();
   });
 
   it('should show the modal', () => {

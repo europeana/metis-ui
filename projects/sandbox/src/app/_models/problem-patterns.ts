@@ -30,11 +30,14 @@ export enum ProblemPatternQualityDimension {
   REPRESENTATIONAL = 'REPRESENTATIONAL'
 }
 
-export interface ProblemPatternDescription {
-  problemPatternId: ProblemPatternId;
+export interface ProblemPatternDescriptionBasic {
   problemPatternSeverity: ProblemPatternSeverity;
   problemPatternQualityDimension: ProblemPatternQualityDimension;
   problemPatternTitle: string;
+}
+
+export interface ProblemPatternDescription extends ProblemPatternDescriptionBasic {
+  problemPatternId: ProblemPatternId;
 }
 
 export interface ProblemOccurrence {

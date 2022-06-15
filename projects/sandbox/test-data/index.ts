@@ -1,19 +1,19 @@
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
+import { problemPatternData } from '../src/app/_data';
 import {
   Dataset,
   DatasetStatus,
   FieldOption,
   ProblemPattern,
   ProblemPatternId,
-  ProblemPatternQualityDimension,
   ProblemPatternsDataset,
-  ProblemPatternSeverity,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData
 } from '../src/app/_models';
+import { stepErrorDetails } from './data/step-error-detail';
 import { ProgressByStepStatus, TimedTarget } from './models/models';
 import { ReportGenerator } from './report-generator';
 
@@ -167,7 +167,7 @@ new (class extends TestDataServer {
           const errorNum = info['processed-records'];
           const error = {
             type: `warnng (${errorNum})`,
-            message: `the message will be long detailed technical stuff....`,
+            message: stepErrorDetails[errorNum % stepErrorDetails.length],
             records: [`${errorNum}`, `${key}`, `${errorNum * key}`]
           };
           if (pbs.errors) {
@@ -277,74 +277,53 @@ new (class extends TestDataServer {
    * @param ( string ) recordId
    **/
   generateProblem(datasetId: number, patternId: number, recordId?: string): ProblemPattern {
-    const severities = [
-      ProblemPatternSeverity.ERROR,
-      ProblemPatternSeverity.FATAL,
-      ProblemPatternSeverity.NOTICE,
-      ProblemPatternSeverity.WARNING
-    ];
-    const dimensions = [
-      ProblemPatternQualityDimension.ACCURACY,
-      ProblemPatternQualityDimension.AVAILABILITY,
-      ProblemPatternQualityDimension.COMPLETENESS,
-      ProblemPatternQualityDimension.CONCISENESS,
-      ProblemPatternQualityDimension.COMPLIANCE,
-      ProblemPatternQualityDimension.CONSISTENCY,
-      ProblemPatternQualityDimension.TIMELINESS,
-      ProblemPatternQualityDimension.LICENSING,
-      ProblemPatternQualityDimension.INTERLINKING,
-      ProblemPatternQualityDimension.UNDERSTANDABILITY,
-      ProblemPatternQualityDimension.REPRESENTATIONAL
-    ];
+    const messageReports = {
+      P1: ['My Title', 'My Other Title'],
+      P2: [
+        'The Descriptive Title',
+        'The Descriptive Title: Which Is It?',
+        'The Descriptive Title: 2-in-1'
+      ],
+      P3: ['Cultural Heritage Object'],
+      P5: ['**$!^#-_-#^!$**', 'xxxxxxxxxxxx'],
+      P6: ['aaaaaaa', 'zzzzzzz'],
+      P7: ['', '/', '/na'],
+      P9: ['Title', 'A1'],
+      P12: ['Urbano dejanje 2015 the courtyard - also known as the yard of the court']
+    };
 
-    const problemTitles = [
-      'Very short description',
-      'Very short title',
-      'Extremely long description',
-      'Extremely long title',
-      'Extremely long values',
-      'Missing description fields',
-      'Missing title fields',
-      'Equal(lower cased) title and description',
-      'Equal(upper cased) title and description',
-      'Equal title and description'
-    ];
+    const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number) => {
+      return `P${id}` as ProblemPatternId;
+    });
 
-    const messageReportDescription = 'urbano dejanje 2015 the courtyard';
-    const messageReports = [
-      'description',
-      'title',
-      'A really, really, really, really, really, extremely long description...',
-      'A really, really, really, really, really, extremely long title...',
-      'A really, really, really, really, really, extremely long value',
-      '',
-      '',
-      messageReportDescription,
-      messageReportDescription.toUpperCase(),
-      messageReportDescription.charAt(0).toUpperCase() + messageReportDescription.slice(1)
-    ];
+    const resultId = patternIds[patternId % patternIds.length];
 
-    return {
-      problemPatternDescription: {
-        problemPatternId: `P${patternId}` as ProblemPatternId,
-        problemPatternSeverity: severities[patternId % severities.length],
-        problemPatternQualityDimension: dimensions[patternId % dimensions.length],
-        problemPatternTitle: problemTitles[patternId % problemTitles.length]
-      },
-      recordOccurrences: 1,
-      recordAnalysisList: [
-        {
+    const occurenceList = new Array(Math.max(1, (datasetId + patternId) % 4))
+      .fill(null)
+      .map((_, occurenceIndex) => {
+        const messageReportGroup = messageReports[resultId];
+        return {
           recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
           problemOccurrenceList: [
             {
-              messageReport: messageReports[patternId % messageReports.length],
-              affectedRecordIds: Object.keys(new Array(patternId % 5).fill(null)).map((i) => {
-                return `/${datasetId}/${patternId + i}`;
+              messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
+              affectedRecordIds: Object.keys(new Array(occurenceIndex % 5).fill(null)).map((i) => {
+                return `/${datasetId}/${occurenceIndex + i}`;
               })
             }
           ]
-        }
-      ]
+        };
+      });
+
+    return {
+      problemPatternDescription: {
+        problemPatternId: resultId,
+        problemPatternSeverity: problemPatternData[resultId].problemPatternSeverity,
+        problemPatternQualityDimension: problemPatternData[resultId].problemPatternQualityDimension,
+        problemPatternTitle: problemPatternData[resultId].problemPatternTitle
+      },
+      recordOccurrences: occurenceList.length,
+      recordAnalysisList: occurenceList
     } as ProblemPattern;
   }
 

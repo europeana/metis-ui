@@ -13,21 +13,17 @@ label {
   margin-left: 2em;
 }
 
-.bold {
-  font-weight: bold;
-}
-
 .capitalise {
   text-transform: capitalize;
 }
 
-.dc-field {
-  border: 2px solid lemonchiffon;
-}
+.decorated-list {
+  list-style: disc;
+  margin: 1em 0em 2em 1.5em;
 
-.dc-field,
-.message-copy {
-  background-color: lemonchiffon;
+  li :last-child {
+    margin-left: 0.4em;
+  }
 }
 
 .dimension {
@@ -77,16 +73,21 @@ label {
   }
 }
 
-.list {
+.openable-list {
   display: block;
   height: 100%;
+  margin-bottom: 0.5em;
   overflow: hidden;
   &.closed {
     height: 0;
   }
 }
 
-.list,
+.analysis-item,
+.openable-list,
+.link-related,
+.list-opener,
+.problem-occurence,
 .title-record-occurences {
   padding-left: 1em;
 }
@@ -94,29 +95,45 @@ label {
 .list-opener {
   color: $eu-jade-dark;
   display: block;
+  margin-top: 0.5em;
   width: 100%;
 
-  &::after {
-    $transitionTime: 80ms;
-    content: '\25B6';
-    display: inline-block;
-    font-size: 12px;
-    left: 1px;
-    position: relative;
-    top: -2px;
-    transform: rotate(0deg);
-    transition: top ease-in-out $transitionTime, transform ease-in-out $transitionTime;
-  }
+  &:not(.auto-opened) {
+    &::after {
+      $transitionTime: 80ms;
+      content: '\25B6';
+      display: inline-block;
+      font-size: 12px;
+      left: 5px;
+      position: relative;
+      top: -2px;
+      transform: rotate(0deg);
+      transition: top ease-in-out $transitionTime, transform ease-in-out $transitionTime;
+    }
 
-  &:hover::after {
-    color: $eu-jade-darkest;
-    color: $eu-light-orange;
-  }
+    &:hover::after {
+      color: $eu-jade-darkest;
+      color: $eu-light-orange;
+    }
 
-  &.is-open::after {
-    top: 0;
-    transform: rotate(90deg);
+    &.is-open::after {
+      top: 0;
+      transform: rotate(90deg);
+    }
   }
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+q {
+  quotes: '“' '„'; // "”";
+  margin-left: 1em;
+}
+
+.message-copy {
+  background-color: lemonchiffon;
 }
 
 .problem-header {
@@ -188,7 +205,7 @@ label {
     display: inline-block;
     height: 12px;
     width: 13px;
-    margin: 0 3px 0 0;
+    margin: 0 5px 0 0;
   }
   &.notice {
     &::before {

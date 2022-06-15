@@ -1,11 +1,13 @@
 import { formatDate } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager, ModalConfirmService } from 'shared';
+import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
+import { problemPatternData } from '../_data';
 import {
   ProblemPattern,
-  ProblemPatternsDataset,
+  ProblemPatternDescriptionBasic,
   ProblemPatternId,
+  ProblemPatternsDataset,
   ProblemPatternSeverity
 } from '../_models';
 
@@ -18,17 +20,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
   public ProblemPatternId = ProblemPatternId;
-
-  public problemPatternIdSeverities = {
-    P1: ProblemPatternSeverity.NOTICE,
-    P2: ProblemPatternSeverity.WARNING,
-    P3: ProblemPatternSeverity.ERROR,
-    P5: ProblemPatternSeverity.FATAL,
-    P6: ProblemPatternSeverity.NOTICE,
-    P7: ProblemPatternSeverity.WARNING,
-    P9: ProblemPatternSeverity.ERROR,
-    P12: ProblemPatternSeverity.FATAL
-  };
+  public problemPatternData = problemPatternData;
 
   _problemPatternsRecord: Array<ProblemPattern>;
   datasetId: string;
@@ -56,7 +48,17 @@ export class ProblemViewerComponent extends SubscriptionManager {
     this.openLinkEvent.emit(recordId);
   }
 
-  showDescriptionModal(problemPatternId: ProblemPatternId) {
+  getWarningClassMap(basicDescription: ProblemPatternDescriptionBasic): ClassMap {
+    const severity = basicDescription.problemPatternSeverity;
+    return {
+      warning: severity === ProblemPatternSeverity.WARNING,
+      error: severity === ProblemPatternSeverity.ERROR,
+      fatal: severity === ProblemPatternSeverity.FATAL,
+      notice: severity === ProblemPatternSeverity.NOTICE
+    };
+  }
+
+  showDescriptionModal(problemPatternId: ProblemPatternId): void {
     this.visibleProblemPatternId = problemPatternId;
     this.subs.push(this.modalConfirms.open(this.modalInstanceId).subscribe());
   }

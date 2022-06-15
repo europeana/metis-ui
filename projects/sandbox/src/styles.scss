@@ -74,6 +74,15 @@ label {
   content: ' *';
 }
 
+.bold {
+  font-weight: bold;
+}
+
+.code,
+.dc-field {
+  font-family: Courier, courier new, serif;
+}
+
 .errors,
 .error-message {
   background-color: $white;
