@@ -268,9 +268,12 @@
 
       <ng-container
         *ngIf="
-          [RecordMediaType.AUDIO, RecordMediaType.TEXT, RecordMediaType.VIDEO].includes(
-            contentTier.recordType
-          )
+          [
+            RecordMediaType.AUDIO,
+            RecordMediaType.TEXT,
+            RecordMediaType.VIDEO,
+            RecordMediaType.THREE_D
+          ].includes(contentTier.recordType)
         "
       >
         <span class="report-sub-header" data-e2e="landing-available">

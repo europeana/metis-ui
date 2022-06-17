@@ -25,7 +25,7 @@ context('Sandbox', () => {
       cy.get(selectorRecordType).contains(RecordMediaType.THREE_D);
 
       cy.get(selectorEmbed).should('have.length', 0);
-      cy.get(selectorLanding).should('have.length', 0);
+      cy.get(selectorLanding).should('have.length', 1);
       cy.get(selectorThumbnail).should('have.length', 0);
       cy.get(selectorImageResolution).should('have.length', 0);
       cy.get(selectorVerticalResolution).should('have.length', 0);
