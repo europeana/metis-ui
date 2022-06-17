@@ -513,7 +513,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             const nullString =
               'A review URL will be generated when the dataset has finished processing';
             if (dataset[fieldNamePortalPublish] === nullString) {
-              console.log('delete portal publish copy');
               delete dataset[fieldNamePortalPublish];
             }
             return dataset;
@@ -521,8 +520,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         );
       },
       (prev: Dataset, curr: Dataset) => {
-        const compare = JSON.stringify(prev) === JSON.stringify(curr);
-        return compare;
+        return JSON.stringify(prev) === JSON.stringify(curr);
       },
       (progressInfo: Dataset) => {
         this.progressData = progressInfo;

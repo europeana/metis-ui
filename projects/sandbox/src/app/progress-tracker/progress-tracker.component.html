@@ -104,13 +104,17 @@
 
   <lib-modal
     id="{{ modalIdErrors }}"
-    title="Error Detail"
+    title="Error Detail - {{
+      progressData['progress-by-step'][detailIndex]
+        ? progressData['progress-by-step'][detailIndex].step
+        : ''
+    }}"
     [isSmall]="false"
     [buttons]="[{ label: 'Close' }]"
   >
     <div *ngIf="progressData['progress-by-step'][detailIndex]; let detailItem">
       <ul class="error-item" *ngFor="let error of detailItem.errors; let i = index">
-        <li class="sticky-item-header">
+        <li class="bold sticky-item-header">
           Error {{ i + 1 }} of {{ detailItem.errors.length }}
           <a appTextCopy #textCopy="textCopy" (click)="textCopy.copy(formatError(error))">
             <span class="copy permanent" [ngClass]="{ copied: textCopy.copied }">
@@ -121,7 +125,7 @@
         <li i18n="progress error error@@progressErrorType">Type: {{ error.type }}</li>
         <li i18n="progress error error@@progressErrorRecords">
           Records: [{{ error.records }}]
-          <ul>
+          <ul class="code">
             <li>{{ error.message }}</li>
           </ul>
         </li>

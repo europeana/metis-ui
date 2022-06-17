@@ -123,7 +123,7 @@ export class SandboxService {
       return this.http.post<SubmissionResponseDataWrapped>(url, formData, {
         observe: 'events',
         reportProgress: true
-      }) as Observable<SubmissionResponseDataWrapped>;
+      }) as Observable<SubmissionResponseDataWrapped | SubmissionResponseData>;
     } else {
       return this.http.post<SubmissionResponseData>(url, formData);
     }
