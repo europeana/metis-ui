@@ -136,6 +136,7 @@ export interface WorkflowExecution {
   workflowStatus: WorkflowStatus;
   cancelling?: boolean;
   cancelledBy?: string;
+  startedBy: string;
   createdDate: string;
   startedDate: string;
   updatedDate?: string;
