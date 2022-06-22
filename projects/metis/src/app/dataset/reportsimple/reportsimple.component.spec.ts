@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MockTranslateService } from '../../_mocked';
+import { MockTranslateService, MockWorkflowService } from '../../_mocked';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { ReportSimpleComponent } from '.';
 
@@ -8,10 +9,20 @@ describe('ReportSimpleComponent', () => {
   let component: ReportSimpleComponent;
   let fixture: ComponentFixture<ReportSimpleComponent>;
 
+  const mockError = {
+    errorType: 'my type',
+    message: 'oh no',
+    occurrences: 1,
+    errorDetails: []
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ReportSimpleComponent],
-      providers: [{ provide: TranslateService, useClass: MockTranslateService }],
+      providers: [
+        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: WorkflowService, useClass: MockWorkflowService }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));
@@ -23,7 +34,7 @@ describe('ReportSimpleComponent', () => {
   });
 
   it('should not be visible or loading by default', () => {
-    expect(component.loading).toBeFalsy();
+    expect(component.reportLoading).toBeFalsy();
     expect(component.isVisible).toBeFalsy();
   });
 
@@ -41,7 +52,7 @@ describe('ReportSimpleComponent', () => {
 
   it('should show if an errors array is provided', () => {
     expect(component.isVisible).toBeFalsy();
-    component.reportErrors = ['Error'];
+    component.reportErrors = [mockError];
     expect(component.isVisible).toBeTruthy();
   });
 
@@ -89,7 +100,7 @@ describe('ReportSimpleComponent', () => {
   });
 
   it('should copy the report', () => {
-    component.reportErrors = ['Error'];
+    component.reportErrors = [mockError];
     fixture.detectChanges();
 
     component.copyReport({

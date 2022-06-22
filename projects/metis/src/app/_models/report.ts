@@ -1,6 +1,6 @@
 import { TopologyName } from './workflow-execution';
 
-export interface ErrorDetails {
+export interface ReportErrorDetails {
   identifier: string;
   additionalInfo: string;
 }
@@ -11,7 +11,7 @@ export interface ReportError {
   errorType: string;
   message: string;
   occurrences: number;
-  errorDetails: ErrorDetails[];
+  errorDetails: ReportErrorDetails[];
 }
 
 // Java name: TaskErrorsInfo
@@ -25,6 +25,7 @@ export interface SimpleReportRequest {
   topology?: TopologyName;
   taskId?: string;
   message?: string;
+  workflowExecutionId?: string;
 }
 
 export interface ReportAvailability {

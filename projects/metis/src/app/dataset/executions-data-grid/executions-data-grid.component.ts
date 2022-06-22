@@ -77,6 +77,11 @@ export class ExecutionsDataGridComponent {
   /* open the fail report
   */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
-    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
+    this.setReportMsg.emit({
+      topology,
+      taskId,
+      workflowExecutionId: this.workflowExecutionId,
+      message: errorMsg
+    });
   }
 }

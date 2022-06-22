@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-
-import { errorNotification, Notification, successNotification } from '../../_models';
+import { errorNotification, Notification, ReportError, successNotification } from '../../_models';
+import { PluginType, TopologyName, XmlSample } from '../../_models';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 @Component({
@@ -9,7 +10,11 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./reportsimple.component.scss']
 })
 export class ReportSimpleComponent {
-  constructor(private readonly translate: TranslateService) {}
+  constructor(
+    private readonly translate: TranslateService,
+    private readonly workflows: WorkflowService
+  ) {}
+
   isVisible: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: any;
@@ -20,6 +25,9 @@ export class ReportSimpleComponent {
   @ViewChild('contentRef') contentRef: ElementRef;
 
   @Output() closeReportSimple = new EventEmitter<void>();
+
+  @Input() reportWorkflowExecutionId: string;
+  @Input() reportPluginType: TopologyName;
 
   /** reportMsg
   /* setter for the report message:
@@ -44,7 +52,7 @@ export class ReportSimpleComponent {
   /* - updates the notification variable
   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @Input() set reportErrors(errors: any) {
+  @Input() set reportErrors(errors: Array<ReportError> | null) {
     if (errors) {
       this.isVisible = true;
       this.errors = errors;
@@ -52,6 +60,11 @@ export class ReportSimpleComponent {
         this.notification = errorNotification(this.translate.instant('reportEmpty'));
       }
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get reportErrors(): any {
+    return this.errors;
   }
 
   /** reportLoading
@@ -66,6 +79,10 @@ export class ReportSimpleComponent {
     }
   }
 
+  get reportLoading(): boolean {
+    return this.loading;
+  }
+
   /** closeReport
   /* - clears errors
   *  - clears message
@@ -73,7 +90,7 @@ export class ReportSimpleComponent {
   *  - emits close event
   */
   closeReport(): void {
-    this.errors = null;
+    this.reportErrors = null;
     this.message = '';
     this.notification = undefined;
     this.isVisible = false;
@@ -105,5 +122,75 @@ export class ReportSimpleComponent {
 
   isObject(val: unknown): boolean {
     return typeof val === 'object';
+  }
+
+  /** pluginTypeFromTopologyName
+  /* @param {TopologyName} topology - the source to convert
+  */
+  pluginTypeFromTopologyName(topology: TopologyName): PluginType {
+    switch (topology) {
+      case 'oai_harvest': {
+        return PluginType.OAIPMH_HARVEST;
+        break;
+      }
+      case 'http_harvest': {
+        return PluginType.HTTP_HARVEST;
+        break;
+      }
+      case 'validation': {
+        return PluginType.VALIDATION_INTERNAL;
+        break;
+      }
+      case 'xslt_transform': {
+        return PluginType.TRANSFORMATION;
+        break;
+      }
+      case 'normalization': {
+        return PluginType.NORMALIZATION;
+        break;
+      }
+      case 'enrichment': {
+        return PluginType.ENRICHMENT;
+        break;
+      }
+      case 'media_process': {
+        return PluginType.MEDIA_PROCESS;
+        break;
+      }
+      default: {
+        return PluginType.LINK_CHECKING;
+      }
+    }
+  }
+
+  /** downloadRecord
+  /* load xml record and invoke its download
+  /* @param {string} id - the record id
+  */
+  downloadRecord(id: string): void {
+    // get the ecloudId from the identifier
+    const match = id.match(/records\/([A-Za-z0-9]*)/);
+    if (match && match.length > 1) {
+      id = match[1];
+    } else {
+      return;
+    }
+
+    this.workflows
+      .getWorkflowComparisons(
+        this.reportWorkflowExecutionId,
+        this.pluginTypeFromTopologyName(this.reportPluginType),
+        [id]
+      )
+      .subscribe((samples: Array<XmlSample>) => {
+        const sample = samples[0];
+        const anchor = document.createElement('a');
+        anchor.href = `data:text/xml,${encodeURIComponent(sample.xmlRecord)}`;
+        anchor.target = '_blank';
+        anchor.download = `record-${sample.ecloudId}.xml`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+      });
   }
 }

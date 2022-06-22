@@ -140,7 +140,8 @@ describe('ActionbarComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'normalization',
       taskId: '123',
-      message: undefined
+      message: undefined,
+      workflowExecutionId: '253453453'
     });
   });
 

@@ -17,6 +17,7 @@ import {
   PublicationFitness,
   SimpleReportRequest,
   successNotification,
+  TopologyName,
   Workflow,
   WorkflowExecution,
   workflowFormFieldConf
@@ -68,6 +69,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reportErrors: any;
   reportMsg?: string;
+
+  // TODO group model
+  reportWorkflowExecutionId?: string;
+  reportPluginType?: TopologyName;
+
   reportLoading: boolean;
 
   @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
@@ -199,6 +205,10 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
           (report) => {
             if (report && report.errors && report.errors.length) {
               this.reportErrors = report.errors;
+              this.reportPluginType = req.topology;
+              if (this.lastExecutionData) {
+                this.reportWorkflowExecutionId = this.lastExecutionData.id;
+              }
             } else {
               this.reportMsg = 'Report is empty.';
             }
