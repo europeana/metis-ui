@@ -440,12 +440,28 @@ describe('Workflow Service', () => {
       .expect('GET', '/orchestrator/proxies/normalization/task/123/report/exists')
       .send(mockReportAvailability);
     expect(execution.metisPlugins[0].hasReport).toBe(true);
+
+    execution.metisPlugins[0].externalTaskId = undefined;
+    service.getReportsForExecution(execution);
+    expect(execution.metisPlugins[0].hasReport).toBe(true);
   });
 
   it('should cancel a workflow (DELETE)', () => {
     const sub = service.cancelThisWorkflow('565645').subscribe(() => undefined);
     mockHttp.expect('DELETE', '/orchestrator/workflows/executions/565645').send({});
     sub.unsubscribe();
+  });
+
+  it('should get the complete dataset summaries', () => {
+    const expectedUrl = '/orchestrator/workflows/executions/overview?pageCount=3&nextPage=0';
+    const sub = service.getCompletedDatasetSummaries(2).subscribe(() => undefined);
+    mockHttp.expect('GET', expectedUrl).send({});
+    sub.unsubscribe();
+
+    const paramString = '&x=y';
+    const sub2 = service.getCompletedDatasetSummaries(2, paramString).subscribe(() => undefined);
+    mockHttp.expect('GET', `${expectedUrl}${paramString}`).send({});
+    sub2.unsubscribe();
   });
 
   it('should get samples', () => {

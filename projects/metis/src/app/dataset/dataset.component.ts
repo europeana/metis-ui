@@ -124,8 +124,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
         return this.workflows.getPublishedHarvestedData(this.datasetId);
       },
       (prev: HarvestData, curr: HarvestData) => {
-        const compare = JSON.stringify(prev) === JSON.stringify(curr);
-        return compare;
+        return JSON.stringify(prev) === JSON.stringify(curr);
       },
       (resultHarvest: HarvestData): void => {
         this.harvestPublicationData = resultHarvest;
@@ -159,15 +158,15 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
     this.createNewDataPoller(
       environment.intervalStatus,
-      (): Observable<WorkflowExecution> => {
+      (): Observable<WorkflowExecution | undefined> => {
         this.lastExecutionIsLoading = false;
-        return this.workflows.getLastDatasetExecution(this.datasetId) as Observable<
-          WorkflowExecution
-        >;
+        return this.workflows.getLastDatasetExecution(this.datasetId);
       },
       false,
-      (execution: WorkflowExecution): void => {
-        this.processLastExecutionData(execution);
+      (execution: WorkflowExecution | undefined): void => {
+        if (execution) {
+          this.processLastExecutionData(execution);
+        }
       },
       (err: HttpErrorResponse): HttpErrorResponse | false => {
         const error = this.errors.handleError(err);
@@ -268,13 +267,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   /* @param {WorkflowExecution} execution - loaded data
   */
   processLastExecutionData(execution: WorkflowExecution): void {
-    if (execution) {
-      this.workflows.getReportsForExecution(execution);
-      this.lastExecutionData = execution;
+    this.workflows.getReportsForExecution(execution);
+    this.lastExecutionData = execution;
 
-      if (this.isStarting && !isWorkflowCompleted(execution)) {
-        this.isStarting = false;
-      }
+    if (this.isStarting && !isWorkflowCompleted(execution)) {
+      this.isStarting = false;
     }
   }
 
