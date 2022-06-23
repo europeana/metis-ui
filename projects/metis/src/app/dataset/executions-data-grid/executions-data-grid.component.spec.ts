@@ -71,7 +71,8 @@ describe('ExecutionsDataGridComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'validation',
       taskId: '123',
-      message: undefined
+      message: undefined,
+      workflowExecutionId: undefined
     });
   });
 
@@ -83,6 +84,7 @@ describe('ExecutionsDataGridComponent', () => {
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: undefined,
       taskId: undefined,
+      workflowExecutionId: undefined,
       message: 'fail message report'
     });
   });

@@ -23,6 +23,7 @@ export class LastExecutionComponent {
   currentPlugin?: PluginExecution;
   isIncremental = false;
   containsDeleted = false;
+  lastExecutionId: string;
 
   @Input()
   set lastExecutionData(value: WorkflowExecution | undefined) {
@@ -33,6 +34,7 @@ export class LastExecutionComponent {
       } else {
         this.currentPlugin = getCurrentPlugin(value);
       }
+      this.lastExecutionId = value.id;
       this.pluginExecutions = value.metisPlugins.slice();
       this.pluginExecutions.reverse();
       this.containsDeleted = executionsIncludeDeleted(this.pluginExecutions);
@@ -50,6 +52,7 @@ export class LastExecutionComponent {
   /* open the fail report
   */
   openFailReport(req: SimpleReportRequest): void {
+    Object.assign(req, { workflowExecutionId: this.lastExecutionId });
     this.setReportMsg.emit(req);
   }
 

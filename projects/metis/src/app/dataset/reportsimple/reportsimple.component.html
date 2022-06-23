@@ -20,33 +20,38 @@
         <div *ngIf="reportErrors">
           <ul *ngFor="let r of reportKeys(reportErrors)">
             <li *ngFor="let rk of reportKeys(reportErrors[r])">
-              <strong>{{ rk }}:&nbsp;</strong>
+              <strong class="capitalise">{{ splitCamelCase(rk) }}:&nbsp;</strong>
               <span *ngIf="!isObject(reportErrors[r][rk])">
                 <app-text-with-links [text]="reportErrors[r][rk]"></app-text-with-links>
               </span>
-              <div *ngIf="isObject(reportErrors[r][rk])">
-                <ul *ngFor="let subrk of reportKeys(reportErrors[r][rk])">
-                  <li *ngFor="let sub of reportKeys(reportErrors[r][rk][subrk])">
-                    <ul *ngIf="sub === 'identifier'">
-                      <li>
-                        <a (click)="downloadRecord(reportErrors[r][rk][subrk][sub])">
-                          <strong>(Download)</strong>
+              <ul class="report-errors" *ngIf="isObject(reportErrors[r][rk])">
+                <ng-container *ngFor="let subrk of reportKeys(reportErrors[r][rk])">
+                  <ng-container *ngFor="let sub of reportKeys(reportErrors[r][rk][subrk])">
+                    <li class="omit-from-copy" *ngIf="sub === 'identifier'">
+                      <span>
+                        <strong class="capitalise">Record XML:&nbsp;</strong>
+                        <a class="btn-download" (click)="downloadRecord(reportErrors[r][rk][subrk][sub])">
+                          <strong>Download</strong>
                         </a>
-                      </li>
-                      <li>
-                        <strong>{{ sub }}:&nbsp;</strong>
+                      </span>
+                    </li>
+                    <li *ngIf="sub === 'identifier'">
+                      <span>
+                        <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
                         {{ reportErrors[r][rk][subrk][sub] }}
-                      </li>
-                    </ul>
-                    <div *ngIf="sub !== 'identifier'">
-                      <strong>{{ sub }}:&nbsp;</strong>
-                      <app-text-with-links
-                        [text]="reportErrors[r][rk][subrk][sub]"
-                      ></app-text-with-links>
-                    </div>
-                  </li>
-                </ul>
-              </div>
+                      </span>
+                    </li>
+                    <li class="last-in-group" *ngIf="sub === 'additionalInfo'">
+                      <span>
+                        <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
+                        <app-text-with-links
+                          [text]="reportErrors[r][rk][subrk][sub]"
+                        ></app-text-with-links>
+                      </span>
+                    </li>
+                  </ng-container>
+                </ng-container>
+              </ul>
             </li>
           </ul>
         </div>

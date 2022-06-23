@@ -1,4 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { SubscriptionManager } from 'shared';
 import { errorNotification, Notification, ReportError, successNotification } from '../../_models';
 import { PluginType, TopologyName, XmlSample } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -9,11 +11,13 @@ import { TranslateService } from '../../_translate';
   templateUrl: './reportsimple.component.html',
   styleUrls: ['./reportsimple.component.scss']
 })
-export class ReportSimpleComponent {
+export class ReportSimpleComponent extends SubscriptionManager {
   constructor(
     private readonly translate: TranslateService,
     private readonly workflows: WorkflowService
-  ) {}
+  ) {
+    super();
+  }
 
   isVisible: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,6 +47,14 @@ export class ReportSimpleComponent {
 
   get reportMsg(): string {
     return this.message;
+  }
+
+  /** splitCamelCase
+  /* string transformation
+  /* @param {string} s - the string to modify and return
+  */
+  splitCamelCase(s: string): string {
+    return s.replace(/([a-z])([A-Z])/g, '$1 $2');
   }
 
   /** reportErrors
@@ -131,31 +143,24 @@ export class ReportSimpleComponent {
     switch (topology) {
       case 'oai_harvest': {
         return PluginType.OAIPMH_HARVEST;
-        break;
       }
       case 'http_harvest': {
         return PluginType.HTTP_HARVEST;
-        break;
       }
       case 'validation': {
         return PluginType.VALIDATION_INTERNAL;
-        break;
       }
       case 'xslt_transform': {
         return PluginType.TRANSFORMATION;
-        break;
       }
       case 'normalization': {
         return PluginType.NORMALIZATION;
-        break;
       }
       case 'enrichment': {
         return PluginType.ENRICHMENT;
-        break;
       }
       case 'media_process': {
         return PluginType.MEDIA_PROCESS;
-        break;
       }
       default: {
         return PluginType.LINK_CHECKING;
@@ -169,28 +174,29 @@ export class ReportSimpleComponent {
   */
   downloadRecord(id: string): void {
     // get the ecloudId from the identifier
-    const match = id.match(/records\/([A-Za-z0-9]*)/);
+    const match = id.match(/(?:http(?:.)*records\/)?([A-Za-z0-9_]*)/);
     if (match && match.length > 1) {
       id = match[1];
     } else {
       return;
     }
-
-    this.workflows
-      .getWorkflowComparisons(
-        this.reportWorkflowExecutionId,
-        this.pluginTypeFromTopologyName(this.reportPluginType),
-        [id]
-      )
-      .subscribe((samples: Array<XmlSample>) => {
-        const sample = samples[0];
-        const anchor = document.createElement('a');
-        anchor.href = `data:text/xml,${encodeURIComponent(sample.xmlRecord)}`;
-        anchor.target = '_blank';
-        anchor.download = `record-${sample.ecloudId}.xml`;
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
-      });
+    this.subs.push(
+      this.workflows
+        .getWorkflowComparisons(
+          this.reportWorkflowExecutionId,
+          this.pluginTypeFromTopologyName(this.reportPluginType),
+          [id]
+        )
+        .subscribe((samples: Array<XmlSample>) => {
+          const sample = samples[0];
+          const anchor = document.createElement('a');
+          anchor.href = `data:text/xml,${encodeURIComponent(sample.xmlRecord)}`;
+          anchor.target = '_blank';
+          anchor.download = `record-${sample.ecloudId}.xml`;
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+        })
+    );
   }
 }

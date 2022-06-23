@@ -70,7 +70,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   reportErrors: any;
   reportMsg?: string;
 
-  // TODO group model
   reportWorkflowExecutionId?: string;
   reportPluginType?: TopologyName;
 
@@ -193,6 +192,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
   /** setReportMsg
   /* sets the message for the reportMsg
+  /* loads the report
   */
   setReportMsg(req: SimpleReportRequest): void {
     if (req.message) {
@@ -206,9 +206,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
             if (report && report.errors && report.errors.length) {
               this.reportErrors = report.errors;
               this.reportPluginType = req.topology;
-              if (this.lastExecutionData) {
-                this.reportWorkflowExecutionId = this.lastExecutionData.id;
-              }
+              this.reportWorkflowExecutionId = req.workflowExecutionId;
             } else {
               this.reportMsg = 'Report is empty.';
             }

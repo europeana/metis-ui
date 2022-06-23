@@ -1,6 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MockTranslateService, MockWorkflowService } from '../../_mocked';
+import { of } from 'rxjs';
+import { MockTranslateService, MockWorkflowService, mockXmlSamples } from '../../_mocked';
+import { PluginType } from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { ReportSimpleComponent } from '.';
@@ -8,6 +10,7 @@ import { ReportSimpleComponent } from '.';
 describe('ReportSimpleComponent', () => {
   let component: ReportSimpleComponent;
   let fixture: ComponentFixture<ReportSimpleComponent>;
+  let workflows: WorkflowService;
 
   const mockError = {
     errorType: 'my type',
@@ -25,6 +28,7 @@ describe('ReportSimpleComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    workflows = TestBed.inject(WorkflowService);
   }));
 
   beforeEach(() => {
@@ -66,6 +70,8 @@ describe('ReportSimpleComponent', () => {
     expect(component.isVisible).toBeFalsy();
     component.reportLoading = true;
     expect(component.isVisible).toBeTruthy();
+    component.reportLoading = false;
+    expect(component.isVisible).toBeTruthy();
   });
 
   it('should warn if the provided errors array is empty', () => {
@@ -80,6 +86,31 @@ describe('ReportSimpleComponent', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(component.reportKeys((undefined as unknown) as Record<string, any>)).toEqual([]);
     expect(component.reportKeys({ a: 5, b: 67, zeta: 65 })).toEqual(['a', 'b', 'zeta']);
+  });
+
+  it('should get the pluginType from the TopologyName', () => {
+    expect(component.pluginTypeFromTopologyName('oai_harvest')).toEqual(PluginType.OAIPMH_HARVEST);
+    expect(component.pluginTypeFromTopologyName('http_harvest')).toEqual(PluginType.HTTP_HARVEST);
+    expect(component.pluginTypeFromTopologyName('validation')).toEqual(
+      PluginType.VALIDATION_INTERNAL
+    );
+    expect(component.pluginTypeFromTopologyName('xslt_transform')).toEqual(
+      PluginType.TRANSFORMATION
+    );
+    expect(component.pluginTypeFromTopologyName('normalization')).toEqual(PluginType.NORMALIZATION);
+    expect(component.pluginTypeFromTopologyName('enrichment')).toEqual(PluginType.ENRICHMENT);
+    expect(component.pluginTypeFromTopologyName('media_process')).toEqual(PluginType.MEDIA_PROCESS);
+    expect(component.pluginTypeFromTopologyName('indexer')).toEqual(PluginType.LINK_CHECKING);
+  });
+
+  it('should download the record', () => {
+    spyOn(workflows, 'getWorkflowComparisons').and.callFake(() => {
+      return of(mockXmlSamples);
+    });
+    component.downloadRecord('123');
+    expect(workflows.getWorkflowComparisons).not.toHaveBeenCalled();
+    component.downloadRecord('http://records/123');
+    expect(workflows.getWorkflowComparisons).toHaveBeenCalled();
   });
 
   it('should close the report window', () => {
@@ -113,5 +144,9 @@ describe('ReportSimpleComponent', () => {
 
     component.copyReport();
     expect(component.notification!.content).toBe('en:reportCopied');
+  });
+
+  it('should split the camel case', () => {
+    expect(component.splitCamelCase('helloThere')).toEqual('hello There');
   });
 });
