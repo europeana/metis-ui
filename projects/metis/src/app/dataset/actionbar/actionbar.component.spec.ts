@@ -7,7 +7,7 @@ import {
   mockWorkflowExecutionResults,
   MockWorkflowService
 } from '../../_mocked';
-import { PluginExecution, WorkflowExecution, WorkflowStatus } from '../../_models';
+import { PluginExecution, PluginType, WorkflowExecution, WorkflowStatus } from '../../_models';
 import { WorkflowService } from '../../_services';
 
 import { ActionbarComponent } from '.';
@@ -141,7 +141,8 @@ describe('ActionbarComponent', () => {
       topology: 'normalization',
       taskId: '123',
       message: undefined,
-      workflowExecutionId: '253453453'
+      workflowExecutionId: '253453453',
+      pluginType: PluginType.VALIDATION_EXTERNAL
     });
   });
 

@@ -1,8 +1,16 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
-import { errorNotification, Notification, ReportError, successNotification } from '../../_models';
-import { PluginType, TopologyName, XmlSample } from '../../_models';
+import {
+  errorNotification,
+  Notification,
+  PluginType,
+  ReportError,
+  successNotification,
+  TopologyName,
+  XmlSample
+} from '../../_models';
 import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
@@ -31,7 +39,8 @@ export class ReportSimpleComponent extends SubscriptionManager {
   @Output() closeReportSimple = new EventEmitter<void>();
 
   @Input() reportWorkflowExecutionId: string;
-  @Input() reportPluginType: TopologyName;
+  @Input() reportTopology: TopologyName;
+  @Input() reportPluginType: PluginType;
 
   /** reportMsg
   /* setter for the report message:
@@ -136,67 +145,46 @@ export class ReportSimpleComponent extends SubscriptionManager {
     return typeof val === 'object';
   }
 
-  /** pluginTypeFromTopologyName
-  /* @param {TopologyName} topology - the source to convert
-  */
-  pluginTypeFromTopologyName(topology: TopologyName): PluginType {
-    switch (topology) {
-      case 'oai_harvest': {
-        return PluginType.OAIPMH_HARVEST;
-      }
-      case 'http_harvest': {
-        return PluginType.HTTP_HARVEST;
-      }
-      case 'validation': {
-        return PluginType.VALIDATION_INTERNAL;
-      }
-      case 'xslt_transform': {
-        return PluginType.TRANSFORMATION;
-      }
-      case 'normalization': {
-        return PluginType.NORMALIZATION;
-      }
-      case 'enrichment': {
-        return PluginType.ENRICHMENT;
-      }
-      case 'media_process': {
-        return PluginType.MEDIA_PROCESS;
-      }
-      default: {
-        return PluginType.LINK_CHECKING;
-      }
-    }
+  isDownloadable(): boolean {
+    return (
+      this.reportPluginType &&
+      ![PluginType.OAIPMH_HARVEST, PluginType.HTTP_HARVEST].includes(this.reportPluginType)
+    );
   }
 
   /** downloadRecord
   /* load xml record and invoke its download
   /* @param {string} id - the record id
   */
-  downloadRecord(id: string): void {
+  downloadRecord(id: string, model: { downloadError?: HttpErrorResponse }): void {
     // get the ecloudId from the identifier
     const match = id.match(/(?:http(?:.)*records\/)?([A-Za-z0-9_]*)/);
-    if (match && match.length > 1) {
+
+    // it counts if the id matches
+    if (match && match.length > 1 && (id === match[1] || match[0] !== match[1])) {
       id = match[1];
     } else {
       return;
     }
     this.subs.push(
       this.workflows
-        .getWorkflowComparisons(
-          this.reportWorkflowExecutionId,
-          this.pluginTypeFromTopologyName(this.reportPluginType),
-          [id]
+        .getWorkflowRecordsById(this.reportWorkflowExecutionId, this.reportPluginType, [id])
+        .subscribe(
+          (samples: Array<XmlSample>) => {
+            const sample = samples[0];
+            const anchor = document.createElement('a');
+            model.downloadError = undefined;
+            anchor.href = `data:text/xml,${encodeURIComponent(sample.xmlRecord)}`;
+            anchor.target = '_blank';
+            anchor.download = `record-${sample.ecloudId}.xml`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+          },
+          (error: HttpErrorResponse) => {
+            model.downloadError = error;
+          }
         )
-        .subscribe((samples: Array<XmlSample>) => {
-          const sample = samples[0];
-          const anchor = document.createElement('a');
-          anchor.href = `data:text/xml,${encodeURIComponent(sample.xmlRecord)}`;
-          anchor.target = '_blank';
-          anchor.download = `record-${sample.ecloudId}.xml`;
-          document.body.appendChild(anchor);
-          anchor.click();
-          document.body.removeChild(anchor);
-        })
     );
   }
 }

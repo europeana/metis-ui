@@ -432,7 +432,7 @@ export class WorkflowService extends SubscriptionManager {
   }
 
   // return samples based on executionid, plugintype and ecloudIds
-  getWorkflowComparisons(
+  getWorkflowRecordsById(
     executionId: string,
     pluginType: PluginType,
     ids: Array<string>

@@ -28,6 +28,17 @@
   margin: 0.2rem 1rem;
 }
 
+.download-error {
+  color: $eu-red;
+  font-size: 14px;
+  font-style: italic;
+
+  li:not(:first-child) {
+    margin-top: 8px;
+  }
+  margin: 8px 0;
+}
+
 .omit-from-copy {
   user-select: none;
 }

@@ -13,6 +13,7 @@ import {
   isWorkflowCompleted,
   Notification,
   PluginExecution,
+  PluginType,
   PreviewFilters,
   PublicationFitness,
   SimpleReportRequest,
@@ -71,7 +72,8 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   reportMsg?: string;
 
   reportWorkflowExecutionId?: string;
-  reportPluginType?: TopologyName;
+  reportTopology?: TopologyName;
+  reportPluginType?: PluginType;
 
   reportLoading: boolean;
 
@@ -205,7 +207,8 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
           (report) => {
             if (report && report.errors && report.errors.length) {
               this.reportErrors = report.errors;
-              this.reportPluginType = req.topology;
+              this.reportTopology = req.topology;
+              this.reportPluginType = req.pluginType;
               this.reportWorkflowExecutionId = req.workflowExecutionId;
             } else {
               this.reportMsg = 'Report is empty.';

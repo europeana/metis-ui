@@ -77,7 +77,9 @@ export class ExecutionsDataGridComponent {
   /* open the fail report
   */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
+    const pluginType: PluginType = this.plugin.pluginType;
     this.setReportMsg.emit({
+      pluginType,
       topology,
       taskId,
       workflowExecutionId: this.workflowExecutionId,

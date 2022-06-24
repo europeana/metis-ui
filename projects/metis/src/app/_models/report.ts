@@ -1,4 +1,4 @@
-import { TopologyName } from './workflow-execution';
+import { PluginType, TopologyName } from './workflow-execution';
 
 export interface ReportErrorDetails {
   identifier: string;
@@ -23,6 +23,7 @@ export interface Report {
 
 export interface SimpleReportRequest {
   topology?: TopologyName;
+  pluginType?: PluginType;
   taskId?: string;
   message?: string;
   workflowExecutionId?: string;

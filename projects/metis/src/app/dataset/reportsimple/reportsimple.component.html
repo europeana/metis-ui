@@ -1,7 +1,8 @@
 <div class="modal-wrapper" *ngIf="isVisible">
   <div class="modal modal-big">
     <div class="head">
-      Report <a class="btn-close" (click)="closeReport()"></a>
+      Report <span *ngIf="reportPluginType">({{ reportPluginType | renameWorkflow }})</span
+      ><a class="btn-close" (click)="closeReport()"></a>
       <a class="btn-right" (click)="copyReport()" *ngIf="reportErrors || message">Copy</a>
     </div>
     <div class="content">
@@ -27,13 +28,44 @@
               <ul class="report-errors" *ngIf="isObject(reportErrors[r][rk])">
                 <ng-container *ngFor="let subrk of reportKeys(reportErrors[r][rk])">
                   <ng-container *ngFor="let sub of reportKeys(reportErrors[r][rk][subrk])">
-                    <li class="omit-from-copy" *ngIf="sub === 'identifier'">
+                    <li class="omit-from-copy" *ngIf="sub === 'identifier' && isDownloadable()">
                       <span>
                         <strong class="capitalise">Record XML:&nbsp;</strong>
-                        <a class="btn-download" (click)="downloadRecord(reportErrors[r][rk][subrk][sub])">
+                        <a
+                          class="btn-download"
+                          (click)="
+                            downloadRecord(
+                              reportErrors[r][rk][subrk][sub],
+                              reportErrors[r][rk][subrk]
+                            )
+                          "
+                        >
                           <strong>Download</strong>
                         </a>
                       </span>
+                    </li>
+                    <li
+                      class="download-error omit-from-copy"
+                      *ngIf="
+                        sub === 'identifier' && reportErrors[r][rk][subrk].downloadError;
+                        let downloadError
+                      "
+                    >
+                      <ul>
+                        <li>
+                          Error Downloading:
+                        </li>
+                        <li>
+                          <ul>
+                            <li>
+                              {{ downloadError.message }}
+                            </li>
+                            <li>
+                              {{ downloadError.error.errorMessage }}
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
                     </li>
                     <li *ngIf="sub === 'identifier'">
                       <span>

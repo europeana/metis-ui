@@ -168,7 +168,14 @@ export class ActionbarComponent {
   */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
     const workflowExecutionId = this.lastExecutionData ? this.lastExecutionData.id : undefined;
-    this.setReportMsg.emit({ topology, taskId, message: errorMsg, workflowExecutionId });
+    const pluginType = this.currentPlugin ? this.currentPlugin.pluginType : undefined;
+    this.setReportMsg.emit({
+      pluginType,
+      topology,
+      taskId,
+      message: errorMsg,
+      workflowExecutionId
+    });
   }
 
   /** copyInformation
