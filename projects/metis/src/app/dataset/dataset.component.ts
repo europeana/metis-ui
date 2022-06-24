@@ -13,12 +13,11 @@ import {
   isWorkflowCompleted,
   Notification,
   PluginExecution,
-  PluginType,
   PreviewFilters,
   PublicationFitness,
-  SimpleReportRequest,
+  ReportRequestWithData,
+  ReportRequest,
   successNotification,
-  TopologyName,
   Workflow,
   WorkflowExecution,
   workflowFormFieldConf
@@ -67,15 +66,8 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   previewFilters: PreviewFilters = { baseFilter: {} };
   pollingRefresh: Subject<boolean>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  reportErrors: any;
-  reportMsg?: string;
-
-  reportWorkflowExecutionId?: string;
-  reportTopology?: TopologyName;
-  reportPluginType?: PluginType;
-
   reportLoading: boolean;
+  reportRequest: ReportRequestWithData;
 
   @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
 
@@ -196,22 +188,18 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   /* sets the message for the reportMsg
   /* loads the report
   */
-  setReportMsg(req: SimpleReportRequest): void {
-    if (req.message) {
-      this.reportMsg = req.message;
-    }
+  setReportMsg(req: ReportRequest): void {
+    this.reportRequest = req;
+
     if (req.taskId && req.topology) {
       this.reportLoading = true;
       this.subs.push(
         this.workflows.getReport(req.taskId, req.topology).subscribe(
           (report) => {
             if (report && report.errors && report.errors.length) {
-              this.reportErrors = report.errors;
-              this.reportTopology = req.topology;
-              this.reportPluginType = req.pluginType;
-              this.reportWorkflowExecutionId = req.workflowExecutionId;
+              this.reportRequest.errors = report.errors;
             } else {
-              this.reportMsg = 'Report is empty.';
+              this.reportRequest.message = 'Report is empty.';
             }
             this.reportLoading = false;
           },
@@ -226,12 +214,12 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   }
 
   /** clearReport
-  /* - clear the report message
-  *  - clear the report errors
+  /* - clear the reportRequest object
   */
   clearReport(): void {
-    this.reportMsg = '';
-    this.reportErrors = undefined;
+    if (this.reportRequest) {
+      this.reportRequest = {};
+    }
   }
 
   /** returnToTop

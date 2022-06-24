@@ -6,7 +6,7 @@ import {
   isWorkflowCompleted,
   PluginExecution,
   Report,
-  SimpleReportRequest,
+  ReportRequest,
   WorkflowExecution
 } from '../../_models';
 
@@ -16,7 +16,7 @@ import {
 })
 export class LastExecutionComponent {
   @Input() datasetId: string;
-  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
 
   report?: Report;
   pluginExecutions: PluginExecution[] = [];
@@ -51,7 +51,7 @@ export class LastExecutionComponent {
   /** openFailReport
   /* open the fail report
   */
-  openFailReport(req: SimpleReportRequest): void {
+  openFailReport(req: ReportRequest): void {
     Object.assign(req, { workflowExecutionId: this.lastExecutionId });
     this.setReportMsg.emit(req);
   }

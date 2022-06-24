@@ -9,13 +9,9 @@
 ></app-load-animation>
 
 <app-reportsimple
-  [reportErrors]="reportErrors"
-  [reportMsg]="reportMsg"
+  [reportRequest]="reportRequest"
   [reportLoading]="reportLoading"
-  (closeReportSimple)="clearReport()"
-  [reportWorkflowExecutionId]="reportWorkflowExecutionId"
-  [reportTopology]="reportTopology"
-  [reportPluginType]="reportPluginType"
+  (closeReport)="clearReport()"
 >
 </app-reportsimple>
 

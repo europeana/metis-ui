@@ -6,9 +6,8 @@ import {
   errorNotification,
   Notification,
   PluginType,
-  ReportError,
+  ReportRequestWithData,
   successNotification,
-  TopologyName,
   XmlSample
 } from '../../_models';
 import { WorkflowService } from '../../_services';
@@ -26,36 +25,31 @@ export class ReportSimpleComponent extends SubscriptionManager {
   ) {
     super();
   }
-
   isVisible: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  errors: any;
-  message: string;
   notification?: Notification;
   loading: boolean;
 
   @ViewChild('contentRef') contentRef: ElementRef;
 
-  @Output() closeReportSimple = new EventEmitter<void>();
+  @Output() closeReport = new EventEmitter<void>();
 
-  @Input() reportWorkflowExecutionId: string;
-  @Input() reportTopology: TopologyName;
-  @Input() reportPluginType: PluginType;
+  _reportRequest: ReportRequestWithData;
+  @Input() set reportRequest(request: ReportRequestWithData) {
+    this._reportRequest = request;
 
-  /** reportMsg
-  /* setter for the report message:
-  /* - checks if the specified message is non-blank
-  /* - updates the isVisible variable
-  */
-  @Input() set reportMsg(msg: string) {
-    if (msg && msg.length > 0) {
+    if (request.message && request.message.length > 0) {
       this.isVisible = true;
-      this.message = msg;
+    }
+    if (request.errors) {
+      this.isVisible = true;
+      if (request.errors.length === 0) {
+        this.notification = errorNotification(this.translate.instant('reportEmpty'));
+      }
     }
   }
 
-  get reportMsg(): string {
-    return this.message;
+  get reportRequest(): ReportRequestWithData {
+    return this._reportRequest;
   }
 
   /** splitCamelCase
@@ -64,28 +58,6 @@ export class ReportSimpleComponent extends SubscriptionManager {
   */
   splitCamelCase(s: string): string {
     return s.replace(/([a-z])([A-Z])/g, '$1 $2');
-  }
-
-  /** reportErrors
-  /* setter for the report errors:
-  /* - checks if the specified errors is non-empty
-  /* - updates the isVisible variable
-  /* - updates the notification variable
-  */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @Input() set reportErrors(errors: Array<ReportError> | null) {
-    if (errors) {
-      this.isVisible = true;
-      this.errors = errors;
-      if (this.errors.length === 0) {
-        this.notification = errorNotification(this.translate.instant('reportEmpty'));
-      }
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get reportErrors(): any {
-    return this.errors;
   }
 
   /** reportLoading
@@ -104,23 +76,18 @@ export class ReportSimpleComponent extends SubscriptionManager {
     return this.loading;
   }
 
-  /** closeReport
-  /* - clears errors
-  *  - clears message
-  *  - clears notification
-  *  - emits close event
-  */
-  closeReport(): void {
-    this.reportErrors = null;
-    this.message = '';
+  /** close
+   * clears notification / visibility and emits close event
+   */
+  close(): void {
     this.notification = undefined;
     this.isVisible = false;
-    this.closeReportSimple.emit();
+    this.closeReport.emit();
   }
 
   /** copyReport
   /* - copies report to clipboard
-  *  - clears notification
+  *  - sets notification
   */
   copyReport(win = window): void {
     const selection = win.getSelection();
@@ -141,15 +108,20 @@ export class ReportSimpleComponent extends SubscriptionManager {
     return o ? Object.keys(o) : [];
   }
 
+  /** isDownloadable
+  /* - template utility to determine if variable is an object
+  /* @param {unknown} val - variable to inspect
+  */
   isObject(val: unknown): boolean {
     return typeof val === 'object';
   }
 
+  /** isDownloadable
+  /* - template utility to determine downloadablity
+  */
   isDownloadable(): boolean {
-    return (
-      this.reportPluginType &&
-      ![PluginType.OAIPMH_HARVEST, PluginType.HTTP_HARVEST].includes(this.reportPluginType)
-    );
+    const type = this.reportRequest.pluginType as PluginType;
+    return type && ![PluginType.OAIPMH_HARVEST, PluginType.HTTP_HARVEST].includes(type);
   }
 
   /** downloadRecord
@@ -168,7 +140,11 @@ export class ReportSimpleComponent extends SubscriptionManager {
     }
     this.subs.push(
       this.workflows
-        .getWorkflowRecordsById(this.reportWorkflowExecutionId, this.reportPluginType, [id])
+        .getWorkflowRecordsById(
+          `${this.reportRequest.workflowExecutionId}`,
+          this.reportRequest.pluginType as PluginType,
+          [id]
+        )
         .subscribe(
           (samples: Array<XmlSample>) => {
             const sample = samples[0];

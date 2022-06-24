@@ -8,7 +8,7 @@ import {
   PluginStatus,
   PluginType,
   PreviewFilters,
-  SimpleReportRequest,
+  ReportRequest,
   TopologyName
 } from '../../_models';
 
@@ -33,7 +33,7 @@ export class ExecutionsDataGridComponent {
 
   @Input() workflowExecutionId?: string;
   @Output() openPreview: EventEmitter<PreviewFilters> = new EventEmitter();
-  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
   @ViewChild('gridDataTemplate', { static: true }) gridDataTemplate: TemplateRef<HTMLElement>;
 
   contentCopied = false;

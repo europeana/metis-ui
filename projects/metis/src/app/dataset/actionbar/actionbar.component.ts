@@ -7,7 +7,7 @@ import {
   isWorkflowCompleted,
   PluginExecution,
   PluginStatus,
-  SimpleReportRequest,
+  ReportRequest,
   TopologyName,
   Workflow,
   WorkflowExecution,
@@ -34,7 +34,7 @@ export class ActionbarComponent {
 
   @Output() startWorkflow = new EventEmitter<void>();
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
-  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
 
   // Make Enum available to template
   public PluginStatus = PluginStatus;

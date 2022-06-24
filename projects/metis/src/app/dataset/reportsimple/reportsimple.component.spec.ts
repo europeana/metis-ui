@@ -23,6 +23,7 @@ describe('ReportSimpleComponent', () => {
     occurrences: 1,
     errorDetails: []
   };
+  const reportRequest = { workflowExecutionId: '1' };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -49,25 +50,25 @@ describe('ReportSimpleComponent', () => {
 
   it('should show if a simple message is provided', () => {
     expect(component.isVisible).toBeFalsy();
-    component.reportMsg = 'Hello';
+    component.reportRequest = { message: 'Hello' };
     expect(component.isVisible).toBeTruthy();
   });
 
   it('should not show if an undefined message is provided', () => {
     expect(component.isVisible).toBeFalsy();
-    component.reportMsg = '';
+    component.reportRequest = { message: '' };
     expect(component.isVisible).toBeFalsy();
   });
 
   it('should show if an errors array is provided', () => {
     expect(component.isVisible).toBeFalsy();
-    component.reportErrors = [mockError];
+    component.reportRequest = { errors: [mockError] };
     expect(component.isVisible).toBeTruthy();
   });
 
   it('should not show if the provided errors array is null', () => {
     expect(component.isVisible).toBeFalsy();
-    component.reportErrors = null;
+    component.reportRequest = { errors: undefined };
     expect(component.isVisible).toBeFalsy();
   });
 
@@ -82,19 +83,19 @@ describe('ReportSimpleComponent', () => {
   it('should warn if the provided errors array is empty', () => {
     expect(component.isVisible).toBeFalsy();
     expect(component.notification).toBeFalsy();
-    component.reportErrors = [];
+    component.reportRequest = { errors: [] };
     expect(component.isVisible).toBeTruthy();
     expect(component.notification!.content).toEqual('en:reportEmpty');
   });
 
   it('should detect if an item is downloadable', () => {
-    component.reportPluginType = PluginType.TRANSFORMATION;
+    component.reportRequest = { pluginType: PluginType.TRANSFORMATION };
     expect(component.isDownloadable()).toBeTruthy();
-    component.reportPluginType = PluginType.NORMALIZATION;
+    component.reportRequest = { pluginType: PluginType.NORMALIZATION };
     expect(component.isDownloadable()).toBeTruthy();
-    component.reportPluginType = PluginType.OAIPMH_HARVEST;
+    component.reportRequest = { pluginType: PluginType.OAIPMH_HARVEST };
     expect(component.isDownloadable()).toBeFalsy();
-    component.reportPluginType = PluginType.HTTP_HARVEST;
+    component.reportRequest = { pluginType: PluginType.HTTP_HARVEST };
     expect(component.isDownloadable()).toBeFalsy();
   });
 
@@ -105,13 +106,11 @@ describe('ReportSimpleComponent', () => {
   });
 
   it('should download the record', () => {
-    console.log(!!mockXmlSamples && !!of && !!workflows);
-  });
-
-  it('should download the record', () => {
     spyOn(workflows, 'getWorkflowRecordsById').and.callFake(() => {
       return of(mockXmlSamples);
     });
+    component.reportRequest = reportRequest;
+
     component.downloadRecord('1-2-3', {});
     expect(workflows.getWorkflowRecordsById).not.toHaveBeenCalled();
     component.downloadRecord('http://records/123', {});
@@ -127,9 +126,9 @@ describe('ReportSimpleComponent', () => {
   });
 
   it('should close the report window', () => {
-    spyOn(component.closeReportSimple, 'emit');
-    component.closeReport();
-    expect(component.closeReportSimple.emit).toHaveBeenCalledWith();
+    spyOn(component.closeReport, 'emit');
+    component.close();
+    expect(component.closeReport.emit).toHaveBeenCalledWith();
   });
 
   it('should determine whether something is an object', () => {
@@ -144,9 +143,8 @@ describe('ReportSimpleComponent', () => {
   });
 
   it('should copy the report', () => {
-    component.reportErrors = [mockError];
+    component.reportRequest = Object.assign(reportRequest, { errors: [mockError] });
     fixture.detectChanges();
-
     component.copyReport({
       getSelection: (): null => {
         return null;
@@ -154,7 +152,6 @@ describe('ReportSimpleComponent', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     expect(component.notification).toBeFalsy();
-
     component.copyReport();
     expect(component.notification!.content).toBe('en:reportCopied');
   });

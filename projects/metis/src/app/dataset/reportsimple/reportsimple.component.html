@@ -1,9 +1,15 @@
 <div class="modal-wrapper" *ngIf="isVisible">
   <div class="modal modal-big">
     <div class="head">
-      Report <span *ngIf="reportPluginType">({{ reportPluginType | renameWorkflow }})</span
-      ><a class="btn-close" (click)="closeReport()"></a>
-      <a class="btn-right" (click)="copyReport()" *ngIf="reportErrors || message">Copy</a>
+      Report
+      <span *ngIf="reportRequest.pluginType; let plugin">({{ plugin | renameWorkflow }})</span
+      ><a class="btn-close" (click)="close()"></a>
+      <a
+        class="btn-right"
+        (click)="copyReport()"
+        *ngIf="reportRequest.errors || reportRequest.message"
+        >Copy</a
+      >
     </div>
     <div class="content">
       <app-load-animation
@@ -15,10 +21,13 @@
         (closed)="notification = undefined"
       ></app-notification>
       <div #contentRef>
-        <div *ngIf="reportMsg" [ngClass]="{ 'fail-message-separator': reportErrors }">
-          {{ reportMsg }}
+        <div
+          *ngIf="reportRequest.message"
+          [ngClass]="{ 'fail-message-separator': reportRequest.errors }"
+        >
+          {{ reportRequest.message }}
         </div>
-        <div *ngIf="reportErrors">
+        <div *ngIf="reportRequest.errors; let reportErrors">
           <ul *ngFor="let r of reportKeys(reportErrors)">
             <li *ngFor="let rk of reportKeys(reportErrors[r])">
               <strong class="capitalise">{{ splitCamelCase(rk) }}:&nbsp;</strong>

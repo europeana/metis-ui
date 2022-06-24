@@ -21,12 +21,17 @@ export interface Report {
   errors: ReportError[];
 }
 
-export interface SimpleReportRequest {
+export interface ReportRequest {
   topology?: TopologyName;
   pluginType?: PluginType;
   taskId?: string;
   message?: string;
   workflowExecutionId?: string;
+}
+
+// data-augmented object
+export interface ReportRequestWithData extends ReportRequest {
+  errors?: ReportError[];
 }
 
 export interface ReportAvailability {

@@ -18,7 +18,7 @@ import {
   Notification,
   PreviewFilters,
   Report,
-  SimpleReportRequest,
+  ReportRequest,
   WorkflowExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -41,7 +41,7 @@ export class HistoryComponent extends SubscriptionManager {
 
   @Input() datasetId: string;
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters | undefined>();
-  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
 
   notification?: Notification;
   currentPage = 0;
@@ -117,7 +117,7 @@ export class HistoryComponent extends SubscriptionManager {
   /** openFailReport
   /* emit the setReportMsg event
   */
-  openFailReport(req: SimpleReportRequest): void {
+  openFailReport(req: ReportRequest): void {
     this.setReportMsg.emit(req);
   }
 

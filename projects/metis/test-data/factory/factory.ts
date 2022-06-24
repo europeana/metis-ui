@@ -746,7 +746,7 @@ export function errorReport(reportId: string, process: string): Report {
         errorType: '1',
         message: process,
         occurrences: 321,
-        errorDetails: ['OJIN3E', 'P72D6Q', '64ELG7'].map((ecloudRecordId: string) => {
+        errorDetails: ['fail', 'OJIN3E', 'P72D6Q'].map((ecloudRecordId: string) => {
           return {
             identifier: `http://test.ecloud.psnc.pl/api/records/${ecloudRecordId}`,
             additionalInfo: 'Error while executing ' + process
