@@ -24,19 +24,61 @@
           "
           [ngClass]="{ 'warning-icon': progressData['dataset-info']['record-limit-exceeded'] }"
         >
-          {{ getFormattedCreationDate() }}
+          <lib-modal
+            id="{{ modalIdIncompleteData }}"
+            title="Data Incomplete Warning"
+            [isSmall]="false"
+            [buttons]="[{ label: 'Close' }]"
+          >
+            <p>Some records may not have been processed.</p>
+            <p>If the dataset is too large then the remainder of the records is ignored</p>
+          </lib-modal>
+          <a
+            *ngIf="
+              progressData['dataset-info']['record-limit-exceeded'];
+              else conditionalWrapWarnLink
+            "
+            (click)="showIncompleteDataWarning()"
+          >
+            <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
+          </a>
+          <ng-template #conditionalWrapWarnLink
+            ><span>{{
+              formatDate(
+                progressData['dataset-info']['creation-date'],
+                'dd/MM/yyyy, HH:mm:ss',
+                'en-GB'
+              )
+            }}</span></ng-template
+          >
         </li>
         <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
       </ul>
     </li>
 
     <!-- right col -->
-    <li style="text-align:right;">
+    <li class="align-right">
       <ul>
         <li>
           <h2 class="title-id">{{ datasetId }}</h2>
         </li>
-        <li class="portal-links">
+
+        <li *ngIf="progressData['error-type']" class="align-left">
+          <span class="preview-unavailable">
+            <a (click)="showProcessingErrors()">Preview Unavailable</a>
+          </span>
+
+          <lib-modal
+            id="{{ modalIdProcessingErrors }}"
+            title="Processing Error Detail"
+            [isSmall]="false"
+            [buttons]="[{ label: 'Close' }]"
+          >
+            {{ progressData['error-type'] }}
+          </lib-modal>
+        </li>
+
+        <li *ngIf="!progressData['error-type']" class="portal-links">
           <ng-template #labelRefPublish
             ><span i18n="progress link link@@progressLinkPublish"
               >view published records</span
@@ -59,18 +101,31 @@
     ></span>
     <span class="orb-status labelled orb-spinner" [ngClass]="{ showing: isLoading }"></span>
   </div>
+
   <lib-modal
     id="{{ modalIdErrors }}"
-    title="Error Detail"
+    title="Error Detail - {{
+      progressData['progress-by-step'][detailIndex]
+        ? progressData['progress-by-step'][detailIndex].step
+        : ''
+    }}"
     [isSmall]="false"
     [buttons]="[{ label: 'Close' }]"
   >
     <div *ngIf="progressData['progress-by-step'][detailIndex]; let detailItem">
-      <ul *ngFor="let error of detailItem.errors">
+      <ul class="error-item" *ngFor="let error of detailItem.errors; let i = index">
+        <li class="bold sticky-item-header">
+          Error {{ i + 1 }} of {{ detailItem.errors.length }}
+          <a appTextCopy #textCopy="textCopy" (click)="textCopy.copy(formatError(error))">
+            <span class="copy permanent" [ngClass]="{ copied: textCopy.copied }">
+              <span class="msg-copy">(copy)</span><span class="msg-copied">copied!</span>
+            </span>
+          </a>
+        </li>
         <li i18n="progress error error@@progressErrorType">Type: {{ error.type }}</li>
         <li i18n="progress error error@@progressErrorRecords">
           Records: [{{ error.records }}]
-          <ul>
+          <ul class="code">
             <li>{{ error.message }}</li>
           </ul>
         </li>

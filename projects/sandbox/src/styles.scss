@@ -41,6 +41,7 @@ $textcolour_highlight: $accent;
 @import 'assets/sass/connections';
 @import 'assets/sass/links';
 @import 'assets/sass/orbs';
+@import 'assets/sass/submit-button';
 
 a {
   color: $eu-jade-dark;
@@ -71,6 +72,15 @@ label {
 
 .asterisked::after {
   content: ' *';
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.code,
+.dc-field {
+  font-family: Courier, courier new, serif;
 }
 
 .errors,
@@ -112,7 +122,7 @@ label {
 
 .form-group {
   color: $eu-jade-dark;
-  margin: 0 auto 1rem;
+  margin: 0 auto 12px;
 }
 
 .header-wrapper header {
@@ -151,7 +161,7 @@ label {
   top: 0.175em;
 }
 
-.wizard button {
+.wizard button:not(.submit-button) {
   background: $eu-jade-classic;
   border: 1px solid $eu-jade-dark;
   border-radius: 1.5em;
@@ -189,27 +199,27 @@ label {
     transform: rotate(270deg);
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1), -1px -1px 1px rgba(0, 0, 0, 0.5);
   }
-
-  &.submit {
-    display: block;
-    margin-left: auto;
-
-    &:hover {
-      box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
-      text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.5);
-    }
-
-    &[disabled] {
-      cursor: default;
-      background: $gray-lighter;
-      border-color: $gray-light;
-      color: $gray-light;
-      pointer-events: none;
-    }
-  }
 }
 
 .wizard input[type='file'] {
   box-shadow: none;
   border-color: $eu-jade-classic;
+}
+
+::-webkit-scrollbar-track {
+  border: 1px solid $eu-jade-light;
+}
+::-webkit-scrollbar {
+  background-color: $eu-light-jade-classic;
+}
+::-webkit-scrollbar-thumb {
+  box-shadow: inset 0 0 9px rgba(55, 185, 139, 0.75);
+  border: 2px solid transparent;
+  // this doesn't work due to a bug in chrome
+  cursor: pointer;
+}
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  cursor: pointer !important;
 }

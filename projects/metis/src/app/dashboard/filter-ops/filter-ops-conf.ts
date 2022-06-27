@@ -73,7 +73,10 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
   const max = el.getAttribute('max');
 
   if (val && max) {
-    if (dates && val > max) {
+    const maxDate = new Date(max);
+    const valDate = new Date(val);
+
+    if (dates && valDate > maxDate) {
       setElementValue(el, max);
       return;
     } else if (!dates) {
@@ -83,7 +86,7 @@ const setDateFrom = (cmp: CanHaveError, el: HTMLInputElement, opElements?: HTMLE
         return;
       } else {
         cmp.setHasError(false);
-        if (new Date(val) > new Date(max)) {
+        if (valDate > maxDate) {
           setElementValue(el, max);
           return;
         }

@@ -1,4 +1,4 @@
-import { fillUploadForm, uploadFile } from '../support/helpers';
+import { fillUploadForm } from '../support/helpers';
 import {
   selectorBtnSubmitData,
   selectorErrors,
@@ -15,12 +15,10 @@ import {
 
 context('Sandbox', () => {
   const classActive = 'is-active';
-  const classSet = 'is-set';
 
   const setStep = (step: number): void => {
     cy.get(`.wizard-status li:nth-child(${step}) a`).click({ force: true });
     cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
-    cy.get(`.wizard-status li:nth-child(${step}) a`).should('not.have.class', classSet);
   };
 
   describe('Dataset Form', () => {
@@ -76,21 +74,6 @@ context('Sandbox', () => {
       );
     });
 
-    it('should flag when a step is complete', () => {
-      cy.get('.wizard-status li:nth-child(1) a').should('not.have.class', classSet);
-      cy.get(selectorInputName).type(testDatasetName);
-      cy.get(selectorInputCountry).select('Greece');
-      cy.get(selectorInputLanguage).select('Greek');
-      uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
-      cy.get(selectorInputZipFile).trigger('change', force);
-      cy.get('.wizard-status li:nth-child(1) a').should('have.class', classSet);
-
-      setStep(2);
-      cy.get('.wizard-status li:nth-child(2) a').should('not.have.class', classSet);
-      cy.get(selectorInputDatasetId).type('1');
-      cy.get('.wizard-status li:nth-child(2) a').should('have.class', classSet);
-    });
-
     it('should flag when a step is invalid', () => {
       setStep(2);
       cy.get(selectorFieldErrors).should('have.length', 0);
@@ -99,7 +82,7 @@ context('Sandbox', () => {
       cy.get(selectorFieldErrors).should('have.length', 0);
 
       setStep(1);
-      cy.get(selectorInputName).type(' ');
+      cy.get(selectorInputName).type(' ', { scrollBehavior: false });
       cy.get(selectorFieldErrors)
         .filter(':visible')
         .should('have.length', 1);

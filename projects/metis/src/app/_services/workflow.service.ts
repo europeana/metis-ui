@@ -222,7 +222,10 @@ export class WorkflowService extends SubscriptionManager {
     endPage: number
   ): Observable<MoreResults<WorkflowExecution>> {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const getResults = (page: number) => this.getCompletedDatasetExecutions(id, page);
+    const getResults = (page: number) =>
+      this.getCompletedDatasetExecutions(id, page).pipe(
+        switchMap((executions) => this.addStartedByToWorkflowExecutionResults(executions))
+      );
     return collectResultsUptoPage(getResults, endPage);
   }
 
@@ -329,6 +332,29 @@ export class WorkflowService extends SubscriptionManager {
           execution.datasetName = datasets[i].datasetName;
         });
         return executions;
+      })
+    );
+  }
+
+  /** addStartedByToWorkflowExecutionResults
+   /* - decodes (and rewrites) the "startedBy" field in each object.
+   /*  @param {Results<WorkflowExecution>} results - the execution data result
+   */
+  addStartedByToWorkflowExecutionResults(
+    results: Results<WorkflowExecution>
+  ): Observable<Results<WorkflowExecution>> {
+    if (results.listSize === 0) {
+      return of(results);
+    }
+    const observables = results.results.map((execution: WorkflowExecution) =>
+      this.authenticationServer.getUserByUserId(execution.startedBy)
+    );
+    return forkJoin(observables).pipe(
+      map((users) => {
+        results.results.forEach((execution, i) => {
+          execution.startedBy = `${users[i].firstName} ${users[i].lastName}`;
+        });
+        return results;
       })
     );
   }

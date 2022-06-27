@@ -1,11 +1,18 @@
 import { FormGroup } from '@angular/forms';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
-import { mockDataset, mockRecordReport } from '.';
+import {
+  mockDataset,
+  mockProblemPatternsDataset,
+  mockProblemPatternsRecord,
+  mockRecordReport
+} from '.';
 import {
   Dataset,
   DatasetStatus,
   FieldOption,
+  ProblemPattern,
+  ProblemPatternsDataset,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -111,6 +118,28 @@ export class MockSandboxService {
         'duplicate-records': 0
       }
     }).pipe(delay(1));
+  }
+
+  getProblemPatternsDataset(_: string): Observable<ProblemPatternsDataset> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getProblemPatternsDataset throws error`));
+        })
+      );
+    }
+    return of(mockProblemPatternsDataset).pipe(delay(1));
+  }
+
+  getProblemPatternsRecord(_: string, __: string): Observable<Array<ProblemPattern>> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getProblemPatternsRecord throws error`));
+        })
+      );
+    }
+    return of(mockProblemPatternsRecord).pipe(delay(1));
   }
 }
 

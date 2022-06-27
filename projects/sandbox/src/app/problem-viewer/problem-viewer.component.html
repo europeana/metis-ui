@@ -1,0 +1,285 @@
+<div class="wrapper">
+  <!-- Modal -->
+  <ng-template #tmpModal let-modalInstanceId="modalInstanceId">
+    <lib-modal
+      id="{{ modalInstanceId }}"
+      title="Problem Detail - {{ visibleProblemPatternId }}"
+      [isSmall]="false"
+      [buttons]="[{ label: 'Close' }]"
+    >
+      <span *ngIf="visibleProblemPatternId">
+        <span
+          class="summary warning-icon"
+          [ngClass]="getWarningClassMap(problemPatternData[visibleProblemPatternId])"
+        >
+          {{ problemPatternData[visibleProblemPatternId].problemPatternTitle }}
+        </span>
+
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P1"
+          >This pattern is identified when multiple records are found within the dataset that have
+          the same <span class="dc-field">dc:title</span> value (ignoring case). If a record has
+          multiple titles, of which just one is duplicated in another record, this issue is still
+          raised.
+        </span>
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P2"
+          >This pattern is identified for a record when it has a
+          <span class="dc-field">dc:title</span> value that is equal to one of its
+          <span class="dc-field">dc:description</span> values. If a record has multiple titles, of
+          which just one is duplicated as a description, this issue is still raised.</span
+        >
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P3">
+          This pattern is identified for a record when it has a
+          <span class="dc-field">dc:title</span> value that is almost equal to one of its
+          <span class="dc-field">dc:description</span> values. If a record has multiple titles, of
+          which just one is similar to a description, this issue is still raised. This issue is not
+          raised if the title and the description are in fact identical, as this is covered by
+          pattern P2.</span
+        >
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P5">
+          This pattern is identified for a record if it has a
+          <span class="dc-field">dc:title</span> value that does not seem to be human-readable. If
+          there are more than 5 characters in the title that are not either alphanumeric or simple
+          spaces, this issue is raised. This pattern is also identified if a title fully contains a
+          <span class="dc-field">dc:identifier</span> value.</span
+        >
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P6">
+          This pattern is identified for a record if it has a
+          <span class="dc-field">dc:title</span> value that does not seem to be meaningful. If there
+          are less than 3 characters in the title, this issue is raised.</span
+        >
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P7">
+          This pattern is identified for a record if it does not have any
+          <span class="dc-field">dc:description</span> values, or if all its descriptions are in
+          fact empty.</span
+        >
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P9">
+          This pattern is identified for a record if it has a
+          <span class="dc-field">dc:description</span> value that is deemed too short. If the
+          description contains 50 characters or less, this issue is raised.</span
+        >
+        <span class="explanation" *ngIf="visibleProblemPatternId === ProblemPatternId.P12">
+          This pattern is identified for a record if it has a
+          <span class="dc-field">dc:title</span> value that is deemed too long. If the title
+          contains more than 70 characters, this issue is raised.</span
+        >
+
+        <ul *ngIf="!!visibleProblemPatternId" class="decorated-list">
+          <li>
+            <span class="bold semi-colon">code</span>
+            <span class="italic">{{ visibleProblemPatternId }}</span>
+          </li>
+          <li>
+            <span class="bold semi-colon">dimension</span>
+            <span class="italic lowercase">{{
+              problemPatternData[visibleProblemPatternId].problemPatternQualityDimension
+            }}</span>
+          </li>
+          <li>
+            <span class="bold semi-colon">severity</span>
+            <span class="italic lowercase">{{
+              problemPatternData[visibleProblemPatternId].problemPatternSeverity
+            }}</span>
+          </li>
+        </ul>
+      </span>
+    </lib-modal>
+  </ng-template>
+
+  <!-- Internal Link -->
+  <!-- prettier-ignore -->
+  <ng-template #internalLinkItem let-recordId="recordId">
+    <!-- //NOSONAR --><li>
+      <ng-container>
+        <a class="link-related" (click)="openLink(recordId)" title="view record issues">
+          {{ recordId }}
+        </a>
+      </ng-container>
+    </li>
+  </ng-template>
+
+  <!-- Problem Occurence -->
+  <ng-template #tmpProblemOccurenceList let-occurence="occurence" let-problemTitle="problemTitle">
+    <ul class="problem-occurence">
+      <li *ngIf="occurence.messageReport; let message">
+        <q>
+          <span class="italic message-copy">
+            {{ message }}
+          </span>
+        </q>
+      </li>
+      <ng-container *ngIf="!problemPatternsRecord && occurence.affectedRecordIds.length > 0">
+        <li
+          class="list-opener"
+          [ngClass]="{ 'is-open': occurence.affectedRecordIdsShowing }"
+          [ngClass]="{ 'auto-opened': occurence.affectedRecordIds.length === 1 }"
+          [ngPlural]="occurence.affectedRecordIds.length"
+        >
+          <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
+            <ng-template ngPluralCase="=1">Affected record:</ng-template>
+            <ng-template ngPluralCase="other">Affected records:</ng-template>
+          </a>
+        </li>
+        <li>
+          <ul
+            class="openable-list"
+            [ngClass]="{
+              closed: occurence.affectedRecordIds.length > 1 && !occurence.affectedRecordIdsShowing
+            }"
+          >
+            <ng-container *ngFor="let id of occurence.affectedRecordIds">
+              <ng-content
+                *ngTemplateOutlet="internalLinkItem; context: { recordId: id }"
+              ></ng-content>
+            </ng-container>
+          </ul>
+        </li>
+      </ng-container>
+    </ul>
+  </ng-template>
+
+  <!-- Record Analysis List -->
+  <ng-template #tmpRecordAnalysisList let-analyses="analyses" let-problemTitle="problemTitle">
+    <ul class="analysis-list">
+      <ng-container *ngFor="let analysis of analyses">
+        <ng-container *ngIf="!problemPatternsRecord">
+          <ng-content
+            *ngTemplateOutlet="internalLinkItem; context: { recordId: analysis.recordId }"
+          ></ng-content>
+        </ng-container>
+
+        <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
+          <ng-content
+            *ngTemplateOutlet="
+              tmpProblemOccurenceList;
+              context: { occurence: problemOccurrence, problemTitle: problemTitle }
+            "
+          ></ng-content>
+        </li>
+      </ng-container>
+    </ul>
+  </ng-template>
+
+  <!-- Problem Pattern (record) -->
+  <ng-template #tmpProblemPattern let-problemPattern="problemPattern">
+    <div class="problem-pattern">
+      <span class="problem-header">
+        <a
+          (click)="showDescriptionModal(problemPattern.problemPatternDescription.problemPatternId)"
+          title="show problem detail"
+        >
+          <span
+            class="warning-icon"
+            [ngClass]="getWarningClassMap(problemPattern.problemPatternDescription)"
+            ><span class="bold semi-colon">{{
+              problemPattern.problemPatternDescription.problemPatternId
+            }}</span></span
+          >
+          <span class="bold italic">
+            {{ problemPattern.problemPatternDescription.problemPatternTitle }}
+          </span>
+        </a>
+      </span>
+
+      <span
+        class="title-record-occurences semi-colon"
+        *ngIf="!problemPatternsRecord"
+        [ngPlural]="problemPattern.recordOccurrences"
+        >Occurs in {{ problemPattern.recordOccurrences }}
+        <ng-template ngPluralCase="=1">record</ng-template>
+        <ng-template ngPluralCase="other">records</ng-template>
+      </span>
+      <ng-content
+        *ngTemplateOutlet="
+          tmpRecordAnalysisList;
+          context: {
+            analyses: problemPattern.recordAnalysisList,
+            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle
+          }
+        "
+      ></ng-content>
+    </div>
+  </ng-template>
+
+  <!-- END TEMPLATES -->
+
+  <!-- RECORD -->
+
+  <div *ngIf="problemPatternsRecord">
+    <ng-container>
+      <ng-content
+        *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_record' }"
+      ></ng-content>
+    </ng-container>
+
+    <ng-template #noProblems>
+      <h2 *ngIf="recordId" class="form-group title">Record: {{ recordId }}</h2>
+      <h3 class="problem-viewer">
+        <span class="tick">No Problem Patterns Found for Record</span>
+      </h3>
+    </ng-template>
+
+    <div *ngIf="problemPatternsRecord.length > 0; else noProblems" class="form-group header-info">
+      <h2 class="title record-title">
+        Record: {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
+      </h2>
+    </div>
+    <div *ngIf="problemPatternsRecord.length > 0" class="problem-viewer record">
+      <ng-container>
+        <ng-container *ngFor="let problemPattern of problemPatternsRecord">
+          <ng-content
+            *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+          ></ng-content>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- DATASET -->
+
+  <div *ngIf="problemPatternsDataset; let ppd">
+    <ng-container>
+      <ng-content
+        *ngTemplateOutlet="tmpModal; context: { modalInstanceId: 'modalDescription_dataset' }"
+      ></ng-content>
+    </ng-container>
+
+    <ul class="form-group header-info">
+      <li>
+        <ul>
+          <li>
+            <h2 class="title">Dataset: {{ ppd.datasetId }}</h2>
+          </li>
+          <li>
+            <span class="title">
+              {{ formatDate(ppd.executionTimestamp, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
+            </span>
+          </li>
+        </ul>
+      </li>
+      <li class="right-aligned" *ngIf="ppd.problemPatternList.length > 0">
+        <ul>
+          <li>
+            <h3 class="capitalise title step">
+              {{ ppd.executionStep }}
+            </h3>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <ng-template #problemViewer>
+      <div class="problem-viewer">
+        <ng-container>
+          <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
+            <ng-content
+              *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+            ></ng-content>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-template>
+    <h3 class="problem-viewer" *ngIf="ppd.problemPatternList.length === 0; else problemViewer">
+      <span class="bold tick">No Problem Patterns Found for Dataset</span>
+    </h3>
+  </div>
+</div>

@@ -67,21 +67,15 @@ context('Sandbox', () => {
     });
 
     it('should show network errors', () => {
-      cy.get(selectorErrors).should('have.length', 0);
+      cy.get(selectorErrors).should('not.exist');
       fillProgressForm('404');
-      cy.get(selectorBtnSubmitProgress)
-        .filter(':visible')
-        .should('have.length', 1);
-      cy.get(selectorInputDatasetId).clear();
-      cy.get(selectorErrors).should('have.length', 0);
-      fillProgressForm('500');
       cy.get(selectorErrors)
         .filter(':visible')
         .should('have.length', 1);
     });
 
     it('should show the progress success', () => {
-      cy.get(selectorSuccessPresent).should('have.length', 0);
+      cy.get(selectorSuccessPresent).should('not.exist');
       fillProgressForm('100');
       cy.get(selectorSuccessPresent).should('have.length', 10);
     });

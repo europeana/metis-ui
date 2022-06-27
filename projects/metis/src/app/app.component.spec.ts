@@ -1,4 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -13,7 +14,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
-import { AuthenticationService, ErrorService, WorkflowService } from './_services';
+import { AuthenticationService, ClickService, ErrorService, WorkflowService } from './_services';
 import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
@@ -70,6 +71,13 @@ describe('AppComponent', () => {
     }));
 
     beforeEach(b4Each);
+
+    it('should handle clicks', () => {
+      const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
+      spyOn(cmpClickService.documentClickedTarget, 'next');
+      fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
+      expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
+    });
 
     it('should handle url changes', () => {
       spyOn(router, 'isActive').and.returnValue(true);

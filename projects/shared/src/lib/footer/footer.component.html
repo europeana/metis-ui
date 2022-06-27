@@ -1,4 +1,4 @@
-<footer class="footer">
+<footer class="footer" [ngClass]="{ 'push-top-margin': !!feedbackUrl }">
   <ul class="legal">
     <li class="flag"></li>
     <li>
@@ -14,4 +14,13 @@
       responsible or liable for the accuracy or use of the information on this website.
     </li>
   </ul>
+  <ng-container *ngIf="feedbackUrl">
+    <a
+      class="external-link feedback-link"
+      data-e2e="feedback-link"
+      [href]="feedbackUrl"
+      target="_blank"
+      >Feedback</a
+    >
+  </ng-container>
 </footer>

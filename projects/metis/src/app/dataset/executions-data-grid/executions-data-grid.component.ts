@@ -19,13 +19,16 @@ import {
 })
 export class ExecutionsDataGridComponent {
   applyHighlight = false;
-  plugin: PluginExecution;
+  _plugin: PluginExecution;
   @Input() applyStripe?: boolean;
   @Input() isIncremental?: boolean;
   @Input()
-  set pluginExecution(plugin: PluginExecution) {
-    this.plugin = plugin;
+  set plugin(plugin: PluginExecution) {
+    this._plugin = plugin;
     this.applyHighlight = plugin.pluginStatus === PluginStatus.RUNNING;
+  }
+  get plugin(): PluginExecution {
+    return this._plugin;
   }
 
   @Input() workflowExecutionId?: string;

@@ -302,6 +302,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
+      startedBy: '1482250000001617026',
       metisPlugins: [
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -329,6 +330,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
+      startedBy: '1482250000001617026',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
@@ -356,6 +358,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
+      startedBy: '1482250000001617026',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
@@ -383,6 +386,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
+      startedBy: '1482250000001617026',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
@@ -410,6 +414,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
+      startedBy: '1482250000001617026',
       metisPlugins: [
         {
           pluginType: PluginType.NORMALIZATION,
@@ -627,7 +632,8 @@ export class MockWorkflowService {
       executions: mockWorkflowExecutionResults.results.map((we: WorkflowExecution) => {
         return {
           workflowExecutionId: we.id,
-          startedDate: we.startedDate
+          startedDate: we.startedDate,
+          startedBy: we.startedBy
         };
       })
     }).pipe(delay(1));

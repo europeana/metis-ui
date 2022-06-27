@@ -220,6 +220,7 @@
 
   <span class="separator-line">
     <sb-navigation-orbs
+      ariaLabel="Tier Navigation"
       [count]="2"
       [fnClassMapInner]="getOrbConfigInner.bind(this)"
       (clickEvent)="setView($event)"
@@ -267,9 +268,12 @@
 
       <ng-container
         *ngIf="
-          [RecordMediaType.AUDIO, RecordMediaType.TEXT, RecordMediaType.VIDEO].includes(
-            contentTier.recordType
-          )
+          [
+            RecordMediaType.AUDIO,
+            RecordMediaType.TEXT,
+            RecordMediaType.VIDEO,
+            RecordMediaType.THREE_D
+          ].includes(contentTier.recordType)
         "
       >
         <span class="report-sub-header" data-e2e="landing-available">
@@ -289,6 +293,16 @@
 
         <ng-content
           *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.embeddableMediaAvailable }"
+        ></ng-content>
+      </ng-container>
+
+      <ng-container *ngIf="contentTier.recordType === RecordMediaType.THREE_D">
+        <span class="report-sub-header" data-e2e="3d-available">
+          3D Available
+        </span>
+
+        <ng-content
+          *ngTemplateOutlet="tickedItem; context: { itemVal: contentTier.mediaResource3DAvailable }"
         ></ng-content>
       </ng-container>
     </span>
@@ -313,6 +327,7 @@
       <ng-container *ngIf="techData.length > 0; else noMedia">
         <span class="separator-line">
           <sb-navigation-orbs
+            ariaLabel="Media Navigation"
             [count]="techData.length"
             [index]="visibleMedia"
             [fnClassMapInner]="getOrbConfigInnerMedia.bind(this)"
@@ -390,6 +405,7 @@
 
     <span class="separator-line">
       <sb-navigation-orbs
+        ariaLabel="Metadata Section Navigation"
         [count]="3"
         [fnClassMapInner]="getOrbConfigInnerMetadata.bind(this)"
         [indicatorAttributes]="[

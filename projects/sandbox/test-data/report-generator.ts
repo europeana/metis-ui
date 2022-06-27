@@ -106,6 +106,8 @@ export class ReportGenerator {
     const mdVals = ['A', 'B', 'C', 'D'];
     const mdVal = mdVals[idAsInt % mdVals.length];
 
+    const recordType = this.generateType(idAsInt);
+
     if (idAsInt === 0) {
       media = [];
     } else if (idAsInt >= 100) {
@@ -133,10 +135,11 @@ export class ReportGenerator {
         portalRecordLink: 'https://portal.record.link'
       },
       contentTierBreakdown: {
-        recordType: this.generateType(idAsInt),
+        recordType: recordType,
         licenseType: LicenseType.OPEN,
         thumbnailAvailable: idAsInt % 4 === 0,
         landingPageAvailable: !errorMode,
+        mediaResource3DAvailable: !errorMode && recordType === RecordMediaType.THREE_D,
         embeddableMediaAvailable: !errorMode,
         mediaResourceTechnicalMetadataList: media,
         processingErrorsList: idAsInt === 0 ? undefined : errors

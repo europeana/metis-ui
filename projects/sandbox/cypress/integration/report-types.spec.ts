@@ -7,6 +7,7 @@ context('Sandbox', () => {
       cy.server();
     });
 
+    const noScrollCheck = { ensureScrollable: false };
     const selectorRecordType = '[data-e2e=record-type]';
 
     const selectorEmbed = '[data-e2e=embed-available]';
@@ -24,7 +25,7 @@ context('Sandbox', () => {
       cy.get(selectorRecordType).contains(RecordMediaType.THREE_D);
 
       cy.get(selectorEmbed).should('have.length', 0);
-      cy.get(selectorLanding).should('have.length', 0);
+      cy.get(selectorLanding).should('have.length', 1);
       cy.get(selectorThumbnail).should('have.length', 0);
       cy.get(selectorImageResolution).should('have.length', 0);
       cy.get(selectorVerticalResolution).should('have.length', 0);
@@ -98,7 +99,7 @@ context('Sandbox', () => {
       const force = { force: true };
 
       cy.visit('/dataset/1?recordId=102'); // 3D record
-      cy.scrollTo(0, 200);
+      cy.scrollTo(0, 200, noScrollCheck);
       cy.wait(200);
 
       [1, 2, 3, 4, 5].forEach((mediaIndex: number) => {
@@ -110,7 +111,7 @@ context('Sandbox', () => {
       });
 
       cy.visit('/dataset/1?recordId=100'); // video record
-      cy.scrollTo(0, 200);
+      cy.scrollTo(0, 200, noScrollCheck);
       cy.wait(200);
 
       const indexesWithVideoValues = [2, 3, 4, 5];

@@ -1,14 +1,19 @@
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
+import { problemPatternData } from '../src/app/_data';
 import {
   Dataset,
   DatasetStatus,
   FieldOption,
+  ProblemPattern,
+  ProblemPatternId,
+  ProblemPatternsDataset,
   ProgressByStep,
   StepStatus,
   SubmissionResponseData
 } from '../src/app/_models';
+import { stepErrorDetails } from './data/step-error-detail';
 import { ProgressByStepStatus, TimedTarget } from './models/models';
 import { ReportGenerator } from './report-generator';
 
@@ -138,7 +143,6 @@ new (class extends TestDataServer {
     if (info['processed-records'] === info['total-records']) {
       info.status = DatasetStatus.COMPLETED;
       if (timedTarget.timesCalled >= 5) {
-        info['portal-preview'] = 'http://this-collection/that-dataset/preview';
         info['portal-publish'] = 'http://this-collection/that-dataset/publish';
       }
       return;
@@ -163,7 +167,7 @@ new (class extends TestDataServer {
           const errorNum = info['processed-records'];
           const error = {
             type: `warnng (${errorNum})`,
-            message: `the message will be long detailed technical stuff....`,
+            message: stepErrorDetails[errorNum % stepErrorDetails.length],
             records: [`${errorNum}`, `${key}`, `${errorNum * key}`]
           };
           if (pbs.errors) {
@@ -205,6 +209,9 @@ new (class extends TestDataServer {
       response.end(JSON.stringify(timedTarget.datasetInfo));
     } else {
       const datasetInfo = this.initialiseDataset(this.ensureNumeric(id[0]));
+      if (id === '13') {
+        datasetInfo['error-type'] = 'The processing did not complete';
+      }
       this.addTimedTarget(id, datasetInfo);
       response.end(JSON.stringify(datasetInfo));
     }
@@ -265,6 +272,62 @@ new (class extends TestDataServer {
   }
 
   /**
+   * generateProblem
+   *
+   * @param ( string ) recordId
+   **/
+  generateProblem(datasetId: number, patternId: number, recordId?: string): ProblemPattern {
+    const messageReports = {
+      P1: ['My Title', 'My Other Title'],
+      P2: [
+        'The Descriptive Title',
+        'The Descriptive Title: Which Is It?',
+        'The Descriptive Title: 2-in-1'
+      ],
+      P3: ['Cultural Heritage Object'],
+      P5: ['**$!^#-_-#^!$**', 'xxxxxxxxxxxx'],
+      P6: ['aaaaaaa', 'zzzzzzz'],
+      P7: ['', '/', '/na'],
+      P9: ['Title', 'A1'],
+      P12: ['Urbano dejanje 2015 the courtyard - also known as the yard of the court']
+    };
+
+    const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number) => {
+      return `P${id}` as ProblemPatternId;
+    });
+
+    const resultId = patternIds[patternId % patternIds.length];
+
+    const occurenceList = new Array(Math.max(1, (datasetId + patternId) % 4))
+      .fill(null)
+      .map((_, occurenceIndex) => {
+        const messageReportGroup = messageReports[resultId];
+        return {
+          recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
+          problemOccurrenceList: [
+            {
+              messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
+              affectedRecordIds: Object.keys(new Array(occurenceIndex % 5).fill(null)).map((i) => {
+                return `/${datasetId}/${occurenceIndex + i}`;
+              })
+            }
+          ]
+        };
+      });
+
+    return {
+      problemPatternDescription: {
+        problemPatternId: resultId,
+        problemPatternSeverity: problemPatternData[resultId].problemPatternSeverity,
+        problemPatternQualityDimension: problemPatternData[resultId].problemPatternQualityDimension,
+        problemPatternTitle: problemPatternData[resultId].problemPatternTitle
+      },
+      recordOccurrences: occurenceList.length,
+      recordAnalysisList: occurenceList
+    } as ProblemPattern;
+  }
+
+  /**
    * handleRequest
    *
    * Handles POST data and 404s.
@@ -289,7 +352,7 @@ new (class extends TestDataServer {
       return;
     }
     if (request.method === 'POST') {
-      const regRes = route.match(/\/dataset\/(\S+)\//);
+      const regRes = /\/dataset\/(\S+)\//.exec(route);
 
       if (regRes) {
         this.newId++;
@@ -363,8 +426,8 @@ new (class extends TestDataServer {
           ] as Array<FieldOption>)
         );
       } else {
-        const regResRecord = route.match(
-          /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/
+        const regResRecord = /\/dataset\/([A-Za-z0-9_]+)\/record\/compute-tier-calculation\?recordId=(\S+)/.exec(
+          route
         );
 
         if (regResRecord && regResRecord.length > 2) {
@@ -374,7 +437,7 @@ new (class extends TestDataServer {
           if (isNaN(recordId)) {
             // check for mismatches between europeana records and the parent dataset
 
-            const europeanaId = recordIdUnparsed.match(/^\/(\d)\/\S+/);
+            const europeanaId = /^\/(\d)\/\S+/.exec(recordIdUnparsed);
             if (europeanaId) {
               const recordDataset = parseInt(europeanaId[1]);
               const datasetParam = parseInt(regResRecord[1]);
@@ -385,8 +448,10 @@ new (class extends TestDataServer {
             }
           }
 
-          if (recordId === 404) {
-            this.handle404(route, response);
+          if (this.errorCodes.indexOf(`${recordId}`) > -1) {
+            response.statusCode = recordId;
+            response.end();
+            return;
           } else {
             const report = this.reportGenerator.generateReport(recordIdUnparsed);
             if (recordId > 999) {
@@ -400,11 +465,9 @@ new (class extends TestDataServer {
           return;
         }
 
-        const regResDataset = route.match(/\/dataset\/([A-Za-z0-9_]+)$/);
+        const regResDataset = /\/dataset\/([A-Za-z0-9_]+)$/.exec(route);
 
-        if (!regResDataset) {
-          this.handle404(route, response);
-        } else {
+        if (regResDataset) {
           const id = regResDataset[1];
           if (this.errorCodes.indexOf(id) > -1) {
             response.statusCode = parseInt(id);
@@ -412,7 +475,73 @@ new (class extends TestDataServer {
           } else {
             this.handleId(response, id);
           }
+          return;
         }
+
+        // Problem Patterns
+        // (convention: only numerically-odd ids get non-empty results)
+
+        const regProblemPattern = /\/pattern-analysis\/([A-Za-z0-9_]+)\/get/.exec(route);
+
+        if (regProblemPattern && regProblemPattern.length > 1) {
+          const id = regProblemPattern[1];
+          const idNumeric = parseInt(id);
+
+          if (route.indexOf('get-record-pattern-analysis') > -1) {
+            const recordId = /recordId=([A-Za-z0-9_\-%]+)/.exec(route);
+
+            if (recordId && recordId.length > 1) {
+              const recordIdNumeric = parseInt(recordId[1]);
+
+              if (this.errorCodes.indexOf(recordId[1]) > -1) {
+                response.statusCode = parseInt(recordId[1]);
+                response.end();
+              } else {
+                const result =
+                  recordIdNumeric % 2 === 0
+                    ? '[]'
+                    : JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
+                if (idNumeric > 999) {
+                  setTimeout(() => {
+                    response.end(result);
+                  }, idNumeric);
+                } else {
+                  response.end(result);
+                }
+              }
+              return;
+            }
+            response.end(JSON.stringify([this.generateProblem(idNumeric, 1)]));
+            return;
+          } else if (route.indexOf('get-dataset-pattern-analysis') > -1) {
+            if (id && this.errorCodes.indexOf(id) > -1) {
+              response.statusCode = idNumeric;
+              response.end();
+              return;
+            }
+            const problemsDataset = {
+              datasetId: id,
+              executionStep: `step ${id}`,
+              executionTimestamp: `${new Date().toISOString()}`,
+              problemPatternList:
+                idNumeric % 2 === 0
+                  ? []
+                  : Object.keys(new Array(15).fill(null)).map((i) => {
+                      return this.generateProblem(idNumeric, parseInt(i));
+                    })
+            } as ProblemPatternsDataset;
+
+            if (idNumeric > 999) {
+              setTimeout(() => {
+                response.end(JSON.stringify(problemsDataset));
+              }, idNumeric);
+            } else {
+              response.end(JSON.stringify(problemsDataset));
+            }
+            return;
+          }
+        }
+        this.handle404(route, response);
       }
     }
   }

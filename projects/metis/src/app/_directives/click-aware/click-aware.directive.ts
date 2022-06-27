@@ -17,7 +17,10 @@ export class ClickAwareDirective extends SubscriptionManager {
    *  constructor
    *  subscribe to the global document click host listener via the clickService
    */
-  constructor(private clickService: ClickService, private elementRef: ElementRef) {
+  constructor(
+    private readonly clickService: ClickService,
+    private readonly elementRef: ElementRef
+  ) {
     super();
     this.subs.push(
       this.clickService.documentClickedTarget.subscribe((target: HTMLElement) => {

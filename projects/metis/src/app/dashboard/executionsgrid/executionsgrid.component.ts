@@ -118,6 +118,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
     this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCall,
+      false,
       fnDataProcess,
       fnError
     ).getPollingSubject();

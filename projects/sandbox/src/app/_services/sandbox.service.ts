@@ -2,12 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ProtocolType } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
   FieldOption,
+  ProblemPattern,
+  ProblemPatternsDataset,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -18,45 +21,62 @@ export class SandboxService {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * getCountries
-   *
-   * gets the country options
-   *
-   * @returns Array<FieldOption>
-   **/
+  /* getProblemPatternsRecord
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<Array<ProblemPattern>>
+  **/
+  getProblemPatternsRecord(datasetId: string, recordId: string): Observable<Array<ProblemPattern>> {
+    const url = `${apiSettings.apiHost}/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`;
+    return this.http.get<Array<ProblemPattern>>(url);
+  }
+
+  /**
+  /* getProblemPatternsDataset
+  /*  @param { string } datasetId
+  /* @returns Observable<ProblemPatternsDataset>
+  **/
+  getProblemPatternsDataset(datasetId: string): Observable<ProblemPatternsDataset> {
+    const url = `${apiSettings.apiHost}/pattern-analysis/${datasetId}/get-dataset-pattern-analysis`;
+    return this.http.get<ProblemPatternsDataset>(url);
+  }
+
+  /**
+  /* getCountries
+  /*  gets the country options
+  /*  @returns Observable<Array<FieldOption>>
+  **/
   getCountries(): Observable<Array<FieldOption>> {
     const url = `${apiSettings.apiHost}/dataset/countries`;
     return this.http.get<Array<FieldOption>>(url);
   }
 
   /**
-   * getLanguages
-   *
-   * gets the language options
-   *
-   * @returns Array<string>
-   **/
+  /*  getLanguages
+  /*  gets the language options
+  /*  @returns Observable<Array<FieldOption>>
+  **/
   getLanguages(): Observable<Array<FieldOption>> {
     const url = `${apiSettings.apiHost}/dataset/languages`;
     return this.http.get<Array<FieldOption>>(url);
   }
 
   /** getRecordReport
-   *
-   * request a record report from the server
-   * /dataset/{id}/record
-   */
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<RecordReport>
+  **/
   getRecordReport(datasetId: string, recordId: string): Observable<RecordReport> {
     const url = `${apiSettings.apiHost}/dataset/${datasetId}/record/compute-tier-calculation`;
     return this.http.get<RecordReport>(`${url}?recordId=${recordId}`);
   }
 
   /** requestProgress
-  /*
+  /*  @param { string } datasetId
   /* request progress info from server
   */
-  requestProgress(id: string): Observable<Dataset> {
-    const url = `${apiSettings.apiHost}/dataset/${id}`;
+  requestProgress(datasetId: string): Observable<Dataset> {
+    const url = `${apiSettings.apiHost}/dataset/${datasetId}`;
     return this.http.get<Dataset>(url);
   }
 
@@ -103,7 +123,7 @@ export class SandboxService {
       return this.http.post<SubmissionResponseDataWrapped>(url, formData, {
         observe: 'events',
         reportProgress: true
-      }) as Observable<SubmissionResponseDataWrapped>;
+      }) as Observable<SubmissionResponseDataWrapped | SubmissionResponseData>;
     } else {
       return this.http.post<SubmissionResponseData>(url, formData);
     }

@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   DataPollingComponent,
   FileUploadComponent,
@@ -123,7 +124,7 @@ export class UploadComponent extends DataPollingComponent {
   validateDatasetName(control: FormControl): ValidationErrors | null {
     const val = control.value;
     if (val) {
-      const matches = `${val}`.match(/[a-zA-Z0-9_]+/);
+      const matches = /[a-zA-Z0-9_]+/.exec(`${val}`);
       if (!matches || matches[0] !== val) {
         return { invalid: true };
       }

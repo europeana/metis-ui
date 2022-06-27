@@ -123,6 +123,9 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       (): Observable<HarvestData> => {
         return this.workflows.getPublishedHarvestedData(this.datasetId);
       },
+      (prev: HarvestData, curr: HarvestData) => {
+        return JSON.stringify(prev) === JSON.stringify(curr);
+      },
       (resultHarvest: HarvestData): void => {
         this.harvestPublicationData = resultHarvest;
         this.harvestIsLoading = false;
@@ -140,6 +143,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       (): Observable<Workflow> => {
         return this.workflows.getWorkflowForDataset(this.datasetId);
       },
+      false,
       (workflow: Workflow): void => {
         this.workflowData = workflow;
         this.workflowIsLoading = false;
@@ -154,14 +158,15 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
 
     this.createNewDataPoller(
       environment.intervalStatus,
-      (): Observable<WorkflowExecution> => {
+      (): Observable<WorkflowExecution | undefined> => {
         this.lastExecutionIsLoading = false;
-        return this.workflows.getLastDatasetExecution(this.datasetId) as Observable<
-          WorkflowExecution
-        >;
+        return this.workflows.getLastDatasetExecution(this.datasetId);
       },
-      (execution: WorkflowExecution): void => {
-        this.processLastExecutionData(execution);
+      false,
+      (execution: WorkflowExecution | undefined): void => {
+        if (execution) {
+          this.processLastExecutionData(execution);
+        }
       },
       (err: HttpErrorResponse): HttpErrorResponse | false => {
         const error = this.errors.handleError(err);
@@ -241,6 +246,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
       () => {
         return this.datasets.getDataset(this.datasetId, true);
       },
+      false,
       (result) => {
         this.datasetData = result;
         this.datasetName = result.datasetName;
@@ -261,13 +267,11 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   /* @param {WorkflowExecution} execution - loaded data
   */
   processLastExecutionData(execution: WorkflowExecution): void {
-    if (execution) {
-      this.workflows.getReportsForExecution(execution);
-      this.lastExecutionData = execution;
+    this.workflows.getReportsForExecution(execution);
+    this.lastExecutionData = execution;
 
-      if (this.isStarting && !isWorkflowCompleted(execution)) {
-        this.isStarting = false;
-      }
+    if (this.isStarting && !isWorkflowCompleted(execution)) {
+      this.isStarting = false;
     }
   }
 

@@ -3,10 +3,6 @@
 
 $margin-v: 12px;
 
-.code {
-  font-family: Courier, courier new, serif;
-}
-
 .false {
   color: red;
 }
@@ -47,23 +43,6 @@ $margin-v: 12px;
     & ul li {
       list-style: disc;
     }
-  }
-  &::-webkit-scrollbar-track {
-    border: 1px solid $eu-jade-light;
-  }
-  &::-webkit-scrollbar {
-    background-color: $eu-light-jade-classic;
-  }
-  &::-webkit-scrollbar-thumb {
-    box-shadow: inset 0 0 9px rgba(55, 185, 139, 0.75);
-    border: 2px solid transparent;
-    // this doesn't work due to a bug in chrome
-    cursor: pointer;
-  }
-  &::-webkit-scrollbar-thumb,
-  &::-webkit-scrollbar-track {
-    border-radius: 5px;
-    cursor: pointer !important;
   }
 }
 

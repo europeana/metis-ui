@@ -30,6 +30,9 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
     this.form = form;
     this.updateRequired();
   }
+  get protocolForm(): FormGroup {
+    return this.form;
+  }
 
   /** isProtocolDisabled
   /* Template utility

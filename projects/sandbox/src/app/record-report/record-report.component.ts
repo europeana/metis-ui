@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {

@@ -2,15 +2,12 @@
 
 $wizard-border-radius: 1.5em;
 
-.buttons {
-  display: flex;
-  margin-top: 1.25em;
-  justify-content: space-between;
+.inline-texts {
+  margin-top: 2em;
+}
 
-  align-content: center;
-  .inline-text {
-    align-self: center;
-  }
+.field-wrapper + button {
+  margin-left: 2em;
 }
 
 .wizard {
@@ -42,6 +39,9 @@ $wizard-border-radius: 1.5em;
   label {
     color: $eu-jade-dark;
     cursor: pointer;
+    &.tick {
+      white-space: nowrap;
+    }
   }
 }
 
@@ -52,15 +52,26 @@ $wizard-border-radius: 1.5em;
   }
 }
 
-.submit-id-ctrls {
-  display: flex;
-  button {
-    flex-basis: 5.75em;
-    margin-left: 0.5rem;
-    text-shadow: none;
-    white-space: nowrap;
-  }
-  input {
-    min-width: 0;
+@media (min-width: $bp-med) {
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(40%, 3fr) auto auto;
+    row-gap: 12px;
+
+    & > .cell-button {
+      align-self: flex-end;
+      display: flex;
+      margin-left: 2em;
+
+      & + .cell-button {
+        align-self: flex-end;
+        display: flex;
+        margin-left: 1em;
+      }
+    }
+
+    & > .cell-errors {
+      grid-column: 1/4;
+    }
   }
 }

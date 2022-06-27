@@ -40,7 +40,7 @@ export class FilterOptionComponent implements CanHaveError {
   valueIndex(name: FilterParamType, value: string, inputRef?: number): number {
     let res = -1;
     this.params[name].forEach((item: FilterParamValue, i: number) => {
-      if (value.length > 0 && item.value === value && item.inputRef === inputRef) {
+      if (value && value.length > 0 && item.value === value && item.inputRef === inputRef) {
         res = i;
       }
     });

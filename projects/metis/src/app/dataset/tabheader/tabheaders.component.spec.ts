@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
-import { createMockPipe, mockHarvestData, mockWorkflowExecutionResults } from '../../_mocked';
+import { createMockPipe } from '../../_mocked';
 import { TabHeadersComponent } from '.';
 
 describe('TabHeadersComponent', () => {
@@ -31,28 +31,5 @@ describe('TabHeadersComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should set the harvest data', () => {
-    expect(component.harvestPublicationData).toBeFalsy();
-    component.harvestData = mockHarvestData;
-    expect(component.harvestPublicationData).toBeTruthy();
-    expect(component.harvestPublicationData).toEqual(mockHarvestData);
-  });
-
-  it('should set the active tab', () => {
-    const tabName = 'The Tab';
-    expect(component.activeTab).toBeFalsy();
-    component.active = tabName;
-    expect(component.activeTab).toBeTruthy();
-    expect(component.activeTab).toEqual(tabName);
-  });
-
-  it('should set the last execution data', () => {
-    const lastExec = mockWorkflowExecutionResults.results[0];
-    expect(component.lastExecutionData).toBeFalsy();
-    component.lastExecution = lastExec;
-    expect(component.lastExecutionData).toBeTruthy();
-    expect(component.lastExecutionData).toEqual(lastExec);
   });
 });

@@ -1,7 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { HostListener } from '@angular/core';
-
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
@@ -86,7 +84,14 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     if (!url) {
       return;
     }
-    if (this.router.isActive(url, false)) {
+    if (
+      this.router.isActive(url, {
+        paths: 'subset',
+        queryParams: 'subset',
+        fragment: 'ignored',
+        matrixParams: 'ignored'
+      })
+    ) {
       this.loggedIn = this.authentication.validatedUser();
       this.bodyClass = url.split('/')[1];
       if (url === '/') {

@@ -18,8 +18,12 @@
           {{ wpe.createdDate | date: 'dd/MM/yyyy' }}
         </span>
         {{ wpe.createdDate | date: 'HH:mm' }}
+
+        <span class="head-prefix user">Started by</span>
+        {{ wpe.startedBy }}
+
         <ng-container *ngIf="getCancelledBy(wpe) | async as canceller">
-          <span class="head-prefix canceller">{{ 'cancelledBy' | translate }}</span>
+          <span class="head-prefix user">{{ 'cancelledBy' | translate }}</span>
           {{ canceller }}
         </ng-container>
       </span>
@@ -54,7 +58,7 @@
         id="app-executions-grid-data"
         [applyStripe]="i % 2 > 0"
         [isIncremental]="wpe.isIncremental"
-        [pluginExecution]="pe"
+        [plugin]="pe"
         [workflowExecutionId]="wpe.id"
         (openPreview)="goToPreview($event)"
         (setReportMsg)="openFailReport($event)"

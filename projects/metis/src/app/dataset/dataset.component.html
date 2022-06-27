@@ -71,7 +71,7 @@
     <div class="tabbed-content" #scrollToTopAnchor>
       <app-tab-headers
         [datasetId]="datasetId"
-        [active]="activeTab"
+        [activeTab]="activeTab"
         [harvestData]="harvestPublicationData"
         [lastExecution]="lastExecutionData"
       >
@@ -108,7 +108,6 @@
         *ngIf="activeTab === 'depublication'"
         [datasetId]="datasetId"
         [datasetName]="datasetName"
-        [totalRecordCount]="harvestPublicationData?.lastPublishedRecords"
       ></app-depublication>
       <app-mapping
         *ngIf="activeTab === 'mapping'"

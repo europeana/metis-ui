@@ -2,15 +2,21 @@
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 .copy {
-  display: none;
-  font-size: 8px;
-  font-weight: bold;
-  height: 100%;
-  padding-right: 4px;
-  position: absolute;
-  right: 100%;
-  top: 0.8em;
-  white-space: nowrap;
+  &.permanent {
+    display: inline;
+  }
+
+  &:not(.permanent) {
+    display: none;
+    font-size: 8px;
+    font-weight: bold;
+    height: 100%;
+    padding-right: 4px;
+    position: absolute;
+    right: 100%;
+    top: 0.8em;
+    white-space: nowrap;
+  }
 
   &:hover {
     color: $eu-jade-darkest;
@@ -57,7 +63,6 @@
 
 .external-link {
   display: inline-block;
-  transition: 0.5s ease-in-out color;
   &::after {
     background-image: svg-url-icon-external('#{$eu-jade-classic}');
     right: -1.35em;

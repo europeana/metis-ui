@@ -1,3 +1,5 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' | 'unshift';
 
 export type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> = Pick<
@@ -17,10 +19,16 @@ export interface FieldOption {
 export enum WizardStepType {
   UPLOAD = 'UPLOAD',
   PROGRESS_TRACK = 'PROGRESS_TRACK',
-  REPORT = 'REPORT'
+  REPORT = 'REPORT',
+  PROBLEMS_DATASET = 'PROBLEMS_DATASET',
+  PROBLEMS_RECORD = 'PROBLEMS_RECORD'
 }
 
 export interface WizardStep {
+  error?: HttpErrorResponse;
+  isBusy?: boolean;
+  isHidden: boolean;
+  lastLoadedIdDataset?: string;
+  lastLoadedIdRecord?: string;
   stepType: WizardStepType;
-  fields: Array<string>;
 }

@@ -33,6 +33,10 @@ export class ReportSimpleComponent {
     }
   }
 
+  get reportMsg(): string {
+    return this.message;
+  }
+
   /** reportErrors
   /* setter for the report errors:
   /* - checks if the specified errors is non-empty
@@ -99,8 +103,7 @@ export class ReportSimpleComponent {
     return o ? Object.keys(o) : [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  isObject(val: any): boolean {
+  isObject(val: unknown): boolean {
     return typeof val === 'object';
   }
 }

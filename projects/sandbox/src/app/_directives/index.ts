@@ -1,1 +1,1 @@
-export * from './href-copy';
+export * from './text-copy';

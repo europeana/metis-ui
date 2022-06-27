@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
 
 @Component({
@@ -9,15 +10,16 @@ import { ClassMap } from 'shared';
 export class NavigationOrbsComponent {
   static maxOrbsUncollapsed = 5;
   collapsed = false;
-  @Input() index = 0;
   steps: Array<number>;
   _indicatorAttributes: { [details: string]: string } = {};
 
+  @Input() index = 0;
+  @Input() ariaLabel: string;
   @Input()
   set count(count: number) {
     this.collapsed = count > NavigationOrbsComponent.maxOrbsUncollapsed;
-    this.steps = new Array(count).fill(null).map((_: number, num: number) => {
-      return num;
+    this.steps = Array.from({ length: count }, (_, i) => {
+      return i;
     });
   }
 
