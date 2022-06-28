@@ -513,16 +513,36 @@ new (class extends TestDataServer {
     );
 
     if (regRes) {
-      response.end(
-        JSON.stringify({
-          records: [
-            {
-              ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
-              xmlRecord: '<x>Compare</x>'
-            }
-          ]
-        })
-      );
+      let body = '';
+      request.on('data', function(data: { toString: () => string }) {
+        body += data.toString();
+      });
+
+      request.on('end', function() {
+        if (JSON.parse(body).ids[0] === 'fail') {
+          response.statusCode = 400;
+          response.end(
+            JSON.stringify({
+              message: 'Failure!',
+              error: {
+                errorMessage: 'Expecting representations!'
+              }
+            })
+          );
+        } else {
+          response.end(
+            JSON.stringify({
+              records: [
+                {
+                  ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
+                  xmlRecord: '<x>Compare</x>'
+                }
+              ]
+            })
+          );
+        }
+        return true;
+      });
       return true;
     }
 

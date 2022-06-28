@@ -7,7 +7,7 @@ import {
   isWorkflowCompleted,
   PluginExecution,
   PluginStatus,
-  SimpleReportRequest,
+  ReportRequest,
   TopologyName,
   Workflow,
   WorkflowExecution,
@@ -34,7 +34,7 @@ export class ActionbarComponent {
 
   @Output() startWorkflow = new EventEmitter<void>();
   @Output() setShowPluginLog = new EventEmitter<PluginExecution | undefined>();
-  @Output() setReportMsg = new EventEmitter<SimpleReportRequest | undefined>();
+  @Output() setReportMsg = new EventEmitter<ReportRequest | undefined>();
 
   // Make Enum available to template
   public PluginStatus = PluginStatus;
@@ -167,7 +167,15 @@ export class ActionbarComponent {
   /* open the fail report
   */
   openFailReport(topology?: TopologyName, taskId?: string, errorMsg?: string): void {
-    this.setReportMsg.emit({ topology, taskId, message: errorMsg });
+    const workflowExecutionId = this.lastExecutionData ? this.lastExecutionData.id : undefined;
+    const pluginType = this.currentPlugin ? this.currentPlugin.pluginType : undefined;
+    this.setReportMsg.emit({
+      pluginType,
+      topology,
+      taskId,
+      message: errorMsg,
+      workflowExecutionId
+    });
   }
 
   /** copyInformation

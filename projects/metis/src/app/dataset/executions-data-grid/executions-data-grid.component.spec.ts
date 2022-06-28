@@ -66,23 +66,29 @@ describe('ExecutionsDataGridComponent', () => {
 
   it('should open a report', () => {
     spyOn(component.setReportMsg, 'emit');
+    component.plugin = basicPluginExecution;
     component.openFailReport('validation', '123');
     fixture.detectChanges();
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: 'validation',
       taskId: '123',
-      message: undefined
+      message: undefined,
+      workflowExecutionId: undefined,
+      pluginType: component.plugin.pluginType
     });
   });
 
   it('should open a simple report', () => {
     spyOn(component.setReportMsg, 'emit');
     const msg = 'fail message report';
+    component.plugin = basicPluginExecution;
     component.openFailReport(undefined, undefined, msg);
     fixture.detectChanges();
     expect(component.setReportMsg.emit).toHaveBeenCalledWith({
       topology: undefined,
       taskId: undefined,
+      workflowExecutionId: undefined,
+      pluginType: component.plugin.pluginType,
       message: 'fail message report'
     });
   });

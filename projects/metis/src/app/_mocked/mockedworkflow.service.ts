@@ -693,9 +693,9 @@ export class MockWorkflowService {
     return of(mockHistoryVersions).pipe(delay(1));
   }
 
-  getWorkflowComparisons(): Observable<XmlSample[]> {
+  getWorkflowRecordsById(): Observable<XmlSample[]> {
     if (this.errorMode) {
-      return throwError(new Error('mock getWorkflowComparisons throws error...'));
+      return throwError(new Error('mock getWorkflowRecordsById throws error...'));
     }
     return of(mockXmlSamples);
   }

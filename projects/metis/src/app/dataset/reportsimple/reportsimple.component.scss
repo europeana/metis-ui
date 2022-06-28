@@ -1,16 +1,60 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/pandora/settings/metis-variables';
 
+.btn-download {
+  align-self: flex-start;
+  background: $eu-jade;
+  border: 1px solid $eu-jade;
+  border-radius: 8px;
+  color: $white;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 12px;
+  margin-left: 1em;
+  padding: 0.25rem 0.5rem;
+  text-transform: uppercase;
+  &:hover {
+    background: $offwhite;
+    border-color: transparent;
+    color: $gray-med;
+  }
+}
+
 .btn-right {
-  display: block;
   float: right;
   color: $white;
+  display: block;
   text-transform: uppercase;
   margin: 0.2rem 1rem;
+}
+
+.download-error {
+  color: $eu-red;
+  font-size: 14px;
+  font-style: italic;
+
+  li:not(:first-child) {
+    margin-top: 8px;
+  }
+  margin: 8px 0;
+}
+
+.omit-from-copy {
+  user-select: none;
 }
 
 .fail-message-separator {
   border-bottom: 1px solid $gray-almost-lightest;
   margin-bottom: 1.5em;
   padding-bottom: 0.5em;
+}
+
+.last-in-group {
+  margin-bottom: 1em;
+}
+
+.report-errors {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
 }

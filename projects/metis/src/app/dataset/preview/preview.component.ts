@@ -228,7 +228,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       this.isLoadingComparisons = true;
       this.subs.push(
         this.workflows
-          .getWorkflowComparisons(workflowExecutionId, plugin, sampleRecordIds)
+          .getWorkflowRecordsById(workflowExecutionId, plugin, sampleRecordIds)
           .subscribe(
             (result) => {
               // strip "new lines"
