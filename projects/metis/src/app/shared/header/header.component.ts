@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
-
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { SubscriptionManager } from 'shared';
 import { environment } from '../../../environments/environment';
 import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
 
@@ -8,16 +9,44 @@ import { AuthenticationService, RedirectPreviousUrl } from '../../_services';
   selector: 'app-header',
   templateUrl: './header.component.html'
 })
-export class HeaderComponent {
+export class HeaderComponent extends SubscriptionManager implements OnInit {
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly redirectPreviousUrl: RedirectPreviousUrl
-  ) {}
+  ) {
+    super();
+  }
 
   openSignIn = false;
+  searchString: string;
 
   @Input() loggedIn: boolean;
+
+  /** ngOnInit
+  /* - set searchString variable to URI-decoded query parameter
+  */
+  ngOnInit(): void {
+    this.subs.push(
+      this.route.queryParams.subscribe((params) => {
+        const q = params.searchString;
+        if (q !== undefined) {
+          this.searchString = decodeURIComponent(q.trim());
+        }
+      })
+    );
+  }
+
+  executeSearch(event: string): void {
+    if (this.authentication.validatedUser()) {
+      this.router.navigate(['/search'], {
+        queryParams: { searchString: encodeURIComponent(event.trim()) }
+      });
+    } else {
+      this.router.navigate(['/signin']);
+    }
+  }
 
   /** toggleSignInMenu
   /* toggles the visibility of the sign-in menu
