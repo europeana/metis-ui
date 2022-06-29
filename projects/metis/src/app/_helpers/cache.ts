@@ -1,8 +1,8 @@
-import { ConnectableObservable, Observable, of } from 'rxjs';
-import { publishLast, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { shareReplay, tap } from 'rxjs/operators';
 
 export class SingleCache<Value> {
-  private observable?: ConnectableObservable<Value>;
+  private observable?: Observable<Value>;
 
   constructor(private readonly sourceFn: () => Observable<Value>) {}
 
@@ -15,19 +15,15 @@ export class SingleCache<Value> {
       return this.observable;
     }
 
-    // Create new observable.
     const observable = this.sourceFn().pipe(
-      tap(
-        (_) => undefined,
-        (_) => this.clear(),
-        () => undefined
-      ),
-      publishLast()
-    ) as ConnectableObservable<Value>;
+      tap({
+        error: () => this.clear()
+      }),
+      shareReplay(1)
+    );
 
     // Return local variable, as this.observable might be cleared by the connect call.
     this.observable = observable;
-    observable.connect();
     return observable;
   }
 
@@ -63,17 +59,14 @@ export class KeyedCache<Value> {
 
     // Create new observable.
     const observable = this.sourceFn(key).pipe(
-      tap(
-        (_) => undefined,
-        (_) => this.clear(key),
-        () => undefined
-      ),
-      publishLast()
-    ) as ConnectableObservable<Value>;
+      tap({
+        error: () => this.clear(key)
+      }),
+      shareReplay(1)
+    );
 
     // Return local variable, as this.observableByKey[key] might be cleared by the connect call.
     this.observableByKey[key] = observable;
-    observable.connect();
     return observable;
   }
 
