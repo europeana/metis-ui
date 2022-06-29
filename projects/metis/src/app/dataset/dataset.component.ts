@@ -15,8 +15,8 @@ import {
   PluginExecution,
   PreviewFilters,
   PublicationFitness,
-  ReportRequestWithData,
   ReportRequest,
+  ReportRequestWithData,
   successNotification,
   Workflow,
   WorkflowExecution,
@@ -67,7 +67,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   pollingRefresh: Subject<boolean>;
 
   reportLoading: boolean;
-  reportRequest: ReportRequestWithData;
+  reportRequest: ReportRequestWithData = {};
 
   @ViewChild(WorkflowComponent) workflowFormRef: WorkflowComponent;
 

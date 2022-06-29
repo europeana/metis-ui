@@ -112,13 +112,11 @@ function runPlugin(id: string, pmd: PluginMetadata, status: PluginStatus): Plugi
   return {
     id: id,
     externalTaskId: id,
-
     pluginMetadata: pmd,
     topologyName: pmd.pluginType.toLowerCase() as TopologyName,
     pluginType: pmd.pluginType,
-
     pluginStatus: status,
-
+    canDisplayRawXml: !(cancelled || failed),
     startedDate: cancelled ? undefined : generateDate(DateBumpType.SECOND),
     updatedDate: cancelled ? undefined : generateDate(DateBumpType.MINUTE),
     finishedDate: status === PluginStatus.FINISHED ? generateDate(DateBumpType.SECOND) : undefined,
