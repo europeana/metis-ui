@@ -5,6 +5,10 @@ export interface XmlSample {
   xmlRecord: string;
 }
 
+export interface XmlDownload extends XmlSample {
+  label: string;
+}
+
 export interface HistoryVersion {
   workflowExecutionId: string;
   pluginType: string;

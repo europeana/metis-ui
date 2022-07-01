@@ -5,12 +5,14 @@
   [ngClass]="{ 'view-sample-expanded': expandedStatistics }"
 >
   <div class="view-sample-title">
-    <app-load-title
-      title="{{ 'statistics' | translate }}"
-      inButton="true"
-      [isLoading]="isLoading"
-    ></app-load-title>
-    <div class="toggle-expand"><a (click)="toggleStatistics()">-</a></div>
+    <div class="title-controls">
+      <app-load-title
+        title="{{ 'statistics' | translate }}"
+        inButton="true"
+        [isLoading]="isLoading"
+      ></app-load-title>
+      <a class="toggle-expand" (click)="toggleStatistics()">-</a>
+    </div>
   </div>
   <div class="view-sample-editor">
     <ul class="stats-listing">

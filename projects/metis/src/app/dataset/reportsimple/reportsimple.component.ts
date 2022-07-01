@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
+import { triggerXmlDownload } from '../../_helpers';
 import {
   errorNotification,
   Notification,
@@ -147,15 +148,8 @@ export class ReportSimpleComponent extends SubscriptionManager {
         )
         .subscribe(
           (samples: Array<XmlSample>) => {
-            const sample = samples[0];
-            const anchor = document.createElement('a');
+            triggerXmlDownload(samples[0]);
             model.downloadError = undefined;
-            anchor.href = `data:text/xml,${encodeURIComponent(sample.xmlRecord)}`;
-            anchor.target = '_blank';
-            anchor.download = `record-${sample.ecloudId}.xml`;
-            document.body.appendChild(anchor);
-            anchor.click();
-            document.body.removeChild(anchor);
           },
           (error: HttpErrorResponse) => {
             model.downloadError = error;

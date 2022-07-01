@@ -5,6 +5,8 @@
 /* the theme is set with a menu drop-down component
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { triggerXmlDownload } from '../_helpers';
+import { XmlDownload } from '../_models';
 
 @Component({
   selector: 'app-theme-selector',
@@ -12,9 +14,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./theme-selector.component.scss']
 })
 export class ThemeSelectorComponent {
+  public triggerXmlDownload = triggerXmlDownload;
   showing: boolean;
   @Output() themeSet = new EventEmitter<boolean>();
   @Input() editorIsDefaultTheme: boolean;
+  @Input() xmlDownloads?: Array<XmlDownload>;
   setTheme(defaultTheme: boolean): void {
     this.themeSet.emit(defaultTheme);
     this.showing = false;
@@ -27,10 +31,10 @@ export class ThemeSelectorComponent {
     this.showing = false;
   }
 
-  /** show
-  /* set the showing variable to true
+  /** toggle
+  /* toggle the showing
   */
-  show(): void {
-    this.showing = true;
+  toggle(): void {
+    this.showing = !this.showing;
   }
 }

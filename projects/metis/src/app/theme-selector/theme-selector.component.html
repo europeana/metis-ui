@@ -1,13 +1,32 @@
-<ul class="filter" appClickAware (clickOutside)="hide()">
+<ul appClickAware (clickOutside)="hide()">
   <li class="dropdown arrow-right">
-    <span class="flex-pair" (click)="show()"
-      ><span class="capitalise">{{ 'background' | translate }}</span
-      ><span [class.black]="!editorIsDefaultTheme" class="theme-ctrl"></span
-    ></span>
+    <span (click)="toggle()" [class.black]="!editorIsDefaultTheme" class="theme-ctrl"></span>
+
     <div class="dropdown-wrapper" *ngIf="showing">
       <ul class="dropdown-content">
         <li>
-          <span class="theme-title">{{ 'editorBackgroundTheme' | translate }}</span>
+          <span class="theme-title">{{ 'previewOptionsDownloads' | translate }}</span>
+        </li>
+        <ng-template #noDownloads>
+          <li class="flex-pair">
+            <span class="download-link disabled">{{ 'previewNoDownloads' | translate }}</span>
+          </li>
+        </ng-template>
+        <ng-container *ngIf="xmlDownloads; else noDownloads">
+          <li *ngFor="let xml of xmlDownloads">
+            <a
+              class="flex-pair download-link"
+              [ngClass]="{
+                disabled: !xml
+              }"
+              (click)="triggerXmlDownload(xml)"
+              ><span class="theme-ctrl download-icon"></span
+              ><span>@{{ (xml.label | renameWorkflow) || xml.label }}</span></a
+            >
+          </li>
+        </ng-container>
+        <li>
+          <span class="theme-title">{{ 'editorThemeSelection' | translate }}</span>
         </li>
         <li>
           <a class="flex-pair" (click)="setTheme(false)"
