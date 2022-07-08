@@ -21,6 +21,7 @@ import {
   PreviewFilters,
   Results,
   WorkflowExecution,
+  XmlDownload,
   XmlSample
 } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
@@ -422,14 +423,15 @@ describe('PreviewComponent', () => {
       expect(component.editorConfig.theme).toEqual('default');
     });
 
-    it('has utility to strip blank lines', () => {
+    it('should process xml samples', () => {
       const samples = [
         {
           xmlRecord: '\n\r'
         }
       ] as XmlSample[];
 
-      const res: XmlSample[] = component.undoNewLines(samples);
+      const res: XmlDownload[] = component.processXmlSamples(samples, 'label');
+      expect(res[0].label).toBeTruthy();
       expect(res[0].xmlRecord).toEqual('');
     });
 

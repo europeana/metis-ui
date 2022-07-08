@@ -24,19 +24,28 @@
   </button>
 </div>
 
-<div *ngIf="xsltStatus === 'has-custom' || xsltStatus === 'new-custom'">
+<div *ngIf="xslt && ['has-custom', 'new-custom'].includes(xsltStatus)">
   <div class="view-sample view-sample-expanded">
     <div class="view-sample-title">
-      <h3>{{ 'xsltCustom' | translate }}</h3>
-      <app-theme-selector
-        (themeSet)="onThemeSet($event)"
-        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-      ></app-theme-selector>
+      <div class="title-controls">
+        <h3>{{ 'xsltCustom' | translate }}</h3>
+        <app-editor-drop-down
+          (themeSet)="onThemeSet($event)"
+          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
+          [xmlDownloads]="[
+            {
+              ecloudId: datasetData ? datasetData.datasetId : '',
+              xmlRecord: xslt,
+              label: 'Custom'
+            }
+          ]"
+        ></app-editor-drop-down>
+      </div>
     </div>
     <div class="view-sample-editor">
       <div class="view-sample-editor-codemirror">
         <ngx-codemirror
-          [ngModel]="xslt! | beautifyXML"
+          [ngModel]="xslt | beautifyXML"
           (ngModelChange)="xsltToSave = $event"
           [options]="editorConfig"
         ></ngx-codemirror>

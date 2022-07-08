@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { createMockPipe } from '../_mocked';
 
-import { ThemeSelectorComponent } from '.';
+import { EditorDropDownComponent } from '.';
 
-describe('ThemeSelectorComponent', () => {
-  let component: ThemeSelectorComponent;
-  let fixture: ComponentFixture<ThemeSelectorComponent>;
+describe('EditorDropDownComponent', () => {
+  let component: EditorDropDownComponent;
+  let fixture: ComponentFixture<EditorDropDownComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ThemeSelectorComponent, createMockPipe('translate')]
+      declarations: [EditorDropDownComponent, createMockPipe('translate')]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ThemeSelectorComponent);
+    fixture = TestBed.createComponent(EditorDropDownComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -24,7 +24,6 @@ describe('ThemeSelectorComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // check component hides
   it('should hide', () => {
     component.showing = true;
     expect(component.showing).toBeTruthy();
@@ -32,14 +31,14 @@ describe('ThemeSelectorComponent', () => {
     expect(component.showing).toBeFalsy();
   });
 
-  // check component shows
-  it('should show', () => {
+  it('should toggle', () => {
     expect(component.showing).toBeFalsy();
-    component.show();
+    component.toggle();
     expect(component.showing).toBeTruthy();
+    component.toggle();
+    expect(component.showing).toBeFalsy();
   });
 
-  // check component hides when the theme is set
   it('should hide when the theme is set', () => {
     component.showing = true;
     expect(component.showing).toBeTruthy();

@@ -3,6 +3,34 @@
   (closed)="notification = undefined"
 ></app-notification>
 
+<ng-template #xmlHeader let-index="index" let-xml="xml" let-comparison="comparison">
+  <div class="view-sample-title">
+    <div class="title-controls">
+      <h3>
+        {{ xml.ecloudId }}
+      </h3>
+      <app-editor-drop-down
+        (themeSet)="onThemeSet($event)"
+        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
+        [xmlDownloads]="comparison ? [xml, comparison] : [xml]"
+      ></app-editor-drop-down>
+      <a
+        *ngIf="expandedSample === index && allSamples.length !== index"
+        class="toggle-expand"
+        title="{{ 'minimise' | translate }}"
+        (click)="expandSample(index)"
+      ></a>
+    </div>
+
+    <span class="step-display" *ngIf="previewFilters.baseFilter.pluginType"
+      ><span>{{ previewFilters.baseFilter.pluginType | renameWorkflow }}</span>
+      <span *ngIf="previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType">
+        {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span
+      ></span
+    >
+  </div>
+</ng-template>
+
 <div *ngIf="!tempXSLT">
   <div class="filter-wrapper">
     <ul
@@ -88,31 +116,16 @@
         'view-sample-compared': allSampleComparisons.length
       }"
     >
-      <div class="view-sample-title">
-        <h3>
-          <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType"
-            >{{ previewFilters.baseFilter.pluginType | renameWorkflow }}
-          </span>
-        </h3>
-
-        <app-theme-selector
-          (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-        ></app-theme-selector>
-        <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
-          <a (click)="expandSample(i)">-</a>
-        </div>
-
-        <span class="compound" *ngIf="previewFilters.baseFilter.pluginType" style="width:100%;"
-          ><span>{{ previewFilters.baseFilter.pluginType | renameWorkflow }}</span>
-          <span
-            *ngIf="previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType"
-          >
-            {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span
-          ></span
-        >
-      </div>
+      <ng-content
+        *ngTemplateOutlet="
+          xmlHeader;
+          context: {
+            xml: sample,
+            index: i,
+            comparison: getComparisonSampleAtIndex(i)
+          }
+        "
+      ></ng-content>
       <div class="view-sample-editor">
         <div
           class="view-sample-editor-codemirror"
@@ -127,19 +140,15 @@
           ></ngx-codemirror>
         </div>
         <div
-          *ngIf="
-            allSampleComparisons.length &&
-            allSampleComparisons.length >= i &&
-            allSampleComparisons[i].xmlRecord
-          "
+          *ngIf="getComparisonSampleAtIndex(i); let comparison"
           class="view-sample-editor-codemirror"
           (click)="handleCodeClick($event)"
           (mouseover)="handleMouseOver($event)"
           (mouseout)="handleMouseOut($event)"
         >
           <ngx-codemirror
-            [ngModel]="allSampleComparisons[i].xmlRecord | beautifyXML"
-            (ngModelChange)="allSampleComparisons[i].xmlRecord = $event"
+            [ngModel]="comparison.xmlRecord | beautifyXML"
+            (ngModelChange)="comparison.xmlRecord = $event"
             [options]="editorConfig"
           ></ngx-codemirror>
         </div>
@@ -154,13 +163,15 @@
 
   <div class="view-sample no-sample" *ngIf="allSamples.length === 0">
     <div class="view-sample-title">
-      <h3>
-        {{ 'noSample' | translate }}
-      </h3>
-      <app-theme-selector
-        (themeSet)="onThemeSet($event)"
-        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-      ></app-theme-selector>
+      <div class="title-controls">
+        <h3>
+          {{ 'noSample' | translate }}
+        </h3>
+        <app-editor-drop-down
+          (themeSet)="onThemeSet($event)"
+          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
+        ></app-editor-drop-down>
+      </div>
     </div>
     <div
       class="view-sample-editor"
@@ -190,18 +201,17 @@
       class="view-sample view-sample-expanded view-sample-transformed"
       *ngFor="let sample of allSamples; let i = index"
     >
-      <div class="view-sample-title">
-        <h3>
-          <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType">{{
-            previewFilters.baseFilter.pluginType | renameWorkflow
-          }}</span>
-        </h3>
-        <app-theme-selector
-          (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-        ></app-theme-selector>
-      </div>
+      <ng-content
+        *ngTemplateOutlet="
+          xmlHeader;
+          context: {
+            xml: sample,
+            index: i,
+            comparison: getComparisonSampleAtIndex(i)
+          }
+        "
+      ></ng-content>
+
       <div class="view-sample-editor">
         <div
           class="view-sample-editor-codemirror"
