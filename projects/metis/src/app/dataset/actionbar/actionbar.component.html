@@ -65,6 +65,15 @@
     <span class="datedivider" *ngIf="now">-</span>
     <span class="time">{{ now | date: 'HH:mm' }}</span>
   </div>
+
+  <!-- show started by -->
+  <div class="started-by">
+    <strong class="uppercase">{{ 'startedBy' | translate }}</strong>
+    <span class="user">
+      {{ lastExecutionData.startedBy }}
+    </span>
+  </div>
+
   <!-- show cancel button, log button, report button and run button -->
   <nav aria-label="Operations to perform on workflow">
     <ul class="nav-ctrls">

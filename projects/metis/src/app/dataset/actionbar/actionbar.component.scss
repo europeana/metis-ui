@@ -135,6 +135,16 @@ nav {
   }
 }
 
+.started-by {
+  font-size: 0.75rem;
+  text-align: center;
+
+  & > * {
+    display: block;
+    font-size: $font-size-slightly-smaller;
+  }
+}
+
 @media (min-width: $bp-small) {
   .dataset-actionbar .status {
     white-space: nowrap;
@@ -178,5 +188,13 @@ nav {
 
   .nav-ctrl:not(:first-child) {
     border-left: 1px solid $offwhite;
+  }
+
+  .started-by {
+    padding-left: 1.5em;
+
+    .user {
+      padding-left: 2em;
+    }
   }
 }

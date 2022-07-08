@@ -19,7 +19,7 @@
         </span>
         {{ wpe.createdDate | date: 'HH:mm' }}
 
-        <span class="head-prefix user">Started by</span>
+        <span class="head-prefix user">{{ 'startedBy' | translate }}</span>
         {{ wpe.startedBy }}
 
         <ng-container *ngIf="getCancelledBy(wpe) | async as canceller">

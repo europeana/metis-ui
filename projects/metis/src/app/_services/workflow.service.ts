@@ -263,6 +263,7 @@ export class WorkflowService extends SubscriptionManager {
     return this.http
       .get<Results<WorkflowExecution>>(url)
       .pipe(
+        switchMap((executions) => this.addStartedByToWorkflowExecutionResults(executions)),
         map((lastExecution) => {
           return lastExecution.results[0];
         })
