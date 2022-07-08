@@ -1,6 +1,11 @@
 <ul appClickAware (clickOutside)="hide()">
   <li class="dropdown arrow-right">
-    <span (click)="toggle()" [class.black]="!editorIsDefaultTheme" class="theme-ctrl"></span>
+    <span
+      (click)="toggle()"
+      [class.black]="!editorIsDefaultTheme"
+      class="theme-ctrl"
+      title="{{ 'options' | translate }}"
+    ></span>
 
     <div class="dropdown-wrapper" *ngIf="showing">
       <ul class="dropdown-content">

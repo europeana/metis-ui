@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { createMockPipe } from '../_mocked';
 
-import { ThemeSelectorComponent } from '.';
+import { EditorDropDownComponent } from '.';
 
-describe('ThemeSelectorComponent', () => {
-  let component: ThemeSelectorComponent;
-  let fixture: ComponentFixture<ThemeSelectorComponent>;
+describe('EditorDropDownComponent', () => {
+  let component: EditorDropDownComponent;
+  let fixture: ComponentFixture<EditorDropDownComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ThemeSelectorComponent, createMockPipe('translate')]
+      declarations: [EditorDropDownComponent, createMockPipe('translate')]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ThemeSelectorComponent);
+    fixture = TestBed.createComponent(EditorDropDownComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

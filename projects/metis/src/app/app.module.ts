@@ -62,7 +62,7 @@ import {
   TextWithLinksComponent
 } from './shared';
 import { SearchResultsComponent } from './search-results';
-import { ThemeSelectorComponent } from './theme-selector';
+import { EditorDropDownComponent } from './editor-drop-down';
 
 @NgModule({
   declarations: [
@@ -110,7 +110,7 @@ import { ThemeSelectorComponent } from './theme-selector';
     SortableGroupComponent,
     StatisticsComponent,
     TabHeadersComponent,
-    ThemeSelectorComponent,
+    EditorDropDownComponent,
     TranslatePipe,
     XmlPipe,
     RenameWorkflowPipe,

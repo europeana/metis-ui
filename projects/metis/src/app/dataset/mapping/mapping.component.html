@@ -29,7 +29,7 @@
     <div class="view-sample-title">
       <div class="title-controls">
         <h3>{{ 'xsltCustom' | translate }}</h3>
-        <app-theme-selector
+        <app-editor-drop-down
           (themeSet)="onThemeSet($event)"
           [editorIsDefaultTheme]="editorConfig.theme === 'default'"
           [xmlDownloads]="[
@@ -39,7 +39,7 @@
               label: 'Custom'
             }
           ]"
-        ></app-theme-selector>
+        ></app-editor-drop-down>
       </div>
     </div>
     <div class="view-sample-editor">

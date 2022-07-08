@@ -9,14 +9,15 @@
       <h3>
         {{ xml.ecloudId }}
       </h3>
-      <app-theme-selector
+      <app-editor-drop-down
         (themeSet)="onThemeSet($event)"
         [editorIsDefaultTheme]="editorConfig.theme === 'default'"
         [xmlDownloads]="comparison ? [xml, comparison] : [xml]"
-      ></app-theme-selector>
+      ></app-editor-drop-down>
       <a
         *ngIf="expandedSample === index && allSamples.length !== index"
         class="toggle-expand"
+        title="{{ 'minimise' | translate }}"
         (click)="expandSample(index)"
       ></a>
     </div>
@@ -166,10 +167,10 @@
         <h3>
           {{ 'noSample' | translate }}
         </h3>
-        <app-theme-selector
+        <app-editor-drop-down
           (themeSet)="onThemeSet($event)"
           [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-        ></app-theme-selector>
+        ></app-editor-drop-down>
       </div>
     </div>
     <div
