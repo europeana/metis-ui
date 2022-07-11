@@ -185,6 +185,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   signInToMetis: 'Sign in to Metis',
   signOut: 'Sign out',
   showWorkflow: 'Show workflow',
+  startedBy: 'Started by',
   startTime: 'Start time',
   startWorkflow: 'Start your next workflow!',
   starting: 'Starting',
