@@ -1,0 +1,32 @@
+<div class="view-sample" [ngClass]="extraClasses">
+  <div class="view-sample-title">
+    <div class="title-controls">
+      <h3>
+        {{ title }}
+      </h3>
+      <app-editor-drop-down
+        *ngIf="editorConfig"
+        class="app-editor-drop-down"
+        (themeSet)="onThemeSet()"
+        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
+        [xmlDownloads]="xmlDownloads"
+      ></app-editor-drop-down>
+      <a
+        *ngIf="expandable && expanded"
+        class="toggle-expand"
+        title="{{ 'minimise' | translate }}"
+        (click)="toggle()"
+      ></a>
+    </div>
+
+    <span class="step-display" *ngIf="step"
+      ><span>{{ step }}</span> <span *ngIf="stepCompare"> {{ stepCompare }}</span></span
+    >
+  </div>
+
+  <ng-content></ng-content>
+
+  <div *ngIf="expandable" class="btns-set btns-set-right">
+    <a class="load-more-btn" (click)="toggle()" *ngIf="!expanded">{{ 'expandInfo' | translate }}</a>
+  </div>
+</div>
