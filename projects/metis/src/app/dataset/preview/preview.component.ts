@@ -46,7 +46,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   @Input() tempXSLT?: string;
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
-  //@ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecutionHistory> = [];
@@ -54,7 +53,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
   allSamples: Array<XmlSample> = [];
   allSampleComparisons: Array<XmlSample> = [];
-  searchedXMLSample: XmlSample;
 
   allTransformedSamples: XmlSample[];
   filterCompareOpen = false;
