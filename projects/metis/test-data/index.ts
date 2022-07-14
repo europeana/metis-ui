@@ -1,6 +1,7 @@
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
+import { xsltDefault } from './_data/xslt';
 import {
   dataset,
   errorReport,
@@ -446,7 +447,14 @@ new (class extends TestDataServer {
     regRes = route.match(/datasets\/-?(\d+)\/xslt/);
 
     if (regRes) {
-      response.end(JSON.stringify(xslt(regRes[1])));
+      response.end(JSON.stringify([xslt(regRes[1])]));
+      return true;
+    }
+
+    regRes = route.match(/datasets\/xslt\/default/);
+
+    if (regRes) {
+      response.end(xsltDefault); //JSON.stringify({ andy: 'maclean' }));
       return true;
     }
 

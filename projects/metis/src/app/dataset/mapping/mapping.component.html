@@ -27,7 +27,6 @@
 <app-editor
   *ngIf="xslt && ['has-custom', 'new-custom'].includes(xsltStatus)"
   [title]="'xsltCustom' | translate"
-  [readOnly]="false"
   [xmlDownloads]="[
     {
       ecloudId: datasetData ? datasetData.datasetId : '',
@@ -42,7 +41,7 @@
       <ngx-codemirror
         [ngModel]="xslt | beautifyXML"
         (ngModelChange)="xsltToSave = $event"
-        [options]="editor.getEditorConfig()"
+        [options]="editor.getEditorConfig(false)"
       ></ngx-codemirror>
     </div>
   </div>

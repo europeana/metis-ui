@@ -38,7 +38,6 @@ export class EditorComponent {
   }
 
   @Input() index?: number;
-  @Input() readOnly = true;
   @Input() step?: string;
   @Input() stepCompare?: string;
   @Input() title: string;
@@ -69,10 +68,11 @@ export class EditorComponent {
 
   /** getEditorConfig
    * returns this.editorConfig copied to incorporate readOnly overrides
+   * @param { boolean } readOnly - override the default conf
    **/
-  getEditorConfig(): EditorConfiguration {
+  getEditorConfig(readOnly = true): EditorConfiguration {
     const copyConfig = Object.assign({}, this.editorConfig);
-    copyConfig.readOnly = this.readOnly;
+    copyConfig.readOnly = readOnly;
     return copyConfig;
   }
 
