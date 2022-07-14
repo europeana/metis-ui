@@ -346,13 +346,22 @@ export class WorkflowService extends SubscriptionManager {
     if (results.listSize === 0) {
       return of(results);
     }
-    const observables = results.results.map((execution: WorkflowExecution) =>
-      this.authenticationServer.getUserByUserId(execution.startedBy)
-    );
+    const observables = results.results.map((execution: WorkflowExecution) => {
+      if (execution.startedBy) {
+        return this.authenticationServer.getUserByUserId(execution.startedBy);
+      } else {
+        return of(null);
+      }
+    });
     return forkJoin(observables).pipe(
       map((users) => {
         results.results.forEach((execution, i) => {
-          execution.startedBy = `${users[i].firstName} ${users[i].lastName}`;
+          const user = users[i];
+          if (user) {
+            execution.startedBy = `${user.firstName} ${user.lastName}`;
+          } else {
+            execution.startedBy = `Unknown user`;
+          }
         });
         return results;
       })
