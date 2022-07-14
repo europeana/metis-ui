@@ -11,7 +11,7 @@ context('metis-ui', () => {
       setupUser();
       cy.visit('/dataset/mapping/0');
     });
-
+    const force = { force: true };
     const selBtnInitDefault = '[data-e2e=xslt-init-default]';
     const selBtnTryDefaultXSLT = '[data-e2e=xslt-try-default]';
     const selEditors = '.view-sample';
@@ -31,16 +31,18 @@ context('metis-ui', () => {
       cy.url().should('not.contain', '/preview');
       cy.url().should('contain', '/mapping');
 
-      cy.get(selBtnTryDefaultXSLT).click();
+      cy.get(selBtnTryDefaultXSLT)
+        .first()
+        .click();
 
       cy.url().should('contain', '/preview');
       cy.url().should('not.contain', '/mapping');
-
       cy.get('button')
         .contains(btnLabel)
         .should('have.length', 1);
-      cy.get('button').click();
-
+      cy.get('button')
+        .contains(btnLabel)
+        .click(force);
       cy.url().should('not.contain', '/preview');
       cy.url().should('contain', '/mapping');
     });

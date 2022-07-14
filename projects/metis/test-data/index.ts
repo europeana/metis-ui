@@ -1,7 +1,7 @@
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
-import { xsltDefault } from './_data/xslt';
+import { xsltStylesheet } from './_data/xslt';
 import {
   dataset,
   errorReport,
@@ -454,7 +454,7 @@ new (class extends TestDataServer {
     regRes = route.match(/datasets\/xslt\/default/);
 
     if (regRes) {
-      response.end(xsltDefault); //JSON.stringify({ andy: 'maclean' }));
+      response.end(xsltStylesheet);
       return true;
     }
 
@@ -503,14 +503,26 @@ new (class extends TestDataServer {
     );
 
     if (regRes) {
+      let pt = 'x';
+      if (regRes[2]) {
+        pt = regRes[2];
+      }
+      const res = [
+        '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
+        'LIF22NBLS6UO65D4LQ25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4',
+        'W75V7FWAJRL3LAALIF22NBLS6UO65D4LQ25XLZKQAMP4N6OHOZC4',
+        'BLS6UO65D4LQLIF22N25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4',
+        'AJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ25XLZKQAMW75V7FW'
+      ].map((id: string) => {
+        return {
+          ecloudId: id,
+          xmlRecord: `<xml>${pt}</xml>`
+        };
+      });
+
       response.end(
         JSON.stringify({
-          records: [
-            {
-              ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
-              xmlRecord: '<x>Preview</x>'
-            }
-          ]
+          records: res
         })
       );
       return true;

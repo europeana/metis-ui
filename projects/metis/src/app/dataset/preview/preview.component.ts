@@ -278,7 +278,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           (result) => {
             this.isLoadingSamples = false;
             this.allSamples = this.processXmlSamples(result, plugin);
-
             if (this.allSamples.length === 1) {
               this.expandedSample = 0;
             }

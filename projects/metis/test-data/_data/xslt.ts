@@ -1,4 +1,97 @@
 export const xsltDefault = `<?xml version="1.0" encoding="UTF-8"?>
+  <rdf:RDF xmlns:adms="http://www.w3.org/ns/adms#"
+     xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:crm="http://www.cidoc-crm.org/rdfs/cidoc_crm_v5.0.2_english_label.rdfs#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:dcat="http://www.w3.org/ns/dcat#"
+     xmlns:dcterms="http://purl.org/dc/terms/"
+     xmlns:doap="http://usefulinc.com/ns/doap#"
+     xmlns:ebucore="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#"
+     xmlns:edm="http://www.europeana.eu/schemas/edm/"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:odrl="http://www.w3.org/ns/odrl/2/"
+     xmlns:ore="http://www.openarchives.org/ore/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:svcs="http://rdfs.org/sioc/services#"
+     xmlns:wgs84_pos="http://www.w3.org/2003/01/geo/wgs84_pos#"
+     xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<edm:ProvidedCHO rdf:about="/39/_nnnXtkZ"/>
+<edm:WebResource rdf:about="https://www.bibliotekacyfrowa.pl/Content/28036/PDF/document.pdf">
+  <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+</edm:WebResource>
+<edm:TimeSpan rdf:about="#timeSpanOf:nnnXtkZ_1">
+  <edm:begin>1883-12-31</edm:begin>
+  <edm:end>1883-12-31</edm:end>
+</edm:TimeSpan>
+<edm:TimeSpan rdf:about="#timeSpanOf:nnnXtkZ_2">
+  <edm:begin>1857-01-01</edm:begin>
+  <edm:end>1883-12-31</edm:end>
+</edm:TimeSpan>
+<ore:Aggregation rdf:about="/aggregation/provider/39/_nnnXtkZ">
+  <edm:aggregatedCHO rdf:resource="/39/_nnnXtkZ"/>
+  <edm:dataProvider>Biblioteka Cyfrowa Uniwersytetu Wrocławskiego</edm:dataProvider>
+  <edm:isShownAt rdf:resource="http://fbc.pionier.net.pl/id/oai:www.bibliotekacyfrowa.pl:28036"/>
+  <edm:isShownBy rdf:resource="https://www.bibliotekacyfrowa.pl/Content/28036/PDF/document.pdf"/>
+  <edm:object rdf:resource="https://www.bibliotekacyfrowa.pl/Content/28036/PDF/document.pdf"/>
+  <edm:provider>Federacja Bibliotek Cyfrowych</edm:provider>
+  <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+</ore:Aggregation>
+<ore:Proxy rdf:about="/proxy/provider/39/_nnnXtkZ">
+  <dc:date rdf:resource="#timeSpanOf:nnnXtkZ_1"/>
+  <dc:date rdf:resource="#timeSpanOf:nnnXtkZ_2"/>
+  <dc:date xml:lang="pl">1883.12.31</dc:date>
+  <dc:date xml:lang="pl">1857 - 1883</dc:date>
+  <dc:description xml:lang="pl">16 tomów z 960 litografiami i tekstami opisów rezydencji w Prusach.</dc:description>
+  <dc:format>image/vnd.djvu</dc:format>
+  <dc:language>deu</dc:language>
+  <dc:publisher xml:lang="pl">Duncker, Alexander</dc:publisher>
+  <dc:relation xml:lang="pl">HDD00004\\OZG</dc:relation>
+  <dc:rights xml:lang="en">Publicly available without restrictions</dc:rights>
+  <dc:rights xml:lang="pl">Dostępne publicznie bez ograniczeń</dc:rights>
+  <dc:rights xml:lang="en">Public Domain Mark 1.0</dc:rights>
+  <dc:rights xml:lang="en">https://creativecommons.org/publicdomain/mark/1.0/deed.en</dc:rights>
+  <dc:rights xml:lang="pl">Znak domeny publicznej 1.0</dc:rights>
+  <dc:rights xml:lang="pl">https://creativecommons.org/publicdomain/mark/1.0/deed.pl</dc:rights>
+  <dc:source xml:lang="pl">1010702 III</dc:source>
+  <dc:subject xml:lang="pl">grafika niemiecka</dc:subject>
+  <dc:subject xml:lang="pl">litografia</dc:subject>
+  <dc:subject xml:lang="pl">Prusy</dc:subject>
+  <dc:subject xml:lang="pl">litografia barwna</dc:subject>
+  <dc:subject xml:lang="pl">19 w.</dc:subject>
+  <dc:subject xml:lang="pl">architektura niemiecka</dc:subject>
+  <dc:subject xml:lang="pl">pałace</dc:subject>
+  <dc:subject xml:lang="pl">zamki</dc:subject>
+  <dc:title xml:lang="pl">Rombczyn nr 605</dc:title>
+  <dc:type xml:lang="pl">książka</dc:type>
+  <dc:type xml:lang="pl">książka</dc:type>
+  <edm:currentLocation xml:lang="pl">BUWr Oddział Zbiorów Graficznych</edm:currentLocation>
+  <edm:europeanaProxy>false</edm:europeanaProxy>
+  <ore:proxyFor rdf:resource="/39/_nnnXtkZ"/>
+  <ore:proxyIn rdf:resource="/aggregation/provider/39/_nnnXtkZ"/>
+  <edm:type>TEXT</edm:type>
+</ore:Proxy>
+<ore:Proxy rdf:about="/proxy/europeana/39/_nnnXtkZ">
+  <dc:identifier>#nnnXtkZ</dc:identifier>
+  <edm:europeanaProxy>true</edm:europeanaProxy>
+  <ore:proxyFor rdf:resource="/39/_nnnXtkZ"/>
+  <ore:proxyIn rdf:resource="/aggregation/europeana/39/_nnnXtkZ"/>
+  <ore:lineage rdf:resource="/proxy/provider/39/_nnnXtkZ"/>
+</ore:Proxy>
+<edm:EuropeanaAggregation rdf:about="/aggregation/europeana/39/_nnnXtkZ">
+  <edm:aggregatedCHO rdf:resource="/39/_nnnXtkZ"/>
+  <edm:dataProvider xml:lang="en">Europeana Foundation</edm:dataProvider>
+  <edm:provider xml:lang="en">Europeana Foundation</edm:provider>
+  <edm:datasetName>39_PRODUCTION_0940429</edm:datasetName>
+  <edm:country>Europe</edm:country>
+  <edm:language>mul</edm:language>
+</edm:EuropeanaAggregation>
+</rdf:RDF>`;
+
+export const xsltStylesheet = `<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0"
   xmlns:adms="http://www.w3.org/ns/adms#"
   xmlns:cc="http://creativecommons.org/ns#"
@@ -459,5 +552,4 @@ export const xsltDefault = `<?xml version="1.0" encoding="UTF-8"?>
     </xsl:variable>
     <xsl:value-of select="concat($prefix, $dataset, '/', $id)" />
   </xsl:function>
-</xsl:stylesheet>
-`;
+</xsl:stylesheet>`;
