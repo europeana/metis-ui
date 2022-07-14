@@ -20,6 +20,7 @@ export class EditorComponent {
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
+
   @Input() expanded = true;
   @Input() expandable = false;
 
@@ -37,6 +38,7 @@ export class EditorComponent {
   }
 
   @Input() index?: number;
+  @Input() readOnly = true;
   @Input() step?: string;
   @Input() stepCompare?: string;
   @Input() title: string;
@@ -65,10 +67,25 @@ export class EditorComponent {
     this.editorConfig = this.editorPrefs.getEditorConfig();
   }
 
+  /** getEditorConfig
+   * returns this.editorConfig copied to incorporate readOnly overrides
+   **/
+  getEditorConfig(): EditorConfiguration {
+    const copyConfig = Object.assign({}, this.editorConfig);
+    copyConfig.readOnly = this.readOnly;
+    return copyConfig;
+  }
+
+  /** onThemeSet
+   * invokes toggleTheme on the EditorPrefService
+   **/
   onThemeSet(): void {
     this.editorPrefs.toggleTheme();
   }
 
+  /** toggle
+   * emits onToggle event
+   **/
   toggle(): void {
     this.onToggle.emit(this.index);
   }

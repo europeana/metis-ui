@@ -6,7 +6,7 @@
 ></app-notification>
 
 <div class="btns-set btns-set-right">
-  <button class="button-filled" (click)="tryOutXSLT('default')">
+  <button class="button-filled" (click)="tryOutXSLT('default')" data-e2e="xslt-try-default">
     {{ 'xsltTryOutDefault' | translate }}
   </button>
 </div>
@@ -19,40 +19,33 @@
 
 <div class="btns-set btns-set-right" *ngIf="xsltStatus === 'no-custom'">
   <span>{{ 'xsltTaskLoadDefault' | translate }}</span>
-  <button class="button-filled" (click)="loadDefaultXSLT()">
+  <button class="button-filled" data-e2e="xslt-init-default" (click)="loadDefaultXSLT()">
     {{ 'xsltInitDefault' | translate }}
   </button>
 </div>
 
-<div *ngIf="xslt && ['has-custom', 'new-custom'].includes(xsltStatus)">
-  <div class="view-sample view-sample-expanded">
-    <div class="view-sample-title">
-      <div class="title-controls">
-        <h3>{{ 'xsltCustom' | translate }}</h3>
-        <app-editor-drop-down
-          (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-          [xmlDownloads]="[
-            {
-              ecloudId: datasetData ? datasetData.datasetId : '',
-              xmlRecord: xslt,
-              label: 'Custom'
-            }
-          ]"
-        ></app-editor-drop-down>
-      </div>
-    </div>
-    <div class="view-sample-editor">
-      <div class="view-sample-editor-codemirror">
-        <ngx-codemirror
-          [ngModel]="xslt | beautifyXML"
-          (ngModelChange)="xsltToSave = $event"
-          [options]="editorConfig"
-        ></ngx-codemirror>
-      </div>
+<app-editor
+  *ngIf="xslt && ['has-custom', 'new-custom'].includes(xsltStatus)"
+  [title]="'xsltCustom' | translate"
+  [readOnly]="false"
+  [xmlDownloads]="[
+    {
+      ecloudId: datasetData ? datasetData.datasetId : '',
+      xmlRecord: xslt,
+      label: 'Custom'
+    }
+  ]"
+  #editor
+>
+  <div class="view-sample-editor">
+    <div class="view-sample-editor-codemirror">
+      <ngx-codemirror
+        [ngModel]="xslt | beautifyXML"
+        (ngModelChange)="xsltToSave = $event"
+        [options]="editor.getEditorConfig()"
+      ></ngx-codemirror>
     </div>
   </div>
-
   <div class="btns-set btns-set-right">
     <button class="button-filled" (click)="cancel()" *ngIf="xsltStatus === 'new-custom'">
       {{ 'cancel' | translate }}
@@ -68,4 +61,4 @@
       {{ 'xsltTryOut' | translate }}
     </button>
   </div>
-</div>
+</app-editor>

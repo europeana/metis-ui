@@ -3,8 +3,6 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { getCodeMirrorEditors } from 'shared';
 import {
   createMockPipe,
   mockDataset,
@@ -15,8 +13,9 @@ import {
   MockWorkflowService
 } from '../../_mocked';
 import { Dataset } from '../../_models';
-import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { EditorComponent } from '../';
 import { PreviewComponent } from '../';
 import { MappingComponent } from '.';
 
@@ -24,7 +23,6 @@ describe('MappingComponent', () => {
   let component: MappingComponent;
   let fixture: ComponentFixture<MappingComponent>;
   let router: Router;
-  let editorPrefService: EditorPrefService;
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
@@ -33,7 +31,12 @@ describe('MappingComponent', () => {
           { path: './dataset/preview/1', component: PreviewComponent }
         ])
       ],
-      declarations: [MappingComponent, createMockPipe('translate'), createMockPipe('beautifyXML')],
+      declarations: [
+        EditorComponent,
+        MappingComponent,
+        createMockPipe('translate'),
+        createMockPipe('beautifyXML')
+      ],
       providers: [
         { provide: WorkflowService, useClass: MockWorkflowService },
         {
@@ -45,7 +48,6 @@ describe('MappingComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-    editorPrefService = TestBed.inject(EditorPrefService);
   };
 
   const b4Each = (): void => {
@@ -130,32 +132,6 @@ describe('MappingComponent', () => {
       tick(1);
       expect(component.xsltStatus).toBe('no-custom');
     }));
-
-    it('toggles the editor theme', () => {
-      fixture.detectChanges();
-      component.allEditors = getCodeMirrorEditors();
-      expect(component.editorConfig.theme).toEqual('default');
-      component.onThemeSet(false);
-      fixture.detectChanges();
-      expect(component.editorConfig.theme).not.toEqual('default');
-      component.onThemeSet(true);
-      expect(component.editorConfig.theme).toEqual('default');
-      component.onThemeSet(true);
-      expect(component.editorConfig.theme).toEqual('default');
-
-      const currentThemeIsDefault = false;
-      spyOn(editorPrefService, 'currentThemeIsDefault').and.callFake(() => {
-        return currentThemeIsDefault;
-      });
-
-      expect(component.editorConfig.theme).toEqual('default');
-      component.onThemeSet(false);
-      expect(component.editorConfig.theme).toEqual('default');
-      component.onThemeSet(true);
-      expect(component.editorConfig.theme).not.toEqual('default');
-      component.onThemeSet(true);
-      expect(component.editorConfig.theme).toEqual('default');
-    });
   });
 
   describe('Error handling', () => {
