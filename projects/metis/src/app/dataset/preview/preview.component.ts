@@ -1,17 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
-import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -38,6 +28,8 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
+  public PluginType = PluginType;
+
   constructor(
     private readonly workflows: WorkflowService,
     private readonly translate: TranslateService,
@@ -54,7 +46,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   @Input() tempXSLT?: string;
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
-  @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecutionHistory> = [];
@@ -62,7 +53,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
   allSamples: Array<XmlSample> = [];
   allSampleComparisons: Array<XmlSample> = [];
-  searchedXMLSample: XmlSample;
 
   allTransformedSamples: XmlSample[];
   filterCompareOpen = false;
@@ -89,7 +79,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - transform any set tempXSLT
   */
   ngOnInit(): void {
-    this.editorConfig = this.editorPrefs.getEditorConfig(true);
+    this.editorConfig = this.editorPrefs.getEditorConfig();
     this.nosample = this.translate.instant('noSample');
 
     this.serviceTimer = timer(0, environment.intervalStatusMedium);
@@ -161,7 +151,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.historyVersions = [];
     this.allSamples = [];
     this.allSampleComparisons = [];
-
     if (!prefilling) {
       this.previewFilters = {
         baseFilter: {
@@ -277,7 +266,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
       this.setPreviewFilters.emit(this.previewFilters);
     }
-    this.editorConfig = this.editorPrefs.getEditorConfig(true);
 
     const filteredExecutionId = this.previewFilters.baseFilter.executionId;
 
@@ -288,7 +276,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           (result) => {
             this.isLoadingSamples = false;
             this.allSamples = this.processXmlSamples(result, plugin);
-
             if (this.allSamples.length === 1) {
               this.expandedSample = 0;
             }
@@ -361,7 +348,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           })
         )
         .subscribe((transformed) => {
-          this.allTransformedSamples = this.processXmlSamples(transformed, `${type}`);
+          this.allTransformedSamples = this.processXmlSamples(transformed, 'transformed');
           this.isLoadingTransformSamples = false;
         }, handleError)
     );
@@ -404,23 +391,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
    **/
   expandSample(index: number): void {
     this.expandedSample = this.expandedSample === index ? undefined : index;
-  }
-
-  /** onThemeSet
-   * sets the theme to the default or the alternative
-   * @param { boolean } toDefault - true if setting to editor default
-   **/
-  onThemeSet(toDefault: boolean): void {
-    const isDef = this.editorPrefs.currentThemeIsDefault();
-    if (toDefault) {
-      if (!isDef) {
-        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
-      }
-    } else {
-      if (isDef) {
-        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
-      }
-    }
   }
 
   /** processXmlSamples

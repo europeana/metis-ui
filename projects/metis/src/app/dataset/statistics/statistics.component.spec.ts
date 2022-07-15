@@ -13,7 +13,7 @@ import {
 } from '../../_mocked';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
-
+import { EditorComponent } from '../editor';
 import { StatisticsComponent } from '.';
 
 function setServiceError(
@@ -35,6 +35,7 @@ describe('StatisticsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
+        EditorComponent,
         StatisticsComponent,
         createMockPipe('translate'),
         createMockPipe('beautifyXML')
@@ -60,11 +61,12 @@ describe('StatisticsComponent', () => {
     expect(component.isLoading).toBeFalsy();
   });
 
-  it('should show statistics', () => {
+  it('should show statistics', fakeAsync(() => {
     expect(fixture.debugElement.query(By.css('.view-statistics'))).toBeFalsy();
+    tick(1);
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('.view-statistics'))).toBeTruthy();
-  });
+  }));
 
   it('allows viewport expansion', () => {
     expect(component.expandedStatistics).toBeFalsy();

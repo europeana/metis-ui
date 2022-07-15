@@ -1,6 +1,6 @@
 import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared';
 import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
-import { Workflow } from '../../src/app/_models/workflow';
+import { Workflow, XmlSample } from '../../src/app/_models';
 import {
   DatasetX,
   DateBumpType,
@@ -9,6 +9,7 @@ import {
   WorkflowX,
   WorkflowXRunConf
 } from '../_models/test-models';
+import { xsltDefault } from '../_data/xslt';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
@@ -464,7 +465,7 @@ datasetXs = ((): Array<DatasetX> => {
       const datasetX = {
         id: datasetId,
         ecloudDatasetId: 'e-cloud-dataset-id-' + datasetId,
-        xsltId: datasetId,
+        xsltId: parseInt(datasetId) % 2 === 0 ? datasetId : undefined,
         datasetId: datasetId,
         datasetName: 'Dataset_' + (parseInt(datasetId) + 1),
         datasetIdsToRedirectFrom: ['0', '1'],
@@ -728,10 +729,10 @@ export function reportExists(reportId: string): ReportAvailability {
 }
 
 // localhost:3000/datasets/0/xslt
-export function xslt(xsltId: string): Report {
+export function xslt(xsltId: string): XmlSample {
   return {
-    id: xsltId,
-    errors: []
+    ecloudId: xsltId,
+    xmlRecord: xsltDefault
   };
 }
 

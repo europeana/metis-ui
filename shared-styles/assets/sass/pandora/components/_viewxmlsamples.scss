@@ -25,21 +25,21 @@ codemirror {
   align-items: center;
   display: flex;
   flex-direction: row;
-  margin-right: 0.625rem;
   width: 100%;
 }
 
 .toggle-expand {
+  $toggle-ctrl-width: 2em;
   background: $white;
   border-radius: 1em;
   color: green;
   display: block;
-  height: 2em;
-  margin-left: 0.625rem;
+  height: $toggle-ctrl-width;
+  min-width: $toggle-ctrl-width;
   pointer: cursor;
   position: relative;
   text-align: center;
-  width: 2em;
+  width: $toggle-ctrl-width;
 
   &::before {
     content: '.';
@@ -58,18 +58,35 @@ codemirror {
   display: flex;
   flex-direction: column;
 
+  .step-display {
+    background: $eu-jade-light;
+    display: flex;
+    padding: 0.5rem 1rem;
+    span {
+      width: 50%;
+      & + span {
+        margin-left: 2.4rem;
+      }
+    }
+    width: 100%;
+  }
+
   .view-sample-title {
     align-items: center;
     background-color: $eu-jade;
     color: $white;
     display: flex;
+    flex-direction: column;
+    max-width: 100%;
     position: relative;
+    width: 100%;
 
     h3 {
       flex-grow: 1;
       font-weight: normal;
       margin-bottom: 0;
       padding: 1rem;
+      word-break: break-all;
     }
 
     .smaller {
@@ -90,21 +107,7 @@ codemirror {
     width: 100%;
   }
 
-  &.view-sample-expanded {
-    .view-sample-title {
-      width: 100%;
-      h3 {
-        margin-bottom: 0;
-        font-size: 1em;
-      }
-    }
-  }
-
   &.view-statistics {
-    .toggle-expand {
-      display: none;
-    }
-
     .view-sample-editor > div,
     .view-sample-editor > .stats-listing {
       border-bottom: 1px solid $offwhite;
@@ -118,11 +121,6 @@ codemirror {
   }
 
   &.view-statistics.view-sample-expanded {
-    .toggle-expand {
-      display: block;
-      margin-left: auto;
-    }
-
     .view-sample-editor > div,
     .view-sample-editor > .stats-listing {
       height: $heightExpanded;
@@ -152,21 +150,24 @@ codemirror {
   }
 }
 
-.view-sample {
-  .view-sample-title {
-    flex-wrap: wrap;
-  }
+.view-sample-transformed {
+  margin-bottom: 2em;
+  button {
+    background: $eu-jade;
+    border: 1px solid $eu-jade;
+    font-size: $font-size-slightly-smaller;
+    margin: 0.5rem 1rem 0.5rem 0.5rem;
 
-  .step-display {
-    background: $eu-jade-light;
-    display: flex;
-    padding: 0.5rem 1rem;
-    span {
-      width: 50%;
-      & + span {
-        margin-left: 2.4rem;
-      }
+    &:hover,
+    &.active {
+      background: $white;
+      color: $eu-jade;
     }
-    width: 100%;
+
+    &:active,
+    &:focus {
+      background: $eu-jade;
+      color: $white;
+    }
   }
 }

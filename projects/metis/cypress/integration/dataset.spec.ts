@@ -40,8 +40,7 @@ context('metis-ui', () => {
       cy.get('@dd').contains('865');
       cy.get('@dd').contains(lastPublished);
 
-      cy.get('.dataset-actionbar .status').as('status');
-      cy.get('@status').contains('Finished');
+      cy.get('.dataset-actionbar .status').contains('Finished');
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
 
       cy.get('.dataset-actionbar .started-by').as('startedBy');
