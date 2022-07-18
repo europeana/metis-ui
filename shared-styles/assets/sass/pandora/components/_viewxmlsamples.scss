@@ -32,7 +32,7 @@ codemirror {
   $toggle-ctrl-width: 2em;
   background: $white;
   border-radius: 1em;
-  color: green;
+  color: $eu-jade;
   display: block;
   height: $toggle-ctrl-width;
   min-width: $toggle-ctrl-width;
@@ -42,15 +42,18 @@ codemirror {
   width: $toggle-ctrl-width;
 
   &::before {
-    content: '.';
+    content: '·';
     display: block;
     font-size: 2em;
-    font-weight: bold;
     left: 0;
-    line-height: 0.5em;
+    line-height: 100%;
     position: absolute;
     right: 0;
     text-align: center;
+  }
+  &:hover::before {
+    color: $eu-jade;
+    font-weight: bold;
   }
 }
 
