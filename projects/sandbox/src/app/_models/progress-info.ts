@@ -1,18 +1,22 @@
 export enum StepStatus {
-  'IMPORT' = 'import',
-  'VALIDATE_EXTERNAL' = 'validate (edm external)',
-  'TRANSFORM' = 'transform',
-  'TRANSFORM_EDM' = 'transform to EDM external',
-  'VALIDATE_INTERNAL' = 'validate (edm internal)',
-  'NORMALISE' = 'normalise',
-  'ENRICH' = 'enrich',
-  'PROCESS_MEDIA' = 'process media',
-  'PREVIEW' = 'preview',
-  'PUBLISH' = 'publish'
+  'HARVEST_HTTP' = 'HARVEST_HTTP',
+  'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
+  'HARVEST_ZIP' = 'HARVEST_ZIP',
+  'VALIDATE_EXTERNAL' = 'VALIDATE_EXTERNAL',
+  'TRANSFORM' = 'TRANSFORM',
+  'TRANSFORM_EDM' = 'TRANSFORM_EDM',
+  'VALIDATE_INTERNAL' = 'VALIDATE_INTERNAL',
+  'NORMALISE' = 'NORMALISE',
+  'ENRICH' = 'ENRICH',
+  'PROCESS_MEDIA' = 'PROCESS_MEDIA',
+  'PREVIEW' = 'PREVIEW',
+  'PUBLISH' = 'PUBLISH'
 }
 
 export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
-  [StepStatus.IMPORT, 'harvest'],
+  [StepStatus.HARVEST_HTTP, 'harvest'],
+  [StepStatus.HARVEST_OAI_PMH, 'harvest'],
+  [StepStatus.HARVEST_ZIP, 'harvest'],
   [StepStatus.ENRICH, 'enrichment'],
   [StepStatus.NORMALISE, 'normalization'],
   [StepStatus.PROCESS_MEDIA, 'media_process'],
@@ -42,8 +46,9 @@ export interface ProgressError {
 }
 
 export enum DatasetStatus {
-  'COMPLETED' = 'completed',
-  'IN_PROGRESS' = 'in progress'
+  'HARVESTING_IDENTIFIERS' = 'HARVESTING_IDENTIFIERS',
+  'IN_PROGRESS' = 'IN_PROGRESS',
+  'COMPLETED' = 'COMPLETED'
 }
 
 export interface DatasetInfo {

@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDataset } from '../_mocked';
+import { RenameStepPipe } from '../_translate';
 import { DatasetStatus, ProgressByStep, StepStatus } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
@@ -16,7 +17,7 @@ describe('ProgressTrackerComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
-      declarations: [ProgressTrackerComponent],
+      declarations: [ProgressTrackerComponent, RenameStepPipe],
       imports: [ReactiveFormsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
@@ -75,7 +76,9 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should get the label class', () => {
-      expect(component.getLabelClass(StepStatus.IMPORT)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_HTTP)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_OAI_PMH)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_ZIP)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
       expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
       expect(component.getLabelClass(StepStatus.VALIDATE_INTERNAL)).toEqual('validation_internal');
