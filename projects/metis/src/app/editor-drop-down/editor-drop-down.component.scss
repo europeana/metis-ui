@@ -16,15 +16,19 @@
 
   & > .theme-ctrl {
     &::before {
-      content: '…';
-      font-size: 1.25em;
-      font-weight: bold;
+      bottom: 0;
+      content: '···';
+      font-size: 2em;
       left: 0;
-      line-height: 1em;
+      letter-spacing: -2px;
+      line-height: 100%;
       position: absolute;
-      right: 0;
+      right: 1px;
       text-align: center;
       top: 0px;
+    }
+    &:hover::before {
+      font-weight: 600;
     }
   }
 }
@@ -40,7 +44,6 @@
 
 .theme-ctrl {
   background-color: $white;
-  border: 1px solid #f1f1f1;
   border-radius: 1em;
   color: $eu-jade;
   cursor: pointer;
@@ -59,10 +62,8 @@
     &::after {
       border: solid $eu-jade;
       border-width: 0 3px 3px 0;
-      height: 10px;
-    }
-    &::after {
       content: '';
+      height: 10px;
       left: 7.5px;
       position: absolute;
       top: 4px;
