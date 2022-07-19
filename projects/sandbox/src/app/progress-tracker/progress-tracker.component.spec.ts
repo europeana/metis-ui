@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDataset } from '../_mocked';
+import { RenameStepPipe } from '../_translate';
 import { DatasetStatus, ProgressByStep, StepStatus } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
@@ -16,7 +17,7 @@ describe('ProgressTrackerComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
-      declarations: [ProgressTrackerComponent],
+      declarations: [ProgressTrackerComponent, RenameStepPipe],
       imports: [ReactiveFormsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
@@ -75,14 +76,15 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should get the label class', () => {
-      expect(component.getLabelClass(StepStatus.IMPORT)).toEqual('harvest');
-      expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
+      expect(component.getLabelClass(StepStatus.HARVEST_HTTP)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_OAI_PMH)).toEqual('harvest');
+      expect(component.getLabelClass(StepStatus.HARVEST_ZIP)).toEqual('harvest');
       expect(component.getLabelClass(StepStatus.VALIDATE_EXTERNAL)).toEqual('validation_external');
       expect(component.getLabelClass(StepStatus.VALIDATE_INTERNAL)).toEqual('validation_internal');
-      expect(component.getLabelClass(StepStatus.PROCESS_MEDIA)).toEqual('media_process');
+      expect(component.getLabelClass(StepStatus.MEDIA_PROCESS)).toEqual('media_process');
       expect(component.getLabelClass(StepStatus.ENRICH)).toEqual('enrichment');
       expect(component.getLabelClass(StepStatus.TRANSFORM)).toEqual('transformation');
-      expect(component.getLabelClass(StepStatus.NORMALISE)).toEqual('normalization');
+      expect(component.getLabelClass(StepStatus.NORMALIZE)).toEqual('normalization');
       expect(component.getLabelClass(StepStatus.PREVIEW)).toEqual('preview');
       expect(component.getLabelClass(StepStatus.PUBLISH)).toEqual('publish');
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');

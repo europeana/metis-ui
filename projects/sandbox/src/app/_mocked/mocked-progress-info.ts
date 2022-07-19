@@ -1,6 +1,4 @@
-import { Dataset, ProgressByStep } from '../_models';
-
-//2021-08-31T08:38:35.655Z
+import { Dataset, DatasetStatus, ProgressByStep, StepStatus } from '../_models';
 
 export const mockDataset = {
   'dataset-info': {
@@ -10,49 +8,49 @@ export const mockDataset = {
     country: 'Greece',
     language: 'He'
   },
-  status: 'completed',
+  status: DatasetStatus.COMPLETED,
   'portal-publish':
     'https://metis-sandbox-publish-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
   'total-records': 4,
   'processed-records': 3,
   'progress-by-step': [
     {
-      step: 'import',
+      step: StepStatus.HARVEST_OAI_PMH,
       total: 4,
       success: 4,
       fail: 0,
       warn: 0
     },
     {
-      step: 'validate (edm external)',
+      step: StepStatus.VALIDATE_EXTERNAL,
       total: 4,
       success: 2,
       fail: 1,
       warn: 1
     },
     {
-      step: 'transform',
+      step: StepStatus.TRANSFORM,
       total: 4,
       success: 1,
       fail: 1,
       warn: 2
     },
     {
-      step: 'validate (edm internal)',
+      step: StepStatus.VALIDATE_INTERNAL,
       total: 4,
       success: 1,
       fail: 2,
       warn: 1
     },
     {
-      step: 'normalise',
+      step: StepStatus.NORMALIZE,
       total: 4,
       success: 0,
       fail: 3,
       warn: 1
     },
     {
-      step: 'enrich',
+      step: StepStatus.ENRICH,
       total: 3,
       success: 0,
       fail: 1,
@@ -66,7 +64,7 @@ export const mockDataset = {
       ]
     },
     {
-      step: 'process media',
+      step: StepStatus.MEDIA_PROCESS,
       total: 4,
       success: 1,
       fail: 1,
@@ -89,14 +87,14 @@ export const mockDataset = {
       ]
     },
     {
-      step: 'preview',
+      step: StepStatus.PREVIEW,
       total: 3,
       success: 1,
       fail: 2,
       warn: 0
     },
     {
-      step: 'publish',
+      step: StepStatus.PUBLISH,
       total: 1,
       success: 1,
       fail: 0,

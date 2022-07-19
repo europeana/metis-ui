@@ -106,16 +106,25 @@ new (class extends TestDataServer {
    **/
   initialiseDataset(
     datasetId: string,
+    harvestType: StepStatus.HARVEST_OAI_PMH | StepStatus.HARVEST_HTTP | StepStatus.HARVEST_ZIP,
     datasetName?: string,
     country?: string,
     language?: string
   ): Dataset {
     const totalRecords = parseInt(datasetId);
+    const steps = Object.values(StepStatus).filter((step: StepStatus) => {
+      return ![
+        StepStatus.HARVEST_OAI_PMH,
+        StepStatus.HARVEST_HTTP,
+        StepStatus.HARVEST_ZIP
+      ].includes(step);
+    });
+    steps.unshift(harvestType);
     return {
       status: DatasetStatus.IN_PROGRESS,
       'total-records': totalRecords,
       'processed-records': 0,
-      'progress-by-step': Object.values(StepStatus).map((key: StepStatus) => {
+      'progress-by-step': steps.map((key: StepStatus) => {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
       'dataset-info': {
@@ -208,7 +217,24 @@ new (class extends TestDataServer {
     if (timedTarget) {
       response.end(JSON.stringify(timedTarget.datasetInfo));
     } else {
-      const datasetInfo = this.initialiseDataset(this.ensureNumeric(id[0]));
+      const numericId = parseInt(this.ensureNumeric(id[0]));
+      let harvestType = StepStatus.HARVEST_ZIP;
+
+      switch (numericId % 3) {
+        case 0: {
+          harvestType = StepStatus.HARVEST_ZIP;
+          break;
+        }
+        case 1: {
+          harvestType = StepStatus.HARVEST_HTTP;
+          break;
+        }
+        case 2: {
+          harvestType = StepStatus.HARVEST_OAI_PMH;
+          break;
+        }
+      }
+      const datasetInfo = this.initialiseDataset(id[0], harvestType);
       if (id === '13') {
         datasetInfo['error-type'] = 'The processing did not complete';
       }
@@ -368,8 +394,18 @@ new (class extends TestDataServer {
           return;
         }
 
+        let harvestType = StepStatus.HARVEST_ZIP;
+        if (params.url) {
+          if (params.metadataformat) {
+            harvestType = StepStatus.HARVEST_OAI_PMH;
+          } else {
+            harvestType = StepStatus.HARVEST_HTTP;
+          }
+        }
+
         const datasetInfo = this.initialiseDataset(
           `${this.newId}`,
+          harvestType,
           datasetName,
           getParam('country'),
           getParam('language')

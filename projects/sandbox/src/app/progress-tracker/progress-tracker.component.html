@@ -106,7 +106,7 @@
     id="{{ modalIdErrors }}"
     title="Error Detail - {{
       progressData['progress-by-step'][detailIndex]
-        ? progressData['progress-by-step'][detailIndex].step
+        ? (progressData['progress-by-step'][detailIndex].step | renameStep)
         : ''
     }}"
     [isSmall]="false"
@@ -137,7 +137,7 @@
       <span class="row-start">
         <span class="orb-status {{ getLabelClass(item.step) }} {{ getStatusClass(item) }}"></span>
         <ng-template #stepLabel>
-          <span class="step-label">{{ item.step }}</span>
+          <span class="step-label">{{ item.step | renameStep }}</span>
         </ng-template>
         <span class="step-label" *ngIf="item.step === 'import'; else stepLabel">harvest</span>
       </span>
