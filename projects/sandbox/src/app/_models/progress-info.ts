@@ -6,9 +6,9 @@ export enum StepStatus {
   'TRANSFORM' = 'TRANSFORM',
   'TRANSFORM_EDM' = 'TRANSFORM_EDM',
   'VALIDATE_INTERNAL' = 'VALIDATE_INTERNAL',
-  'NORMALISE' = 'NORMALISE',
+  'NORMALIZE' = 'NORMALIZE',
   'ENRICH' = 'ENRICH',
-  'PROCESS_MEDIA' = 'PROCESS_MEDIA',
+  'MEDIA_PROCESS' = 'MEDIA_PROCESS',
   'PREVIEW' = 'PREVIEW',
   'PUBLISH' = 'PUBLISH'
 }
@@ -18,8 +18,8 @@ export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.HARVEST_OAI_PMH, 'harvest'],
   [StepStatus.HARVEST_ZIP, 'harvest'],
   [StepStatus.ENRICH, 'enrichment'],
-  [StepStatus.NORMALISE, 'normalization'],
-  [StepStatus.PROCESS_MEDIA, 'media_process'],
+  [StepStatus.NORMALIZE, 'normalization'],
+  [StepStatus.MEDIA_PROCESS, 'media_process'],
   [StepStatus.TRANSFORM, 'transformation'],
   [StepStatus.TRANSFORM_EDM, 'transformation-edm'],
   [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],

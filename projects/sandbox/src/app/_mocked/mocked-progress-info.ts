@@ -43,7 +43,7 @@ export const mockDataset = {
       warn: 1
     },
     {
-      step: StepStatus.NORMALISE,
+      step: StepStatus.NORMALIZE,
       total: 4,
       success: 0,
       fail: 3,
@@ -64,7 +64,7 @@ export const mockDataset = {
       ]
     },
     {
-      step: StepStatus.PROCESS_MEDIA,
+      step: StepStatus.MEDIA_PROCESS,
       total: 4,
       success: 1,
       fail: 1,
