@@ -18,6 +18,7 @@ context('metis-ui', () => {
 
     beforeEach(() => {
       setupDatasetPage('edit', 0);
+      cy.wait(50);
     });
 
     const expectedId = '0';
@@ -39,9 +40,11 @@ context('metis-ui', () => {
       cy.get('@dd').contains('865');
       cy.get('@dd').contains(lastPublished);
 
-      cy.get('.dataset-actionbar .status').as('status');
-      cy.get('@status').contains('Finished');
+      cy.get('.dataset-actionbar .status').contains('Finished');
       cy.get('.unfit-to-publish').contains('This dataset is not fit for publication');
+
+      cy.get('.dataset-actionbar .started-by').as('startedBy');
+      cy.get('@startedBy').contains('Valentine');
 
       cy.get('.table-grid.last-execution .table-grid-row-start').should('have.length', 11);
       getHistoryRow(0).contains('Check Links');

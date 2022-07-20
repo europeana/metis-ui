@@ -88,19 +88,19 @@ context('metis-ui', () => {
     });
 
     it('should show a single menu on initialisation', () => {
-      cy.get(selMenuDate).should('have.length', 1);
-      cy.get(selMenuPlugin).should('have.length', 0);
-      cy.get(selMenuCompare).should('have.length', 0);
-      cy.get(selMenuDateItems).should('have.length', 0);
-      cy.get(selMenuPluginItems).should('have.length', 0);
-      cy.get(selMenuCompareItems).should('have.length', 0);
+      cy.get(selMenuDate).should('not.exist');
+      cy.get(selMenuPlugin).should('not.exist');
+      cy.get(selMenuCompare).should('not.exist');
+      cy.get(selMenuDateItems).should('not.exist');
+      cy.get(selMenuPluginItems).should('not.exist');
+      cy.get(selMenuCompareItems).should('not.exist');
     });
 
     it('should open the menus successively', () => {
       cy.scrollTo(0, 100000);
-      cy.get(selMenuDateItems).should('have.length', 0);
-      cy.get(selMenuPluginItems).should('have.length', 0);
-      cy.get(selMenuCompareItems).should('have.length', 0);
+      cy.get(selMenuDateItems).should('not.exist');
+      cy.get(selMenuPluginItems).should('not.exist');
+      cy.get(selMenuCompareItems).should('not.exist');
       fillMenus(3);
       checkMenusVisible();
     });
@@ -108,15 +108,64 @@ context('metis-ui', () => {
     it('should restore the selection when the user leaves then returns', () => {
       fillMenus(3);
       leaveAndReturn();
-      cy.get(selEditorDefault).should('have.length', 0);
+      cy.get(selEditorDefault).should('not.exist');
       cy.get(selEditorCompare).should('be.visible');
       checkMenusVisible();
     });
 
+    it('should maintain themed editors', () => {
+      fillMenus(3);
+      const selEditorOps = '.theme-ctrl';
+      const selIndicatorActiveBlack = '.theme-ctrl.black.active';
+      const selIndicatorActiveWhite = '.theme-ctrl.active:not(.black)';
+
+      const selLinkThemeBlack = '[data-e2e=set-theme-white]';
+      const selLinkThemeWhite = '[data-e2e=set-theme-white]';
+      console.log(selLinkThemeBlack + selLinkThemeWhite + selIndicatorActiveWhite);
+
+      cy.get(selEditorOps).should('have.length', 5);
+      cy.get(selLinkThemeBlack).should('not.exist', 1);
+      cy.get(selLinkThemeWhite).should('not.exist', 1);
+
+      cy.get(selEditorOps)
+        .first()
+        .click(force);
+
+      cy.get(selLinkThemeBlack).should('have.length', 1);
+      cy.get(selLinkThemeWhite).should('have.length', 1);
+      cy.get(selIndicatorActiveBlack).should('not.exist');
+      cy.get(selIndicatorActiveWhite).should('have.length', 1);
+
+      cy.get(selLinkThemeBlack).click(force);
+
+      // re-open the menu, check switched
+      cy.get(selEditorOps)
+        .first()
+        .click(force);
+
+      cy.get(selLinkThemeBlack).should('have.length', 1);
+      cy.get(selLinkThemeWhite).should('have.length', 1);
+      cy.get(selIndicatorActiveBlack).should('have.length', 1);
+      cy.get(selIndicatorActiveWhite).should('not.exist');
+
+      // check the last item is switched too
+      cy.get(selEditorOps)
+        .first()
+        .click(force);
+      cy.get(selEditorOps)
+        .last()
+        .click(force);
+
+      cy.get(selLinkThemeBlack).should('have.length', 1);
+      cy.get(selLinkThemeWhite).should('have.length', 1);
+      cy.get(selIndicatorActiveBlack).should('have.length', 1);
+      cy.get(selIndicatorActiveWhite).should('not.exist');
+    });
+
     it('should clear the editors when the user changes the date', () => {
       const checkEditorsHidden = (): void => {
-        cy.get(selEditorCompare).should('have.length', 0);
-        cy.get(selEditorDefault).should('have.length', 0);
+        cy.get(selEditorCompare).should('not.exist');
+        cy.get(selEditorDefault).should('not.exist');
       };
 
       checkEditorsHidden();
@@ -134,18 +183,18 @@ context('metis-ui', () => {
       cy.get(selEditorCompare).should('be.visible');
 
       fillMenus(1);
-      cy.get(selEditorCompare).should('have.length', 0);
+      cy.get(selEditorCompare).should('not.exist');
       leaveAndReturn();
-      cy.get(selEditorCompare).should('have.length', 0);
+      cy.get(selEditorCompare).should('not.exist');
       fillMenus(3);
       cy.get(selEditorCompare).should('be.visible');
       leaveAndReturn();
       cy.get(selEditorCompare).should('be.visible');
 
       fillMenus(2);
-      cy.get(selEditorCompare).should('have.length', 0);
+      cy.get(selEditorCompare).should('not.exist');
       leaveAndReturn();
-      cy.get(selEditorCompare).should('have.length', 0);
+      cy.get(selEditorCompare).should('not.exist');
     });
   });
 });

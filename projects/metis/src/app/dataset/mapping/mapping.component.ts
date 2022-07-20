@@ -1,15 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { EditorConfiguration } from 'codemirror';
 import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/comment-fold';
 import 'codemirror/addon/fold/foldcode';
@@ -18,12 +9,11 @@ import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/mode/xml/xml';
-import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
-import { DatasetsService, EditorPrefService, ErrorService } from '../../_services';
+import { DatasetsService, ErrorService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 enum XSLTStatus {
@@ -40,7 +30,6 @@ enum XSLTStatus {
 })
 export class MappingComponent extends SubscriptionManager implements OnInit {
   constructor(
-    private readonly editorPrefs: EditorPrefService,
     private readonly errors: ErrorService,
     private readonly datasets: DatasetsService,
     private readonly translate: TranslateService,
@@ -49,11 +38,9 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
     super();
   }
 
-  @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
   @Input() datasetData: Dataset;
   @Output() setTempXSLT = new EventEmitter<string | undefined>();
 
-  editorConfig: EditorConfiguration;
   xsltStatus: XSLTStatus = XSLTStatus.LOADING;
   xslt?: string;
   xsltToSave?: string;
@@ -66,7 +53,6 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   /* - prepare the translated messages
   */
   ngOnInit(): void {
-    this.editorConfig = this.editorPrefs.getEditorConfig(false);
     this.msgXSLTSuccess = this.translate.instant('xsltSuccessful');
     this.loadCustomXSLT();
   }
@@ -122,22 +108,6 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
         }
       )
     );
-  }
-
-  /** onThemeSet
-  /* set the editor theme
-  */
-  onThemeSet(toDefault: boolean): void {
-    const isDef = this.editorPrefs.currentThemeIsDefault();
-    if (toDefault) {
-      if (!isDef) {
-        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
-      }
-    } else {
-      if (isDef) {
-        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
-      }
-    }
   }
 
   /** tryOutXSLT

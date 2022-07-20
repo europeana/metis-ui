@@ -21,10 +21,12 @@ import {
   PreviewFilters,
   Results,
   WorkflowExecution,
+  XmlDownload,
   XmlSample
 } from '../../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
+import { EditorComponent } from '../';
 import { MappingComponent } from '../';
 import { PreviewComponent } from '.';
 
@@ -53,6 +55,7 @@ describe('PreviewComponent', () => {
         ])
       ],
       declarations: [
+        EditorComponent,
         PreviewComponent,
         createMockPipe('translate'),
         createMockPipe('beautifyXML'),
@@ -109,10 +112,6 @@ describe('PreviewComponent', () => {
   };
 
   describe('Normal operation', () => {
-    beforeEach(async(() => {
-      configureTestbed();
-    }));
-
     beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
@@ -303,32 +302,27 @@ describe('PreviewComponent', () => {
       expect(component.expandedSample).toEqual(undefined);
     }));
 
-    it('should show sample comparison', fakeAsync(() => {
-      expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(0);
+    it('should show a sample comparison', fakeAsync(() => {
+      tick(1);
+      fixture.detectChanges();
       component.datasetData = mockDataset;
       component.previewFilters = previewFilterDataCompare;
       component.historyVersions = mockHistoryVersions;
       tick(1);
       fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.view-sample')).length).toBe(1);
-      expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
+      expect(component.previewFilters.sampleRecordIds).toBeTruthy();
+      expect(component.allSampleComparisons.length).toBeFalsy();
 
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
       tick(1);
       fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(1);
-
-      component.previewFilters.sampleRecordIds = undefined;
-      component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
-      tick(1);
-      fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('.view-sample-compared')).length).toBe(0);
+      expect(component.allSampleComparisons.length).toBeTruthy();
 
       component.ngOnDestroy();
     }));
 
     it('should toggle filters', fakeAsync(() => {
-      tick(0);
+      tick(1);
       fixture.detectChanges();
 
       expect(
@@ -404,32 +398,15 @@ describe('PreviewComponent', () => {
       tick(1);
     }));
 
-    it('toggles the editor theme', () => {
-      component.datasetData = mockDataset;
-      fixture.detectChanges();
-      expect(component.editorConfig.theme).toEqual('default');
-      component.transformSamples('default');
-      fixture.detectChanges();
-
-      component.onThemeSet(false);
-      expect(component.editorConfig.theme).not.toEqual('default');
-      component.onThemeSet(false);
-      expect(component.editorConfig.theme).not.toEqual('default');
-
-      component.onThemeSet(true);
-      expect(component.editorConfig.theme).toEqual('default');
-      component.onThemeSet(true);
-      expect(component.editorConfig.theme).toEqual('default');
-    });
-
-    it('has utility to strip blank lines', () => {
+    it('should process xml samples', () => {
       const samples = [
         {
           xmlRecord: '\n\r'
         }
       ] as XmlSample[];
 
-      const res: XmlSample[] = component.undoNewLines(samples);
+      const res: XmlDownload[] = component.processXmlSamples(samples, 'label');
+      expect(res[0].label).toBeTruthy();
       expect(res[0].xmlRecord).toEqual('');
     });
 

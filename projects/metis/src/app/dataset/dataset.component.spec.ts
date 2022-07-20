@@ -19,7 +19,7 @@ import {
   Dataset,
   NotificationType,
   PublicationFitness,
-  SimpleReportRequest,
+  ReportRequest,
   WorkflowExecution
 } from '../_models';
 import { DatasetsService, ErrorService, WorkflowService } from '../_services';
@@ -135,33 +135,32 @@ describe('Dataset Component', () => {
     });
 
     it('should set a report from a message request', fakeAsync(() => {
-      expect(component.reportMsg).toBeFalsy();
-      expect(component.reportMsg).toBeFalsy();
+      component.reportRequest = {};
+      expect(component.reportRequest.message).toBeFalsy();
 
       const srrM = {
         message: 'message'
-      } as SimpleReportRequest;
+      } as ReportRequest;
 
       component.setReportMsg(srrM);
       tick(1);
 
-      expect(component.reportErrors).toBeFalsy();
-      expect(component.reportMsg).toBeTruthy();
+      expect(component.reportRequest.errors).toBeFalsy();
+      expect(component.reportRequest.message).toBeTruthy();
     }));
 
     it('should set a report from task data', fakeAsync(() => {
-      expect(component.reportMsg).toBeFalsy();
-      expect(component.reportMsg).toBeFalsy();
-
+      component.reportRequest = {};
+      expect(component.reportRequest.message).toBeFalsy();
       const srrE = {
         topology: 'http_harvest',
         taskId: 'taskId'
-      } as SimpleReportRequest;
+      } as ReportRequest;
 
       component.setReportMsg(srrE);
       tick(1);
-      expect(component.reportErrors).toBeTruthy();
-      expect(component.reportMsg).toBeFalsy();
+      expect(component.reportRequest.errors).toBeTruthy();
+      expect(component.reportRequest.message).toBeFalsy();
     }));
 
     it('should handle an empty report', fakeAsync(() => {
@@ -171,26 +170,28 @@ describe('Dataset Component', () => {
           errors: []
         }).pipe(delay(1));
       });
-      expect(component.reportMsg).toBeFalsy();
+      component.reportRequest = {};
+      expect(component.reportRequest.message).toBeFalsy();
 
       const srrE = {
         topology: 'http_harvest',
         taskId: 'taskId'
-      } as SimpleReportRequest;
+      } as ReportRequest;
 
       component.setReportMsg(srrE);
       tick(1);
-      expect(component.reportMsg).toEqual('Report is empty.');
+      expect(component.reportRequest.message).toEqual('Report is empty.');
     }));
 
-    it('should clear the report message', () => {
-      expect(component.reportMsg).toBeFalsy();
+    it('should clear the report', () => {
+      component.reportRequest = {};
+      expect(component.reportRequest.message).toBeFalsy();
       component.setReportMsg({
         message: 'message'
-      } as SimpleReportRequest);
-      expect(component.reportMsg).toBeTruthy();
+      } as ReportRequest);
+      expect(component.reportRequest.message).toBeTruthy();
       component.clearReport();
-      expect(component.reportMsg).toBeFalsy();
+      expect(component.reportRequest.message).toBeFalsy();
     });
 
     it('should start a workflow', fakeAsync(() => {

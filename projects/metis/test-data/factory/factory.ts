@@ -1,6 +1,6 @@
 import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared';
 import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
-import { Workflow } from '../../src/app/_models/workflow';
+import { Workflow, XmlSample } from '../../src/app/_models';
 import {
   DatasetX,
   DateBumpType,
@@ -9,6 +9,7 @@ import {
   WorkflowX,
   WorkflowXRunConf
 } from '../_models/test-models';
+import { xsltDefault } from '../_data/xslt';
 import {
   DatasetExecutionProgress,
   DatasetOverview,
@@ -112,13 +113,11 @@ function runPlugin(id: string, pmd: PluginMetadata, status: PluginStatus): Plugi
   return {
     id: id,
     externalTaskId: id,
-
     pluginMetadata: pmd,
     topologyName: pmd.pluginType.toLowerCase() as TopologyName,
     pluginType: pmd.pluginType,
-
     pluginStatus: status,
-
+    canDisplayRawXml: !(cancelled || failed),
     startedDate: cancelled ? undefined : generateDate(DateBumpType.SECOND),
     updatedDate: cancelled ? undefined : generateDate(DateBumpType.MINUTE),
     finishedDate: status === PluginStatus.FINISHED ? generateDate(DateBumpType.SECOND) : undefined,
@@ -466,7 +465,7 @@ datasetXs = ((): Array<DatasetX> => {
       const datasetX = {
         id: datasetId,
         ecloudDatasetId: 'e-cloud-dataset-id-' + datasetId,
-        xsltId: datasetId,
+        xsltId: parseInt(datasetId) % 2 === 0 ? datasetId : undefined,
         datasetId: datasetId,
         datasetName: 'Dataset_' + (parseInt(datasetId) + 1),
         datasetIdsToRedirectFrom: ['0', '1'],
@@ -730,10 +729,10 @@ export function reportExists(reportId: string): ReportAvailability {
 }
 
 // localhost:3000/datasets/0/xslt
-export function xslt(xsltId: string): Report {
+export function xslt(xsltId: string): XmlSample {
   return {
-    id: xsltId,
-    errors: []
+    ecloudId: xsltId,
+    xmlRecord: xsltDefault
   };
 }
 
@@ -746,9 +745,9 @@ export function errorReport(reportId: string, process: string): Report {
         errorType: '1',
         message: process,
         occurrences: 321,
-        errorDetails: [1, 2, 3].map(() => {
+        errorDetails: ['fail', 'OJIN3E', 'P72D6Q'].map((ecloudRecordId: string) => {
           return {
-            identifier: 'http://test.ecloud.psnc.pl/api/records/' + reportId,
+            identifier: `http://test.ecloud.psnc.pl/api/records/${ecloudRecordId}`,
             additionalInfo: 'Error while executing ' + process
           };
         })

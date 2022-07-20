@@ -71,6 +71,7 @@
     <a
       *ngIf="plugin.failMessage || plugin.hasReport"
       class="table-btn"
+      data-e2e="open-report"
       (click)="
         openFailReport(
           plugin.hasReport ? plugin.topologyName : undefined,

@@ -479,10 +479,10 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
-  it('should get sample comparisons', () => {
+  it('should get records by id', () => {
     const ids = { ids: ['1', '2'] };
     const sub = service
-      .getWorkflowComparisons('5653454353', PluginType.ENRICHMENT, ids.ids)
+      .getWorkflowRecordsById('5653454353', PluginType.ENRICHMENT, ids.ids)
       .subscribe((samples) => {
         expect(samples).toEqual(mockXmlSamples);
       });

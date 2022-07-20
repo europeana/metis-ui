@@ -1,17 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { EditorConfiguration } from 'codemirror';
-import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -26,6 +16,7 @@ import {
   PreviewFilters,
   WorkflowExecution,
   WorkflowExecutionHistory,
+  XmlDownload,
   XmlSample
 } from '../../_models';
 import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
@@ -37,6 +28,8 @@ import { TranslateService } from '../../_translate';
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent extends SubscriptionManager implements OnInit, OnDestroy {
+  public PluginType = PluginType;
+
   constructor(
     private readonly workflows: WorkflowService,
     private readonly translate: TranslateService,
@@ -53,13 +46,14 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   @Input() tempXSLT?: string;
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
-  @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecutionHistory> = [];
   allPlugins: Array<{ type: PluginType; error: boolean }> = [];
+
   allSamples: Array<XmlSample> = [];
   allSampleComparisons: Array<XmlSample> = [];
+
   allTransformedSamples: XmlSample[];
   filterCompareOpen = false;
   filterDateOpen = false;
@@ -85,7 +79,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - transform any set tempXSLT
   */
   ngOnInit(): void {
-    this.editorConfig = this.editorPrefs.getEditorConfig(true);
+    this.editorConfig = this.editorPrefs.getEditorConfig();
     this.nosample = this.translate.instant('noSample');
 
     this.serviceTimer = timer(0, environment.intervalStatusMedium);
@@ -157,7 +151,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.historyVersions = [];
     this.allSamples = [];
     this.allSampleComparisons = [];
-
     if (!prefilling) {
       this.previewFilters = {
         baseFilter: {
@@ -228,11 +221,11 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       this.isLoadingComparisons = true;
       this.subs.push(
         this.workflows
-          .getWorkflowComparisons(workflowExecutionId, plugin, sampleRecordIds)
+          .getWorkflowRecordsById(workflowExecutionId, plugin, sampleRecordIds)
           .subscribe(
             (result) => {
               // strip "new lines"
-              this.allSampleComparisons = this.undoNewLines(result);
+              this.allSampleComparisons = this.processXmlSamples(result, plugin);
               this.isLoadingComparisons = false;
             },
             (err: HttpErrorResponse): void => {
@@ -245,11 +238,23 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     }
   }
 
+  /** getComparisonSampleAtIndex
+   * @param { number } index - the array index
+   * @returns XmlSample or null
+   **/
+  getComparisonSampleAtIndex(index: number): XmlSample | null {
+    if (this.allSampleComparisons.length >= index) {
+      return this.allSampleComparisons[index];
+    }
+    return null;
+  }
+
   /** getXMLSamples
-  /* - closes open dropdowns
-  *  - get and show samples based on plugin
-  *  - loads historyVersions based on plugin
-  */
+   * (closes open dropdowns) and gets the samples based on plugin
+   * then loads historyVersions based on plugin
+   * @param { PluginType } plugin - the plugin type
+   * @param { boolean } prefilling - flag ig pre-filling the UI
+   **/
   getXMLSamples(plugin: PluginType, prefilling = false): void {
     if (!prefilling) {
       this.onClickedOutside();
@@ -261,7 +266,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
       this.setPreviewFilters.emit(this.previewFilters);
     }
-    this.editorConfig = this.editorPrefs.getEditorConfig(true);
 
     const filteredExecutionId = this.previewFilters.baseFilter.executionId;
 
@@ -271,7 +275,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
         this.workflows.getWorkflowSamples(filteredExecutionId, plugin).subscribe(
           (result) => {
             this.isLoadingSamples = false;
-            this.allSamples = this.undoNewLines(result);
+            this.allSamples = this.processXmlSamples(result, plugin);
             if (this.allSamples.length === 1) {
               this.expandedSample = 0;
             }
@@ -292,7 +296,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
   getVersions(plugin: PluginType, filteredExecutionId: string): void {
     this.isLoadingHistories = true;
-
     this.subs.push(
       this.workflows.getVersionHistory(filteredExecutionId, plugin).subscribe(
         (result) => {
@@ -309,8 +312,9 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   }
 
   /** transformSamples
-  /* - transform samples on the fly based on temp saved XSLT
-  */
+   * - transform samples on the fly based on temp saved XSLT
+   * @param { string } type - the plugin type
+   **/
   transformSamples(type: string): void {
     this.isLoadingTransformSamples = true;
     const handleError = (err: HttpErrorResponse): void => {
@@ -337,22 +341,22 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
               )
               .pipe(
                 switchMap((samples) => {
-                  this.allSamples = this.undoNewLines(samples);
+                  this.allSamples = this.processXmlSamples(samples, `${type}`);
                   return this.datasets.getTransform(this.datasetData.datasetId, samples, type);
                 })
               );
           })
         )
         .subscribe((transformed) => {
-          this.allTransformedSamples = this.undoNewLines(transformed);
+          this.allTransformedSamples = this.processXmlSamples(transformed, 'transformed');
           this.isLoadingTransformSamples = false;
         }, handleError)
     );
   }
 
   /** prefillFilters
-  /* prefill the filters when temporarily saved options are available
-  */
+   * prefill the filters when temporarily saved options are available
+   **/
   prefillFilters(): void {
     const prvCmp = this.previewFilters.comparisonFilter;
     const pluginType = this.previewFilters.baseFilter.pluginType;
@@ -381,42 +385,25 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   }
 
   /** expandSample
-  /* - expand the editor, so you can view more lines of code
-  *  - only one sample can be expanded at any given moment
-  */
+   * - expand the editor, so you can view more lines of code
+   *  - resets to undefined if already set
+   * @param { number } index - the expanded index
+   **/
   expandSample(index: number): void {
-    const sample = this.allSamples[index].xmlRecord;
-    const samples = this.undoNewLines(this.allSamples);
-    this.allSamples[index].xmlRecord = '';
     this.expandedSample = this.expandedSample === index ? undefined : index;
-    samples[index].xmlRecord = sample;
   }
 
-  /** onThemeSet
-  /* sets the theme to the default or the alternative
-  */
-  onThemeSet(toDefault: boolean): void {
-    const isDef = this.editorPrefs.currentThemeIsDefault();
-    if (toDefault) {
-      if (!isDef) {
-        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
-      }
-    } else {
-      if (isDef) {
-        this.editorConfig.theme = this.editorPrefs.toggleTheme(this.allEditors);
-      }
-    }
-  }
-
-  /** undoNewLines
+  /** processXmlSamples
   /* clears new-line markers in the specified samples
   */
-  undoNewLines(samples: XmlSample[]): XmlSample[] {
+  processXmlSamples(samples: XmlSample[], label: string): XmlDownload[] {
     const clearSamples = samples;
     for (let i = 0; i < samples.length; i++) {
       clearSamples[i].xmlRecord = samples[i].xmlRecord.replace(/[\r\n]/g, '').trim();
     }
-    return clearSamples;
+    return clearSamples.map((xml: XmlSample) => {
+      return Object.assign(xml, { label: label });
+    });
   }
 
   /** gotoMapping

@@ -79,104 +79,86 @@
       </li>
     </ul>
   </div>
+
   <div *ngIf="allSamples">
-    <div
-      class="view-sample"
-      *ngFor="let sample of allSamples; let i = index"
-      [ngClass]="{
-        'view-sample-expanded': expandedSample === i,
-        'view-sample-compared': allSampleComparisons.length
-      }"
-    >
-      <div class="view-sample-title">
-        <h3>
-          <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType"
-            >{{ previewFilters.baseFilter.pluginType | renameWorkflow }}
-          </span>
-        </h3>
-
-        <app-theme-selector
-          (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-        ></app-theme-selector>
-        <div class="toggle-expand" *ngIf="expandedSample === i && allSamples.length !== i">
-          <a (click)="expandSample(i)">-</a>
-        </div>
-
-        <span class="compound" *ngIf="previewFilters.baseFilter.pluginType" style="width:100%;"
-          ><span>{{ previewFilters.baseFilter.pluginType | renameWorkflow }}</span>
-          <span
-            *ngIf="previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType"
+    <ng-container *ngFor="let sample of allSamples; let i = index">
+      <app-editor
+        [index]="i"
+        [expandable]="true"
+        [expanded]="expandedSample === i"
+        [extraClasses]="{
+          'view-sample-compared': allSampleComparisons.length
+        }"
+        [step]="
+          previewFilters.baseFilter.pluginType
+            ? (previewFilters.baseFilter.pluginType | renameWorkflow)
+            : undefined
+        "
+        [stepCompare]="
+          previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
+            ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
+            : undefined
+        "
+        [title]="sample.ecloudId"
+        [xmlDownloads]="[sample, getComparisonSampleAtIndex(i)]"
+        (onToggle)="expandSample($event)"
+        #editorAll
+      >
+        <div class="view-sample-editor">
+          <div
+            class="view-sample-editor-codemirror"
+            (click)="handleCodeClick($event)"
+            (mouseover)="handleMouseOver($event)"
+            (mouseout)="handleMouseOut($event)"
           >
-            {{ previewFilters.comparisonFilter.pluginType | renameWorkflow }}</span
-          ></span
-        >
-      </div>
-      <div class="view-sample-editor">
-        <div
-          class="view-sample-editor-codemirror"
-          (click)="handleCodeClick($event)"
-          (mouseover)="handleMouseOver($event)"
-          (mouseout)="handleMouseOut($event)"
-        >
-          <ngx-codemirror
-            [ngModel]="sample.xmlRecord | beautifyXML"
-            (ngModelChange)="sample.xmlRecord = $event"
-            [options]="editorConfig"
-          ></ngx-codemirror>
+            <ngx-codemirror
+              [ngModel]="sample.xmlRecord | beautifyXML"
+              (ngModelChange)="sample.xmlRecord = $event"
+              [options]="editorAll.getEditorConfig()"
+            ></ngx-codemirror>
+          </div>
+          <div
+            *ngIf="getComparisonSampleAtIndex(i); let comparison"
+            class="view-sample-editor-codemirror"
+            (click)="handleCodeClick($event)"
+            (mouseover)="handleMouseOver($event)"
+            (mouseout)="handleMouseOut($event)"
+          >
+            <ngx-codemirror
+              [ngModel]="comparison.xmlRecord | beautifyXML"
+              (ngModelChange)="comparison.xmlRecord = $event"
+              [options]="editorAll.getEditorConfig()"
+            ></ngx-codemirror>
+          </div>
         </div>
-        <div
-          *ngIf="
-            allSampleComparisons.length &&
-            allSampleComparisons.length >= i &&
-            allSampleComparisons[i].xmlRecord
-          "
-          class="view-sample-editor-codemirror"
-          (click)="handleCodeClick($event)"
-          (mouseover)="handleMouseOver($event)"
-          (mouseout)="handleMouseOut($event)"
-        >
-          <ngx-codemirror
-            [ngModel]="allSampleComparisons[i].xmlRecord | beautifyXML"
-            (ngModelChange)="allSampleComparisons[i].xmlRecord = $event"
-            [options]="editorConfig"
-          ></ngx-codemirror>
-        </div>
-      </div>
-      <div class="btns-set btns-set-right">
-        <a class="load-more-btn" (click)="expandSample(i)" *ngIf="expandedSample !== i">{{
-          'expandInfo' | translate
-        }}</a>
-      </div>
-    </div>
+      </app-editor>
+    </ng-container>
   </div>
 
-  <div class="view-sample no-sample" *ngIf="allSamples.length === 0">
-    <div class="view-sample-title">
-      <h3>
-        {{ 'noSample' | translate }}
-      </h3>
-      <app-theme-selector
-        (themeSet)="onThemeSet($event)"
-        [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-      ></app-theme-selector>
-    </div>
-    <div
-      class="view-sample-editor"
-      *ngIf="nosample"
-      (click)="handleCodeClick($event)"
-      (mouseover)="handleMouseOver($event)"
-      (mouseout)="handleMouseOut($event)"
+  <ng-container *ngIf="allSamples.length === 0">
+    <app-editor
+      [expanded]="false"
+      [extraClasses]="{ 'no-sample': true }"
+      [title]="'noSample' | translate"
+      #editorNone
     >
-      <ngx-codemirror
-        [ngModel]="nosample | beautifyXML"
-        (ngModelChange)="(nosample)"
-        [options]="editorConfig"
-      ></ngx-codemirror>
-    </div>
-  </div>
+      <div
+        class="view-sample-editor"
+        *ngIf="nosample"
+        (click)="handleCodeClick($event)"
+        (mouseover)="handleMouseOver($event)"
+        (mouseout)="handleMouseOut($event)"
+      >
+        <ngx-codemirror
+          [ngModel]="nosample | beautifyXML"
+          (ngModelChange)="(nosample)"
+          [options]="editorNone.getEditorConfig()"
+        ></ngx-codemirror>
+      </div>
+    </app-editor>
+  </ng-container>
 </div>
+
 <div *ngIf="tempXSLT">
   <div class="messages" *ngIf="isLoadingTransformSamples">
     <div class="success-message">
@@ -186,57 +168,64 @@
   </div>
 
   <div *ngIf="allTransformedSamples && allSamples">
-    <div
-      class="view-sample view-sample-expanded view-sample-transformed"
-      *ngFor="let sample of allSamples; let i = index"
-    >
-      <div class="view-sample-title">
-        <h3>
-          <span>{{ sample.ecloudId }}</span>
-          <span class="smaller" *ngIf="previewFilters.baseFilter.pluginType">{{
-            previewFilters.baseFilter.pluginType | renameWorkflow
-          }}</span>
-        </h3>
-        <app-theme-selector
-          (themeSet)="onThemeSet($event)"
-          [editorIsDefaultTheme]="editorConfig.theme === 'default'"
-        ></app-theme-selector>
-      </div>
-      <div class="view-sample-editor">
-        <div
-          class="view-sample-editor-codemirror"
-          (click)="handleCodeClick($event)"
-          (mouseover)="handleMouseOver($event)"
-          (mouseout)="handleMouseOut($event)"
-        >
-          <ngx-codemirror
-            [ngModel]="sample.xmlRecord | beautifyXML"
-            (ngModelChange)="sample.xmlRecord = $event"
-            [options]="editorConfig"
-          ></ngx-codemirror>
-        </div>
+    <ng-container *ngFor="let sample of allSamples; let i = index">
+      <app-editor
+        [index]="i"
+        [extraClasses]="{
+          'view-sample-transformed': true
+        }"
+        [expanded]="true"
+        [step]="
+          previewFilters.baseFilter.pluginType
+            ? (previewFilters.baseFilter.pluginType | renameWorkflow)
+            : undefined
+        "
+        [stepCompare]="
+          previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
+            ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
+            : undefined
+        "
+        [title]="sample.ecloudId"
+        [xmlDownloads]="[sample, allTransformedSamples[i] && allTransformedSamples[i]]"
+        (onToggle)="expandSample($event)"
+        #editorTransformed
+      >
+        <div class="view-sample-editor">
+          <div
+            class="view-sample-editor-codemirror"
+            (click)="handleCodeClick($event)"
+            (mouseover)="handleMouseOver($event)"
+            (mouseout)="handleMouseOut($event)"
+          >
+            <ngx-codemirror
+              [ngModel]="sample.xmlRecord | beautifyXML"
+              (ngModelChange)="sample.xmlRecord = $event"
+              [options]="editorTransformed.getEditorConfig()"
+            ></ngx-codemirror>
+          </div>
 
-        <div
-          class="view-sample-editor-codemirror"
-          (click)="handleCodeClick($event)"
-          (mouseover)="handleMouseOver($event)"
-          (mouseout)="handleMouseOut($event)"
-        >
-          <ngx-codemirror
-            *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
-            [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
-            (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"
-            [options]="editorConfig"
-          ></ngx-codemirror>
-        </div>
+          <div
+            class="view-sample-editor-codemirror"
+            (click)="handleCodeClick($event)"
+            (mouseover)="handleMouseOver($event)"
+            (mouseout)="handleMouseOut($event)"
+          >
+            <ngx-codemirror
+              *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
+              [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
+              (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"
+              [options]="editorConfig"
+            ></ngx-codemirror>
+          </div>
 
-        <div class="preview-controls">
-          <div class="preview-controls-left"></div>
-          <div class="preview-controls-right">
-            <button (click)="gotoMapping()">{{ 'goToMapping' | translate }}</button>
+          <div class="preview-controls">
+            <div class="preview-controls-left"></div>
+            <div class="preview-controls-right">
+              <button (click)="gotoMapping()">{{ 'goToMapping' | translate }}</button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </app-editor>
+    </ng-container>
   </div>
 </div>

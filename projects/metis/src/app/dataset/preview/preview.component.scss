@@ -30,28 +30,6 @@
   }
 }
 
-.view-sample-transformed {
-  margin-bottom: 2em;
-  button {
-    background: $eu-jade;
-    border: 1px solid $eu-jade;
-    font-size: $font-size-slightly-smaller;
-    margin: 0.5rem 1rem 0.5rem 0.5rem;
-
-    &:hover,
-    &.active {
-      background: $white;
-      color: $eu-jade;
-    }
-
-    &:active,
-    &:focus {
-      background: $eu-jade;
-      color: $white;
-    }
-  }
-}
-
 .load-more-btn {
   margin-right: 1rem;
 }

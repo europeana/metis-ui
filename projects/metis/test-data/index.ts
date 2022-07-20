@@ -1,6 +1,7 @@
 import * as url from 'url';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
+import { xsltStylesheet } from './_data/xslt';
 import {
   dataset,
   errorReport,
@@ -446,7 +447,20 @@ new (class extends TestDataServer {
     regRes = route.match(/datasets\/-?(\d+)\/xslt/);
 
     if (regRes) {
-      response.end(JSON.stringify(xslt(regRes[1])));
+      let res = [xslt(regRes[1])];
+      if (route.indexOf('transform/default') > -1) {
+        res = Array(5)
+          .fill(0)
+          .map(() => res[0]);
+      }
+      response.end(JSON.stringify(res));
+      return true;
+    }
+
+    regRes = route.match(/datasets\/xslt\/default/);
+
+    if (regRes) {
+      response.end(xsltStylesheet);
       return true;
     }
 
@@ -495,14 +509,26 @@ new (class extends TestDataServer {
     );
 
     if (regRes) {
+      let plugin = '';
+      if (regRes[2]) {
+        plugin = regRes[2];
+      }
+      const res = [
+        '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
+        'LIF22NBLS6UO65D4LQ25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4',
+        'W75V7FWAJRL3LAALIF22NBLS6UO65D4LQ25XLZKQAMP4N6OHOZC4',
+        'BLS6UO65D4LQLIF22N25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4',
+        'AJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ25XLZKQAMW75V7FW'
+      ].map((id: string) => {
+        return {
+          ecloudId: id,
+          xmlRecord: `<xml>${plugin}</xml>`
+        };
+      });
+
       response.end(
         JSON.stringify({
-          records: [
-            {
-              ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
-              xmlRecord: '<x>Preview</x>'
-            }
-          ]
+          records: res
         })
       );
       return true;
@@ -513,16 +539,41 @@ new (class extends TestDataServer {
     );
 
     if (regRes) {
-      response.end(
-        JSON.stringify({
-          records: [
-            {
-              ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
-              xmlRecord: '<x>Compare</x>'
-            }
-          ]
-        })
-      );
+      let body = '';
+      let plugin = 'PluginType';
+      request.on('data', function(data: { toString: () => string }) {
+        body += data.toString();
+      });
+
+      if (regRes[2]) {
+        plugin = regRes[2];
+      }
+
+      request.on('end', function() {
+        if (JSON.parse(body).ids[0] === 'fail') {
+          response.statusCode = 400;
+          response.end(
+            JSON.stringify({
+              message: 'Failure!',
+              error: {
+                errorMessage: 'Expecting representations!'
+              }
+            })
+          );
+        } else {
+          response.end(
+            JSON.stringify({
+              records: [
+                {
+                  ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
+                  xmlRecord: `<x>${plugin}</x>`
+                }
+              ]
+            })
+          );
+        }
+        return true;
+      });
       return true;
     }
 

@@ -1,5 +1,4 @@
 import { async, TestBed } from '@angular/core/testing';
-import { getCodeMirrorEditors } from 'shared';
 import { EditorPrefService } from '.';
 
 describe('editor pref service', () => {
@@ -26,27 +25,20 @@ describe('editor pref service', () => {
 
   it('should report on whether the current theme is the default theme', () => {
     expect(service.currentThemeIsDefault()).toEqual(true);
-    service.toggleTheme(getCodeMirrorEditors());
+    service.toggleTheme();
     expect(service.currentThemeIsDefault()).toEqual(false);
   });
 
   it('can toggle the current theme', () => {
     expect(service.getEditorPref()).toEqual('default');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const editors: any = getCodeMirrorEditors();
-    service.toggleTheme(editors);
+    service.toggleTheme();
     expect(service.getEditorPref()).not.toEqual('default');
-    expect(editors[0].codeMirror.setOption).toHaveBeenCalledWith('theme', altTheme);
+    expect(service.getEditorPref()).toEqual(altTheme);
   });
 
   it('indicates if the toggled theme is the default theme', () => {
     expect(service.getEditorPref()).toEqual('default');
-    expect(service.toggleTheme(getCodeMirrorEditors())).not.toEqual('default');
-    expect(service.toggleTheme(getCodeMirrorEditors())).toEqual('default');
-  });
-
-  it('provides an editor configuration object (read only)', () => {
-    expect(service.getEditorConfig(true).readOnly).toEqual(true);
-    expect(service.getEditorConfig(false).readOnly).toEqual(false);
+    expect(service.toggleTheme()).not.toEqual('default');
+    expect(service.toggleTheme()).toEqual('default');
   });
 });

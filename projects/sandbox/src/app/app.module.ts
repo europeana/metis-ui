@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
+import { RenameStepPipe } from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { HttpErrorsComponent } from './http-errors';
 import { NavigationOrbsComponent } from './navigation-orbs';
@@ -26,6 +27,7 @@ import { WizardComponent } from './wizard';
     ProblemViewerComponent,
     ProgressTrackerComponent,
     RecordReportComponent,
+    RenameStepPipe,
     UploadComponent,
     WizardComponent
   ],

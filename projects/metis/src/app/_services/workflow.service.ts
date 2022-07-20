@@ -263,6 +263,7 @@ export class WorkflowService extends SubscriptionManager {
     return this.http
       .get<Results<WorkflowExecution>>(url)
       .pipe(
+        switchMap((executions) => this.addStartedByToWorkflowExecutionResults(executions)),
         map((lastExecution) => {
           return lastExecution.results[0];
         })
@@ -441,7 +442,7 @@ export class WorkflowService extends SubscriptionManager {
   }
 
   // return samples based on executionid, plugintype and ecloudIds
-  getWorkflowComparisons(
+  getWorkflowRecordsById(
     executionId: string,
     pluginType: PluginType,
     ids: Array<string>
