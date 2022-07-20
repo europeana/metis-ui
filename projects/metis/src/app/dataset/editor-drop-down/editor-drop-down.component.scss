@@ -14,7 +14,7 @@
   position: relative;
   z-index: 1;
 
-  & > .theme-ctrl {
+  & > .editor-ctrl {
     &::before {
       bottom: 0;
       content: '···';
@@ -23,7 +23,7 @@
       letter-spacing: -2px;
       line-height: 100%;
       position: absolute;
-      right: 1px;
+      right: 2px;
       text-align: center;
       top: 0px;
     }
@@ -42,7 +42,7 @@
   max-height: 20em;
 }
 
-.theme-ctrl {
+.editor-ctrl {
   background-color: $white;
   border-radius: 1em;
   color: $eu-jade;

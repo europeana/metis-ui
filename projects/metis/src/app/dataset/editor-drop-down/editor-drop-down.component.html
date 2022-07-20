@@ -3,7 +3,7 @@
     <span
       (click)="toggle()"
       [class.black]="!editorIsDefaultTheme"
-      class="theme-ctrl"
+      class="editor-ctrl"
       title="{{ 'options' | translate }}"
     ></span>
 
@@ -25,7 +25,7 @@
                 disabled: !xml
               }"
               (click)="triggerXmlDownload(xml)"
-              ><span class="theme-ctrl download-icon"></span
+              ><span class="editor-ctrl download-icon"></span
               ><span>@{{ (xml.label | renameWorkflow) || xml.label }}</span></a
             >
           </li>
@@ -35,13 +35,13 @@
         </li>
         <li>
           <a class="flex-pair" (click)="setTheme(false)" data-e2e="set-theme-black"
-            ><span [class.active]="!editorIsDefaultTheme" class="theme-ctrl black"></span
+            ><span [class.active]="!editorIsDefaultTheme" class="editor-ctrl black"></span
             ><span class="capitalise">{{ 'black' | translate }}</span></a
           >
         </li>
         <li>
           <a class="flex-pair" (click)="setTheme(true)" data-e2e="set-theme-white"
-            ><span [class.active]="editorIsDefaultTheme" class="theme-ctrl"></span
+            ><span [class.active]="editorIsDefaultTheme" class="editor-ctrl"></span
             ><span class="capitalise">{{ 'white' | translate }}</span></a
           >
         </li>
