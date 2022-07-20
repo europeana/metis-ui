@@ -30,15 +30,11 @@ $dimension-button: 40px;
   display: flex;
   justify-content: center;
   left: 1em;
-  position: absolute;
   right: 1em;
-  top: 5em;
 
   @media (min-width: $bp-small-3) {
     left: auto;
-    position: relative;
     right: auto;
-    top: auto;
   }
 }
 
@@ -57,5 +53,10 @@ $dimension-button: 40px;
 
   &:hover {
     background-color: $eu-jade-dark;
+  }
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.5;
   }
 }

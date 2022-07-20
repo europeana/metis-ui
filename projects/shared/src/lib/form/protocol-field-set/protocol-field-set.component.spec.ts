@@ -11,12 +11,9 @@ describe('ProtocolFieldSetComponent', () => {
   const formBuilder: FormBuilder = new FormBuilder();
   const urlHarvest1 = 'http://harvest-1';
   const urlHarvest2 = 'http://harvest-2';
-  const fmtMeta = 'EDM';
   const spec = 'specification';
 
   beforeEach(async(() => {
-    console.log(fmtMeta);
-
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [ProtocolFieldSetComponent],

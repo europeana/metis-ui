@@ -73,4 +73,12 @@ describe('EditorComponent', () => {
     component.onThemeSet();
     expect(editorPrefs.toggleTheme).toHaveBeenCalled();
   });
+
+  it('should search', () => {
+    spyOn(component.onSearch, 'emit');
+    component.search('abc');
+    expect(component.onSearch.emit).toHaveBeenCalled();
+    component.search('');
+    expect(component.onSearch.emit).toHaveBeenCalledTimes(2);
+  });
 });

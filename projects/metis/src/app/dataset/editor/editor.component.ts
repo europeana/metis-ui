@@ -40,7 +40,9 @@ export class EditorComponent {
   @Input() index?: number;
   @Input() step?: string;
   @Input() stepCompare?: string;
+  @Input() themeDisabled = false;
   @Input() title: string;
+  @Input() isSearchEditor = false;
 
   _xmlDownloads?: Array<XmlDownload>;
 
@@ -58,6 +60,7 @@ export class EditorComponent {
     return this._xmlDownloads;
   }
 
+  @Output() onSearch = new EventEmitter<string>();
   @Output() onToggle = new EventEmitter<number>();
 
   constructor(private readonly editorPrefs: EditorPrefService) {}
@@ -81,6 +84,14 @@ export class EditorComponent {
    **/
   onThemeSet(): void {
     this.editorPrefs.toggleTheme();
+  }
+
+  /** search
+   * invokes onSearch emit
+   **/
+  search(term: string): void {
+    this.title = term;
+    this.onSearch.emit(term);
   }
 
   /** toggle

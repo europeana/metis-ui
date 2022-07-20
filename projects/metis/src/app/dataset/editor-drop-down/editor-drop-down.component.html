@@ -35,13 +35,16 @@
         </li>
         <li>
           <a class="flex-pair" (click)="setTheme(false)" data-e2e="set-theme-black"
-            ><span [class.active]="!editorIsDefaultTheme" class="editor-ctrl black"></span
+            ><span
+              [class.active]="!editorIsDefaultTheme"
+              class="editor-ctrl theme-ctrl black"
+            ></span
             ><span class="capitalise">{{ 'black' | translate }}</span></a
           >
         </li>
         <li>
           <a class="flex-pair" (click)="setTheme(true)" data-e2e="set-theme-white"
-            ><span [class.active]="editorIsDefaultTheme" class="editor-ctrl"></span
+            ><span [class.active]="editorIsDefaultTheme" class="editor-ctrl theme-ctrl"></span
             ><span class="capitalise">{{ 'white' | translate }}</span></a
           >
         </li>

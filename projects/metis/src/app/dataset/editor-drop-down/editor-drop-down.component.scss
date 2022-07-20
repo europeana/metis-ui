@@ -13,24 +13,6 @@
   color: $gray-med;
   position: relative;
   z-index: 1;
-
-  & > .editor-ctrl {
-    &::before {
-      bottom: 0;
-      content: '···';
-      font-size: 2em;
-      left: 0;
-      letter-spacing: -2px;
-      line-height: 100%;
-      position: absolute;
-      right: 2px;
-      text-align: center;
-      top: 0px;
-    }
-    &:hover::before {
-      font-weight: 600;
-    }
-  }
 }
 
 .dropdown-wrapper::after,
@@ -42,21 +24,16 @@
   max-height: 20em;
 }
 
-.editor-ctrl {
-  background-color: $white;
-  border-radius: 1em;
-  color: $eu-jade;
-  cursor: pointer;
-  display: block;
-  height: 2em;
-  position: relative;
-  text-transform: capitalize;
-  width: 2em;
+.editor-ctrl.black {
+  background-color: #000;
+  border: 0;
+  color: $white;
+}
 
-  &.black {
-    background-color: #000;
-    border: 0;
-    color: $white;
+.editor-ctrl.download-icon,
+.editor-ctrl.theme-ctrl {
+  &::before {
+    content: unset;
   }
   &:not(.download-icon).active {
     &::after {

@@ -1,7 +1,7 @@
 /** SearchComponent
 /*  an input and submit button that emits events on click and Enter
 */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-search',
@@ -9,17 +9,25 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
+  @Input() reversed = false;
+  @Input() label?: string;
+  @Input() pattern?: string;
+  @Input() inputId = 'search';
   @Input() searchString?: string;
   @Input() placeholderKey: string;
+  @Input() executeEmpty = false;
   @Output() onExecute: EventEmitter<string> = new EventEmitter();
+  @ViewChild('searchInput') searchInput: ElementRef;
 
   /** submitOnEnter
   /*  key down handler to call executeSearch
   /* @param {KeyboardEvent} e - the key event
   */
   submitOnEnter(e: KeyboardEvent): void {
-    if (e.key === 'Enter') {
-      this.executeSearch();
+    if (this.searchInput.nativeElement.validity.valid) {
+      if (e.key === 'Enter') {
+        this.executeSearch();
+      }
     }
   }
 
@@ -27,8 +35,9 @@ export class SearchComponent {
   /*  emits event with searchString
   */
   executeSearch(): void {
-    if (this.searchString) {
-      this.onExecute.emit(this.searchString.trim());
+    this.searchInput.nativeElement.focus();
+    if (this.searchString || this.executeEmpty) {
+      this.onExecute.emit(this.searchString ? this.searchString.trim() : '');
     }
   }
 }
