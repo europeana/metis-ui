@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { EditorConfiguration } from 'codemirror';
 import { Observable, Subscription, timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -19,7 +18,7 @@ import {
   XmlDownload,
   XmlSample
 } from '../../_models';
-import { DatasetsService, EditorPrefService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 @Component({
@@ -33,7 +32,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   constructor(
     private readonly workflows: WorkflowService,
     private readonly translate: TranslateService,
-    private readonly editorPrefs: EditorPrefService,
     private readonly errors: ErrorService,
     private readonly datasets: DatasetsService,
     private readonly router: Router
@@ -47,12 +45,17 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
   @Output() setPreviewFilters = new EventEmitter<PreviewFilters>();
 
-  editorConfig: EditorConfiguration;
   allWorkflowExecutions: Array<WorkflowExecutionHistory> = [];
   allPlugins: Array<{ type: PluginType; error: boolean }> = [];
 
   allSamples: Array<XmlSample> = [];
   allSampleComparisons: Array<XmlSample> = [];
+
+  searchedXMLSample?: XmlDownload;
+  searchedXMLSampleCompare?: XmlDownload;
+  searchedXMLSampleExpanded = false;
+  searchError = false;
+  searchTerm = '';
 
   allTransformedSamples: XmlSample[];
   filterCompareOpen = false;
@@ -65,6 +68,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   isLoadingComparisons = false;
   isLoadingFilter = false;
   isLoadingHistories = false;
+  isLoadingSearch = false;
   isLoadingSamples = false;
   isLoadingTransformSamples = false;
   downloadUrlCache: { [key: string]: string } = {};
@@ -79,7 +83,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   *  - transform any set tempXSLT
   */
   ngOnInit(): void {
-    this.editorConfig = this.editorPrefs.getEditorConfig();
     this.nosample = this.translate.instant('noSample');
 
     this.serviceTimer = timer(0, environment.intervalStatusMedium);
@@ -235,6 +238,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
             }
           )
       );
+      this.searchXMLSample(this.searchTerm, true);
     }
   }
 
@@ -251,7 +255,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
 
   /** getXMLSamples
    * (closes open dropdowns) and gets the samples based on plugin
-   * then loads historyVersions based on plugin
+   * then loads historyVersions (possible comparisons) based on plugin
    * @param { PluginType } plugin - the plugin type
    * @param { boolean } prefilling - flag ig pre-filling the UI
    **/
@@ -259,6 +263,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     if (!prefilling) {
       this.onClickedOutside();
       this.allSampleComparisons = [];
+      this.searchedXMLSampleCompare = undefined;
 
       this.previewFilters.comparisonFilter = undefined;
       this.previewFilters.sampleRecordIds = [];
@@ -267,40 +272,47 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       this.setPreviewFilters.emit(this.previewFilters);
     }
 
-    const filteredExecutionId = this.previewFilters.baseFilter.executionId;
+    const executionId = this.previewFilters.baseFilter.executionId;
 
-    if (filteredExecutionId) {
-      this.isLoadingSamples = true;
-      this.subs.push(
-        this.workflows.getWorkflowSamples(filteredExecutionId, plugin).subscribe(
-          (result) => {
-            this.isLoadingSamples = false;
-            this.allSamples = this.processXmlSamples(result, plugin);
-            if (this.allSamples.length === 1) {
-              this.expandedSample = 0;
-            }
-            this.previewFilters.sampleRecordIds = this.allSamples.map((sample) => {
-              return sample.ecloudId;
-            });
-          },
-          (err: HttpErrorResponse): void => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
-            this.isLoadingSamples = false;
-          }
-        )
-      );
-      this.getVersions(plugin, filteredExecutionId);
+    if (!executionId) {
+      return;
     }
+    this.isLoadingSamples = true;
+    this.subs.push(
+      this.workflows.getWorkflowSamples(executionId, plugin).subscribe(
+        (result) => {
+          this.isLoadingSamples = false;
+          this.allSamples = this.processXmlSamples(result, plugin);
+          if (this.allSamples.length === 1) {
+            this.expandedSample = 0;
+          }
+          this.previewFilters.sampleRecordIds = this.allSamples.map((sample) => {
+            return sample.ecloudId;
+          });
+        },
+        (err: HttpErrorResponse): void => {
+          const error = this.errors.handleError(err);
+          this.notification = httpErrorNotification(error);
+          this.isLoadingSamples = false;
+        }
+      )
+    );
+    this.getVersions(plugin, executionId);
+    this.searchXMLSample(this.searchTerm);
   }
 
-  getVersions(plugin: PluginType, filteredExecutionId: string): void {
+  /** getVersions
+   * loads historyVersions (possible comparisons)
+   * @param { PluginType } plugin - the plugin type
+   * @param { string } executionId -
+   **/
+  getVersions(plugin: PluginType, executionId: string): void {
     this.isLoadingHistories = true;
     this.subs.push(
-      this.workflows.getVersionHistory(filteredExecutionId, plugin).subscribe(
+      this.workflows.getVersionHistory(executionId, plugin).subscribe(
         (result) => {
-          this.isLoadingHistories = false;
           this.historyVersions = result;
+          this.isLoadingHistories = false;
         },
         (err: HttpErrorResponse): void => {
           const error = this.errors.handleError(err);
@@ -360,7 +372,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   prefillFilters(): void {
     const prvCmp = this.previewFilters.comparisonFilter;
     const pluginType = this.previewFilters.baseFilter.pluginType;
-    const filteredExecutionId = this.previewFilters.baseFilter.executionId;
+    const executionId = this.previewFilters.baseFilter.executionId;
 
     if (pluginType) {
       this.getXMLSamples(pluginType, true);
@@ -368,15 +380,15 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       if (prvCmp && prvCmp.pluginType && prvCmp.executionId) {
         this.getXMLSamplesCompare(prvCmp.pluginType, prvCmp.executionId, true);
       }
-      if (filteredExecutionId) {
-        this.getVersions(pluginType, filteredExecutionId);
+      if (executionId) {
+        this.getVersions(pluginType, executionId);
       }
     }
 
-    if (this.previewFilters.baseStartedDate && filteredExecutionId) {
+    if (this.previewFilters.baseStartedDate && executionId) {
       this.addPluginsFilter(
         {
-          workflowExecutionId: filteredExecutionId,
+          workflowExecutionId: executionId,
           startedDate: this.previewFilters.baseStartedDate
         },
         true
@@ -391,6 +403,10 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
    **/
   expandSample(index: number): void {
     this.expandedSample = this.expandedSample === index ? undefined : index;
+  }
+
+  expandSearchSample(): void {
+    this.searchedXMLSampleExpanded = !this.searchedXMLSampleExpanded;
   }
 
   /** processXmlSamples
@@ -504,9 +520,61 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   }
 
   /** byId
-  /* returns item by id
-  */
+   * returns item by id
+   * @param {number} _ - unused
+   * @param {WorkflowExecution} item - the item
+   **/
   byId(_: number, item: WorkflowExecution): string {
     return item.id;
+  }
+
+  /** searchXMLSample
+   * updates local searchTerm and optionally invokes search on it
+   * updates local variables searchError / searchedXMLSample | searchedXMLSampleCompare
+   * @param {string} searchTerm - the term
+   **/
+  searchXMLSample(searchTerm: string, comparison = false): void {
+    this.searchTerm = searchTerm;
+
+    if (searchTerm.length === 0) {
+      this.searchedXMLSample = undefined;
+      this.searchError = false;
+      return;
+    }
+
+    const filterPlugin = comparison
+      ? this.previewFilters.comparisonFilter
+      : this.previewFilters.baseFilter;
+    const pluginType = filterPlugin ? filterPlugin.pluginType : null;
+    const executionId = this.previewFilters.baseFilter.executionId;
+
+    if (executionId && pluginType) {
+      this.searchError = false;
+      this.isLoadingSearch = true;
+
+      this.subs.push(
+        this.workflows.getWorkflowRecordsById(executionId, pluginType, [searchTerm]).subscribe(
+          (result: XmlSample[]) => {
+            if (result.length) {
+              const searchedSample = Object.assign(result[0], { label: searchTerm });
+              if (comparison) {
+                this.searchedXMLSampleCompare = searchedSample;
+              } else {
+                this.searchedXMLSample = searchedSample;
+              }
+            } else {
+              this.searchError = true;
+              this.searchedXMLSample = undefined;
+            }
+            this.isLoadingSearch = false;
+          },
+          (error: HttpErrorResponse) => {
+            this.notification = httpErrorNotification(error);
+            this.searchedXMLSample = undefined;
+            this.isLoadingSearch = false;
+          }
+        )
+      );
+    }
   }
 }

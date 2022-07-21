@@ -9,11 +9,14 @@ context('metis-ui', () => {
   const urlPreview = `/dataset/preview/${datasetId}`;
 
   const selEditorCompare = '.view-sample-compared';
-  const selEditorDefault = `.view-sample:not(${selEditorCompare}):not(.no-sample)`;
+  const selEditorDefault = `.view-sample:not(${selEditorCompare}):not(.no-sample):not(.search-editor)`;
+  const selEditorSearch = '.view-sample.search-editor';
 
   const selMenuCompare = '.dropdown-compare';
   const selMenuDate = '.dropdown-date';
   const selMenuPlugin = '.dropdown-plugin';
+
+  const selNotificationError = '.error-notification';
 
   const selContent = '.dropdown-content';
   const selFirstItem = 'li:first-child a';
@@ -26,6 +29,11 @@ context('metis-ui', () => {
   const selMenuCompareFirstItem = `${selMenuCompare} ${selFirstItem}`;
   const selMenuDateFirstItem = `${selMenuDateItems} ${selFirstItem}`;
   const selMenuPluginSecondItem = `${selMenuPluginItems} ${selSecondItem}`;
+
+  const selEditorSearchContent = `${selEditorSearch} .view-sample-editor`;
+  const selEditorSearchError = `${selEditorSearch} .error`;
+  const selBtnSearch = `${selEditorSearch} .search`;
+  const selInputSearch = `${selEditorSearch} .search-string`;
 
   const checkMenusVisible = (): void => {
     cy.get(selMenuDate).should('be.visible');
@@ -115,15 +123,14 @@ context('metis-ui', () => {
 
     it('should maintain themed editors', () => {
       fillMenus(3);
-      const selEditorOps = '.theme-ctrl';
-      const selIndicatorActiveBlack = '.theme-ctrl.black.active';
-      const selIndicatorActiveWhite = '.theme-ctrl.active:not(.black)';
+      const selEditorOps = '.editor-ctrl';
+      const selIndicatorActiveBlack = '.editor-ctrl.black.active';
+      const selIndicatorActiveWhite = '.editor-ctrl.active:not(.black)';
 
       const selLinkThemeBlack = '[data-e2e=set-theme-white]';
       const selLinkThemeWhite = '[data-e2e=set-theme-white]';
-      console.log(selLinkThemeBlack + selLinkThemeWhite + selIndicatorActiveWhite);
 
-      cy.get(selEditorOps).should('have.length', 5);
+      cy.get(selEditorOps).should('have.length', 6);
       cy.get(selLinkThemeBlack).should('not.exist', 1);
       cy.get(selLinkThemeWhite).should('not.exist', 1);
 
@@ -195,6 +202,84 @@ context('metis-ui', () => {
       cy.get(selEditorCompare).should('not.exist');
       leaveAndReturn();
       cy.get(selEditorCompare).should('not.exist');
+    });
+
+    it('should search', () => {
+      fillMenus(3);
+      cy.get(selEditorSearchContent).should('not.exist');
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+      cy.get(selInputSearch).type('ABC123');
+      cy.get(selBtnSearch).click(force);
+      cy.get(selEditorSearchContent).should('exist');
+    });
+
+    it('should only be able to search a valid eCloudId', () => {
+      fillMenus(3);
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+      cy.get(selInputSearch).type('__');
+      cy.get(selBtnSearch).should('have.class', 'disabled');
+      cy.get(selInputSearch).clear();
+      cy.get(selBtnSearch).should('not.have.class', 'disabled');
+      cy.get(selInputSearch).type('A1b2');
+      cy.get(selBtnSearch).should('not.have.class', 'disabled');
+    });
+
+    it('should warn of empty searches', () => {
+      fillMenus(3);
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+
+      cy.get(selEditorSearchError).should('not.exist');
+
+      cy.get(selInputSearch).type('tiny');
+      cy.get(selBtnSearch).click(force);
+
+      cy.get(selEditorSearchContent).should('not.exist');
+      cy.get(selEditorSearchError).should('exist');
+    });
+
+    it('should show search errors', () => {
+      fillMenus(3);
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+      cy.get(selEditorSearchError).should('not.exist');
+
+      cy.get(selInputSearch).type('500');
+      cy.get(selBtnSearch).click(force);
+
+      cy.get(selEditorSearchContent).should('not.exist');
+      cy.get(selEditorSearchError).should('not.exist');
+      cy.get(selNotificationError).should('exist');
+    });
+
+    it('should update the search result when the plugin changes', () => {
+      fillMenus(3);
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+      cy.get(selInputSearch).type('ABC123');
+      cy.get(selBtnSearch).click(force);
+      cy.contains(selEditorSearchContent, 'VALIDATION_EXTERNAL').should('exist');
+      cy.get(selMenuPlugin + ' a').click(force);
+      cy.get(`${selMenuPluginItems} li:nth-child(3) a`).click(force);
+      cy.contains(selEditorSearchContent, 'TRANSFORMATION').should('exist');
+    });
+
+    it('should update the search result with a comparison', () => {
+      const selInnerEditors = `${selEditorSearch} .view-sample-editor-codemirror`;
+      console.log(selEditorSearchError);
+      fillMenus(3);
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+      cy.get(selInputSearch).type('ABC123');
+      cy.get(selBtnSearch).click(force);
+      cy.contains(selEditorSearchContent, 'VALIDATION_EXTERNAL').should('exist');
+      cy.get(selInnerEditors).should('have.length', 1);
+
+      cy.get(selMenuCompare + ' a').click(force);
+      cy.get(selMenuCompareFirstItem).click(force);
+      cy.get(selInnerEditors).should('have.length', 2);
     });
   });
 });

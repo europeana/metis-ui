@@ -2,7 +2,15 @@
 /*
 /* a component for wrapping ng-content in an expandable window with theme options
 */
-import { Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import { EditorConfiguration } from 'codemirror';
 import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
 
@@ -16,7 +24,7 @@ import { EditorPrefService } from '../../_services';
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss']
 })
-export class EditorComponent {
+export class EditorComponent implements AfterContentInit {
   @ViewChildren(CodemirrorComponent) allEditors: QueryList<CodemirrorComponent>;
 
   editorConfig: EditorConfiguration;
@@ -38,6 +46,10 @@ export class EditorComponent {
   }
 
   @Input() index?: number;
+
+  initialised = false;
+
+  @Input() loading = false;
   @Input() step?: string;
   @Input() stepCompare?: string;
   @Input() themeDisabled = false;
@@ -77,6 +89,15 @@ export class EditorComponent {
     const copyConfig = Object.assign({}, this.editorConfig);
     copyConfig.readOnly = readOnly;
     return copyConfig;
+  }
+
+  /** ngAfterContentInit
+   * set initialised flag
+   **/
+  ngAfterContentInit(): void {
+    setTimeout(() => {
+      this.initialised = true;
+    }, 0);
   }
 
   /** onThemeSet

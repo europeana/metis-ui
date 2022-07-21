@@ -1,4 +1,5 @@
 <app-notification
+  [ngClass]="{ notification: notification }"
   [notification]="notification"
   (closed)="notification = undefined"
 ></app-notification>
@@ -79,61 +80,117 @@
       </li>
     </ul>
   </div>
-
-  <div *ngIf="allSamples">
-    <ng-container *ngFor="let sample of allSamples; let i = index">
-      <app-editor
-        [index]="i"
-        [expandable]="true"
-        [expanded]="expandedSample === i"
-        [extraClasses]="{
-          'view-sample-compared': allSampleComparisons.length
-        }"
-        [step]="
-          previewFilters.baseFilter.pluginType
-            ? (previewFilters.baseFilter.pluginType | renameWorkflow)
-            : undefined
-        "
-        [stepCompare]="
-          previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
-            ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
-            : undefined
-        "
-        [title]="sample.ecloudId"
-        [xmlDownloads]="[sample, getComparisonSampleAtIndex(i)]"
-        (onToggle)="expandSample($event)"
-        #editorAll
+  <app-editor
+    *ngIf="allSamples.length"
+    [xmlDownloads]="[searchedXMLSample, searchedXMLSampleCompare]"
+    [expandable]="true"
+    [expanded]="searchedXMLSample && searchedXMLSampleExpanded"
+    [extraClasses]="{
+      'search-editor': true,
+      'search-error': searchError,
+      'result-found': searchedXMLSample
+    }"
+    [isSearchEditor]="true"
+    [loading]="isLoadingSearch"
+    [step]="
+      searchedXMLSample && previewFilters.baseFilter.pluginType
+        ? (previewFilters.baseFilter.pluginType | renameWorkflow)
+        : undefined
+    "
+    [stepCompare]="
+      previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
+        ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
+        : undefined
+    "
+    [title]="'previewSearchRecords' | translate"
+    (onSearch)="searchXMLSample($event)"
+    (onToggle)="expandSearchSample()"
+    #editorSearch
+  >
+    <span class="error" *ngIf="searchError">
+      {{ 'searchEmpty' | translate }} "{{ searchTerm }}"
+    </span>
+    <div class="view-sample-editor" *ngIf="searchedXMLSample">
+      <div
+        class="view-sample-editor-codemirror"
+        (click)="handleCodeClick($event)"
+        (mouseover)="handleMouseOver($event)"
+        (mouseout)="handleMouseOut($event)"
       >
-        <div class="view-sample-editor">
-          <div
-            class="view-sample-editor-codemirror"
-            (click)="handleCodeClick($event)"
-            (mouseover)="handleMouseOver($event)"
-            (mouseout)="handleMouseOut($event)"
-          >
-            <ngx-codemirror
-              [ngModel]="sample.xmlRecord | beautifyXML"
-              (ngModelChange)="sample.xmlRecord = $event"
-              [options]="editorAll.getEditorConfig()"
-            ></ngx-codemirror>
-          </div>
-          <div
-            *ngIf="getComparisonSampleAtIndex(i); let comparison"
-            class="view-sample-editor-codemirror"
-            (click)="handleCodeClick($event)"
-            (mouseover)="handleMouseOver($event)"
-            (mouseout)="handleMouseOut($event)"
-          >
-            <ngx-codemirror
-              [ngModel]="comparison.xmlRecord | beautifyXML"
-              (ngModelChange)="comparison.xmlRecord = $event"
-              [options]="editorAll.getEditorConfig()"
-            ></ngx-codemirror>
-          </div>
+        <ngx-codemirror
+          [ngModel]="searchedXMLSample.xmlRecord | beautifyXML"
+          (ngModelChange)="searchedXMLSample = $event"
+          [options]="editorSearch.getEditorConfig()"
+        ></ngx-codemirror>
+      </div>
+      <div
+        *ngIf="searchedXMLSampleCompare"
+        class="view-sample-editor-codemirror"
+        (click)="handleCodeClick($event)"
+        (mouseover)="handleMouseOver($event)"
+        (mouseout)="handleMouseOut($event)"
+      >
+        <ngx-codemirror
+          [ngModel]="searchedXMLSampleCompare.xmlRecord | beautifyXML"
+          (ngModelChange)="searchedXMLSampleCompare.xmlRecord = $event"
+          [options]="editorSearch.getEditorConfig()"
+        ></ngx-codemirror>
+      </div>
+    </div>
+  </app-editor>
+
+  <ng-container *ngFor="let sample of allSamples; let i = index">
+    <app-editor
+      [index]="i"
+      [expandable]="true"
+      [expanded]="expandedSample === i"
+      [extraClasses]="{
+        'view-sample-compared': allSampleComparisons.length
+      }"
+      [step]="
+        previewFilters.baseFilter.pluginType
+          ? (previewFilters.baseFilter.pluginType | renameWorkflow)
+          : undefined
+      "
+      [stepCompare]="
+        previewFilters.comparisonFilter && previewFilters.comparisonFilter.pluginType
+          ? (previewFilters.comparisonFilter.pluginType | renameWorkflow)
+          : undefined
+      "
+      [title]="sample.ecloudId"
+      [xmlDownloads]="[sample, getComparisonSampleAtIndex(i)]"
+      (onToggle)="expandSample($event)"
+      #editorAll
+    >
+      <div class="view-sample-editor">
+        <div
+          class="view-sample-editor-codemirror"
+          (click)="handleCodeClick($event)"
+          (mouseover)="handleMouseOver($event)"
+          (mouseout)="handleMouseOut($event)"
+        >
+          <ngx-codemirror
+            [ngModel]="sample.xmlRecord | beautifyXML"
+            (ngModelChange)="sample.xmlRecord = $event"
+            [options]="editorAll.getEditorConfig()"
+          ></ngx-codemirror>
         </div>
-      </app-editor>
-    </ng-container>
-  </div>
+        <div
+          *ngIf="getComparisonSampleAtIndex(i); let comparison"
+          class="view-sample-editor-codemirror"
+          (click)="handleCodeClick($event)"
+          (mouseover)="handleMouseOver($event)"
+          (mouseout)="handleMouseOut($event)"
+        >
+          <ngx-codemirror
+            [ngModel]="comparison.xmlRecord | beautifyXML"
+            (ngModelChange)="comparison.xmlRecord = $event"
+            [options]="editorAll.getEditorConfig()"
+          ></ngx-codemirror>
+        </div>
+      </div>
+    </app-editor>
+  </ng-container>
 
   <ng-container *ngIf="allSamples.length === 0">
     <app-editor
@@ -214,7 +271,7 @@
               *ngIf="allTransformedSamples[i] && allTransformedSamples[i].xmlRecord"
               [ngModel]="allTransformedSamples[i].xmlRecord | beautifyXML"
               (ngModelChange)="allTransformedSamples[i].xmlRecord = $event"
-              [options]="editorConfig"
+              [options]="editorTransformed.getEditorConfig()"
             ></ngx-codemirror>
           </div>
 

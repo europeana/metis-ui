@@ -66,6 +66,7 @@ describe('StatisticsComponent', () => {
     tick(1);
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('.view-statistics'))).toBeTruthy();
+    tick(1);
   }));
 
   it('allows viewport expansion', () => {
