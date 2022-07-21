@@ -518,14 +518,49 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
-  it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {
-    service
-      .addDatasetNameAndCurrentPlugin([])
-      .subscribe((res) => {
-        expect(res).toEqual([]);
+  it('should add the datasetName and current plugin ', fakeAsync(() => {
+    const sub = service.addDatasetNameAndCurrentPlugin([mockWorkflowExecution]).subscribe((res) => {
+      expect(res.length).toBeGreaterThan(0);
+    });
+    tick(10);
+    sub.unsubscribe();
+  }));
+
+  it('should handle addDatasetNameAndCurrentPlugin with an empty list', fakeAsync(() => {
+    const sub = service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
+      expect(res).toEqual([]);
+    });
+    tick(10);
+    sub.unsubscribe();
+  }));
+
+  it('should add the started by to WorkflowExecutionResults', fakeAsync(() => {
+    const sub = service
+      .addStartedByToWorkflowExecutionResults({
+        listSize: 1,
+        nextPage: -1,
+        results: [mockWorkflowExecution]
       })
-      .unsubscribe();
-  });
+      .subscribe((res) => {
+        expect(res.results.length).toBeGreaterThan(0);
+      });
+    tick(10);
+    sub.unsubscribe();
+  }));
+
+  it('should handle addStartedByToWorkflowExecutionResults with an empty list', fakeAsync(() => {
+    const sub = service
+      .addStartedByToWorkflowExecutionResults({
+        listSize: 0,
+        nextPage: -1,
+        results: []
+      })
+      .subscribe((res) => {
+        expect(res.results).toEqual([]);
+      });
+    tick(10);
+    sub.unsubscribe();
+  }));
 
   it('should unsubscribe when destroyed', () => {
     const sub = getUnsubscribable();

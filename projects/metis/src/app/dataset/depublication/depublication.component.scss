@@ -69,7 +69,7 @@
   height: 1.5rem;
   width: 1.5rem;
   &.showing {
-    background: svg-url-icon-spin('#{$gray-light}') center no-repeat;
+    background: svg-url-icon-spin($gray-light) center no-repeat;
   }
 }
 

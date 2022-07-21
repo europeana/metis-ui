@@ -60,3 +60,8 @@ $dimension-button: 40px;
     opacity: 0.5;
   }
 }
+
+.search.loading {
+  background-image: svg-url-icon-spin($white);
+  background-position: 50% 50%;
+}

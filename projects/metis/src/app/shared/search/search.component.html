@@ -2,7 +2,7 @@
   <ng-template #button>
     <a
       class="search"
-      [ngClass]="{ disabled: !searchInput.validity.valid }"
+      [ngClass]="{ disabled: !searchInput.validity.valid, loading: loading }"
       (click)="executeSearch()"
     ></a>
   </ng-template>

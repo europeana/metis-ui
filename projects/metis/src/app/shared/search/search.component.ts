@@ -11,6 +11,7 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@
 export class SearchComponent {
   @Input() reversed = false;
   @Input() label?: string;
+  @Input() loading = false;
   @Input() pattern?: string;
   @Input() inputId = 'search';
   @Input() searchString?: string;
