@@ -59,7 +59,6 @@ export interface ProblemPattern {
 
 export interface ProblemPatternsDataset {
   datasetId: string;
-  executionStep: string;
   executionTimestamp: string;
   problemPatternList: Array<ProblemPattern>;
 }
