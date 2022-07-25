@@ -5,8 +5,8 @@
 /* the theme is set with a menu drop-down component
 */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { triggerXmlDownload } from '../_helpers';
-import { XmlDownload } from '../_models';
+import { triggerXmlDownload } from '../../_helpers';
+import { XmlDownload } from '../../_models';
 
 @Component({
   selector: 'app-editor-drop-down',

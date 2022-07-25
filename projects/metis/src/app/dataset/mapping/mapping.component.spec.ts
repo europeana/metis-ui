@@ -90,6 +90,7 @@ describe('MappingComponent', () => {
       expect(component.xsltStatus).toBe('new-custom');
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
       expect(component.xslt).toBeTruthy();
+      tick(1);
     }));
 
     it('should save xslt', fakeAsync(() => {

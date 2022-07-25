@@ -33,6 +33,15 @@ describe('SearchComponent', () => {
     expect(component.onExecute.emit).toHaveBeenCalled();
   });
 
+  it('should not execute a search if invalid', () => {
+    spyOn(component.onExecute, 'emit');
+    component.pattern = '[0-9]+';
+    fixture.detectChanges();
+    component.searchInput.nativeElement.value = 'ABC';
+    component.submitOnEnter(({ key: 'Enter' } as unknown) as KeyboardEvent);
+    expect(component.onExecute.emit).not.toHaveBeenCalled();
+  });
+
   it('should execute a search on return (key event)', () => {
     spyOn(component.onExecute, 'emit');
 
@@ -44,5 +53,14 @@ describe('SearchComponent', () => {
     expect(component.onExecute.emit).not.toHaveBeenCalled();
     component.submitOnEnter(({ key: 'Enter' } as unknown) as KeyboardEvent);
     expect(component.onExecute.emit).toHaveBeenCalledWith(testTerm);
+  });
+
+  it('should execute empty searches', () => {
+    spyOn(component.onExecute, 'emit');
+    component.executeSearch();
+    expect(component.onExecute.emit).not.toHaveBeenCalled();
+    component.executeEmpty = true;
+    component.executeSearch();
+    expect(component.onExecute.emit).toHaveBeenCalledWith('');
   });
 });

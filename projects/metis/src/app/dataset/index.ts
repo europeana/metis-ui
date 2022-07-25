@@ -7,6 +7,7 @@ export * from './depublication/depublication-row/';
 export * from './depublication/sortable-header';
 export * from './depublication/sortable-group/';
 export * from './editor/';
+export * from './editor-drop-down/';
 export * from './executions-data-grid/';
 export * from './generalinfo/';
 export * from './history/';

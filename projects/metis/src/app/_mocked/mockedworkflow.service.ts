@@ -302,7 +302,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
-      startedBy: '1482250000001617026',
+      startedBy: undefined,
       metisPlugins: [
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -693,9 +693,12 @@ export class MockWorkflowService {
     return of(mockHistoryVersions).pipe(delay(1));
   }
 
-  getWorkflowRecordsById(): Observable<XmlSample[]> {
+  getWorkflowRecordsById(_: string, __: PluginType, ids: Array<string>): Observable<XmlSample[]> {
     if (this.errorMode) {
       return throwError(new Error('mock getWorkflowRecordsById throws error...'));
+    }
+    if (ids.length === 1 && ids[0] === 'zero') {
+      return of([]);
     }
     return of(mockXmlSamples);
   }

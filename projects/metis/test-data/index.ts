@@ -21,6 +21,8 @@ import {
 import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-models';
 import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models/depublication';
 
+const FAIL = 'fail';
+
 new (class extends TestDataServer {
   serverName = 'metis';
   depublicationInfoCache: Array<RecordDepublicationInfo> = [];
@@ -541,38 +543,51 @@ new (class extends TestDataServer {
     if (regRes) {
       let body = '';
       let plugin = 'PluginType';
-      request.on('data', function(data: { toString: () => string }) {
-        body += data.toString();
-      });
-
       if (regRes[2]) {
         plugin = regRes[2];
       }
 
+      request.on('data', function(data: { toString: () => string }) {
+        body += data.toString();
+      });
       request.on('end', function() {
-        if (JSON.parse(body).ids[0] === 'fail') {
-          response.statusCode = 400;
-          response.end(
-            JSON.stringify({
-              message: 'Failure!',
-              error: {
-                errorMessage: 'Expecting representations!'
+        const ids = JSON.parse(body).ids;
+        setTimeout(
+          () => {
+            const firstAsNumber = parseInt(ids[0]);
+            if (ids[0] === FAIL) {
+              response.statusCode = 400;
+              response.end(
+                JSON.stringify({
+                  message: 'Failure!',
+                  error: {
+                    errorMessage: 'Expecting representations!'
+                  }
+                })
+              );
+            } else if (firstAsNumber >= 400 && firstAsNumber <= 599) {
+              response.statusCode = firstAsNumber;
+              response.end();
+            } else {
+              let records = [];
+              // short ids get an empty result
+              if (ids[0].length > 5) {
+                records = ids.map((id: string) => {
+                  return {
+                    ecloudId: id,
+                    xmlRecord: `<x>${plugin}</x>`
+                  };
+                });
               }
-            })
-          );
-        } else {
-          response.end(
-            JSON.stringify({
-              records: [
-                {
-                  ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
-                  xmlRecord: `<x>${plugin}</x>`
-                }
-              ]
-            })
-          );
-        }
-        return true;
+              response.end(
+                JSON.stringify({
+                  records: records
+                })
+              );
+            }
+          },
+          ids.length === 1 ? 1000 : 0
+        );
       });
       return true;
     }
@@ -633,6 +648,22 @@ new (class extends TestDataServer {
     const requestHandled = this.routeToFile(request, response, route);
 
     if (!requestHandled) {
+      if (request.method === 'PUT') {
+        let body = '';
+        request.on('data', function(data: { toString: () => string }) {
+          body += data.toString();
+        });
+        request.on('end', function() {
+          const data = (JSON.parse(body) as { xslt: string }).xslt;
+          if (data === FAIL) {
+            response.statusCode = 500;
+            response.end();
+          } else {
+            response.end();
+          }
+        });
+        return;
+      }
       if (request.method === 'POST') {
         response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 

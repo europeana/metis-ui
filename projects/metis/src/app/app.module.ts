@@ -27,6 +27,7 @@ import {
   DepublicationComponent,
   DepublicationRowComponent,
   EditorComponent,
+  EditorDropDownComponent,
   ExecutionsDataGridComponent,
   GeneralinfoComponent,
   HistoryComponent,
@@ -63,7 +64,6 @@ import {
   TextWithLinksComponent
 } from './shared';
 import { SearchResultsComponent } from './search-results';
-import { EditorDropDownComponent } from './editor-drop-down';
 
 @NgModule({
   declarations: [

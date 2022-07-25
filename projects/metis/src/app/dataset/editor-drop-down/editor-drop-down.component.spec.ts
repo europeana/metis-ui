@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { createMockPipe } from '../_mocked';
+import { createMockPipe } from '../../_mocked';
 
 import { EditorDropDownComponent } from '.';
 

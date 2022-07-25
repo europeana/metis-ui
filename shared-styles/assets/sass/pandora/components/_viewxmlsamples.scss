@@ -21,6 +21,39 @@ codemirror {
   width: 100%;
 }
 
+// Editor ctrl
+
+.editor-ctrl {
+  $ctrl-width: 2em;
+  background-color: $white;
+  border-radius: 50%;
+  color: $eu-jade;
+  cursor: pointer;
+  display: block;
+  height: $ctrl-width;
+  min-width: $ctrl-width;
+  position: relative;
+  text-transform: capitalize;
+  width: $ctrl-width;
+
+  &::before {
+    bottom: 0;
+    content: '···';
+    display: block;
+    font-size: 2em;
+    left: 0;
+    letter-spacing: -2px;
+    line-height: 100%;
+    position: absolute;
+    right: 2px;
+    text-align: center;
+    top: 0px;
+  }
+  &:hover::before {
+    font-weight: 600;
+  }
+}
+
 .title-controls {
   align-items: center;
   display: flex;
@@ -29,27 +62,11 @@ codemirror {
 }
 
 .toggle-expand {
-  $toggle-ctrl-width: 2em;
-  background: $white;
-  border-radius: 1em;
-  color: $eu-jade;
-  display: block;
-  height: $toggle-ctrl-width;
-  min-width: $toggle-ctrl-width;
-  pointer: cursor;
-  position: relative;
-  text-align: center;
-  width: $toggle-ctrl-width;
-
   &::before {
     content: '·';
-    display: block;
-    font-size: 2em;
-    left: 0;
+    letter-spacing: normal;
     line-height: 100%;
-    position: absolute;
     right: 0;
-    text-align: center;
   }
   &:hover::before {
     color: $eu-jade;
@@ -172,5 +189,146 @@ codemirror {
       background: $eu-jade;
       color: $white;
     }
+  }
+}
+
+// Search Editor
+
+.view-sample.search-editor .app-search {
+  @include fontSize(19px);
+  padding: 0.625rem 1rem;
+  transition: width 1s;
+  width: calc(100% - 40px);
+  &.pre-init {
+    width: 0;
+  }
+}
+
+.search-editor {
+  $input-padding-left: 0.65rem;
+  transition: margin-bottom 0.5s;
+
+  &.search-error {
+    margin-bottom: 3em;
+  }
+
+  .error {
+    color: red;
+    margin: 0 1.6em -1.6em;
+  }
+
+  .search {
+    $search-dimension: 36px;
+    $search-space: 0.625rem;
+
+    height: $search-dimension;
+    margin-left: $search-space;
+    margin-right: -0.3em;
+    min-width: $search-dimension;
+    position: relative;
+    transition: border-radius 0.5s;
+    width: $search-dimension;
+
+    &::before {
+      content: '';
+      display: block;
+      height: 2em;
+      left: -$search-space;
+      position: absolute;
+      width: $search-space;
+    }
+  }
+
+  .search-form {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    right: 0;
+  }
+
+  .search-label {
+    display: block;
+    letter-spacing: 0;
+    overflow: hidden;
+    padding-bottom: 0;
+    width: 100%;
+  }
+
+  .search-string {
+    margin-left: -$input-padding-left;
+    margin-right: 0;
+  }
+
+  &:not(.result-found) {
+    &:not(.search-error) {
+      margin-bottom: 1em;
+    }
+
+    .app-editor-drop-down {
+      visibility: hidden;
+    }
+
+    .btns-set {
+      display: none;
+    }
+
+    .search-label {
+      overflow: hidden;
+      transition: width 0.5s;
+      width: 0;
+      white-space: nowrap;
+    }
+
+    .search-string {
+      // if there's no result... we should remain at full width
+      border: 1px solid #777;
+      padding: 0.2em $input-padding-left;
+      transition: width 0.5s;
+      width: 100%;
+    }
+
+    .view-sample-title {
+      background: transparent;
+      color: $eu-jade;
+    }
+  }
+
+  // if there is a result then the width is dynamic
+  &.result-found {
+    .search {
+      border-radius: 50%;
+    }
+
+    .search-string {
+      border: 0;
+      padding: 0;
+      transition: none;
+      width: 0;
+    }
+
+    // expand input...
+    .search-string:focus,
+    .search-string:hover,
+    .search:hover ~ .search-string {
+      border: 1px solid #777;
+      padding: 0.2em $input-padding-left;
+      transition: width 0.5s;
+      width: 100%;
+    }
+
+    // ...contract label
+    .search-string:focus,
+    .search-string:hover,
+    .search:hover {
+      & ~ .search-label {
+        overflow: hidden;
+        transition: width 0.5s;
+        width: 0;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .view-sample-title {
+    transition: background 0.5s;
   }
 }

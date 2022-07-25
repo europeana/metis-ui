@@ -231,7 +231,7 @@
 .svg-icon-spin-inbutton {
   padding-right: 2rem;
   &::after {
-    background-image: svg-url-icon-spin('#fff');
+    background-image: svg-url-icon-spin($white);
     height: 23px;
     top: 0.4rem;
     transform: scale(0.7);
@@ -304,11 +304,10 @@
 }
 
 .svg-icon-spin {
-  background-image: svg-url-icon-spin('#7777777');
+  background-image: svg-url-icon-spin($gray-light);
   height: 32px;
   width: 23px;
   visibility: hidden;
-
   &.showing {
     visibility: visible;
   }

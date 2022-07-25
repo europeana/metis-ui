@@ -3,6 +3,7 @@
   *ngIf="statistics"
   [expanded]="expandedStatistics"
   [expandable]="true"
+  [themeDisabled]="true"
   [title]="'statistics' | translate"
   [extraClasses]="{ 'view-sample-expanded': expandedStatistics, 'view-statistics': true }"
   (onToggle)="toggleStatistics()"

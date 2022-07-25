@@ -43,7 +43,7 @@ $width-orb: 3em;
   }
 
   .head-prefix.workflow {
-    background: svg-url-icon-workflow('#{$eu-jade}', 0.5) 0 center / 16px no-repeat;
+    background: svg-url-icon-workflow($eu-jade, 0.5) 0 center / 16px no-repeat;
     padding-left: 1.75em;
   }
 }
@@ -81,7 +81,7 @@ $width-orb: 3em;
   margin-top: 38px;
 
   .workflow-icon {
-    background-image: svg-url-icon-workflow('#{$eu-jade}', 0.5);
+    background-image: svg-url-icon-workflow($eu-jade, 0.5);
     background-position: 0 center;
     background-repeat: no-repeat;
     background-size: 16px 16px;
@@ -90,12 +90,12 @@ $width-orb: 3em;
   }
   &:hover {
     .workflow-icon {
-      background-image: svg-url-icon-workflow('#{$eu-jade}', 1);
+      background-image: svg-url-icon-workflow($eu-jade, 1);
     }
   }
   &.is-loading {
     .workflow-icon {
-      background-image: svg-url-icon-spin('#{$eu-jade}');
+      background-image: svg-url-icon-spin($eu-jade);
     }
   }
 }

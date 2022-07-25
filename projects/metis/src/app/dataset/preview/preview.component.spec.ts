@@ -171,6 +171,7 @@ describe('PreviewComponent', () => {
       tick(1);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css(selNonDefaultEditor)).length).toBeTruthy();
+      tick(0);
       component.ngOnDestroy();
     }));
 
@@ -183,7 +184,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeFalsy();
 
       component.datasetData = mockDataset;
-      tick(1);
+      tick(1000);
       fixture.detectChanges();
 
       expect(fixture.debugElement.queryAll(By.css('.dropdown-date')).length).toBeTruthy();
@@ -201,6 +202,7 @@ describe('PreviewComponent', () => {
       expect(fixture.debugElement.queryAll(By.css('.dropdown-plugin')).length).toBeTruthy();
       expect(fixture.debugElement.queryAll(By.css('.dropdown-compare')).length).toBeTruthy();
 
+      tick(1000);
       component.ngOnDestroy();
     }));
 
@@ -236,6 +238,7 @@ describe('PreviewComponent', () => {
     }));
 
     it('should expand a sample', fakeAsync((): void => {
+      fixture.detectChanges();
       component.datasetData = mockDataset;
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
@@ -250,19 +253,27 @@ describe('PreviewComponent', () => {
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeTruthy();
       fixture.detectChanges();
+      tick(1);
       component.ngOnDestroy();
     }));
 
+    it('should expand the searched sample', (): void => {
+      expect(component.searchedXMLSampleExpanded).toBeFalsy();
+      component.expandSearchSample();
+      expect(component.searchedXMLSampleExpanded).toBeTruthy();
+    });
+
     it('should collapse an expanded sample', fakeAsync((): void => {
-      tick(0);
+      tick(1000);
       fixture.detectChanges();
 
       component.datasetData = mockDataset;
+      tick(1000);
       fixture.detectChanges();
       component.previewFilters = previewFilterData;
       component.prefillFilters();
       component.tempXSLT = undefined;
-      tick(1);
+      tick(1000);
       component.expandedSample = undefined;
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
@@ -272,6 +283,7 @@ describe('PreviewComponent', () => {
       component.expandSample(0);
       fixture.detectChanges();
       expect(fixture.debugElement.queryAll(By.css('.view-sample-expanded')).length).toBeFalsy();
+      tick(1000);
       component.ngOnDestroy();
     }));
 
@@ -308,17 +320,66 @@ describe('PreviewComponent', () => {
       component.datasetData = mockDataset;
       component.previewFilters = previewFilterDataCompare;
       component.historyVersions = mockHistoryVersions;
-      tick(1);
+      tick(1000);
       fixture.detectChanges();
       expect(component.previewFilters.sampleRecordIds).toBeTruthy();
       expect(component.allSampleComparisons.length).toBeFalsy();
 
+      spyOn(component.setPreviewFilters, 'emit');
       component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
-      tick(1);
+      tick(1000);
       fixture.detectChanges();
       expect(component.allSampleComparisons.length).toBeTruthy();
+      expect(component.setPreviewFilters.emit).not.toHaveBeenCalled();
 
+      component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', false);
+      tick(1);
+      fixture.detectChanges();
+      expect(component.setPreviewFilters.emit).toHaveBeenCalled();
+
+      component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123');
+      tick(1);
+      fixture.detectChanges();
+
+      expect(component.setPreviewFilters.emit).toHaveBeenCalledTimes(2);
       component.ngOnDestroy();
+    }));
+
+    it('should search for a sample', (): void => {
+      expect(component.searchedXMLSample).toBeFalsy();
+
+      component.searchXMLSample('abc');
+      expect(component.searchedXMLSample).toBeFalsy();
+
+      component.previewFilters.baseFilter.executionId = 'A';
+      component.searchXMLSample('abc');
+      expect(component.searchedXMLSample).toBeFalsy();
+
+      component.previewFilters.baseFilter.pluginType = PluginType.NORMALIZATION;
+      component.searchXMLSample('abc');
+      expect(component.searchedXMLSample).toBeTruthy();
+      expect(component.searchError).toBeFalsy();
+
+      component.searchXMLSample('zero');
+      expect(component.searchError).toBeTruthy();
+    });
+
+    it('should get the comparison for the searched sample', fakeAsync((): void => {
+      expect(component.searchedXMLSampleCompare).toBeFalsy();
+      component.searchXMLSample('abc', true);
+      tick(1);
+      expect(component.searchedXMLSampleCompare).toBeFalsy();
+      component.previewFilters.baseFilter = {
+        executionId: 'A',
+        pluginType: PluginType.NORMALIZATION
+      };
+      component.previewFilters.comparisonFilter = {
+        executionId: 'B',
+        pluginType: PluginType.VALIDATION_INTERNAL
+      };
+      component.searchXMLSample('abc', true);
+      tick(1);
+      expect(component.searchedXMLSampleCompare).toBeTruthy();
     }));
 
     it('should toggle filters', fakeAsync(() => {
@@ -408,6 +469,12 @@ describe('PreviewComponent', () => {
       const res: XmlDownload[] = component.processXmlSamples(samples, 'label');
       expect(res[0].label).toBeTruthy();
       expect(res[0].xmlRecord).toEqual('');
+    });
+
+    it('should get the comparison by index', () => {
+      expect(component.getComparisonSampleAtIndex(1)).toBeFalsy();
+      component.allSampleComparisons = [({} as unknown) as XmlDownload];
+      expect(component.getComparisonSampleAtIndex(0)).toBeTruthy();
     });
 
     it('should go to the mapping', () => {
@@ -534,6 +601,16 @@ describe('PreviewComponent', () => {
       tick(1);
     }));
 
+    it('should handle errors searching for a sample', (): void => {
+      expect(component.searchedXMLSample).toBeFalsy();
+      expect(component.searchError).toBeFalsy();
+      component.previewFilters.baseFilter.executionId = 'A';
+      component.previewFilters.baseFilter.pluginType = PluginType.NORMALIZATION;
+      component.searchXMLSample('abc123');
+      expect(component.searchedXMLSample).toBeFalsy();
+      expect(component.notification).toBeTruthy();
+    });
+
     it('should handle errors transforming the samples', fakeAsync(() => {
       component.datasetData = mockDataset;
       component.isLoadingTransformSamples = true;
@@ -545,6 +622,19 @@ describe('PreviewComponent', () => {
       expect(component.isLoading()).toBeFalsy();
       component.ngOnDestroy();
       tick(1);
+    }));
+
+    it('should handle errors getting the sample comparison', fakeAsync(() => {
+      component.datasetData = mockDataset;
+      component.previewFilters = previewFilterDataCompare;
+      component.historyVersions = mockHistoryVersions;
+      tick(1);
+      fixture.detectChanges();
+      component.getXMLSamplesCompare(PluginType.NORMALIZATION, '123', true);
+      tick(1);
+      fixture.detectChanges();
+      expect(component.allSampleComparisons.length).toBeFalsy();
+      component.ngOnDestroy();
     }));
   });
 });

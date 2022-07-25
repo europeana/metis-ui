@@ -1,10 +1,26 @@
 <span class="search-form">
+  <ng-template #button>
+    <a
+      class="search"
+      [ngClass]="{ disabled: !searchInput.validity.valid, loading: loading }"
+      (click)="executeSearch()"
+    ></a>
+  </ng-template>
+  <ng-container *ngIf="reversed">
+    <ng-content *ngTemplateOutlet="button"></ng-content>
+  </ng-container>
   <input
+    #searchInput
+    id="{{ inputId }}"
     class="search-string"
     type="text"
+    [attr.pattern]="pattern"
     (keyup)="submitOnEnter($event)"
     [(ngModel)]="searchString"
     placeholder="{{ placeholderKey | translate }}"
   />
-  <span class="search" (click)="executeSearch()"></span>
+  <label *ngIf="label" class="search-label" for="{{ inputId }}">{{ label }} </label>
+  <ng-container *ngIf="!reversed">
+    <ng-content *ngTemplateOutlet="button"></ng-content>
+  </ng-container>
 </span>
