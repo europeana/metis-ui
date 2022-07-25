@@ -557,7 +557,6 @@ new (class extends TestDataServer {
             }
             const problemsDataset = {
               datasetId: id,
-              executionStep: `step ${id}`,
               executionTimestamp: `${new Date().toISOString()}`,
               problemPatternList:
                 idNumeric % 2 === 0
