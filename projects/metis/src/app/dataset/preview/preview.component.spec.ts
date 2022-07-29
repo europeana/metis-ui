@@ -233,6 +233,21 @@ describe('PreviewComponent', () => {
       expect(component.historyVersions).toBeTruthy();
       expect(component.allPlugins.length).toBeTruthy();
 
+      const searchTerm = 'mySearchTerm';
+      const previewFilterDataSearch = Object.assign({}, previewFilterData);
+      previewFilterDataSearch.searchedRecordId = searchTerm;
+
+      component.previewFilters = { baseFilter: {} };
+
+      component.prefillFilters();
+      tick(1);
+      expect(component.searchTerm).toBeFalsy();
+
+      component.previewFilters = previewFilterDataSearch;
+      component.prefillFilters();
+      tick(1);
+      expect(component.searchTerm).toEqual(searchTerm);
+
       component.ngOnDestroy();
       tick(1);
     }));
