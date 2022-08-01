@@ -373,15 +373,24 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     const prvCmp = this.previewFilters.comparisonFilter;
     const pluginType = this.previewFilters.baseFilter.pluginType;
     const executionId = this.previewFilters.baseFilter.executionId;
+    const searchedRecordId = this.previewFilters.searchedRecordId;
 
     if (pluginType) {
       this.getXMLSamples(pluginType, true);
 
       if (prvCmp && prvCmp.pluginType && prvCmp.executionId) {
         this.getXMLSamplesCompare(prvCmp.pluginType, prvCmp.executionId, true);
+        if (searchedRecordId) {
+          this.searchTerm = searchedRecordId;
+          this.searchXMLSample(searchedRecordId, true);
+        }
       }
       if (executionId) {
         this.getVersions(pluginType, executionId);
+      }
+      if (searchedRecordId) {
+        this.searchTerm = searchedRecordId;
+        this.searchXMLSample(searchedRecordId, false);
       }
     }
 
@@ -537,6 +546,10 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     this.searchTerm = searchTerm;
 
     if (searchTerm.length === 0) {
+      if (this.previewFilters.searchedRecordId) {
+        this.previewFilters.searchedRecordId = undefined;
+        this.setPreviewFilters.emit(this.previewFilters);
+      }
       this.searchedXMLSample = undefined;
       this.searchError = false;
       return;
@@ -562,6 +575,8 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
               } else {
                 this.searchedXMLSample = searchedSample;
               }
+              this.previewFilters.searchedRecordId = searchTerm;
+              this.setPreviewFilters.emit(this.previewFilters);
             } else {
               this.searchError = true;
               this.searchedXMLSample = undefined;

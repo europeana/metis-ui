@@ -116,6 +116,7 @@ export interface PreviewFilters {
   comparisonFilter?: PreviewFilter;
   baseStartedDate?: string;
   sampleRecordIds?: Array<string>;
+  searchedRecordId?: string;
 }
 
 export interface PluginAvailability {

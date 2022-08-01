@@ -281,5 +281,36 @@ context('metis-ui', () => {
       cy.get(selMenuCompareFirstItem).click(force);
       cy.get(selInnerEditors).should('have.length', 2);
     });
+
+    it('should remember the search when the user switches tabs', () => {
+      fillMenus(3);
+      cy.get(selEditorSearchContent).should('not.exist');
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+      cy.get(selInputSearch).type('ABC123');
+      cy.get(selBtnSearch).click(force);
+      cy.get(selEditorSearchContent).should('exist');
+      leaveAndReturn();
+      cy.wait(500);
+      cy.get(selEditorSearchContent).should('exist');
+    });
+
+    it('should remember the compared search when the user switches tabs', () => {
+      fillMenus(3);
+      leaveAndReturn();
+      cy.get(selEditorDefault).should('not.exist');
+      cy.get(selEditorCompare).should('be.visible');
+      cy.get(selEditorSearchContent).should('not.exist');
+
+      cy.get(selBtnSearch).click(force);
+      cy.wait(500);
+      cy.get(selInputSearch).type('ABC123');
+      cy.get(selBtnSearch).click(force);
+      cy.get(selEditorSearchContent).should('exist');
+
+      leaveAndReturn();
+      cy.wait(500);
+      cy.get(selEditorSearchContent).should('exist');
+    });
   });
 });

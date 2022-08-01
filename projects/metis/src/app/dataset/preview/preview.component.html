@@ -91,6 +91,7 @@
       'result-found': searchedXMLSample
     }"
     [isSearchEditor]="true"
+    [searchTerm]="previewFilters.searchedRecordId"
     [loading]="isLoadingSearch"
     [step]="
       searchedXMLSample && previewFilters.baseFilter.pluginType

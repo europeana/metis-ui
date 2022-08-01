@@ -55,6 +55,7 @@ export class EditorComponent implements AfterContentInit {
   @Input() themeDisabled = false;
   @Input() title: string;
   @Input() isSearchEditor = false;
+  @Input() searchTerm: string;
 
   _xmlDownloads?: Array<XmlDownload>;
 

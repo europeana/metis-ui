@@ -12,12 +12,12 @@
         [ngClass]="{ 'pre-init': !initialised }"
         [executeEmpty]="true"
         [inputId]="'search_xml'"
-        [label]="title"
+        [label]="searchTerm ? searchTerm : title"
         [loading]="loading"
         [pattern]="'[A-Za-z0-9]*'"
         [placeholderKey]="'previewSearchRecords' | translate"
         [reversed]="true"
-        [searchString]="''"
+        [searchString]="searchTerm"
         (onExecute)="search($event)"
       ></app-search>
       <app-editor-drop-down
