@@ -1,4 +1,6 @@
 #footer {
-  position: sticky;
-  top: calc(100% - 6.75rem);
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
 }
