@@ -30,10 +30,14 @@
     <ng-content *ngTemplateOutlet="dataWrapper.gridDataTemplate"></ng-content>
   </ng-container>
 
-  <span class="table-grid-footer">
-    <a class="load-more-btn" routerLink="/dataset/log/{{ datasetId }}" (click)="scroll(starttab)">{{
-      'fullHistory' | translate
-    }}</a>
+  <span *ngIf="fullHistoryLinkVisible()" class="table-grid-footer">
+    <a
+      class="load-more-btn"
+      data-e2e="log-link"
+      routerLink="/dataset/log/{{ datasetId }}"
+      (click)="scroll(starttab)"
+      >{{ 'fullHistory' | translate }}</a
+    >
   </span>
 </div>
 <div #starttab></div>
