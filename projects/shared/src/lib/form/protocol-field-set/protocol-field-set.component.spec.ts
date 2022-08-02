@@ -55,7 +55,7 @@ describe('ProtocolFieldSetComponent', () => {
 
   it('should clear the form validators', () => {
     component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
-    const ctrl = (component.form.get('url') as FormControl);
+    const ctrl = component.form.get('url') as FormControl;
     ctrl.setValidators(Validators.required);
     expect(ctrl.hasValidator(Validators.required)).toBeTruthy();
 

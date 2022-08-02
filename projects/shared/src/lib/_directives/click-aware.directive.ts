@@ -35,26 +35,25 @@ export class ClickAwareDirective extends SubscriptionManager {
    *   emit event if outside
    */
   documentClickListener(nativeElement: HTMLElement, clickTarget: HTMLElement): void {
-
-    if(this.clickAwareIgnoreWhen) {
+    if (this.clickAwareIgnoreWhen) {
       return;
     }
 
     let shouldIgnore = false;
 
-    if(this.ignoreClasses.length > 0){
+    if (this.ignoreClasses.length > 0) {
       let node = clickTarget;
-      while(node){
-        this.ignoreClasses.forEach((clss: string)=> {
-          if(node.classList && node.classList.contains(clss)){
+      while (node) {
+        this.ignoreClasses.forEach((clss: string) => {
+          if (node.classList && node.classList.contains(clss)) {
             shouldIgnore = true;
           }
         });
-        node = node.parentNode as unknown as HTMLElement;
+        node = (node.parentNode as unknown) as HTMLElement;
       }
     }
 
-    if(!shouldIgnore) {
+    if (!shouldIgnore) {
       this.isClickedInside = nativeElement.contains(clickTarget);
       if (!this.isClickedInside) {
         this.clickOutside.emit();
