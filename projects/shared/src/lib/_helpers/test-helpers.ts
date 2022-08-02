@@ -23,8 +23,7 @@ export function getCodeMirrorEditors(): QueryList<CodemirrorComponent> {
         setOption: jasmine.createSpy('setEditorOption')
       }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ] as any) as QueryList<CodemirrorComponent>;
+  ] as unknown) as QueryList<CodemirrorComponent>;
 }
 
 /** gatherValues
@@ -74,8 +73,7 @@ export class MockHttpRequest {
 
   constructor(private readonly req: TestRequest, public url: string) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public body(body: any): MockHttpRequest {
+  public body(body: unknown): MockHttpRequest {
     expect(this.req.request.body).toEqual(body);
     this.hasBody = true;
     return this;
@@ -90,8 +88,7 @@ export class MockHttpRequest {
     return this.header('Authorization', 'Basic ' + value);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public send(data: any): void {
+  public send(data: unknown): void {
     if (!this.hasBody) {
       if (this.req.request.body) {
         expect(this.req.request.body).toEqual({});
@@ -99,7 +96,7 @@ export class MockHttpRequest {
         expect(this.req.request.body).toEqual(null);
       }
     }
-    this.req.flush(data);
+    this.req.flush(data as Array<unknown>);
     this.isClosed = true;
   }
 }

@@ -6,7 +6,6 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
 import { CollapsibleDirective } from './_directives/collapsible';
-import { ClickAwareDirective } from './_directives/click-aware';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
@@ -69,7 +68,6 @@ import { SearchResultsComponent } from './search-results';
   declarations: [
     ActionbarComponent,
     AppComponent,
-    ClickAwareDirective,
     CollapsibleDirective,
     RegisterComponent,
     LoginComponent,

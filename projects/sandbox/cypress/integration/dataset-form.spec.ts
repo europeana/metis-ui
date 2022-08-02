@@ -119,16 +119,16 @@ context('Sandbox', () => {
       cy.url().should('match', /\d+\/\S+\d+/);
 
       // confirm the form is navigable
-      cy.get(`.wizard-status li:first-child() a`).click(force);
+      cy.get(`.wizard-head li:first-child() a`).click(force);
 
       navigateSteps(
         () => {
           currentStep++;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
+          cy.get(`.wizard-head li:nth-child(${currentStep}) a`).click(force);
         },
         () => {
           currentStep--;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
+          cy.get(`.wizard-head li:nth-child(${currentStep}) a`).click(force);
         }
       );
     });

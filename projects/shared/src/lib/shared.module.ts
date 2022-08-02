@@ -2,8 +2,10 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { DataPollingComponent } from './data-polling/data-polling.component';
+import { ClickAwareDirective } from './_directives/click-aware.directive';
 import { MockModalConfirmService } from './_mocked/MockedModalConfirm.service';
 import { ModalConfirmComponent } from './modal-confirm/modal-confirm.component';
+import { ClickService } from './_services/click.service';
 import { ModalConfirmService } from './_services/modal-confirm.service';
 import { SubscriptionManager } from './subscription-manager/subscription.manager';
 import { ProtocolFieldSetComponent } from './form/protocol-field-set/protocol-field-set.component';
@@ -12,6 +14,7 @@ import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
+    ClickAwareDirective,
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
@@ -20,8 +23,9 @@ import { FooterComponent } from './footer/footer.component';
     ProtocolFieldSetComponent
   ],
   imports: [BrowserModule, FormsModule, ReactiveFormsModule],
-  providers: [ModalConfirmService, MockModalConfirmService],
+  providers: [ClickService, ModalConfirmService, MockModalConfirmService],
   exports: [
+    ClickAwareDirective,
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,

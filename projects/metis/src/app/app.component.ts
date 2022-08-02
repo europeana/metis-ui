@@ -4,10 +4,15 @@ import { Event, Router, RouterEvent } from '@angular/router';
 import { of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ModalConfirmComponent, ModalConfirmService, SubscriptionManager } from 'shared';
+import {
+  ClickService,
+  ModalConfirmComponent,
+  ModalConfirmService,
+  SubscriptionManager
+} from 'shared';
 import { environment } from '../environments/environment';
 import { CancellationRequest } from './_models';
-import { AuthenticationService, ClickService, ErrorService, WorkflowService } from './_services';
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 
 @Component({
   selector: 'app-root',

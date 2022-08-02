@@ -2,7 +2,8 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ClickService } from '../../_services';
+
+import { ClickService } from '../_services/click.service';
 import { ClickAwareDirective } from '.';
 
 @Component({
@@ -13,7 +14,7 @@ import { ClickAwareDirective } from '.';
         <br />
         <br />
       </div>
-      <div class="live-zone" appClickAware #clickInfo="clickInfo" (click)="clicked()">
+      <div class="live-zone" libClickAware #clickInfo="clickInfo" (click)="clicked()">
         <span class="inner-element">CHILD</span>
       </div>
     </div>
