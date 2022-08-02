@@ -1,8 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';
 import { ProtocolType } from '../../_models/shared-models';
+import { FileUploadComponent } from '../file-upload/file-upload.component';
 
 describe('ProtocolFieldSetComponent', () => {
   let component: ProtocolFieldSetComponent;
@@ -13,10 +14,23 @@ describe('ProtocolFieldSetComponent', () => {
   const urlHarvest2 = 'http://harvest-2';
   const spec = 'specification';
 
+  const buildForm = (): void => {
+    component.protocolForm = formBuilder.group({
+      pluginType: null,
+      harvestUrl: urlHarvest1,
+      url: urlHarvest2,
+      setSpec: spec,
+      metadataFormat: null,
+      fileField: null,
+      incrementalHarvest: null
+    });
+    component.protocolSwitchField = 'pluginType';
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
-      declarations: [ProtocolFieldSetComponent],
+      declarations: [FileUploadComponent, ProtocolFieldSetComponent],
       providers: [{ provide: FormBuilder, useValue: formBuilder }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
@@ -25,17 +39,32 @@ describe('ProtocolFieldSetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProtocolFieldSetComponent);
     component = fixture.componentInstance;
-
-    component.protocolForm = formBuilder.group({
-      pluginType: null,
-      harvestUrl: urlHarvest1,
-      url: urlHarvest2,
-      setSpec: spec,
-      metadataFormat: null,
-      fileField: null
-    });
-    component.protocolSwitchField = 'pluginType';
+    buildForm();
     fixture.detectChanges();
+  });
+
+  it('should clear the file value', () => {
+    component.fileFormName = 'fileField';
+    buildForm();
+    fixture.detectChanges();
+    spyOn(component.fileUpload, 'clearFileValue');
+    component.form.value.pluginType = ProtocolType.ZIP_UPLOAD;
+    component.clearFileValue();
+    expect(component.fileUpload.clearFileValue).toHaveBeenCalled();
+  });
+
+  it('should clear the form validators', () => {
+    component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
+    const ctrl = (component.form.get('url') as FormControl);
+    ctrl.setValidators(Validators.required);
+    expect(ctrl.hasValidator(Validators.required)).toBeTruthy();
+
+    component.clearFormValidators();
+    expect(ctrl.hasValidator(Validators.required)).toBeFalsy();
+  });
+
+  it('should get the form', () => {
+    expect(component.protocolForm).toBeTruthy();
   });
 
   it('should report if the harvest protocol is ZIP_UPLOAD', () => {
