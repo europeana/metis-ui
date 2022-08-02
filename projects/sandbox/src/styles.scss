@@ -133,6 +133,11 @@ label {
   display: none;
 }
 
+.pusher {
+  display: flex;
+  flex-direction: column;
+}
+
 .separator-line {
   background: $eu-jade-light;
   display: block;
