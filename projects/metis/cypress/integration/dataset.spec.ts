@@ -65,6 +65,24 @@ context('metis-ui', () => {
       checkAHref(cy.get('@tabTitle').contains('Raw XML'), '/dataset/preview/' + expectedId);
       checkAHref(cy.get('@tabTitle').contains('Processing history'), '/dataset/log/' + expectedId);
     });
+
+    it('should (conditionally) show the links to the log tab', () => {
+      const selLogLink = '[data-e2e=log-link]';
+      cy.visit('/dataset/edit/0');
+      cy.get(selLogLink).should('have.length', 1);
+      cy.visit('/dataset/workflow/0');
+      cy.get(selLogLink).should('have.length', 1);
+      cy.visit('/dataset/depublication/0');
+      cy.get(selLogLink).should('have.length', 1);
+      cy.visit('/dataset/mapping/0');
+      cy.get(selLogLink).should('have.length', 1);
+      cy.visit('/dataset/preview/0');
+      cy.get(selLogLink).should('have.length', 1);
+      cy.visit('/dataset/log/0');
+      cy.get(selLogLink).should('have.length', 0);
+      cy.visit('/dataset/edit/0');
+      cy.get(selLogLink).should('have.length', 1);
+    });
   });
 
   describe('dataset edit', () => {

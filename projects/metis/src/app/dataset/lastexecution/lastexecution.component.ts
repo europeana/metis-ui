@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { statusClassFromPlugin } from '../../_helpers';
 import {
   executionsIncludeDeleted,
@@ -39,6 +40,17 @@ export class LastExecutionComponent {
       this.pluginExecutions.reverse();
       this.containsDeleted = executionsIncludeDeleted(this.pluginExecutions);
     }
+  }
+
+  constructor(private readonly router: Router) {}
+
+  fullHistoryLinkVisible(): boolean {
+    return !this.router.isActive('/dataset/log', {
+      paths: 'subset',
+      queryParams: 'subset',
+      fragment: 'ignored',
+      matrixParams: 'ignored'
+    });
   }
 
   /** scroll
