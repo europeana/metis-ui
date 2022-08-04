@@ -26,13 +26,13 @@ import {
   Statistics,
   SubTaskInfo,
   TopologyName,
+  User,
   Workflow,
   WorkflowExecution,
   WorkflowExecutionHistoryList,
   WorkflowStatus,
   XmlSample
 } from '../_models';
-import { TranslateService } from '../_translate';
 import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
 import { ErrorService } from './error.service';
@@ -44,8 +44,7 @@ export class WorkflowService extends SubscriptionManager {
     private readonly http: HttpClient,
     private readonly datasetsService: DatasetsService,
     private readonly errors: ErrorService,
-    private readonly authenticationServer: AuthenticationService,
-    private readonly translate: TranslateService
+    private readonly authenticationServer: AuthenticationService
   ) {
     super();
   }
@@ -351,18 +350,13 @@ export class WorkflowService extends SubscriptionManager {
       if (execution.startedBy) {
         return this.authenticationServer.getUserByUserId(execution.startedBy);
       } else {
-        return of(null);
+        return of(AuthenticationService.unknownUser);
       }
     });
     return forkJoin(observables).pipe(
       map((users) => {
         results.results.forEach((execution, i) => {
-          const user = users[i];
-          if (user) {
-            execution.startedBy = `${user.firstName} ${user.lastName}`;
-          } else {
-            execution.startedBy = `Unknown user`;
-          }
+          execution.startedByUser = users[i];
         });
         return results;
       })
@@ -486,17 +480,13 @@ export class WorkflowService extends SubscriptionManager {
     return this.http.get<NodePathStatistics>(url).pipe(this.errors.handleRetry());
   }
 
-  getWorkflowCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
+  getWorkflowCancelledBy(workflow: WorkflowExecution): Observable<User | undefined> {
     const cancelledBy = workflow.cancelledBy;
     if (workflow.workflowStatus === WorkflowStatus.CANCELLED && cancelledBy) {
       if (cancelledBy === 'SYSTEM_MINUTE_CAP_EXPIRE') {
-        return of(this.translate.instant('systemTimeout'));
+        return of(AuthenticationService.unknownUser);
       } else {
-        return this.authenticationServer.getUserByUserId(cancelledBy).pipe(
-          map((user) => {
-            return `${user.firstName} ${user.lastName}`;
-          })
-        );
+        return this.authenticationServer.getUserByUserId(cancelledBy);
       }
     }
     return of(void 0);

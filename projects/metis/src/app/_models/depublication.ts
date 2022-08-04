@@ -6,7 +6,7 @@ export enum SortDirection {
   DESC = 'DESC'
 }
 
-export class SortParameter {
+export interface SortParameter {
   field: string;
   direction: SortDirection;
 }

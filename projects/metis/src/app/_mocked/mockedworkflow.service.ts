@@ -19,6 +19,7 @@ import {
   Statistics,
   SubTaskInfo,
   TaskState,
+  User,
   Workflow,
   WorkflowExecution,
   WorkflowExecutionHistoryList,
@@ -750,7 +751,7 @@ export class MockWorkflowService {
     return of(mockLogs).pipe(delay(1));
   }
 
-  getWorkflowCancelledBy(): Observable<string | undefined> {
+  getWorkflowCancelledBy(_: string): Observable<User | undefined> {
     return of(void 0);
   }
 }

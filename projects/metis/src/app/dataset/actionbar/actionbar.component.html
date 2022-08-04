@@ -14,7 +14,7 @@
         *ngSwitchCase="PluginStatus.CANCELLED"
         i18n="pluginStatus@@pluginStatusCancelled"
       >
-        Cancelled by {{ cancelledBy }}
+        Cancelled by <app-username [user]="cancelledBy"></app-username>
       </ng-container>
       <ng-container *ngSwitchCase="PluginStatus.INQUEUE" i18n="pluginStatus@@pluginStatusInQueue">
         In Queue
@@ -70,7 +70,7 @@
   <div class="started-by">
     <strong class="uppercase">{{ 'startedBy' | translate }}</strong>
     <span class="user">
-      {{ lastExecutionData.startedBy }}
+      <app-username [user]="lastExecutionData.startedByUser"></app-username>
     </span>
   </div>
 
