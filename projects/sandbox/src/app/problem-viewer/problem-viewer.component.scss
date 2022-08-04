@@ -155,7 +155,7 @@ q {
   background: #fff;
   margin-bottom: 1em;
   max-height: 28em;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   padding: $problem-viewer-padding;
 }

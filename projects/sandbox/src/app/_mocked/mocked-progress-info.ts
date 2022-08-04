@@ -22,6 +22,13 @@ export const mockDataset = {
       warn: 0
     },
     {
+      step: StepStatus.TRANSFORM_TO_EDM_EXTERNAL,
+      total: 4,
+      success: 4,
+      fail: 0,
+      warn: 0
+    },
+    {
       step: StepStatus.VALIDATE_EXTERNAL,
       total: 4,
       success: 2,
