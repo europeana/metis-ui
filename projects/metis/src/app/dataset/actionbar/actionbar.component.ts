@@ -9,6 +9,7 @@ import {
   PluginStatus,
   ReportRequest,
   TopologyName,
+  User,
   Workflow,
   WorkflowExecution,
   WorkflowStatus
@@ -53,7 +54,7 @@ export class ActionbarComponent {
 
   isCancelling?: boolean;
   isCompleted?: boolean;
-  cancelledBy?: string;
+  cancelledBy?: User;
   contentCopied = false;
 
   @Input()
@@ -136,7 +137,7 @@ export class ActionbarComponent {
   /* clear canceeled by, unsubscribe and emit startWorkflow event
   */
   beginWorkflow(): void {
-    this.cancelledBy = '';
+    this.cancelledBy = undefined;
     if (this.subscription) {
       this.subscription.unsubscribe();
     }

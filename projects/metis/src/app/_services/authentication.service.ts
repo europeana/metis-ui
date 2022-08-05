@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { apiSettings } from '../../environments/apisettings';
@@ -17,6 +17,9 @@ export class AuthenticationService {
   private readonly key = 'currentUser';
   private token: string | null;
   public currentUser: User | null = null;
+  static readonly unknownUser = ({
+    userId: 'unknown'
+  } as unknown) as User;
 
   userCache = new KeyedCache((key) => this.requestUserByUserId(key));
 
@@ -166,12 +169,12 @@ export class AuthenticationService {
   }
 
   /** setCurrentUser
-  /* store information about current user
-  /* in currentUser variable,
-  /* in token variable
-  /* and in localstorage, to keep user logged in between page refreshes
-  /* @param {object} user - user related information
-  */
+   * store information about current user
+   * in currentUser variable,
+   * in token variable
+   * and in localstorage, to keep user logged in between page refreshes
+   * @param {object} user - user related information
+   **/
   public setCurrentUser(user: User): void {
     this.currentUser = user;
     this.token = user.metisUserAccessToken.accessToken;
@@ -179,16 +182,27 @@ export class AuthenticationService {
   }
 
   /** getCurrentUser
-  /* get information from currently active user
-  */
+   * get information from currently active user
+   * @returns { User | null }
+   **/
   getCurrentUser(): User | null {
     return this.currentUser;
   }
 
+  /** requestUserByUserId
+   * get the User from the id
+   * @param { string } id - the user id
+   * @returns { User } - possibly unknownUser
+   **/
   requestUserByUserId(userId: string): Observable<User> {
     const url = `${apiSettings.apiHostAuth}/authentication/user_by_user_id`;
     return this.http
       .post<User>(url, { userId })
+      .pipe(
+        catchError(() => {
+          return of(AuthenticationService.unknownUser);
+        })
+      )
       .pipe(this.errors.handleRetry());
   }
 

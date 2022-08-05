@@ -202,6 +202,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   updateProfile: 'If you want to update your profile, send an email to',
   url: 'URL',
   user: 'User',
+  unknownUser: 'Unknown user',
   userPassword: 'Password',
   userPasswordError: 'Please enter a valid password',
   userPasswordMatchError: 'Passwords do not match',

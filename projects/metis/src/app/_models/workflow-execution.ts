@@ -1,3 +1,5 @@
+import { User } from '.';
+
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
   OAIPMH_HARVEST = 'OAIPMH_HARVEST',
@@ -138,6 +140,7 @@ export interface WorkflowExecution {
   cancelling?: boolean;
   cancelledBy?: string;
   startedBy?: string;
+  startedByUser?: User;
   createdDate: string;
   startedDate: string;
   updatedDate?: string;
