@@ -24,31 +24,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   _progressData: Dataset;
 
-  // TODO... use values embedded in ProgressData directy... once model finalised
-  zeroContentTierLinks: Array<string> | undefined;
-  zeroMetadataTierLinks: Array<string> | undefined;
-
   @Input() set progressData(data: Dataset) {
     this._progressData = data;
-
     if (!this.warningViewOpen) {
       // reset the notification flag unless the user's already looking at it
       this.warningViewOpened = [false, false];
-    }
-
-    const tierInfo = data['tier-zero-info'];
-
-    if(tierInfo) {
-      if (tierInfo['content-tier']) {
-        this.zeroContentTierLinks = tierInfo['content-tier'].samples;
-      } else {
-        this.zeroContentTierLinks = undefined;
-      }
-      if (tierInfo['metadata-tier']) {
-        this.zeroMetadataTierLinks = tierInfo['metadata-tier'].samples;
-      } else {
-        this.zeroMetadataTierLinks = undefined;
-      }
     }
   }
 
@@ -115,9 +95,26 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns { number }
    **/
   getWarningViewCount(): number {
-    return [this.zeroContentTierLinks, this.zeroMetadataTierLinks].filter((item)=> {
-      return !!item;
-    }).length;
+    return [this.getZeroTierLinks('content-tier'), this.getZeroTierLinks('metadata-tier')].filter(
+      (item) => {
+        return !!item;
+      }
+    ).length;
+  }
+
+  /**
+   * getZeroTierLinks
+   * @returns { Array<string> | null }
+   **/
+  getZeroTierLinks(tierType: 'content-tier' | 'metadata-tier'): Array<string> | null {
+    const tierInfo = this.progressData['tier-zero-info'];
+    if (tierInfo) {
+      const contentInfo = tierInfo[tierType];
+      if (contentInfo) {
+        return contentInfo.samples;
+      }
+    }
+    return null;
   }
 
   /**

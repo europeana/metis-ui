@@ -161,7 +161,8 @@
       <span
         class="grid-cell-errors"
         [ngClass]="{
-          'adjusted-for-warning-openers': zeroContentTierLinks || zeroMetadataTierLinks
+          'adjusted-for-warning-openers':
+            getZeroTierLinks('content-tier') || getZeroTierLinks('metadata-tier')
         }"
       >
         <a
@@ -224,26 +225,46 @@
       [clickAwareIgnoreWhen]="!showing"
       (clickOutside)="closeWarningView()"
     >
-      <div *ngIf="zeroContentTierLinks && warningDisplayedTier === DisplayedTier.CONTENT">
-        <a (click)="closeWarningView()" class="warning-animated warning-view-title"
-          >Content Tier Zero ({{ zeroContentTierLinks.length }})</a
-        >
+      <ng-template #warningViewHeader let-list="list" let-label="label">
         <span class="warning-view-header">
-          This dataset contains {{ zeroContentTierLinks.length }} records that were awarded content
-          tier 0. Here follows a sample list of records.
+          This dataset contains
+          {{
+            list.length | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
+          }}
+          awarded {{ label }} 0.
+          <ng-container *ngIf="list.length > 1">
+            Here follows a sample list of records
+          </ng-container>
         </span>
-      </div>
-      <div *ngIf="zeroMetadataTierLinks && warningDisplayedTier === DisplayedTier.METADATA">
-        <a (click)="closeWarningView()" class="warning-animated warning-view-title"
-          >Metadata Tier Zero ({{ zeroMetadataTierLinks.length }})</a
-        >
-        <span class="warning-view-header">
-          This dataset contains {{ zeroMetadataTierLinks.length }} records that were awarded
-          metadata tier 0. Here follows a sample list of records.
-        </span>
-      </div>
+      </ng-template>
+      <ng-container *ngIf="getZeroTierLinks('content-tier'); let zeroTierContentLinks">
+        <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
+          <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+            >Content Tier Zero ({{ zeroTierContentLinks.length }})</a
+          >
+          <ng-content
+            *ngTemplateOutlet="
+              warningViewHeader;
+              context: { list: zeroTierContentLinks, label: 'content tier' }
+            "
+          ></ng-content>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="getZeroTierLinks('metadata-tier'); let zeroTierMetadataLinks">
+        <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
+          <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+            >Metadata Tier Zero ({{ zeroTierMetadataLinks.length }})</a
+          >
+          <ng-content
+            *ngTemplateOutlet="
+              warningViewHeader;
+              context: { list: zeroTierMetadataLinks, label: 'metadata tier' }
+            "
+          ></ng-content>
+        </div>
+      </ng-container>
       <ul *ngIf="warningDisplayedTier === DisplayedTier.CONTENT" class="warning-view-list">
-        <li *ngFor="let recId of zeroContentTierLinks">
+        <li *ngFor="let recId of getZeroTierLinks('content-tier')">
           <a
             class="view-record-report"
             (click)="reportLinkClicked(recId, false)"
@@ -253,7 +274,7 @@
         </li>
       </ul>
       <ul class="warning-view-list" *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-        <li *ngFor="let recId of zeroMetadataTierLinks">
+        <li *ngFor="let recId of getZeroTierLinks('metadata-tier')">
           <a
             class="view-record-report"
             (click)="reportLinkClicked(recId, true)"

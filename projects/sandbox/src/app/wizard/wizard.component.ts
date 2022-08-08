@@ -567,7 +567,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK));
         }
         this.submitDatasetProgress();
-      } else if (action === ButtonAction.BTN_PROBLEMS) {
+      } else {
         if (updateLocation) {
           this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_DATASET));
         }
@@ -664,7 +664,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         if (updateLocation) {
           this.setStep(this.getStepIndex(WizardStepType.REPORT));
         }
-      } else if (action === ButtonAction.BTN_PROBLEMS) {
+      } else {
         this.submitRecordProblemPatterns();
         if (updateLocation) {
           this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_RECORD));

@@ -160,26 +160,14 @@ new (class extends TestDataServer {
   }
 
   /**
-   * makeProgress
+   * makeProgressTierZero
    *
-   * Bumps fields in the TimedTarget.dataset object making corresponding
-   * depletions to fields in the TimedTarget.progressBurndown object
+   * Adds content to the TimedTarget.dataset['tier-zero-info'] object
    *
    * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
    **/
-  makeProgress(timedTarget: TimedTarget): void {
+  makeProgressTierZero(timedTarget: TimedTarget, add?: number): void {
     const dataset = timedTarget.dataset;
-
-    if (dataset['processed-records'] === dataset['total-records']) {
-      dataset.status = DatasetStatus.COMPLETED;
-      if (timedTarget.timesCalled >= 5) {
-        dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
-      }
-      return;
-    }
-    dataset['processed-records'] += 1;
-
-    // Add tierzero warnings
     const maxRecordListLength = 10;
     const datasetInfo = dataset['dataset-info'];
     const tierZeroInfo = dataset['tier-zero-info'];
@@ -192,7 +180,8 @@ new (class extends TestDataServer {
         if (timedTarget.timesCalled % item.mod === 0) {
           const info = tierZeroInfo[item.tier as 'content-tier' | 'metadata-tier'];
           if (info) {
-            for (let i = 0; i < Math.pow(item.mod, 3); i++) {
+            const itemsToAdd = add ? add : Math.pow(item.mod, 3);
+            for (let i = 0; i < itemsToAdd; i++) {
               if (info.samples.length < maxRecordListLength) {
                 info.samples.push(
                   `Record_id_XYZABC__C3PO_GTXXX_SDF_76_14_${item.tier}_${datasetInfo['dataset-id']}`
@@ -203,6 +192,40 @@ new (class extends TestDataServer {
         }
       });
     }
+  }
+
+  /**
+   * makeProgress
+   *
+   * Bumps fields in the TimedTarget.dataset object making corresponding
+   * depletions to fields in the TimedTarget.progressBurndown object
+   *
+   * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
+   **/
+  makeProgress(timedTarget: TimedTarget): void {
+    const dataset = timedTarget.dataset;
+
+    if (dataset['processed-records'] === dataset['total-records']) {
+      // early exit...
+      dataset.status = DatasetStatus.COMPLETED;
+      if (timedTarget.timesCalled >= 5) {
+        dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
+      }
+      const tierZeroInfo = dataset['tier-zero-info'];
+      if (tierZeroInfo) {
+        const ct = tierZeroInfo['content-tier'];
+        const mt = tierZeroInfo['metadata-tier'];
+        if ((ct && ct.samples.length === 0) || (mt && mt.samples.length === 0)) {
+          this.makeProgressTierZero(timedTarget, 1);
+        }
+      }
+      return;
+    }
+
+    dataset['processed-records'] += 1;
+
+    // Add tierzero warnings
+    this.makeProgressTierZero(timedTarget);
 
     // burn down the progress
     const burndown = timedTarget.progressBurndown;
