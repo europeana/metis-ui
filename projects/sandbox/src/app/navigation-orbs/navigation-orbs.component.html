@@ -7,6 +7,7 @@
         class="nav-orb labelled"
         [attr.data-label]="itemIndex + 1"
         [attr.data-indicator]="_indicatorAttributes[itemIndex]"
+        [attr.title]="tooltips.length > itemIndex ? tooltips[itemIndex] : null"
       ></a>
     </ng-template>
 

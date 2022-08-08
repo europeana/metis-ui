@@ -63,6 +63,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .portal-links {
+  margin-left: 2em;
   position: relative;
   right: 1em;
 }
@@ -95,7 +96,9 @@ $eu-jade-slightly-dark: #1ea072;
 .wrapper {
   background-color: $white;
   margin-bottom: 1em;
+  overflow-x: hidden;
   padding: 0.5em;
+  position: relative;
 }
 
 .orb-spinner {
@@ -152,9 +155,12 @@ $eu-jade-slightly-dark: #1ea072;
   .grid-cell-errors {
     float: right;
     margin-top: 1em;
-
     text-align: right;
     white-space: nowrap;
+
+    &.adjusted-for-warning-openers {
+      margin-right: 5em;
+    }
 
     .open-error-detail {
       color: $eu-jade-classic;
@@ -266,4 +272,95 @@ $eu-jade-slightly-dark: #1ea072;
   color: $gray-light;
   margin-left: 0.2em;
   white-space: nowrap;
+}
+
+.sb-navigation-orbs {
+  align-self: flex-start;
+  background: $eu-light-jade-classic;
+  border: 1px solid $grey-3;
+  border-radius: 1.5em 0 0 1.5em;
+  border-right: 1px dotted $grey-3;
+  padding: 0.5em;
+}
+
+.warning-view {
+  $slide-out-duration: 0.4s;
+  bottom: 0;
+  display: flex;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  max-width: 80%;
+  position: absolute;
+  right: 0;
+  top: 1.5em;
+  transition: clip-path $slide-out-duration ease-in-out, right $slide-out-duration ease-in-out;
+  &.closed {
+    right: calc(-80% + 4em);
+    clip-path: polygon(0 0, 4em 0, 4em 100%, 0% 100%);
+  }
+  &:not(.closed) .warning-animated::before {
+    // re-play the inherited animation
+    animation-play-state: running;
+  }
+}
+
+.warning-view-content {
+  background: #a5e4ce;
+  border-right: 1px dotted $grey-3;
+  border-top: 1px solid $grey-3;
+  border-bottom: 1px dotted $grey-3;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.75em 1em 0.75em 1em;
+  width: 40em;
+
+  .warning-animated {
+    font-weight: bold;
+    &::before {
+      bottom: -3px;
+      cursor: default;
+      left: 0;
+      position: relative;
+      width: 18px;
+      height: 18px;
+      margin-right: 7px;
+    }
+  }
+}
+
+.warning-view-header {
+  color: $eu-jade-dark;
+  display: block;
+  font-size: 14px;
+  margin: 0.25em 0 0.75em 0;
+}
+
+.warning-view-list {
+  font-size: 14px;
+  font-weight: bold;
+  list-style: none;
+  max-height: 100%;
+  overflow-y: auto;
+  padding-left: 1em;
+  word-break: break-all;
+
+  // apply custom bullets
+  li {
+    display: flex;
+    justify-content: flex-start;
+    &::before {
+      content: '\2022';
+      color: $eu-jade-dark;
+      display: inline-block;
+      flex-basis: 0;
+      font-weight: bold;
+      margin-left: -6px;
+      margin-right: 15px;
+      width: 0.85em;
+    }
+  }
+}
+
+.warning-view-title {
+  display: inline-block;
 }

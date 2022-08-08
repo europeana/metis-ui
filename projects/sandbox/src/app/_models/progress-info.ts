@@ -61,6 +61,11 @@ export interface DatasetInfo {
   'record-limit-exceeded'?: boolean;
 }
 
+export interface TierInfo {
+  samples: Array<string>;
+  total: number;
+}
+
 export interface Dataset {
   status: DatasetStatus;
   'processed-records': number;
@@ -69,4 +74,8 @@ export interface Dataset {
   'portal-publish'?: string;
   'dataset-info': DatasetInfo;
   'error-type'?: string;
+  'tier-zero-info'?: {
+    'content-tier'?: TierInfo;
+    'metadata-tier'?: TierInfo;
+  };
 }

@@ -36,6 +36,9 @@ export class NavigationOrbsComponent {
   @Input() fnClassMapInner: (i: number) => ClassMap = (_: number) => {
     return {} as ClassMap;
   };
+
+  @Input() tooltips: Array<string> = [];
+
   @Output() clickEvent: EventEmitter<number> = new EventEmitter();
 
   clicked(index: number): void {

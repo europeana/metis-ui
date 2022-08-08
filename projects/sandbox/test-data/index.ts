@@ -11,7 +11,8 @@ import {
   ProblemPatternsDataset,
   ProgressByStep,
   StepStatus,
-  SubmissionResponseData
+  SubmissionResponseData,
+  TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
 import { ProgressByStepStatus, TimedTarget } from './models/models';
@@ -43,13 +44,13 @@ new (class extends TestDataServer {
 
     this.errorCodes = generateRange(400, 418).concat(generateRange(500, 508));
 
-    const fn = (): void => {
+    const tick = (): void => {
       this.timedTargets.forEach((tgt: TimedTarget) => {
         tgt.timesCalled += 1;
         this.makeProgress(tgt);
       });
     };
-    setInterval(fn, 1000);
+    setInterval(tick, 1000);
   }
 
   /**
@@ -111,7 +112,8 @@ new (class extends TestDataServer {
     country?: string,
     language?: string
   ): Dataset {
-    const totalRecords = parseInt(datasetId);
+    const idAsNumber = parseInt(datasetId[0]);
+    const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
       return ![
         StepStatus.HARVEST_OAI_PMH,
@@ -120,6 +122,23 @@ new (class extends TestDataServer {
       ].includes(step);
     });
     steps.unshift(harvestType);
+
+    const createEmptyTier = (): TierInfo => {
+      return { samples: [], total: 0 } as TierInfo;
+    };
+
+    const tierZeroInfo =
+      idAsNumber % 2 === 0
+        ? undefined
+        : idAsNumber % 3 === 0
+        ? {
+            'content-tier': createEmptyTier(),
+            'metadata-tier': createEmptyTier()
+          }
+        : {
+            'content-tier': createEmptyTier()
+          };
+
     return {
       status: DatasetStatus.IN_PROGRESS,
       'total-records': totalRecords,
@@ -135,28 +154,57 @@ new (class extends TestDataServer {
         language: language ? language : 'GeneratedLanguage',
         'transformed-to-edm-external': country === 'Greece',
         'record-limit-exceeded': !!(datasetName && datasetName.length > 10)
-      }
+      },
+      'tier-zero-info': tierZeroInfo
     };
   }
 
   /**
    * makeProgress
    *
-   * Bumps fields in the TimedTarget.datasetInfo object making corresponding
+   * Bumps fields in the TimedTarget.dataset object making corresponding
    * depletions to fields in the TimedTarget.progressBurndown object
    *
-   * @param {TimedTarget} timedTarget - the TimedTarget object to operate on
+   * @param { TimedTarget } timedTarget - the TimedTarget object to operate on
    **/
   makeProgress(timedTarget: TimedTarget): void {
-    const info = timedTarget.datasetInfo;
-    if (info['processed-records'] === info['total-records']) {
-      info.status = DatasetStatus.COMPLETED;
+    const dataset = timedTarget.dataset;
+
+    if (dataset['processed-records'] === dataset['total-records']) {
+      dataset.status = DatasetStatus.COMPLETED;
       if (timedTarget.timesCalled >= 5) {
-        info['portal-publish'] = 'http://this-collection/that-dataset/publish';
+        dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
       }
       return;
     }
-    info['processed-records'] += 1;
+    dataset['processed-records'] += 1;
+
+    // Add tierzero warnings
+    const maxRecordListLength = 10;
+    const datasetInfo = dataset['dataset-info'];
+    const tierZeroInfo = dataset['tier-zero-info'];
+
+    if (datasetInfo && tierZeroInfo) {
+      [
+        { tier: 'content-tier', mod: 2 },
+        { tier: 'metadata-tier', mod: 3 }
+      ].forEach((item) => {
+        if (timedTarget.timesCalled % item.mod === 0) {
+          const info = tierZeroInfo[item.tier as 'content-tier' | 'metadata-tier'];
+          if (info) {
+            for (let i = 0; i < Math.pow(item.mod, 3); i++) {
+              if (info.samples.length < maxRecordListLength) {
+                info.samples.push(
+                  `Record_id_XYZABC__C3PO_GTXXX_SDF_76_14_${item.tier}_${datasetInfo['dataset-id']}`
+                );
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // burn down the progress
     const burndown = timedTarget.progressBurndown;
     const shiftField =
       burndown.warn > 0
@@ -164,7 +212,7 @@ new (class extends TestDataServer {
         : burndown.fail > 0
         ? ProgressByStepStatus.FAIL
         : ProgressByStepStatus.SUCCESS;
-    const pbsArray = info['progress-by-step'];
+    const pbsArray = dataset['progress-by-step'];
     const statusTargets = burndown.statusTargets
       ? burndown.statusTargets
       : Array.from(pbsArray.keys());
@@ -173,7 +221,7 @@ new (class extends TestDataServer {
       if (shiftField !== ProgressByStepStatus.SUCCESS && statusTargets.indexOf(key) > -1) {
         pbs[shiftField] += 1;
         if (shiftField === ProgressByStepStatus.FAIL && burndown.error > 0) {
-          const errorNum = info['processed-records'];
+          const errorNum = dataset['processed-records'];
           const error = {
             type: `warnng (${errorNum})`,
             message: stepErrorDetails[errorNum % stepErrorDetails.length],
@@ -198,8 +246,8 @@ new (class extends TestDataServer {
   /**
    * handleId
    *
-   * Retrieves or creates a TimedTarget object with the supplied id and writes
-   * its datasetInfo data to the response.
+   * Retrieves or creates a TimedTarget object with the supplied id and
+   * ends the response with its dataset data.
    *
    * The id "42001357" will be interpreted as having:
    *  - 4 records in total
@@ -215,7 +263,7 @@ new (class extends TestDataServer {
     const timedTarget = this.timedTargets.get(id);
     this.headerJSON(response);
     if (timedTarget) {
-      response.end(JSON.stringify(timedTarget.datasetInfo));
+      response.end(JSON.stringify(timedTarget.dataset));
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
       let harvestType = StepStatus.HARVEST_ZIP;
@@ -234,12 +282,9 @@ new (class extends TestDataServer {
           break;
         }
       }
-      const datasetInfo = this.initialiseDataset(id[0], harvestType);
-      if (id === '13') {
-        datasetInfo['error-type'] = 'The processing did not complete';
-      }
-      this.addTimedTarget(id, datasetInfo);
-      response.end(JSON.stringify(datasetInfo));
+      const dataset = this.initialiseDataset(id, harvestType);
+      this.addTimedTarget(id, dataset);
+      response.end(JSON.stringify(dataset));
     }
   }
 
@@ -249,9 +294,9 @@ new (class extends TestDataServer {
    *  Derives progressBurndown data and adds it to a TimedTarget
    *
    * @param { string } id - object identity
-   * @param { Dataset } datasetInfo - the timed target datasetInfo
+   * @param { Dataset } dataset - the timed target dataset
    **/
-  addTimedTarget(id: string, datasetInfo: Dataset): void {
+  addTimedTarget(id: string, dataset: Dataset): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
@@ -267,13 +312,12 @@ new (class extends TestDataServer {
 
     this.timedTargets.set(id, {
       progressBurndown: {
-        total: parseInt(paddedId[0]),
         warn: parseInt(paddedId[1]),
         fail: parseInt(paddedId[2]),
         error: parseInt(paddedId[3]),
         statusTargets: statusTargets
       },
-      datasetInfo: datasetInfo,
+      dataset: dataset,
       timesCalled: 0
     });
   }
@@ -403,7 +447,7 @@ new (class extends TestDataServer {
           }
         }
 
-        const datasetInfo = this.initialiseDataset(
+        const dataset = this.initialiseDataset(
           `${this.newId}`,
           harvestType,
           datasetName,
@@ -411,7 +455,7 @@ new (class extends TestDataServer {
           getParam('language')
         );
 
-        this.addTimedTarget(`${this.newId}`, datasetInfo);
+        this.addTimedTarget(`${this.newId}`, dataset);
 
         this.headerJSON(response);
         response.end(

@@ -82,3 +82,8 @@ export interface RecordReport {
   contentTierBreakdown: ContentTierBreakdown;
   metadataTierBreakdown: MetadataTierBreakdown;
 }
+
+export interface RecordReportRequest {
+  recordId: string;
+  openMetadata: boolean;
+}

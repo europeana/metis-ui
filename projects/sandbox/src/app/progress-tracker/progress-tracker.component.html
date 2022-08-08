@@ -1,4 +1,8 @@
-<div class="form-group" *ngIf="progressData['dataset-info']; let info">
+<div
+  class="form-group"
+  [ngClass]="{ hidden: !showing }"
+  *ngIf="progressData['dataset-info']; let info"
+>
   <ul class="header-info container-h">
     <!-- left col -->
     <li>
@@ -93,7 +97,7 @@
     </li>
   </ul>
 </div>
-<div class="wrapper">
+<div class="wrapper" [ngClass]="{ hidden: !showing }">
   <div>
     <span
       *ngFor="let item of progressData['progress-by-step']"
@@ -154,7 +158,12 @@
           ><span *ngIf="item.fail" class="dataset-errors">{{ item.fail }}</span></ng-template
         >
       </span>
-      <span class="grid-cell-errors">
+      <span
+        class="grid-cell-errors"
+        [ngClass]="{
+          'adjusted-for-warning-openers': zeroContentTierLinks || zeroMetadataTierLinks
+        }"
+      >
         <a
           (click)="showErrorsForStep(i)"
           class="open-error-detail link-internal"
@@ -185,5 +194,74 @@
         >
       </span>
     </ng-container>
+  </div>
+  <div
+    class="warning-view"
+    *ngIf="getWarningViewCount(); let warningViewCount"
+    [ngClass]="{
+      closed: !warningViewOpen
+    }"
+  >
+    <sb-navigation-orbs
+      libClickAware
+      [ignoreClasses]="['link-internal', 'nav-orb', 'warning-view-content']"
+      [clickAwareIgnoreWhen]="!showing"
+      (clickOutside)="closeWarningView()"
+      ariaLabel="Tier Zero Warnings Navigation"
+      class="sb-navigation-orbs vertical zero-warning"
+      [count]="warningViewCount"
+      [fnClassMapInner]="getOrbConfigInner.bind(this)"
+      [tooltips]="[
+        'content tier 0 records found - click to see samples',
+        'media tier 0 records found - click to see samples'
+      ]"
+      (clickEvent)="setWarningView($event)"
+    ></sb-navigation-orbs>
+    <div
+      class="warning-view-content"
+      libClickAware
+      [ignoreClasses]="['link-internal', 'nav-orb', 'sb-navigation-orbs']"
+      [clickAwareIgnoreWhen]="!showing"
+      (clickOutside)="closeWarningView()"
+    >
+      <div *ngIf="zeroContentTierLinks && warningDisplayedTier === DisplayedTier.CONTENT">
+        <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+          >Content Tier Zero ({{ zeroContentTierLinks.length }})</a
+        >
+        <span class="warning-view-header">
+          This dataset contains {{ zeroContentTierLinks.length }} records that were awarded content
+          tier 0. Here follows a sample list of records.
+        </span>
+      </div>
+      <div *ngIf="zeroMetadataTierLinks && warningDisplayedTier === DisplayedTier.METADATA">
+        <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+          >Metadata Tier Zero ({{ zeroMetadataTierLinks.length }})</a
+        >
+        <span class="warning-view-header">
+          This dataset contains {{ zeroMetadataTierLinks.length }} records that were awarded
+          metadata tier 0. Here follows a sample list of records.
+        </span>
+      </div>
+      <ul *ngIf="warningDisplayedTier === DisplayedTier.CONTENT" class="warning-view-list">
+        <li *ngFor="let recId of zeroContentTierLinks">
+          <a
+            class="view-record-report"
+            (click)="reportLinkClicked(recId, false)"
+            title="view record report"
+            >{{ recId }}</a
+          >
+        </li>
+      </ul>
+      <ul class="warning-view-list" *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
+        <li *ngFor="let recId of zeroMetadataTierLinks">
+          <a
+            class="view-record-report"
+            (click)="reportLinkClicked(recId, true)"
+            title="view record report"
+            >{{ recId }}</a
+          >
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

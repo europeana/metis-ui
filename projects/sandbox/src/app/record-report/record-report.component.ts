@@ -18,17 +18,15 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
 })
 export class RecordReportComponent {
   public apiSettings = apiSettings;
+  public RecordMediaType = RecordMediaType;
+  public DisplayedTier = DisplayedTier;
+
   _report: RecordReport;
-
   mediaCollapsed = false;
-
   techData: Array<MediaDataItem>;
-
   visibleTier: DisplayedTier = DisplayedTier.CONTENT;
   visibleMedia = 0;
   visibleMetadata: DisplayedMetaTier = DisplayedMetaTier.LANGUAGE;
-
-  public RecordMediaType = RecordMediaType;
 
   @ViewChild('inputMediaIndex') inputMediaIndex: ElementRef;
 
@@ -122,7 +120,7 @@ export class RecordReportComponent {
     this.visibleMedia = index;
   }
 
-  setView(index: number): void {
+  setView(index: DisplayedTier): void {
     this.visibleTier = index;
   }
 
