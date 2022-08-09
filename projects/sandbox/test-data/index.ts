@@ -186,6 +186,7 @@ new (class extends TestDataServer {
                 info.samples.push(
                   `Record_id_XYZABC__C3PO_GTXXX_SDF_76_14_${item.tier}_${datasetInfo['dataset-id']}`
                 );
+                info.total += 1;
               }
             }
           }

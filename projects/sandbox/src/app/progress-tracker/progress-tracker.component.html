@@ -224,6 +224,7 @@
       [ignoreClasses]="['link-internal', 'nav-orb', 'sb-navigation-orbs']"
       [clickAwareIgnoreWhen]="!showing"
       (clickOutside)="closeWarningView()"
+      *ngIf="progressData['tier-zero-info']; let tierInfo"
     >
       <ng-template #warningViewHeader let-list="list" let-label="label">
         <span class="warning-view-header">
@@ -237,28 +238,28 @@
           </ng-container>
         </span>
       </ng-template>
-      <ng-container *ngIf="getZeroTierLinks('content-tier'); let zeroTierContentLinks">
+      <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
         <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
           <a (click)="closeWarningView()" class="warning-animated warning-view-title"
-            >Content Tier Zero ({{ zeroTierContentLinks.length }})</a
+            >Content Tier Zero ({{ contentTier.total }})</a
           >
           <ng-content
             *ngTemplateOutlet="
               warningViewHeader;
-              context: { list: zeroTierContentLinks, label: 'content tier' }
+              context: { list: contentTier.samples, label: 'content tier' }
             "
           ></ng-content>
         </div>
       </ng-container>
-      <ng-container *ngIf="getZeroTierLinks('metadata-tier'); let zeroTierMetadataLinks">
+      <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
         <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
           <a (click)="closeWarningView()" class="warning-animated warning-view-title"
-            >Metadata Tier Zero ({{ zeroTierMetadataLinks.length }})</a
+            >Metadata Tier Zero ({{ metadataTier.total }})</a
           >
           <ng-content
             *ngTemplateOutlet="
               warningViewHeader;
-              context: { list: zeroTierMetadataLinks, label: 'metadata tier' }
+              context: { list: metadataTier.samples, label: 'metadata tier' }
             "
           ></ng-content>
         </div>
