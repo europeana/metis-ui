@@ -437,7 +437,6 @@ describe('WizardComponent', () => {
       expect(component.recordReport).toBeFalsy();
 
       component.wizardConf[index].error = undefined;
-
       index = component.getStepIndex(WizardStepType.PROBLEMS_RECORD);
 
       component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, false);
