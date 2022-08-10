@@ -86,9 +86,37 @@ describe('ProgressTrackerComponent', () => {
       expect(component.getLabelClass('' as StepStatus)).toEqual('harvest');
     });
 
-    it('should get the orb configuration', () => {
+    it('should get the inner orb configuration', () => {
       expect(component.getOrbConfigInner(0)['content-tier-orb']).toBeTruthy();
       expect(component.getOrbConfigInner(1)['metadata-tier-orb']).toBeTruthy();
+    });
+
+    it('should get the outer orb configuration', () => {
+      const tierInfoDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+
+      expect(component.getOrbConfigOuter(0)['hidden']).toBeFalsy();
+      expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
+
+      tierInfoDataset['tier-zero-info'] = {
+        'content-tier': undefined,
+        'metadata-tier': {
+          samples: ['3', '4'],
+          total: 2
+        }
+      };
+      component.progressData = tierInfoDataset;
+      expect(component.getOrbConfigOuter(0)['hidden']).toBeTruthy();
+      expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
+
+      tierInfoDataset['tier-zero-info'] = {
+        'content-tier': {
+          samples: ['1', '2'],
+          total: 2
+        },
+        'metadata-tier': undefined
+      };
+      expect(component.getOrbConfigOuter(0)['hidden']).toBeFalsy();
+      expect(component.getOrbConfigOuter(1)['hidden']).toBeFalsy();
     });
 
     it('should get the status class', () => {
@@ -103,11 +131,9 @@ describe('ProgressTrackerComponent', () => {
       );
     });
 
-    it('should get the zero tier links', () => {
-      expect(component.getZeroTierLinks('content-tier')).toBeFalsy();
-      expect(component.getZeroTierLinks('metadata-tier')).toBeFalsy();
-      expect(component.getWarningViewCount()).toEqual(0);
+    it('should get the orb config count', () => {
       const tierInfoDataset: Dataset = Object.assign({}, mockDataset) as Dataset;
+      expect(component.getOrbConfigCount()).toEqual(0);
 
       tierInfoDataset['tier-zero-info'] = {
         'content-tier': {
@@ -115,18 +141,24 @@ describe('ProgressTrackerComponent', () => {
           total: 2
         }
       };
-
       component.progressData = tierInfoDataset;
-      expect(component.getZeroTierLinks('content-tier')).toBeTruthy();
-      expect(component.getZeroTierLinks('metadata-tier')).toBeFalsy();
-      expect(component.getWarningViewCount()).toEqual(1);
+      expect(component.getOrbConfigCount()).toEqual(1);
 
       tierInfoDataset['tier-zero-info']['metadata-tier'] = {
         samples: ['3', '4'],
         total: 2
       };
-      expect(component.getZeroTierLinks('metadata-tier')).toBeTruthy();
-      expect(component.getWarningViewCount()).toEqual(2);
+      component.progressData = tierInfoDataset;
+      expect(component.getOrbConfigCount()).toEqual(2);
+
+      tierInfoDataset['tier-zero-info'] = {
+        'metadata-tier': {
+          samples: ['3', '4'],
+          total: 2
+        }
+      };
+      component.progressData = tierInfoDataset;
+      expect(component.getOrbConfigCount()).toEqual(2);
     });
 
     it('should handle clicks on the zero tier links', () => {

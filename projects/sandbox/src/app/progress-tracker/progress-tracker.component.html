@@ -97,7 +97,7 @@
     </li>
   </ul>
 </div>
-<div class="wrapper" [ngClass]="{ hidden: !showing }">
+<div class="wrapper" *ngIf="progressData" [ngClass]="{ hidden: !showing }">
   <div>
     <span
       *ngFor="let item of progressData['progress-by-step']"
@@ -161,8 +161,7 @@
       <span
         class="grid-cell-errors"
         [ngClass]="{
-          'adjusted-for-warning-openers':
-            getZeroTierLinks('content-tier') || getZeroTierLinks('metadata-tier')
+          'adjusted-for-warning-openers': progressData['tier-zero-info']
         }"
       >
         <a
@@ -198,7 +197,7 @@
   </div>
   <div
     class="warning-view"
-    *ngIf="getWarningViewCount(); let warningViewCount"
+    *ngIf="getOrbConfigCount(); let orbCount"
     [ngClass]="{
       closed: !warningViewOpen
     }"
@@ -210,11 +209,12 @@
       (clickOutside)="closeWarningView()"
       ariaLabel="Tier Zero Warnings Navigation"
       class="sb-navigation-orbs vertical zero-warning"
-      [count]="warningViewCount"
+      [count]="orbCount"
       [fnClassMapInner]="getOrbConfigInner.bind(this)"
+      [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
       [tooltips]="[
-        'content tier 0 records found - click to see samples',
-        'media tier 0 records found - click to see samples'
+        'content-tier-zero records found (click to see samples)',
+        'metadata-tier-zero records found (click to see samples)'
       ]"
       (clickEvent)="setWarningView($event)"
     ></sb-navigation-orbs>
@@ -265,7 +265,7 @@
         </div>
       </ng-container>
       <ul *ngIf="warningDisplayedTier === DisplayedTier.CONTENT" class="warning-view-list">
-        <li *ngFor="let recId of getZeroTierLinks('content-tier')">
+        <li *ngFor="let recId of tierInfo['content-tier'].samples">
           <a
             class="view-record-report"
             (click)="reportLinkClicked(recId, false)"
@@ -274,8 +274,8 @@
           >
         </li>
       </ul>
-      <ul class="warning-view-list" *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-        <li *ngFor="let recId of getZeroTierLinks('metadata-tier')">
+      <ul *ngIf="warningDisplayedTier === DisplayedTier.METADATA" class="warning-view-list">
+        <li *ngFor="let recId of tierInfo['metadata-tier'].samples">
           <a
             class="view-record-report"
             (click)="reportLinkClicked(recId, true)"

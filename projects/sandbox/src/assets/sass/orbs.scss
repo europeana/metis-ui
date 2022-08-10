@@ -427,7 +427,7 @@ $orb-border-radius: 1.5em;
     flex-direction: column;
   }
   &.zero-warning {
-    .orb-container {
+    .orb-container:not(.hidden) {
       height: 48px;
       .nav-orb.labelled {
         border-color: $eu-jade-dark;

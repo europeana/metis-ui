@@ -128,7 +128,11 @@ new (class extends TestDataServer {
     };
 
     const tierZeroInfo =
-      idAsNumber % 2 === 0
+      idAsNumber % 5 === 0
+        ? {
+            'metadata-tier': createEmptyTier()
+          }
+        : idAsNumber % 2 === 0
         ? undefined
         : idAsNumber % 3 === 0
         ? {

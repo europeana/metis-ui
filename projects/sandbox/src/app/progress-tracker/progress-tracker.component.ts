@@ -21,15 +21,24 @@ import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 export class ProgressTrackerComponent extends SubscriptionManager {
   public formatDate = formatDate;
   public DisplayedTier = DisplayedTier;
-
   _progressData: Dataset;
 
   @Input() set progressData(data: Dataset) {
-    this._progressData = data;
     if (!this.warningViewOpen) {
       // reset the notification flag unless the user's already looking at it
       this.warningViewOpened = [false, false];
     }
+    const tierInfo = data['tier-zero-info'];
+    if (tierInfo) {
+      // add placeholder content-tier data if only metadata-tier data is present
+      if (tierInfo['metadata-tier'] && !tierInfo['content-tier']) {
+        tierInfo['content-tier'] = {
+          samples: [],
+          total: 0
+        };
+      }
+    }
+    this._progressData = data;
   }
 
   get progressData(): Dataset {
@@ -64,6 +73,35 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     };
   }
 
+  getOrbConfigOuter(i: number): ClassMap {
+    if (this.progressData && i === DisplayedTier.CONTENT) {
+      const tierInfo = this.progressData['tier-zero-info'];
+      if (tierInfo) {
+        if (tierInfo['content-tier'] && tierInfo['content-tier'].total === 0) {
+          return {
+            hidden: true
+          };
+        }
+      }
+    }
+    return {};
+  }
+
+  /**
+   * getOrbConfigCount
+   * @returns { number }
+   **/
+  getOrbConfigCount(): number {
+    const tierInfo = this.progressData['tier-zero-info'];
+    if (tierInfo) {
+      if (tierInfo['metadata-tier']) {
+        return 2;
+      }
+      return 1;
+    }
+    return 0;
+  }
+
   /**
    * getLabelClass
    * Template utility to get css class based on the StepStatus
@@ -91,33 +129,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
-   * getWarningViewCount
-   * @returns { number }
-   **/
-  getWarningViewCount(): number {
-    return [this.getZeroTierLinks('content-tier'), this.getZeroTierLinks('metadata-tier')].filter(
-      (item) => {
-        return !!item;
-      }
-    ).length;
-  }
-
-  /**
-   * getZeroTierLinks
-   * @returns { Array<string> | null }
-   **/
-  getZeroTierLinks(tierType: 'content-tier' | 'metadata-tier'): Array<string> | null {
-    const tierInfo = this.progressData['tier-zero-info'];
-    if (tierInfo) {
-      const contentInfo = tierInfo[tierType];
-      if (contentInfo) {
-        return contentInfo.samples;
-      }
-    }
-    return null;
-  }
-
-  /**
    * isComplete
    * Template utility to detect if processing is complete
    * @returns boolean
@@ -142,6 +153,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   /**
    * setWarningView
+   * navigationOrbs output
    * @param { number } index - the warning view code
    **/
   setWarningView(index: DisplayedTier): void {
