@@ -195,95 +195,100 @@
       </span>
     </ng-container>
   </div>
-  <div
-    class="warning-view"
-    *ngIf="getOrbConfigCount(); let orbCount"
-    [ngClass]="{
-      closed: !warningViewOpen
-    }"
-  >
-    <sb-navigation-orbs
-      libClickAware
-      [ignoreClasses]="['link-internal', 'nav-orb', 'warning-view-content']"
-      [clickAwareIgnoreWhen]="!showing"
-      (clickOutside)="closeWarningView()"
-      ariaLabel="Tier Zero Warnings Navigation"
-      class="sb-navigation-orbs vertical zero-warning"
-      [count]="orbCount"
-      [fnClassMapInner]="getOrbConfigInner.bind(this)"
-      [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
-      [tooltips]="[
-        'content-tier-zero records found (click to see samples)',
-        'metadata-tier-zero records found (click to see samples)'
-      ]"
-      (clickEvent)="setWarningView($event)"
-    ></sb-navigation-orbs>
+  <ng-container *ngIf="progressData['tier-zero-info']; let tierInfo">
     <div
-      class="warning-view-content"
-      libClickAware
-      [ignoreClasses]="['link-internal', 'nav-orb', 'sb-navigation-orbs']"
-      [clickAwareIgnoreWhen]="!showing"
-      (clickOutside)="closeWarningView()"
-      *ngIf="progressData['tier-zero-info']; let tierInfo"
+      class="warning-view"
+      *ngIf="
+        (tierInfo['content-tier'] && tierInfo['content-tier'].total) ||
+        (tierInfo['metadata-tier'] && tierInfo['metadata-tier'].total)
+      "
+      [ngClass]="{
+        closed: !warningViewOpen
+      }"
     >
-      <ng-template #warningViewHeader let-list="list" let-label="label">
-        <span class="warning-view-header">
-          This dataset contains
-          {{
-            list.length | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
-          }}
-          awarded {{ label }} 0.
-          <ng-container *ngIf="list.length > 1">
-            Here follows a sample list of records
-          </ng-container>
-        </span>
-      </ng-template>
-      <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
-        <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
-          <a (click)="closeWarningView()" class="warning-animated warning-view-title"
-            >Content Tier Zero ({{ contentTier.total }})</a
-          >
-          <ng-content
-            *ngTemplateOutlet="
-              warningViewHeader;
-              context: { list: contentTier.samples, label: 'content tier' }
-            "
-          ></ng-content>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
-        <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-          <a (click)="closeWarningView()" class="warning-animated warning-view-title"
-            >Metadata Tier Zero ({{ metadataTier.total }})</a
-          >
-          <ng-content
-            *ngTemplateOutlet="
-              warningViewHeader;
-              context: { list: metadataTier.samples, label: 'metadata tier' }
-            "
-          ></ng-content>
-        </div>
-      </ng-container>
-      <ul *ngIf="warningDisplayedTier === DisplayedTier.CONTENT" class="warning-view-list">
-        <li *ngFor="let recId of tierInfo['content-tier'].samples">
-          <a
-            class="view-record-report"
-            (click)="reportLinkClicked(recId, false)"
-            title="view record report"
-            >{{ recId }}</a
-          >
-        </li>
-      </ul>
-      <ul *ngIf="warningDisplayedTier === DisplayedTier.METADATA" class="warning-view-list">
-        <li *ngFor="let recId of tierInfo['metadata-tier'].samples">
-          <a
-            class="view-record-report"
-            (click)="reportLinkClicked(recId, true)"
-            title="view record report"
-            >{{ recId }}</a
-          >
-        </li>
-      </ul>
+      <sb-navigation-orbs
+        libClickAware
+        [ignoreClasses]="['link-internal', 'nav-orb', 'warning-view-content']"
+        [clickAwareIgnoreWhen]="!showing"
+        (clickOutside)="closeWarningView()"
+        ariaLabel="Tier Zero Warnings Navigation"
+        class="sb-navigation-orbs vertical zero-warning"
+        [count]="getOrbConfigCount()"
+        [fnClassMapInner]="getOrbConfigInner.bind(this)"
+        [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
+        [tooltips]="[
+          'content-tier-zero records found (click to see samples)',
+          'metadata-tier-zero records found (click to see samples)'
+        ]"
+        (clickEvent)="setWarningView($event)"
+      ></sb-navigation-orbs>
+      <div
+        class="warning-view-content"
+        libClickAware
+        [ignoreClasses]="['link-internal', 'nav-orb', 'sb-navigation-orbs']"
+        [clickAwareIgnoreWhen]="!showing"
+        (clickOutside)="closeWarningView()"
+      >
+        <ng-template #warningViewHeader let-list="list" let-label="label">
+          <span class="warning-view-header">
+            This dataset contains
+            {{
+              list.length
+                | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
+            }}
+            awarded {{ label }} 0.
+            <ng-container *ngIf="list.length > 1">
+              Here follows a sample list of records
+            </ng-container>
+          </span>
+        </ng-template>
+        <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
+          <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
+            <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+              >Content Tier Zero ({{ contentTier.total }})</a
+            >
+            <ng-content
+              *ngTemplateOutlet="
+                warningViewHeader;
+                context: { list: contentTier.samples, label: 'content tier' }
+              "
+            ></ng-content>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
+          <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
+            <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+              >Metadata Tier Zero ({{ metadataTier.total }})</a
+            >
+            <ng-content
+              *ngTemplateOutlet="
+                warningViewHeader;
+                context: { list: metadataTier.samples, label: 'metadata tier' }
+              "
+            ></ng-content>
+          </div>
+        </ng-container>
+        <ul *ngIf="warningDisplayedTier === DisplayedTier.CONTENT" class="warning-view-list">
+          <li *ngFor="let recId of tierInfo['content-tier'].samples">
+            <a
+              class="view-record-report"
+              (click)="reportLinkClicked(recId, false)"
+              title="view record report"
+              >{{ recId }}</a
+            >
+          </li>
+        </ul>
+        <ul *ngIf="warningDisplayedTier === DisplayedTier.METADATA" class="warning-view-list">
+          <li *ngFor="let recId of tierInfo['metadata-tier'].samples">
+            <a
+              class="view-record-report"
+              (click)="reportLinkClicked(recId, true)"
+              title="view record report"
+              >{{ recId }}</a
+            >
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </ng-container>
 </div>
