@@ -229,15 +229,14 @@
         [clickAwareIgnoreWhen]="!showing"
         (clickOutside)="closeWarningView()"
       >
-        <ng-template #warningViewHeader let-list="list" let-label="label">
+        <ng-template #warningViewHeader let-list="list" let-label="label" let-total="total">
           <span class="warning-view-header">
             This dataset contains
             {{
-              list.length
-                | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
+              total | i18nPlural: { '=1': 'one record that was', other: '# records that were' }
             }}
             awarded {{ label }} 0.
-            <ng-container *ngIf="list.length > 1">
+            <ng-container *ngIf="total > 1">
               Here follows a sample list of records
             </ng-container>
           </span>
@@ -250,7 +249,11 @@
             <ng-content
               *ngTemplateOutlet="
                 warningViewHeader;
-                context: { list: contentTier.samples, label: 'content tier' }
+                context: {
+                  list: contentTier.samples,
+                  label: 'content tier',
+                  total: contentTier.total
+                }
               "
             ></ng-content>
           </div>
@@ -263,7 +266,11 @@
             <ng-content
               *ngTemplateOutlet="
                 warningViewHeader;
-                context: { list: metadataTier.samples, label: 'metadata tier' }
+                context: {
+                  list: metadataTier.samples,
+                  label: 'metadata tier',
+                  total: metadataTier.total
+                }
               "
             ></ng-content>
           </div>
