@@ -14,6 +14,11 @@
     <input type="checkbox" [formControlName]="conf.name" id="{{ conf.name }}" />
   </label>
 
+  <ng-container *ngIf="conf.name === 'pluginMEDIA_PROCESS'">
+    <app-workflow-form-field-media-process [conf]="conf" [workflowForm]="workflowForm">
+    </app-workflow-form-field-media-process>
+  </ng-container>
+
   <ng-container *ngIf="conf.name === 'pluginHARVEST'">
     <div
       class="show-on-hover"

@@ -21,6 +21,7 @@ context('metis-ui', () => {
     const fieldsOnlyHTTP = ['#url'];
     const fieldsOnlyOAI = ['#harvest-url', '#setspec', '#metadata-format'];
     const fieldsBoth = ['#incremental-harvest'];
+    const fieldsOtherParameters = ['#customxslt', '#throttle-level-select'];
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
@@ -40,6 +41,12 @@ context('metis-ui', () => {
       checkPluginStatus('Process Media', false);
       checkPluginStatus('Preview', false);
       checkPluginStatus('Publish', false);
+    });
+
+    it('should show the extra parameter fields', () => {
+      fieldsOtherParameters.forEach((selector: string) => {
+        cy.get(selector).should('exist');
+      });
     });
 
     it('should disable the save button when there are gaps in the step-sequence', () => {
