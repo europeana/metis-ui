@@ -19,6 +19,7 @@ import {
 import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
 import { SandboxService } from '../_services';
 import { ProblemViewerComponent } from '../problem-viewer';
+import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
 import { WizardComponent } from './wizard.component';
 
@@ -44,6 +45,7 @@ describe('WizardComponent', () => {
         FileUploadComponent,
         ProblemViewerComponent,
         ProtocolFieldSetComponent,
+        RecordReportComponent,
         UploadComponent,
         WizardComponent
       ],
@@ -368,6 +370,34 @@ describe('WizardComponent', () => {
       component.followProblemPatternLink(recordId);
       expect(component.fillAndSubmitRecordForm).toHaveBeenCalled();
     });
+
+    it('should open the report', () => {
+      spyOn(component, 'fillAndSubmitRecordForm');
+      const recordId = '1';
+      component.openReport({ recordId: recordId, openMetadata: false });
+      expect(component.trackRecordId).toEqual(recordId);
+      expect(component.fillAndSubmitRecordForm).toHaveBeenCalled();
+    });
+
+    it('should set the view when requesting the record report', fakeAsync(() => {
+      component.trackDatasetId = '1';
+      component.trackRecordId = '1';
+      component.recordReport = mockRecordReport;
+      fixture.detectChanges();
+      spyOn(component.reportComponent, 'setView');
+
+      component.submitRecordReport();
+      expect(component.reportComponent.setView).not.toHaveBeenCalled();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.reportComponent.setView).not.toHaveBeenCalled();
+
+      component.submitRecordReport(true);
+      expect(component.reportComponent.setView).not.toHaveBeenCalled();
+      tick(1);
+      fixture.detectChanges();
+      expect(component.reportComponent.setView).toHaveBeenCalled();
+    }));
   });
 
   describe('Error handling', () => {
@@ -391,7 +421,7 @@ describe('WizardComponent', () => {
     }));
 
     it('should handle record form errors', fakeAsync(() => {
-      const index = component.getStepIndex(WizardStepType.REPORT);
+      let index = component.getStepIndex(WizardStepType.REPORT);
       component.recordReport = mockRecordReport;
       expect(component.wizardConf[index].error).toBeFalsy();
 
@@ -405,6 +435,15 @@ describe('WizardComponent', () => {
       tick(1);
       expect(component.wizardConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
+
+      component.wizardConf[index].error = undefined;
+      index = component.getStepIndex(WizardStepType.PROBLEMS_RECORD);
+
+      component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, false);
+      tick(1);
+      expect(component.wizardConf[index].error).toBeTruthy();
+      expect(component.recordReport).toBeFalsy();
+
       component.cleanup();
       tick(apiSettings.interval);
     }));

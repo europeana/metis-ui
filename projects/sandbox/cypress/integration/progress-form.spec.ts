@@ -97,7 +97,7 @@ context('Sandbox', () => {
       cy.get(selectorModalDisplay).should('have.length', 0);
       fillProgressForm('10118');
       cy.get(selectorErrorLink).should('have.length', 1);
-      cy.get(selectorErrorLink).click();
+      cy.get(selectorErrorLink).click({ force: true });
       cy.get(selectorModalDisplay).should('have.length', 1);
       cy.get(selectorModalDisplay).should('be.visible');
     });

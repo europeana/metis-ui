@@ -12,17 +12,20 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
   DatasetStatus,
+  DisplayedTier,
   FieldOption,
   FixedLengthArray,
   ProblemPattern,
   ProblemPatternsDataset,
   RecordReport,
+  RecordReportRequest,
   WizardStep,
   WizardStepType
 } from '../_models';
 
 import { SandboxService } from '../_services';
 import { ProblemViewerComponent } from '../problem-viewer';
+import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
 
 enum ButtonAction {
@@ -38,9 +41,11 @@ enum ButtonAction {
 })
 export class WizardComponent extends DataPollingComponent implements OnInit {
   public ButtonAction = ButtonAction;
+  public WizardStepType = WizardStepType;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
+  @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
   formProgress: FormGroup;
   formRecord: FormGroup;
@@ -562,7 +567,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK));
         }
         this.submitDatasetProgress();
-      } else if (action === ButtonAction.BTN_PROBLEMS) {
+      } else {
         if (updateLocation) {
           this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_DATASET));
         }
@@ -609,7 +614,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * submitRecordReport
    * Submits the formRecord data
    **/
-  submitRecordReport(): void {
+  submitRecordReport(showMeta = false): void {
     const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.REPORT)];
     stepConf.isBusy = true;
     this.isPollingRecord = true;
@@ -622,6 +627,12 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           stepConf.error = undefined;
           stepConf.lastLoadedIdDataset = this.trackDatasetId;
           stepConf.lastLoadedIdRecord = decodeURIComponent(`${this.trackRecordId}`);
+
+          if (showMeta) {
+            setTimeout(() => {
+              this.reportComponent.setView(DisplayedTier.METADATA);
+            }, 0);
+          }
         },
         (err: HttpErrorResponse): void => {
           this.recordReport = undefined;
@@ -641,7 +652,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { ButtonAction } action - the desired action
    * @param { boolean } updateLocation - flag if updateLocation function should be called
    **/
-  onSubmitRecord(action: ButtonAction, updateLocation = false): void {
+  onSubmitRecord(action: ButtonAction, updateLocation = false, showMeta = false): void {
     const form = this.formRecord;
 
     if (form.valid) {
@@ -649,11 +660,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.trackDatasetId = this.formProgress.value.datasetToTrack;
 
       if (action === ButtonAction.BTN_RECORD) {
-        this.submitRecordReport();
+        this.submitRecordReport(showMeta);
         if (updateLocation) {
           this.setStep(this.getStepIndex(WizardStepType.REPORT));
         }
-      } else if (action === ButtonAction.BTN_PROBLEMS) {
+      } else {
         this.submitRecordProblemPatterns();
         if (updateLocation) {
           this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_RECORD));
@@ -753,7 +764,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { boolean } problems - flag to load report or problem-patterns
    * @param { true } updateLocation - flag to update url location
    **/
-  fillAndSubmitRecordForm(problems: boolean, updateLocation = true): void {
+  fillAndSubmitRecordForm(problems: boolean, updateLocation = true, showMeta = false): void {
     (this.formProgress.get('datasetToTrack') as FormControl).setValue(this.trackDatasetId);
     (this.formRecord.get('recordToTrack') as FormControl).setValue(this.trackRecordId);
 
@@ -769,7 +780,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
     this.onSubmitRecord(
       problems ? ButtonAction.BTN_PROBLEMS : ButtonAction.BTN_RECORD,
-      updateLocation
+      updateLocation,
+      showMeta
     );
   }
 
@@ -781,5 +793,15 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   followProblemPatternLink(recordId: string): void {
     this.trackRecordId = recordId;
     this.fillAndSubmitRecordForm(true);
+  }
+
+  /**
+   * openReport
+   * Handles click on (internal) record link
+   * @param { RecordReportRequest } request - the record to open
+   **/
+  openReport(request: RecordReportRequest): void {
+    this.trackRecordId = request.recordId;
+    this.fillAndSubmitRecordForm(false, true, request.openMetadata);
   }
 }

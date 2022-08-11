@@ -39,7 +39,7 @@
 
 .copy,
 .external-link {
-  word-break: break-all;
+  white-space: nowrap;
 }
 
 .copyable-link-item {
@@ -49,8 +49,11 @@
 }
 
 .external-link {
+  display: inline-block;
   position: relative;
+
   &::after {
+    background-image: svg-url-icon-external('#{$eu-jade-classic}');
     background-repeat: no-repeat;
     content: '';
     display: block;
@@ -58,13 +61,6 @@
     top: 0.425em;
     position: absolute;
     width: 1em;
-  }
-}
-
-.external-link {
-  display: inline-block;
-  &::after {
-    background-image: svg-url-icon-external('#{$eu-jade-classic}');
     right: -1.35em;
   }
 
