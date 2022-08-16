@@ -9,7 +9,6 @@ export enum StepStatus {
   'NORMALIZE' = 'NORMALIZE',
   'ENRICH' = 'ENRICH',
   'MEDIA_PROCESS' = 'MEDIA_PROCESS',
-  'PREVIEW' = 'PREVIEW',
   'PUBLISH' = 'PUBLISH'
 }
 
@@ -24,7 +23,6 @@ export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.TRANSFORM_TO_EDM_EXTERNAL, 'transformation_edm'],
   [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],
   [StepStatus.VALIDATE_INTERNAL, 'validation_internal'],
-  [StepStatus.PREVIEW, 'preview'],
   [StepStatus.PUBLISH, 'publish']
 ]);
 

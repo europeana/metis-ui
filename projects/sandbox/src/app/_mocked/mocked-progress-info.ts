@@ -94,13 +94,6 @@ export const mockDataset = {
       ]
     },
     {
-      step: StepStatus.PREVIEW,
-      total: 3,
-      success: 1,
-      fail: 2,
-      warn: 0
-    },
-    {
       step: StepStatus.PUBLISH,
       total: 1,
       success: 1,
