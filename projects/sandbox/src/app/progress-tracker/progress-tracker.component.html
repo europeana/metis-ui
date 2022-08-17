@@ -233,10 +233,10 @@
           <span class="warning-view-header">
             This dataset contains
             {{ total | i18nPlural: { '=1': 'one record that was', other: '# records that were' } }}
-            awarded {{ label }} 0.
-            <ng-container *ngIf="total > 1">
-              Here follows a sample list of records
-            </ng-container>
+            awarded {{ label }}
+            {{
+              total | i18nPlural: { '=1': '0:', other: '0. Here follows a sample list of records:' }
+            }}
           </span>
         </ng-template>
         <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
