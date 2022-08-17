@@ -48,21 +48,11 @@ context('metis-ui', () => {
     });
 
     it('should show the user who cancelled an execution', () => {
-      cy.get(`${selectorHistoryGrid} .head-text.workflow .user`)
-        .eq(1)
-        .contains('Cancelled by');
-      cy.get(`${selectorHistoryGrid} .head-text.workflow`)
-        .eq(0)
-        .contains(userName);
+      cy.contains(`Cancelled by ${userName}`).should('exist');
     });
 
     it('should show the user who started an execution', () => {
-      cy.get(`${selectorHistoryGrid} .head-text.workflow .user`)
-        .eq(0)
-        .contains('Started by');
-      cy.get(`${selectorHistoryGrid} .head-text.workflow`)
-        .eq(0)
-        .contains(userName);
+      cy.contains(`Started by ${userName}`).should('exist');
     });
   });
 });
