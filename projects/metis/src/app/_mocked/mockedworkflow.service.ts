@@ -19,6 +19,7 @@ import {
   Statistics,
   SubTaskInfo,
   TaskState,
+  ThrottleLevel,
   User,
   Workflow,
   WorkflowExecution,
@@ -69,7 +70,8 @@ export const mockWorkflow: Workflow = {
     },
     {
       enabled: true,
-      pluginType: PluginType.MEDIA_PROCESS
+      pluginType: PluginType.MEDIA_PROCESS,
+      throttlingLevel: ThrottleLevel.MEDIUM
     },
     {
       enabled: true,

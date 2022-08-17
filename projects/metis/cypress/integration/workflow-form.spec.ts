@@ -21,6 +21,13 @@ context('metis-ui', () => {
     const fieldsOnlyHTTP = ['#url'];
     const fieldsOnlyOAI = ['#harvest-url', '#setspec', '#metadata-format'];
     const fieldsBoth = ['#incremental-harvest'];
+    const fieldsOtherParameters = [
+      '#check-all',
+      '#check-sample',
+      '#customxslt',
+      '#throttle-level-select'
+    ];
+    const selLinkCheckStep = '.workflow-header .steps .link_checking';
 
     beforeEach(() => {
       setupDatasetPage('workflow', 1);
@@ -29,6 +36,13 @@ context('metis-ui', () => {
     afterEach(() => {
       cleanupUser();
     });
+
+    const addLinkChecking = (): void => {
+      const selFirstFieldHoverZone = '.form-fields-container > :first-child .link-check-ctrl';
+      const selFirstFieldHoverLink = `${selFirstFieldHoverZone} .ctrl.add`;
+      cy.get(selFirstFieldHoverZone).invoke('show');
+      cy.get(selFirstFieldHoverLink).click(force);
+    };
 
     it('should show the workflow', () => {
       checkPluginStatus('Import', true);
@@ -42,6 +56,13 @@ context('metis-ui', () => {
       checkPluginStatus('Publish', false);
     });
 
+    it('should show the extra parameter fields', () => {
+      addLinkChecking();
+      fieldsOtherParameters.forEach((selector: string) => {
+        cy.get(selector).should('exist');
+      });
+    });
+
     it('should disable the save button when there are gaps in the step-sequence', () => {
       cy.get('[data-e2e="save-workflow"] button').should('have.length', 0);
       cy.wait(500);
@@ -50,6 +71,12 @@ context('metis-ui', () => {
       cy.get('.notification').contains('Gaps are not allowed in the workflow sequence ');
       cy.get('.steps .validation_internal').click(force);
       cy.get('[data-e2e="save-workflow"] button').should('not.be.disabled');
+    });
+
+    it('should show link checking', () => {
+      cy.get(selLinkCheckStep).should('not.exist');
+      addLinkChecking();
+      cy.get(selLinkCheckStep).should('exist');
     });
 
     describe('HTTP Harvest', () => {

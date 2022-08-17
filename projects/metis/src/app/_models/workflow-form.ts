@@ -36,6 +36,7 @@ export enum ParameterFieldName {
   customXslt = 'customXslt',
   harvestUrl = 'harvestUrl',
   incrementalHarvest = 'incrementalHarvest',
+  throttlingLevel = 'throttlingLevel',
   metadataFormat = 'metadataFormat',
   performSampling = 'performSampling',
   pluginType = 'pluginType',
@@ -63,26 +64,30 @@ export interface WorkflowFieldDataParameterised extends WorkflowFieldData {
 
 const parameterFieldPresets = Object.assign(
   {},
-  ...['HARVEST', PluginType.TRANSFORMATION, PluginType.LINK_CHECKING].map((pType) => {
-    let paramField = null;
-    if (pType === 'HARVEST') {
-      paramField = [
-        ParameterFieldName.harvestUrl,
-        ParameterFieldName.incrementalHarvest,
-        ParameterFieldName.metadataFormat,
-        ParameterFieldName.pluginType,
-        ParameterFieldName.setSpec,
-        ParameterFieldName.url
-      ];
-    } else if (pType === PluginType.TRANSFORMATION) {
-      paramField = [ParameterFieldName.customXslt];
-    } else if (pType === PluginType.LINK_CHECKING) {
-      paramField = [ParameterFieldName.performSampling];
+  ...['HARVEST', PluginType.TRANSFORMATION, PluginType.LINK_CHECKING, PluginType.MEDIA_PROCESS].map(
+    (pType) => {
+      let paramField = null;
+      if (pType === 'HARVEST') {
+        paramField = [
+          ParameterFieldName.harvestUrl,
+          ParameterFieldName.incrementalHarvest,
+          ParameterFieldName.metadataFormat,
+          ParameterFieldName.pluginType,
+          ParameterFieldName.setSpec,
+          ParameterFieldName.url
+        ];
+      } else if (pType === PluginType.TRANSFORMATION) {
+        paramField = [ParameterFieldName.customXslt];
+      } else if (pType === PluginType.LINK_CHECKING) {
+        paramField = [ParameterFieldName.performSampling];
+      } else if (pType === PluginType.MEDIA_PROCESS) {
+        paramField = [ParameterFieldName.throttlingLevel];
+      }
+      return {
+        [pType]: paramField
+      };
     }
-    return {
-      [pType]: paramField
-    };
-  })
+  )
 );
 
 export type WorkflowFormFieldConf = (WorkflowFieldData | WorkflowFieldDataParameterised)[];

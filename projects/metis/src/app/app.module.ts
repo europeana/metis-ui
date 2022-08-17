@@ -44,6 +44,7 @@ import {
   WorkflowComponent,
   WorkflowFormFieldComponent,
   WorkflowFormFieldLinkCheckComponent,
+  WorkflowFormFieldMediaProcessComponent,
   WorkflowFormFieldTransformComponent,
   WorkflowHeaderComponent
 } from './dataset';
@@ -100,6 +101,7 @@ import { SearchResultsComponent } from './search-results';
     WorkflowHeaderComponent,
     WorkflowFormFieldComponent,
     WorkflowFormFieldLinkCheckComponent,
+    WorkflowFormFieldMediaProcessComponent,
     WorkflowFormFieldTransformComponent,
     MappingComponent,
     PreviewComponent,

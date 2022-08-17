@@ -19,6 +19,7 @@ import {
   errorNotification,
   httpErrorNotification,
   isWorkflowCompleted,
+  MediaProcessPluginMetadata,
   Notification,
   OAIHarvestPluginMetadataTmp,
   ParameterField,
@@ -32,9 +33,7 @@ import {
   WorkflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-
 import { TranslateService } from '../../_translate';
-
 import { WorkflowFormFieldComponent } from './workflow-form-field';
 
 @Component({
@@ -395,13 +394,18 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   extractPluginParamsExtra(enabledPluginMetadata: PluginMetadata): void {
     // parameters for transformation
-    if (enabledPluginMetadata.pluginType === 'TRANSFORMATION') {
+    if (enabledPluginMetadata.pluginType === PluginType.TRANSFORMATION) {
       this.workflowForm.controls.customXslt.setValue(enabledPluginMetadata.customXslt);
     }
     // parameters for link-checking
-    if (enabledPluginMetadata.pluginType === 'LINK_CHECKING') {
+    if (enabledPluginMetadata.pluginType === PluginType.LINK_CHECKING) {
       const value = String(enabledPluginMetadata.performSampling);
       this.workflowForm.controls.performSampling.setValue(value);
+    }
+    // parameters for media-process
+    if (enabledPluginMetadata.pluginType === PluginType.MEDIA_PROCESS) {
+      const value = (enabledPluginMetadata as MediaProcessPluginMetadata).throttlingLevel;
+      this.workflowForm.controls.throttlingLevel.setValue(value);
     }
   }
 
