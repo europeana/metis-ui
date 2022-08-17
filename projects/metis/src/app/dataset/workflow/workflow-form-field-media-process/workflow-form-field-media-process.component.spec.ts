@@ -26,11 +26,12 @@ describe('WorkflowFormFieldMediaProcessComponent', () => {
     component.conf = {
       label: PluginType.MEDIA_PROCESS,
       name: 'pluginMEDIA_PROCESS',
-      dragType: DragType.dragNone
+      dragType: DragType.dragNone,
+      parameterFields: [ParameterFieldName.throttlingLevel]
     };
     component.workflowForm = formBuilder.group({
       pluginMEDIA_PROCESS: null,
-      parameterFields: [ParameterFieldName.throttlingLevel]
+      throttlingLevel: null
     });
     fixture.detectChanges();
   });
