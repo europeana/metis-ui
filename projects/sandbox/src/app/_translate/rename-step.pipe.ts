@@ -17,7 +17,6 @@ const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.NORMALIZE, 'Normalisation'],
   [StepStatus.ENRICH, 'Enrichment'],
   [StepStatus.MEDIA_PROCESS, 'Media Processing'],
-  [StepStatus.PREVIEW, 'Preview'],
   [StepStatus.PUBLISH, 'Publish']
 ]);
 

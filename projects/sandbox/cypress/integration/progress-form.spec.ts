@@ -28,6 +28,8 @@ context('Sandbox', () => {
     const selCountryLang = '[data-e2e="country-language"]';
     const selCreationDate = '[data-e2e="creation-date"]';
 
+    const totalNumberOfSteps = 9;
+
     it('should show the input and submit button', () => {
       cy.get(selectorInputDatasetId).should('have.length', 1);
       cy.get(selectorBtnSubmitProgress).should('have.length', 1);
@@ -77,19 +79,19 @@ context('Sandbox', () => {
     it('should show the progress success', () => {
       cy.get(selectorSuccessPresent).should('not.exist');
       fillProgressForm('100');
-      cy.get(selectorSuccessPresent).should('have.length', 10);
+      cy.get(selectorSuccessPresent).should('have.length', totalNumberOfSteps);
     });
 
     it('should show the progress warn', () => {
       cy.get(selectorWarnPresent).should('have.length', 0);
       fillProgressForm('110');
-      cy.get(selectorWarnPresent).should('have.length', 10);
+      cy.get(selectorWarnPresent).should('have.length', totalNumberOfSteps);
     });
 
     it('should show the progress fail', () => {
       cy.get(selectorFailPresent).should('have.length', 0);
       fillProgressForm('101');
-      cy.get(selectorFailPresent).should('have.length', 10);
+      cy.get(selectorFailPresent).should('have.length', totalNumberOfSteps);
     });
 
     it('should show the progress errors', () => {
