@@ -23,7 +23,6 @@ export class ProblemViewerComponent extends SubscriptionManager {
   public problemPatternData = problemPatternData;
 
   _problemPatternsRecord: Array<ProblemPattern>;
-  datasetId: string;
   modalInstanceId = 'modalDescription_dataset';
   visibleProblemPatternId: ProblemPatternId;
 
@@ -44,8 +43,11 @@ export class ProblemViewerComponent extends SubscriptionManager {
     super();
   }
 
-  openLink(recordId: string): void {
-    this.openLinkEvent.emit(recordId);
+  openLink(event: { ctrlKey: boolean; preventDefault: () => void }, recordId: string): void {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      this.openLinkEvent.emit(recordId);
+    }
   }
 
   getWarningClassMap(basicDescription: ProblemPatternDescriptionBasic): ClassMap {

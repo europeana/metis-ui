@@ -36,8 +36,19 @@ describe('ProblemViewerComponent', () => {
 
   it('should open the link', () => {
     spyOn(component.openLinkEvent, 'emit');
-    component.openLink('x');
+
+    const fnPreventDefault = (): void => {};
+    const event = {
+      preventDefault: fnPreventDefault,
+      ctrlKey: false
+    };
+
+    component.openLink(event, 'x');
     expect(component.openLinkEvent.emit).toHaveBeenCalled();
+
+    event.ctrlKey = true;
+    component.openLink(event, 'x');
+    expect(component.openLinkEvent.emit).toHaveBeenCalledTimes(1);
   });
 
   it('should get the warning classmap', () => {

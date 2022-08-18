@@ -87,10 +87,12 @@
 
   <!-- Internal Link -->
   <!-- prettier-ignore -->
-  <ng-template #internalLinkItem let-recordId="recordId">
+  <ng-template #internalLinkItem let-recordId="recordId" let-datasetId="datasetId">
     <!-- //NOSONAR --><li>
       <ng-container>
-        <a class="link-related" (click)="openLink(recordId)" title="view record issues">
+        <a class="link-related" (click)="openLink($event, recordId)" title="view record issues"
+        href="/dataset/{{datasetId}}?view=problems&recordId={{recordId}}"
+        >
           {{ recordId }}
         </a>
       </ng-container>
@@ -98,7 +100,12 @@
   </ng-template>
 
   <!-- Problem Occurence -->
-  <ng-template #tmpProblemOccurenceList let-occurence="occurence" let-problemTitle="problemTitle">
+  <ng-template
+    #tmpProblemOccurenceList
+    let-occurence="occurence"
+    let-problemTitle="problemTitle"
+    let-datasetId="datasetId"
+  >
     <ul class="problem-occurence">
       <li *ngIf="occurence.messageReport; let message">
         <q>
@@ -128,7 +135,10 @@
           >
             <ng-container *ngFor="let id of occurence.affectedRecordIds">
               <ng-content
-                *ngTemplateOutlet="internalLinkItem; context: { recordId: id }"
+                *ngTemplateOutlet="
+                  internalLinkItem;
+                  context: { recordId: id, datasetId: datasetId }
+                "
               ></ng-content>
             </ng-container>
           </ul>
@@ -138,12 +148,20 @@
   </ng-template>
 
   <!-- Record Analysis List -->
-  <ng-template #tmpRecordAnalysisList let-analyses="analyses" let-problemTitle="problemTitle">
+  <ng-template
+    #tmpRecordAnalysisList
+    let-analyses="analyses"
+    let-problemTitle="problemTitle"
+    let-datasetId="datasetId"
+  >
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
         <ng-container *ngIf="!problemPatternsRecord">
           <ng-content
-            *ngTemplateOutlet="internalLinkItem; context: { recordId: analysis.recordId }"
+            *ngTemplateOutlet="
+              internalLinkItem;
+              context: { recordId: analysis.recordId, datasetId: datasetId }
+            "
           ></ng-content>
         </ng-container>
 
@@ -151,7 +169,11 @@
           <ng-content
             *ngTemplateOutlet="
               tmpProblemOccurenceList;
-              context: { occurence: problemOccurrence, problemTitle: problemTitle }
+              context: {
+                occurence: problemOccurrence,
+                problemTitle: problemTitle,
+                datasetId: datasetId
+              }
             "
           ></ng-content>
         </li>
@@ -160,7 +182,7 @@
   </ng-template>
 
   <!-- Problem Pattern (record) -->
-  <ng-template #tmpProblemPattern let-problemPattern="problemPattern">
+  <ng-template #tmpProblemPattern let-problemPattern="problemPattern" let-datasetId="datasetId">
     <div class="problem-pattern">
       <span class="problem-header">
         <a
@@ -193,7 +215,8 @@
           tmpRecordAnalysisList;
           context: {
             analyses: problemPattern.recordAnalysisList,
-            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle
+            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle,
+            datasetId: datasetId
           }
         "
       ></ng-content>
@@ -227,7 +250,10 @@
       <ng-container>
         <ng-container *ngFor="let problemPattern of problemPatternsRecord">
           <ng-content
-            *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+            *ngTemplateOutlet="
+              tmpProblemPattern;
+              context: { problemPattern: problemPattern, datasetId: '' }
+            "
           ></ng-content>
         </ng-container>
       </ng-container>
@@ -263,7 +289,10 @@
         <ng-container>
           <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
             <ng-content
-              *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+              *ngTemplateOutlet="
+                tmpProblemPattern;
+                context: { problemPattern: problemPattern, datasetId: ppd.datasetId }
+              "
             ></ng-content>
           </ng-container>
         </ng-container>
