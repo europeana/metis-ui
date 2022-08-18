@@ -1,3 +1,5 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
 .content {
   line-height: 1.3em;
   position: absolute;
@@ -6,4 +8,13 @@
 .show-on-hover {
   align-items: center;
   height: 100%;
+
+  .form-group {
+    label {
+      color: $gray-lighter;
+    }
+    flex-direction: row-reverse;
+    padding-top: 0;
+    width: 100%;
+  }
 }
