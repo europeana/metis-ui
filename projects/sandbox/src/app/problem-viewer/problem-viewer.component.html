@@ -90,7 +90,7 @@
   <ng-template #internalLinkItem let-recordId="recordId" let-datasetId="datasetId" let-showConnectBelow="showConnectBelow">
     <!-- //NOSONAR --><li>
       <ng-container>
-        <a class="link-related" (click)="openLink($event, recordId)" title="view record issues"
+        <a class="code link-related" (click)="openLink($event, recordId)" title="view record issues"
         [ngClass]="{ 'connect-to-below' : showConnectBelow }"
         href="/dataset/{{datasetId}}?view=problems&recordId={{recordId}}"
         >
@@ -120,16 +120,15 @@
         <li
           class="list-opener"
           [ngClass]="{
-            'is-open': occurence.affectedRecordIdsShowing,
-            disabled: occurence.affectedRecordIds.length === 1
+            'is-open': occurence.affectedRecordIdsShowing
           }"
         >
           <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
             <ng-template #nonP1>
               <ng-container [ngPlural]="occurence.affectedRecordIds.length">
                 <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
-                <ng-template ngPluralCase="=1">affected record:</ng-template>
-                <ng-template ngPluralCase="other">affected records:</ng-template>
+                <ng-template ngPluralCase="=1">affected record</ng-template>
+                <ng-template ngPluralCase="other">affected records</ng-template>
               </ng-container>
             </ng-template>
             <ng-container
@@ -137,8 +136,8 @@
               [ngPlural]="occurence.affectedRecordIds.length"
             >
               <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
-              <ng-template ngPluralCase="=1">other record with this title:</ng-template>
-              <ng-template ngPluralCase="other">other records with this title:</ng-template>
+              <ng-template ngPluralCase="=1">other record with this title</ng-template>
+              <ng-template ngPluralCase="other">other records with this title</ng-template>
             </ng-container>
           </a>
         </li>
@@ -146,7 +145,7 @@
           <ul
             class="openable-list"
             [ngClass]="{
-              closed: occurence.affectedRecordIds.length > 1 && !occurence.affectedRecordIdsShowing
+              closed: !occurence.affectedRecordIdsShowing
             }"
           >
             <ng-container *ngFor="let id of occurence.affectedRecordIds">
@@ -181,9 +180,8 @@
                 recordId: analysis.recordId,
                 datasetId: datasetId,
                 showConnectBelow:
-                  analysis.problemOccurrenceList[0].affectedRecordIds.length === 1 ||
-                  (analysis.problemOccurrenceList[0].affectedRecordIds.length &&
-                    analysis.problemOccurrenceList[0].affectedRecordIdsShowing)
+                  analysis.problemOccurrenceList[0].affectedRecordIds.length &&
+                  analysis.problemOccurrenceList[0].affectedRecordIdsShowing
               }
             "
           ></ng-content>

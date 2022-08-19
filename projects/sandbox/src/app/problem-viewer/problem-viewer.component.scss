@@ -53,7 +53,9 @@ label {
 }
 
 .link-related {
+  line-height: 16px;
   position: relative;
+
   &::before {
     background-image: svg-url-icon-lightbulb($eu-jade);
     background-repeat: no-repeat;
@@ -71,49 +73,14 @@ label {
   }
 }
 
-.link-related {
-  &::after {
-    border-left: 1px solid $eu-jade-light;
-    color: $eu-jade-light;
-    content: '';
-    width: 16px;
-    position: absolute;
-    left: 4px;
-    overflow: hidden;
-    top: 0;
-
-    width: 32px;
-  }
-}
 .openable-list {
   display: block;
   height: 100%;
   margin-bottom: 0.5em;
   overflow: hidden;
+
   &.closed {
     height: 0;
-  }
-
-  .link-related {
-    &::after {
-      content: '——';
-      height: 1.6em;
-      left: -12px;
-      line-height: 1em;
-    }
-  }
-  :last-child .link-related::after {
-    height: 0.55em;
-    line-height: 0.825em;
-  }
-}
-
-.connect-to-below {
-  &::after {
-    content: '';
-    height: 4.5em;
-    left: 20px;
-    top: 1em;
   }
 }
 
@@ -132,28 +99,25 @@ label {
   margin-top: 0.5em;
   width: 100%;
 
-  &:not(.disabled) {
-    &::after {
-      $transitionTime: 80ms;
-      content: '\25B6';
-      display: inline-block;
-      font-size: 12px;
-      left: 5px;
-      position: relative;
-      top: -2px;
-      transform: rotate(0deg);
-      transition: top ease-in-out $transitionTime, transform ease-in-out $transitionTime;
-    }
+  &::after {
+    $transitionTime: 80ms;
+    content: '\25B6';
+    display: inline-block;
+    font-size: 12px;
+    left: 5px;
+    position: relative;
+    top: -2px;
+    transform: rotate(0deg);
+    transition: top ease-in-out $transitionTime, transform ease-in-out $transitionTime;
+  }
 
-    &:hover::after {
-      color: $eu-jade-darkest;
-      color: $eu-light-orange;
-    }
+  &:hover::after {
+    color: $eu-jade-darkest;
+  }
 
-    &.is-open::after {
-      top: 0;
-      transform: rotate(90deg);
-    }
+  &.is-open::after {
+    top: 0;
+    transform: rotate(90deg);
   }
 
   .affected-count {
@@ -162,21 +126,6 @@ label {
       content: ' ';
     }
   }
-
-  // connecting line
-  &.is-open::before {
-    border-left: 1px solid $eu-jade-light;
-    bottom: 1.5em;
-    content: '';
-    height: 4em;
-    left: 1.25em;
-    position: absolute;
-    width: 1px;
-  }
-
-  &.disabled a {
-    pointer-events: none;
-  }
 }
 
 .lowercase {
@@ -184,7 +133,7 @@ label {
 }
 
 q {
-  quotes: '“' '„'; // "”";
+  quotes: '“' '„';
   margin-left: 1em;
 }
 
@@ -242,7 +191,10 @@ q {
 }
 
 .title-record-occurences {
-  font-style: italic;
+  color: $gray-light;
+  strong {
+    color: $gray-med;
+  }
 }
 
 .toggle-view-raw {
@@ -296,5 +248,51 @@ q {
   .explanation,
   .summary {
     text-align: left;
+  }
+}
+
+@media (min-width: $bp-med) {
+  // connecting lines
+
+  .link-related::after {
+    border-left: 1px solid $eu-jade-light;
+    color: $eu-jade-light;
+    content: '';
+    width: 16px;
+    position: absolute;
+    left: 4px;
+    overflow: hidden;
+    top: 0;
+    width: 32px;
+  }
+
+  .openable-list {
+    .link-related::after {
+      content: '——';
+      height: 1.6em;
+      left: -12px;
+      line-height: 1em;
+    }
+    :last-child .link-related::after {
+      height: 6px;
+      line-height: 16px;
+    }
+  }
+
+  .connect-to-below::after {
+    content: '';
+    height: 4.5em;
+    left: 20px;
+    top: 1em;
+  }
+
+  .list-opener.is-open::before {
+    border-left: 1px solid $eu-jade-light;
+    bottom: 1.5em;
+    content: '';
+    height: 4em;
+    left: 1.25em;
+    position: absolute;
+    width: 1px;
   }
 }
