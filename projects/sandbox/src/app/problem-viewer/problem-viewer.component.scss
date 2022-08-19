@@ -53,7 +53,6 @@ label {
 }
 
 .link-related {
-  line-height: 16px;
   position: relative;
 
   &::before {
@@ -249,9 +248,7 @@ q {
   .summary {
     text-align: left;
   }
-}
 
-@media (min-width: $bp-med) {
   // connecting lines
 
   .link-related::after {
@@ -275,7 +272,15 @@ q {
     }
     :last-child .link-related::after {
       height: 6px;
-      line-height: 16px;
+      line-height: 15px;
+    }
+  }
+
+  @supports (not (-moz-appearance: button)) and (-webkit-appearance: none) {
+    .openable-list {
+      :last-child .link-related::after {
+        height: 8px;
+      }
     }
   }
 
