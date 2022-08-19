@@ -53,6 +53,7 @@ label {
 }
 
 .link-related {
+  position: relative;
   &::before {
     background-image: svg-url-icon-lightbulb($eu-jade);
     background-repeat: no-repeat;
@@ -70,6 +71,20 @@ label {
   }
 }
 
+.link-related {
+  &::after {
+    border-left: 1px solid $eu-jade-light;
+    color: $eu-jade-light;
+    content: '';
+    width: 16px;
+    position: absolute;
+    left: 4px;
+    overflow: hidden;
+    top: 0;
+
+    width: 32px;
+  }
+}
 .openable-list {
   display: block;
   height: 100%;
@@ -77,6 +92,28 @@ label {
   overflow: hidden;
   &.closed {
     height: 0;
+  }
+
+  .link-related {
+    &::after {
+      content: '——';
+      height: 1.6em;
+      left: -12px;
+      line-height: 1em;
+    }
+  }
+  :last-child .link-related::after {
+    height: 0.55em;
+    line-height: 0.825em;
+  }
+}
+
+.connect-to-below {
+  &::after {
+    content: '';
+    height: 4.5em;
+    left: 20px;
+    top: 1em;
   }
 }
 
@@ -95,7 +132,7 @@ label {
   margin-top: 0.5em;
   width: 100%;
 
-  &:not(.auto-opened) {
+  &:not(.disabled) {
     &::after {
       $transitionTime: 80ms;
       content: '\25B6';
@@ -118,6 +155,28 @@ label {
       transform: rotate(90deg);
     }
   }
+
+  .affected-count {
+    font-weight: bold;
+    &:after {
+      content: ' ';
+    }
+  }
+
+  // connecting line
+  &.is-open::before {
+    border-left: 1px solid $eu-jade-light;
+    bottom: 1.5em;
+    content: '';
+    height: 4em;
+    left: 1.25em;
+    position: absolute;
+    width: 1px;
+  }
+
+  &.disabled a {
+    pointer-events: none;
+  }
 }
 
 .lowercase {
@@ -127,6 +186,10 @@ label {
 q {
   quotes: '“' '„'; // "”";
   margin-left: 1em;
+}
+
+.message {
+  padding-left: 1em;
 }
 
 .message-copy {
@@ -145,6 +208,7 @@ q {
   display: flex;
   flex-flow: wrap;
   flex-direction: row;
+  position: relative;
 }
 
 .problem-pattern {

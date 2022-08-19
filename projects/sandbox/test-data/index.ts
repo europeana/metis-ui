@@ -379,7 +379,9 @@ new (class extends TestDataServer {
       P1: ['My Title', 'My Other Title'],
       P2: [
         'The Descriptive Title',
-        'The Descriptive Title: Which Is It?',
+        `The Descriptive Title: when all the good titles were taken
+        they inevitably started to evolve into titles that were
+        more descriptive in syntax.`,
         'The Descriptive Title: 2-in-1'
       ],
       P3: ['Cultural Heritage Object'],
@@ -387,7 +389,12 @@ new (class extends TestDataServer {
       P6: ['aaaaaaa', 'zzzzzzz'],
       P7: ['', '/', '/na'],
       P9: ['Title', 'A1'],
-      P12: ['Urbano dejanje 2015 the courtyard - also known as the yard of the court']
+      P12: [
+        `This value is 255 characters long, which is the maximum length it can be.
+        This means that this value – shown in light yellow – can occupy a lot of
+        real estate.  It will line-wrap, though how often it line-wraps would depend
+        on the width of its container.`
+      ]
     };
 
     const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number) => {

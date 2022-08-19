@@ -63,7 +63,7 @@ context('Sandbox', () => {
 
       it('should expand the affected record id list', () => {
         cy.visit('/dataset/101?view=problems');
-        const selUnopenedOpener = '.list-opener:not(.auto-opened)';
+        const selUnopenedOpener = '.list-opener';
         const openedContent = `${selUnopenedOpener} + li .openable-list`;
         cy.get(openedContent).should('not.exist');
         cy.get(`${selUnopenedOpener} a`)
