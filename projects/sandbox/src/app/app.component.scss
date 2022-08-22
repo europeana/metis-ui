@@ -1,6 +1,38 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
 #footer {
   display: flex;
   height: 100%;
   flex-direction: column;
   justify-content: flex-end;
+}
+
+.user-assistance {
+  color: $eu-jade-classic;
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+
+  li {
+    padding: 1em;
+  }
+
+  @media (min-width: $bp-xl) {
+
+    bottom: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    left: 0;
+    padding: 0 2.2rem;
+    position: absolute;
+    right: 0;
+    transform: translate(0, -100%);
+
+    li {
+      padding: 2em 0;
+      width: 100%;
+    }
+  }
 }
