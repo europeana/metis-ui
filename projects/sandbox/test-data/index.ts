@@ -188,7 +188,7 @@ new (class extends TestDataServer {
             for (let i = 0; i < itemsToAdd; i++) {
               if (info.samples.length < maxRecordListLength) {
                 info.samples.push(
-                  `Record_id_XYZABC__C3PO_GTXXX_SDF_76_14_${item.tier}_${datasetInfo['dataset-id']}`
+                  `/${datasetInfo['dataset-id']}/Record_id_XYZABC__C3PO_GTXXX_SDF_76_14_${item.tier}`
                 );
                 info.total += 1;
               }
@@ -412,9 +412,16 @@ new (class extends TestDataServer {
           problemOccurrenceList: [
             {
               messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
-              affectedRecordIds: Object.keys(new Array(occurenceIndex % 5).fill(null)).map((i) => {
-                return `/${datasetId}/${occurenceIndex + i}`;
-              })
+              affectedRecordIds: Object.keys(new Array(occurenceIndex % 5).fill(null)).map(
+                (i, index) => {
+                  let suffix = '';
+                  if ((occurenceIndex + index) % 2 > 0) {
+                    suffix =
+                      '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
+                  }
+                  return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
+                }
+              )
             }
           ]
         };
