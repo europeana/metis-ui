@@ -36,19 +36,19 @@ describe('ProblemViewerComponent', () => {
 
   it('should open the link', () => {
     spyOn(component.openLinkEvent, 'emit');
-
-    const fnPreventDefault = (): void => {};
     const event = {
-      preventDefault: fnPreventDefault,
+      preventDefault: jasmine.createSpy(),
       ctrlKey: false
     };
 
     component.openLink(event, 'x');
     expect(component.openLinkEvent.emit).toHaveBeenCalled();
+    expect(event.preventDefault).toHaveBeenCalled();
 
     event.ctrlKey = true;
     component.openLink(event, 'x');
     expect(component.openLinkEvent.emit).toHaveBeenCalledTimes(1);
+    expect(event.preventDefault).toHaveBeenCalledTimes(1);
   });
 
   it('should get the warning classmap', () => {
