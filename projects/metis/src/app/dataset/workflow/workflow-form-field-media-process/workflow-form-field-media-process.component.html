@@ -3,7 +3,7 @@
     <label for="throttle-level-select">{{ 'throttleLevel' | translate }}</label>
     <select
       id="throttle-level-select"
-      formControlName="throttlingLevel"
+      [formControlName]="ParameterFieldName.throttlingLevel"
       [attr.disabled]="disabled ? 'disabled' : null"
       [attr.readonly]="disabled ? 'readonly' : null"
     >
