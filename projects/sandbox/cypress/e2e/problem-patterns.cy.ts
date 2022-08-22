@@ -61,12 +61,18 @@ context('Sandbox', () => {
         testModalOpen('/dataset/101?view=problems');
       });
 
-      it('should expand the affected record id list', () => {
+      it('should collapse and expand the list of affected record ids', () => {
         cy.visit('/dataset/101?view=problems');
-        const selUnopenedOpener = '.list-opener:not(.auto-opened)';
-        const openedContent = `${selUnopenedOpener} + li .openable-list`;
-        cy.get(openedContent).should('not.exist');
-        cy.get(`${selUnopenedOpener} a`)
+        const selOpener = '.list-opener';
+        const openedContent = `${selOpener} + li .openable-list`;
+        cy.get(openedContent).should('exist');
+        cy.get(`${selOpener} a`)
+          .first()
+          .click(force);
+        cy.get(openedContent)
+          .filter(':visible')
+          .should('not.exist');
+        cy.get(`${selOpener} a`)
           .first()
           .click(force);
         cy.get(openedContent)
