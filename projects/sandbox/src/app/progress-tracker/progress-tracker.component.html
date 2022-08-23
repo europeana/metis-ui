@@ -277,7 +277,8 @@
           <li *ngFor="let recId of tierInfo['content-tier'].samples">
             <a
               class="view-record-report"
-              (click)="reportLinkClicked(recId, false)"
+              (click)="reportLinkClicked($event, recId, false)"
+              href="/dataset/{{ datasetId }}?recordId={{ recId }}"
               title="view record report"
               >{{ recId }}</a
             >
@@ -287,7 +288,8 @@
           <li *ngFor="let recId of tierInfo['metadata-tier'].samples">
             <a
               class="view-record-report"
-              (click)="reportLinkClicked(recId, true)"
+              (click)="reportLinkClicked($event, recId, true)"
+              href="/dataset/{{ datasetId }}?recordId={{ recId }}"
               title="view record report"
               >{{ recId }}</a
             >

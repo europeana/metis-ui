@@ -297,6 +297,23 @@ describe('WizardComponent', () => {
       expect(form.enable).toHaveBeenCalled();
     });
 
+    it('should set the step conditionally via callSetStep', () => {
+      spyOn(component, 'setStep');
+
+      const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
+        return ({
+          preventDefault: jasmine.createSpy(),
+          ctrlKey: ctrlKey
+        } as unknown) as KeyboardEvent;
+      };
+
+      component.callSetStep(createKeyEvent(true), 1, false);
+      expect(component.setStep).not.toHaveBeenCalled();
+
+      component.callSetStep(createKeyEvent(false), 1, false);
+      expect(component.setStep).toHaveBeenCalled();
+    });
+
     it('should show the orbs', () => {
       const conf = component.wizardConf;
       expect(conf[0].isHidden).toBeTruthy();
