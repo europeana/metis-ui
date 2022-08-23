@@ -2,34 +2,41 @@
 
 #footer {
   display: flex;
-  height: 100%;
   flex-direction: column;
   justify-content: flex-end;
 }
 
-.user-assistance {
-  color: $eu-jade-classic;
+.user-assistance-wrapper {
   display: flex;
+  height: 100%;
   flex-direction: column;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
+  justify-content: flex-end;
+  margin: auto;
+  max-width: 50em;
+  width: 80%;
 
-  li {
-    padding: 1em;
-  }
-
-  @media (min-width: $bp-xl) {
-    bottom: 0;
-    flex-direction: row;
-    justify-content: space-around;
-    left: 0;
-    padding: 0 2.2rem;
-    right: 0;
+  .user-assistance {
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
 
     li {
-      padding: 2em 0;
-      width: 100%;
+      padding: 1em;
+      .external-link:not(:hover):not(:active) {
+        color: $eu-jade-classic;
+      }
+    }
+
+    @media (min-width: $bp-xl) {
+      flex-direction: row;
+      justify-content: space-around;
+
+      li {
+        padding: 2em 0;
+      }
     }
   }
 }
