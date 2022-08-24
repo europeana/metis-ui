@@ -9,7 +9,9 @@ import { ClickService } from 'shared';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  public documentationUrl = apiSettings.documentationUrl;
   public feedbackUrl = apiSettings.feedbackUrl;
+  public userGuideUrl = apiSettings.userGuideUrl;
 
   constructor(private readonly clickService: ClickService) {}
 

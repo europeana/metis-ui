@@ -48,7 +48,7 @@ context('Sandbox', () => {
           return sel !== activeOrb + selectorActive;
         })
         .forEach((sel: string) => {
-          cy.get(sel).should('have.length', 0);
+          cy.get(sel).should('not.exist');
         });
       cy.get(activeOrb + selectorActive).should('have.length', 1);
     };
@@ -82,7 +82,7 @@ context('Sandbox', () => {
     it('should show the processing errors conditionally', () => {
       cy.visit('/dataset/1?recordId=2');
       const selectorErrors = '.processing-errors';
-      cy.get(selectorErrors).should('have.length', 0);
+      cy.get(selectorErrors).should('not.exist');
       cy.visit('/dataset/1?recordId=13');
       cy.wait(200);
       cy.get(selectorErrors).should('have.length', 1);
@@ -92,7 +92,7 @@ context('Sandbox', () => {
       cy.visit('/dataset/1?recordId=2');
       cy.get(selectorProgressOrb)
         .filter(':visible')
-        .should('have.length', 0);
+        .should('not.exist');
       cy.get(selectorLinkProgressForm)
         .scrollIntoView()
         .should('be.visible');
@@ -100,7 +100,7 @@ context('Sandbox', () => {
       cy.get(selectorLinkProgressForm)
         .scrollIntoView()
         .click(force);
-      cy.get(selectorLinkProgressForm).should('have.length', 0);
+      cy.get(selectorLinkProgressForm).should('not.exist');
       cy.get(selectorProgressOrb)
         .filter(':visible')
         .should('have.length', 1);
@@ -108,7 +108,7 @@ context('Sandbox', () => {
 
     it('should link the report to the dataset form (without opening the progress form)', () => {
       cy.visit('/dataset/1?recordId=2');
-      cy.get(`.progress-orb-container:not(.hidden)`).should('have.length', 0);
+      cy.get(`.progress-orb-container:not(.hidden)`).should('not.exist');
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
       cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 1);
 
@@ -117,7 +117,7 @@ context('Sandbox', () => {
       cy.get(selectorLinkDatasetForm).click();
 
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 0);
+      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('not.exist');
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {
@@ -126,17 +126,17 @@ context('Sandbox', () => {
       const selectorMetadataTierOrbActive = `${selectorMetadataTierOrb}.is-active`;
 
       cy.get(selectorContentTierOrbActive).should('have.length', 1);
-      cy.get(selectorMetadataTierOrbActive).should('have.length', 0);
+      cy.get(selectorMetadataTierOrbActive).should('not.exist');
 
       cy.get(selectorMetadataTierOrb).click(force);
 
-      cy.get(selectorContentTierOrbActive).should('have.length', 0);
+      cy.get(selectorContentTierOrbActive).should('not.exist');
       cy.get(selectorMetadataTierOrbActive).should('have.length', 1);
 
       cy.get(selectorContentTierOrb).click(force);
 
       cy.get(selectorContentTierOrbActive).should('have.length', 1);
-      cy.get(selectorMetadataTierOrbActive).should('have.length', 0);
+      cy.get(selectorMetadataTierOrbActive).should('not.exist');
     });
 
     it('should navigate by multiple media orbs when there are 5 or less media items', () => {
@@ -255,7 +255,7 @@ context('Sandbox', () => {
       const subSectionOrbs = [selectorLanguageOrb, selectorElementOrb, selectorClassesOrb];
 
       subSectionOrbs.forEach((sel: string) => {
-        cy.get(sel + selectorActive).should('have.length', 0);
+        cy.get(sel + selectorActive).should('not.exist');
       });
 
       cy.get(selectorMetadataTierOrb).click(force);
@@ -286,37 +286,37 @@ context('Sandbox', () => {
       const selConnectedError = `${selConnected}.error`;
 
       cy.visit('/dataset/1?recordId=2');
-      cy.get(selConnected).should('have.length', 0);
-      cy.get(selConnectedError).should('have.length', 0);
+      cy.get(selConnected).should('not.exist');
+      cy.get(selConnectedError).should('not.exist');
 
       cy.visit('/dataset/1?recordId=/1/23');
       cy.get(selConnected).should('have.length', 2);
-      cy.get(selConnectedError).should('have.length', 0);
+      cy.get(selConnectedError).should('not.exist');
 
       cy.visit('/dataset/1?recordId=/2/34');
       cy.get(selConnected).should('have.length', 2);
       cy.get(selConnectedError).should('have.length', 2);
 
       cy.get(selectorInputDatasetId)
-        .clear()
+        .clear(force)
         .type('2');
       cy.get(selConnected).should('have.length', 2);
-      cy.get(selConnectedError).should('have.length', 0);
+      cy.get(selConnectedError).should('not.exist');
 
       cy.get(selectorInputDatasetId)
-        .clear()
+        .clear(force)
         .type('XXX');
-      cy.get(selConnected).should('have.length', 0);
+      cy.get(selConnected).should('not.exist');
 
       cy.get(selectorInputDatasetId)
-        .clear()
+        .clear(force)
         .type('2');
       cy.get(selConnected).should('have.length', 2);
 
       cy.get(selectorInputRecordId)
-        .clear()
+        .clear(force)
         .type('X X');
-      cy.get(selConnected).should('have.length', 0);
+      cy.get(selConnected).should('not.exist');
     });
   });
 });

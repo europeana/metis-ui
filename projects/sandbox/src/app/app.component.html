@@ -9,5 +9,32 @@
 </div>
 <div class="pusher">
   <router-outlet></router-outlet>
-  <lib-footer id="footer" [feedbackUrl]="feedbackUrl"></lib-footer>
+  <div class="user-assistance-wrapper">
+    <ul class="user-assistance" *ngIf="documentationUrl || feedbackUrl || userGuideUrl">
+      <li *ngIf="documentationUrl">
+        <a
+          class="external-link"
+          data-e2e="documentation-url"
+          [href]="documentationUrl"
+          target="_blank"
+          >Documentation</a
+        >
+      </li>
+      <li *ngIf="feedbackUrl">
+        <a
+          class="external-link feedback-url"
+          data-e2e="feedback-url"
+          [href]="feedbackUrl"
+          target="_blank"
+          >Feedback</a
+        >
+      </li>
+      <li *ngIf="userGuideUrl">
+        <a class="external-link" data-e2e="user-guide-url" [href]="userGuideUrl" target="_blank"
+          >User Guide</a
+        >
+      </li>
+    </ul>
+  </div>
+  <lib-footer id="footer"></lib-footer>
 </div>

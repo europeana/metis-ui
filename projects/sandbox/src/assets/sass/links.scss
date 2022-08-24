@@ -53,7 +53,7 @@
   position: relative;
 
   &::after {
-    background-image: svg-url-icon-external('#{$eu-jade-classic}');
+    background-image: svg-url-icon-external($eu-jade-classic);
     background-repeat: no-repeat;
     content: '';
     display: block;
@@ -66,10 +66,18 @@
 
   &:hover {
     &::after {
-      background-image: svg-url-icon-external('#{$eu-jade-darkest}');
+      background-image: svg-url-icon-external($eu-jade-darkest);
     }
     & + .copy {
       display: inline;
+    }
+  }
+
+  &:active,
+  &:active:hover {
+    color: $eu-light-orange;
+    &::after {
+      background-image: svg-url-icon-external($eu-light-orange);
     }
   }
 
@@ -78,7 +86,7 @@
     cursor: default;
     &::after,
     &:hover::after {
-      background-image: svg-url-icon-spin('#{$eu-jade-classic}');
+      background-image: svg-url-icon-spin($eu-jade-classic);
       background-size: 0.85em;
       right: -1.2em;
     }
