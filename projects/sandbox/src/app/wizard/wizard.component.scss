@@ -52,26 +52,35 @@ $wizard-border-radius: 1.5em;
   }
 }
 
-@media (min-width: $bp-med) {
-  .grid {
-    display: grid;
-    grid-template-columns: minmax(40%, 3fr) auto auto;
-    row-gap: 12px;
+.grid {
+  display: grid;
+  grid-template-columns: minmax(40%, 3fr) auto auto;
+  row-gap: 12px;
 
-    & > .cell-button {
-      align-self: flex-end;
-      display: flex;
+  & > .cell-button {
+    align-self: flex-end;
+    display: flex;
+    margin-left: 1em;
+
+    .label {
+      display: none;
+    }
+
+    @media (min-width: $bp-med) {
       margin-left: 2em;
-
-      & + .cell-button {
-        align-self: flex-end;
-        display: flex;
-        margin-left: 1em;
+      .label {
+        display: block;
       }
     }
 
-    & > .cell-errors {
-      grid-column: 1/4;
+    & + .cell-button {
+      align-self: flex-end;
+      display: flex;
+      margin-left: 1em;
     }
+  }
+
+  & > .cell-errors {
+    grid-column: 1/4;
   }
 }
