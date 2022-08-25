@@ -44,7 +44,7 @@ context('metis-ui', () => {
     });
 
     it('should initialise an editor with the default XSLT', () => {
-      cy.get(selBtnInitDefault).should('have.length', 0);
+      cy.get(selBtnInitDefault).should('not.exist');
       cy.visit('/dataset/mapping/1');
       cy.get(selBtnInitDefault).should('have.length', 1);
 

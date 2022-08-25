@@ -19,14 +19,14 @@ context('metis-ui', () => {
     });
 
     it('should show the results', () => {
-      cy.get('.grid-cell').should('have.length', 0);
+      cy.get('.grid-cell').should('not.exist');
       cy.get('.search-string').type('set');
       cy.get('.search').click();
       cy.get('.grid-cell').should('have.length', expectedHeaderCount * expectedRowCount);
     });
 
     it('should load more results', () => {
-      cy.get('.grid-cell').should('have.length', 0);
+      cy.get('.grid-cell').should('not.exist');
       cy.get('.search-string').type('set');
       cy.get('.search').click();
       cy.get('.grid-cell').should('have.length', expectedHeaderCount * expectedRowCount);
