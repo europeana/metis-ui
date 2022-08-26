@@ -156,6 +156,20 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   }
 
   /**
+   * getNavOrbLinks
+   * @returns Array<string>
+   **/
+  getNavOrbLinks(): Array<string> {
+    return [
+      '/new',
+      `/dataset/${this.trackDatasetId}`,
+      `/dataset/${this.trackDatasetId}?view=problems`,
+      `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}`,
+      `/dataset/${this.trackDatasetId}?recordId=${this.trackRecordId}&view=problems`
+    ];
+  }
+
+  /**
    * ngOnInit
    * handle route parameters
    **/
@@ -387,6 +401,22 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    **/
   getIsUpload(stepIndex: number): boolean {
     return this.wizardConf[stepIndex].stepType === WizardStepType.UPLOAD;
+  }
+
+  /**
+   * callSetStep
+   * Template utility to filter out right click / ctrl click events
+   * Conditionally calls this.setStep
+   *
+   * @param { event } event - the dome event
+   * @param { number } stepIndex - the value to set
+   * @param { boolean } reset - flag a reset
+   **/
+  callSetStep(event: KeyboardEvent, stepIndex: number, reset = false): void {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      this.setStep(stepIndex, reset);
+    }
   }
 
   /**

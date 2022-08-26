@@ -46,6 +46,7 @@
       [count]="wizardConf.length"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
+      [links]="getNavOrbLinks()"
       (clickEvent)="setStep($event)"
     ></sb-navigation-orbs>
   </div>
@@ -217,8 +218,9 @@
             >Or
             <a
               class="link-internal"
-              (click)="setStep(getStepIndex(WizardStepType.PROGRESS_TRACK))"
+              (click)="callSetStep($event, getStepIndex(WizardStepType.PROGRESS_TRACK))"
               data-e2e="link-progress-form"
+              href="/dataset/{{ trackDatasetId }}"
               >track a dataset</a
             ></label
           >
@@ -226,7 +228,11 @@
         <li>
           <label class="inline-text" i18n="create link link@@createLinkInternal"
             >Or
-            <a class="link-internal" (click)="setStep(0, true)" data-e2e="link-dataset-form"
+            <a
+              class="link-internal"
+              (click)="callSetStep($event, 0, true)"
+              data-e2e="link-dataset-form"
+              href="/new"
               >create a new dataset</a
             ></label
           >

@@ -37,12 +37,16 @@ export class NavigationOrbsComponent {
     return {} as ClassMap;
   };
 
+  @Input() links: Array<string> = [];
   @Input() tooltips: Array<string> = [];
 
   @Output() clickEvent: EventEmitter<number> = new EventEmitter();
 
-  clicked(index: number): void {
-    this.clickEvent.emit(index);
+  clicked(event: { ctrlKey: boolean; preventDefault: () => void }, index: number): void {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      this.clickEvent.emit(index);
+    }
   }
 
   clickedNext(): void {

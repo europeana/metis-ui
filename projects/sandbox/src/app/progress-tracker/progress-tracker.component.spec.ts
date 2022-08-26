@@ -162,7 +162,18 @@ describe('ProgressTrackerComponent', () => {
 
     it('should handle clicks on the zero tier links', () => {
       spyOn(component.openReport, 'emit');
-      component.reportLinkClicked('1', false);
+
+      const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
+        return ({
+          preventDefault: jasmine.createSpy(),
+          ctrlKey: ctrlKey
+        } as unknown) as KeyboardEvent;
+      };
+
+      component.reportLinkClicked(createKeyEvent(true), '1', false);
+      expect(component.openReport.emit).not.toHaveBeenCalled();
+
+      component.reportLinkClicked(createKeyEvent(false), '1', false);
       expect(component.openReport.emit).toHaveBeenCalled();
     });
 

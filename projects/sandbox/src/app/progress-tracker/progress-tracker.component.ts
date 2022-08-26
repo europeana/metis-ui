@@ -194,11 +194,14 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @param { string } recordId - the record to open
    * @param { boolean } openMetadata - open the report showing the metadata
    **/
-  reportLinkClicked(recordId: string, openMetadata: boolean): void {
-    this.openReport.emit({
-      recordId,
-      openMetadata
-    });
+  reportLinkClicked(event: KeyboardEvent, recordId: string, openMetadata: boolean): void {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      this.openReport.emit({
+        recordId,
+        openMetadata
+      });
+    }
   }
 
   /**
