@@ -214,18 +214,6 @@ context('metis-ui', () => {
       cy.get(selEditorSearchContent).should('exist');
     });
 
-    it('should only be able to search a valid eCloudId', () => {
-      fillMenus(3);
-      cy.get(selBtnSearch).click(force);
-      cy.wait(500);
-      cy.get(selInputSearch).type('__');
-      cy.get(selBtnSearch).should('have.class', 'disabled');
-      cy.get(selInputSearch).clear();
-      cy.get(selBtnSearch).should('not.have.class', 'disabled');
-      cy.get(selInputSearch).type('A1b2');
-      cy.get(selBtnSearch).should('not.have.class', 'disabled');
-    });
-
     it('should warn of empty searches', () => {
       fillMenus(3);
       cy.get(selBtnSearch).click(force);
