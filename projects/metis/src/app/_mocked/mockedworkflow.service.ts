@@ -696,6 +696,16 @@ export class MockWorkflowService {
     return of(mockHistoryVersions).pipe(delay(1));
   }
 
+  searchWorkflowRecordsById(_: string, __: PluginType, id: string): Observable<XmlSample> {
+    if (this.errorMode) {
+      return throwError(new Error('mock searchWorkflowRecordsById throws error...'));
+    }
+    if (id === 'zero') {
+      return of((null as unknown) as XmlSample);
+    }
+    return of(mockXmlSamples[0]);
+  }
+
   getWorkflowRecordsById(_: string, __: PluginType, ids: Array<string>): Observable<XmlSample[]> {
     if (this.errorMode) {
       return throwError(new Error('mock getWorkflowRecordsById throws error...'));

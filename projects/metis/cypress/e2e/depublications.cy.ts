@@ -18,7 +18,7 @@ context('metis-ui', () => {
 
     const openDepublishMenu = (): void => {
       cy.get(selCtrls).scrollIntoView();
-      cy.get(selMenuContentDepublish).should('have.length', 0);
+      cy.get(selMenuContentDepublish).should('not.exist');
       cy.get(selMenuOpenDepublish).click(force);
       cy.get(selMenuContentDepublish).should('be.visible');
     };
@@ -40,11 +40,11 @@ context('metis-ui', () => {
       it('should open and close the "add" menu', () => {
         cy.wait(1000);
         cy.get(selCtrls).scrollIntoView();
-        cy.get(selMenuContentAdd).should('have.length', 0);
+        cy.get(selMenuContentAdd).should('not.exist');
         cy.get(selMenuOpenAdd).click(force);
         cy.get(selMenuContentAdd).should('be.visible');
         cy.get(selMenuOpenAdd).click(force);
-        cy.get(selMenuContentAdd).should('have.length', 0);
+        cy.get(selMenuContentAdd).should('not.exist');
       });
 
       it('should open and close the "depublish" menu', () => {
@@ -52,7 +52,7 @@ context('metis-ui', () => {
         openDepublishMenu();
         cy.get(selMenuContentDepublish).should('be.visible');
         cy.get(selMenuOpenDepublish).click(force);
-        cy.get(selMenuContentDepublish).should('have.length', 0);
+        cy.get(selMenuContentDepublish).should('not.exist');
       });
     });
 
@@ -71,7 +71,7 @@ context('metis-ui', () => {
       };
 
       it('should open and close the file dialog form', () => {
-        cy.get(selDialogFile).should('have.length', 0);
+        cy.get(selDialogFile).should('not.exist');
         cy.get(selMenuOpenAdd).click(force);
         cy.get(selItemFile)
           .scrollIntoView()
@@ -79,11 +79,11 @@ context('metis-ui', () => {
 
         cy.get(selDialogFile).should('be.visible');
         cy.get(selDialogClose).click();
-        cy.get(selDialogFile).should('have.length', 0);
+        cy.get(selDialogFile).should('not.exist');
       });
 
       it('should open and close the input dialog form', () => {
-        cy.get(selDialogInput).should('have.length', 0);
+        cy.get(selDialogInput).should('not.exist');
         cy.get(selMenuOpenAdd).click(force);
         cy.get(selItemInput)
           .scrollIntoView()
@@ -91,7 +91,7 @@ context('metis-ui', () => {
 
         cy.get(selDialogInput).should('be.visible');
         cy.get(selDialogClose).click();
-        cy.get(selDialogInput).should('have.length', 0);
+        cy.get(selDialogInput).should('not.exist');
       });
 
       it('should submit new entries', () => {
@@ -138,24 +138,24 @@ context('metis-ui', () => {
       const selDialogConfirmClose = selDialogConfirm + ' .btn-close';
 
       it('should ask confirmation for dataset depublication', () => {
-        cy.get(selDialogConfirm).should('have.length', 0);
+        cy.get(selDialogConfirm).should('not.exist');
         cy.wait(1000);
         openDepublishMenu();
         cy.get(selItemDDataset).click(force);
         cy.get(selDialogConfirm).should('be.visible');
         cy.get(selDialogConfirmClose).click();
-        cy.get(selDialogConfirm).should('have.length', 0);
+        cy.get(selDialogConfirm).should('not.exist');
       });
 
       it('should ask confirmation for record id depublication', () => {
-        cy.get(selDialogConfirm).should('have.length', 0);
+        cy.get(selDialogConfirm).should('not.exist');
         cy.wait(1000);
         cy.get(selCheckbox).check(force);
         openDepublishMenu();
         cy.get(selItemDRecords).click(force);
         cy.get(selDialogConfirm).should('be.visible');
         cy.get(selDialogConfirmClose).click();
-        cy.get(selDialogConfirm).should('have.length', 0);
+        cy.get(selDialogConfirm).should('not.exist');
       });
     });
 

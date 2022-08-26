@@ -88,7 +88,7 @@ context('metis-ui', () => {
     it('should show the search form when logged in', () => {
       cy.route('POST', '/authentication/login', user);
       fillLoginFieldsAndSubmit(false);
-      cy.get('.search-form').should('have.length', 0);
+      cy.get('.search-form').should('not.exist');
       cy.get('.login-btn').click();
       cy.get('.search-form').should('have.length', 1);
     });

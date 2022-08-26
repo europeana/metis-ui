@@ -50,9 +50,9 @@ context('metis-ui', () => {
 
     cy.get(selMenuDateFirstItem).click(force);
     cy.get(selMenuPlugin).should('be.visible');
-    cy.get(selMenuDateItems).should('have.length', 0);
-    cy.get(selEditorDefault).should('have.length', 0);
-    cy.get(selEditorCompare).should('have.length', 0);
+    cy.get(selMenuDateItems).should('not.exist');
+    cy.get(selEditorDefault).should('not.exist');
+    cy.get(selEditorCompare).should('not.exist');
 
     if (number === 1) {
       return;
@@ -64,7 +64,7 @@ context('metis-ui', () => {
     cy.get(selMenuCompare).should('be.visible');
 
     cy.get(selEditorDefault).should('be.visible');
-    cy.get(selEditorCompare).should('have.length', 0);
+    cy.get(selEditorCompare).should('not.exist');
 
     if (number === 2) {
       return;
@@ -73,7 +73,7 @@ context('metis-ui', () => {
     cy.get(selMenuCompare + ' a').click(force);
     cy.get(selMenuCompareFirstItem).click(force);
 
-    cy.get(selEditorDefault).should('have.length', 0);
+    cy.get(selEditorDefault).should('not.exist');
     cy.get(selEditorCompare).should('be.visible');
   };
 
@@ -214,28 +214,14 @@ context('metis-ui', () => {
       cy.get(selEditorSearchContent).should('exist');
     });
 
-    it('should only be able to search a valid eCloudId', () => {
-      fillMenus(3);
-      cy.get(selBtnSearch).click(force);
-      cy.wait(500);
-      cy.get(selInputSearch).type('__');
-      cy.get(selBtnSearch).should('have.class', 'disabled');
-      cy.get(selInputSearch).clear();
-      cy.get(selBtnSearch).should('not.have.class', 'disabled');
-      cy.get(selInputSearch).type('A1b2');
-      cy.get(selBtnSearch).should('not.have.class', 'disabled');
-    });
-
     it('should warn of empty searches', () => {
       fillMenus(3);
       cy.get(selBtnSearch).click(force);
       cy.wait(500);
-
       cy.get(selEditorSearchError).should('not.exist');
 
       cy.get(selInputSearch).type('tiny');
       cy.get(selBtnSearch).click(force);
-
       cy.get(selEditorSearchContent).should('not.exist');
       cy.get(selEditorSearchError).should('exist');
     });

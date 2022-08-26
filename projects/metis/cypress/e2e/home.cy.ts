@@ -12,7 +12,7 @@ context('metis-ui', () => {
     });
 
     it('should not show the search form', () => {
-      cy.get('.search-form').should('have.length', 0);
+      cy.get('.search-form').should('not.exist');
     });
 
     it('should show the home screen and have a signin button', () => {

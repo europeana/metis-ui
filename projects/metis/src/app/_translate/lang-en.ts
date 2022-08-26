@@ -144,7 +144,7 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   preview: 'Preview',
   previewNoDownloads: 'No downloads available',
   previewOptionsDownloads: 'XML Downloads',
-  previewSearchRecords: 'Search for record by eCloud id',
+  previewSearchRecords: 'Search for record by eCloud or europeana id',
   processingHistory: 'Processing history',
   processedRecords: 'Processed / records',
   processedRecordsDeleted: 'Processed / records / deleted',

@@ -64,7 +64,7 @@ context('metis-ui', () => {
     });
 
     it('should disable the save button when there are gaps in the step-sequence', () => {
-      cy.get('[data-e2e="save-workflow"] button').should('have.length', 0);
+      cy.get('[data-e2e="save-workflow"] button').should('not.exist');
       cy.wait(500);
       cy.get('.steps .validation_internal').click(force);
       cy.get('[data-e2e="save-workflow"] button').should('be.disabled');
@@ -92,7 +92,7 @@ context('metis-ui', () => {
           cy.get(selector).should('have.length', 1);
         });
         fieldsOnlyOAI.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 0);
+          cy.get(selector).should('not.exist');
         });
       });
     });
@@ -110,7 +110,7 @@ context('metis-ui', () => {
           cy.get(selector).should('have.length', 1);
         });
         fieldsOnlyHTTP.forEach((selector: string) => {
-          cy.get(selector).should('have.length', 0);
+          cy.get(selector).should('not.exist');
         });
       });
     });

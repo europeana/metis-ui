@@ -494,6 +494,22 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
+  it('should search records by id', () => {
+    const id = '1';
+    const sub = service
+      .searchWorkflowRecordsById('5653454353', PluginType.ENRICHMENT, id)
+      .subscribe((sample) => {
+        expect(sample).toEqual(mockXmlSamples[0]);
+      });
+    mockHttp
+      .expect(
+        'POST',
+        `/orchestrator/proxies/recordsearchbyid?workflowExecutionId=5653454353&pluginType=ENRICHMENT&idToSearch=${id}`
+      )
+      .send(mockXmlSamples[0]);
+    sub.unsubscribe();
+  });
+
   it('should get statistics', () => {
     const sub = service.getStatistics('normalization', '-4354').subscribe((statistics) => {
       expect(statistics).toEqual(mockStatistics);

@@ -435,7 +435,34 @@ export class WorkflowService extends SubscriptionManager {
       .pipe(this.errors.handleRetry());
   }
 
-  // return samples based on executionid, plugintype and ecloudIds
+  /** searchWorkflowRecordsById
+   * return XmlSample based on executionid, plugintype and idToSearch
+   *
+   * @param { string } executionId - the workflow execution id
+   * @param { PluginType } pluginType - the plugin type
+   * @param { string } idToSearch - the record to get
+   *
+   * @returns Observable<XmlSample>
+   **/
+  searchWorkflowRecordsById(
+    executionId: string,
+    pluginType: PluginType,
+    idToSearch: string
+  ): Observable<XmlSample> {
+    const params = `?workflowExecutionId=${executionId}&pluginType=${pluginType}&idToSearch=${idToSearch}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/recordsearchbyid${params}`;
+    return this.http.post<XmlSample>(url, null).pipe(this.errors.handleRetry());
+  }
+
+  /** getWorkflowRecordsById
+   * return samples based on executionid, plugintype and ecloudIds
+   *
+   * @param { string } executionId - the workflow execution id
+   * @param { PluginType } pluginType - the plugin type
+   * @param { Array<string> } ids - the records to include
+   *
+   * @returns Observable<XmlSample[]>
+   **/
   getWorkflowRecordsById(
     executionId: string,
     pluginType: PluginType,

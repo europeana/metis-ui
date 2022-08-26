@@ -19,9 +19,58 @@ import {
   xslt
 } from './factory/factory';
 import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-models';
-import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models/depublication';
+import { DepublicationStatus, RecordDepublicationInfo, XmlSample } from '../src/app/_models';
 
 const FAIL = 'fail';
+
+// handler defined outside "this" content of server instance so it can be assigned within request.data event
+const handleRecordSearch = (
+  response: ServerResponse,
+  ids: Array<string>,
+  plugin: string,
+  respondWithArray: boolean
+): void => {
+  setTimeout(
+    () => {
+      const firstAsNumber = parseInt(ids[0]);
+      if (ids[0] === FAIL) {
+        response.statusCode = 400;
+        response.end(
+          JSON.stringify({
+            message: 'Failure!',
+            error: {
+              errorMessage: 'Expecting representations!'
+            }
+          })
+        );
+      } else if (firstAsNumber >= 400 && firstAsNumber <= 599) {
+        response.statusCode = firstAsNumber;
+        response.end();
+      } else {
+        let records: Array<XmlSample> = [];
+        // short ids get an empty result
+        if (ids[0].length > 5) {
+          records = ids.map((id: string) => {
+            return {
+              ecloudId: id,
+              xmlRecord: `<x>${plugin}</x>`
+            } as XmlSample;
+          });
+        }
+        if (respondWithArray) {
+          response.end(
+            JSON.stringify({
+              records: records
+            })
+          );
+        } else {
+          response.end(JSON.stringify(records[0]));
+        }
+      }
+    },
+    ids.length === 1 ? 1000 : 0
+  );
+};
 
 new (class extends TestDataServer {
   serverName = 'metis';
@@ -537,6 +586,14 @@ new (class extends TestDataServer {
     }
 
     regRes = route.match(
+      /orchestrator\/proxies\/recordsearchbyid\?workflowExecutionId=(\S+)&pluginType=(\S+)&idToSearch=(\S+)/
+    );
+    if (regRes) {
+      handleRecordSearch(response, [regRes[3]], regRes[2], false);
+      return true;
+    }
+
+    regRes = route.match(
       /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)&pluginType=(\S+)/
     );
 
@@ -552,42 +609,7 @@ new (class extends TestDataServer {
       });
       request.on('end', function() {
         const ids = JSON.parse(body).ids;
-        setTimeout(
-          () => {
-            const firstAsNumber = parseInt(ids[0]);
-            if (ids[0] === FAIL) {
-              response.statusCode = 400;
-              response.end(
-                JSON.stringify({
-                  message: 'Failure!',
-                  error: {
-                    errorMessage: 'Expecting representations!'
-                  }
-                })
-              );
-            } else if (firstAsNumber >= 400 && firstAsNumber <= 599) {
-              response.statusCode = firstAsNumber;
-              response.end();
-            } else {
-              let records = [];
-              // short ids get an empty result
-              if (ids[0].length > 5) {
-                records = ids.map((id: string) => {
-                  return {
-                    ecloudId: id,
-                    xmlRecord: `<x>${plugin}</x>`
-                  };
-                });
-              }
-              response.end(
-                JSON.stringify({
-                  records: records
-                })
-              );
-            }
-          },
-          ids.length === 1 ? 1000 : 0
-        );
+        handleRecordSearch(response, ids, plugin, true);
       });
       return true;
     }

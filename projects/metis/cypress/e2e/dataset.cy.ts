@@ -79,7 +79,7 @@ context('metis-ui', () => {
       cy.visit('/dataset/preview/0');
       cy.get(selLogLink).should('have.length', 1);
       cy.visit('/dataset/log/0');
-      cy.get(selLogLink).should('have.length', 0);
+      cy.get(selLogLink).should('not.exist');
       cy.visit('/dataset/edit/0');
       cy.get(selLogLink).should('have.length', 1);
     });

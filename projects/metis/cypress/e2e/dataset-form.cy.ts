@@ -42,7 +42,7 @@ context('metis-ui', () => {
       });
 
       it('should not show the fitness options', () => {
-        cy.get(selFitnessOps).should('have.length', 0);
+        cy.get(selFitnessOps).should('not.exist');
       });
     });
 
