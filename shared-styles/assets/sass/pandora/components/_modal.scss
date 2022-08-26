@@ -7,6 +7,10 @@
   width: 100%; // 100vw leaves uneven spacing
   z-index: 11;
 
+  .footer {
+    text-align: center;
+  }
+
   .modal {
     background: $white;
     height: auto;
@@ -52,29 +56,30 @@
     }
   }
 
-  .modal .content {
-    max-height: 80vh;
-    overflow: scroll;
-    padding: 1rem;
+  .modal .content button,
+  .modal .footer button {
+    background: $eu-jade;
+    border: 0;
+    border-radius: $border-radius;
+    color: $white;
+    display: inline-block;
+    margin: 1rem 0 1rem 0;
+    padding: 0.8rem 2rem;
 
-    button {
-      background: $eu-jade;
-      border: 0;
-      border-radius: 2px;
-      color: $white;
-      display: inline-block;
-      margin: 1rem 0 0 0;
-      padding: 0.8rem 2rem;
-    }
-
-    button:first-child:not(:last-child) {
+    &:first-child:not(:last-child) {
       margin-right: 1rem;
     }
 
-    button:first-child:last-child {
+    &:first-child:last-child {
       display: block;
-      margin: 1.5em auto 0 auto;
+      margin: 1.5em auto;
     }
+  }
+
+  .modal .content {
+    max-height: 60vh;
+    overflow: scroll;
+    padding: 1rem;
 
     strong {
       display: inline-block;
