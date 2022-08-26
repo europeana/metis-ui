@@ -15,6 +15,7 @@ import {
   DragType,
   HarvestPluginMetadataBase,
   IncrementalHarvestPluginMetadata,
+  MediaProcessPluginMetadata,
   NotificationType,
   OAIHarvestPluginMetadata,
   PluginMetadata,
@@ -80,7 +81,7 @@ describe('WorkflowComponent', () => {
 
   const setSavableChanges = function(): void {
     component.datasetData = mockDataset;
-    getFormControl('pluginType').setValue('HTTP_HARVEST');
+    getFormControl('pluginType').setValue(PluginType.HTTP_HARVEST);
     getFormControl('customXslt').setValue('mocked');
     getFormControl('url').setValue('http://eu/zip');
     [
@@ -360,16 +361,22 @@ describe('WorkflowComponent', () => {
       expect(result.metisPluginsMetadata.filter((x) => x.enabled).length).toEqual(1);
     });
 
-    it('should format missing url parameters as a blank string', () => {
+    it('should format missing url parameters as a blank string or null', () => {
       const result: { metisPluginsMetadata: PluginMetadata[] } = component.formatFormValues();
       const httpHarvestConf = result.metisPluginsMetadata.filter(
-        (x) => x.pluginType === 'HTTP_HARVEST'
+        (x) => x.pluginType === PluginType.HTTP_HARVEST
       )[0] as HarvestPluginMetadataBase;
       const oaipmhHarvestConf = result.metisPluginsMetadata.filter(
-        (x) => x.pluginType === 'OAIPMH_HARVEST'
+        (x) => x.pluginType === PluginType.OAIPMH_HARVEST
       )[0] as OAIHarvestPluginMetadata;
+
       expect(oaipmhHarvestConf.url).toEqual('');
       expect(httpHarvestConf.url).toEqual('');
+
+      const mediaConf = result.metisPluginsMetadata.filter(
+        (x) => x.pluginType === PluginType.MEDIA_PROCESS
+      )[0] as MediaProcessPluginMetadata;
+      expect(mediaConf.throttlingLevel).toBeFalsy();
     });
 
     it('should reset', () => {
@@ -465,7 +472,7 @@ describe('WorkflowComponent', () => {
       const httpUrl = 'HTTP_URL';
       const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
       const plugin = testWorkflowData.metisPluginsMetadata[0];
-      plugin.pluginType = 'HTTP_HARVEST';
+      plugin.pluginType = PluginType.HTTP_HARVEST;
 
       // test null
       delete plugin.url;
@@ -479,7 +486,7 @@ describe('WorkflowComponent', () => {
     });
 
     it('should extract the workflow params (enabled)', () => {
-      const pluginType = 'HTTP_HARVEST';
+      const pluginType = PluginType.HTTP_HARVEST;
       const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
       const plugin = testWorkflowData.metisPluginsMetadata[0];
       plugin.pluginType = pluginType;
