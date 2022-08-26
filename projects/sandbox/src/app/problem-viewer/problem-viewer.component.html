@@ -135,9 +135,12 @@
               *ngIf="ppId === ProblemPatternId.P1; else nonP1"
               [ngPlural]="occurence.affectedRecordIds.length"
             >
-              <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
-              <ng-template ngPluralCase="=1">other record with this title</ng-template>
-              <ng-template ngPluralCase="other">other records with this title</ng-template>
+              <ng-template ngPluralCase="=1">There is 1 record with this title</ng-template>
+              <ng-template ngPluralCase="other"
+                >There are
+                <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
+                records with this title</ng-template
+              >
             </ng-container>
           </a>
         </li>
