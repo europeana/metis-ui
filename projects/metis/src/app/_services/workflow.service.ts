@@ -435,6 +435,30 @@ export class WorkflowService extends SubscriptionManager {
       .pipe(this.errors.handleRetry());
   }
 
+  /** getRecordFromPredecessor
+   *  return samples based on executionid and plugintype
+   * @param { string } executionId
+   * @param { PluginType } pluginType
+   * @param { Array<string> } ids
+   **/
+  getRecordFromPredecessor(
+    executionId: string,
+    pluginType: PluginType,
+    ids: Array<string>
+  ): Observable<XmlSample[]> {
+    const params = `?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
+    const url = `${apiSettings.apiHostCore}/orchestrator/proxies/recordfrompredecessorplugin${params}`;
+
+    return this.http
+      .post<{ records: XmlSample[] }>(url, { ids })
+      .pipe(
+        map((samples) => {
+          return samples.records;
+        })
+      )
+      .pipe(this.errors.handleRetry());
+  }
+
   /** searchWorkflowRecordsById
    * return XmlSample based on executionid, plugintype and idToSearch
    *

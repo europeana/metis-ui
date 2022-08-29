@@ -141,7 +141,7 @@ export class ReportSimpleComponent extends SubscriptionManager {
     }
     this.subs.push(
       this.workflows
-        .getWorkflowRecordsById(
+        .getRecordFromPredecessor(
           `${this.reportRequest.workflowExecutionId}`,
           this.reportRequest.pluginType as PluginType,
           [id]
