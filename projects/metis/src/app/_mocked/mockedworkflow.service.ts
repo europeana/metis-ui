@@ -716,6 +716,10 @@ export class MockWorkflowService {
     return of(mockXmlSamples);
   }
 
+  getRecordFromPredecessor(_: string, __: PluginType, ids: Array<string>): Observable<XmlSample[]> {
+    return this.getWorkflowRecordsById(_, __, ids);
+  }
+
   getStatistics(): Observable<Statistics> {
     return of(mockStatistics);
   }
