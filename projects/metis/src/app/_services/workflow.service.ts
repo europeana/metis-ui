@@ -446,7 +446,6 @@ export class WorkflowService extends SubscriptionManager {
     pluginType: PluginType,
     ids: Array<string>
   ): Observable<XmlSample[]> {
-    console.log('x');
     const params = `?workflowExecutionId=${executionId}&pluginType=${pluginType}`;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/recordfrompredecessorplugin${params}`;
 
