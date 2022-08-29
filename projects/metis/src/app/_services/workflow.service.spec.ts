@@ -477,6 +477,23 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
+  it('should get records from predecessor', () => {
+    const ids = { ids: ['1', '2'] };
+    const sub = service
+      .getRecordFromPredecessor('5653454353', PluginType.ENRICHMENT, ids.ids)
+      .subscribe((samples) => {
+        expect(samples).toEqual(mockXmlSamples);
+      });
+    mockHttp
+      .expect(
+        'POST',
+        '/orchestrator/proxies/recordfrompredecessorplugin?workflowExecutionId=5653454353&pluginType=ENRICHMENT'
+      )
+      .body(ids)
+      .send({ records: mockXmlSamples });
+    sub.unsubscribe();
+  });
+
   it('should get records by id', () => {
     const ids = { ids: ['1', '2'] };
     const sub = service

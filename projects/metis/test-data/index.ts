@@ -594,6 +594,26 @@ new (class extends TestDataServer {
     }
 
     regRes = route.match(
+      /orchestrator\/proxies\/recordfrompredecessorplugin\?workflowExecutionId=(\S+)&pluginType=(\S+)/
+    );
+
+    if (regRes) {
+      let body = '';
+      let plugin = 'PluginType';
+      if (regRes[2]) {
+        plugin = regRes[2];
+      }
+      request.on('data', function(data: { toString: () => string }) {
+        body += data.toString();
+      });
+      request.on('end', function() {
+        const ids = JSON.parse(body).ids;
+        handleRecordSearch(response, ids, plugin, true);
+      });
+      return true;
+    }
+
+    regRes = route.match(
       /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)&pluginType=(\S+)/
     );
 
