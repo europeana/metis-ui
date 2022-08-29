@@ -454,8 +454,6 @@ export class WorkflowService extends SubscriptionManager {
       .post<{ records: XmlSample[] }>(url, { ids })
       .pipe(
         map((samples) => {
-          console.log('samples.records = ' + JSON.stringify(samples.records));
-
           return samples.records;
         })
       )
