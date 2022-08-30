@@ -1,4 +1,4 @@
-import { User } from '.';
+import { User } from './user';
 
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',

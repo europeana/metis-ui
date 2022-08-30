@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import {
@@ -51,10 +51,10 @@ describe('RegisterComponent', () => {
 
   const fillVaidForm = (): void => {
     component.registerForm.controls.email.setValue('test@mocked.com');
-    (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
+    (component.registerForm.controls.passwords as UntypedFormGroup).controls.password.setValue(
       '!Passw0rd123'
     );
-    (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue(
+    (component.registerForm.controls.passwords as UntypedFormGroup).controls.confirm.setValue(
       '!Passw0rd123'
     );
   };
@@ -115,8 +115,8 @@ describe('RegisterComponent', () => {
     it('should reject weak password', () => {
       submitBtn = fixture.nativeElement.querySelector('app-loading-button');
       component.registerForm.controls.email.setValue('test@mocked.com');
-      (component.registerForm.controls.passwords as FormGroup).controls.password.setValue('');
-      (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue('');
+      (component.registerForm.controls.passwords as UntypedFormGroup).controls.password.setValue('');
+      (component.registerForm.controls.passwords as UntypedFormGroup).controls.confirm.setValue('');
       expect(submitBtn.disabled).toBeTruthy();
       component.onSubmit();
       fixture.detectChanges();

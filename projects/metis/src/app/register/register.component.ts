@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
@@ -28,12 +28,12 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   msgPasswordWeak: string;
   msgRegistrationFailed: string;
   msgAlreadyRegistered: string;
-  registerForm: FormGroup;
+  registerForm: UntypedFormGroup;
 
   public password?: string;
 
   constructor(
-    private readonly fb: FormBuilder,
+    private readonly fb: UntypedFormBuilder,
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly translate: TranslateService,
@@ -73,7 +73,7 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   /* get password after keyup in form
   */
   onKeyupPassword(): void {
-    this.password = (this.registerForm.controls.passwords.get('password') as FormControl).value;
+    this.password = (this.registerForm.controls.passwords.get('password') as UntypedFormControl).value;
   }
 
   /** onSubmit
@@ -87,7 +87,7 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
     const controls = this.registerForm.controls;
     const email = controls.email.value;
     const passwords = controls.passwords;
-    const password = (passwords.get('password') as FormControl).value;
+    const password = (passwords.get('password') as UntypedFormControl).value;
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 

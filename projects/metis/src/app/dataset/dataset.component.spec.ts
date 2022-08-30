@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
@@ -83,7 +83,7 @@ describe('Dataset Component', () => {
       mockHeader.elRef = { nativeElement: {} } as ElementRef;
       component.workflowHeaderRef = mockHeader;
       spyOn(component.workflowFormRef, 'onHeaderSynchronised');
-      component.formInitialised({} as FormGroup);
+      component.formInitialised({} as UntypedFormGroup);
       expect(component.workflowFormRef.onHeaderSynchronised).toHaveBeenCalled();
     });
 
@@ -91,7 +91,7 @@ describe('Dataset Component', () => {
       component.workflowFormRef = { onHeaderSynchronised: () => undefined } as WorkflowComponent;
       const mockHeader = new WorkflowHeaderComponent();
       spyOn(component.workflowFormRef, 'onHeaderSynchronised');
-      component.formInitialised({} as FormGroup);
+      component.formInitialised({} as UntypedFormGroup);
       expect(component.workflowFormRef.onHeaderSynchronised).not.toHaveBeenCalled();
       mockHeader.elRef = { nativeElement: {} } as ElementRef;
       component.workflowHeaderRef = mockHeader;

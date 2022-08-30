@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ParameterFieldName, WorkflowFieldData } from '../../../_models';
 
 @Component({
@@ -10,5 +10,5 @@ import { ParameterFieldName, WorkflowFieldData } from '../../../_models';
 export class WorkflowFormFieldTransformComponent {
   public ParameterFieldName = ParameterFieldName;
   @Input() conf: WorkflowFieldData;
-  @Input() workflowForm: FormGroup;
+  @Input() workflowForm: UntypedFormGroup;
 }

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
@@ -18,7 +18,7 @@ import { TranslateService } from '../_translate';
 export class LoginComponent extends DataPollingComponent implements OnInit {
   loading = false;
   notification?: Notification;
-  loginForm: FormGroup;
+  loginForm: UntypedFormGroup;
   msgBadCredentials: string;
   msgSigninFailed: string;
 
@@ -26,7 +26,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly redirectPreviousUrl: RedirectPreviousUrl,
-    private readonly fb: FormBuilder,
+    private readonly fb: UntypedFormBuilder,
     private readonly translate: TranslateService,
     private readonly documentTitleService: DocumentTitleService
   ) {
