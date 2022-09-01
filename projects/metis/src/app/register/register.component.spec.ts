@@ -115,7 +115,9 @@ describe('RegisterComponent', () => {
     it('should reject weak password', () => {
       submitBtn = fixture.nativeElement.querySelector('app-loading-button');
       component.registerForm.controls.email.setValue('test@mocked.com');
-      (component.registerForm.controls.passwords as UntypedFormGroup).controls.password.setValue('');
+      (component.registerForm.controls.passwords as UntypedFormGroup).controls.password.setValue(
+        ''
+      );
       (component.registerForm.controls.passwords as UntypedFormGroup).controls.confirm.setValue('');
       expect(submitBtn.disabled).toBeTruthy();
       component.onSubmit();

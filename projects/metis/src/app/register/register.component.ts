@@ -1,6 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
@@ -73,7 +78,9 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   /* get password after keyup in form
   */
   onKeyupPassword(): void {
-    this.password = (this.registerForm.controls.passwords.get('password') as UntypedFormControl).value;
+    this.password = (this.registerForm.controls.passwords.get(
+      'password'
+    ) as UntypedFormControl).value;
   }
 
   /** onSubmit

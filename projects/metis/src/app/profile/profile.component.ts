@@ -1,6 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
@@ -102,7 +107,9 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   /* set password variable to input value
   */
   onKeyupPassword(): void {
-    this.password = (this.profileForm.controls.passwords.get('password') as UntypedFormControl).value;
+    this.password = (this.profileForm.controls.passwords.get(
+      'password'
+    ) as UntypedFormControl).value;
   }
 
   /** checkMatchingPasswords

@@ -6,7 +6,12 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ModalConfirmService } from 'shared';
@@ -330,7 +335,10 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationFile(this._datasetId, (form.get('depublicationFile') as UntypedFormControl).value)
+          .setPublicationFile(
+            this._datasetId,
+            (form.get('depublicationFile') as UntypedFormControl).value
+          )
           .subscribe(
             () => {
               this.refreshPolling();
@@ -462,7 +470,10 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationInfo(this._datasetId, (form.get('recordIds') as UntypedFormControl).value.trim())
+          .setPublicationInfo(
+            this._datasetId,
+            (form.get('recordIds') as UntypedFormControl).value.trim()
+          )
           .subscribe(
             () => {
               this.refreshPolling();
