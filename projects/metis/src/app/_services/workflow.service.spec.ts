@@ -15,7 +15,6 @@ import {
   mockReportAvailability,
   mockStatistics,
   mockStatisticsDetail,
-  MockTranslateService,
   mockWorkflow,
   mockWorkflowExecution,
   mockWorkflowExecutionHistoryList,
@@ -28,10 +27,10 @@ import {
   PluginAvailabilityList,
   PluginType,
   ReportAvailability,
+  User,
   WorkflowExecution,
   WorkflowStatus
 } from '../_models';
-import { TranslateService } from '../_translate';
 
 import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
 
@@ -45,7 +44,6 @@ describe('Workflow Service', () => {
         WorkflowService,
         { provide: ErrorService, useClass: MockErrorService },
         { provide: DatasetsService, useClass: MockDatasetsService },
-        { provide: TranslateService, useClass: MockTranslateService },
         { provide: AuthenticationService, useClass: MockAuthenticationService }
       ],
       imports: [HttpClientTestingModule]
@@ -479,6 +477,23 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
+  it('should get records from predecessor', () => {
+    const ids = { ids: ['1', '2'] };
+    const sub = service
+      .getRecordFromPredecessor('5653454353', PluginType.ENRICHMENT, ids.ids)
+      .subscribe((samples) => {
+        expect(samples).toEqual(mockXmlSamples);
+      });
+    mockHttp
+      .expect(
+        'POST',
+        '/orchestrator/proxies/recordfrompredecessorplugin?workflowExecutionId=5653454353&pluginType=ENRICHMENT'
+      )
+      .body(ids)
+      .send({ records: mockXmlSamples });
+    sub.unsubscribe();
+  });
+
   it('should get records by id', () => {
     const ids = { ids: ['1', '2'] };
     const sub = service
@@ -493,6 +508,22 @@ describe('Workflow Service', () => {
       )
       .body(ids)
       .send({ records: mockXmlSamples });
+    sub.unsubscribe();
+  });
+
+  it('should search records by id', () => {
+    const id = '1';
+    const sub = service
+      .searchWorkflowRecordsById('5653454353', PluginType.ENRICHMENT, id)
+      .subscribe((sample) => {
+        expect(sample).toEqual(mockXmlSamples[0]);
+      });
+    mockHttp
+      .expect(
+        'POST',
+        `/orchestrator/proxies/recordsearchbyid?workflowExecutionId=5653454353&pluginType=ENRICHMENT&idToSearch=${id}`
+      )
+      .send(mockXmlSamples[0]);
     sub.unsubscribe();
   });
 
@@ -518,14 +549,49 @@ describe('Workflow Service', () => {
     sub.unsubscribe();
   });
 
-  it('should handle addDatasetNameAndCurrentPlugin with an empty list', () => {
-    service
-      .addDatasetNameAndCurrentPlugin([])
-      .subscribe((res) => {
-        expect(res).toEqual([]);
+  it('should add the datasetName and current plugin ', fakeAsync(() => {
+    const sub = service.addDatasetNameAndCurrentPlugin([mockWorkflowExecution]).subscribe((res) => {
+      expect(res.length).toBeGreaterThan(0);
+    });
+    tick(10);
+    sub.unsubscribe();
+  }));
+
+  it('should handle addDatasetNameAndCurrentPlugin with an empty list', fakeAsync(() => {
+    const sub = service.addDatasetNameAndCurrentPlugin([]).subscribe((res) => {
+      expect(res).toEqual([]);
+    });
+    tick(10);
+    sub.unsubscribe();
+  }));
+
+  it('should add the started by to WorkflowExecutionResults', fakeAsync(() => {
+    const sub = service
+      .addStartedByToWorkflowExecutionResults({
+        listSize: 1,
+        nextPage: -1,
+        results: [mockWorkflowExecution]
       })
-      .unsubscribe();
-  });
+      .subscribe((res) => {
+        expect(res.results.length).toBeGreaterThan(0);
+      });
+    tick(10);
+    sub.unsubscribe();
+  }));
+
+  it('should handle addStartedByToWorkflowExecutionResults with an empty list', fakeAsync(() => {
+    const sub = service
+      .addStartedByToWorkflowExecutionResults({
+        listSize: 0,
+        nextPage: -1,
+        results: []
+      })
+      .subscribe((res) => {
+        expect(res.results).toEqual([]);
+      });
+    tick(10);
+    sub.unsubscribe();
+  }));
 
   it('should unsubscribe when destroyed', () => {
     const sub = getUnsubscribable();
@@ -567,23 +633,27 @@ describe('Workflow Service', () => {
 
     const sub1 = service
       .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: string | undefined) => {
-        expect(res).toEqual('mocked test');
+      .subscribe((res: User | undefined) => {
+        expect(res).toBeTruthy();
+        if (res) {
+          expect(res.firstName).toEqual('mocked');
+          expect(res.lastName).toEqual('test');
+        }
       });
 
     cancelledWorkflow.cancelledBy = 'SYSTEM_MINUTE_CAP_EXPIRE';
 
     const sub2 = service
       .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: string | undefined) => {
-        expect(res).toEqual('en:systemTimeout');
+      .subscribe((res: User | undefined) => {
+        expect(res).toBeTruthy();
       });
 
     cancelledWorkflow.cancelledBy = undefined;
 
     const sub3 = service
       .getWorkflowCancelledBy(cancelledWorkflow)
-      .subscribe((res: string | undefined) => {
+      .subscribe((res: User | undefined) => {
         expect(res).toEqual(undefined);
       });
 

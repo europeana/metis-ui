@@ -13,11 +13,10 @@ const stepStatusNames: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.VALIDATE_EXTERNAL, 'Validation (external)'],
   [StepStatus.VALIDATE_INTERNAL, 'Validation (internal)'],
   [StepStatus.TRANSFORM, 'Transformation'],
-  [StepStatus.TRANSFORM_EDM, 'Transformation (EDM)'],
+  [StepStatus.TRANSFORM_TO_EDM_EXTERNAL, 'Transform to EDM'],
   [StepStatus.NORMALIZE, 'Normalisation'],
   [StepStatus.ENRICH, 'Enrichment'],
   [StepStatus.MEDIA_PROCESS, 'Media Processing'],
-  [StepStatus.PREVIEW, 'Preview'],
   [StepStatus.PUBLISH, 'Publish']
 ]);
 

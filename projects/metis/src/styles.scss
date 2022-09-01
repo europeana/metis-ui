@@ -30,7 +30,6 @@ $textcolour_highlight: $accent;
 
 /* NAVIGATION */
 @import 'shared-styles/assets/sass/scss/objects/nav';
-@import 'shared-styles/assets/sass/scss/objects/navigation/phase-flags';
 
 /* Buttons and text Styles */
 @import 'shared-styles/assets/sass/scss/objects/buttons';
@@ -66,3 +65,13 @@ $textcolour_highlight: $accent;
 @import '~codemirror/theme/midnight.css';
 
 @import '~codemirror/addon/fold/foldgutter.css';
+
+.header-wrapper .search-form {
+  position: absolute;
+  top: 5em;
+
+  @media (min-width: $bp-small-3) {
+    position: relative;
+    top: auto;
+  }
+}

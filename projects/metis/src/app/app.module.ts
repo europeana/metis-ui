@@ -6,7 +6,6 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
 import { CollapsibleDirective } from './_directives/collapsible';
-import { ClickAwareDirective } from './_directives/click-aware';
 import { XmlPipe } from './_helpers';
 import { TokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
@@ -27,6 +26,7 @@ import {
   DepublicationComponent,
   DepublicationRowComponent,
   EditorComponent,
+  EditorDropDownComponent,
   ExecutionsDataGridComponent,
   GeneralinfoComponent,
   HistoryComponent,
@@ -40,9 +40,11 @@ import {
   SortableHeaderComponent,
   StatisticsComponent,
   TabHeadersComponent,
+  UsernameComponent,
   WorkflowComponent,
   WorkflowFormFieldComponent,
   WorkflowFormFieldLinkCheckComponent,
+  WorkflowFormFieldMediaProcessComponent,
   WorkflowFormFieldTransformComponent,
   WorkflowHeaderComponent
 } from './dataset';
@@ -63,13 +65,11 @@ import {
   TextWithLinksComponent
 } from './shared';
 import { SearchResultsComponent } from './search-results';
-import { EditorDropDownComponent } from './editor-drop-down';
 
 @NgModule({
   declarations: [
     ActionbarComponent,
     AppComponent,
-    ClickAwareDirective,
     CollapsibleDirective,
     RegisterComponent,
     LoginComponent,
@@ -96,10 +96,12 @@ import { EditorDropDownComponent } from './editor-drop-down';
     ExecutionsDataGridComponent,
     LastExecutionComponent,
     HistoryComponent,
+    UsernameComponent,
     WorkflowComponent,
     WorkflowHeaderComponent,
     WorkflowFormFieldComponent,
     WorkflowFormFieldLinkCheckComponent,
+    WorkflowFormFieldMediaProcessComponent,
     WorkflowFormFieldTransformComponent,
     MappingComponent,
     PreviewComponent,

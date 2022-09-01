@@ -1,0 +1,9 @@
+<span *ngIf="user">
+  <ng-template #knownUser>
+    {{ user.firstName }}
+    {{ user.lastName }}
+  </ng-template>
+  <ng-container *ngIf="user.userId === unknownUser.userId; else knownUser">
+    {{ 'unknownUser' | translate }}
+  </ng-container>
+</span>

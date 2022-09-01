@@ -1,4 +1,42 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
 #footer {
-  position: sticky;
-  top: calc(100% - 6.75rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.user-assistance-wrapper {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin: auto;
+  max-width: 50em;
+  width: 80%;
+
+  .user-assistance {
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+
+    li {
+      padding: 1em;
+      .external-link:not(:hover):not(:active) {
+        color: $eu-jade-classic;
+      }
+    }
+
+    @media (min-width: $bp-xl) {
+      flex-direction: row;
+      justify-content: space-around;
+
+      li {
+        padding: 2em 0;
+      }
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import { Dataset } from '../../src/app/_models';
 
 export interface ProgressBurndown {
-  total: number;
   warn: number;
   fail: number;
   error: number;
@@ -16,6 +15,6 @@ export enum ProgressByStepStatus {
 
 export interface TimedTarget {
   progressBurndown: ProgressBurndown;
-  datasetInfo: Dataset;
+  dataset: Dataset;
   timesCalled: number;
 }

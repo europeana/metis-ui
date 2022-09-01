@@ -5,7 +5,12 @@ import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { MockModalConfirmService, ModalConfirmComponent, ModalConfirmService } from 'shared';
+import {
+  ClickService,
+  MockModalConfirmService,
+  ModalConfirmComponent,
+  ModalConfirmService
+} from 'shared';
 import { AppComponent } from '.';
 import {
   createMockPipe,
@@ -14,7 +19,7 @@ import {
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
-import { AuthenticationService, ClickService, ErrorService, WorkflowService } from './_services';
+import { AuthenticationService, ErrorService, WorkflowService } from './_services';
 import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {

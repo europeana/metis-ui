@@ -161,7 +161,6 @@ $space-sibling-buttons: 1em;
 }
 
 @media all and (min-width: $bp-large) {
-
   .table-grid {
     grid-template-columns: 4fr 2fr 2fr 2fr 2fr auto;
 
@@ -179,12 +178,10 @@ $space-sibling-buttons: 1em;
     .time {
       margin-left: 0.4em;
     }
-
   }
 }
 
 @media all and (min-width: $bp-xl) {
-
   .table-grid {
     grid-template-columns: 3fr 2fr 2fr 2fr 2fr auto;
 
@@ -208,7 +205,6 @@ $space-sibling-buttons: 1em;
 }
 
 @media all and (min-width: $bp-xxl) {
-
   .table-grid {
     .date-and-time,
     .button-placeholder {

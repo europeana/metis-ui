@@ -19,6 +19,8 @@ import {
   Statistics,
   SubTaskInfo,
   TaskState,
+  ThrottleLevel,
+  User,
   Workflow,
   WorkflowExecution,
   WorkflowExecutionHistoryList,
@@ -68,7 +70,8 @@ export const mockWorkflow: Workflow = {
     },
     {
       enabled: true,
-      pluginType: PluginType.MEDIA_PROCESS
+      pluginType: PluginType.MEDIA_PROCESS,
+      throttlingLevel: ThrottleLevel.MEDIUM
     },
     {
       enabled: true,
@@ -302,7 +305,7 @@ export const mockWorkflowExecutionResults: Results<WorkflowExecution> = {
       createdDate: novemberFifth,
       updatedDate: '',
       startedDate: '',
-      startedBy: '1482250000001617026',
+      startedBy: undefined,
       metisPlugins: [
         {
           pluginType: PluginType.VALIDATION_EXTERNAL,
@@ -693,11 +696,28 @@ export class MockWorkflowService {
     return of(mockHistoryVersions).pipe(delay(1));
   }
 
-  getWorkflowRecordsById(): Observable<XmlSample[]> {
+  searchWorkflowRecordsById(_: string, __: PluginType, id: string): Observable<XmlSample> {
+    if (this.errorMode) {
+      return throwError(new Error('mock searchWorkflowRecordsById throws error...'));
+    }
+    if (id === 'zero') {
+      return of((null as unknown) as XmlSample);
+    }
+    return of(mockXmlSamples[0]);
+  }
+
+  getWorkflowRecordsById(_: string, __: PluginType, ids: Array<string>): Observable<XmlSample[]> {
     if (this.errorMode) {
       return throwError(new Error('mock getWorkflowRecordsById throws error...'));
     }
+    if (ids.length === 1 && ids[0] === 'zero') {
+      return of([]);
+    }
     return of(mockXmlSamples);
+  }
+
+  getRecordFromPredecessor(_: string, __: PluginType, ids: Array<string>): Observable<XmlSample[]> {
+    return this.getWorkflowRecordsById(_, __, ids);
   }
 
   getStatistics(): Observable<Statistics> {
@@ -747,7 +767,7 @@ export class MockWorkflowService {
     return of(mockLogs).pipe(delay(1));
   }
 
-  getWorkflowCancelledBy(): Observable<string | undefined> {
+  getWorkflowCancelledBy(_: string): Observable<User | undefined> {
     return of(void 0);
   }
 }

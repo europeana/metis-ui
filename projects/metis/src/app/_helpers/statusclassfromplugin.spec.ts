@@ -6,8 +6,7 @@ function makePluginExecution(status: string): PluginExecution {
   return ({
     pluginStatus: status,
     executionProgress: { errors: 0 }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any) as PluginExecution;
+  } as unknown) as PluginExecution;
 }
 
 describe('status class from plugin', () => {
@@ -61,5 +60,14 @@ describe('status class from plugin', () => {
     expect(statusClassFromPlugin(makePluginExecution(PluginStatus.PENDING))).toEqual(
       'status-pending'
     );
+  });
+
+  it('should handle missing progress information', () => {
+    expect(
+      statusClassFromPlugin(({
+        pluginStatus: status,
+        executionProgress: undefined
+      } as unknown) as PluginExecution)
+    ).toEqual('status-');
   });
 });

@@ -2,7 +2,6 @@
   <header class="header">
     <div class="header-container">
       <div class="metis-logo">
-        <a routerLink="{{ logoLink() }}" class="phase-flag beta" tabindex="-1">BETA</a>
         <a routerLink="{{ logoLink() }}" class="logo"></a>
       </div>
 
@@ -23,7 +22,7 @@
               routerLinkActive="svg-icon-dashboard-active"
               class="link-to-dashboard svg-icon-dashboard"
             ></a>
-            <div class="metis-user" appClickAware (clickOutside)="onClickedOutsideUser($event)">
+            <div class="metis-user" libClickAware (clickOutside)="onClickedOutsideUser($event)">
               <a class="has-submenu" (click)="toggleSignInMenu()"
                 ><span
                   class="svg-icon-loggedin-user {{

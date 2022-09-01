@@ -19,7 +19,58 @@ import {
   xslt
 } from './factory/factory';
 import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-models';
-import { DepublicationStatus, RecordDepublicationInfo } from '../src/app/_models/depublication';
+import { DepublicationStatus, RecordDepublicationInfo, XmlSample } from '../src/app/_models';
+
+const FAIL = 'fail';
+
+// handler defined outside "this" content of server instance so it can be assigned within request.data event
+const handleRecordSearch = (
+  response: ServerResponse,
+  ids: Array<string>,
+  plugin: string,
+  respondWithArray: boolean
+): void => {
+  setTimeout(
+    () => {
+      const firstAsNumber = parseInt(ids[0]);
+      if (ids[0] === FAIL) {
+        response.statusCode = 400;
+        response.end(
+          JSON.stringify({
+            message: 'Failure!',
+            error: {
+              errorMessage: 'Expecting representations!'
+            }
+          })
+        );
+      } else if (firstAsNumber >= 400 && firstAsNumber <= 599) {
+        response.statusCode = firstAsNumber;
+        response.end();
+      } else {
+        let records: Array<XmlSample> = [];
+        // short ids get an empty result
+        if (ids[0].length > 5) {
+          records = ids.map((id: string) => {
+            return {
+              ecloudId: id,
+              xmlRecord: `<x>${plugin}</x>`
+            } as XmlSample;
+          });
+        }
+        if (respondWithArray) {
+          response.end(
+            JSON.stringify({
+              records: records
+            })
+          );
+        } else {
+          response.end(JSON.stringify(records[0]));
+        }
+      }
+    },
+    ids.length === 1 ? 1000 : 0
+  );
+};
 
 new (class extends TestDataServer {
   serverName = 'metis';
@@ -535,44 +586,50 @@ new (class extends TestDataServer {
     }
 
     regRes = route.match(
+      /orchestrator\/proxies\/recordsearchbyid\?workflowExecutionId=(\S+)&pluginType=(\S+)&idToSearch=(\S+)/
+    );
+    if (regRes) {
+      handleRecordSearch(response, [regRes[3]], regRes[2], false);
+      return true;
+    }
+
+    regRes = route.match(
+      /orchestrator\/proxies\/recordfrompredecessorplugin\?workflowExecutionId=(\S+)&pluginType=(\S+)/
+    );
+
+    if (regRes) {
+      let body = '';
+      let plugin = 'PluginType';
+      if (regRes[2]) {
+        plugin = regRes[2];
+      }
+      request.on('data', function(data: { toString: () => string }) {
+        body += data.toString();
+      });
+      request.on('end', function() {
+        const ids = JSON.parse(body).ids;
+        handleRecordSearch(response, ids, plugin, true);
+      });
+      return true;
+    }
+
+    regRes = route.match(
       /orchestrator\/proxies\/recordsbyids\?workflowExecutionId=(\S+)&pluginType=(\S+)/
     );
 
     if (regRes) {
       let body = '';
       let plugin = 'PluginType';
-      request.on('data', function(data: { toString: () => string }) {
-        body += data.toString();
-      });
-
       if (regRes[2]) {
         plugin = regRes[2];
       }
 
+      request.on('data', function(data: { toString: () => string }) {
+        body += data.toString();
+      });
       request.on('end', function() {
-        if (JSON.parse(body).ids[0] === 'fail') {
-          response.statusCode = 400;
-          response.end(
-            JSON.stringify({
-              message: 'Failure!',
-              error: {
-                errorMessage: 'Expecting representations!'
-              }
-            })
-          );
-        } else {
-          response.end(
-            JSON.stringify({
-              records: [
-                {
-                  ecloudId: '25XLZKQAMW75V7FWAJRL3LAAP4N6OHOZC4LIF22NBLS6UO65D4LQ',
-                  xmlRecord: `<x>${plugin}</x>`
-                }
-              ]
-            })
-          );
-        }
-        return true;
+        const ids = JSON.parse(body).ids;
+        handleRecordSearch(response, ids, plugin, true);
       });
       return true;
     }
@@ -633,6 +690,22 @@ new (class extends TestDataServer {
     const requestHandled = this.routeToFile(request, response, route);
 
     if (!requestHandled) {
+      if (request.method === 'PUT') {
+        let body = '';
+        request.on('data', function(data: { toString: () => string }) {
+          body += data.toString();
+        });
+        request.on('end', function() {
+          const data = (JSON.parse(body) as { xslt: string }).xslt;
+          if (data === FAIL) {
+            response.statusCode = 500;
+            response.end();
+          } else {
+            response.end();
+          }
+        });
+        return;
+      }
       if (request.method === 'POST') {
         response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 

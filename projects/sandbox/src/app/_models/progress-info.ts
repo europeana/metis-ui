@@ -2,14 +2,13 @@ export enum StepStatus {
   'HARVEST_HTTP' = 'HARVEST_HTTP',
   'HARVEST_OAI_PMH' = 'HARVEST_OAI_PMH',
   'HARVEST_ZIP' = 'HARVEST_ZIP',
+  'TRANSFORM_TO_EDM_EXTERNAL' = 'TRANSFORM_TO_EDM_EXTERNAL',
   'VALIDATE_EXTERNAL' = 'VALIDATE_EXTERNAL',
   'TRANSFORM' = 'TRANSFORM',
-  'TRANSFORM_EDM' = 'TRANSFORM_EDM',
   'VALIDATE_INTERNAL' = 'VALIDATE_INTERNAL',
   'NORMALIZE' = 'NORMALIZE',
   'ENRICH' = 'ENRICH',
   'MEDIA_PROCESS' = 'MEDIA_PROCESS',
-  'PREVIEW' = 'PREVIEW',
   'PUBLISH' = 'PUBLISH'
 }
 
@@ -21,10 +20,9 @@ export const StepStatusClass: ReadonlyMap<StepStatus, string> = new Map([
   [StepStatus.NORMALIZE, 'normalization'],
   [StepStatus.MEDIA_PROCESS, 'media_process'],
   [StepStatus.TRANSFORM, 'transformation'],
-  [StepStatus.TRANSFORM_EDM, 'transformation-edm'],
+  [StepStatus.TRANSFORM_TO_EDM_EXTERNAL, 'transformation_edm'],
   [StepStatus.VALIDATE_EXTERNAL, 'validation_external'],
   [StepStatus.VALIDATE_INTERNAL, 'validation_internal'],
-  [StepStatus.PREVIEW, 'preview'],
   [StepStatus.PUBLISH, 'publish']
 ]);
 
@@ -61,6 +59,11 @@ export interface DatasetInfo {
   'record-limit-exceeded'?: boolean;
 }
 
+export interface TierInfo {
+  samples: Array<string>;
+  total: number;
+}
+
 export interface Dataset {
   status: DatasetStatus;
   'processed-records': number;
@@ -69,4 +72,8 @@ export interface Dataset {
   'portal-publish'?: string;
   'dataset-info': DatasetInfo;
   'error-type'?: string;
+  'tier-zero-info'?: {
+    'content-tier'?: TierInfo;
+    'metadata-tier'?: TierInfo;
+  };
 }

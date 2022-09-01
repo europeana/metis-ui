@@ -1,0 +1,33 @@
+<div [formGroup]="workflowForm">
+  <ng-template #fieldInput let-disabled="disabled">
+    <label for="throttle-level-select">{{ 'throttleLevel' | translate }}</label>
+    <select
+      id="throttle-level-select"
+      [formControlName]="ParameterFieldName.throttlingLevel"
+      [attr.disabled]="disabled ? 'disabled' : null"
+      [attr.readonly]="disabled ? 'readonly' : null"
+    >
+      <option [ngValue]="ThrottleLevel.WEAK">{{ 'throttleLevelWeak' | translate }}</option>
+      <option [ngValue]="ThrottleLevel.MEDIUM">{{ 'throttleLevelMedium' | translate }}</option>
+      <option [ngValue]="ThrottleLevel.STRONG">{{ 'throttleLevelStrong' | translate }}</option>
+    </select>
+  </ng-template>
+
+  <span
+    class="show-on-hover"
+    *ngIf="workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value"
+  >
+    <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: true }"></ng-content>
+  </span>
+
+  <div
+    class="form-group form-group-checkbox"
+    *ngIf="
+      !workflowForm.get('pluginMEDIA_PROCESS')!.disabled &&
+      workflowForm.get('pluginMEDIA_PROCESS')!.value
+    "
+    [formGroup]="workflowForm"
+  >
+    <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: false }"></ng-content>
+  </div>
+</div>

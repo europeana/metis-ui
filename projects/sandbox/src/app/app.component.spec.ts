@@ -1,7 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { ClickService } from 'shared';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -22,5 +25,12 @@ describe('AppComponent', () => {
 
   it('should create the app', () => {
     expect(app).toBeTruthy();
+  });
+
+  it('should handle clicks', () => {
+    const cmpClickService = fixture.debugElement.injector.get<ClickService>(ClickService);
+    spyOn(cmpClickService.documentClickedTarget, 'next');
+    fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
+    expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
   });
 });

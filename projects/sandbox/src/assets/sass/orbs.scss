@@ -76,7 +76,7 @@ $orb-border-radius: 1.5em;
     &.indicator-orb::before {
       background-color: $white;
     }
-    &:not([data-indicator])::before {
+    &:not([data-indicator]):not(.warning-animated)::before {
       background-image: svg-url-icon-tick('#000');
     }
   }
@@ -401,6 +401,42 @@ $orb-border-radius: 1.5em;
   }
   &:active {
     background-image: svg-url-icon-spin('#{$eu-light-orange}');
+  }
+}
+
+.warning-animated::before {
+  @keyframes spin {
+    100% {
+      transform: rotateY(180deg);
+    }
+  }
+  animation: spin 0.6s linear 1;
+  background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red) center no-repeat;
+  bottom: -0.75rem;
+  content: '';
+  display: inline-block;
+  height: 22px;
+  left: calc(50% - 10px);
+  position: absolute;
+  width: 20px;
+  z-index: 1;
+}
+
+.vertical {
+  .wizard-status {
+    flex-direction: column;
+  }
+  &.zero-warning {
+    .orb-container:not(.hidden) {
+      height: 48px;
+      .nav-orb.labelled {
+        border-color: $eu-jade-dark;
+        transform: scale(0.75);
+      }
+      & + .orb-container {
+        margin-top: 7px;
+      }
+    }
   }
 }
 

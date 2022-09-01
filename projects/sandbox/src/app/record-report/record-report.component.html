@@ -145,7 +145,7 @@
       <a
         *ngIf="visibleTier !== 0; else conditionalWrapCT"
         class="link-shortcut"
-        (click)="setView(0)"
+        (click)="setView(DisplayedTier.CONTENT)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapCT"></ng-container>
       </a>
@@ -155,7 +155,7 @@
       <a
         *ngIf="visibleTier !== 0; else conditionalWrapCTVal"
         class="link-shortcut"
-        (click)="setView(0)"
+        (click)="setView(DisplayedTier.CONTENT)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapCTVal"></ng-container>
       </a>
@@ -167,7 +167,7 @@
       <a
         *ngIf="visibleTier !== 1; else conditionalWrapMetadata"
         class="link-shortcut"
-        (click)="setView(1)"
+        (click)="setView(DisplayedTier.METADATA)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapMetadata"></ng-container>
       </a>
@@ -177,7 +177,7 @@
       <a
         *ngIf="visibleTier !== 1; else conditionalWrapMetadataVal"
         class="link-shortcut"
-        (click)="setView(1)"
+        (click)="setView(DisplayedTier.METADATA)"
       >
         <ng-container *ngTemplateOutlet="conditionalWrapMetadataVal"></ng-container>
       </a>

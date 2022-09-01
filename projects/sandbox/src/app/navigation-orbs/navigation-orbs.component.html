@@ -2,11 +2,13 @@
   <ul class="wizard-status">
     <ng-template #orbItem let-itemIndex="itemIndex">
       <a
-        (click)="clicked(itemIndex)"
+        (click)="clicked($event, itemIndex)"
         [ngClass]="fnClassMapInner(itemIndex)"
         class="nav-orb labelled"
         [attr.data-label]="itemIndex + 1"
+        [attr.href]="links.length > itemIndex ? links[itemIndex] : null"
         [attr.data-indicator]="_indicatorAttributes[itemIndex]"
+        [attr.title]="tooltips.length > itemIndex ? tooltips[itemIndex] : null"
       ></a>
     </ng-template>
 

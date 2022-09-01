@@ -19,6 +19,7 @@ import {
   errorNotification,
   httpErrorNotification,
   isWorkflowCompleted,
+  MediaProcessPluginMetadata,
   Notification,
   OAIHarvestPluginMetadataTmp,
   ParameterField,
@@ -32,9 +33,7 @@ import {
   WorkflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
-
 import { TranslateService } from '../../_translate';
-
 import { WorkflowFormFieldComponent } from './workflow-form-field';
 
 @Component({
@@ -375,10 +374,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   extractWorkflowParamsAlways(workflow: Workflow): void {
     for (const thisWorkflow of workflow.metisPluginsMetadata) {
-      if (thisWorkflow.pluginType === 'HTTP_HARVEST') {
+      if (thisWorkflow.pluginType === PluginType.HTTP_HARVEST) {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
         this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
-      } else if (thisWorkflow.pluginType === 'OAIPMH_HARVEST') {
+      } else if (thisWorkflow.pluginType === PluginType.OAIPMH_HARVEST) {
         if (thisWorkflow.url) {
           this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         }
@@ -395,13 +394,18 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   extractPluginParamsExtra(enabledPluginMetadata: PluginMetadata): void {
     // parameters for transformation
-    if (enabledPluginMetadata.pluginType === 'TRANSFORMATION') {
+    if (enabledPluginMetadata.pluginType === PluginType.TRANSFORMATION) {
       this.workflowForm.controls.customXslt.setValue(enabledPluginMetadata.customXslt);
     }
     // parameters for link-checking
-    if (enabledPluginMetadata.pluginType === 'LINK_CHECKING') {
+    if (enabledPluginMetadata.pluginType === PluginType.LINK_CHECKING) {
       const value = String(enabledPluginMetadata.performSampling);
       this.workflowForm.controls.performSampling.setValue(value);
+    }
+    // parameters for media-process
+    if (enabledPluginMetadata.pluginType === PluginType.MEDIA_PROCESS) {
+      const value = (enabledPluginMetadata as MediaProcessPluginMetadata).throttlingLevel;
+      this.workflowForm.controls.throttlingLevel.setValue(value);
     }
   }
 
@@ -412,8 +416,8 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     for (const thisWorkflow of workflow.metisPluginsMetadata) {
       if (thisWorkflow.enabled) {
         if (
-          thisWorkflow.pluginType === 'OAIPMH_HARVEST' ||
-          thisWorkflow.pluginType === 'HTTP_HARVEST'
+          thisWorkflow.pluginType === PluginType.OAIPMH_HARVEST ||
+          thisWorkflow.pluginType === PluginType.HTTP_HARVEST
         ) {
           this.workflowForm.controls.pluginType.setValue(thisWorkflow.pluginType);
           this.workflowForm.controls.pluginHARVEST.setValue(true);
@@ -469,8 +473,17 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       ...params.map((pf) => {
         let valToSave = this.workflowForm.value[pf];
         if (!valToSave) {
-          if (['harvestUrl', 'url', 'setSpec', 'metadataFormat'].includes(pf)) {
+          if (
+            [
+              ParameterFieldName.harvestUrl,
+              ParameterFieldName.url,
+              ParameterFieldName.setSpec,
+              ParameterFieldName.metadataFormat
+            ].includes(pf)
+          ) {
             valToSave = '';
+          } else if (ParameterFieldName.throttlingLevel === pf) {
+            valToSave = null;
           } else {
             valToSave = false;
           }

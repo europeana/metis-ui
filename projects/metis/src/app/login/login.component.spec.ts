@@ -84,7 +84,6 @@ describe('LoginComponent', () => {
   }));
 
   it('should redirect if already logged in', fakeAsync((): void => {
-    console.log('should redirect if already logged in');
     spyOn(router, 'navigate');
     component.ngOnInit();
     const sub = authenticationService.login('name', 'pw').subscribe();

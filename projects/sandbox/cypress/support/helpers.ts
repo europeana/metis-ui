@@ -30,10 +30,10 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
 };
 
 export const fillUploadForm = (testDatasetName: string): void => {
-  cy.get(selectorInputName).scrollIntoView();
   cy.get(selectorInputName).type(testDatasetName, { scrollBehavior: false });
-  cy.get(selectorInputCountry).select('Greece');
-  cy.get(selectorInputLanguage).select('Greek');
+  cy.get(selectorInputCountry).scrollIntoView();
+  cy.get(selectorInputCountry).select('Greece', { force: true });
+  cy.get(selectorInputLanguage).select('Greek', { force: true });
   uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
 };
 

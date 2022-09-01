@@ -87,10 +87,13 @@
 
   <!-- Internal Link -->
   <!-- prettier-ignore -->
-  <ng-template #internalLinkItem let-recordId="recordId">
+  <ng-template #internalLinkItem let-recordId="recordId" let-datasetId="datasetId" let-showConnectBelow="showConnectBelow">
     <!-- //NOSONAR --><li>
       <ng-container>
-        <a class="link-related" (click)="openLink(recordId)" title="view record issues">
+        <a class="code link-related" (click)="openLink($event, recordId)" title="view record issues"
+        [ngClass]="{ 'connect-to-below' : showConnectBelow }"
+        href="/dataset/{{datasetId}}?view=problems&recordId={{recordId}}"
+        >
           {{ recordId }}
         </a>
       </ng-container>
@@ -98,9 +101,15 @@
   </ng-template>
 
   <!-- Problem Occurence -->
-  <ng-template #tmpProblemOccurenceList let-occurence="occurence" let-problemTitle="problemTitle">
+  <ng-template
+    #tmpProblemOccurenceList
+    let-occurence="occurence"
+    let-problemTitle="problemTitle"
+    let-datasetId="datasetId"
+    let-ppId="ppId"
+  >
     <ul class="problem-occurence">
-      <li *ngIf="occurence.messageReport; let message">
+      <li class="message" *ngIf="occurence.messageReport; let message">
         <q>
           <span class="italic message-copy">
             {{ message }}
@@ -110,25 +119,44 @@
       <ng-container *ngIf="!problemPatternsRecord && occurence.affectedRecordIds.length > 0">
         <li
           class="list-opener"
-          [ngClass]="{ 'is-open': occurence.affectedRecordIdsShowing }"
-          [ngClass]="{ 'auto-opened': occurence.affectedRecordIds.length === 1 }"
-          [ngPlural]="occurence.affectedRecordIds.length"
+          [ngClass]="{
+            'is-open': occurence.affectedRecordIdsShowing
+          }"
         >
           <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
-            <ng-template ngPluralCase="=1">Affected record:</ng-template>
-            <ng-template ngPluralCase="other">Affected records:</ng-template>
+            <ng-template #nonP1>
+              <ng-container [ngPlural]="occurence.affectedRecordIds.length">
+                <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
+                <ng-template ngPluralCase="=1">affected record</ng-template>
+                <ng-template ngPluralCase="other">affected records</ng-template>
+              </ng-container>
+            </ng-template>
+            <ng-container
+              *ngIf="ppId === ProblemPatternId.P1; else nonP1"
+              [ngPlural]="occurence.affectedRecordIds.length"
+            >
+              <ng-template ngPluralCase="=1">There is 1 record with this title</ng-template>
+              <ng-template ngPluralCase="other"
+                >There are
+                <span class="affected-count">{{ occurence.affectedRecordIds.length }}</span>
+                records with this title</ng-template
+              >
+            </ng-container>
           </a>
         </li>
         <li>
           <ul
             class="openable-list"
             [ngClass]="{
-              closed: occurence.affectedRecordIds.length > 1 && !occurence.affectedRecordIdsShowing
+              closed: !occurence.affectedRecordIdsShowing
             }"
           >
             <ng-container *ngFor="let id of occurence.affectedRecordIds">
               <ng-content
-                *ngTemplateOutlet="internalLinkItem; context: { recordId: id }"
+                *ngTemplateOutlet="
+                  internalLinkItem;
+                  context: { recordId: id, datasetId: datasetId }
+                "
               ></ng-content>
             </ng-container>
           </ul>
@@ -138,12 +166,27 @@
   </ng-template>
 
   <!-- Record Analysis List -->
-  <ng-template #tmpRecordAnalysisList let-analyses="analyses" let-problemTitle="problemTitle">
+  <ng-template
+    #tmpRecordAnalysisList
+    let-analyses="analyses"
+    let-problemTitle="problemTitle"
+    let-datasetId="datasetId"
+    let-ppId="ppId"
+  >
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
         <ng-container *ngIf="!problemPatternsRecord">
           <ng-content
-            *ngTemplateOutlet="internalLinkItem; context: { recordId: analysis.recordId }"
+            *ngTemplateOutlet="
+              internalLinkItem;
+              context: {
+                recordId: analysis.recordId,
+                datasetId: datasetId,
+                showConnectBelow:
+                  analysis.problemOccurrenceList[0].affectedRecordIds.length &&
+                  analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+              }
+            "
           ></ng-content>
         </ng-container>
 
@@ -151,7 +194,12 @@
           <ng-content
             *ngTemplateOutlet="
               tmpProblemOccurenceList;
-              context: { occurence: problemOccurrence, problemTitle: problemTitle }
+              context: {
+                occurence: problemOccurrence,
+                problemTitle: problemTitle,
+                datasetId: datasetId,
+                ppId: ppId
+              }
             "
           ></ng-content>
         </li>
@@ -160,7 +208,7 @@
   </ng-template>
 
   <!-- Problem Pattern (record) -->
-  <ng-template #tmpProblemPattern let-problemPattern="problemPattern">
+  <ng-template #tmpProblemPattern let-problemPattern="problemPattern" let-datasetId="datasetId">
     <div class="problem-pattern">
       <span class="problem-header">
         <a
@@ -184,16 +232,18 @@
         class="title-record-occurences semi-colon"
         *ngIf="!problemPatternsRecord"
         [ngPlural]="problemPattern.recordOccurrences"
-        >Occurs in {{ problemPattern.recordOccurrences }}
-        <ng-template ngPluralCase="=1">record</ng-template>
-        <ng-template ngPluralCase="other">records</ng-template>
+        >Occurs in <strong>{{ problemPattern.recordOccurrences }}</strong>
+        <ng-template ngPluralCase="=1"> record</ng-template>
+        <ng-template ngPluralCase="other"> records</ng-template>
       </span>
       <ng-content
         *ngTemplateOutlet="
           tmpRecordAnalysisList;
           context: {
             analyses: problemPattern.recordAnalysisList,
-            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle
+            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle,
+            datasetId: datasetId,
+            ppId: problemPattern.problemPatternDescription.problemPatternId
           }
         "
       ></ng-content>
@@ -227,7 +277,10 @@
       <ng-container>
         <ng-container *ngFor="let problemPattern of problemPatternsRecord">
           <ng-content
-            *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+            *ngTemplateOutlet="
+              tmpProblemPattern;
+              context: { problemPattern: problemPattern, datasetId: '' }
+            "
           ></ng-content>
         </ng-container>
       </ng-container>
@@ -256,15 +309,6 @@
           </li>
         </ul>
       </li>
-      <li class="right-aligned" *ngIf="ppd.problemPatternList.length > 0">
-        <ul>
-          <li>
-            <h3 class="capitalise title step">
-              {{ ppd.executionStep }}
-            </h3>
-          </li>
-        </ul>
-      </li>
     </ul>
 
     <ng-template #problemViewer>
@@ -272,7 +316,10 @@
         <ng-container>
           <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
             <ng-content
-              *ngTemplateOutlet="tmpProblemPattern; context: { problemPattern: problemPattern }"
+              *ngTemplateOutlet="
+                tmpProblemPattern;
+                context: { problemPattern: problemPattern, datasetId: ppd.datasetId }
+              "
             ></ng-content>
           </ng-container>
         </ng-container>

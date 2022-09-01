@@ -1,15 +1,17 @@
 import { formatDate } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   Dataset,
   DatasetStatus,
+  DisplayedTier,
   ProgressByStep,
   ProgressError,
+  RecordReportRequest,
   StepStatus,
   StepStatusClass
 } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ModalConfirmService, SubscriptionManager } from 'shared';
+import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 
 @Component({
   selector: 'sb-progress-tracker',
@@ -18,10 +20,35 @@ import { ModalConfirmService, SubscriptionManager } from 'shared';
 })
 export class ProgressTrackerComponent extends SubscriptionManager {
   public formatDate = formatDate;
+  public DisplayedTier = DisplayedTier;
+  _progressData: Dataset;
 
-  @Input() progressData: Dataset;
+  @Input() set progressData(data: Dataset) {
+    if (!this.warningViewOpen) {
+      // reset the notification flag unless the user's already looking at it
+      this.warningViewOpened = [false, false];
+    }
+    const tierInfo = data['tier-zero-info'];
+    if (tierInfo) {
+      // add placeholder content-tier data if only metadata-tier data is present
+      if (tierInfo['metadata-tier'] && !tierInfo['content-tier']) {
+        tierInfo['content-tier'] = {
+          samples: [],
+          total: 0
+        };
+      }
+    }
+    this._progressData = data;
+  }
+
+  get progressData(): Dataset {
+    return this._progressData;
+  }
+
   @Input() datasetId: number;
   @Input() isLoading: boolean;
+  @Input() showing: boolean;
+  @Output() openReport = new EventEmitter<RecordReportRequest>();
 
   modalIdProcessingErrors = 'confirm-modal-processing-error';
   modalIdErrors = 'confirm-modal-errors';
@@ -29,8 +56,50 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   detailIndex: number;
   expandedWarning = false;
 
+  warningViewOpen = false;
+  warningViewOpened = [false, false];
+  warningDisplayedTier: DisplayedTier;
+
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
+  }
+
+  getOrbConfigInner(i: number): ClassMap {
+    return {
+      'is-active': this.warningDisplayedTier === i,
+      'content-tier-orb': i === DisplayedTier.CONTENT,
+      'metadata-tier-orb': i === DisplayedTier.METADATA,
+      'warning-animated': !this.warningViewOpened[i]
+    };
+  }
+
+  getOrbConfigOuter(i: number): ClassMap {
+    if (this.progressData && i === DisplayedTier.CONTENT) {
+      const tierInfo = this.progressData['tier-zero-info'];
+      if (tierInfo) {
+        if (tierInfo['content-tier'] && tierInfo['content-tier'].total === 0) {
+          return {
+            hidden: true
+          };
+        }
+      }
+    }
+    return {};
+  }
+
+  /**
+   * getOrbConfigCount
+   * @returns { number }
+   **/
+  getOrbConfigCount(): number {
+    const tierInfo = this.progressData['tier-zero-info'];
+    if (tierInfo) {
+      if (tierInfo['metadata-tier']) {
+        return 2;
+      }
+      return 1;
+    }
+    return 0;
   }
 
   /**
@@ -69,6 +138,31 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   }
 
   /**
+   * closeWarningView
+   * Template utility - sets warningViewOpen to false
+   * Delays the resetting of warningView to fit with animation
+   **/
+  closeWarningView(): void {
+    if (this.showing) {
+      this.warningViewOpen = false;
+      setTimeout(() => {
+        this.warningDisplayedTier = -1;
+      }, 400);
+    }
+  }
+
+  /**
+   * setWarningView
+   * navigationOrbs output
+   * @param { number } index - the warning view code
+   **/
+  setWarningView(index: DisplayedTier): void {
+    this.warningDisplayedTier = index;
+    this.warningViewOpen = true;
+    this.warningViewOpened[index] = true;
+  }
+
+  /**
    * showErrorsForStep
    * Shows the error-detail modal
    * @param { number } detailIndex - the item to open
@@ -92,6 +186,22 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    **/
   showIncompleteDataWarning(): void {
     this.subs.push(this.modalConfirms.open(this.modalIdIncompleteData).subscribe());
+  }
+
+  /**
+   * reportLinkClicked
+   * Emit event to open report
+   * @param { string } recordId - the record to open
+   * @param { boolean } openMetadata - open the report showing the metadata
+   **/
+  reportLinkClicked(event: KeyboardEvent, recordId: string, openMetadata: boolean): void {
+    if (!event.ctrlKey) {
+      event.preventDefault();
+      this.openReport.emit({
+        recordId,
+        openMetadata
+      });
+    }
   }
 
   /**

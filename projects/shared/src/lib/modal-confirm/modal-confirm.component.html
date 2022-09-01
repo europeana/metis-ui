@@ -5,6 +5,8 @@
       <p>
         <ng-content></ng-content>
       </p>
+    </div>
+    <div class="footer">
       <p *ngIf="buttons; else yes_no">
         <ng-container *ngFor="let item of buttons">
           <button

@@ -1,19 +1,26 @@
+<ng-template #fieldInput let-disabled="disabled">
+  <div class="form-group form-group-checkbox" [formGroup]="workflowForm">
+    <label for="customxslt">{{ 'customXslt' | translate }}</label>
+    <input
+      [attr.disabled]="disabled ? 'disabled' : null"
+      [attr.readonly]="disabled ? 'readonly' : null"
+      [formControlName]="ParameterFieldName.customXslt"
+      id="customxslt"
+      type="checkbox"
+    />
+  </div>
+</ng-template>
 <span
   class="show-on-hover"
   *ngIf="workflowForm.get(conf.name)!.disabled || !workflowForm.get(conf.name)!.value"
-  ><input type="checkbox" [checked]="workflowForm.value.customXslt" readonly="true" disabled="" />{{
-    'customXslt' | translate
-  }}</span
 >
+  <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: true }"></ng-content>
+</span>
 <div
-  class="form-group form-group-checkbox"
   *ngIf="
     !workflowForm.get('pluginTRANSFORMATION')!.disabled &&
     workflowForm.get('pluginTRANSFORMATION')!.value
   "
-  [formGroup]="workflowForm"
 >
-  <label for="customxslt">{{ 'customXslt' | translate }}</label>
-
-  <input id="customxslt" type="checkbox" formControlName="customXslt" />
+  <ng-content *ngTemplateOutlet="fieldInput; context: { disabled: false }"></ng-content>
 </div>

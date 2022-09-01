@@ -1,6 +1,6 @@
 import { DatasetSearchView, PublicationFitness } from '../../src/app/_models/dataset-shared';
 import { DatasetDepublicationStatus, HarvestData } from '../../src/app/_models/harvest-data';
-import { Workflow, XmlSample } from '../../src/app/_models';
+import { ThrottleLevel, Workflow, XmlSample } from '../../src/app/_models';
 import {
   DatasetX,
   DateBumpType,
@@ -265,7 +265,8 @@ function generatePluginMetadata(pType: PluginType): PluginMetadata {
     metadataFormat: pType === PluginType.OAIPMH_HARVEST ? 'edm' : undefined,
     setSpec: pType === PluginType.OAIPMH_HARVEST ? 'setSpec' : undefined,
     incrementalHarvest: pType === PluginType.OAIPMH_HARVEST ? true : undefined,
-    customXslt: pType === PluginType.TRANSFORMATION ? false : undefined
+    customXslt: pType === PluginType.TRANSFORMATION ? false : undefined,
+    throttlingLevel: ThrottleLevel.STRONG
   } as PluginMetadata;
 }
 

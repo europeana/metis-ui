@@ -10,7 +10,7 @@
       <input
         id="check-sample"
         type="radio"
-        formControlName="performSampling"
+        [formControlName]="ParameterFieldName.performSampling"
         value="true"
         [checked]="workflowForm.value.performSampling === 'true'"
       />
@@ -20,7 +20,7 @@
       <input
         id="check-all"
         type="radio"
-        formControlName="performSampling"
+        [formControlName]="ParameterFieldName.performSampling"
         value="false"
         [checked]="workflowForm.value.performSampling !== 'true'"
       />
@@ -28,7 +28,6 @@
     </label>
   </div>
 </div>
-
 <div
   [formGroup]="workflowForm"
   class="show-on-hover fixed"

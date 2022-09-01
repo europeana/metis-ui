@@ -1,4 +1,5 @@
 // Java name: AbstractMetisPluginMetadata
+import { PluginType } from '.';
 
 type pluginTypes =
   | 'VALIDATION_EXTERNAL'
@@ -28,7 +29,7 @@ export interface IncrementalHarvestPluginMetadata extends HarvestPluginMetadataB
 }
 
 export interface OAIHarvestPluginMetadata extends IncrementalHarvestPluginMetadata {
-  pluginType: 'OAIPMH_HARVEST';
+  pluginType: PluginType.OAIPMH_HARVEST;
   setSpec: string;
   metadataFormat: string;
 }
@@ -39,7 +40,7 @@ export interface OAIHarvestPluginMetadataTmp extends OAIHarvestPluginMetadata {
 }
 
 export interface HttpHarvestPluginMetadata extends IncrementalHarvestPluginMetadata {
-  pluginType: 'HTTP_HARVEST';
+  pluginType: PluginType.HTTP_HARVEST;
 }
 
 export interface IncrementalHarvestingAllowedResult {
@@ -47,10 +48,22 @@ export interface IncrementalHarvestingAllowedResult {
 }
 
 export interface TransformationPluginMetadata {
-  pluginType: 'TRANSFORMATION';
+  pluginType: PluginType.TRANSFORMATION;
   mocked?: boolean;
   enabled?: boolean;
   customXslt: boolean;
+}
+
+export enum ThrottleLevel {
+  WEAK = 'WEAK',
+  MEDIUM = 'MEDIUM',
+  STRONG = 'STRONG'
+}
+
+export interface MediaProcessPluginMetadata {
+  enabled?: boolean;
+  pluginType: PluginType.MEDIA_PROCESS;
+  throttlingLevel: ThrottleLevel;
 }
 
 export type PluginMetadata =
@@ -58,4 +71,5 @@ export type PluginMetadata =
   | OAIHarvestPluginMetadata
   | OAIHarvestPluginMetadataTmp
   | HttpHarvestPluginMetadata
+  | MediaProcessPluginMetadata
   | TransformationPluginMetadata;

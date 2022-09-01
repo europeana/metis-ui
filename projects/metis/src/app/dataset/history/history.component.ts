@@ -19,6 +19,7 @@ import {
   PreviewFilters,
   Report,
   ReportRequest,
+  User,
   WorkflowExecution
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -142,7 +143,7 @@ export class HistoryComponent extends SubscriptionManager {
   /** getCancelledBy
   /* get the cancelling user
   */
-  getCancelledBy(workflow: WorkflowExecution): Observable<string | undefined> {
+  getCancelledBy(workflow: WorkflowExecution): Observable<User | undefined> {
     return this.workflows.getWorkflowCancelledBy(workflow);
   }
 }

@@ -40,9 +40,17 @@ describe('NavigationOrbsComponent', () => {
   });
 
   it('should emit an event when clicked', () => {
+    const event = {
+      preventDefault: jasmine.createSpy(),
+      ctrlKey: true
+    };
     const index = 1976;
     spyOn(component.clickEvent, 'emit');
-    component.clicked(index);
+    component.clicked(event, index);
+    expect(component.clickEvent.emit).not.toHaveBeenCalled();
+
+    event.ctrlKey = false;
+    component.clicked(event, index);
     expect(component.clickEvent.emit).toHaveBeenCalledWith(index);
   });
 

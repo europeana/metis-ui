@@ -29,7 +29,6 @@ $textcolour_highlight: $accent;
 
 /* NAVIGATION */
 @import 'shared-styles/assets/sass/scss/objects/nav';
-@import 'shared-styles/assets/sass/scss/objects/navigation/phase-flags';
 
 /* Metis */
 @import 'shared-styles/assets/sass/pandora/base/helpers';
@@ -68,6 +67,12 @@ label {
     opacity: 0.5;
     pointer-events: none;
   }
+}
+
+input,
+select {
+  border: 1px solid $eu-jade-dark;
+  box-shadow: unset;
 }
 
 .asterisked::after {
@@ -131,6 +136,11 @@ label {
 
 .hidden {
   display: none;
+}
+
+.pusher {
+  display: flex;
+  flex-direction: column;
 }
 
 .separator-line {
