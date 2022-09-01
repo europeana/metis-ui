@@ -1,4 +1,4 @@
-import { Results } from './workflow-results';
+import { Results } from './results';
 
 export enum SortDirection {
   UNSET = 'UNSET',
