@@ -1,9 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
-  ReactiveFormsModule,
   Validators
 } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';

@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { createMockPipe } from '../../../_mocked';
 import { DragType, ParameterFieldName, PluginType } from '../../../_models';
 import { WorkflowFormFieldMediaProcessComponent } from '.';

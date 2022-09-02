@@ -220,36 +220,41 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           }
         })
     );
+    this.location.subscribe(this.handleLocationPopState.bind(this));
+  }
 
-    // capture "back" and "forward" events / sync with form data
-    this.location.subscribe((state: PopStateEvent) => {
-      const url = `${state.url}`;
-      const ids = /\/dataset\/(\d+)/.exec(url);
+  /**
+   * handleLocationPopState
+   * capture "back" and "forward" events / sync with form data
+   * @param { PopStateEvent } state - the event
+   **/
+  handleLocationPopState(state: PopStateEvent): void {
+    const url = `${state.url}`;
+    const ids = /\/dataset\/(\d+)/.exec(url);
 
-      if (!ids || ids.length === 0) {
-        // clear the data, form data, pollers / set step to progress
-        this.progressData = undefined;
-        this.trackDatasetId = '';
-        this.trackRecordId = '';
-        this.buildForms();
-        this.clearDataPollers();
-        this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
-        (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue('');
+    if (!ids || ids.length === 0) {
+      // clear the data, form data, pollers / set step to progress
+      this.progressData = undefined;
+      this.trackDatasetId = '';
+      this.trackRecordId = '';
+      this.buildForms();
+      this.clearDataPollers();
+      this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
+      (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue('');
+    } else {
+      this.trackDatasetId = ids[1];
+      const regParamRecord = /\S+\?recordId=([^&]*)/;
+      const regParamProblems = /[?&]view=problems/;
+      const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
+      const matchParamProblems = !!regParamProblems.exec(url);
+      if (matchParamRecord) {
+        this.trackRecordId = decodeURIComponent(matchParamRecord[1]);
+        this.fillAndSubmitRecordForm(matchParamProblems);
       } else {
-        this.trackDatasetId = ids[1];
-        const regParamRecord = /\S+\?recordId=([^&]*)/;
-        const regParamProblems = /[?&]view=problems/;
-        const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
-        const matchParamProblems = !!regParamProblems.exec(url);
-        if (matchParamRecord) {
-          this.trackRecordId = decodeURIComponent(matchParamRecord[1]);
-          this.fillAndSubmitRecordForm(matchParamProblems);
-        } else {
-          (this.formRecord.get('recordToTrack') as UntypedFormControl).setValue('');
-          this.fillAndSubmitProgressForm(matchParamProblems, false);
-        }
+        (this.formRecord.get('recordToTrack') as UntypedFormControl).setValue('');
+        this.fillAndSubmitProgressForm(matchParamProblems, false);
       }
-    });
+    }
   }
 
   /**
