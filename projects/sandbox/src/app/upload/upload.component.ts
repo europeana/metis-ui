@@ -1,6 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   DataPollingComponent,
@@ -24,7 +30,7 @@ export class UploadComponent extends DataPollingComponent {
   @Output() notifySubmitted: EventEmitter<string> = new EventEmitter();
   @Input() showing = false;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';
 
@@ -66,7 +72,7 @@ export class UploadComponent extends DataPollingComponent {
    * build the form
    **/
   buildForm(): void {
-    this.form = new FormBuilder().group({
+    this.form = new UntypedFormBuilder().group({
       name: ['', [Validators.required, this.validateDatasetName]],
       country: ['', [Validators.required]],
       language: ['', [Validators.required]],
@@ -106,7 +112,7 @@ export class UploadComponent extends DataPollingComponent {
         'xsltFile'
       ];
       return !protocolFieldNames.find((f: string) => {
-        const val = this.form.get(f) as FormControl;
+        const val = this.form.get(f) as UntypedFormControl;
         return !val.valid;
       });
     }
@@ -121,7 +127,7 @@ export class UploadComponent extends DataPollingComponent {
    * @param { FormControl } control - the control to validate
    * @returns null or a code-keyed boolean
    **/
-  validateDatasetName(control: FormControl): ValidationErrors | null {
+  validateDatasetName(control: UntypedFormControl): ValidationErrors | null {
     const val = control.value;
     if (val) {
       const matches = /[a-zA-Z0-9_]+/.exec(`${val}`);

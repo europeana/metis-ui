@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { harvestValidator } from './harvest.validator';
 import { ClassMap, ProtocolType } from '../../_models/shared-models';
 import { SubscriptionManager } from '../../subscription-manager/subscription.manager';
@@ -25,12 +25,12 @@ export class ProtocolFieldSetComponent extends SubscriptionManager {
   @Input() disabledProtocols: Array<ProtocolType> = [];
   @Input() visibleProtocols: Array<ProtocolType> = [];
 
-  form: FormGroup;
-  @Input() set protocolForm(form: FormGroup) {
+  form: UntypedFormGroup;
+  @Input() set protocolForm(form: UntypedFormGroup) {
     this.form = form;
     this.updateRequired();
   }
-  get protocolForm(): FormGroup {
+  get protocolForm(): UntypedFormGroup {
     return this.form;
   }
 

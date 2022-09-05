@@ -1,6 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
@@ -64,7 +70,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   selectedLanguage?: Language;
 
   publicationFitnessOps: Array<{ label: string; val: string }>;
-  datasetForm: FormGroup;
+  datasetForm: UntypedFormGroup;
   countryOptions: Country[];
   languageOptions: Language[];
 
@@ -89,7 +95,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     private readonly countries: CountriesService,
     private readonly datasets: DatasetsService,
     private readonly router: Router,
-    private readonly fb: FormBuilder,
+    private readonly fb: UntypedFormBuilder,
     private readonly errors: ErrorService,
     private readonly translate: TranslateService
   ) {
@@ -141,8 +147,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* - returns form control as array
   /* - (necessary for template-check to pass)
   */
-  get redirectionIds(): FormArray {
-    return this.datasetForm.get('datasetIdsToRedirectFrom') as FormArray;
+  get redirectionIds(): UntypedFormArray {
+    return this.datasetForm.get('datasetIdsToRedirectFrom') as UntypedFormArray;
   }
 
   /** addRedirectionId
@@ -280,8 +286,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* generates a FormArray object from datasetIdsToRedirectFrom
   /* @returns FormArray
   */
-  getIdsAsFormArray(): FormArray {
-    let list: Array<FormControl> = [];
+  getIdsAsFormArray(): UntypedFormArray {
+    let list: Array<UntypedFormControl> = [];
     if (this.datasetData.datasetIdsToRedirectFrom) {
       list = this.datasetData.datasetIdsToRedirectFrom.map((id) => {
         return this.fb.control(id);

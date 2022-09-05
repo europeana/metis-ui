@@ -1,7 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { PopStateEvent } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
@@ -32,11 +33,11 @@ describe('WizardComponent', () => {
   const formNameRecordId = 'recordToTrack';
 
   const setFormValueDataset = (val: string): void => {
-    (component.formProgress.get(formNameDatasetId) as FormControl).setValue(val);
+    (component.formProgress.get(formNameDatasetId) as UntypedFormControl).setValue(val);
   };
 
   const setFormValueRecord = (val: string): void => {
-    (component.formRecord.get(formNameRecordId) as FormControl).setValue(val);
+    (component.formRecord.get(formNameRecordId) as UntypedFormControl).setValue(val);
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -236,7 +237,7 @@ describe('WizardComponent', () => {
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
-      tick(1);
+      tick(apiSettings.interval);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(2);
 
       // clear and re-submit
@@ -245,17 +246,34 @@ describe('WizardComponent', () => {
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
-      tick(1);
+      tick(apiSettings.interval);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+      component.cleanup();
+      tick(apiSettings.interval);
+    }));
 
-      // with location update
+    it('should handle the location pop-state', fakeAsync(() => {
+      expect(component.progressData).toBeFalsy();
 
-      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
+      const ps = ({
+        url: '/dataset/1'
+      } as unknown) as PopStateEvent;
+
+      expect(component.progressData).toBeFalsy();
+      component.handleLocationPopState(ps);
       tick(1);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(5);
-      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
+      expect(component.progressData).toBeTruthy();
+
+      ps.url = '/dataset';
+      component.handleLocationPopState(ps);
       tick(1);
-      expect(component.clearDataPollers).toHaveBeenCalledTimes(6);
+      expect(component.progressData).toBeFalsy();
+      expect(component.trackRecordId).toBeFalsy();
+
+      ps.url = '/dataset/1?recordId=2';
+      component.handleLocationPopState(ps);
+      tick(1);
+      expect(component.trackRecordId).toBeTruthy();
 
       component.cleanup();
       tick(apiSettings.interval);
@@ -312,6 +330,12 @@ describe('WizardComponent', () => {
 
       component.callSetStep(createKeyEvent(false), 1, false);
       expect(component.setStep).toHaveBeenCalled();
+
+      component.callSetStep(createKeyEvent(true), 1, true);
+      expect(component.setStep).toHaveBeenCalledTimes(1);
+
+      component.callSetStep(createKeyEvent(false), 1, true);
+      expect(component.setStep).toHaveBeenCalledTimes(2);
     });
 
     it('should show the orbs', () => {
@@ -339,8 +363,8 @@ describe('WizardComponent', () => {
     });
 
     it('should validate the dataset id', () => {
-      const frmCtrl = (val: string): FormControl => {
-        return ({ value: val } as unknown) as FormControl;
+      const frmCtrl = (val: string): UntypedFormControl => {
+        return ({ value: val } as unknown) as UntypedFormControl;
       };
       ['0', '1'].forEach((val: string) => {
         expect(component.validateDatasetId(frmCtrl(val))).toBeFalsy();
@@ -351,8 +375,8 @@ describe('WizardComponent', () => {
     });
 
     it('should validate the record id', () => {
-      const recordId = component.formRecord.get(formNameRecordId) as FormControl;
-      const datasetId = component.formProgress.get(formNameDatasetId) as FormControl;
+      const recordId = component.formRecord.get(formNameRecordId) as UntypedFormControl;
+      const datasetId = component.formProgress.get(formNameDatasetId) as UntypedFormControl;
 
       ['0', '1'].forEach((val: string) => {
         recordId.setValue(val);
@@ -376,7 +400,7 @@ describe('WizardComponent', () => {
       recordId.setValue('1 1'); // invalid
       expect(component.validateRecordId(recordId)).toBeTruthy();
 
-      expect(component.validateRecordId(({} as unknown) as FormControl)).toBeFalsy();
+      expect(component.validateRecordId(({} as unknown) as UntypedFormControl)).toBeFalsy();
     });
 
     it('should follow the problem pattern link', () => {

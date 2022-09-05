@@ -1,6 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { combineLatest, Observable } from 'rxjs';
@@ -47,8 +53,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
-  formProgress: FormGroup;
-  formRecord: FormGroup;
+  formProgress: UntypedFormGroup;
+  formRecord: UntypedFormGroup;
   isPollingProgress = false;
   isPollingRecord = false;
   EnumProtocolType = ProtocolType;
@@ -88,7 +94,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   currentStepType = WizardStepType.PROGRESS_TRACK;
 
   constructor(
-    private readonly fb: FormBuilder,
+    private readonly fb: UntypedFormBuilder,
     private readonly sandbox: SandboxService,
     private readonly route: ActivatedRoute,
     private readonly location: Location
@@ -214,36 +220,41 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
           }
         })
     );
+    this.location.subscribe(this.handleLocationPopState.bind(this));
+  }
 
-    // capture "back" and "forward" events / sync with form data
-    this.location.subscribe((state: PopStateEvent) => {
-      const url = `${state.url}`;
-      const ids = /\/dataset\/(\d+)/.exec(url);
+  /**
+   * handleLocationPopState
+   * capture "back" and "forward" events / sync with form data
+   * @param { PopStateEvent } state - the event
+   **/
+  handleLocationPopState(state: PopStateEvent): void {
+    const url = `${state.url}`;
+    const ids = /\/dataset\/(\d+)/.exec(url);
 
-      if (!ids || ids.length === 0) {
-        // clear the data, form data, pollers / set step to progress
-        this.progressData = undefined;
-        this.trackDatasetId = '';
-        this.trackRecordId = '';
-        this.buildForms();
-        this.clearDataPollers();
-        this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
-        (this.formProgress.get('datasetToTrack') as FormControl).setValue('');
+    if (!ids || ids.length === 0) {
+      // clear the data, form data, pollers / set step to progress
+      this.progressData = undefined;
+      this.trackDatasetId = '';
+      this.trackRecordId = '';
+      this.buildForms();
+      this.clearDataPollers();
+      this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
+      (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue('');
+    } else {
+      this.trackDatasetId = ids[1];
+      const regParamRecord = /\S+\?recordId=([^&]*)/;
+      const regParamProblems = /[?&]view=problems/;
+      const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
+      const matchParamProblems = !!regParamProblems.exec(url);
+      if (matchParamRecord) {
+        this.trackRecordId = decodeURIComponent(matchParamRecord[1]);
+        this.fillAndSubmitRecordForm(matchParamProblems);
       } else {
-        this.trackDatasetId = ids[1];
-        const regParamRecord = /\S+\?recordId=([^&]*)/;
-        const regParamProblems = /[?&]view=problems/;
-        const matchParamRecord: RegExpMatchArray | null = regParamRecord.exec(url);
-        const matchParamProblems = !!regParamProblems.exec(url);
-        if (matchParamRecord) {
-          this.trackRecordId = decodeURIComponent(matchParamRecord[1]);
-          this.fillAndSubmitRecordForm(matchParamProblems);
-        } else {
-          (this.formRecord.get('recordToTrack') as FormControl).setValue('');
-          this.fillAndSubmitProgressForm(matchParamProblems, false);
-        }
+        (this.formRecord.get('recordToTrack') as UntypedFormControl).setValue('');
+        this.fillAndSubmitProgressForm(matchParamProblems, false);
       }
-    });
+    }
   }
 
   /**
@@ -273,7 +284,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { FormControl } control - the control to validate
    * @returns ValidationErrors object or null
    **/
-  validateDatasetId(control: FormControl): ValidationErrors | null {
+  validateDatasetId(control: UntypedFormControl): ValidationErrors | null {
     const val = control.value;
     const enableRecordForm = (enable: boolean): void => {
       if (this.formRecord) {
@@ -305,13 +316,13 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param {FormControl} control - the input control to validate
    * @returns ValidationErrors object or null
    */
-  validateRecordId(control: FormControl): ValidationErrors | null {
+  validateRecordId(control: UntypedFormControl): ValidationErrors | null {
     const val = control.value;
     if (val) {
       if (!val.match(/^\S+$/)) {
         return { invalid: true };
       }
-      const datasetIdCtrl = this.formProgress.get('datasetToTrack') as FormControl;
+      const datasetIdCtrl = this.formProgress.get('datasetToTrack') as UntypedFormControl;
       if (!(datasetIdCtrl.value && datasetIdCtrl.valid)) {
         return { invalid: true };
       }
@@ -326,7 +337,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { WizardStep } stepConf - the config to evaluate
    * @returns FormGroup
    **/
-  getFormGroup(stepConf: WizardStep): FormGroup | undefined {
+  getFormGroup(stepConf: WizardStep): UntypedFormGroup | undefined {
     if (stepConf.stepType === WizardStepType.PROGRESS_TRACK) {
       return this.formProgress;
     } else if (stepConf.stepType === WizardStepType.REPORT) {
@@ -768,7 +779,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { true } updateLocation - flag onSubmitProgress to update url location
    **/
   fillAndSubmitProgressForm(problems: boolean, updateLocation = true): void {
-    (this.formProgress.get('datasetToTrack') as FormControl).setValue(this.trackDatasetId);
+    (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue(this.trackDatasetId);
 
     let step: WizardStepType;
 
@@ -795,8 +806,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { true } updateLocation - flag to update url location
    **/
   fillAndSubmitRecordForm(problems: boolean, updateLocation = true, showMeta = false): void {
-    (this.formProgress.get('datasetToTrack') as FormControl).setValue(this.trackDatasetId);
-    (this.formRecord.get('recordToTrack') as FormControl).setValue(this.trackRecordId);
+    (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue(this.trackDatasetId);
+    (this.formRecord.get('recordToTrack') as UntypedFormControl).setValue(this.trackRecordId);
 
     let step: WizardStepType;
 

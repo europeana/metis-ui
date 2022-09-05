@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'lib-file-upload',
@@ -18,7 +18,7 @@ export class FileUploadComponent implements ControlValueAccessor {
   @ViewChild('fileUpload', { static: false }) fileUpload: ElementRef;
 
   @Input() acceptedTypes: string;
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
 
   @HostListener('change', ['$event.target.files'])
   emitFiles(event: FileList): void {

@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { DragType, PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
@@ -10,7 +10,7 @@ describe('WorkflowFormFieldComponent', () => {
   let component: WorkflowFormFieldComponent;
   let fixture: ComponentFixture<WorkflowFormFieldComponent>;
 
-  const formBuilder: FormBuilder = new FormBuilder();
+  const formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -23,7 +23,7 @@ describe('WorkflowFormFieldComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
-        { provide: FormBuilder, useValue: formBuilder }
+        { provide: UntypedFormBuilder, useValue: formBuilder }
       ]
     }).compileComponents();
   }));

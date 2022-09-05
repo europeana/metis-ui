@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ProtocolType } from 'shared';
 import { WorkflowFieldData } from '../../../_models';
@@ -12,7 +12,7 @@ import { WorkflowFieldData } from '../../../_models';
 export class WorkflowFormFieldComponent {
   @Input() conf: WorkflowFieldData;
   @Input() index: number;
-  @Input() workflowForm: FormGroup;
+  @Input() workflowForm: UntypedFormGroup;
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
   @ViewChild('pluginElement') pluginElement: ElementRef;
 
@@ -39,6 +39,6 @@ export class WorkflowFormFieldComponent {
     if (this.conf.name === 'pluginLINK_CHECKING') {
       return false;
     }
-    return !(this.workflowForm.get(this.conf.name) as FormControl).value;
+    return !(this.workflowForm.get(this.conf.name) as UntypedFormControl).value;
   }
 }

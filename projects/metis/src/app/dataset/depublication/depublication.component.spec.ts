@@ -7,7 +7,7 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
@@ -68,8 +68,8 @@ describe('DepublicationComponent', () => {
     beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
-    const frmCtrl = (val: string, fileInput?: boolean): FormControl => {
-      return ({ value: fileInput ? { name: val } : val } as unknown) as FormControl;
+    const frmCtrl = (val: string, fileInput?: boolean): UntypedFormControl => {
+      return ({ value: fileInput ? { name: val } : val } as unknown) as UntypedFormControl;
     };
 
     it('should set the dataset id', () => {

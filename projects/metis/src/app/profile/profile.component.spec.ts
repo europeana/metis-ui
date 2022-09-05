@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { of } from 'rxjs';
 import {
   createMockPipe,
@@ -53,7 +53,7 @@ describe('ProfileComponent', () => {
 
     it('should not create the form without a user', () => {
       authentication.currentUser = null;
-      component.profileForm = (undefined as unknown) as FormGroup;
+      component.profileForm = (undefined as unknown) as UntypedFormGroup;
       component.createForm();
       fixture.detectChanges();
       expect(component.profileForm).toBeFalsy();
@@ -64,7 +64,7 @@ describe('ProfileComponent', () => {
       expect(component.profileForm).toBeTruthy();
       const defaultVal = 'Unknown';
       const getVal = (fieldName: string): string => {
-        const field = component.profileForm.get(fieldName) as FormControl;
+        const field = component.profileForm.get(fieldName) as UntypedFormControl;
         return field.value as string;
       };
 
@@ -73,12 +73,15 @@ describe('ProfileComponent', () => {
       expect(getVal('network-member')).toEqual('Yes');
       expect(getVal('organization-name')).toEqual('organization');
 
-      authentication.currentUser = Object.assign(authentication.currentUser, {
-        accountRole: null,
-        country: null,
-        networkMember: null,
-        organizationName: null
-      });
+      expect(authentication.currentUser).toBeTruthy();
+      if (authentication.currentUser) {
+        authentication.currentUser = Object.assign(authentication.currentUser, {
+          accountRole: null,
+          country: null,
+          networkMember: null,
+          organizationName: null
+        });
+      }
       component.createForm();
       fixture.detectChanges();
 

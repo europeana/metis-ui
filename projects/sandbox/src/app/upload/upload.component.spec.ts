@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { SandboxService } from '../_services';
 import { UploadComponent } from './';
@@ -34,10 +34,10 @@ describe('UploadComponent', () => {
     fixture.detectChanges();
   };
 
-  const getFormValidationErrors = (form: FormGroup): string => {
+  const getFormValidationErrors = (form: UntypedFormGroup): string => {
     return Object.keys(form.controls)
       .map((control) => {
-        const controlErrors = (form.get(control) as FormControl).errors;
+        const controlErrors = (form.get(control) as UntypedFormControl).errors;
         if (!controlErrors) {
           return [];
         }
@@ -51,20 +51,20 @@ describe('UploadComponent', () => {
   };
 
   const fillUploadForm = (protocolType = ProtocolType.HTTP_HARVEST): void => {
-    (component.form.get('name') as FormControl).setValue('A');
-    (component.form.get('country') as FormControl).setValue('Greece');
-    (component.form.get('language') as FormControl).setValue('Greek');
-    (component.form.get('dataset') as FormControl).setValue(testFile);
-    (component.form.get('name') as FormControl).setValue('A');
-    (component.form.get('uploadProtocol') as FormControl).setValue(protocolType);
+    (component.form.get('name') as UntypedFormControl).setValue('A');
+    (component.form.get('country') as UntypedFormControl).setValue('Greece');
+    (component.form.get('language') as UntypedFormControl).setValue('Greek');
+    (component.form.get('dataset') as UntypedFormControl).setValue(testFile);
+    (component.form.get('name') as UntypedFormControl).setValue('A');
+    (component.form.get('uploadProtocol') as UntypedFormControl).setValue(protocolType);
 
     fixture.detectChanges();
 
     if (protocolType === ProtocolType.OAIPMH_HARVEST) {
-      (component.form.get('harvestUrl') as FormControl).setValue('http://x');
-      (component.form.get('metadataFormat') as FormControl).setValue('xxx');
+      (component.form.get('harvestUrl') as UntypedFormControl).setValue('http://x');
+      (component.form.get('metadataFormat') as UntypedFormControl).setValue('xxx');
     } else if (protocolType === ProtocolType.HTTP_HARVEST) {
-      (component.form.get('url') as FormControl).setValue('http://x');
+      (component.form.get('url') as UntypedFormControl).setValue('http://x');
     }
     expect(getFormValidationErrors(component.form)).toEqual('');
     expect(component.form.valid).toBeTruthy();
@@ -84,7 +84,7 @@ describe('UploadComponent', () => {
     });
 
     it('should validate input', () => {
-      const input = component.form.get('name') as FormControl;
+      const input = component.form.get('name') as UntypedFormControl;
       expect(input.valid).toBeFalsy();
       input.setValue('A');
       expect(input.valid).toBeTruthy();
@@ -93,8 +93,8 @@ describe('UploadComponent', () => {
     });
 
     it('should validate the dataset name', () => {
-      const frmCtrl = (val: string): FormControl => {
-        return ({ value: val } as unknown) as FormControl;
+      const frmCtrl = (val: string): UntypedFormControl => {
+        return ({ value: val } as unknown) as UntypedFormControl;
       };
       ['0', '1', 'A1', 'A_1', '_1_A_'].forEach((val: string) => {
         expect(component.validateDatasetName(frmCtrl(val))).toBeFalsy();
@@ -107,7 +107,7 @@ describe('UploadComponent', () => {
     it('should validate the protocol', () => {
       expect(component.protocolIsValid()).toBeFalsy();
 
-      component.form = (undefined as unknown) as FormGroup;
+      component.form = (undefined as unknown) as UntypedFormGroup;
       expect(component.protocolIsValid()).toBeFalsy();
 
       component.rebuildForm();
@@ -124,8 +124,8 @@ describe('UploadComponent', () => {
 
     it('should validate conditionally', () => {
       component.buildForm();
-      const ctrlFile = component.form.get(component.xsltFileFormName) as FormControl;
-      const ctrlCB = component.form.get('sendXSLT') as FormControl;
+      const ctrlFile = component.form.get(component.xsltFileFormName) as UntypedFormControl;
+      const ctrlCB = component.form.get('sendXSLT') as UntypedFormControl;
 
       component.updateConditionalXSLValidator();
       expect(ctrlFile.valid).toBeTruthy();

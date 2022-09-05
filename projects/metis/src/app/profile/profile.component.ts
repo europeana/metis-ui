@@ -1,6 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
@@ -19,11 +24,11 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   public password: string;
   confirmPasswordError = false;
   emailInfo: string = environment.links.updateProfileMain;
-  profileForm: FormGroup;
+  profileForm: UntypedFormGroup;
 
   constructor(
     private readonly authentication: AuthenticationService,
-    private readonly fb: FormBuilder,
+    private readonly fb: UntypedFormBuilder,
     private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
   ) {
@@ -102,7 +107,9 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   /* set password variable to input value
   */
   onKeyupPassword(): void {
-    this.password = (this.profileForm.controls.passwords.get('password') as FormControl).value;
+    this.password = (this.profileForm.controls.passwords.get(
+      'password'
+    ) as UntypedFormControl).value;
   }
 
   /** checkMatchingPasswords
@@ -125,8 +132,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
-    const password = (passwords.get('password') as FormControl).value;
-    const oldpassword = (passwords.get('oldpassword') as FormControl).value;
+    const password = (passwords.get('password') as UntypedFormControl).value;
+    const oldpassword = (passwords.get('oldpassword') as UntypedFormControl).value;
 
     this.subs.push(
       this.authentication.updatePassword(password, oldpassword).subscribe(

@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { of } from 'rxjs';
 
 import {
@@ -51,8 +51,8 @@ describe('WorkflowComponent', () => {
     } as any) as HTMLElement;
   };
 
-  const getFormControl = (name: string): FormControl => {
-    return component.workflowForm.get(name) as FormControl;
+  const getFormControl = (name: string): UntypedFormControl => {
+    return component.workflowForm.get(name) as UntypedFormControl;
   };
 
   const getIndexDragged = (): number => {
@@ -96,7 +96,7 @@ describe('WorkflowComponent', () => {
       'pluginPUBLISH',
       'pluginLINK_CHECKING'
     ].forEach((fName: string) => {
-      const field = component.workflowForm.get(fName) as FormControl;
+      const field = component.workflowForm.get(fName) as UntypedFormControl;
       field.setValue(true);
     });
   };
@@ -296,8 +296,8 @@ describe('WorkflowComponent', () => {
     });
 
     it('should enable the incremental-harvesting field', fakeAsync(() => {
-      const getField = (): FormControl => {
-        return component.workflowForm.get('incrementalHarvest') as FormControl;
+      const getField = (): UntypedFormControl => {
+        return component.workflowForm.get('incrementalHarvest') as UntypedFormControl;
       };
 
       const testWorkflowData = JSON.parse(JSON.stringify(workflowData));
@@ -336,7 +336,7 @@ describe('WorkflowComponent', () => {
         })[0] as IncrementalHarvestPluginMetadata).incrementalHarvest
       ).toBeFalsy();
 
-      const field = component.workflowForm.get('incrementalHarvest') as FormControl;
+      const field = component.workflowForm.get('incrementalHarvest') as UntypedFormControl;
       field.setValue(true);
       result = component.formatFormValues();
 

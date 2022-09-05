@@ -8,7 +8,12 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 import { fromEvent, timer } from 'rxjs';
 import { switchMap, throttleTime } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -44,7 +49,7 @@ import { WorkflowFormFieldComponent } from './workflow-form-field';
 export class WorkflowComponent extends SubscriptionManager implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
-    private readonly fb: FormBuilder,
+    private readonly fb: UntypedFormBuilder,
     private readonly errors: ErrorService,
     private readonly translate: TranslateService
   ) {
@@ -58,13 +63,13 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   @Input() fieldConf: WorkflowFormFieldConf;
 
   @Output() startWorkflow = new EventEmitter<void>();
-  @Output() formInitialised = new EventEmitter<FormGroup>();
+  @Output() formInitialised = new EventEmitter<UntypedFormGroup>();
 
   @ViewChildren(WorkflowFormFieldComponent) inputFields: QueryList<WorkflowFormFieldComponent>;
 
   notification?: Notification;
   newWorkflow = true;
-  workflowForm: FormGroup;
+  workflowForm: UntypedFormGroup;
   isSaving = false;
 
   newNotification: Notification;
@@ -242,7 +247,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
    */
   setLinkCheck(linkCheckIndex: number): void {
     this.rearrange(linkCheckIndex, false);
-    (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).markAsDirty();
+    (this.workflowForm.get('pluginLINK_CHECKING') as UntypedFormControl).markAsDirty();
   }
 
   /** addLinkCheck
@@ -253,7 +258,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     insertIndex: number,
     correctForInactive: boolean
   ): void {
-    (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValue(true);
+    (this.workflowForm.get('pluginLINK_CHECKING') as UntypedFormControl).setValue(true);
 
     let activeCount = -1;
     let newInsertIndex = -1;
@@ -287,7 +292,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     });
     if (removeIndex > -1) {
       // remove any previously-set link-check
-      (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValue(false);
+      (this.workflowForm.get('pluginLINK_CHECKING') as UntypedFormControl).setValue(false);
       this.fieldConf.splice(removeIndex, 1);
     }
   }
@@ -325,7 +330,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   updateRequired(): void {
     this.subs.push(
       this.workflowForm.valueChanges.subscribe(() => {
-        const ctrlLinkChecking = this.workflowForm.get('pluginLINK_CHECKING') as FormControl;
+        const ctrlLinkChecking = this.workflowForm.get('pluginLINK_CHECKING') as UntypedFormControl;
         if (ctrlLinkChecking.value === true) {
           ctrlLinkChecking.setValidators([Validators.required]);
         }
@@ -365,7 +370,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   clearForm(): void {
     this.fieldConf.forEach((field) => {
-      (this.workflowForm.get(field.name) as FormControl).setValue(false);
+      (this.workflowForm.get(field.name) as UntypedFormControl).setValue(false);
     });
   }
 
@@ -424,7 +429,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
         } else {
           const ctrl = this.workflowForm.controls[
             'plugin' + thisWorkflow.pluginType
-          ] as FormControl;
+          ] as UntypedFormControl;
           if (ctrl) {
             ctrl.setValue(true);
           }

@@ -147,7 +147,7 @@ new (class extends TestDataServer {
 
   getStatistics(): string {
     return JSON.stringify({
-      taskId: -5886403149040825151,
+      taskId: -5886403149040825,
       nodePathStatistics: [
         {
           xPath: '//rdf:RDF/edm:ProvidedCHO',
