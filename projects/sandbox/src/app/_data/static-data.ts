@@ -29,7 +29,7 @@ export const problemPatternData = {
   P7: {
     problemPatternSeverity: ProblemPatternSeverity.NOTICE,
     problemPatternQualityDimension: ProblemPatternQualityDimension.COMPLETENESS,
-    problemPatternTitle: 'Blank description fields'
+    problemPatternTitle: 'Missing (or blank) description fields'
   },
   P9: {
     problemPatternSeverity: ProblemPatternSeverity.WARNING,
