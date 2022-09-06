@@ -1,4 +1,4 @@
-import { UntypedFormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
@@ -98,7 +98,7 @@ export class MockSandboxService {
   }
 
   submitDataset(
-    form: UntypedFormGroup,
+    form: FormGroup,
     fileNames: Array<string>
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
     console.log(

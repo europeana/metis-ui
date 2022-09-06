@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Location, PopStateEvent } from '@angular/common';
 import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
   ValidationErrors,
   Validators
 } from '@angular/forms';
@@ -53,8 +53,14 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
-  formProgress: UntypedFormGroup;
-  formRecord: UntypedFormGroup;
+  formProgress = this.fb.group({
+    datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
+  });
+
+  formRecord = this.fb.group({
+    recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
+  });
+
   isPollingProgress = false;
   isPollingRecord = false;
   EnumProtocolType = ProtocolType;
@@ -94,7 +100,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   currentStepType = WizardStepType.PROGRESS_TRACK;
 
   constructor(
-    private readonly fb: UntypedFormBuilder,
+    private readonly fb: NonNullableFormBuilder,
     private readonly sandbox: SandboxService,
     private readonly route: ActivatedRoute,
     private readonly location: Location
@@ -110,7 +116,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.languageList = languages;
       })
     );
-    this.buildForms();
+    this.resetStepData();
   }
 
   /**
@@ -237,10 +243,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.progressData = undefined;
       this.trackDatasetId = '';
       this.trackRecordId = '';
-      this.buildForms();
+      this.resetStepData();
       this.clearDataPollers();
       this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
-      (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue('');
+      (this.formProgress.get('datasetToTrack') as FormControl).setValue('');
     } else {
       this.trackDatasetId = ids[1];
       const regParamRecord = /\S+\?recordId=([^&]*)/;
@@ -251,25 +257,17 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         this.trackRecordId = decodeURIComponent(matchParamRecord[1]);
         this.fillAndSubmitRecordForm(matchParamProblems);
       } else {
-        (this.formRecord.get('recordToTrack') as UntypedFormControl).setValue('');
+        (this.formRecord.get('recordToTrack') as FormControl).setValue('');
         this.fillAndSubmitProgressForm(matchParamProblems, false);
       }
     }
   }
 
   /**
-   * buildForms
-   * builds the two forms
+   * resetStepData
+   * reset variables in the wizardConf object
    **/
-  buildForms(): void {
-    this.formProgress = this.fb.group({
-      datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
-    });
-
-    this.formRecord = this.fb.group({
-      recordToTrack: ['', [Validators.required, this.validateRecordId.bind(this)]]
-    });
-
+  resetStepData(): void {
     this.wizardConf.forEach((step: WizardStep) => {
       step.error = undefined;
       step.isBusy = false;
@@ -284,7 +282,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { FormControl } control - the control to validate
    * @returns ValidationErrors object or null
    **/
-  validateDatasetId(control: UntypedFormControl): ValidationErrors | null {
+  validateDatasetId(control: FormControl<string | undefined>): ValidationErrors | null {
     const val = control.value;
     const enableRecordForm = (enable: boolean): void => {
       if (this.formRecord) {
@@ -316,16 +314,16 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param {FormControl} control - the input control to validate
    * @returns ValidationErrors object or null
    */
-  validateRecordId(control: UntypedFormControl): ValidationErrors | null {
+  validateRecordId(control: FormControl<string>): ValidationErrors | null {
     const val = control.value;
-    if (val) {
-      if (!val.match(/^\S+$/)) {
-        return { invalid: true };
-      }
-      const datasetIdCtrl = this.formProgress.get('datasetToTrack') as UntypedFormControl;
-      if (!(datasetIdCtrl.value && datasetIdCtrl.valid)) {
-        return { invalid: true };
-      }
+    if (!val.match(/^\S+$/)) {
+      return { invalid: true };
+    }
+    const datasetIdCtrl = this.formProgress.get('datasetToTrack') as FormControl<
+      string | undefined
+    >;
+    if (!(datasetIdCtrl.value && datasetIdCtrl.valid)) {
+      return { invalid: true };
     }
     return null;
   }
@@ -337,7 +335,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { WizardStep } stepConf - the config to evaluate
    * @returns FormGroup
    **/
-  getFormGroup(stepConf: WizardStep): UntypedFormGroup | undefined {
+  getFormGroup(stepConf: WizardStep): FormGroup | undefined {
     if (stepConf.stepType === WizardStepType.PROGRESS_TRACK) {
       return this.formProgress;
     } else if (stepConf.stepType === WizardStepType.REPORT) {
@@ -495,19 +493,24 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { string } other - additional class to include with non-empty result
    **/
   getConnectClasses(other: string): ClassMap {
+    const res: ClassMap = {};
+
     if (!(this.formProgress.valid && this.formRecord.valid)) {
-      return {};
+      return res;
     }
+
     const valDataset = this.formProgress.value.datasetToTrack;
     const valRecord = this.formRecord.value.recordToTrack;
-    const match = valRecord.match(/\/(\d+)\/\S/);
-    const connect = valDataset.length && valRecord.length && match;
-    const res: ClassMap = {
-      connect: !!connect,
-      error: connect && match[1] !== valDataset
-    };
-    if (connect) {
-      res[other] = true;
+
+    if (valDataset && valRecord) {
+      const match = valRecord.match(/\/(\d+)\/\S/);
+      const connect = valDataset.length > 0 && valRecord.length > 0 && !!match;
+
+      (res.connect = connect), (res.error = connect && match[1] !== valDataset);
+
+      if (connect) {
+        res[other] = true;
+      }
     }
     return res;
   }
@@ -697,7 +700,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const form = this.formRecord;
 
     if (form.valid) {
-      this.trackRecordId = encodeURIComponent(this.formRecord.value.recordToTrack);
+      this.trackRecordId = encodeURIComponent(`${this.formRecord.value.recordToTrack}`);
       this.trackDatasetId = this.formProgress.value.datasetToTrack;
 
       if (action === ButtonAction.BTN_RECORD) {
@@ -779,7 +782,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { true } updateLocation - flag onSubmitProgress to update url location
    **/
   fillAndSubmitProgressForm(problems: boolean, updateLocation = true): void {
-    (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue(this.trackDatasetId);
+    (this.formProgress.get('datasetToTrack') as FormControl).setValue(this.trackDatasetId);
 
     let step: WizardStepType;
 
@@ -806,8 +809,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @param { true } updateLocation - flag to update url location
    **/
   fillAndSubmitRecordForm(problems: boolean, updateLocation = true, showMeta = false): void {
-    (this.formProgress.get('datasetToTrack') as UntypedFormControl).setValue(this.trackDatasetId);
-    (this.formRecord.get('recordToTrack') as UntypedFormControl).setValue(this.trackRecordId);
+    (this.formProgress.get('datasetToTrack') as FormControl).setValue(this.trackDatasetId);
+    (this.formRecord.get('recordToTrack') as FormControl).setValue(this.trackRecordId);
 
     let step: WizardStepType;
 

@@ -201,12 +201,16 @@
         </button>
       </span>
 
-      <ng-container *ngIf="formRecord.get('recordToTrack')?.errors; let errors">
-        <span class="cell-errors field-errors" *ngIf="errors.invalid">
-          <span class="errors" i18n="Field error@@invalidRecordId"
-            >Please provide a valid record id</span
-          >
-        </span>
+      <ng-container *ngIf="formRecord.get('recordToTrack'); let recordField">
+        <ng-container
+          *ngIf="formRecord.value.recordToTrack?.length && recordField.errors; let errors"
+        >
+          <span class="cell-errors field-errors" *ngIf="errors.invalid">
+            <span class="errors" i18n="Field error@@invalidRecordId"
+              >Please provide a valid record id</span
+            >
+          </span>
+        </ng-container>
       </ng-container>
     </div>
     <!-- end grid -->
