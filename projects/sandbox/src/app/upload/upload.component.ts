@@ -80,36 +80,6 @@ export class UploadComponent extends DataPollingComponent {
   });
 
   /**
-   * buildForm
-   *
-   * build the form
-   **/
-  /*
-  buildForm(): void {
-    this.form = new FormBuilder().group({
-      name: ['', [Validators.required, this.validateDatasetName]],
-      country: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-      url: ['', [Validators.required]],
-      dataset: ['', [Validators.required]],
-      harvestUrl: ['', [Validators.required]],
-      setSpec: [''],
-      metadataFormat: [''],
-      sendXSLT: [''],
-      xsltFile: ['']
-    });
-
-    this.subs.push(
-      this.form.valueChanges.subscribe(() => {
-        this.error = undefined;
-      })
-    );
-    this.error = undefined;
-  }
-  */
-
-  /**
    * protocolIsValid
    *
    * partial form validation
