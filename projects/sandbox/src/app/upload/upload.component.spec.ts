@@ -50,20 +50,20 @@ describe('UploadComponent', () => {
   };
 
   const fillUploadForm = (protocolType = ProtocolType.HTTP_HARVEST): void => {
-    (component.form.get('name') as FormControl).setValue('A');
-    (component.form.get('country') as FormControl).setValue('Greece');
-    (component.form.get('language') as FormControl).setValue('Greek');
-    (component.form.get('dataset') as FormControl).setValue(testFile);
-    (component.form.get('name') as FormControl).setValue('A');
-    (component.form.get('uploadProtocol') as FormControl).setValue(protocolType);
+    component.form.controls.name.setValue('A');
+    component.form.controls.country.setValue('Greece');
+    component.form.controls.language.setValue('Greek');
+    component.form.controls.dataset.setValue(testFile);
+    component.form.controls.name.setValue('A');
+    component.form.controls.uploadProtocol.setValue(protocolType);
 
     fixture.detectChanges();
 
     if (protocolType === ProtocolType.OAIPMH_HARVEST) {
-      (component.form.get('harvestUrl') as FormControl).setValue('http://x');
-      (component.form.get('metadataFormat') as FormControl).setValue('xxx');
+      component.form.controls.harvestUrl.setValue('http://x');
+      component.form.controls.metadataFormat.setValue('xxx');
     } else if (protocolType === ProtocolType.HTTP_HARVEST) {
-      (component.form.get('url') as FormControl).setValue('http://x');
+      component.form.controls.url.setValue('http://x');
     }
     expect(getFormValidationErrors(component.form)).toEqual('');
     expect(component.form.valid).toBeTruthy();
@@ -83,7 +83,7 @@ describe('UploadComponent', () => {
     });
 
     it('should validate input', () => {
-      const input = component.form.get('name') as FormControl;
+      const input = component.form.controls.name;
       expect(input.valid).toBeFalsy();
       input.setValue('A');
       expect(input.valid).toBeTruthy();
@@ -106,8 +106,8 @@ describe('UploadComponent', () => {
     it('should validate the protocol', () => {
       fillUploadForm();
       expect(component.protocolIsValid()).toBeTruthy();
-      (component.form.get('uploadProtocol') as FormControl).setValue(ProtocolType.HTTP_HARVEST);
-      (component.form.get('url') as FormControl).setValue('');
+      component.form.controls.uploadProtocol.setValue(ProtocolType.HTTP_HARVEST);
+      component.form.controls.url.setValue('');
       expect(component.protocolIsValid()).toBeFalsy();
     });
   });
@@ -119,8 +119,8 @@ describe('UploadComponent', () => {
     beforeEach(b4Each);
 
     it('should validate conditionally', () => {
-      const ctrlFile = component.form.get(component.xsltFileFormName) as FormControl;
-      const ctrlCB = component.form.get('sendXSLT') as FormControl;
+      const ctrlFile = component.form.controls.xsltFile;
+      const ctrlCB = component.form.controls.sendXSLT;
 
       component.updateConditionalXSLValidator();
       expect(ctrlFile.valid).toBeTruthy();

@@ -71,11 +71,11 @@ export class UploadComponent extends DataPollingComponent {
     language: ['', [Validators.required]],
     uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
     url: ['', [Validators.required]],
-    dataset: ['', [Validators.required]],
+    dataset: [new File([], ''), [Validators.required]],
     harvestUrl: ['', [Validators.required]],
     setSpec: [''],
     metadataFormat: [''],
-    sendXSLT: [''],
+    sendXSLT: [false],
     xsltFile: ['']
   });
 

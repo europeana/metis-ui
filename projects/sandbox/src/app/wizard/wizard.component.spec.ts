@@ -29,15 +29,13 @@ describe('WizardComponent', () => {
   let fixture: ComponentFixture<WizardComponent>;
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
-  const formNameDatasetId = 'datasetToTrack';
-  const formNameRecordId = 'recordToTrack';
 
   const setFormValueDataset = (val: string): void => {
-    (component.formProgress.get(formNameDatasetId) as FormControl).setValue(val);
+    component.formProgress.controls.datasetToTrack.setValue(val);
   };
 
   const setFormValueRecord = (val: string): void => {
-    (component.formRecord.get(formNameRecordId) as FormControl).setValue(val);
+    component.formRecord.controls.recordToTrack.setValue(val);
   };
 
   const configureTestbed = (errorMode = false): void => {
@@ -375,8 +373,8 @@ describe('WizardComponent', () => {
     });
 
     it('should validate the record id', () => {
-      const recordId = component.formRecord.get(formNameRecordId) as FormControl;
-      const datasetId = component.formProgress.get(formNameDatasetId) as FormControl;
+      const recordId = component.formRecord.controls.recordToTrack;
+      const datasetId = component.formProgress.controls.datasetToTrack;
 
       ['0', '1'].forEach((val: string) => {
         recordId.setValue(val);
