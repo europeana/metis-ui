@@ -1,11 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  FormBuilder,
-  FormControl,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';
 import { ProtocolType } from '../../_models/shared-models';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
@@ -60,7 +55,7 @@ describe('ProtocolFieldSetComponent', () => {
 
   it('should clear the form validators', () => {
     component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
-    const ctrl = component.form.get('url') as FormControl;
+    const ctrl = component.form.controls.url;
     ctrl.setValidators(Validators.required);
     expect(ctrl.hasValidator(Validators.required)).toBeTruthy();
 
@@ -121,12 +116,12 @@ describe('ProtocolFieldSetComponent', () => {
     expect(component.form.valid).toBeFalsy();
 
     setProtocol(ProtocolType.ZIP_UPLOAD);
-    (component.form.get('fileField') as FormControl).setValue(getTestFile(component.ZIP));
+    component.form.controls.fileField.setValue(getTestFile(component.ZIP));
     component.updateRequired();
 
     expect(component.form.valid).toBeTruthy();
 
-    (component.form.get('url') as FormControl).setValue('');
+    component.form.controls.url.setValue('');
     setProtocol(ProtocolType.HTTP_HARVEST);
     component.updateRequired();
 
