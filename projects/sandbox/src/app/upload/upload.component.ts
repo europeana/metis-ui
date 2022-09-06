@@ -1,12 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  ValidationErrors,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   DataPollingComponent,
@@ -30,7 +24,6 @@ export class UploadComponent extends DataPollingComponent {
   @Output() notifySubmitted: EventEmitter<string> = new EventEmitter();
   @Input() showing = false;
 
-  form: UntypedFormGroup;
   zipFileFormName = 'dataset';
   xsltFileFormName = 'xsltFile';
 
@@ -40,7 +33,7 @@ export class UploadComponent extends DataPollingComponent {
 
   error: HttpErrorResponse | undefined;
 
-  constructor(private readonly sandbox: SandboxService) {
+  constructor(private readonly fb: FormBuilder, private readonly sandbox: SandboxService) {
     super();
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
@@ -52,7 +45,12 @@ export class UploadComponent extends DataPollingComponent {
         this.languageList = languages;
       })
     );
-    this.buildForm();
+    this.subs.push(
+      this.form.valueChanges.subscribe(() => {
+        this.error = undefined;
+      })
+    );
+    this.error = undefined;
   }
 
   /**
@@ -63,35 +61,23 @@ export class UploadComponent extends DataPollingComponent {
   rebuildForm(): void {
     this.protocolFields.clearFileValue();
     this.xslFileField.clearFileValue();
-    this.buildForm();
-  }
-
-  /**
-   * buildForm
-   *
-   * build the form
-   **/
-  buildForm(): void {
-    this.form = new UntypedFormBuilder().group({
-      name: ['', [Validators.required, this.validateDatasetName]],
-      country: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
-      url: ['', [Validators.required]],
-      dataset: ['', [Validators.required]],
-      harvestUrl: ['', [Validators.required]],
-      setSpec: [''],
-      metadataFormat: [''],
-      sendXSLT: [''],
-      xsltFile: ['']
-    });
-    this.subs.push(
-      this.form.valueChanges.subscribe(() => {
-        this.error = undefined;
-      })
-    );
+    this.form.reset();
     this.error = undefined;
   }
+
+  form = this.fb.group({
+    name: ['', [Validators.required, this.validateDatasetName]],
+    country: ['', [Validators.required]],
+    language: ['', [Validators.required]],
+    uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
+    url: ['', [Validators.required]],
+    dataset: [new File([], ''), [Validators.required]],
+    harvestUrl: ['', [Validators.required]],
+    setSpec: [''],
+    metadataFormat: [''],
+    sendXSLT: [false],
+    xsltFile: ['']
+  });
 
   /**
    * protocolIsValid
@@ -112,7 +98,7 @@ export class UploadComponent extends DataPollingComponent {
         'xsltFile'
       ];
       return !protocolFieldNames.find((f: string) => {
-        const val = this.form.get(f) as UntypedFormControl;
+        const val = this.form.get(f) as FormControl;
         return !val.valid;
       });
     }
@@ -127,7 +113,7 @@ export class UploadComponent extends DataPollingComponent {
    * @param { FormControl } control - the control to validate
    * @returns null or a code-keyed boolean
    **/
-  validateDatasetName(control: UntypedFormControl): ValidationErrors | null {
+  validateDatasetName(control: FormControl<string>): ValidationErrors | null {
     const val = control.value;
     if (val) {
       const matches = /[a-zA-Z0-9_]+/.exec(`${val}`);

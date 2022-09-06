@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ProtocolType } from 'shared';
@@ -86,7 +86,7 @@ export class SandboxService {
   /*  @param {Array<string>} fileNames - the names of files to append
   */
   submitDataset(
-    form: UntypedFormGroup,
+    form: FormGroup,
     fileNames: Array<string>
   ): Observable<SubmissionResponseData | SubmissionResponseDataWrapped> {
     const protocol = form.value.uploadProtocol;
@@ -112,7 +112,7 @@ export class SandboxService {
     let fileAppended = false;
 
     fileNames.forEach((fileName: string) => {
-      const file = form.get(fileName) as UntypedFormControl;
+      const file = form.get(fileName) as FormControl;
       if (file) {
         formData.append(fileName, file.value);
         fileAppended = true;

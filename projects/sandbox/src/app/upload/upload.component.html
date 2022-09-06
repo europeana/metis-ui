@@ -3,17 +3,28 @@
     <label
       for="name"
       i18n="name label"
-      *ngFor="let isValid of [form.value['name'].length > 0 && !form.get('name')?.errors]"
+      *ngFor="
+        let isValid of [
+          form.value['name'] && form.value['name'].length > 0 && !form.get('name')?.errors
+        ]
+      "
       [ngClass]="{
         tick: isValid,
         asterisked: !isValid
       }"
       >Name</label
     >
+
     <input id="name" formControlName="name" autocomplete="off" />
-    <span class="field-errors" *ngIf="form.value['name'].length > 0 && form.get('name')?.errors">
-      <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
-    </span>
+    <ng-container *ngIf="form.get('name'); let nameField">
+      <ng-container *ngIf="nameField.value; let name">
+        <span class="field-errors" *ngIf="name.length > 0 && nameField.errors">
+          <span class="errors" i18n="Field error@@invalidDatasetName"
+            >Please provide a valid name</span
+          >
+        </span>
+      </ng-container>
+    </ng-container>
   </div>
   <div class="form-group">
     <label

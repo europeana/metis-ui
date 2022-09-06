@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MockHttp, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -25,7 +25,7 @@ describe('sandbox service', () => {
   let mockHttp: MockHttp;
   let service: SandboxService;
 
-  const formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
+  const formBuilder = new FormBuilder();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -88,7 +88,7 @@ describe('sandbox service', () => {
     const setSpec = 'yyy';
     const url = 'http://xyz.com';
 
-    const getForm = (protocol: ProtocolType): UntypedFormGroup => {
+    const getForm = (protocol: ProtocolType): FormGroup => {
       const res = formBuilder.group({
         name: [name, []],
         country: [country, []],
@@ -97,9 +97,9 @@ describe('sandbox service', () => {
         metadataFormat: [metadataFormat, []],
         setSpec: [setSpec, []],
         uploadProtocol: [protocol, []],
-        url: [url, []]
+        url: [url, []],
+        xsltFile: []
       });
-      res.addControl('xsltFile', new UntypedFormControl(''));
       return res;
     };
 
