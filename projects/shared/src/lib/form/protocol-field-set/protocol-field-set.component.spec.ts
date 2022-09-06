@@ -1,9 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import {
+  FormBuilder,
+  FormControl,
   ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
   Validators
 } from '@angular/forms';
 import { ProtocolFieldSetComponent } from './protocol-field-set.component';
@@ -14,7 +14,7 @@ describe('ProtocolFieldSetComponent', () => {
   let component: ProtocolFieldSetComponent;
   let fixture: ComponentFixture<ProtocolFieldSetComponent>;
 
-  const formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
+  const formBuilder: FormBuilder = new FormBuilder();
   const urlHarvest1 = 'http://harvest-1';
   const urlHarvest2 = 'http://harvest-2';
   const spec = 'specification';
@@ -36,7 +36,7 @@ describe('ProtocolFieldSetComponent', () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [FileUploadComponent, ProtocolFieldSetComponent],
-      providers: [{ provide: UntypedFormBuilder, useValue: formBuilder }],
+      providers: [{ provide: FormBuilder, useValue: formBuilder }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   }));
@@ -60,7 +60,7 @@ describe('ProtocolFieldSetComponent', () => {
 
   it('should clear the form validators', () => {
     component.form.value.pluginType = ProtocolType.HTTP_HARVEST;
-    const ctrl = component.form.get('url') as UntypedFormControl;
+    const ctrl = component.form.get('url') as FormControl;
     ctrl.setValidators(Validators.required);
     expect(ctrl.hasValidator(Validators.required)).toBeTruthy();
 
@@ -110,7 +110,7 @@ describe('ProtocolFieldSetComponent', () => {
     };
 
     const setProtocol = (protocol: ProtocolType): void => {
-      (component.form.get(component.protocolSwitchField) as UntypedFormControl).setValue(protocol);
+      (component.form.get(component.protocolSwitchField) as FormControl).setValue(protocol);
     };
 
     expect(component.form.valid).toBeTruthy();
@@ -121,12 +121,12 @@ describe('ProtocolFieldSetComponent', () => {
     expect(component.form.valid).toBeFalsy();
 
     setProtocol(ProtocolType.ZIP_UPLOAD);
-    (component.form.get('fileField') as UntypedFormControl).setValue(getTestFile(component.ZIP));
+    (component.form.get('fileField') as FormControl).setValue(getTestFile(component.ZIP));
     component.updateRequired();
 
     expect(component.form.valid).toBeTruthy();
 
-    (component.form.get('url') as UntypedFormControl).setValue('');
+    (component.form.get('url') as FormControl).setValue('');
     setProtocol(ProtocolType.HTTP_HARVEST);
     component.updateRequired();
 
