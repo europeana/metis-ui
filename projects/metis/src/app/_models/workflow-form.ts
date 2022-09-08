@@ -90,7 +90,7 @@ const parameterFieldPresets = Object.assign(
   )
 );
 
-export type WorkflowFormFieldConf = (WorkflowFieldData | WorkflowFieldDataParameterised)[];
+export type WorkflowFormFieldConf = Array<WorkflowFieldData | WorkflowFieldDataParameterised>;
 
 export const workflowFormFieldConf: WorkflowFormFieldConf = [
   {

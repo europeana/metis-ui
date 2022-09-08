@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { createMockPipe } from '../../../_mocked';
 import { DragType, ParameterFieldName, PluginType } from '../../../_models';
 import { WorkflowFormFieldTransformComponent } from '.';
@@ -9,14 +9,14 @@ describe('WorkflowFormFieldTransformComponent', () => {
   let component: WorkflowFormFieldTransformComponent;
   let fixture: ComponentFixture<WorkflowFormFieldTransformComponent>;
 
-  const formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
+  const formBuilder: FormBuilder = new FormBuilder();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [WorkflowFormFieldTransformComponent, createMockPipe('translate')],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [{ provide: UntypedFormBuilder, useValue: formBuilder }]
+      providers: [{ provide: FormBuilder, useValue: formBuilder }]
     }).compileComponents();
   }));
 
@@ -30,8 +30,8 @@ describe('WorkflowFormFieldTransformComponent', () => {
       parameterFields: [ParameterFieldName.customXslt]
     };
     component.workflowForm = formBuilder.group({
-      pluginTRANSFORMATION: null,
-      customXslt: null
+      pluginTRANSFORMATION: [false],
+      customXslt: [File]
     });
     fixture.detectChanges();
   });

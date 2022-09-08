@@ -80,7 +80,6 @@
     <app-workflow-header
       (returnToTop)="returnToTop()"
       (setLinkCheck)="setLinkCheck($event)"
-      [conf]="fieldConf"
       *ngIf="activeTab === 'workflow'"
     >
     </app-workflow-header>
@@ -96,7 +95,6 @@
       <app-workflow
         *ngIf="activeTab === 'workflow'"
         [datasetData]="datasetData"
-        [fieldConf]="fieldConf"
         [workflowData]="workflowData"
         [lastExecution]="lastExecutionData"
         [isStarting]="isStarting"

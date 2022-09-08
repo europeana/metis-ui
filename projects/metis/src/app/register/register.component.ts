@@ -1,11 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators
-} from '@angular/forms';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
@@ -33,12 +28,23 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   msgPasswordWeak: string;
   msgRegistrationFailed: string;
   msgAlreadyRegistered: string;
-  registerForm: UntypedFormGroup;
+  registerForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    passwords: this.fb.group(
+      {
+        password: ['', Validators.required],
+        confirm: ['', Validators.required]
+      },
+      {
+        validators: MatchPasswordValidator
+      }
+    )
+  });
 
   public password?: string;
 
   constructor(
-    private readonly fb: UntypedFormBuilder,
+    private readonly fb: NonNullableFormBuilder,
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly translate: TranslateService,
@@ -54,20 +60,6 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   */
   ngOnInit(): void {
     this.documentTitleService.setTitle('Register');
-
-    this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      passwords: this.fb.group(
-        {
-          password: ['', Validators.required],
-          confirm: ['', Validators.required]
-        },
-        {
-          validators: MatchPasswordValidator
-        }
-      )
-    });
-
     this.msgSuccess = this.translate.instant('registrationSuccessful');
     this.msgPasswordWeak = this.translate.instant('userPasswordWeakError');
     this.msgRegistrationFailed = this.translate.instant('registrationFailed');
@@ -78,9 +70,7 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
   /* get password after keyup in form
   */
   onKeyupPassword(): void {
-    this.password = (this.registerForm.controls.passwords.get(
-      'password'
-    ) as UntypedFormControl).value;
+    this.password = this.registerForm.controls.passwords.controls.password.value;
   }
 
   /** onSubmit
@@ -94,7 +84,7 @@ export class RegisterComponent extends SubscriptionManager implements OnInit {
     const controls = this.registerForm.controls;
     const email = controls.email.value;
     const passwords = controls.passwords;
-    const password = (passwords.get('password') as UntypedFormControl).value;
+    const password = passwords.controls.password.value;
     const strength = PasswordStrength(password);
     const min = environment.passwordStrength;
 

@@ -19,8 +19,7 @@ import {
   ReportRequestWithData,
   successNotification,
   Workflow,
-  WorkflowExecution,
-  workflowFormFieldConf
+  WorkflowExecution
 } from '../_models';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
 import { WorkflowComponent } from './workflow';
@@ -43,7 +42,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
     super();
   }
 
-  fieldConf = workflowFormFieldConf;
   activeTab = 'edit';
   datasetId: string;
   prevTab?: string;

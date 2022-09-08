@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
-  UntypedFormArray,
-  UntypedFormBuilder,
-  UntypedFormControl,
+  FormArray,
+  FormControl,
+  NonNullableFormBuilder,
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
@@ -38,6 +38,7 @@ const DATASET_TEMP_LSKEY = 'tempDatasetData';
   styleUrls: ['./datasetform.component.scss']
 })
 export class DatasetformComponent extends SubscriptionManager implements OnInit {
+  createdBy: string;
   _datasetData: Partial<Dataset>;
 
   @Input() set datasetData(data: Partial<Dataset>) {
@@ -58,7 +59,20 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     return this._datasetData;
   }
 
-  createdBy: string;
+  datasetForm = this.fb.group({
+    datasetName: ['', [Validators.required]],
+    dataProvider: [''],
+    provider: ['', [Validators.required]],
+    intermediateProvider: [''],
+    datasetIdsToRedirectFrom: this.fb.array([]),
+    replaces: [''],
+    replacedBy: [''],
+    country: [({} as unknown) as Country, [Validators.required]],
+    language: [({} as unknown) as Language, [Validators.required]],
+    description: [''],
+    notes: [''],
+    publicationFitness: [PublicationFitness.FIT]
+  });
 
   @Input() harvestPublicationData?: HarvestData;
   @Input() isNew: boolean;
@@ -70,7 +84,6 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   selectedLanguage?: Language;
 
   publicationFitnessOps: Array<{ label: string; val: string }>;
-  datasetForm: UntypedFormGroup;
   countryOptions: Country[];
   languageOptions: Language[];
 
@@ -95,7 +108,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     private readonly countries: CountriesService,
     private readonly datasets: DatasetsService,
     private readonly router: Router,
-    private readonly fb: UntypedFormBuilder,
+    private readonly fb: NonNullableFormBuilder,
     private readonly errors: ErrorService,
     private readonly translate: TranslateService
   ) {
@@ -135,7 +148,10 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
         val: PublicationFitness.UNFIT
       }
     ];
-    this.buildForm();
+
+    this.updateForm();
+    this.updateFormEnabled();
+
     this.returnCountries();
     this.returnLanguages();
     this.invalidNotification = errorNotification(this.translate.instant('formError'), {
@@ -147,8 +163,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* - returns form control as array
   /* - (necessary for template-check to pass)
   */
-  get redirectionIds(): UntypedFormArray {
-    return this.datasetForm.get('datasetIdsToRedirectFrom') as UntypedFormArray;
+  get redirectionIds(): FormArray {
+    return this.datasetForm.get('datasetIdsToRedirectFrom') as FormArray;
   }
 
   /** addRedirectionId
@@ -189,21 +205,22 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /* indicates if specified field is enabled and valid
   */
   showError(fieldName: keyof Dataset): boolean {
-    return this.datasetForm.enabled && !this.datasetForm.controls[fieldName].valid;
+    const ctrl = this.datasetForm.get(fieldName) as FormControl;
+    return this.datasetForm.enabled && !ctrl.valid;
   }
 
   /** fieldHasValue
   /* indicates if specified field value has been set
   */
   fieldHasValue(fieldName: keyof Dataset): boolean {
-    return !!this.datasetForm.controls[fieldName].value;
+    return !!(this.datasetForm.get(fieldName) as FormControl).value;
   }
 
   /** clearField
   /* clear the specified field and mark the form as dirty
   */
   clearField(fieldName: keyof Dataset): void {
-    this.datasetForm.controls[fieldName].setValue('');
+    (this.datasetForm.get(fieldName) as FormControl).setValue('');
     this.datasetForm.markAsDirty();
   }
 
@@ -259,35 +276,12 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     );
   }
 
-  /** buildForm
-  /* - create a FormGroup
-  /* - update the form
-  */
-  buildForm(): void {
-    this.datasetForm = this.fb.group({
-      datasetName: ['', [Validators.required]],
-      dataProvider: [''],
-      provider: ['', [Validators.required]],
-      intermediateProvider: [''],
-      datasetIdsToRedirectFrom: this.getIdsAsFormArray(),
-      replaces: [''],
-      replacedBy: [''],
-      country: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      description: [''],
-      notes: [''],
-      publicationFitness: [PublicationFitness.FIT]
-    });
-    this.updateForm();
-    this.updateFormEnabled();
-  }
-
   /** getIdsAsFormArray
   /* generates a FormArray object from datasetIdsToRedirectFrom
   /* @returns FormArray
   */
-  getIdsAsFormArray(): UntypedFormArray {
-    let list: Array<UntypedFormControl> = [];
+  getIdsAsFormArray(): FormArray {
+    let list: Array<FormControl<string>> = [];
     if (this.datasetData.datasetIdsToRedirectFrom) {
       list = this.datasetData.datasetIdsToRedirectFrom.map((id) => {
         return this.fb.control(id);
@@ -353,10 +347,12 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
 
     if (this.isNew) {
       this.subs.push(
-        this.datasets.createDataset(this.datasetForm.value).subscribe((result) => {
-          localStorage.removeItem(DATASET_TEMP_LSKEY);
-          this.router.navigate(['/dataset/new/' + result.datasetId]);
-        }, handleError)
+        this.datasets
+          .createDataset((this.datasetForm as UntypedFormGroup).value)
+          .subscribe((result) => {
+            localStorage.removeItem(DATASET_TEMP_LSKEY);
+            this.router.navigate(['/dataset/new/' + result.datasetId]);
+          }, handleError)
       );
     } else {
       const dataset = {
