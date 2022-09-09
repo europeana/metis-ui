@@ -49,7 +49,7 @@ describe('RegisterComponent', () => {
     fixture.detectChanges();
   };
 
-  const fillVaidForm = (): void => {
+  const fillValidForm = (): void => {
     component.registerForm.controls.email.setValue('test@mocked.com');
     component.registerForm.controls.passwords.controls.password.setValue('!Passw0rd123');
     component.registerForm.controls.passwords.controls.confirm.setValue('!Passw0rd123');
@@ -88,7 +88,7 @@ describe('RegisterComponent', () => {
       spyOn(authentication, 'register').and.callFake(() => {
         return of(false);
       });
-      fillVaidForm();
+      fillValidForm();
       component.onSubmit();
       tick(3000);
       tick(1);
@@ -99,7 +99,7 @@ describe('RegisterComponent', () => {
     it('should submit the form and redirect', fakeAsync(() => {
       spyOn(router, 'navigate');
       submitBtn = fixture.nativeElement.querySelector('app-loading-button');
-      fillVaidForm();
+      fillValidForm();
       component.onSubmit();
       tick(3000);
       tick(1);
@@ -132,7 +132,7 @@ describe('RegisterComponent', () => {
     beforeEach(b4Each);
 
     it('should handle submit errors', fakeAsync(() => {
-      fillVaidForm();
+      fillValidForm();
       component.onSubmit();
       tick(1);
       fixture.detectChanges();
