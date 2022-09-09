@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-
+import { FormBuilder } from '@angular/forms';
 import { createMockPipe, MockTranslateService } from '../../../_mocked';
 import { DragDT, DragType, EventDragDT, ParameterFieldName, PluginType } from '../../../_models';
 import { TranslateService } from '../../../_translate';
@@ -86,7 +85,7 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.getAdjustableLabel(0, true)).toBe('harvest');
 
     component.setWorkflowForm(
-      new UntypedFormBuilder().group({
+      new FormBuilder().group({
         pluginType: PluginType.HTTP_HARVEST
       })
     );
@@ -94,7 +93,7 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.getAdjustableLabel(0, true)).toBe(PluginType.HTTP_HARVEST.toLowerCase());
 
     component.setWorkflowForm(
-      new UntypedFormBuilder().group({
+      new FormBuilder().group({
         pluginType: PluginType.OAIPMH_HARVEST
       })
     );
@@ -103,7 +102,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should respond to orb clicks', () => {
-    const fGroup: UntypedFormGroup = new UntypedFormBuilder().group({
+    const fGroup = new FormBuilder().group({
       pluginType: true
     });
     component.setWorkflowForm(fGroup);
@@ -116,7 +115,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should clear all fields in the conf', () => {
-    const fGroup: UntypedFormGroup = new UntypedFormBuilder().group(formGroupConf);
+    const fGroup = new FormBuilder().group(formGroupConf);
     component.setWorkflowForm(fGroup);
     fixture.detectChanges();
 
@@ -127,7 +126,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should enable save when clearAll is called', () => {
-    const fGroup: UntypedFormGroup = new UntypedFormBuilder().group(formGroupConf);
+    const fGroup = new FormBuilder().group(formGroupConf);
     component.setWorkflowForm(fGroup);
 
     expect(component.workflowForm.pristine).toBeTruthy();
@@ -137,7 +136,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should not enable save when clearAll is called and all were already deselected', () => {
-    const fGroup: UntypedFormGroup = new UntypedFormBuilder().group({
+    const fGroup = new FormBuilder().group({
       pluginVALIDATION_EXTERNAL: false,
       pluginVALIDATION_INTERNAL: false
     });
@@ -149,7 +148,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should select all fields in the conf', () => {
-    const fGroup: UntypedFormGroup = new UntypedFormBuilder().group(
+    const fGroup = new FormBuilder().group(
       Object.assign(formGroupConf, { pluginVALIDATION_EXTERNAL: false })
     );
     component.setWorkflowForm(fGroup);
@@ -162,7 +161,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should enable save when selectAll is called', () => {
-    const fGroup: UntypedFormGroup = new UntypedFormBuilder().group(
+    const fGroup = new FormBuilder().group(
       Object.assign(formGroupConf, { pluginVALIDATION_EXTERNAL: false })
     );
     component.setWorkflowForm(fGroup);
@@ -174,7 +173,7 @@ describe('WorkflowHeaderComponent', () => {
   });
 
   it('should not enable save when selectAll is called and all were already selected', () => {
-    const fGroup: UntypedFormGroup = new UntypedFormBuilder().group(formGroupConf);
+    const fGroup = new FormBuilder().group(formGroupConf);
     component.setWorkflowForm(fGroup);
     expect(component.workflowForm.pristine).toBeTruthy();
     component.selectAll();
@@ -308,7 +307,7 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeFalsy();
 
     component.setWorkflowForm(
-      new UntypedFormBuilder().group({
+      new FormBuilder().group({
         pluginVALIDATION_EXTERNAL: true
       })
     );
@@ -316,7 +315,7 @@ describe('WorkflowHeaderComponent', () => {
     expect(component.isActive('pluginVALIDATION_EXTERNAL')).toBeTruthy();
 
     component.setWorkflowForm(
-      new UntypedFormBuilder().group({
+      new FormBuilder().group({
         pluginVALIDATION_EXTERNAL: false
       })
     );

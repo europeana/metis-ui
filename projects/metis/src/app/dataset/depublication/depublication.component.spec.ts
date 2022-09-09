@@ -7,7 +7,7 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import { ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
@@ -68,8 +68,8 @@ describe('DepublicationComponent', () => {
     beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
-    const frmCtrl = (val: string, fileInput?: boolean): UntypedFormControl => {
-      return ({ value: fileInput ? { name: val } : val } as unknown) as UntypedFormControl;
+    const frmCtrl = (val: string): FormControl<string> => {
+      return ({ value: val } as unknown) as FormControl<string>;
     };
 
     it('should set the dataset id', () => {
@@ -158,10 +158,6 @@ describe('DepublicationComponent', () => {
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       tick(1);
-      expect(component.dialogFileOpen).toBeTruthy();
-      addFormFieldData();
-      component.onSubmitFormFile();
-      tick(1);
       expect(component.dialogFileOpen).toBeFalsy();
       discardPeriodicTasks();
     }));
@@ -240,8 +236,11 @@ describe('DepublicationComponent', () => {
     });
 
     it('should validate the file extension', () => {
-      expect(component.validateFileExtension(frmCtrl('file.txt', true))).toBeFalsy();
-      expect(component.validateFileExtension(frmCtrl('file.png', true))).toBeTruthy();
+      const frmCtrlFile = (val: string): FormControl<File> => {
+        return ({ value: { name: val } } as unknown) as FormControl<File>;
+      };
+      expect(component.validateFileExtension(frmCtrlFile('file.txt'))).toBeFalsy();
+      expect(component.validateFileExtension(frmCtrlFile('file.png'))).toBeTruthy();
     });
 
     it('should set the sort parameter', () => {
