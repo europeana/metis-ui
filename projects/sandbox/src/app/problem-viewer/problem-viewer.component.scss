@@ -104,7 +104,7 @@ label {
   position: relative;
   width: 100%;
 
-  &::after {
+  a::after {
     $transitionTime: 80ms;
     content: '\25B6';
     display: inline-block;
@@ -116,15 +116,15 @@ label {
     transition: top linear $transitionTime, transform linear $transitionTime;
   }
 
-  &:hover::after {
+  a:hover::after {
     color: $eu-jade-darkest;
   }
 
-  &:active:hover::after {
+  a:active:hover::after {
     color: $eu-light-orange;
   }
 
-  &.is-open::after {
+  &.is-open a::after {
     top: 0;
     transform: rotate(90deg);
   }
