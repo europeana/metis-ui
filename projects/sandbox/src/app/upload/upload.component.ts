@@ -71,7 +71,8 @@ export class UploadComponent extends DataPollingComponent {
     language: ['', [Validators.required]],
     uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
     url: ['', [Validators.required]],
-    dataset: [new File([], ''), [Validators.required]],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataset: [(undefined as any) as File, [Validators.required]],
     harvestUrl: ['', [Validators.required]],
     setSpec: [''],
     metadataFormat: [''],

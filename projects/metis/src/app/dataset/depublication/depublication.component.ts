@@ -56,7 +56,8 @@ export class DepublicationComponent extends DataPollingComponent {
   });
 
   formFile = this.fb.group({
-    depublicationFile: [new File([], ''), [Validators.required, this.validateFileExtension]]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    depublicationFile: [(undefined as any) as File, [Validators.required, this.validateFileExtension]]
   });
 
   isSaving = false;
