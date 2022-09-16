@@ -196,10 +196,6 @@ describe('ProgressTrackerComponent', () => {
       });
       component.showErrorsForStep(1);
       expect(modalConfirms.open).toHaveBeenCalled();
-      component.showProcessingErrors();
-      expect(modalConfirms.open).toHaveBeenCalledTimes(2);
-      component.showIncompleteDataWarning();
-      expect(modalConfirms.open).toHaveBeenCalledTimes(3);
     });
 
     it('should report if complete', () => {

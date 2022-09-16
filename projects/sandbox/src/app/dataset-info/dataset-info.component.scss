@@ -1,0 +1,67 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.container-h {
+  display: flex;
+  flex-direction: row;
+}
+
+.header-info {
+  color: $eu-jade-dark;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  .creation-date {
+    align-items: center;
+    display: flex;
+    &.warning-icon {
+      position: relative;
+      &::before {
+        content: '';
+        height: 12px;
+        width: 13px;
+        background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+        margin: 0 3px 0 2px;
+      }
+    }
+  }
+  .progress-title {
+    color: $eu-jade-dark;
+    display: flex;
+  }
+  .title-id {
+    word-break: break-all;
+  }
+  .title-name {
+    word-break: break-all;
+  }
+}
+
+.portal-links {
+  margin-left: 2em;
+  position: relative;
+  right: 1em;
+}
+
+.preview-unavailable {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+
+  &::before {
+    content: '';
+    height: 13px;
+    width: 13px;
+    background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+    margin: -2px 3px 0 2px;
+    display: block;
+  }
+}

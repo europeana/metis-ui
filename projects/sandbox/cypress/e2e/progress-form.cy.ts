@@ -68,6 +68,15 @@ context('Sandbox', () => {
       cy.get(selPortalLinks).should('have.length', 1);
     });
 
+    it('should warn when the preview is unavailable', () => {
+      const selectorPreviewUnavailable = '.preview-unavailable';
+      cy.get(selectorPreviewUnavailable).should('not.exist');
+      fillProgressForm('13');
+      cy.get(selectorPreviewUnavailable)
+        .filter(':visible')
+        .should('have.length', 1);
+    });
+
     it('should show network errors', () => {
       cy.get(selectorErrors).should('not.exist');
       fillProgressForm('404');

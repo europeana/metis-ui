@@ -146,6 +146,7 @@ new (class extends TestDataServer {
     return {
       status: DatasetStatus.IN_PROGRESS,
       'total-records': totalRecords,
+      'error-type': datasetId === '13' ? 'The process failed bigly' : '',
       'processed-records': 0,
       'progress-by-step': steps.map((key: StepStatus) => {
         return this.initialiseProgressByStep(key, totalRecords);

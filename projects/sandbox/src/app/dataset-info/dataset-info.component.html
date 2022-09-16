@@ -1,0 +1,81 @@
+<ul class="header-info container-h">
+  <!-- left col -->
+  <li>
+    <ul>
+      <li class="container-h">
+        <h2 class="progress-title" i18n="progress title">
+          <span class="title-name" [ngClass]="{ tick: processingComplete }">{{
+            datasetInfo['dataset-name']
+          }}</span>
+        </h2>
+      </li>
+      <li class="container-h" *ngIf="datasetInfo['transformed-to-edm-external']">
+        <span class="xsl-icon"></span>
+        <span>xsl-transformed</span>
+      </li>
+      <li
+        data-e2e="creation-date"
+        class="creation-date"
+        [title]="datasetInfo['record-limit-exceeded'] ? 'Some records not processed' : ''"
+        [ngClass]="{ 'warning-icon': datasetInfo['record-limit-exceeded'] }"
+      >
+        <lib-modal
+          id="{{ modalIdIncompleteData }}"
+          title="Data Incomplete Warning"
+          [isSmall]="false"
+          [buttons]="[{ label: 'Close' }]"
+        >
+          <p>Some records may not have been processed.</p>
+          <p>If the dataset is too large then the remainder of the records is ignored</p>
+        </lib-modal>
+        <a
+          *ngIf="datasetInfo['record-limit-exceeded']; else conditionalWrapWarnLink"
+          (click)="showIncompleteDataWarning()"
+        >
+          <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
+        </a>
+        <ng-template #conditionalWrapWarnLink
+          ><span>{{
+            formatDate(datasetInfo['creation-date'], 'dd/MM/yyyy, HH:mm:ss', 'en-GB')
+          }}</span></ng-template
+        >
+      </li>
+      <li data-e2e="country-language">{{ datasetInfo.country }} / {{ datasetInfo.language }}</li>
+    </ul>
+  </li>
+
+  <!-- right col -->
+  <li class="align-right">
+    <ul>
+      <li>
+        <h2 class="title-id">{{ datasetInfo['dataset-id'] }}</h2>
+      </li>
+      <li *ngIf="processingError" class="align-left">
+        <span class="preview-unavailable">
+          <a (click)="showProcessingErrors()">Preview Unavailable</a>
+        </span>
+
+        <lib-modal
+          id="{{ modalIdProcessingErrors }}"
+          title="Processing Error Detail"
+          [isSmall]="false"
+          [buttons]="[{ label: 'Close' }]"
+        >
+          {{ processingError }}
+        </lib-modal>
+      </li>
+
+      <li *ngIf="!processingError && publishUrl" class="portal-links">
+        <ng-template #labelRefPublish
+          ><span i18n="progress link link@@progressLinkPublish"
+            >view published records</span
+          ></ng-template
+        >
+        <sb-copyable-link-item
+          [href]="publishUrl"
+          [labelRef]="labelRefPublish"
+        ></sb-copyable-link-item>
+      </li>
+    </ul>
+  </li>
+</ul>

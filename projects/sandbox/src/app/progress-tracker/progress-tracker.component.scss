@@ -3,47 +3,10 @@
 
 $eu-jade-slightly-dark: #1ea072;
 
-.align-left {
-  text-align: left;
-}
-
-.align-right {
-  text-align: right;
-}
-
 .code {
   margin-top: 0.5em;
 }
 
-.header-info {
-  justify-content: space-between;
-  .creation-date {
-    align-items: center;
-    display: flex;
-    &.warning-icon {
-      position: relative;
-      &::before {
-        content: '';
-        height: 12px;
-        width: 13px;
-        background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
-        margin: 0 3px 0 2px;
-      }
-    }
-  }
-  .progress-title {
-    color: $eu-jade-dark;
-    display: flex;
-  }
-  .title-id {
-    word-break: break-all;
-  }
-  .title-name {
-    word-break: break-all;
-  }
-}
-
-.container-h,
 .progress-grid > .container-h {
   display: flex;
   flex-direction: row;
@@ -107,21 +70,6 @@ $eu-jade-slightly-dark: #1ea072;
   transition: 0.5s ease-in-out opacity;
   &.showing {
     opacity: 1;
-  }
-}
-
-.preview-unavailable {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-
-  &::before {
-    content: '';
-    height: 13px;
-    width: 13px;
-    background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
-    margin: -2px 3px 0 2px;
-    display: block;
   }
 }
 
