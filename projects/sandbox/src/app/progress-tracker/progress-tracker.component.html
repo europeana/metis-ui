@@ -120,7 +120,7 @@
     >
       <sb-navigation-orbs
         libClickAware
-        [ignoreClasses]="['link-internal', 'nav-orb', 'warning-view-content']"
+        [ignoreClasses]="['link-internal:not(.dataset-name)', 'nav-orb', 'warning-view-content']"
         [clickAwareIgnoreWhen]="!showing"
         (clickOutside)="closeWarningView()"
         ariaLabel="Tier Zero Warnings Navigation"
@@ -137,7 +137,7 @@
       <div
         class="warning-view-content"
         libClickAware
-        [ignoreClasses]="['link-internal', 'nav-orb', 'sb-navigation-orbs']"
+        [ignoreClasses]="['link-internal:not(.dataset-name)', 'nav-orb', 'sb-navigation-orbs']"
         [clickAwareIgnoreWhen]="!showing"
         (clickOutside)="closeWarningView()"
       >

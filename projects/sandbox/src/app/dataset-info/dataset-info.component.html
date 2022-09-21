@@ -1,80 +1,178 @@
+<ng-template #tmpProcessingError>
+  <li *ngIf="processingError" class="align-left">
+    <span class="preview-unavailable">
+      <a (click)="showProcessingErrors()">Preview Unavailable</a>
+    </span>
+
+    <lib-modal
+      id="{{ modalIdProcessingErrors }}"
+      title="Processing Error Detail"
+      [isSmall]="false"
+      [buttons]="[{ label: 'Close' }]"
+    >
+      {{ processingError }}
+    </lib-modal>
+  </li>
+</ng-template>
+
+<ng-template #tmpLinkPublished>
+  <li class="portal-links" [ngClass]="{ available: !processingError && publishUrl }">
+    <ng-template #labelRefPublish
+      ><span i18n="progress link link@@progressLinkPublish"
+        >view published records</span
+      ></ng-template
+    >
+    <sb-copyable-link-item [href]="publishUrl" [labelRef]="labelRefPublish"></sb-copyable-link-item>
+  </li>
+</ng-template>
+
 <ul class="dataset-info container-h">
   <!-- left col -->
-  <li>
+  <li class="left-col">
     <ul>
       <li class="container-h">
-        <h2 class="progress-title" i18n="progress title">
+        <!-- optional link on dataset name -->
+        <h2
+          *ngIf="!enableDynamicInfo"
+          class="dataset-name"
+          i18n="progress title"
+          [ngClass]="{ open: fullInfoOpen }"
+        >
           <span class="title-name" [ngClass]="{ tick: processingComplete }">{{
             datasetInfo['dataset-name']
           }}</span>
         </h2>
+
+        <h2 *ngIf="enableDynamicInfo">
+          <a
+            class="dataset-name link-internal"
+            i18n="progress title"
+            (click)="toggleFullInfoOpen()"
+            [ngClass]="{ open: fullInfoOpen }"
+          >
+            <span class="title-name" [ngClass]="{ tick: processingComplete }">{{
+              datasetInfo['dataset-name']
+            }}</span></a
+          >
+        </h2>
       </li>
-      <li class="container-h" *ngIf="datasetInfo['transformed-to-edm-external']">
+      <li
+        class="container-h"
+        *ngIf="!enableDynamicInfo && datasetInfo['transformed-to-edm-external']"
+      >
         <span class="xsl-icon"></span>
         <span>xsl-transformed</span>
       </li>
-      <li
-        data-e2e="creation-date"
-        class="creation-date"
-        [title]="datasetInfo['record-limit-exceeded'] ? 'Some records not processed' : ''"
-        [ngClass]="{ 'warning-icon': datasetInfo['record-limit-exceeded'] }"
-      >
-        <lib-modal
-          id="{{ modalIdIncompleteData }}"
-          title="Data Incomplete Warning"
-          [isSmall]="false"
-          [buttons]="[{ label: 'Close' }]"
-        >
-          <p>Some records may not have been processed.</p>
-          <p>If the dataset is too large then the remainder of the records is ignored</p>
-        </lib-modal>
-        <a
-          *ngIf="datasetInfo['record-limit-exceeded']; else conditionalWrapWarnLink"
-          (click)="showIncompleteDataWarning()"
-        >
-          <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
-        </a>
-        <ng-template #conditionalWrapWarnLink
-          ><span>{{
-            formatDate(datasetInfo['creation-date'], 'dd/MM/yyyy, HH:mm:ss', 'en-GB')
-          }}</span></ng-template
-        >
+
+      <!-- label-and-slide -->
+
+      <li data-e2e="country-language" class="container-h nowrap">
+        <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
+          Country / Language:
+        </span>
+        <span> {{ datasetInfo.country }} / {{ datasetInfo.language }} </span>
       </li>
-      <li data-e2e="country-language">{{ datasetInfo.country }} / {{ datasetInfo.language }}</li>
+
+      <li class="container-h nowrap">
+        <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
+          Creation Date:
+        </span>
+        <span
+          data-e2e="creation-date"
+          class="creation-date container-h nowrap"
+          [title]="datasetInfo['record-limit-exceeded'] ? 'Some records not processed' : ''"
+          [ngClass]="{ 'warning-icon': datasetInfo['record-limit-exceeded'] }"
+        >
+          <lib-modal
+            id="{{ modalIdIncompleteData }}"
+            title="Data Incomplete Warning"
+            [isSmall]="false"
+            [buttons]="[{ label: 'Close' }]"
+          >
+            <p>Some records may not have been processed.</p>
+            <p>If the dataset is too large then the remainder of the records is ignored</p>
+          </lib-modal>
+          <a
+            *ngIf="datasetInfo['record-limit-exceeded']; else conditionalWrapWarnLink"
+            (click)="showIncompleteDataWarning()"
+          >
+            <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
+          </a>
+          <ng-template #conditionalWrapWarnLink
+            ><span>{{
+              formatDate(datasetInfo['creation-date'], 'dd/MM/yyyy, HH:mm:ss', 'en-GB')
+            }}</span></ng-template
+          >
+        </span>
+      </li>
+
+      <!--openable section -->
+
+      <li
+        class="full-info-view"
+        [ngClass]="{
+          open: fullInfoOpen
+        }"
+        libClickAware
+        [ignoreClasses]="['dataset-name']"
+        [clickAwareIgnoreWhen]="!fullInfoOpen"
+        (clickOutside)="closeFullInfo()"
+      >
+        <ul>
+          <li>
+            <ul class="grid">
+              <li class="grid-label hide-desktop">
+                {{ datasetInfo['dataset-id'] }}
+              </li>
+              <li class="align-right hide-desktop">
+                <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
+                <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
+              </li>
+
+              <li class="grid-label">Last Problem Analysis:</li>
+              <li class="align-right">
+                {{ formatDate(datasetInfo['creation-date'], 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
+              </li>
+
+              <li class="grid-heading">Uploaded Record Data</li>
+              <li class="grid-label">Protocol:</li>
+              <li class="align-right">ZIP</li>
+              <li class="grid-label">File Name:</li>
+              <li class="align-right">myfile.zip</li>
+              <li class="grid-label">Set Spec:</li>
+              <li class="align-right">(maybe)</li>
+              <li class="grid-label">Metadata Format:</li>
+              <li class="align-right">EDM</li>
+              <li class="grid-label">Url:</li>
+              <li class="align-right">
+                http://whatever.z/xxxxx/xxxxxxxxxx
+              </li>
+              <li class="grid-label">Harvest Url:</li>
+              <li class="align-right">
+                http://whatever.z/xxxxx/xxxxx/xxxxx/xxxxx/xxxxx/xxxxx/xxxxx
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
 
   <!-- right col -->
-  <li class="align-right">
+  <li class="align-right hide-mobile">
     <ul>
       <li>
         <h2 class="title-id">{{ datasetInfo['dataset-id'] }}</h2>
       </li>
-      <li *ngIf="processingError" class="align-left">
-        <span class="preview-unavailable">
-          <a (click)="showProcessingErrors()">Preview Unavailable</a>
-        </span>
-
-        <lib-modal
-          id="{{ modalIdProcessingErrors }}"
-          title="Processing Error Detail"
-          [isSmall]="false"
-          [buttons]="[{ label: 'Close' }]"
-        >
-          {{ processingError }}
-        </lib-modal>
-      </li>
-
-      <li *ngIf="!processingError && publishUrl" class="portal-links">
-        <ng-template #labelRefPublish
-          ><span i18n="progress link link@@progressLinkPublish"
-            >view published records</span
-          ></ng-template
-        >
-        <sb-copyable-link-item
-          [href]="publishUrl"
-          [labelRef]="labelRefPublish"
-        ></sb-copyable-link-item>
+      <ng-container *ngTemplateOutlet="tmpProcessingError"></ng-container>
+      <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
+      <li
+        class="container-h transparent"
+        *ngIf="enableDynamicInfo && datasetInfo['transformed-to-edm-external']"
+        [ngClass]="{ showing: fullInfoOpen }"
+      >
+        <span>xsl-transformed</span>
+        <span class="xsl-icon"></span>
       </li>
     </ul>
   </li>

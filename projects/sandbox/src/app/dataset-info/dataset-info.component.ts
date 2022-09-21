@@ -17,11 +17,30 @@ export class DatasetInfoComponent extends SubscriptionManager {
   @Input() publishUrl?: string;
   @Input() processingError: string;
 
+  fullInfoOpen = false;
+  enableDynamicInfo = false;
+
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
 
   constructor(private readonly modalConfirms: ModalConfirmService) {
     super();
+  }
+
+  /**
+   * closeFullInfo
+   * Sets this.fullInfoOpen to false
+   **/
+  closeFullInfo(): void {
+    this.fullInfoOpen = false;
+  }
+
+  /**
+   * toggleFullInfoOpen
+   * Toggles this.fullInfoOpen
+   **/
+  toggleFullInfoOpen(): void {
+    this.fullInfoOpen = !this.fullInfoOpen;
   }
 
   /**

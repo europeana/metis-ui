@@ -19,4 +19,4 @@ export const selectorReportOrb = '.nav-orb.report-orb';
 export const selectorPatternProblemsDatasetOrb = 'li:not(:last-child) .nav-orb.problem-orb';
 export const selectorPatternProblemsRecordOrb = 'li:last-child .nav-orb.problem-orb';
 export const selectorUploadOrb = '.nav-orb.upload-orb';
-export const selectorProgressTitle = '.progress-title';
+export const selectorProgressTitle = '.dataset-name';
