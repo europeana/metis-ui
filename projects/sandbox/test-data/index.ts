@@ -676,18 +676,18 @@ new (class extends TestDataServer {
               if (this.errorCodes.indexOf(recordId[1]) > -1) {
                 response.statusCode = parseInt(recordId[1]);
                 response.end();
-              } else {
-                const result =
-                  recordIdNumeric % 2 === 0
-                    ? '[]'
-                    : JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
-                if (idNumeric > 999) {
-                  setTimeout(() => {
-                    response.end(result);
-                  }, idNumeric);
-                } else {
+                return;
+              }
+              const result =
+                recordIdNumeric % 2 === 0
+                  ? '[]'
+                  : JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
+              if (idNumeric > 999) {
+                setTimeout(() => {
                   response.end(result);
-                }
+                }, idNumeric);
+              } else {
+                response.end(result);
               }
               return;
             }
@@ -717,13 +717,13 @@ new (class extends TestDataServer {
               'problem-analysis-date': problemsDataset.executionTimestamp
             }) as unknown) as DatasetInfo;
 
-            if (idNumeric > 999) {
-              setTimeout(() => {
+            // apply possible delay to response
+            setTimeout(
+              () => {
                 response.end(JSON.stringify(problemsDataset));
-              }, idNumeric);
-            } else {
-              response.end(JSON.stringify(problemsDataset));
-            }
+              },
+              idNumeric > 999 ? idNumeric : 0
+            );
             return;
           }
         }
