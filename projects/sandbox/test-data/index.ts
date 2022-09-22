@@ -1,9 +1,11 @@
 import * as url from 'url';
+import formidable from 'formidable';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
 import {
   Dataset,
+  DatasetInfo,
   DatasetStatus,
   FieldOption,
   ProblemPattern,
@@ -78,6 +80,76 @@ new (class extends TestDataServer {
     );
   }
 
+  /** handleUpload
+   **/
+  handleUpload(request: IncomingMessage, response: ServerResponse, datasetName: string): void {
+    const route = request.url as string;
+
+    if (datasetName === '404') {
+      this.handle404(route, response);
+      return;
+    }
+
+    const params = url.parse(route, true).query;
+    const getParam = (name: string): string => {
+      return params[name] as string;
+    };
+
+    const harvestType =
+      route.indexOf('harvestOaiPmh') > -1
+        ? StepStatus.HARVEST_OAI_PMH
+        : route.indexOf('harvestByUrl') > -1
+        ? StepStatus.HARVEST_HTTP
+        : StepStatus.HARVEST_ZIP;
+
+    const dataset = this.initialiseDataset(
+      `${this.newId}`,
+      harvestType,
+      datasetName,
+      getParam('country'),
+      getParam('language')
+    );
+
+    // Set up timed target and send response
+    this.addTimedTarget(`${this.newId}`, dataset);
+    this.headerJSON(response);
+    response.end(
+      JSON.stringify({
+        'dataset-id': `${this.newId}`,
+        'duplicate-records': 0,
+        'records-to-process': 0
+      } as SubmissionResponseData)
+    );
+
+    // Temporary function to add non-model (parameter) fields
+    const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
+      const res: { [details: string]: string | boolean } = {};
+      res[name] = value;
+      dataset['dataset-info'] = Object.assign(res, dataset['dataset-info']) as DatasetInfo;
+    };
+    if (harvestType === StepStatus.HARVEST_OAI_PMH) {
+      addNewDatasetInfoField('harvestUrl', getParam('url'));
+      addNewDatasetInfoField('setSpec', getParam('setspec'));
+      addNewDatasetInfoField('metadataFormat', getParam('metadataformat'));
+    } else if (harvestType === StepStatus.HARVEST_HTTP) {
+      addNewDatasetInfoField('url', getParam('url'));
+    }
+
+    // continue request processing (get file info)
+    const form = formidable({ multiples: true });
+    form.parse(request, (_, __, files) => {
+      if (files) {
+        if (files.dataset) {
+          const fileName = (files.dataset as { originalFilename: string }).originalFilename;
+          addNewDatasetInfoField('dataset-filename', fileName);
+        }
+        if (files.xsltFile) {
+          addNewDatasetInfoField('transformed-to-edm-external', true);
+        }
+      }
+    });
+  }
+
   /**
    * initialiseProgressByStep
    *
@@ -143,6 +215,31 @@ new (class extends TestDataServer {
             'content-tier': createEmptyTier()
           };
 
+    const datasetProtocol = Object.assign(
+      { 'upload-protocol': harvestType },
+      harvestType === StepStatus.HARVEST_OAI_PMH
+        ? {
+            harvestUrl: 'http://default-harvest-url',
+            setSpec: 'default-set-spec'
+          }
+        : harvestType === StepStatus.HARVEST_HTTP
+        ? {
+            url: 'http://default-url'
+          }
+        : {
+            'dataset-filename': 'default.zip'
+          }
+    );
+
+    const datasetInfo = {
+      'creation-date': `${new Date().toISOString()}`,
+      'dataset-id': datasetId,
+      'dataset-name': datasetName ? datasetName : 'GeneratedName',
+      country: country ? country : 'GeneratedCountry',
+      language: language ? language : 'GeneratedLanguage',
+      'record-limit-exceeded': !!(datasetName && datasetName.length > 10)
+    };
+
     return {
       status: DatasetStatus.IN_PROGRESS,
       'total-records': totalRecords,
@@ -151,15 +248,7 @@ new (class extends TestDataServer {
       'progress-by-step': steps.map((key: StepStatus) => {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
-      'dataset-info': {
-        'creation-date': `${new Date().toISOString()}`,
-        'dataset-id': datasetId,
-        'dataset-name': datasetName ? datasetName : 'GeneratedName',
-        country: country ? country : 'GeneratedCountry',
-        language: language ? language : 'GeneratedLanguage',
-        'transformed-to-edm-external': country === 'Greece',
-        'record-limit-exceeded': !!(datasetName && datasetName.length > 10)
-      },
+      'dataset-info': (Object.assign(datasetInfo, datasetProtocol) as unknown) as DatasetInfo,
       'tier-zero-info': tierZeroInfo
     };
   }
@@ -275,8 +364,7 @@ new (class extends TestDataServer {
   /**
    * handleId
    *
-   * Retrieves or creates a TimedTarget object with the supplied id and
-   * ends the response with its dataset data.
+   * Retrieves or creates a TimedTarget object with the supplied id
    *
    * The id "42001357" will be interpreted as having:
    *  - 4 records in total
@@ -285,14 +373,12 @@ new (class extends TestDataServer {
    *  - 0 errors
    *  - 1,3,5,7 will be the 'progress-by-step' items to apply the (non success) statuses to
    *
-   *  @param {ServerResponse} response - the server response object
    *  @param {string} id - the id to track
    **/
-  handleId(response: ServerResponse, id: string): void {
+  handleId(id: string): Dataset {
     const timedTarget = this.timedTargets.get(id);
-    this.headerJSON(response);
     if (timedTarget) {
-      response.end(JSON.stringify(timedTarget.dataset));
+      return timedTarget.dataset;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
       let harvestType = StepStatus.HARVEST_ZIP;
@@ -313,7 +399,7 @@ new (class extends TestDataServer {
       }
       const dataset = this.initialiseDataset(id, harvestType);
       this.addTimedTarget(id, dataset);
-      response.end(JSON.stringify(dataset));
+      return dataset;
     }
   }
 
@@ -466,48 +552,10 @@ new (class extends TestDataServer {
     }
     if (request.method === 'POST') {
       const regRes = /\/dataset\/(\S+)\//.exec(route);
-
       if (regRes) {
         this.newId++;
-
-        const datasetName = regRes[1].split('/')[0];
-        const params = url.parse(route, true).query;
-        const getParam = (name: string): string => {
-          return params[name] as string;
-        };
-
-        if (datasetName === '404') {
-          this.handle404(route, response);
-          return;
-        }
-
-        let harvestType = StepStatus.HARVEST_ZIP;
-        if (params.url) {
-          if (params.metadataformat) {
-            harvestType = StepStatus.HARVEST_OAI_PMH;
-          } else {
-            harvestType = StepStatus.HARVEST_HTTP;
-          }
-        }
-
-        const dataset = this.initialiseDataset(
-          `${this.newId}`,
-          harvestType,
-          datasetName,
-          getParam('country'),
-          getParam('language')
-        );
-
-        this.addTimedTarget(`${this.newId}`, dataset);
-
-        this.headerJSON(response);
-        response.end(
-          JSON.stringify({
-            'dataset-id': `${this.newId}`,
-            'duplicate-records': 0,
-            'records-to-process': 0
-          } as SubmissionResponseData)
-        );
+        this.handleUpload(request, response, regRes[1].split('/')[0]);
+        return;
       } else {
         response.end(`{ "error": "invalid url" }`);
       }
@@ -516,6 +564,10 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify([
+            {
+              name: 'Bosnia and Herzogovina',
+              xmlValue: 'Bosnia and Herzogovina'
+            },
             {
               name: 'Greece',
               xmlValue: 'Greece'
@@ -534,6 +586,10 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify([
+            {
+              name: 'Bosnian',
+              xmlValue: 'Bosnian'
+            },
             {
               name: 'Greek',
               xmlValue: 'Greek'
@@ -596,7 +652,8 @@ new (class extends TestDataServer {
             response.statusCode = parseInt(id);
             response.end();
           } else {
-            this.handleId(response, id);
+            this.headerJSON(response);
+            response.end(JSON.stringify(this.handleId(id)));
           }
           return;
         }
@@ -642,6 +699,7 @@ new (class extends TestDataServer {
               response.end();
               return;
             }
+
             const problemsDataset = {
               datasetId: id,
               executionTimestamp: `${new Date().toISOString()}`,
@@ -652,6 +710,12 @@ new (class extends TestDataServer {
                       return this.generateProblem(idNumeric, parseInt(i));
                     })
             } as ProblemPatternsDataset;
+
+            // Update last-analysis reference (dataset-info created if inexistent)
+            const dataset = this.handleId(id);
+            dataset['dataset-info'] = (Object.assign(dataset['dataset-info'], {
+              'problem-analysis-date': problemsDataset.executionTimestamp
+            }) as unknown) as DatasetInfo;
 
             if (idNumeric > 999) {
               setTimeout(() => {

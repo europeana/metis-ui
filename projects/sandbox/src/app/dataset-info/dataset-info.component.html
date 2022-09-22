@@ -26,6 +26,18 @@
   </li>
 </ng-template>
 
+<!-- Temporary template to output fields that aren't in the model -->
+
+<ng-template let-ob="ob" let-val="val" let-label="label" let-isDate="isDate" #newField>
+  <ng-container *ngIf="ob[val]">
+    <li class="grid-label">{{ label }}:</li>
+    <li *ngIf="!isDate" class="align-right">{{ ob[val] }}</li>
+    <li *ngIf="isDate" class="align-right">
+      {{ formatDate(ob[val], 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
+    </li>
+  </ng-container>
+</ng-template>
+
 <ul class="dataset-info container-h">
   <!-- left col -->
   <li class="left-col">
@@ -129,28 +141,53 @@
                 <ng-container *ngTemplateOutlet="tmpLinkPublished"></ng-container>
               </li>
 
-              <li class="grid-label">Last Problem Analysis:</li>
-              <li class="align-right">
-                {{ formatDate(datasetInfo['creation-date'], 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
-              </li>
+              <ng-content
+                *ngTemplateOutlet="
+                  newField;
+                  context: {
+                    ob: datasetInfo,
+                    label: 'Last Problem Analysis',
+                    val: 'problem-analysis-date',
+                    isDate: true
+                  }
+                "
+              ></ng-content>
 
               <li class="grid-heading">Uploaded Record Data</li>
-              <li class="grid-label">Protocol:</li>
-              <li class="align-right">ZIP</li>
-              <li class="grid-label">File Name:</li>
-              <li class="align-right">myfile.zip</li>
-              <li class="grid-label">Set Spec:</li>
-              <li class="align-right">(maybe)</li>
-              <li class="grid-label">Metadata Format:</li>
-              <li class="align-right">EDM</li>
-              <li class="grid-label">Url:</li>
-              <li class="align-right">
-                http://whatever.z/xxxxx/xxxxxxxxxx
-              </li>
-              <li class="grid-label">Harvest Url:</li>
-              <li class="align-right">
-                http://whatever.z/xxxxx/xxxxx/xxxxx/xxxxx/xxxxx/xxxxx/xxxxx
-              </li>
+
+              <ng-content
+                *ngTemplateOutlet="
+                  newField;
+                  context: { ob: datasetInfo, label: 'Protocol', val: 'upload-protocol' }
+                "
+              ></ng-content>
+              <ng-content
+                *ngTemplateOutlet="
+                  newField;
+                  context: { ob: datasetInfo, label: 'File Name', val: 'dataset-filename' }
+                "
+              ></ng-content>
+              <ng-content
+                *ngTemplateOutlet="
+                  newField;
+                  context: { ob: datasetInfo, label: 'Set Spec', val: 'setSpec' }
+                "
+              ></ng-content>
+              <ng-content
+                *ngTemplateOutlet="
+                  newField;
+                  context: { ob: datasetInfo, label: 'Metadata Format', val: 'metadataFormat' }
+                "
+              ></ng-content>
+              <ng-content
+                *ngTemplateOutlet="newField; context: { ob: datasetInfo, label: 'Url', val: 'url' }"
+              ></ng-content>
+              <ng-content
+                *ngTemplateOutlet="
+                  newField;
+                  context: { ob: datasetInfo, label: 'Harvest Url', val: 'harvestUrl' }
+                "
+              ></ng-content>
             </ul>
           </li>
         </ul>
