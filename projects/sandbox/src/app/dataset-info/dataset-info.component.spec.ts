@@ -51,4 +51,20 @@ describe('DatasetInfoComponent', () => {
     component.showProcessingErrors();
     expect(modalConfirms.open).toHaveBeenCalled();
   });
+
+  it('should toggle fullInfoOpen', () => {
+    expect(component.fullInfoOpen).toBeFalsy();
+    component.toggleFullInfoOpen();
+    expect(component.fullInfoOpen).toBeTruthy();
+    component.toggleFullInfoOpen();
+    expect(component.fullInfoOpen).toBeFalsy();
+  });
+
+  it('should close fullInfoOpen', () => {
+    component.fullInfoOpen = true;
+    component.closeFullInfo();
+    expect(component.fullInfoOpen).toBeFalsy();
+    component.closeFullInfo();
+    expect(component.fullInfoOpen).toBeFalsy();
+  });
 });
