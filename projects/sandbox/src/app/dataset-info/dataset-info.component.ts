@@ -18,7 +18,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   @Input() processingError: string;
 
   fullInfoOpen = false;
-  enableDynamicInfo = true;
+  enableDynamicInfo = false;
 
   modalIdIncompleteData = 'confirm-modal-incomplete-data';
   modalIdProcessingErrors = 'confirm-modal-processing-error';
