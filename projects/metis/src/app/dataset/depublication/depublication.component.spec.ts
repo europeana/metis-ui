@@ -155,6 +155,7 @@ describe('DepublicationComponent', () => {
     it('should submit the file', fakeAsync(() => {
       component.dialogFileOpen = true;
       component.datasetId = '123';
+      addFormFieldData();
       expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       tick(1);
