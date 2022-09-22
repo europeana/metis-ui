@@ -56,7 +56,7 @@ export class UploadComponent extends DataPollingComponent {
   /**
    * rebuildForm
    *
-   * invokes build form after clearing file inputs from previous submission
+   * invokes form reset after clearing file inputs from previous submission
    **/
   rebuildForm(): void {
     this.protocolFields.clearFileValue();
