@@ -48,7 +48,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * Shows the incomplete-data warning modal
    **/
   showIncompleteDataWarning(): void {
-    console.log('showIncompleteDataWarning');
     this.subs.push(this.modalConfirms.open(this.modalIdIncompleteData).subscribe());
   }
 
@@ -57,7 +56,6 @@ export class DatasetInfoComponent extends SubscriptionManager {
    * Shows the processing-error modal
    **/
   showProcessingErrors(): void {
-    console.log('showProcessingErrors');
     this.subs.push(this.modalConfirms.open(this.modalIdProcessingErrors).subscribe());
   }
 }

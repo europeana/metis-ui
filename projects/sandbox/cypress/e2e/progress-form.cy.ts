@@ -69,12 +69,19 @@ context('Sandbox', () => {
     });
 
     it('should warn when the preview is unavailable', () => {
-      const selectorPreviewUnavailable = '.preview-unavailable';
+      const selectorPreviewUnavailable = '.preview-unavailable a';
       cy.get(selectorPreviewUnavailable).should('not.exist');
+      cy.get(selectorModalDisplay).should('not.exist');
+
       fillProgressForm('13');
       cy.get(selectorPreviewUnavailable)
         .filter(':visible')
         .should('have.length', 1);
+
+      cy.get(selectorPreviewUnavailable)
+        .filter(':visible')
+        .click({ force: true });
+      cy.get(selectorModalDisplay).should('be.visible');
     });
 
     it('should show network errors', () => {
