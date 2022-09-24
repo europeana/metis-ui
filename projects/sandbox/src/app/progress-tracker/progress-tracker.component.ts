@@ -50,9 +50,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() showing: boolean;
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
-  modalIdProcessingErrors = 'confirm-modal-processing-error';
   modalIdErrors = 'confirm-modal-errors';
-  modalIdIncompleteData = 'confirm-modal-incomplete-data';
   detailIndex: number;
   expandedWarning = false;
 
@@ -170,22 +168,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   showErrorsForStep(detailIndex: number): void {
     this.detailIndex = detailIndex;
     this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
-  }
-
-  /**
-   * showProcessingErrors
-   * Shows the processing-error modal
-   **/
-  showProcessingErrors(): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdProcessingErrors).subscribe());
-  }
-
-  /**
-   * showIncompleteDataWarning
-   * Shows the incomplete-data warning modal
-   **/
-  showIncompleteDataWarning(): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdIncompleteData).subscribe());
   }
 
   /**
