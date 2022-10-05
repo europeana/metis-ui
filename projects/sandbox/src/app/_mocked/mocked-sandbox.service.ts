@@ -3,12 +3,14 @@ import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
   mockDataset,
+  mockDatasetInfo,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
   mockRecordReport
 } from '.';
 import {
   Dataset,
+  DatasetInfo,
   DatasetStatus,
   FieldOption,
   ProblemPattern,
@@ -94,6 +96,11 @@ export class MockSandboxService {
     }
     const res = Object.assign({}, mockDataset);
     res.status = DatasetStatus.COMPLETED;
+    return of(res).pipe(delay(1));
+  }
+
+  requestDatasetInfo(_: string): Observable<DatasetInfo> {
+    const res = Object.assign({}, mockDatasetInfo);
     return of(res).pipe(delay(1));
   }
 

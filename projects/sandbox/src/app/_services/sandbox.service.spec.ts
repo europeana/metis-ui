@@ -6,6 +6,7 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   mockCountries,
   mockDataset,
+  mockDatasetInfo,
   mockLanguages,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
@@ -69,6 +70,14 @@ describe('sandbox service', () => {
     mockHttp
       .expect('GET', `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`)
       .send(mockRecordReport);
+    sub.unsubscribe();
+  });
+
+  it('should request the dataset info', () => {
+    const sub = service.requestDatasetInfo('1').subscribe((datasetInfo) => {
+      expect(datasetInfo).toEqual(mockDatasetInfo);
+    });
+    mockHttp.expect('GET', '/dataset-info/1').send(mockDatasetInfo);
     sub.unsubscribe();
   });
 

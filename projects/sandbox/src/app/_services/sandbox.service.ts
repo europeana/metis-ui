@@ -8,6 +8,7 @@ import { ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
+  DatasetInfo,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -78,6 +79,15 @@ export class SandboxService {
   requestProgress(datasetId: string): Observable<Dataset> {
     const url = `${apiSettings.apiHost}/dataset/${datasetId}`;
     return this.http.get<Dataset>(url);
+  }
+
+  /** requestDatasetInfo
+  /*  @param { string } datasetId
+  /* request dataset info from server
+  */
+  requestDatasetInfo(datasetId: string): Observable<DatasetInfo> {
+    const url = `${apiSettings.apiHost}/dataset-info/${datasetId}`;
+    return this.http.get<DatasetInfo>(url);
   }
 
   /** submitDataset

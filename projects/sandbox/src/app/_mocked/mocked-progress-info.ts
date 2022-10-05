@@ -1,13 +1,15 @@
 import { Dataset, DatasetStatus, ProgressByStep, StepStatus } from '../_models';
 
+export const mockDatasetInfo = {
+  'creation-date': '2022-01-19T15:21:09',
+  'dataset-name': 'Test_Dataset_Name',
+  'dataset-id': '1',
+  country: 'Greece',
+  language: 'He'
+};
+
 export const mockDataset = {
-  'dataset-info': {
-    'creation-date': '2022-01-19T15:21:09',
-    'dataset-name': 'Test_Dataset_Name',
-    'dataset-id': '1',
-    country: 'Greece',
-    language: 'He'
-  },
+  'dataset-info': mockDatasetInfo,
   status: DatasetStatus.COMPLETED,
   'portal-publish':
     'https://metis-sandbox-publish-api-test-portal.eanadev.org/portal/search?view=grid&q=edm_datasetName:43_jochen_test*',
