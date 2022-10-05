@@ -196,7 +196,7 @@ $slide-down-duration: 0.4s;
   .left-col {
     display: block;
     margin-bottom: 0;
-    transition: margin-bottom 0.4s ease-in-out;
+    transition: margin-bottom $slide-down-duration ease-in-out;
     &.push-height {
       margin-bottom: 10.5em;
       .full-info-view.open {
