@@ -4,9 +4,11 @@ import { Router } from '@angular/router';
 import { catchError, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { KeyedCache } from 'shared';
+
 import { apiSettings } from '../../environments/apisettings';
 import { environment } from '../../environments/environment';
-import { KeyedCache } from '../_helpers';
 import { User } from '../_models';
 
 import { ErrorService } from './error.service';
