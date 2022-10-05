@@ -1,6 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { of } from 'rxjs';
 import { MockHttp, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -13,6 +14,7 @@ import {
   mockRecordReport
 } from '../_mocked';
 import {
+  DatasetInfo,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -79,6 +81,23 @@ describe('sandbox service', () => {
     });
     mockHttp.expect('GET', '/dataset-info/1').send(mockDatasetInfo);
     sub.unsubscribe();
+  });
+
+  it('should get the dataset info (from the cache)', () => {
+    spyOn(service, 'requestDatasetInfo').and.callFake(() => {
+      return of(({} as unknown) as DatasetInfo);
+    });
+    let observable = service.getDatasetInfo('1');
+    expect(service.requestDatasetInfo).toHaveBeenCalled();
+    observable = service.getDatasetInfo('1');
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(1);
+    observable = service.getDatasetInfo('2');
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
+    observable = service.getDatasetInfo('2');
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
+    observable = service.getDatasetInfo('2', true);
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(3);
+    expect(observable).toBeTruthy();
   });
 
   it('should get the progress', () => {

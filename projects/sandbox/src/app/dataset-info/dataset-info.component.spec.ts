@@ -78,6 +78,8 @@ describe('DatasetInfoComponent', () => {
 
   it('should load data when the datasetId is set', () => {
     spyOn(sandbox, 'requestDatasetInfo').and.callThrough();
+    fixture.detectChanges();
+    expect(component.datasetId).toBeFalsy();
     component.datasetId = '1';
     expect(sandbox.requestDatasetInfo).toHaveBeenCalled();
   });

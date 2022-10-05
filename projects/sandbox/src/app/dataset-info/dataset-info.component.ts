@@ -27,11 +27,13 @@ export class DatasetInfoComponent extends SubscriptionManager {
 
   @Input() set datasetId(datasetId: string) {
     this._datasetId = datasetId;
-    console.log('make call(' + datasetId + ')... ' + !!this.sandbox.requestDatasetInfo);
-    this.sandbox.requestDatasetInfo(datasetId).subscribe((info: DatasetInfo) => {
-      console.log('made call ' + info);
-      this.datasetInfo = info;
-    });
+    this.subs.push(
+      this.sandbox
+        .getDatasetInfo(datasetId, !this.processingComplete)
+        .subscribe((info: DatasetInfo) => {
+          this.datasetInfo = info;
+        })
+    );
   }
 
   @Input() datasetInfo: DatasetInfo;

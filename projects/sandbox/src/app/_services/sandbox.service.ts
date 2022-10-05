@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ProtocolType } from 'shared';
+import { KeyedCache, ProtocolType } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
@@ -19,6 +19,8 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
+  datasetInfoCache = new KeyedCache((key) => this.requestDatasetInfo(key));
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -88,6 +90,18 @@ export class SandboxService {
   requestDatasetInfo(datasetId: string): Observable<DatasetInfo> {
     const url = `${apiSettings.apiHost}/dataset-info/${datasetId}`;
     return this.http.get<DatasetInfo>(url);
+  }
+
+  /** getDatasetInfo
+  /*  @param { string } datasetId
+  /*  @param { false } clearCache - flag cache clear
+  /* returns dataset info from cache
+  */
+  getDatasetInfo(datasetId: string, clearCache = false): Observable<DatasetInfo> {
+    if (clearCache) {
+      this.datasetInfoCache.clear(datasetId);
+    }
+    return this.datasetInfoCache.get(datasetId);
   }
 
   /** submitDataset

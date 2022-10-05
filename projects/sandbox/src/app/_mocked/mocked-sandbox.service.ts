@@ -104,6 +104,10 @@ export class MockSandboxService {
     return of(res).pipe(delay(1));
   }
 
+  getDatasetInfo(_: string): Observable<DatasetInfo> {
+    return this.requestDatasetInfo(_);
+  }
+
   submitDataset(
     form: FormGroup,
     fileNames: Array<string>
