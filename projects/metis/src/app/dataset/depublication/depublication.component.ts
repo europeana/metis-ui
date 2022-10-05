@@ -56,9 +56,9 @@ export class DepublicationComponent extends DataPollingComponent {
   });
 
   formFile = this.fb.group({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     depublicationFile: [
-      (undefined as any) as File,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (undefined as unknown) as File,
       [Validators.required, this.validateFileExtension]
     ]
   });
