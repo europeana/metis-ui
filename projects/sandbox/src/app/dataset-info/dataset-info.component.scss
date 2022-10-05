@@ -194,7 +194,6 @@ $slide-down-duration: 0.4s;
   }
 
   .left-col {
-    display: block;
     margin-bottom: 0;
     transition: margin-bottom $slide-down-duration ease-in-out;
     &.push-height {
