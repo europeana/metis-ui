@@ -60,20 +60,12 @@ $slide-down-duration: 0.4s;
   &.link-internal:active .tick::after {
     background-image: svg-url-icon-tick('#{$eu-light-orange}');
   }
-
-  @media (min-width: $bp-large) {
-    transition: transform $slide-down-duration ease-in-out;
-    transform: translate(0, 0);
-    &.open {
-      transform: translate(0, -0.25em);
-    }
-  }
 }
 
 .full-info-view {
   background: $eu-light-jade-classic;
   display: none;
-  z-index: 1;
+  z-index: 2;
   &.open {
     display: block;
   }
@@ -94,7 +86,7 @@ $slide-down-duration: 0.4s;
       font-size: 20px;
       grid-column-end: 3;
       grid-column-start: 1;
-      margin: 1em 0 0.75em 0;
+      margin: 1em 0 0.5em 0;
     }
 
     .grid-label {

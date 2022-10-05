@@ -38,7 +38,7 @@
   </ng-container>
 </ng-template>
 
-<ul class="dataset-info container-h">
+<ul class="dataset-info container-h" *ngIf="datasetInfo">
   <!-- left col -->
   <li class="left-col">
     <ul>
@@ -78,14 +78,16 @@
 
       <!-- label-and-slide -->
 
-      <li data-e2e="country-language" class="container-h nowrap">
+      <li class="container-h nowrap" data-e2e="country-language">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           Country / Language:
         </span>
-        <span> {{ datasetInfo.country }} / {{ datasetInfo.language }} </span>
+        <span class="country-language">
+          {{ datasetInfo.country }} / {{ datasetInfo.language }}
+        </span>
       </li>
 
-      <li class="container-h nowrap">
+      <li class="container-h nowrap" *ngIf="datasetInfo['creation-date']; let date">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           Creation Date:
         </span>
@@ -111,9 +113,7 @@
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
           <ng-template #conditionalWrapWarnLink
-            ><span>{{
-              formatDate(datasetInfo['creation-date'], 'dd/MM/yyyy, HH:mm:ss', 'en-GB')
-            }}</span></ng-template
+            ><span>{{ formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}</span></ng-template
           >
         </span>
       </li>
@@ -126,7 +126,7 @@
           open: fullInfoOpen
         }"
         libClickAware
-        [ignoreClasses]="['dataset-name', 'creation-date', 'modal-wrapper']"
+        [ignoreClasses]="ignoreClassesList"
         [clickAwareIgnoreWhen]="!fullInfoOpen"
         (clickOutside)="closeFullInfo()"
       >
@@ -146,8 +146,8 @@
                   newField;
                   context: {
                     ob: datasetInfo,
-                    label: 'Last Problem Analysis',
-                    val: 'problem-analysis-date',
+                    label: 'End Date',
+                    val: 'end-date',
                     isDate: true
                   }
                 "

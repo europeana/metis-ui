@@ -53,6 +53,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
+  enableDynamicInfo = true;
+
   formProgress = this.fb.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]
   });
@@ -159,6 +161,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       'problem-orb': isProblemOrb,
       'progress-orb': isProgressTrack,
       'report-orb': isRecordTrack,
+      'top-level-nav': true,
       'upload-orb': isUpload,
       'indicator-orb': this.getStepIsIndicator(i),
       spinner: !!stepConf.isBusy,
@@ -549,7 +552,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)];
     stepConf.isBusy = true;
     this.isPollingProgress = true;
-
     this.clearDataPollers();
     this.createNewDataPoller(
       apiSettings.interval,
