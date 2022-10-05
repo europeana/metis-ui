@@ -193,6 +193,19 @@ $slide-down-duration: 0.4s;
     }
   }
 
+  .left-col {
+    display: block;
+    margin-bottom: 0;
+    transition: margin-bottom 0.4s ease-in-out;
+    &.push-height {
+      margin-bottom: 10.5em;
+      .full-info-view.open {
+        border-bottom: 0;
+        border-right: 0;
+      }
+    }
+  }
+
   .portal-links {
     margin-left: 3em;
     position: relative;

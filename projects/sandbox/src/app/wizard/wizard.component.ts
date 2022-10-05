@@ -53,7 +53,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
   @ViewChild(RecordReportComponent, { static: false }) reportComponent: RecordReportComponent;
 
-  enableDynamicInfo = true;
+  enableDynamicInfo = false;
 
   formProgress = this.fb.group({
     datasetToTrack: ['', [Validators.required, this.validateDatasetId.bind(this)]]

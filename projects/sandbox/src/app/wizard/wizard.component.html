@@ -75,9 +75,13 @@
       }"
       class="wizard-section"
     >
-      <!-- Show dataset-info component for dataset prooblem viewer -->
+      <!-- Show dataset-info component for dataset problem viewer -->
       <span *ngIf="enableDynamicInfo && problemPatternsDataset">
-        <sb-dataset-info [datasetId]="problemPatternsDataset.datasetId" [enableDynamicInfo]="true">
+        <sb-dataset-info
+          [datasetId]="problemPatternsDataset.datasetId"
+          [pushHeight]="problemPatternsDataset.problemPatternList.length === 0"
+          [enableDynamicInfo]="true"
+        >
         </sb-dataset-info>
       </span>
 

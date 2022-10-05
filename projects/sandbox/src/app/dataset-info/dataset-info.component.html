@@ -40,16 +40,11 @@
 
 <ul class="dataset-info container-h" *ngIf="datasetInfo">
   <!-- left col -->
-  <li class="left-col">
+  <li class="left-col" [ngClass]="{ 'push-height': pushHeight && fullInfoOpen }">
     <ul>
       <li class="container-h">
         <!-- optional link on dataset name -->
-        <h2
-          *ngIf="!enableDynamicInfo"
-          class="dataset-name"
-          i18n="progress title"
-          [ngClass]="{ open: fullInfoOpen }"
-        >
+        <h2 *ngIf="!enableDynamicInfo" class="dataset-name" i18n="progress title">
           <span class="title-name" [ngClass]="{ tick: processingComplete }">{{
             datasetInfo['dataset-name']
           }}</span>
