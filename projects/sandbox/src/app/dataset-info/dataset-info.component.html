@@ -77,7 +77,7 @@
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           Country / Language:
         </span>
-        <span class="country-language">
+        <span class="country-language ignore-close-click">
           {{ datasetInfo.country }} / {{ datasetInfo.language }}
         </span>
       </li>
@@ -88,7 +88,7 @@
         </span>
         <span
           data-e2e="creation-date"
-          class="creation-date container-h nowrap"
+          class="creation-date container-h ignore-close-click nowrap"
           [title]="datasetInfo['record-limit-exceeded'] ? 'Some records not processed' : ''"
           [ngClass]="{ 'warning-icon': datasetInfo['record-limit-exceeded'] }"
         >

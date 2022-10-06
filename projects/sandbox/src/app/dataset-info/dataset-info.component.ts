@@ -14,7 +14,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   public formatDate = formatDate;
   public readonly ignoreClassesList = [
     'dataset-name',
-    'creation-date',
+    'ignore-close-click',
     'modal-wrapper',
     'top-level-nav'
   ];
