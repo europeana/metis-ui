@@ -31,6 +31,7 @@ export class ProblemViewerComponent extends SubscriptionManager {
 
   @Output() openLinkEvent = new EventEmitter<string>();
   @Input() recordId: string;
+  @Input() enableDynamicInfo = false;
 
   @Input() set problemPatternsDataset(problemPatternsDataset: ProblemPatternsDataset) {
     problemPatternsDataset.problemPatternList.forEach((pp: ProblemPattern) => {

@@ -62,9 +62,11 @@
       *ngIf="progressData"
       [showing]="currentStepType === EnumWizardStepType.PROGRESS_TRACK"
       [progressData]="progressData"
+      [datsetInfo]="progressData['dataset-info']"
       [datasetId]="trackDatasetId"
       [isLoading]="isPollingProgress"
       (openReport)="openReport($event)"
+      [enableDynamicInfo]="enableDynamicInfo"
     ></sb-progress-tracker>
 
     <div
@@ -73,10 +75,21 @@
       }"
       class="wizard-section"
     >
+      <!-- Show dataset-info component for dataset problem viewer -->
+      <span *ngIf="enableDynamicInfo && problemPatternsDataset">
+        <sb-dataset-info
+          [datasetId]="problemPatternsDataset.datasetId"
+          [pushHeight]="problemPatternsDataset.problemPatternList.length === 0"
+          [enableDynamicInfo]="true"
+        >
+        </sb-dataset-info>
+      </span>
+
       <sb-problem-viewer
         *ngIf="problemPatternsDataset"
         [problemPatternsDataset]="problemPatternsDataset"
         (openLinkEvent)="followProblemPatternLink($event)"
+        [enableDynamicInfo]="enableDynamicInfo"
       ></sb-problem-viewer>
     </div>
 

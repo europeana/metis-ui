@@ -4,7 +4,6 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
 import {
-  Dataset,
   DatasetInfo,
   DatasetStatus,
   FieldOption,
@@ -17,7 +16,7 @@ import {
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { ProgressByStepStatus, TimedTarget } from './models/models';
+import { DatasetWithInfo, ProgressByStepStatus, TimedTarget } from './models/models';
 import { ReportGenerator } from './report-generator';
 
 new (class extends TestDataServer {
@@ -175,7 +174,7 @@ new (class extends TestDataServer {
    * Initialises and returns a new Dataset object
    *
    * @param {number} totalRecords - the value for the result's 'total-records'
-   * @returns {Dataset}
+   * @returns {DatasetWithInfo}
    **/
   initialiseDataset(
     datasetId: string,
@@ -183,7 +182,7 @@ new (class extends TestDataServer {
     datasetName?: string,
     country?: string,
     language?: string
-  ): Dataset {
+  ): DatasetWithInfo {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
@@ -305,6 +304,9 @@ new (class extends TestDataServer {
       dataset.status = DatasetStatus.COMPLETED;
       if (timedTarget.timesCalled >= 5) {
         dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
+        dataset['dataset-info'] = (Object.assign(dataset['dataset-info'], {
+          'end-date': `${new Date().toISOString()}`
+        }) as unknown) as DatasetInfo;
       }
       const tierZeroInfo = dataset['tier-zero-info'];
       if (tierZeroInfo) {
@@ -375,7 +377,7 @@ new (class extends TestDataServer {
    *
    *  @param {string} id - the id to track
    **/
-  handleId(id: string): Dataset {
+  handleId(id: string): DatasetWithInfo {
     const timedTarget = this.timedTargets.get(id);
     if (timedTarget) {
       return timedTarget.dataset;
@@ -409,9 +411,9 @@ new (class extends TestDataServer {
    *  Derives progressBurndown data and adds it to a TimedTarget
    *
    * @param { string } id - object identity
-   * @param { Dataset } dataset - the timed target dataset
+   * @param { DatasetWithInfo } dataset - the timed target dataset
    **/
-  addTimedTarget(id: string, dataset: Dataset): void {
+  addTimedTarget(id: string, dataset: DatasetWithInfo): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
@@ -644,6 +646,24 @@ new (class extends TestDataServer {
           return;
         }
 
+        // get dataset info
+
+        const regResDatasetInfo = /\/dataset-info\/([A-Za-z0-9_]+)$/.exec(route);
+
+        if (regResDatasetInfo) {
+          const id = regResDatasetInfo[1];
+          if (this.errorCodes.indexOf(id) > -1) {
+            response.statusCode = parseInt(id);
+            response.end();
+          } else {
+            this.headerJSON(response);
+            response.end(JSON.stringify(this.handleId(id)['dataset-info']));
+          }
+          return;
+        }
+
+        // get dataset progress
+
         const regResDataset = /\/dataset\/([A-Za-z0-9_]+)$/.exec(route);
 
         if (regResDataset) {
@@ -710,12 +730,6 @@ new (class extends TestDataServer {
                       return this.generateProblem(idNumeric, parseInt(i));
                     })
             } as ProblemPatternsDataset;
-
-            // Update last-analysis reference (dataset-info created if inexistent)
-            const dataset = this.handleId(id);
-            dataset['dataset-info'] = (Object.assign(dataset['dataset-info'], {
-              'problem-analysis-date': problemsDataset.executionTimestamp
-            }) as unknown) as DatasetInfo;
 
             // apply possible delay to response
             setTimeout(

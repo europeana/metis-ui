@@ -38,18 +38,13 @@
   </ng-container>
 </ng-template>
 
-<ul class="dataset-info container-h">
+<ul class="dataset-info container-h" *ngIf="datasetInfo">
   <!-- left col -->
-  <li class="left-col">
+  <li class="left-col" [ngClass]="{ 'push-height': pushHeight && fullInfoOpen }">
     <ul>
       <li class="container-h">
         <!-- optional link on dataset name -->
-        <h2
-          *ngIf="!enableDynamicInfo"
-          class="dataset-name"
-          i18n="progress title"
-          [ngClass]="{ open: fullInfoOpen }"
-        >
+        <h2 *ngIf="!enableDynamicInfo" class="dataset-name" i18n="progress title">
           <span class="title-name" [ngClass]="{ tick: processingComplete }">{{
             datasetInfo['dataset-name']
           }}</span>
@@ -78,20 +73,22 @@
 
       <!-- label-and-slide -->
 
-      <li data-e2e="country-language" class="container-h nowrap">
+      <li class="container-h nowrap" data-e2e="country-language">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           Country / Language:
         </span>
-        <span> {{ datasetInfo.country }} / {{ datasetInfo.language }} </span>
+        <span class="country-language ignore-close-click">
+          {{ datasetInfo.country }} / {{ datasetInfo.language }}
+        </span>
       </li>
 
-      <li class="container-h nowrap">
+      <li class="container-h nowrap" *ngIf="datasetInfo['creation-date']; let date">
         <span class="slide-right-label" [ngClass]="{ open: fullInfoOpen }">
           Creation Date:
         </span>
         <span
           data-e2e="creation-date"
-          class="creation-date container-h nowrap"
+          class="creation-date container-h ignore-close-click nowrap"
           [title]="datasetInfo['record-limit-exceeded'] ? 'Some records not processed' : ''"
           [ngClass]="{ 'warning-icon': datasetInfo['record-limit-exceeded'] }"
         >
@@ -111,9 +108,7 @@
             <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
           </a>
           <ng-template #conditionalWrapWarnLink
-            ><span>{{
-              formatDate(datasetInfo['creation-date'], 'dd/MM/yyyy, HH:mm:ss', 'en-GB')
-            }}</span></ng-template
+            ><span>{{ formatDate(date, 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}</span></ng-template
           >
         </span>
       </li>
@@ -126,7 +121,7 @@
           open: fullInfoOpen
         }"
         libClickAware
-        [ignoreClasses]="['dataset-name', 'creation-date', 'modal-wrapper']"
+        [ignoreClasses]="ignoreClassesList"
         [clickAwareIgnoreWhen]="!fullInfoOpen"
         (clickOutside)="closeFullInfo()"
       >
@@ -146,8 +141,8 @@
                   newField;
                   context: {
                     ob: datasetInfo,
-                    label: 'Last Problem Analysis',
-                    val: 'problem-analysis-date',
+                    label: 'End Date',
+                    val: 'end-date',
                     isDate: true
                   }
                 "

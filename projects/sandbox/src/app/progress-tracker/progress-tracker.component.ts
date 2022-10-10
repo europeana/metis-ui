@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   Dataset,
+  DatasetInfo,
   DatasetStatus,
   DisplayedTier,
   ProgressByStep,
@@ -21,7 +22,17 @@ import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 export class ProgressTrackerComponent extends SubscriptionManager {
   public formatDate = formatDate;
   public DisplayedTier = DisplayedTier;
+  public readonly ignoreClassesList = [
+    'link-internal:not(.dataset-name)',
+    'nav-orb',
+    'sb-navigation-orbs',
+    'creation-date',
+    'modal-wrapper'
+  ];
   _progressData: Dataset;
+
+  @Input() enableDynamicInfo = false;
+  @Input() datsetInfo: DatasetInfo;
 
   @Input() set progressData(data: Dataset) {
     if (!this.warningViewOpen) {

@@ -3,9 +3,8 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager } from 'shared';
+import { KeyedCache, SubscriptionManager } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { KeyedCache } from '../_helpers';
 import {
   CancellationRequest,
   DatasetOverview,

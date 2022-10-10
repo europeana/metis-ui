@@ -244,13 +244,12 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .warning-view-content {
-  background: #a5e4ce;
+  background: $eu-light-jade-classic;
   border-right: 1px dotted $grey-3;
   border-top: 1px solid $grey-3;
   border-bottom: 1px dotted $grey-3;
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 0.75em 1em 0.75em 1em;
   width: 40em;
 

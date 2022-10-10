@@ -1,10 +1,11 @@
-<ng-container *ngIf="progressData['dataset-info']; let info">
+<ng-container *ngIf="datsetInfo">
   <sb-dataset-info
     [ngClass]="{ hidden: !showing }"
-    [datasetInfo]="info"
+    [datasetInfo]="datsetInfo"
     [processingComplete]="isComplete()"
     [publishUrl]="progressData['portal-publish']"
     [processingError]="progressData['error-type']"
+    [enableDynamicInfo]="enableDynamicInfo"
   >
   </sb-dataset-info>
 </ng-container>
@@ -92,7 +93,7 @@
 
       <span
         class="full-grid-width"
-        *ngIf="i === 0 && progressData['dataset-info']['record-limit-exceeded']"
+        *ngIf="i === 0 && datsetInfo && datsetInfo['record-limit-exceeded']"
         data-e2e="warn-limit-reached"
       >
         <a
@@ -120,7 +121,7 @@
     >
       <sb-navigation-orbs
         libClickAware
-        [ignoreClasses]="['link-internal:not(.dataset-name)', 'nav-orb', 'warning-view-content']"
+        [ignoreClasses]="ignoreClassesList"
         [clickAwareIgnoreWhen]="!showing"
         (clickOutside)="closeWarningView()"
         ariaLabel="Tier Zero Warnings Navigation"
@@ -137,7 +138,7 @@
       <div
         class="warning-view-content"
         libClickAware
-        [ignoreClasses]="['link-internal:not(.dataset-name)', 'nav-orb', 'sb-navigation-orbs']"
+        [ignoreClasses]="ignoreClassesList"
         [clickAwareIgnoreWhen]="!showing"
         (clickOutside)="closeWarningView()"
       >

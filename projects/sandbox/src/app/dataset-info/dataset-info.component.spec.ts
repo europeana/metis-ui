@@ -1,9 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { mockDataset } from '../_mocked';
+import { mockDatasetInfo, MockSandboxService } from '../_mocked';
+import { SandboxService } from '../_services';
 import { DatasetInfoComponent } from '.';
-
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
@@ -11,20 +11,28 @@ describe('DatasetInfoComponent', () => {
   let component: DatasetInfoComponent;
   let fixture: ComponentFixture<DatasetInfoComponent>;
   let modalConfirms: ModalConfirmService;
+  let sandbox: SandboxService;
 
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
-      providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
+      providers: [
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
+        {
+          provide: SandboxService,
+          useClass: MockSandboxService
+        }
+      ],
       declarations: [DatasetInfoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
+    sandbox = TestBed.inject(SandboxService);
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DatasetInfoComponent);
     component = fixture.componentInstance;
-    component.datasetInfo = mockDataset['dataset-info'];
+    component.datasetInfo = mockDatasetInfo;
   };
 
   const getConfirmResult = (): Observable<boolean> => {
@@ -66,5 +74,13 @@ describe('DatasetInfoComponent', () => {
     expect(component.fullInfoOpen).toBeFalsy();
     component.closeFullInfo();
     expect(component.fullInfoOpen).toBeFalsy();
+  });
+
+  it('should load data when the datasetId is set', () => {
+    spyOn(sandbox, 'requestDatasetInfo').and.callThrough();
+    fixture.detectChanges();
+    expect(component.datasetId).toBeFalsy();
+    component.datasetId = '1';
+    expect(sandbox.requestDatasetInfo).toHaveBeenCalled();
   });
 });
