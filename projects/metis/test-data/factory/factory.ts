@@ -257,7 +257,7 @@ function runWorkflow(workflow: WorkflowX, executionId: string): WorkflowExecutio
   return workflowExecution;
 }
 
-function generatePluginMetadata(pType: PluginType): PluginMetadata {
+function generatePluginMetadata(pType: PluginType, metadataIndex = 1): PluginMetadata {
   return {
     pluginType: pType,
     enabled: true,
@@ -266,7 +266,12 @@ function generatePluginMetadata(pType: PluginType): PluginMetadata {
     setSpec: pType === PluginType.OAIPMH_HARVEST ? 'setSpec' : undefined,
     incrementalHarvest: pType === PluginType.OAIPMH_HARVEST ? true : undefined,
     customXslt: pType === PluginType.TRANSFORMATION ? false : undefined,
-    throttlingLevel: ThrottleLevel.STRONG
+    throttlingLevel:
+      pType === PluginType.MEDIA_PROCESS
+        ? metadataIndex % 2 === 1
+          ? ThrottleLevel.STRONG
+          : ThrottleLevel.WEAK
+        : undefined
   } as PluginMetadata;
 }
 
@@ -363,9 +368,11 @@ datasetXs = ((): Array<DatasetX> => {
         conf: {
           expectedRecords: 879
         },
-        metisPluginsMetadata: fullSequenceTypesOAIPMH.map((type: PluginType) => {
-          return generatePluginMetadata(type);
-        })
+        metisPluginsMetadata: fullSequenceTypesOAIPMH.map(
+          (type: PluginType, metadataIndex: number) => {
+            return generatePluginMetadata(type, metadataIndex);
+          }
+        )
       },
       {
         conf: {
