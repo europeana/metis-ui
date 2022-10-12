@@ -29,6 +29,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
     'creation-date',
     'modal-wrapper'
   ];
+
+  readonly fieldContentTier = 'content-tier';
+  readonly fieldMetadataTier = 'metadata-tier';
+  readonly fieldTierZeroInfo = 'tier-zero-info';
+
   _progressData: Dataset;
 
   @Input() enableDynamicInfo = false;
@@ -39,11 +44,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
       // reset the notification flag unless the user's already looking at it
       this.warningViewOpened = [false, false];
     }
-    const tierInfo = data['tier-zero-info'];
+    const tierInfo = data[this.fieldTierZeroInfo];
     if (tierInfo) {
       // add placeholder content-tier data if only metadata-tier data is present
-      if (tierInfo['metadata-tier'] && !tierInfo['content-tier']) {
-        tierInfo['content-tier'] = {
+      if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
+        tierInfo[this.fieldContentTier] = {
           samples: [],
           total: 0
         };
@@ -84,9 +89,10 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   getOrbConfigOuter(i: number): ClassMap {
     if (this.progressData && i === DisplayedTier.CONTENT) {
-      const tierInfo = this.progressData['tier-zero-info'];
+      const tierInfo = this.progressData[this.fieldTierZeroInfo];
       if (tierInfo) {
-        if (tierInfo['content-tier'] && tierInfo['content-tier'].total === 0) {
+        const infoContentTier = tierInfo[this.fieldContentTier];
+        if (infoContentTier && infoContentTier.total === 0) {
           return {
             hidden: true
           };
@@ -101,9 +107,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns { number }
    **/
   getOrbConfigCount(): number {
-    const tierInfo = this.progressData['tier-zero-info'];
+    const tierInfo = this.progressData[this.fieldTierZeroInfo];
     if (tierInfo) {
-      if (tierInfo['metadata-tier']) {
+      if (tierInfo[this.fieldMetadataTier]) {
         return 2;
       }
       return 1;
