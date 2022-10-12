@@ -6,7 +6,7 @@ export function MatchPasswordValidator(ac: AbstractControl): ValidationErrors | 
   };
 
   const getValue = (fieldName: string): string => {
-    return getField(fieldName).value as string;
+    return getField(fieldName).value;
   };
 
   if (getValue('password') !== getValue('confirm')) {

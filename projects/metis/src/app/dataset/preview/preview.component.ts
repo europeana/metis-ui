@@ -561,35 +561,36 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
     const pluginType = filterPlugin ? filterPlugin.pluginType : null;
     const executionId = this.previewFilters.baseFilter.executionId;
 
-    if (executionId && pluginType) {
-      this.searchError = false;
-      this.isLoadingSearch = true;
-      this.subs.push(
-        this.workflows.searchWorkflowRecordsById(executionId, pluginType, searchTerm).subscribe(
-          (result: XmlSample) => {
-            if (result) {
-              this.previewFilters.searchedRecordId = searchTerm;
-              const searchedSample = Object.assign(result, { label: searchTerm });
-              if (comparison) {
-                this.searchedXMLSampleCompare = searchedSample;
-              } else {
-                this.searchedXMLSample = searchedSample;
-              }
-              this.setPreviewFilters.emit(this.previewFilters);
-            } else {
-              this.previewFilters.searchedRecordId = undefined;
-              this.searchError = true;
-              this.searchedXMLSample = undefined;
-            }
-            this.isLoadingSearch = false;
-          },
-          (error: HttpErrorResponse) => {
-            this.notification = httpErrorNotification(error);
-            this.searchedXMLSample = undefined;
-            this.isLoadingSearch = false;
-          }
-        )
-      );
+    if (!(executionId && pluginType)) {
+      return;
     }
+    this.searchError = false;
+    this.isLoadingSearch = true;
+    this.subs.push(
+      this.workflows.searchWorkflowRecordsById(executionId, pluginType, searchTerm).subscribe(
+        (result: XmlSample) => {
+          if (result) {
+            this.previewFilters.searchedRecordId = searchTerm;
+            const searchedSample = Object.assign(result, { label: searchTerm });
+            if (comparison) {
+              this.searchedXMLSampleCompare = searchedSample;
+            } else {
+              this.searchedXMLSample = searchedSample;
+            }
+            this.setPreviewFilters.emit(this.previewFilters);
+          } else {
+            this.previewFilters.searchedRecordId = undefined;
+            this.searchError = true;
+            this.searchedXMLSample = undefined;
+          }
+          this.isLoadingSearch = false;
+        },
+        (error: HttpErrorResponse) => {
+          this.notification = httpErrorNotification(error);
+          this.searchedXMLSample = undefined;
+          this.isLoadingSearch = false;
+        }
+      )
+    );
   }
 }

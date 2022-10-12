@@ -507,7 +507,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       const match = valRecord.match(/\/(\d+)\/\S/);
       const connect = valDataset.length > 0 && valRecord.length > 0 && !!match;
 
-      (res.connect = connect), (res.error = connect && match[1] !== valDataset);
+      res.connect = connect;
+      res.error = connect && match[1] !== valDataset;
 
       if (connect) {
         res[other] = true;

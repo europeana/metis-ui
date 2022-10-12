@@ -212,7 +212,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
   /** fieldHasValue
   /* indicates if specified field value has been set
   */
-  fieldHasValue(fieldName: keyof Dataset): boolean {
+  fieldHasValue(fieldName: keyof Dataset): fieldName is keyof Dataset {
     return !!(this.datasetForm.get(fieldName) as FormControl).value;
   }
 
