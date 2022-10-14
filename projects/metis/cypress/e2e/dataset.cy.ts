@@ -28,6 +28,12 @@ context('metis-ui', () => {
       cy.get('.search-form').should('have.length', 1);
     });
 
+    it('should show the throttle level', () => {
+      cy.get('.last-execution')
+        .contains(`Weak Throttle`)
+        .should('exist');
+    });
+
     it('should show the dataset, general info, status, history and redirection ids', () => {
       cy.get('.dataset-name').contains('Dataset_1');
       cy.get('.depublication-status').should('have.length', 1);

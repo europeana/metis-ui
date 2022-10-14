@@ -304,7 +304,8 @@
   }
 }
 
-.pill-harvest {
+.pill-harvest,
+.pill-throttle {
   background-position: 2px center;
   background-repeat: no-repeat;
   background-size: 14px;
@@ -338,4 +339,21 @@
   &.incremental {
     background-image: svg-url-icon-harvest-incremental($eu-jade);
   }
+
+  &.pill-throttle.weak {
+    background-image: svg-url-icon-throttle($eu-jade, $eu-jade, $eu-jade);
+  }
+
+  &.pill-throttle.medium {
+    background-image: svg-url-icon-throttle($eu-jade, $eu-jade, $eu-light-jade);
+  }
+
+  &.pill-throttle.strong {
+    background-image: svg-url-icon-throttle($eu-jade, $eu-light-jade, $eu-light-jade);
+  }
+}
+
+.pill-throttle {
+  background-position: 5px 3px;
+  background-size: 12px;
 }

@@ -54,5 +54,11 @@ context('metis-ui', () => {
     it('should show the user who started an execution', () => {
       cy.contains(`Started by ${userName}`).should('exist');
     });
+
+    it('should show the throttle level', () => {
+      cy.get('.history')
+        .contains(`Strong Throttle`)
+        .should('exist');
+    });
   });
 });
