@@ -1,5 +1,6 @@
+<!-- prettier-ignore -->
 <ng-template #tmpProcessingError>
-  <li *ngIf="processingError" class="align-left">
+  <!-- //NOSONAR --><li *ngIf="processingError" class="align-left">
     <span class="preview-unavailable">
       <a (click)="showProcessingErrors()">Preview Unavailable</a>
     </span>
@@ -15,8 +16,9 @@
   </li>
 </ng-template>
 
+<!-- prettier-ignore -->
 <ng-template #tmpLinkPublished>
-  <li class="portal-links" [ngClass]="{ available: !processingError && publishUrl }">
+  <!-- //NOSONAR --><li class="portal-links" [ngClass]="{ available: !processingError && publishUrl }">
     <ng-template #labelRefPublish
       ><span i18n="progress link link@@progressLinkPublish"
         >view published records</span
@@ -27,12 +29,12 @@
 </ng-template>
 
 <!-- Temporary template to output fields that aren't in the model -->
-
 <ng-template let-ob="ob" let-val="val" let-label="label" let-isDate="isDate" #newField>
+  <!-- prettier-ignore -->
   <ng-container *ngIf="ob[val]">
-    <li class="grid-label">{{ label }}:</li>
-    <li *ngIf="!isDate" class="align-right">{{ ob[val] }}</li>
-    <li *ngIf="isDate" class="align-right">
+    <!-- //NOSONAR --><li class="grid-label">{{ label }}:</li>
+    <!-- //NOSONAR --><li *ngIf="!isDate" class="align-right">{{ ob[val] }}</li>
+    <!-- //NOSONAR --><li *ngIf="isDate" class="align-right">
       {{ formatDate(ob[val], 'dd/MM/yyyy, HH:mm:ss', 'en-GB') }}
     </li>
   </ng-container>
