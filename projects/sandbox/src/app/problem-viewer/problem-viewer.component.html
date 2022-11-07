@@ -1,4 +1,25 @@
 <div class="wrapper">
+  <!-- skip arrows -->
+  <ng-template #tmpSkipArrows>
+    <span
+      *ngIf="problemCount > 1 && (viewerVisibleIndex > 0 || canScrollDown())"
+      class="skip-arrows"
+    >
+      <a
+        class="skip-arrow up"
+        title="Go to previous"
+        [ngClass]="{ enabled: viewerVisibleIndex > 0 }"
+        (click)="skipToProblem(viewerVisibleIndex - 1)"
+      ></a>
+      <a
+        class="skip-arrow"
+        title="Go to next"
+        [ngClass]="{ enabled: canScrollDown() }"
+        (click)="skipToProblem(viewerVisibleIndex + 1)"
+      ></a>
+    </span>
+  </ng-template>
+
   <!-- Modal -->
   <ng-template #tmpModal let-modalInstanceId="modalInstanceId">
     <lib-modal
@@ -208,8 +229,14 @@
   </ng-template>
 
   <!-- Problem Pattern (record) -->
-  <ng-template #tmpProblemPattern let-problemPattern="problemPattern" let-datasetId="datasetId">
-    <div class="problem-pattern">
+  <ng-template
+    #tmpProblemPattern
+    let-problemPattern="problemPattern"
+    let-datasetId="datasetId"
+    let-index="index"
+    let-totalProblems="totalProblems"
+  >
+    <div class="problem-pattern" #problemType>
       <span class="problem-header">
         <a
           (click)="showDescriptionModal(problemPattern.problemPatternDescription.problemPatternId)"
@@ -236,17 +263,19 @@
         <ng-template ngPluralCase="=1"> record</ng-template>
         <ng-template ngPluralCase="other"> records</ng-template>
       </span>
-      <ng-content
-        *ngTemplateOutlet="
-          tmpRecordAnalysisList;
-          context: {
-            analyses: problemPattern.recordAnalysisList,
-            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle,
-            datasetId: datasetId,
-            ppId: problemPattern.problemPatternDescription.problemPatternId
-          }
-        "
-      ></ng-content>
+      <ng-container *ngIf="!problemPattern.closed">
+        <ng-content
+          *ngTemplateOutlet="
+            tmpRecordAnalysisList;
+            context: {
+              analyses: problemPattern.recordAnalysisList,
+              problemTitle: problemPattern.problemPatternDescription.problemPatternTitle,
+              datasetId: datasetId,
+              ppId: problemPattern.problemPatternDescription.problemPatternId
+            }
+          "
+        ></ng-content>
+      </ng-container>
     </div>
   </ng-template>
 
@@ -273,13 +302,20 @@
         Record: {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
       </h2>
     </div>
+
     <div *ngIf="problemPatternsRecord.length > 0" class="problem-viewer record">
+      <ng-content *ngTemplateOutlet="tmpSkipArrows"></ng-content>
       <ng-container>
-        <ng-container *ngFor="let problemPattern of problemPatternsRecord">
+        <ng-container *ngFor="let problemPattern of problemPatternsRecord; let i = index">
           <ng-content
             *ngTemplateOutlet="
               tmpProblemPattern;
-              context: { problemPattern: problemPattern, datasetId: '' }
+              context: {
+                problemPattern: problemPattern,
+                datasetId: '',
+                index: i,
+                totalProblems: problemPatternsRecord.length
+              }
             "
           ></ng-content>
         </ng-container>
@@ -312,19 +348,26 @@
     </ul>
 
     <ng-template #problemViewer>
-      <div class="problem-viewer">
+      <div class="problem-viewer" (scroll)="onScroll($event)">
+        <ng-content *ngTemplateOutlet="tmpSkipArrows"></ng-content>
         <ng-container>
-          <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
+          <ng-container *ngFor="let problemPattern of ppd.problemPatternList; let i = index">
             <ng-content
               *ngTemplateOutlet="
                 tmpProblemPattern;
-                context: { problemPattern: problemPattern, datasetId: ppd.datasetId }
+                context: {
+                  problemPattern: problemPattern,
+                  datasetId: ppd.datasetId,
+                  index: i,
+                  totalProblems: ppd.problemPatternList.length
+                }
               "
             ></ng-content>
           </ng-container>
         </ng-container>
       </div>
     </ng-template>
+
     <h3 class="problem-viewer" *ngIf="ppd.problemPatternList.length === 0; else problemViewer">
       <span class="bold tick">No Problem Patterns Found for Dataset</span>
     </h3>

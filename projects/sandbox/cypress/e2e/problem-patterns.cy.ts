@@ -79,6 +79,13 @@ context('Sandbox', () => {
           .filter(':visible')
           .should('exist');
       });
+
+      it('should show problem navigation arrows', () => {
+        cy.visit('/dataset/101?view=problems');
+        cy.get('.skip-arrows')
+          .filter(':visible')
+          .should('exist');
+      });
     });
 
     describe('(record)', () => {
