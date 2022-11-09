@@ -190,8 +190,13 @@ label {
 }
 
 q {
-  quotes: '“' '„';
   margin-left: 1em;
+  quotes: '“' '„';
+
+  &.quote-header {
+    line-height: 1.3em;
+    margin-left: 0.5em;
+  }
 }
 
 .message {
@@ -250,8 +255,11 @@ q {
 
 .title-record-occurences {
   color: $gray-light;
+  display: flex;
+  margin: 2px 0 6px 0;
   strong {
     color: $gray-med;
+    margin: 0 0.25em;
   }
 }
 
@@ -325,7 +333,7 @@ q {
     .link-related::after {
       border-left: 1px solid $eu-jade-light;
       content: '——';
-      height: 2.5em;
+      height: calc(100% + 0.8em);
       line-height: 1.6em;
       overflow: hidden;
     }
@@ -344,13 +352,13 @@ q {
     top: 18px;
   }
 
-  .list-opener.is-open::before {
+  .list-opener:not(.fmt-compact).is-open::before {
     border-left: 1px solid $eu-jade-light;
     content: '';
-    height: 96px;
+    height: 80px;
     left: 5px;
     position: absolute;
-    top: -3.5em;
+    top: -2.5em;
     width: 1px;
   }
 }
