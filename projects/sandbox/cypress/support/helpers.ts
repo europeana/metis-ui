@@ -12,6 +12,7 @@ import {
 } from '../support/selectors';
 
 const noScrollCheck = { ensureScrollable: false };
+const force = { force: true };
 
 export const uploadFile = (fileName: string, fileType = '', selector: string): void => {
   cy.get(selector).then((subject) => {
@@ -23,7 +24,7 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(testFile);
         el.files = dataTransfer.files;
-        cy.wrap(subject).trigger('change', { force: true });
+        cy.wrap(subject).trigger('change', force);
         console.log(el.files);
       });
   });
@@ -32,19 +33,19 @@ export const uploadFile = (fileName: string, fileType = '', selector: string): v
 export const fillUploadForm = (testDatasetName: string): void => {
   cy.get(selectorInputName).type(testDatasetName, { scrollBehavior: false });
   cy.get(selectorInputCountry).scrollIntoView();
-  cy.get(selectorInputCountry).select('Greece', { force: true });
-  cy.get(selectorInputLanguage).select('Greek', { force: true });
+  cy.get(selectorInputCountry).select('Greece', force);
+  cy.get(selectorInputLanguage).select('Greek', force);
   uploadFile('Test_Sandbox.zip', 'zip', selectorInputZipFile);
 };
 
 export const fillProgressForm = (id: string, problems = false): void => {
   cy.get(selectorInputDatasetId)
-    .clear()
+    .clear(force)
     .type(id);
   if (problems) {
-    cy.get(selectorBtnSubmitDatasetProblems).click();
+    cy.get(selectorBtnSubmitDatasetProblems).click(force);
   } else {
-    cy.get(selectorBtnSubmitProgress).click();
+    cy.get(selectorBtnSubmitProgress).click(force);
   }
 };
 
@@ -53,11 +54,11 @@ export const fillRecordForm = (id: string, problems = false): void => {
   cy.wait(500);
   cy.get(selectorInputRecordId)
     .should('be.visible')
-    .clear()
+    .clear(force)
     .type(id);
   if (problems) {
-    cy.get(selectorBtnSubmitRecordProblems).click();
+    cy.get(selectorBtnSubmitRecordProblems).click(force);
   } else {
-    cy.get(selectorBtnSubmitRecord).click();
+    cy.get(selectorBtnSubmitRecord).click(force);
   }
 };

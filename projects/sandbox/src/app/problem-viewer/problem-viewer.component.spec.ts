@@ -1,7 +1,16 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  async,
+  ComponentFixture,
+  discardPeriodicTasks,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { mockProblemPatternsDataset } from '../_mocked';
 import {
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
@@ -17,7 +26,8 @@ describe('ProblemViewerComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       declarations: [ProblemViewerComponent],
-      providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }]
+      providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };
 
@@ -86,5 +96,47 @@ describe('ProblemViewerComponent', () => {
     expect(modalConfirms.open).not.toHaveBeenCalled();
     component.showDescriptionModal(ProblemPatternId.P1);
     expect(modalConfirms.open).toHaveBeenCalled();
+  });
+
+  it('should check if downward scroll is possible', fakeAsync(() => {
+    expect(component.canScrollDown()).toBeFalsy();
+
+    component.problemPatternsDataset = mockProblemPatternsDataset;
+    tick();
+    fixture.detectChanges();
+    const problem = component.problemTypes.get(0);
+    expect(problem).toBeTruthy();
+
+    if (problem) {
+      problem.nativeElement.parentNode.scrollTop = 0;
+      problem.nativeElement.style.height = '5000px';
+      expect(component.canScrollDown()).toBeTruthy();
+    }
+    discardPeriodicTasks();
+  }));
+
+  it('should skip to the problem', () => {
+    component.problemPatternsDataset = mockProblemPatternsDataset;
+    fixture.detectChanges();
+    spyOn(component, 'updateViewerVisibleIndex');
+    component.skipToProblem(0);
+    expect(component.updateViewerVisibleIndex).toHaveBeenCalled();
+  });
+
+  it('should bind to the scroll event', () => {
+    let fakeResult = false;
+    const fakeEvent = {
+      target: {
+        closest: jasmine.createSpy().and.callFake(() => {
+          return fakeResult;
+        })
+      }
+    };
+    spyOn(component.scrollSubject, 'next');
+    component.onScroll((fakeEvent as unknown) as Event);
+    expect(component.scrollSubject.next).not.toHaveBeenCalled();
+    fakeResult = true;
+    component.onScroll((fakeEvent as unknown) as Event);
+    expect(component.scrollSubject.next).toHaveBeenCalled();
   });
 });
