@@ -1,14 +1,11 @@
 <div class="wrapper">
   <!-- skip arrows -->
   <ng-template #tmpSkipArrows>
-    <span
-      *ngIf="problemCount > 1 && (viewerVisibleIndex > 0 || canScrollDown())"
-      class="skip-arrows"
-    >
+    <span *ngIf="problemCount > 1 && (canScrollUp() || canScrollDown())" class="skip-arrows">
       <a
         class="skip-arrow up"
         title="Go to previous"
-        [ngClass]="{ enabled: viewerVisibleIndex > 0 }"
+        [ngClass]="{ enabled: canScrollUp() }"
         (click)="skipToProblem(viewerVisibleIndex - 1)"
       ></a>
       <a

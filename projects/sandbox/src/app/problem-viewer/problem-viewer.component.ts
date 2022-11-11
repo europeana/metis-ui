@@ -87,21 +87,40 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     super();
   }
 
+  /** getScrollableParent
+   *
+   * @returns HTMLElement or null
+   **/
+  getScrollableParent(problemIndex = 0): HTMLElement | null {
+    if (this.problemTypes) {
+      const problem = this.problemTypes.get(problemIndex);
+      if (problem && problem.nativeElement) {
+        return problem.nativeElement.parentNode;
+      }
+    }
+    return null;
+  }
+
+  /** canScrollUp
+   * template utility for arrow availability
+   * @returns boolean
+   **/
+  canScrollUp(): boolean {
+    const scrollEl = this.getScrollableParent();
+    if (scrollEl && scrollEl.scrollTop > 0) {
+      return scrollEl.scrollTop > 0;
+    }
+    return false;
+  }
+
   /** canScrollDown
    * template utility for arrow availability
    * @returns boolean
    **/
   canScrollDown(): boolean {
-    if (this.problemTypes) {
-      if (this.viewerVisibleIndex + 1 < this.problemCount) {
-        const problem = this.problemTypes.get(0);
-        if (problem && problem.nativeElement) {
-          const element = problem.nativeElement.parentNode;
-          if (element && element.scrollHeight > 0) {
-            return !(element.scrollTop + element.offsetHeight >= element.scrollHeight);
-          }
-        }
-      }
+    const scrollEl = this.getScrollableParent();
+    if (scrollEl && scrollEl.scrollHeight > 0) {
+      return !(scrollEl.scrollTop + scrollEl.offsetHeight >= scrollEl.scrollHeight);
     }
     return false;
   }
@@ -149,6 +168,9 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
    * updates scrollTop on the parent of the indexed ViewChild
    **/
   skipToProblem(index: number): void {
+    if (index < 0) {
+      index = 0;
+    }
     const prob = this.problemTypes.get(index);
     if (prob) {
       prob.nativeElement.parentNode.scrollTop = prob.nativeElement.offsetTop - 8;

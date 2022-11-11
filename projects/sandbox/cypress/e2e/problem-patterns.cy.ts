@@ -87,13 +87,6 @@ context('Sandbox', () => {
           .filter(':visible')
           .should('have.length', 2);
       });
-
-      it('should show problem navigation arrows', () => {
-        cy.visit('/dataset/101?view=problems');
-        cy.get('.skip-arrows')
-          .filter(':visible')
-          .should('exist');
-      });
     });
 
     describe('(record)', () => {
@@ -147,6 +140,27 @@ context('Sandbox', () => {
           testModalOpen();
           cy.get(selectorModalClose).click(force);
         });
+      });
+    });
+
+    describe('(error navigation)', () => {
+      it('should show the arrows (dataset)', () => {
+        cy.visit('/dataset/101?view=problems');
+        cy.get('.skip-arrows')
+          .filter(':visible')
+          .should('exist');
+      });
+
+      it('should not show the arrows if (record) viewer is not scrollable', () => {
+        cy.visit('/dataset/1?recordId=1&view=problems');
+        cy.get('.skip-arrows').should('not.exist');
+      });
+
+      it('should show the arrows if the (record) viewer is scrollable', () => {
+        cy.visit('/dataset/1478?recordId=121r9&view=problems');
+        cy.get('.skip-arrows')
+          .filter(':visible')
+          .should('exist');
       });
     });
   });

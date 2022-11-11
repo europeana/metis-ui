@@ -461,9 +461,11 @@ new (class extends TestDataServer {
   /**
    * generateProblem
    *
+   * @param ( number ) datasetId
+   * @param ( number ) patternIdIndex
    * @param ( string ) recordId
    **/
-  generateProblem(datasetId: number, patternId: number, recordId?: string): ProblemPattern {
+  generateProblem(datasetId: number, patternIdIndex: number, recordId?: string): ProblemPattern {
     const messageReports = {
       P1: ['My Title', 'My Other Title', "Can't people think of original titles?"],
       P2: [
@@ -486,15 +488,25 @@ new (class extends TestDataServer {
       ]
     };
 
-    const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number) => {
+    let indexMatch = -1;
+
+    const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number, index: number) => {
+      if (recordId && recordId.indexOf(`${id}`) === 0) {
+        indexMatch = index;
+      }
       return `P${id}` as ProblemPatternId;
     });
 
-    const resultId = patternIds[patternId % patternIds.length];
+    const resultId = patternIds[indexMatch > -1 ? indexMatch : patternIdIndex % patternIds.length];
 
-    let occurrenceCount = Math.max(1, (datasetId + patternId) % 4);
+    let occurrenceCount = Math.max(1, (datasetId + patternIdIndex) % 4);
 
-    if (resultId === 'P1' && patternId === 0) {
+    if (recordId && recordId.indexOf('x') > -1) {
+      const multiplier = parseInt(recordId.substr(recordId.indexOf('x') + 1, recordId.length));
+      if (!isNaN(multiplier)) {
+        occurrenceCount = occurrenceCount * multiplier;
+      }
+    } else if (resultId === 'P1' && patternIdIndex === 0) {
       occurrenceCount += 1;
     }
 
@@ -696,16 +708,27 @@ new (class extends TestDataServer {
 
             if (recordId && recordId.length > 1) {
               const recordIdNumeric = parseInt(recordId[1]);
-
               if (this.errorCodes.indexOf(recordId[1]) > -1) {
                 response.statusCode = parseInt(recordId[1]);
                 response.end();
                 return;
               }
-              const result =
-                recordIdNumeric % 2 === 0
-                  ? '[]'
-                  : JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
+
+              let result = '[]';
+
+              if (recordIdNumeric % 2 === 1) {
+                // Add problems as per subsequent characters in the (numeric) dataset id
+                result = JSON.stringify([
+                  this.generateProblem(idNumeric, 0, recordId[1]),
+                  ...`${idNumeric}`
+                    .slice(1)
+                    .split('')
+                    .map((numericPart: string) => {
+                      return this.generateProblem(idNumeric, parseInt(numericPart));
+                    })
+                ]);
+              }
+
               if (idNumeric > 999) {
                 setTimeout(() => {
                   response.end(result);
