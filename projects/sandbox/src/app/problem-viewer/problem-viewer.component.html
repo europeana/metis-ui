@@ -130,18 +130,21 @@
     let-ppId="ppId"
   >
     <ul class="problem-occurence">
-      <li class="message" *ngIf="occurence.messageReport; let message">
-        <q>
-          <span class="italic message-copy">
-            {{ message }}
-          </span>
-        </q>
-      </li>
+      <ng-container *ngIf="problemPatternsRecord || ppId !== ProblemPatternId.P1">
+        <li class="message" *ngIf="occurence.messageReport; let message">
+          <q>
+            <span class="italic message-copy">
+              {{ message }}
+            </span>
+          </q>
+        </li>
+      </ng-container>
       <ng-container *ngIf="!problemPatternsRecord && occurence.affectedRecordIds.length > 0">
         <li
           class="list-opener"
           [ngClass]="{
-            'is-open': occurence.affectedRecordIdsShowing
+            'is-open': occurence.affectedRecordIdsShowing,
+            'fmt-compact': [ProblemPatternId.P1, ProblemPatternId.P7].includes(ppId)
           }"
         >
           <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
@@ -187,6 +190,7 @@
   </ng-template>
 
   <!-- Record Analysis List -->
+
   <ng-template
     #tmpRecordAnalysisList
     let-analyses="analyses"
@@ -196,19 +200,35 @@
   >
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
+        <!-- duplicate titles - extended version for dataset problems -->
         <ng-container *ngIf="!problemPatternsRecord">
-          <ng-content
-            *ngTemplateOutlet="
-              internalLinkItem;
-              context: {
-                recordId: analysis.recordId,
-                datasetId: datasetId,
-                showConnectBelow:
-                  analysis.problemOccurrenceList[0].affectedRecordIds.length &&
-                  analysis.problemOccurrenceList[0].affectedRecordIdsShowing
-              }
-            "
-          ></ng-content>
+          <li
+            *ngIf="ppId === ProblemPatternId.P1"
+            class="link-related"
+            [ngClass]="{
+              'connect-to-below':
+                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
+                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+            }"
+          >
+            <q class="quote-header">
+              <span class="italic message-copy">
+                {{ analysis.problemOccurrenceList[0].messageReport }}
+              </span>
+            </q>
+          </li>
+
+          <ng-container
+            *ngIf="ppId !== ProblemPatternId.P1"
+            [ngTemplateOutlet]="internalLinkItem"
+            [ngTemplateOutletContext]="{
+              recordId: analysis.recordId,
+              datasetId: datasetId,
+              showConnectBelow:
+                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
+                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+            }"
+          ></ng-container>
         </ng-container>
 
         <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
@@ -262,6 +282,17 @@
         >Occurs in <strong>{{ problemPattern.recordOccurrences }}</strong>
         <ng-template ngPluralCase="=1"> record</ng-template>
         <ng-template ngPluralCase="other"> records</ng-template>
+
+        <!-- different title count -->
+        <ng-container
+          *ngIf="problemPattern.problemPatternDescription.problemPatternId === ProblemPatternId.P1"
+        >
+          <ng-container *ngIf="problemPattern.recordAnalysisList.length > 1">
+            with
+            <strong>{{ problemPattern.recordAnalysisList.length }}</strong>
+            different titles
+          </ng-container>
+        </ng-container>
       </span>
       <ng-container *ngIf="!problemPattern.closed">
         <ng-content

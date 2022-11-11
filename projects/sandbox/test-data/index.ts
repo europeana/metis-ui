@@ -465,7 +465,7 @@ new (class extends TestDataServer {
    **/
   generateProblem(datasetId: number, patternId: number, recordId?: string): ProblemPattern {
     const messageReports = {
-      P1: ['My Title', 'My Other Title'],
+      P1: ['My Title', 'My Other Title', "Can't people think of original titles?"],
       P2: [
         'The Descriptive Title',
         `The Descriptive Title: when all the good titles were taken
@@ -492,29 +492,33 @@ new (class extends TestDataServer {
 
     const resultId = patternIds[patternId % patternIds.length];
 
-    const occurenceList = new Array(Math.max(1, (datasetId + patternId) % 4))
-      .fill(null)
-      .map((_, occurenceIndex) => {
-        const messageReportGroup = messageReports[resultId];
-        return {
-          recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
-          problemOccurrenceList: [
-            {
-              messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
-              affectedRecordIds: Object.keys(new Array(occurenceIndex % 5).fill(null)).map(
-                (i, index) => {
-                  let suffix = '';
-                  if ((occurenceIndex + index) % 2 > 0) {
-                    suffix =
-                      '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
-                  }
-                  return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
+    let occurrenceCount = Math.max(1, (datasetId + patternId) % 4);
+
+    if (resultId === 'P1' && patternId === 0) {
+      occurrenceCount += 1;
+    }
+
+    const occurenceList = new Array(occurrenceCount).fill(null).map((_, occurenceIndex) => {
+      const messageReportGroup = messageReports[resultId];
+      return {
+        recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
+        problemOccurrenceList: [
+          {
+            messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
+            affectedRecordIds: Object.keys(new Array((occurenceIndex % 5) + 2).fill(null)).map(
+              (i, index) => {
+                let suffix = '';
+                if ((occurenceIndex + index) % 2 > 0) {
+                  suffix =
+                    '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
                 }
-              )
-            }
-          ]
-        };
-      });
+                return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
+              }
+            )
+          }
+        ]
+      };
+    });
 
     return {
       problemPatternDescription: {
