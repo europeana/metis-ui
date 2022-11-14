@@ -179,11 +179,13 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     this.recordLinksViewOpen = !this.recordLinksViewOpen;
     if (this.recordLinksViewOpen) {
       if (this.problemPatternsRecord && !this.processedRecordData) {
-        this.sandbox
-          .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
-          .subscribe((prd: ProcessedRecordData) => {
-            this.processedRecordData = prd;
-          });
+        this.subs.push(
+          this.sandbox
+            .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
+            .subscribe((prd: ProcessedRecordData) => {
+              this.processedRecordData = prd;
+            })
+        );
       }
     }
   }
