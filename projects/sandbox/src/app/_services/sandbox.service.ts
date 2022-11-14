@@ -14,8 +14,8 @@ import {
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
-  ProcessedRecordData,
   ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
