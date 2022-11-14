@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache, ProtocolType } from 'shared';
 
@@ -12,6 +14,8 @@ import {
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProcessedRecordData,
+  ProblemPatternsRecord,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -32,6 +36,43 @@ export class SandboxService {
   getProblemPatternsRecord(datasetId: string, recordId: string): Observable<Array<ProblemPattern>> {
     const url = `${apiSettings.apiHost}/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`;
     return this.http.get<Array<ProblemPattern>>(url);
+  }
+
+  /**
+  /* getProblemPatternsRecordWrapped
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<ProblemPatternsRecord>
+  **/
+  getProblemPatternsRecordWrapped(
+    datasetId: string,
+    recordId: string
+  ): Observable<ProblemPatternsRecord> {
+    return this.getProblemPatternsRecord(datasetId, recordId).pipe(
+      map((errorList) => {
+        return {
+          datasetId: datasetId,
+          problemPatternList: errorList
+        };
+      })
+    );
+  }
+
+  /**
+  /* getProcessedRecordData
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<ProcessedRecordData>
+  **/
+  getProcessedRecordData(datasetId: string, recordId: string): Observable<ProcessedRecordData> {
+    return this.getRecordReport(datasetId, recordId).pipe(
+      map((report: RecordReport) => {
+        return {
+          europeanaRecordId: report.recordTierCalculationSummary.europeanaRecordId,
+          portalRecordLink: report.recordTierCalculationSummary.portalRecordLink
+        };
+      })
+    );
   }
 
   /**

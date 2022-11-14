@@ -11,6 +11,7 @@ import {
   mockLanguages,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
+  mockProcessedRecordData,
   mockRecordReport
 } from '../_mocked';
 import {
@@ -18,6 +19,8 @@ import {
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -195,9 +198,6 @@ describe('sandbox service', () => {
   });
 
   it('should get the problem-patterns for records', () => {
-    console.log({} as ProblemPattern);
-    expect(true).toBeTruthy();
-
     const datasetId = '123';
     const recordId = '456';
     const sub = service
@@ -211,6 +211,38 @@ describe('sandbox service', () => {
         `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
       )
       .send(mockProblemPatternsRecord);
+    sub.unsubscribe();
+  });
+
+  it('should get the problem-patterns for records (wrapped)', () => {
+    const datasetId = '123';
+    const recordId = '456';
+    const sub = service
+      .getProblemPatternsRecordWrapped(datasetId, recordId)
+      .subscribe((pp: ProblemPatternsRecord) => {
+        expect(pp.problemPatternList).toEqual(mockProblemPatternsRecord);
+      });
+    mockHttp
+      .expect(
+        'GET',
+        `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
+      )
+      .send(mockProblemPatternsRecord);
+    sub.unsubscribe();
+  });
+
+  it('should get the processed record data', () => {
+    const datasetId = '123';
+    const recordId = '456';
+    const sub = service
+      .getProcessedRecordData(datasetId, recordId)
+      .subscribe((prd: ProcessedRecordData) => {
+        expect(prd).toEqual(mockProcessedRecordData);
+      });
+
+    mockHttp
+      .expect('GET', `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`)
+      .send(mockRecordReport);
     sub.unsubscribe();
   });
 });

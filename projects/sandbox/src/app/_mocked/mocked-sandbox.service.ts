@@ -6,6 +6,7 @@ import {
   mockDatasetInfo,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
+  mockProcessedRecordData,
   mockRecordReport
 } from '.';
 import {
@@ -15,6 +16,8 @@ import {
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -151,6 +154,24 @@ export class MockSandboxService {
       );
     }
     return of(mockProblemPatternsRecord).pipe(delay(1));
+  }
+
+  getProblemPatternsRecordWrapped(datasetId: string, _: string): Observable<ProblemPatternsRecord> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getProblemPatternsRecordWrapped throws error`));
+        })
+      );
+    }
+    return of({
+      datasetId: datasetId,
+      problemPatternList: mockProblemPatternsRecord
+    }).pipe(delay(1));
+  }
+
+  getProcessedRecordData(_: string, __: string): Observable<ProcessedRecordData> {
+    return of(mockProcessedRecordData);
   }
 }
 
