@@ -81,6 +81,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   getOrbConfigInner(i: number): ClassMap {
     return {
       'is-active': this.warningDisplayedTier === i,
+      'allow-active-clicks': this.getOrbConfigCount() === 1,
       'content-tier-orb': i === DisplayedTier.CONTENT,
       'metadata-tier-orb': i === DisplayedTier.METADATA,
       'warning-animated': !this.warningViewOpened[i]
@@ -168,10 +169,18 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   /**
    * setWarningView
-   * navigationOrbs output
+   * Template utility: navigationOrbs click output
    * @param { number } index - the warning view code
    **/
   setWarningView(index: DisplayedTier): void {
+    // close if only one option is present and is being set to the same value
+    if (this.getOrbConfigCount() === 1) {
+      if (this.warningDisplayedTier === index) {
+        this.closeWarningView();
+        return;
+      }
+    }
+
     this.warningDisplayedTier = index;
     this.warningViewOpen = true;
     this.warningViewOpened[index] = true;
