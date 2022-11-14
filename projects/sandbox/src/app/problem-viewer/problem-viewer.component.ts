@@ -14,6 +14,7 @@ import { debounceTime, tap } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
+import { apiSettings } from '../../environments/apisettings';
 import { problemPatternData } from '../_data';
 import {
   ProblemOccurrence,
@@ -22,8 +23,11 @@ import {
   ProblemPatternId,
   ProblemPatternsDataset,
   ProblemPatternSeverity,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordAnalysis
 } from '../_models';
+import { SandboxService } from '../_services';
 
 @Component({
   selector: 'sb-problem-viewer',
@@ -31,15 +35,19 @@ import {
   styleUrls: ['./problem-viewer.component.scss']
 })
 export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
+  public apiSettings = apiSettings;
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
   public ProblemPatternId = ProblemPatternId;
   public problemPatternData = problemPatternData;
+  public readonly ignoreClassesList = ['link-internal', 'nav-orb', 'record-links-view-content'];
 
-  _problemPatternsRecord: Array<ProblemPattern>;
+  _problemPatternsRecord: ProblemPatternsRecord;
   _problemPatternsDataset: ProblemPatternsDataset;
   modalInstanceId = 'modalDescription_dataset';
   problemCount = 0;
+  processedRecordData?: ProcessedRecordData;
+  recordLinksViewOpen = false;
   scrollSubject = new BehaviorSubject(true);
   visibleProblemPatternId: ProblemPatternId;
   viewerVisibleIndex = 0;
@@ -69,21 +77,26 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     return this._problemPatternsDataset;
   }
 
-  @Input() set problemPatternsRecord(problemPatternsRecord: Array<ProblemPattern>) {
+  @Input() set problemPatternsRecord(problemPatternsRecord: ProblemPatternsRecord) {
     this.problemCount = 0;
+    this.processedRecordData = undefined;
+
     // use timer to prevent ExpressionChangedAfterIthasBeenCheckedError
     setTimeout(() => {
-      this.problemCount = problemPatternsRecord.length;
+      this.problemCount = problemPatternsRecord.problemPatternList.length;
     });
     this.modalInstanceId = `modalDescription_record`;
     this._problemPatternsRecord = problemPatternsRecord;
   }
 
-  get problemPatternsRecord(): Array<ProblemPattern> {
+  get problemPatternsRecord(): ProblemPatternsRecord {
     return this._problemPatternsRecord;
   }
 
-  constructor(private readonly modalConfirms: ModalConfirmService) {
+  constructor(
+    private readonly sandbox: SandboxService,
+    private readonly modalConfirms: ModalConfirmService
+  ) {
     super();
   }
 
@@ -156,6 +169,23 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
       fatal: severity === ProblemPatternSeverity.FATAL,
       notice: severity === ProblemPatternSeverity.NOTICE
     };
+  }
+
+  /** openRecordLinksView
+   * toggles recordLinksViewOpen
+   * optionally loads RecordReport data
+   **/
+  openRecordLinksView(recordId: string): void {
+    this.recordLinksViewOpen = !this.recordLinksViewOpen;
+    if (this.recordLinksViewOpen) {
+      if (this.problemPatternsRecord && !this.processedRecordData) {
+        this.sandbox
+          .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
+          .subscribe((prd: ProcessedRecordData) => {
+            this.processedRecordData = prd;
+          });
+      }
+    }
   }
 
   showDescriptionModal(problemPatternId: ProblemPatternId): void {

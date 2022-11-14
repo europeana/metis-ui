@@ -10,12 +10,13 @@ import {
 import { of } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
-import { mockProblemPatternsDataset } from '../_mocked';
+import { mockProblemPatternsDataset, MockSandboxService } from '../_mocked';
 import {
   ProblemPatternDescriptionBasic,
   ProblemPatternId,
   ProblemPatternSeverity
 } from '../_models';
+import { SandboxService } from '../_services';
 import { ProblemViewerComponent } from '.';
 
 describe('ProblemViewerComponent', () => {
@@ -26,7 +27,13 @@ describe('ProblemViewerComponent', () => {
   const configureTestbed = (): void => {
     TestBed.configureTestingModule({
       declarations: [ProblemViewerComponent],
-      providers: [{ provide: ModalConfirmService, useClass: MockModalConfirmService }],
+      providers: [
+        { provide: ModalConfirmService, useClass: MockModalConfirmService },
+        {
+          provide: SandboxService,
+          useClass: MockSandboxService
+        }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   };

@@ -140,7 +140,10 @@ describe('WizardComponent', () => {
       expect(component.getStepIsIndicator(3)).toBeTruthy();
 
       expect(component.getStepIsIndicator(4)).toBeFalsy();
-      component.problemPatternsRecord = mockProblemPatternsRecord;
+      component.problemPatternsRecord = {
+        datasetId: '1',
+        problemPatternList: mockProblemPatternsRecord
+      };
       expect(component.getStepIsIndicator(4)).toBeFalsy();
       component.wizardConf[4].lastLoadedIdDataset = '1';
       component.wizardConf[4].lastLoadedIdRecord = '2';
