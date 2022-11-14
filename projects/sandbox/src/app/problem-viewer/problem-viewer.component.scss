@@ -284,6 +284,7 @@ q {
   transition: opacity 0.2s ease-in-out;
 
   .element-orb {
+    border-color: $eu-jade-dark;
     transform: scale(0.75);
   }
 }

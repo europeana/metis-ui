@@ -81,6 +81,7 @@ $orb-border-radius: 1.5em;
     }
   }
 
+  &:active:hover,
   &:active {
     background-color: $white;
     border-color: $eu-light-orange;

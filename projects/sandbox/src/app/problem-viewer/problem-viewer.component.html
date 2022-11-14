@@ -425,7 +425,8 @@
                 problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
               )
             "
-            class="nav-orb labelled element-orb"
+            class="nav-orb labelled element-orb allow-active-clicks"
+            [ngClass]="{ 'is-active': recordLinksViewOpen }"
             title="record xml links (click to open)"
           >
           </a>
