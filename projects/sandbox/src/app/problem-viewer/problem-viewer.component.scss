@@ -281,7 +281,7 @@ q {
   border-top-left-radius: 1.5em;
   display: flex;
   padding: 0.5em;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s linear;
 
   .element-orb {
     border-color: $eu-jade-dark;
