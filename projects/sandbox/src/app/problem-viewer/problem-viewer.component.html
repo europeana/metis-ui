@@ -447,11 +447,15 @@
               >
               <sb-copyable-link-item
                 [labelRef]="labelRefHarvest"
-                href="{{ apiSettings.apiHost }}/dataset/{{
-                  problemPatternsRecord.datasetId
-                }}/record?recordId={{
-                  processedRecordData ? processedRecordData.europeanaRecordId : ''
-                }}"
+                [href]="
+                  processedRecordData
+                    ? apiSettings.apiHost +
+                      '/dataset/' +
+                      problemPatternsRecord.datasetId +
+                      '/record?recordId=' +
+                      processedRecordData.europeanaRecordId
+                    : ''
+                "
               ></sb-copyable-link-item>
             </li>
             <li>
