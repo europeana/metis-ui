@@ -1,4 +1,5 @@
 import { formatDate } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   ElementRef,
@@ -44,6 +45,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
 
   _problemPatternsRecord: ProblemPatternsRecord;
   _problemPatternsDataset: ProblemPatternsDataset;
+
   modalInstanceId = 'modalDescription_dataset';
   problemCount = 0;
   processedRecordData?: ProcessedRecordData;
@@ -53,6 +55,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   viewerVisibleIndex = 0;
 
   @Output() openLinkEvent = new EventEmitter<string>();
+  @Output() onError = new EventEmitter<HttpErrorResponse>();
   @Input() recordId: string;
   @Input() enableDynamicInfo = false;
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
@@ -182,9 +185,17 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
         this.subs.push(
           this.sandbox
             .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
-            .subscribe((prd: ProcessedRecordData) => {
-              this.processedRecordData = prd;
-            })
+            .subscribe(
+              (prd: ProcessedRecordData) => {
+                this.processedRecordData = prd;
+              },
+              (err: HttpErrorResponse) => {
+                this.processedRecordData = undefined;
+                this.recordLinksViewOpen = false;
+                this.onError.emit(err);
+                return err;
+              }
+            )
         );
       }
     }

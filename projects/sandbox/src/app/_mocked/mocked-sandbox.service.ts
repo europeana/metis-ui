@@ -14,7 +14,6 @@ import {
   DatasetInfo,
   DatasetStatus,
   FieldOption,
-  ProblemPattern,
   ProblemPatternsDataset,
   ProblemPatternsRecord,
   ProcessedRecordData,
@@ -145,17 +144,6 @@ export class MockSandboxService {
     return of(mockProblemPatternsDataset).pipe(delay(1));
   }
 
-  getProblemPatternsRecord(_: string, __: string): Observable<Array<ProblemPattern>> {
-    if (this.errorMode) {
-      return timer(1).pipe(
-        switchMap(() => {
-          return throwError(new Error(`mock getProblemPatternsRecord throws error`));
-        })
-      );
-    }
-    return of(mockProblemPatternsRecord).pipe(delay(1));
-  }
-
   getProblemPatternsRecordWrapped(datasetId: string, _: string): Observable<ProblemPatternsRecord> {
     if (this.errorMode) {
       return timer(1).pipe(
@@ -171,6 +159,13 @@ export class MockSandboxService {
   }
 
   getProcessedRecordData(_: string, __: string): Observable<ProcessedRecordData> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getProcessedRecordData throws error`));
+        })
+      );
+    }
     return of(mockProcessedRecordData);
   }
 }

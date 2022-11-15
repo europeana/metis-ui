@@ -104,6 +104,7 @@
         *ngIf="problemPatternsRecord"
         [problemPatternsRecord]="problemPatternsRecord"
         (openLinkEvent)="followProblemPatternLink($event)"
+        (onError)="wizardConf[this.getStepIndex(EnumWizardStepType.PROBLEMS_RECORD)].error = $event"
       ></sb-problem-viewer>
     </div>
 
