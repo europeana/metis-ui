@@ -15,7 +15,6 @@ import { debounceTime, tap } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
 import { problemPatternData } from '../_data';
 import {
   ProblemOccurrence,
@@ -36,7 +35,6 @@ import { SandboxService } from '../_services';
   styleUrls: ['./problem-viewer.component.scss']
 })
 export class ProblemViewerComponent extends SubscriptionManager implements OnInit {
-  public apiSettings = apiSettings;
   public formatDate = formatDate;
   public ProblemPatternSeverity = ProblemPatternSeverity;
   public ProblemPatternId = ProblemPatternId;
