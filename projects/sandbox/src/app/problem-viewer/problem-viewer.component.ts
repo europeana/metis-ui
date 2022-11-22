@@ -105,6 +105,15 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     super();
   }
 
+  /** decode
+   * @param { string } str - the source
+   *
+   * @returns the uri-decoded string
+   **/
+  decode(str: string): string {
+    return decodeURIComponent(str);
+  }
+
   /** getScrollableParent
    *
    * @returns HTMLElement or null

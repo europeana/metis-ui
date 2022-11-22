@@ -319,7 +319,7 @@
     </ng-container>
 
     <ng-template #noProblems>
-      <h2 *ngIf="recordId" class="form-group title">Record: {{ recordId }}</h2>
+      <h2 *ngIf="recordId" class="form-group title">Record: {{ decode(recordId) }}</h2>
       <h3 class="problem-viewer">
         <span class="tick">No Problem Patterns Found for Record</span>
       </h3>
