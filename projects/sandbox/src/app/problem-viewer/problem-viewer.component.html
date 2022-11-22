@@ -453,6 +453,12 @@
                 [labelRef]="labelRefHarvest"
                 [href]="
                   processedRecordData
+                    ? (problemPatternsRecord.datasetId
+                      | formatHarvestUrl: processedRecordData.europeanaRecordId)
+                    : ''
+                "
+                xxxhref="
+                  processedRecordData
                     ? apiSettings.apiHost +
                       '/dataset/' +
                       problemPatternsRecord.datasetId +

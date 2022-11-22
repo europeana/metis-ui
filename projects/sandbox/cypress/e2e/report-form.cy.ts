@@ -1,4 +1,4 @@
-import { fillRecordForm } from '../support/helpers';
+import { fillRecordForm, getSelectorPublishedUrl } from '../support/helpers';
 import {
   selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
@@ -77,6 +77,22 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitProgress).should('not.be.disabled');
       cy.get(selectorInputRecordId).should('have.value', '2');
       cy.get(selectorInputDatasetId).should('have.value', '1');
+    });
+
+    it('should show the as processed / as published links', () => {
+      let datasetId = '1';
+      let recordId = '/1/23';
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('not.exist');
+      cy.visit(`/dataset/${datasetId}?recordId=${encodeURIComponent(recordId)}`);
+      cy.wait(200);
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('have.length', 1);
+
+      datasetId = '4';
+      recordId = '/4/321';
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('not.exist');
+      cy.visit(`/dataset/${datasetId}?recordId=${encodeURIComponent(recordId)}`);
+      cy.wait(200);
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('have.length', 1);
     });
 
     it('should show the processing errors conditionally', () => {

@@ -7,7 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { RenameStepPipe } from './_translate';
+import { FormatHarvestUrlPipe, RenameStepPipe } from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { HttpErrorsComponent } from './http-errors';
@@ -24,6 +24,7 @@ import { WizardComponent } from './wizard';
     TextCopyDirective,
     CopyableLinkItemComponent,
     DatasetInfoComponent,
+    FormatHarvestUrlPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,
     ProblemViewerComponent,

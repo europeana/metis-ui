@@ -19,6 +19,7 @@ import {
 } from '../_mocked';
 import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
 import { SandboxService } from '../_services';
+import { FormatHarvestUrlPipe } from '../_translate';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
@@ -42,6 +43,7 @@ describe('WizardComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         FileUploadComponent,
+        FormatHarvestUrlPipe,
         ProblemViewerComponent,
         ProtocolFieldSetComponent,
         RecordReportComponent,

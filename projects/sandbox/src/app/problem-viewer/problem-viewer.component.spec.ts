@@ -22,6 +22,7 @@ import {
   ProblemPatternSeverity
 } from '../_models';
 import { SandboxService } from '../_services';
+import { FormatHarvestUrlPipe } from '../_translate';
 import { ProblemViewerComponent } from '.';
 
 describe('ProblemViewerComponent', () => {
@@ -32,7 +33,7 @@ describe('ProblemViewerComponent', () => {
   const configureTestbed = (errorMode = false): void => {
     console.log('error mode is ' + errorMode);
     TestBed.configureTestingModule({
-      declarations: [ProblemViewerComponent],
+      declarations: [FormatHarvestUrlPipe, ProblemViewerComponent],
       providers: [
         { provide: ModalConfirmService, useClass: MockModalConfirmService },
         {

@@ -1,4 +1,4 @@
-import { fillProgressForm, fillRecordForm } from '../support/helpers';
+import { fillProgressForm, fillRecordForm, getSelectorPublishedUrl } from '../support/helpers';
 import {
   selectorInputDatasetId,
   selectorPatternProblemsRecordOrb,
@@ -6,10 +6,6 @@ import {
 } from '../support/selectors';
 
 context('Sandbox', () => {
-  const getUrlSelector = (datasetId: string, recordId: string): string => {
-    return `[href="http://localhost:3000/dataset/${datasetId}/record?recordId=${recordId}-eu"]`;
-  };
-
   describe('Links Pop-Out', () => {
     beforeEach(() => {
       cy.server();
@@ -42,8 +38,8 @@ context('Sandbox', () => {
       const datasetId2 = '2';
       const recordId1 = '121';
       const recordId2 = '123';
-      const selectorLink1 = getUrlSelector(datasetId1, recordId1);
-      const selectorLink2 = getUrlSelector(datasetId2, recordId2);
+      const selectorLink1 = getSelectorPublishedUrl(datasetId1, recordId1);
+      const selectorLink2 = getSelectorPublishedUrl(datasetId2, recordId2);
 
       fillProgressForm(datasetId1);
       fillRecordForm(recordId1, true);
@@ -65,7 +61,7 @@ context('Sandbox', () => {
       const datasetId = '1';
       const waitTime = 1001;
       const recordId = `${waitTime}`;
-      const selectorLink = getUrlSelector(datasetId, recordId);
+      const selectorLink = getSelectorPublishedUrl(datasetId, recordId);
 
       fillProgressForm(datasetId);
       fillRecordForm(recordId, true);

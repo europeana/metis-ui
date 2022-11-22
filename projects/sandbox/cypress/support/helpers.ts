@@ -14,6 +14,10 @@ import {
 const noScrollCheck = { ensureScrollable: false };
 const force = { force: true };
 
+export const getSelectorPublishedUrl = (datasetId: string, recordId: string): string => {
+  return `[href="http://localhost:3000/dataset/${datasetId}/record?recordId=${recordId}-eu"]`;
+};
+
 export const uploadFile = (fileName: string, fileType = '', selector: string): void => {
   cy.get(selector).then((subject) => {
     cy.fixture(fileName, 'base64')
