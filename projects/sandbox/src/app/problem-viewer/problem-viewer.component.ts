@@ -46,6 +46,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   _problemPatternsRecord: ProblemPatternsRecord;
   _problemPatternsDataset: ProblemPatternsDataset;
 
+  isLoading = false;
   modalInstanceId = 'modalDescription_dataset';
   problemCount = 0;
   processedRecordData?: ProcessedRecordData;
@@ -83,6 +84,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   @Input() set problemPatternsRecord(problemPatternsRecord: ProblemPatternsRecord) {
     this.problemCount = 0;
     this.processedRecordData = undefined;
+    this.recordLinksViewOpen = false;
 
     // use timer to prevent ExpressionChangedAfterIthasBeenCheckedError
     setTimeout(() => {
@@ -182,17 +184,21 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
     this.recordLinksViewOpen = !this.recordLinksViewOpen;
     if (this.recordLinksViewOpen) {
       if (this.problemPatternsRecord && !this.processedRecordData) {
+        this.isLoading = true;
         this.subs.push(
           this.sandbox
             .getProcessedRecordData(this.problemPatternsRecord.datasetId, recordId)
             .subscribe(
               (prd: ProcessedRecordData) => {
                 this.processedRecordData = prd;
+                this.isLoading = false;
+                this.recordLinksViewOpen = true;
               },
               (err: HttpErrorResponse) => {
                 this.processedRecordData = undefined;
                 this.recordLinksViewOpen = false;
                 this.onError.emit(err);
+                this.isLoading = false;
                 return err;
               }
             )

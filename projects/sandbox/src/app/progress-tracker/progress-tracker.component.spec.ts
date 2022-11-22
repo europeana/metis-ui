@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDataset } from '../_mocked';
 import { RenameStepPipe } from '../_translate';
-import { Dataset, DatasetStatus, ProgressByStep, StepStatus } from '../_models';
+import { Dataset, DatasetStatus, DisplayedTier, ProgressByStep, StepStatus } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
@@ -205,11 +205,30 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should set the warning view', () => {
+      component.showing = true;
       component.warningViewOpen = false;
       component.warningViewOpened = [false, false];
       component.setWarningView(1);
       expect(component.warningViewOpen).toBeTruthy();
       expect(component.warningViewOpened[1]).toBeTruthy();
+
+      // close if single opener
+      let orbCount = 1;
+      spyOn(component, 'getOrbConfigCount').and.callFake(() => orbCount);
+      component.setWarningView(orbCount);
+      expect(component.warningViewOpen).toBeFalsy();
+      component.setWarningView(DisplayedTier.METADATA);
+      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeFalsy();
+      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeTruthy();
+      expect(component.warningViewOpen).toBeFalsy();
+
+      // remain open if multiple openers
+      orbCount = 2;
+      component.setWarningView(orbCount);
+      expect(component.warningViewOpen).toBeTruthy();
+      component.setWarningView(DisplayedTier.CONTENT);
+      expect(component.warningViewOpen).toBeTruthy();
+      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeTruthy();
     });
 
     it('should toggle the exapnded-warning flag', () => {

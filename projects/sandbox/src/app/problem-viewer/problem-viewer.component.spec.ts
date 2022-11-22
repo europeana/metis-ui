@@ -80,6 +80,7 @@ describe('ProblemViewerComponent', () => {
       expect(component.recordLinksViewOpen).toBeFalsy();
 
       component.openRecordLinksView('1');
+      expect(component.isLoading).toBeFalsy();
       expect(component.processedRecordData).toBeFalsy();
       expect(component.recordLinksViewOpen).toBeTruthy();
 
@@ -90,6 +91,8 @@ describe('ProblemViewerComponent', () => {
       component.recordLinksViewOpen = false;
       component.openRecordLinksView('1');
       expect(component.processedRecordData).toBeTruthy();
+      expect(component.recordLinksViewOpen).toBeTruthy();
+      expect(component.isLoading).toBeFalsy();
     });
 
     it('should get the warning classmap', () => {
@@ -210,6 +213,7 @@ describe('ProblemViewerComponent', () => {
       tick(1);
       expect(component.processedRecordData).toBeFalsy();
       expect(component.recordLinksViewOpen).toBeFalsy();
+      expect(component.isLoading).toBeFalsy();
       expect(component.onError.emit).toHaveBeenCalled();
     }));
   });

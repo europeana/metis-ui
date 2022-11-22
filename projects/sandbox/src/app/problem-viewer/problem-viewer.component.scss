@@ -249,7 +249,7 @@ q {
   transition: clip-path $record-links-slide-out-duration ease-in-out,
     right $record-links-slide-out-duration ease-in-out;
   width: $record-links-content-width;
-  z-index: 1;
+  z-index: 2;
 
   &.closed {
     clip-path: polygon(0 0, $record-links-opener-width 0, $record-links-opener-width 100%, 0% 100%);
@@ -286,6 +286,10 @@ q {
   .element-orb {
     border-color: $eu-jade-dark;
     transform: scale(0.75);
+
+    &.spinner {
+      pointer-events: none;
+    }
   }
 }
 

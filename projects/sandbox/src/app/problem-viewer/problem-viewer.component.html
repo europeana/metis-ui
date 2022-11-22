@@ -412,7 +412,7 @@
     *ngIf="problemPatternsRecord && problemPatternsRecord.problemPatternList.length > 0"
   >
     <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
-      <div class="record-links-view" [ngClass]="{ closed: !recordLinksViewOpen }">
+      <div class="record-links-view" [ngClass]="{ closed: !recordLinksViewOpen && !isLoading }">
         <span
           class="record-links-view-opener"
           libClickAware
@@ -426,7 +426,11 @@
               )
             "
             class="nav-orb labelled element-orb allow-active-clicks"
-            [ngClass]="{ 'is-active': recordLinksViewOpen }"
+            [ngClass]="{
+              'is-active': recordLinksViewOpen,
+              'indicator-orb': isLoading,
+              spinner: isLoading
+            }"
             title="record xml links (click to open)"
           >
           </a>

@@ -124,12 +124,19 @@ export class MockSandboxService {
         })
       );
     }
+    if (form.value.url && form.value.url.indexOf('wrap') > -1) {
+      return of({
+        body: {
+          'dataset-id': '1',
+          'records-to-process': 1,
+          'duplicate-records': 0
+        }
+      }).pipe(delay(1));
+    }
     return of({
-      body: {
-        'dataset-id': '1',
-        'records-to-process': 1,
-        'duplicate-records': 0
-      }
+      'dataset-id': '1',
+      'records-to-process': 1,
+      'duplicate-records': 0
     }).pipe(delay(1));
   }
 

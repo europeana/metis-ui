@@ -6,6 +6,10 @@ import {
 } from '../support/selectors';
 
 context('Sandbox', () => {
+  const getUrlSelector = (datasetId: string, recordId: string): string => {
+    return `[href="http://localhost:3000/dataset/${datasetId}/record?recordId=${recordId}-eu"]`;
+  };
+
   describe('Links Pop-Out', () => {
     beforeEach(() => {
       cy.server();
@@ -33,24 +37,43 @@ context('Sandbox', () => {
       cy.get(selectorOpen).should('exist');
     });
 
-    it('should load the urls when opened', () => {
-      fillProgressForm('1');
-      fillRecordForm('121', true);
+    it('should load the urls when opened (quick load)', () => {
+      const datasetId1 = '1';
+      const datasetId2 = '2';
+      const recordId1 = '121';
+      const recordId2 = '123';
+      const selectorLink1 = getUrlSelector(datasetId1, recordId1);
+      const selectorLink2 = getUrlSelector(datasetId2, recordId2);
 
-      const selectorLink1 = '[href="http://localhost:3000/dataset/1/record?recordId=121-eu"]';
-      const selectorLink2 = '[href="http://localhost:3000/dataset/2/record?recordId=123-eu"]';
+      fillProgressForm(datasetId1);
+      fillRecordForm(recordId1, true);
 
       cy.get(selectorOpen).should('not.exist');
       cy.get(selectorPopOutOpener).click(force);
       cy.get(selectorLink1).should('exist');
       cy.get(selectorLink2).should('not.exist');
 
-      fillProgressForm('2');
-      fillRecordForm('123', true);
+      fillProgressForm(datasetId2);
+      fillRecordForm(recordId2, true);
       cy.get(selectorPopOutOpener).click(force);
 
       cy.get(selectorLink1).should('not.exist');
       cy.get(selectorLink2).should('exist');
+    });
+
+    it('should load the urls when opened (delayed load)', () => {
+      const datasetId = '1';
+      const waitTime = 1001;
+      const recordId = `${waitTime}`;
+      const selectorLink = getUrlSelector(datasetId, recordId);
+
+      fillProgressForm(datasetId);
+      fillRecordForm(recordId, true);
+
+      cy.get(selectorPopOutOpener).click(force);
+      cy.get(selectorLink).should('not.exist');
+      cy.wait(waitTime);
+      cy.get(selectorLink).should('exist');
     });
 
     it('should handle the error when loading fails', () => {

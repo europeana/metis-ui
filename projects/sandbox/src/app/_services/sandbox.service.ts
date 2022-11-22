@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache, ProtocolType } from 'shared';
@@ -11,6 +11,7 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
   DatasetInfo,
+  DatasetStatus,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
@@ -65,12 +66,25 @@ export class SandboxService {
   /* @returns Observable<ProcessedRecordData>
   **/
   getProcessedRecordData(datasetId: string, recordId: string): Observable<ProcessedRecordData> {
-    return this.getRecordReport(datasetId, recordId).pipe(
-      map((report: RecordReport) => {
-        return {
-          europeanaRecordId: report.recordTierCalculationSummary.europeanaRecordId,
-          portalRecordLink: report.recordTierCalculationSummary.portalRecordLink
-        };
+    const pollInfo = timer(0, apiSettings.interval).pipe(
+      switchMap(() => {
+        return this.requestProgress(datasetId);
+      }),
+      takeWhile((dataset: Dataset) => {
+        return dataset.status !== DatasetStatus.COMPLETED && !dataset['portal-publish'];
+      }, true),
+      takeLast(1)
+    );
+    return pollInfo.pipe(
+      mergeMap((_: Dataset) => {
+        return this.getRecordReport(datasetId, recordId).pipe(
+          map((report: RecordReport) => {
+            return {
+              europeanaRecordId: report.recordTierCalculationSummary.europeanaRecordId,
+              portalRecordLink: report.recordTierCalculationSummary.portalRecordLink
+            };
+          })
+        );
       })
     );
   }
