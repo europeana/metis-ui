@@ -48,11 +48,11 @@
   position: relative;
 }
 
-// colour overrides to maintain green look of deprecated theme
+// colour override to maintain green look of deprecated links component (1 of 2)
 .user-assistance,
 .copyable-link-item,
 .report-value {
-  .external-link:not(.left):not(.pending) {
+  .external-link:not(.left):not(.large):not(.pending) {
     color: $eu-jade-dark;
     &::after {
       background-image: svg-url-icon-external($eu-jade-dark);
@@ -60,6 +60,9 @@
     &:active,
     &:active:hover {
       color: $eu-light-orange;
+      &::after {
+        background-image: svg-url-icon-external($eu-light-orange);
+      }
     }
     &:hover {
       color: $eu-jade-darkest;
@@ -70,12 +73,9 @@
   }
 }
 
-// colour overrides to maintain green look of deprecated theme
-.user-assistance .external-link:not(.left) {
-  color: $eu-jade-dark;
-  &::after {
-    background-image: svg-url-icon-external($eu-jade-classic);
-  }
+// colour override to maintain green look of deprecated links component (2 of 2)
+.user-assistance .external-link:not(.left):not(.large):not(.pending)::after {
+  background-image: svg-url-icon-external($eu-jade-classic);
 }
 
 .external-link {
