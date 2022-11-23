@@ -87,6 +87,7 @@
   &:not(.left)::after {
     background-image: svg-url-icon-external($gray-med);
     background-repeat: no-repeat;
+    background-size: cover;
     content: '';
     display: inline-block;
   }
