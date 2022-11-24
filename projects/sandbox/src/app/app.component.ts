@@ -13,6 +13,8 @@ export class AppComponent {
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
 
+  isSidebarOpen = false;
+
   constructor(private readonly clickService: ClickService) {}
 
   /** documentClick
@@ -21,7 +23,23 @@ export class AppComponent {
    * - (picked up by the click-aware directive)
    **/
   @HostListener('document:click', ['$event'])
-  documentClick(event: { target: HTMLElement }): void {
+  documentClick(event: { target: HTMLElement; stopPropagation: () => void }): boolean | void {
     this.clickService.documentClickedTarget.next(event.target);
+  }
+
+  /**
+   * closeSideBar
+   * sets isSidebarOpen to false
+   **/
+  closeSideBar(): void {
+    this.isSidebarOpen = false;
+  }
+
+  /**
+   * toggleSidebarOpen
+   * toggle isSidebarOpen
+   **/
+  toggleSidebarOpen(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
 }
