@@ -69,6 +69,29 @@ context('Sandbox Accessibility', () => {
     });
   });
 
+  describe('Problem Patterns (Dataset) Page', () => {
+    beforeEach(() => {
+      cy.visit('/dataset/1?view=problems');
+      injectAxe();
+    });
+
+    it('Has an accessible header', () => {
+      checkZone('header');
+    });
+
+    it('Has an accessible footer', () => {
+      checkZone('footer');
+    });
+
+    it('Has an accessible main', () => {
+      checkZone('main');
+    });
+
+    it('Has no detectable a11y violations', () => {
+      cy.checkA11y();
+    });
+  });
+
   describe('Record Report Pages', () => {
     beforeEach(() => {
       cy.visit('/dataset/1?recordId=1');
@@ -88,6 +111,29 @@ context('Sandbox Accessibility', () => {
     });
 
     it('Has no detectable a11y violations ( page)', () => {
+      cy.checkA11y();
+    });
+  });
+
+  describe('Problem Patterns (Record) Page', () => {
+    beforeEach(() => {
+      cy.visit('/dataset/1?recordId=1&view=problems');
+      injectAxe();
+    });
+
+    it('Has an accessible header', () => {
+      checkZone('header');
+    });
+
+    it('Has an accessible footer', () => {
+      checkZone('footer');
+    });
+
+    it('Has an accessible main', () => {
+      checkZone('main');
+    });
+
+    it('Has no detectable a11y violations', () => {
       cy.checkA11y();
     });
   });

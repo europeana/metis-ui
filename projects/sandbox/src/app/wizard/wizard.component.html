@@ -9,32 +9,32 @@
       <h1 class="header-text" *ngIf="currentStepIndex === i">
         <ng-container
           *ngSwitchCase="EnumWizardStepType.UPLOAD"
-          i18n="upload step title@@titleConfigureSource"
+          i18n="step title@@titleConfigureSource"
         >
           Upload Dataset
         </ng-container>
 
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK"
-          i18n="upload step title@@titleTrackProcessing"
+          i18n="step title@@titleTrackProcessing"
         >
           Track Dataset Processing
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROBLEMS_DATASET"
-          i18n="upload step title@@titleProblemsDataset"
+          i18n="step title@@titleProblemsDataset"
         >
           Problem Patterns (Dataset)
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumWizardStepType.REPORT"
-          i18n="upload step title@@titleReport"
+          i18n="step title@@titleReport"
         >
           Record Report
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROBLEMS_RECORD"
-          i18n="upload step title@@titleProblemsRecord"
+          i18n="step title@@titleProblemsRecord"
         >
           Problem Patterns (Record)
         </ng-container>
@@ -48,6 +48,13 @@
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
       (clickEvent)="setStep($event)"
+      [tooltips]="[
+        'Upload Dataset',
+        'Track Dataset Processing',
+        'Problem Patterns (Dataset)',
+        'Record Report',
+        'Problem Patterns (Record)'
+      ]"
     ></sb-navigation-orbs>
   </div>
   <div class="wizard-content">
