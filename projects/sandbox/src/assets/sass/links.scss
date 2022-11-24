@@ -48,50 +48,101 @@
   position: relative;
 }
 
-.external-link {
-  display: inline-block;
-  position: relative;
+// colour override to maintain green look of deprecated links component (1 of 2)
+.user-assistance,
+.copyable-link-item,
+.report-value {
+  .external-link:not(.left):not(.large):not(.pending) {
+    color: $eu-jade-dark;
+    &::after {
+      background-image: svg-url-icon-external($eu-jade-dark);
+    }
+    &:active,
+    &:active:hover {
+      color: $eu-light-orange;
+      &::after {
+        background-image: svg-url-icon-external($eu-light-orange);
+      }
+    }
+    &:hover {
+      color: $eu-jade-darkest;
+      &::after {
+        background-image: svg-url-icon-external($eu-jade-darkest);
+      }
+    }
+  }
+}
 
-  &::after {
-    background-image: svg-url-icon-external($eu-jade-classic);
+// colour override to maintain green look of deprecated links component (2 of 2)
+.user-assistance .external-link:not(.left):not(.large):not(.pending)::after {
+  background-image: svg-url-icon-external($eu-jade-classic);
+}
+
+.external-link {
+  align-items: center;
+  color: $gray-med;
+  display: flex;
+
+  &.left::before,
+  &:not(.left)::after {
+    background-image: svg-url-icon-external($gray-med);
     background-repeat: no-repeat;
+    background-size: cover;
     content: '';
-    display: block;
-    height: 1em;
-    top: 0.425em;
-    position: absolute;
-    width: 1em;
-    right: -1.35em;
+    display: inline-block;
   }
 
-  &:hover {
-    &::after {
-      background-image: svg-url-icon-external($eu-jade-darkest);
+  &.large {
+    &.left::before,
+    &:not(.left)::after {
+      height: 1.25em;
+      width: 1.25em;
     }
-    & + .copy {
-      display: inline;
+    &.left::before {
+      margin-right: 1em;
+    }
+    &:not(.left)::after {
+      margin-left: 1em;
+    }
+  }
+  &:not(.large) {
+    &.left::before,
+    &:not(.left)::after {
+      height: 0.85em;
+      width: 0.85em;
+    }
+    &.left::before {
+      margin-right: 0.5em;
+    }
+    &:not(.left)::after {
+      margin-left: 0.5em;
+    }
+  }
+  &:hover {
+    color: $gray-light;
+    &.left::before,
+    &:not(.left)::after {
+      background-image: svg-url-icon-external($gray-light);
     }
   }
 
   &:active,
   &:active:hover {
     color: $eu-light-orange;
-    &::after {
+    &.left::before,
+    &:not(.left)::after {
       background-image: svg-url-icon-external($eu-light-orange);
     }
   }
 
-  &.pending {
+  &:not(.left).pending {
     color: $eu-jade-disabled;
     cursor: default;
-    &::after,
-    &:hover::after {
+    pointer-events: none;
+    &::after {
       background-image: svg-url-icon-spin($eu-jade-classic);
       background-size: 0.85em;
       right: -1.2em;
-    }
-    &:hover {
-      color: $eu-jade-disabled;
     }
   }
 }
