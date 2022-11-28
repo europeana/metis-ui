@@ -56,7 +56,7 @@
     "cypress:ci-any": "run-p --race start:ci-any cypress:run --project=${npm_config_project}",
     "cypress:ci-accessibility-any": "run-p --race start:ci-any cypress:run-accessibility --project=${npm_config_project}",
     "cypress:run": "sleep 10 && cypress run --project projects/${npm_config_project} --config '{\"component\": {},  \"e2e\": { \"excludeSpecPattern\": \"**/**a11y.cy.ts\"}}'",
-    "cypress:run-accessibility": "sleep 10 && cypress run --project projects/${npm_config_project} --config '{\"testFiles\": \"**/a11y.cy.ts\"}'",
+    "cypress:run-accessibility": "sleep 10 && cypress run --project projects/${npm_config_project} --spec **/*a11y.cy.ts",
     "cypress:open-sandbox": "cypress open --project projects/sandbox",
     "cypress": "cypress open --project projects/metis",
     "start:ci-any": "ng serve --project=${npm_config_project} --port 4280 --live-reload=false --configuration=e2e",

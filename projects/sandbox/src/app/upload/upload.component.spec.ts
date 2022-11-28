@@ -109,6 +109,37 @@ describe('UploadComponent', () => {
       component.form.controls.uploadProtocol.setValue(ProtocolType.HTTP_HARVEST);
       component.form.controls.url.setValue('');
       expect(component.protocolIsValid()).toBeFalsy();
+      component.form = (null as unknown) as FormGroup;
+      expect(component.protocolIsValid()).toBeFalsy();
+    });
+
+    it('should disable the form on submit', () => {
+      fillUploadForm();
+      expect(component.form.enabled).toBeTruthy();
+      expect(component.form.valid).toBeTruthy();
+
+      component.form.controls.url.setValue('http://wrap.it');
+      component.onSubmitDataset();
+      expect(component.form.enabled).toBeFalsy();
+      expect(component.form.valid).toBeFalsy();
+
+      component.form.enable();
+      component.rebuildForm();
+
+      fillUploadForm(ProtocolType.OAIPMH_HARVEST);
+      expect(component.form.enabled).toBeTruthy();
+      expect(component.form.valid).toBeTruthy();
+      component.onSubmitDataset();
+      expect(component.form.enabled).toBeFalsy();
+      expect(component.form.valid).toBeFalsy();
+
+      component.form.enable();
+      component.rebuildForm();
+
+      fillUploadForm(ProtocolType.OAIPMH_HARVEST);
+      component.onSubmitDataset();
+      expect(component.form.enabled).toBeFalsy();
+      expect(component.form.valid).toBeFalsy();
     });
   });
 

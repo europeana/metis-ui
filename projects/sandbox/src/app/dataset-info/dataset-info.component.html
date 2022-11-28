@@ -119,6 +119,7 @@
 
       <li
         class="full-info-view"
+        [attr.aria-disabled]="!fullInfoOpen"
         [ngClass]="{
           open: fullInfoOpen
         }"
