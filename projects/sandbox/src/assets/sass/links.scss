@@ -48,8 +48,7 @@
   position: relative;
 }
 
-// colour override to maintain green look of deprecated links component (1 of 2)
-.user-assistance,
+// colour override to maintain green look of deprecated links component
 .copyable-link-item,
 .report-value {
   .external-link:not(.left):not(.large):not(.pending) {
@@ -71,11 +70,6 @@
       }
     }
   }
-}
-
-// colour override to maintain green look of deprecated links component (2 of 2)
-.user-assistance .external-link:not(.left):not(.large):not(.pending)::after {
-  background-image: svg-url-icon-external($eu-jade-classic);
 }
 
 .external-link {

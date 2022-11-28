@@ -33,4 +33,18 @@ describe('AppComponent', () => {
     fixture.debugElement.query(By.css('.pusher')).nativeElement.click();
     expect(cmpClickService.documentClickedTarget.next).toHaveBeenCalled();
   });
+
+  it('should close the sidebar', () => {
+    app.isSidebarOpen = true;
+    app.closeSideBar();
+    expect(app.isSidebarOpen).toBeFalsy();
+  });
+
+  it('should close the sidebar', () => {
+    expect(app.isSidebarOpen).toBeFalsy();
+    app.toggleSidebarOpen();
+    expect(app.isSidebarOpen).toBeTruthy();
+    app.toggleSidebarOpen();
+    expect(app.isSidebarOpen).toBeFalsy();
+  });
 });
