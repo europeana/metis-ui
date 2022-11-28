@@ -319,22 +319,27 @@
     </ng-container>
 
     <ng-template #noProblems>
-      <h2 *ngIf="recordId" class="form-group title">Record: {{ recordId }}</h2>
+      <h2 *ngIf="recordId" class="form-group title">Record: {{ decode(recordId) }}</h2>
       <h3 class="problem-viewer">
         <span class="tick">No Problem Patterns Found for Record</span>
       </h3>
     </ng-template>
 
-    <div *ngIf="problemPatternsRecord.length > 0; else noProblems" class="form-group header-info">
+    <div
+      *ngIf="problemPatternsRecord.problemPatternList.length > 0; else noProblems"
+      class="form-group header-info"
+    >
       <h2 class="title record-title">
-        Record: {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
+        Record: {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
       </h2>
     </div>
 
-    <div *ngIf="problemPatternsRecord.length > 0" class="problem-viewer record">
+    <div *ngIf="problemPatternsRecord.problemPatternList.length > 0" class="problem-viewer record">
       <ng-content *ngTemplateOutlet="tmpSkipArrows"></ng-content>
       <ng-container>
-        <ng-container *ngFor="let problemPattern of problemPatternsRecord; let i = index">
+        <ng-container
+          *ngFor="let problemPattern of problemPatternsRecord.problemPatternList; let i = index"
+        >
           <ng-content
             *ngTemplateOutlet="
               tmpProblemPattern;
@@ -342,7 +347,7 @@
                 problemPattern: problemPattern,
                 datasetId: '',
                 index: i,
-                totalProblems: problemPatternsRecord.length
+                totalProblems: problemPatternsRecord.problemPatternList.length
               }
             "
           ></ng-content>
@@ -400,4 +405,83 @@
       <span class="bold tick">No Problem Patterns Found for Dataset</span>
     </h3>
   </div>
+
+  <!-- DOWNLOAD LINKS VIEW -->
+
+  <ng-container
+    *ngIf="problemPatternsRecord && problemPatternsRecord.problemPatternList.length > 0"
+  >
+    <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
+      <div class="record-links-view" [ngClass]="{ closed: !recordLinksViewOpen && !isLoading }">
+        <span
+          class="record-links-view-opener"
+          libClickAware
+          (clickOutside)="recordLinksViewOpen = false"
+          [ignoreClasses]="ignoreClassesList"
+        >
+          <a
+            (click)="
+              openRecordLinksView(
+                problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+              )
+            "
+            class="nav-orb labelled element-orb allow-active-clicks"
+            [ngClass]="{
+              'is-active': recordLinksViewOpen,
+              'indicator-orb': isLoading,
+              spinner: isLoading
+            }"
+            title="record xml links (click to open)"
+          >
+          </a>
+        </span>
+        <div
+          class="record-links-view-content"
+          [ngClass]="{ disabled: !processedRecordData }"
+          libClickAware
+          (clickOutside)="recordLinksViewOpen = false"
+          [ignoreClasses]="ignoreClassesList"
+        >
+          <ul>
+            <li>
+              <ng-template #labelRefHarvest
+                ><span i18n="record link link@@recordLinkHarvest"
+                  >record before processing (as provided)</span
+                ></ng-template
+              >
+              <sb-copyable-link-item
+                [labelRef]="labelRefHarvest"
+                [href]="
+                  processedRecordData
+                    ? (problemPatternsRecord.datasetId
+                      | formatHarvestUrl: processedRecordData.europeanaRecordId)
+                    : ''
+                "
+                xxxhref="
+                  processedRecordData
+                    ? apiSettings.apiHost +
+                      '/dataset/' +
+                      problemPatternsRecord.datasetId +
+                      '/record?recordId=' +
+                      processedRecordData.europeanaRecordId
+                    : ''
+                "
+              ></sb-copyable-link-item>
+            </li>
+            <li>
+              <ng-template #labelRefPortal
+                ><span i18n="record link link@@recordLinkPortal"
+                  >record after processing (as published)</span
+                ></ng-template
+              >
+              <sb-copyable-link-item
+                [labelRef]="labelRefPortal"
+                [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
+              ></sb-copyable-link-item>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
 </div>

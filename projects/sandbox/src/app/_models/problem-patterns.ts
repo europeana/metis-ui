@@ -57,6 +57,11 @@ export interface ProblemPattern {
   recordAnalysisList: Array<RecordAnalysis>;
 }
 
+export interface ProblemPatternsRecord {
+  datasetId: string;
+  problemPatternList: Array<ProblemPattern>;
+}
+
 export interface ProblemPatternsDataset {
   datasetId: string;
   executionTimestamp: string;

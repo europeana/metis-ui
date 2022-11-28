@@ -19,6 +19,7 @@ import {
 } from '../_mocked';
 import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
 import { SandboxService } from '../_services';
+import { FormatHarvestUrlPipe } from '../_translate';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
@@ -42,6 +43,7 @@ describe('WizardComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         FileUploadComponent,
+        FormatHarvestUrlPipe,
         ProblemViewerComponent,
         ProtocolFieldSetComponent,
         RecordReportComponent,
@@ -140,7 +142,10 @@ describe('WizardComponent', () => {
       expect(component.getStepIsIndicator(3)).toBeTruthy();
 
       expect(component.getStepIsIndicator(4)).toBeFalsy();
-      component.problemPatternsRecord = mockProblemPatternsRecord;
+      component.problemPatternsRecord = {
+        datasetId: '1',
+        problemPatternList: mockProblemPatternsRecord
+      };
       expect(component.getStepIsIndicator(4)).toBeFalsy();
       component.wizardConf[4].lastLoadedIdDataset = '1';
       component.wizardConf[4].lastLoadedIdRecord = '2';

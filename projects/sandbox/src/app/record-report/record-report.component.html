@@ -198,9 +198,7 @@
         >
         <sb-copyable-link-item
           [labelRef]="labelRefHarvest"
-          href="{{ apiSettings.apiHost }}/dataset/{{ getDatasetId() }}/record?recordId={{
-            summary.europeanaRecordId
-          }}"
+          [href]="getDatasetId() | formatHarvestUrl: summary.europeanaRecordId"
         ></sb-copyable-link-item>
       </li>
       <li>

@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
 import { MockHttp, ProtocolType } from 'shared';
@@ -11,13 +11,17 @@ import {
   mockLanguages,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
+  mockProcessedRecordData,
   mockRecordReport
 } from '../_mocked';
 import {
   DatasetInfo,
+  DatasetStatus,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -195,9 +199,6 @@ describe('sandbox service', () => {
   });
 
   it('should get the problem-patterns for records', () => {
-    console.log({} as ProblemPattern);
-    expect(true).toBeTruthy();
-
     const datasetId = '123';
     const recordId = '456';
     const sub = service
@@ -213,4 +214,49 @@ describe('sandbox service', () => {
       .send(mockProblemPatternsRecord);
     sub.unsubscribe();
   });
+
+  it('should get the problem-patterns for records (wrapped)', () => {
+    const datasetId = '123';
+    const recordId = '456';
+    const sub = service
+      .getProblemPatternsRecordWrapped(datasetId, recordId)
+      .subscribe((pp: ProblemPatternsRecord) => {
+        expect(pp.problemPatternList).toEqual(mockProblemPatternsRecord);
+      });
+    mockHttp
+      .expect(
+        'GET',
+        `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
+      )
+      .send(mockProblemPatternsRecord);
+    sub.unsubscribe();
+  });
+
+  it('should get the processed record data', fakeAsync(() => {
+    const datasetId = '123_PROCESSED_RECORD_DATA';
+    const recordId = '456';
+    const processedDataset = Object.assign({}, mockDataset);
+    processedDataset.status = DatasetStatus.IN_PROGRESS;
+    delete processedDataset['portal-publish'];
+
+    const sub = service
+      .getProcessedRecordData(datasetId, recordId)
+      .subscribe((prd: ProcessedRecordData) => {
+        expect(prd).toEqual(mockProcessedRecordData);
+      });
+
+    tick();
+    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    tick(apiSettings.interval);
+
+    processedDataset.status = DatasetStatus.COMPLETED;
+    processedDataset['portal-publish'] = 'http://portal';
+    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    tick(apiSettings.interval);
+
+    mockHttp
+      .expect('GET', `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`)
+      .send(mockRecordReport);
+    sub.unsubscribe();
+  }));
 });

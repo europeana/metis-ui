@@ -644,8 +644,10 @@ new (class extends TestDataServer {
               }
             }
           }
-
-          if (this.errorCodes.indexOf(`${recordId}`) > -1) {
+          if (recordIdUnparsed.indexOf('four-o-four') > -1) {
+            this.handle404(route, response);
+            return;
+          } else if (this.errorCodes.indexOf(`${recordId}`) > -1) {
             response.statusCode = recordId;
             response.end();
             return;

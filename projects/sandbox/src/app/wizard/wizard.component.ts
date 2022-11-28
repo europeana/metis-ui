@@ -21,8 +21,8 @@ import {
   DisplayedTier,
   FieldOption,
   FixedLengthArray,
-  ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
   RecordReport,
   RecordReportRequest,
   WizardStep,
@@ -70,7 +70,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   progressData?: Dataset;
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
-  problemPatternsRecord?: Array<ProblemPattern>;
+  problemPatternsRecord?: ProblemPatternsRecord;
   trackDatasetId = '';
   trackRecordId = '';
   countryList: Array<FieldOption>;
@@ -630,26 +630,28 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     stepConf.isBusy = true;
 
     this.subs.push(
-      this.sandbox.getProblemPatternsRecord(this.trackDatasetId, this.trackRecordId).subscribe(
-        (problemPatternsRecord: Array<ProblemPattern>) => {
-          this.problemPatternsRecord = problemPatternsRecord;
-          stepConf.error = undefined;
-          stepConf.isBusy = false;
-          stepConf.lastLoadedIdDataset = this.trackDatasetId;
-          stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
-          setTimeout(() => {
-            this.problemViewerRecord.recordId = this.trackRecordId;
-          });
-        },
-        (err: HttpErrorResponse) => {
-          this.problemPatternsRecord = undefined;
-          stepConf.error = err;
-          stepConf.lastLoadedIdDataset = undefined;
-          stepConf.lastLoadedIdRecord = undefined;
-          this.resetBusy();
-          return err;
-        }
-      )
+      this.sandbox
+        .getProblemPatternsRecordWrapped(this.trackDatasetId, this.trackRecordId)
+        .subscribe(
+          (problemPatternsRecord: ProblemPatternsRecord) => {
+            this.problemPatternsRecord = problemPatternsRecord;
+            stepConf.error = undefined;
+            stepConf.isBusy = false;
+            stepConf.lastLoadedIdDataset = this.trackDatasetId;
+            stepConf.lastLoadedIdRecord = decodeURIComponent(this.trackRecordId);
+            setTimeout(() => {
+              this.problemViewerRecord.recordId = this.trackRecordId;
+            });
+          },
+          (err: HttpErrorResponse) => {
+            this.problemPatternsRecord = undefined;
+            stepConf.error = err;
+            stepConf.lastLoadedIdDataset = undefined;
+            stepConf.lastLoadedIdRecord = undefined;
+            this.resetBusy();
+            return err;
+          }
+        )
     );
   }
 

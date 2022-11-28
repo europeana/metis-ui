@@ -224,9 +224,9 @@ $eu-jade-slightly-dark: #1ea072;
 
 .warning-view {
   $slide-out-duration: 0.4s;
-  bottom: 0;
   display: flex;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  max-height: calc(100% - 1.5em);
   max-width: 80%;
   position: absolute;
   right: 0;

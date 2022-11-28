@@ -13,12 +13,15 @@ export enum RecordMediaType {
   'OTHER' = 'OTHER'
 }
 
-interface RecordTierCalculationSummary {
+export interface ProcessedRecordData {
   europeanaRecordId: string;
+  portalRecordLink: string;
+}
+
+interface RecordTierCalculationSummary extends ProcessedRecordData {
   providerRecordId: string;
   contentTier: string;
   metadataTier: string;
-  portalRecordLink: string;
 }
 
 export interface MediaDataItem {

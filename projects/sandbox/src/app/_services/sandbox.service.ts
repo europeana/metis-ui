@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
+import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache, ProtocolType } from 'shared';
 
@@ -9,9 +11,12 @@ import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
   DatasetInfo,
+  DatasetStatus,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -32,6 +37,56 @@ export class SandboxService {
   getProblemPatternsRecord(datasetId: string, recordId: string): Observable<Array<ProblemPattern>> {
     const url = `${apiSettings.apiHost}/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`;
     return this.http.get<Array<ProblemPattern>>(url);
+  }
+
+  /**
+  /* getProblemPatternsRecordWrapped
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<ProblemPatternsRecord>
+  **/
+  getProblemPatternsRecordWrapped(
+    datasetId: string,
+    recordId: string
+  ): Observable<ProblemPatternsRecord> {
+    return this.getProblemPatternsRecord(datasetId, recordId).pipe(
+      map((errorList) => {
+        return {
+          datasetId: datasetId,
+          problemPatternList: errorList
+        };
+      })
+    );
+  }
+
+  /**
+  /* getProcessedRecordData
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<ProcessedRecordData>
+  **/
+  getProcessedRecordData(datasetId: string, recordId: string): Observable<ProcessedRecordData> {
+    const pollInfo = timer(0, apiSettings.interval).pipe(
+      switchMap(() => {
+        return this.requestProgress(datasetId);
+      }),
+      takeWhile((dataset: Dataset) => {
+        return dataset.status !== DatasetStatus.COMPLETED && !dataset['portal-publish'];
+      }, true),
+      takeLast(1)
+    );
+    return pollInfo.pipe(
+      mergeMap((_: Dataset) => {
+        return this.getRecordReport(datasetId, recordId).pipe(
+          map((report: RecordReport) => {
+            return {
+              europeanaRecordId: report.recordTierCalculationSummary.europeanaRecordId,
+              portalRecordLink: report.recordTierCalculationSummary.portalRecordLink
+            };
+          })
+        );
+      })
+    );
   }
 
   /**

@@ -81,6 +81,7 @@ $orb-border-radius: 1.5em;
     }
   }
 
+  &:active:hover,
   &:active {
     background-color: $white;
     border-color: $eu-light-orange;
@@ -98,6 +99,9 @@ $orb-border-radius: 1.5em;
     background-color: $eu-light-orange;
     border-color: $white;
     pointer-events: none;
+    &.allow-active-clicks {
+      pointer-events: all;
+    }
     &.indicator-orb::before {
       border-color: $white;
       background-color: $eu-light-orange;
