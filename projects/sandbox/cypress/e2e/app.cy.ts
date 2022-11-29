@@ -2,7 +2,7 @@ context('Sandbox', () => {
   describe('App', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     const selectorLogo = '.metis-logo .logo';

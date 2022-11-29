@@ -387,17 +387,6 @@ $orb-border-radius: 1.5em;
   }
 }
 
-.dataset-orbs-hidden {
-  .upload-orb {
-    display: none;
-  }
-
-  .orb-container {
-    flex-basis: 100%;
-    text-align: center;
-  }
-}
-
 .spinner {
   background: svg-url-icon-spin('#{$white}') center / 2em no-repeat $eu-jade-light;
   &:hover {

@@ -1,10 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { WizardComponent } from './wizard';
+import { HomeComponent } from './home';
 
 const routes: Routes = [
   {
     path: 'dataset/:id',
+    component: WizardComponent
+  },
+  {
+    path: 'dataset',
     component: WizardComponent
   },
   {
@@ -13,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: WizardComponent
+    component: HomeComponent
   },
   {
     path: '**',

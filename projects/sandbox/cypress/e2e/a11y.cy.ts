@@ -48,7 +48,7 @@ context('Sandbox Accessibility', () => {
 
   describe('Progress Page', () => {
     beforeEach(() => {
-      cy.visit('/');
+      cy.visit('/dataset');
       injectAxe();
     });
 

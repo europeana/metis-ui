@@ -9,7 +9,7 @@ context('Sandbox', () => {
   describe('Links Pop-Out', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     const selectorView = '.record-links-view';
