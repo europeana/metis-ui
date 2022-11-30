@@ -27,12 +27,6 @@ $bp-desktop: $bp-xl;
 .footer {
   padding: 0 2.2rem;
   position: relative;
-
-  &.push-top-margin {
-    @media (max-width: $bp-desktop) {
-      margin-top: 6em;
-    }
-  }
 }
 
 .legal {
