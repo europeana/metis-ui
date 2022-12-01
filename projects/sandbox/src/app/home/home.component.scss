@@ -1,0 +1,66 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.get-started {
+  display: flex;
+  margin-left: auto;
+  font-weight: bold;
+}
+
+.home {
+  box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
+  background-color: $white;
+  padding: 0 2em 2em 2em;
+}
+
+.home-header {
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+
+  margin-bottom: 1em;
+
+  img {
+    max-width: 50%;
+  }
+
+  h1 {
+    text-align: center;
+  }
+}
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.list {
+  list-style-type: decimal;
+  margin: 1em 0 3em 0;
+}
+
+.nav-orb.is-active {
+  border-color: $gray-med;
+  border-color: $gray-light;
+  border-color: $eu-light-orange;
+}
+
+@media (min-width: $bp-med) {
+  .home-content {
+    text-align: left;
+  }
+
+  .home-header {
+    display: flex;
+    margin-bottom: 2em;
+
+    h1 {
+      text-align: left;
+      margin-right: 2em;
+    }
+  }
+
+  .list {
+    margin: 1em 0 2em 3em;
+  }
+}

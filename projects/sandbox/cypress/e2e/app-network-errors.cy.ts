@@ -14,7 +14,7 @@ context('Sandbox', () => {
   describe('App Network Errors', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     it('should show an error when the data upload fails', () => {

@@ -12,7 +12,7 @@ context('Sandbox', () => {
   describe('Progress Form', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     const selectorProgressTitleComplete = selectorProgressTitle + ' .tick';
