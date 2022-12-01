@@ -3,9 +3,15 @@
     <h1>Welcome to<br />Metis Sandbox!</h1>
     <div class="circle-container-outer">
       <ul class="circle-container">
-        <li class="orb-container"><a routerLink="/new" class="nav-orb labelled upload-orb"></a></li>
         <li class="orb-container">
-          <a routerLink="/dataset" class="nav-orb labelled progress-orb"></a>
+          <a routerLink="/new" class="nav-orb labelled upload-orb" title="Upload Dataset"></a>
+        </li>
+        <li class="orb-container">
+          <a
+            routerLink="/dataset"
+            class="nav-orb labelled progress-orb"
+            title="Track Dataset Processing"
+          ></a>
         </li>
         <li class="orb-container"><span class="nav-orb labelled is-active problem-orb"></span></li>
         <li class="orb-container"><span class="nav-orb labelled is-active report-orb"></span></li>
