@@ -11,6 +11,7 @@ import { FormatHarvestUrlPipe, RenameStepPipe } from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
 import { DatasetInfoComponent } from './dataset-info';
 import { FooterComponent } from './footer';
+import { HomeComponent } from './home';
 import { HttpErrorsComponent } from './http-errors';
 import { NavigationOrbsComponent } from './navigation-orbs';
 import { ProblemViewerComponent } from './problem-viewer';
@@ -26,6 +27,7 @@ import { WizardComponent } from './wizard';
     CopyableLinkItemComponent,
     DatasetInfoComponent,
     FooterComponent,
+    HomeComponent,
     FormatHarvestUrlPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,

@@ -1,10 +1,5 @@
 <main class="wizard">
-  <div
-    class="wizard-head"
-    [ngClass]="{
-      'dataset-orbs-hidden': wizardConf[getStepIndex(EnumWizardStepType.UPLOAD)].isHidden
-    }"
-  >
+  <div class="wizard-head">
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <h1 class="header-text" *ngIf="currentStepIndex === i">
         <ng-container
@@ -26,10 +21,7 @@
         >
           Problem Patterns (Dataset)
         </ng-container>
-        <ng-container
-          *ngSwitchCase="EnumWizardStepType.REPORT"
-          i18n="step title@@titleReport"
-        >
+        <ng-container *ngSwitchCase="EnumWizardStepType.REPORT" i18n="step title@@titleReport">
           Record Report
         </ng-container>
         <ng-container

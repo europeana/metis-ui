@@ -1,0 +1,46 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import '../../mixins/circle';
+
+.circle-container {
+  @include on-circle($item-count: 5, $item-size: 10%);
+  // use padding-box vs border-box to mask a gradient
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(to right, $eu-light-orange, $eu-jade-classic) border-box;
+  border: 1px solid transparent;
+  min-width: 6em;
+}
+
+.circle-container-outer {
+  margin: auto;
+  max-width: 16em;
+  padding: 3em 0;
+  width: 70%;
+}
+
+.home {
+  border-radius: 1.5em;
+  margin: 7rem auto 1.5rem auto;
+  max-width: 50em;
+  width: 80%;
+}
+
+@media (min-width: $bp-med) {
+  .circle-container-outer {
+    padding: 0 15% 0 0%;
+    width: 50%;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .circle-container-outer {
+    padding: 2em;
+    width: 12em;
+  }
+
+  .home-header {
+    h1 {
+      margin-right: 0;
+      margin-right: 7em;
+    }
+  }
+}

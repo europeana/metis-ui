@@ -19,7 +19,6 @@ context('Sandbox', () => {
     const force = { force: true };
     const noScrollCheck = { ensureScrollable: false };
     const selectorDatasetOrb = '.upload-orb';
-    const selectorOrbsHidden = '.dataset-orbs-hidden';
     const selectorContentTierOrb = '.content-tier-orb';
     const selectorMetadataTierOrb = '.metadata-tier-orb';
 
@@ -54,7 +53,7 @@ context('Sandbox', () => {
     };
 
     it('should be disabled if there is no dataset id or if the dataset id is invalid', () => {
-      cy.visit('/');
+      cy.visit('/dataset');
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
       cy.get(selectorInputRecordId).should('be.disabled');
 
@@ -122,18 +121,14 @@ context('Sandbox', () => {
         .should('have.length', 1);
     });
 
-    it('should link the report to the dataset form (without opening the progress form)', () => {
+    it('should link the report to the dataset form', () => {
       cy.visit('/dataset/1?recordId=2');
       cy.get(`.progress-orb-container:not(.hidden)`).should('not.exist');
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 1);
-
       cy.scrollTo('bottom', noScrollCheck);
       cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
-
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('not.exist');
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {

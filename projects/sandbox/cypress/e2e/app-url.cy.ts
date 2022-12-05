@@ -20,11 +20,11 @@ context('Sandbox', () => {
 
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     it('should add a path section when the progress form is submitted', () => {
-      cy.location('pathname').should('equal', '/');
+      cy.location('pathname').should('equal', '/dataset');
       fillProgressForm('1');
       cy.location('pathname').should('equal', '/dataset/1');
     });
