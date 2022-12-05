@@ -1,0 +1,61 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'mixins/circle';
+
+.wizard-head {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2em;
+
+  .header-text {
+    text-align: center;
+  }
+
+  .sb-navigation-orbs {
+    margin: auto;
+    max-width: 16em;
+    padding: 3em 0;
+    width: 70%;
+  }
+
+  @media (min-width: $bp-med) {
+    .sb-navigation-orbs {
+      padding: 0 15% 0 0%;
+      width: 50%;
+    }
+  }
+
+  @media (min-width: $bp-large) {
+    padding: 0 2em;
+
+    .sb-navigation-orbs {
+      padding: 2em;
+      width: 12em;
+    }
+
+    .header-text {
+      width: 10em;
+      margin-right: auto;
+    }
+  }
+}
+
+.wizard-head .wizard-status {
+  @include on-circle($item-count: 5, $item-size: 10%);
+  // use padding-box v border-box to mask a gradient
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(to right, $eu-light-orange, $eu-jade-classic) border-box;
+  border: 1px solid transparent;
+}
+
+@media (min-width: $bp-med) {
+  .wizard-head {
+    flex-direction: row;
+    .header-text {
+      width: 10em;
+      margin-right: auto;
+      text-align: left;
+    }
+  }
+}

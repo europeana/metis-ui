@@ -35,7 +35,6 @@ $margin-v: 12px;
   word-break: break-word;
 
   &.boxed {
-    border: 1px solid $eu-jade-disabled;
     margin-bottom: 1em;
   }
   &.multiple-entries {
@@ -80,7 +79,6 @@ $margin-v: 12px;
 }
 
 .report-grid {
-  color: $eu-jade-dark;
   column-gap: 1.75em;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -93,12 +91,6 @@ $margin-v: 12px;
 
 .record-report {
   margin-bottom: 36px;
-}
-
-.report-description,
-.report-header,
-.report-sub-header {
-  color: $eu-jade-dark;
 }
 
 .report-header {

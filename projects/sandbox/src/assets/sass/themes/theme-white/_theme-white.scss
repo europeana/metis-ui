@@ -9,15 +9,16 @@
 
 input,
 select {
-  border: 1px solid $eu-jade-dark;
+  border: 1px solid $gray-5;
+  border-radius: 6px;
   box-shadow: unset;
 }
 
 input[type='file'] {
   box-shadow: none;
-  border-color: $eu-jade-classic;
+  border-color: $gray-5;
 }
 
 .tick::after {
-  background-image: svg-url-icon-tick('#{$eu-jade-classic}');
+  background-image: svg-url-icon-tick('#{$gray-med}');
 }

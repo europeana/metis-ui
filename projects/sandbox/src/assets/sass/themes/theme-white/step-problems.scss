@@ -1,0 +1,37 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.problem-viewer {
+  border: 1px solid $gray-5;
+}
+
+.record-links-view-content {
+  border-top: 1px solid $gray-5;
+}
+
+.record-links-view-opener {
+  border: 1px solid $gray-5;
+}
+
+.record-links-view-content,
+.record-links-view-opener {
+  background-color: $white;
+}
+
+.skip-arrows {
+  background-color: $white;
+  border-bottom: 1px solid $gray-5;
+  border-left: 1px solid $gray-5;
+  border-right: 1px solid $gray-5;
+  .skip-arrow {
+    color: $gray-lighter;
+    &.enabled {
+      color: $gray-med;
+    }
+    &:hover {
+      color: $gray-light;
+    }
+    &:active {
+      color: $eu-jade;
+    }
+  }
+}

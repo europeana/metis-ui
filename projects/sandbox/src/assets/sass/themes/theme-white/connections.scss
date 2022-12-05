@@ -1,0 +1,38 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+$width: 12px;
+
+.connect {
+  position: relative;
+  &::after {
+    border-left: 1px solid $gray-5;
+    content: '';
+    display: block;
+    height: 44px;
+    left: -$width;
+    position: absolute;
+    width: $width;
+  }
+  &.bottom::after {
+    border-bottom: 1px solid $gray-5;
+    bottom: 16px;
+  }
+  &.top::after {
+    border-top: 1px solid $gray-5;
+    top: 16px;
+  }
+  &.error {
+    input {
+      border: 1px solid red;
+    }
+    &::after {
+      border-left: 1px solid red;
+    }
+    &.bottom::after {
+      border-bottom: 1px solid red;
+    }
+    &.top::after {
+      border-top: 1px solid red;
+    }
+  }
+}

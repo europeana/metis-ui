@@ -1,7 +1,7 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, Inject } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
-
 import { ClickService } from 'shared';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'sb-root',
@@ -12,10 +12,16 @@ export class AppComponent {
   public documentationUrl = apiSettings.documentationUrl;
   public feedbackUrl = apiSettings.feedbackUrl;
   public userGuideUrl = apiSettings.userGuideUrl;
+  public apiSettings = apiSettings;
 
   isSidebarOpen = false;
+  themes = ['theme-default', 'theme-white'];
+  themeIndex = 0;
 
-  constructor(private readonly clickService: ClickService) {}
+  constructor(
+    @Inject(DOCUMENT) private document: Document,
+    private readonly clickService: ClickService
+  ) {}
 
   /** documentClick
    * - global document click handler
@@ -23,8 +29,19 @@ export class AppComponent {
    * - (picked up by the click-aware directive)
    **/
   @HostListener('document:click', ['$event'])
-  documentClick(event: { target: HTMLElement; stopPropagation: () => void }): boolean | void {
+  documentClick(event: { target: HTMLElement }): boolean | void {
     this.clickService.documentClickedTarget.next(event.target);
+  }
+
+  switchTheme(): void {
+    this.themeIndex += 1;
+    if (this.themeIndex >= this.themes.length) {
+      this.themeIndex = 0;
+    }
+    this.themes.forEach((theme: string) => {
+      this.document.body.classList.remove(theme);
+    });
+    this.document.body.classList.add(this.themes[this.themeIndex]);
   }
 
   /**

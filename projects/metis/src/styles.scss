@@ -66,6 +66,10 @@ $textcolour_highlight: $accent;
 
 @import '~codemirror/addon/fold/foldgutter.css';
 
+body {
+  background-color: $offwhite;
+}
+
 .header-wrapper .search-form {
   position: absolute;
   top: 5em;

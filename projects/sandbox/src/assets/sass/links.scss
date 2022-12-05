@@ -18,7 +18,8 @@
     white-space: nowrap;
   }
 
-  &:hover {
+  &:hover,
+  &:not(.permanent):hover {
     color: $eu-jade-darkest;
     display: inline;
   }
@@ -48,93 +49,46 @@
   position: relative;
 }
 
-// colour override to maintain green look of deprecated links component
-.copyable-link-item,
-.report-value {
-  .external-link:not(.left):not(.large):not(.pending) {
-    color: $eu-jade-dark;
-    &::after {
-      background-image: svg-url-icon-external($eu-jade-dark);
-    }
-    &:active,
-    &:active:hover {
-      color: $eu-light-orange;
-      &::after {
-        background-image: svg-url-icon-external($eu-light-orange);
-      }
-    }
-    &:hover {
-      color: $eu-jade-darkest;
-      &::after {
-        background-image: svg-url-icon-external($eu-jade-darkest);
-      }
-    }
-  }
-}
-
-.external-link {
+.external-link-left {
   align-items: center;
-  color: $gray-med;
   display: flex;
+  line-height: 3em;
 
-  &.left::before,
-  &:not(.left)::after {
-    background-image: svg-url-icon-external($gray-med);
+  &::before {
     background-repeat: no-repeat;
     background-size: cover;
     content: '';
     display: inline-block;
+    height: 1.25em;
+    margin-right: 1em;
+    width: 1.25em;
+  }
+}
+
+.external-link {
+  display: inline-block;
+  position: relative;
+
+  &::after {
+    // background-image set in theme!
+    background-repeat: no-repeat;
+    content: '';
+    display: block;
+    height: 1em;
+    top: 0.275em;
+    position: absolute;
+    width: 1em;
+    right: -1.35em;
   }
 
-  &.large {
-    &.left::before,
-    &:not(.left)::after {
-      height: 1.25em;
-      width: 1.25em;
-    }
-    &.left::before {
-      margin-right: 1em;
-    }
-    &:not(.left)::after {
-      margin-left: 1em;
-    }
-  }
-  &:not(.large) {
-    &.left::before,
-    &:not(.left)::after {
-      height: 0.85em;
-      width: 0.85em;
-    }
-    &.left::before {
-      margin-right: 0.5em;
-    }
-    &:not(.left)::after {
-      margin-left: 0.5em;
-    }
-  }
-  &:hover {
-    color: $gray-light;
-    &.left::before,
-    &:not(.left)::after {
-      background-image: svg-url-icon-external($gray-light);
-    }
+  &:hover + .copy {
+    display: inline;
   }
 
-  &:active,
-  &:active:hover {
-    color: $eu-light-orange;
-    &.left::before,
-    &:not(.left)::after {
-      background-image: svg-url-icon-external($eu-light-orange);
-    }
-  }
-
-  &:not(.left).pending {
-    color: $eu-jade-disabled;
+  &.pending {
     cursor: default;
-    pointer-events: none;
-    &::after {
-      background-image: svg-url-icon-spin($eu-jade-classic);
+    &::after,
+    &:hover::after {
       background-size: 0.85em;
       right: -1.2em;
     }
