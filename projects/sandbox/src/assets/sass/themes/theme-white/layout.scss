@@ -18,6 +18,10 @@
   background: $white;
 }
 
+.inputs {
+  margin-top: 1em;
+}
+
 .wizard {
   background-color: $white;
   margin: 6rem auto 8rem auto;
@@ -35,6 +39,6 @@
 
 @media (min-width: $bp-large) {
   .wizard-content {
-    margin-top: 2em;
+    margin-top: 1em;
   }
 }

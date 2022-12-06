@@ -62,7 +62,6 @@ label {
   position: relative;
 
   &::before {
-    background-image: svg-url-icon-lightbulb($eu-jade);
     background-repeat: no-repeat;
     background-position: center 4px;
     content: '';
@@ -71,12 +70,6 @@ label {
     margin-right: 3px;
     min-width: 10px;
     width: 10px;
-  }
-  &:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-jade-dark);
-  }
-  &:active:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-light-orange);
   }
 }
 
@@ -362,8 +355,6 @@ q {
   // connecting lines
 
   .link-related::after {
-    border-left: 1px solid $eu-jade-light;
-    color: $eu-jade-light;
     content: '';
     left: -11px;
     overflow: hidden;
@@ -374,14 +365,12 @@ q {
 
   .openable-list {
     .link-related::after {
-      border-left: 1px solid $eu-jade-light;
       content: '——';
       height: calc(100% + 0.8em);
       line-height: 1.6em;
       overflow: hidden;
     }
     :last-child .link-related::after {
-      border-bottom: 1px solid $eu-jade-light;
       content: '';
       height: 26px;
       transform: translate(0px, -16px);
@@ -396,7 +385,6 @@ q {
   }
 
   .list-opener:not(.fmt-compact).is-open::before {
-    border-left: 1px solid $eu-jade-light;
     content: '';
     height: 80px;
     left: 5px;

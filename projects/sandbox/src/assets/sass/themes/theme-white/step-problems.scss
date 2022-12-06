@@ -35,3 +35,37 @@
     }
   }
 }
+
+// connector lines
+@media (min-width: $bp-large) {
+  $colour-connect-lines: $gray-5;
+
+  .link-related::after {
+    border-left: 1px solid $colour-connect-lines;
+    color: $colour-connect-lines;
+  }
+
+  .link-related::before {
+    background-image: svg-url-icon-lightbulb($gray-med);
+  }
+
+  &:hover::before {
+    background-image: svg-url-icon-lightbulb($eu-jade-dark);
+  }
+  &:active:hover::before {
+    background-image: svg-url-icon-lightbulb($eu-light-orange);
+  }
+
+  .openable-list {
+    .link-related::after {
+      border-left: 1px solid $colour-connect-lines;
+    }
+    :last-child .link-related::after {
+      border-bottom: 1px solid $colour-connect-lines;
+    }
+  }
+
+  .list-opener:not(.fmt-compact).is-open::before {
+    border-left: 1px solid $colour-connect-lines;
+  }
+}

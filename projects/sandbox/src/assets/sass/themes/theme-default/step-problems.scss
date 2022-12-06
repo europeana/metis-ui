@@ -34,3 +34,35 @@
 .form-group.title {
   color: $eu-jade-dark;
 }
+
+// connector lines
+@media (min-width: $bp-large) {
+  .link-related::after {
+    border-left: 1px solid $eu-jade-light;
+    color: $eu-jade-light;
+  }
+
+  .link-related::before {
+    background-image: svg-url-icon-lightbulb($eu-jade);
+  }
+
+  &:hover::before {
+    background-image: svg-url-icon-lightbulb($eu-jade-dark);
+  }
+  &:active:hover::before {
+    background-image: svg-url-icon-lightbulb($eu-light-orange);
+  }
+
+  .openable-list {
+    .link-related::after {
+      border-left: 1px solid $eu-jade-light;
+    }
+    :last-child .link-related::after {
+      border-bottom: 1px solid $eu-jade-light;
+    }
+  }
+
+  .list-opener:not(.fmt-compact).is-open::before {
+    border-left: 1px solid $eu-jade-light;
+  }
+}
