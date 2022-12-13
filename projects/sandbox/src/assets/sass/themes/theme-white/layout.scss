@@ -20,6 +20,7 @@
 
 .home,
 .wizard {
+  border: 1px solid $gray-5;
   box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
 }
 
@@ -34,9 +35,6 @@
 
 .wizard-content {
   margin: 3em 2em 2em 2em;
-  .inline-texts {
-    padding-bottom: 2em;
-  }
 }
 
 @media (min-width: $bp-med) {
