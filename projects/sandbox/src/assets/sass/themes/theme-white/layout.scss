@@ -18,6 +18,11 @@
   background: $white;
 }
 
+.home,
+.wizard {
+  box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
+}
+
 .inputs {
   margin-top: 1em;
 }
@@ -29,6 +34,9 @@
 
 .wizard-content {
   margin: 3em 2em 2em 2em;
+  .inline-texts {
+    padding-bottom: 2em;
+  }
 }
 
 @media (min-width: $bp-med) {
