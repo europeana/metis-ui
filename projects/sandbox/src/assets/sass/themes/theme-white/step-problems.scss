@@ -1,0 +1,71 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.problem-viewer {
+  border: 1px solid $gray-5;
+}
+
+.record-links-view-content {
+  border-top: 1px solid $gray-5;
+}
+
+.record-links-view-opener {
+  border: 1px solid $gray-5;
+}
+
+.record-links-view-content,
+.record-links-view-opener {
+  background-color: $white;
+}
+
+.skip-arrows {
+  background-color: $white;
+  border-bottom: 1px solid $gray-5;
+  border-left: 1px solid $gray-5;
+  border-right: 1px solid $gray-5;
+  .skip-arrow {
+    color: $gray-lighter;
+    &.enabled {
+      color: $gray-med;
+    }
+    &:hover {
+      color: $gray-light;
+    }
+    &:active {
+      color: $eu-jade;
+    }
+  }
+}
+
+// connector lines
+@media (min-width: $bp-large) {
+  $colour-connect-lines: $gray-5;
+
+  .link-related::after {
+    border-left: 1px solid $colour-connect-lines;
+    color: $colour-connect-lines;
+  }
+
+  .link-related::before {
+    background-image: svg-url-icon-lightbulb($gray-med);
+  }
+
+  &:hover::before {
+    background-image: svg-url-icon-lightbulb($eu-jade-dark);
+  }
+  &:active:hover::before {
+    background-image: svg-url-icon-lightbulb($eu-light-orange);
+  }
+
+  .openable-list {
+    .link-related::after {
+      border-left: 1px solid $colour-connect-lines;
+    }
+    :last-child .link-related::after {
+      border-bottom: 1px solid $colour-connect-lines;
+    }
+  }
+
+  .list-opener:not(.fmt-compact).is-open::before {
+    border-left: 1px solid $colour-connect-lines;
+  }
+}

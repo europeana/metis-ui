@@ -27,7 +27,6 @@ $slide-down-duration: 0.4s;
 }
 
 .dataset-info {
-  color: $eu-jade-dark;
   justify-content: space-between;
   margin-bottom: $container-margin-bottom;
 
@@ -39,9 +38,9 @@ $slide-down-duration: 0.4s;
       &::before {
         content: '';
         height: 12px;
-        width: 13px;
-        background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
+        // background set in theme!
         margin: 0 3px 0 2px;
+        width: 13px;
       }
     }
   }
@@ -56,14 +55,9 @@ $slide-down-duration: 0.4s;
 .dataset-name {
   display: inline-block;
   flex-grow: 1;
-
-  &.link-internal:active .tick::after {
-    background-image: svg-url-icon-tick('#{$eu-light-orange}');
-  }
 }
 
 .full-info-view {
-  background: $eu-light-jade-classic;
   display: none;
   z-index: 2;
   &.open {

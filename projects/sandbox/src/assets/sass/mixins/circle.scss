@@ -1,22 +1,24 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
 /// Mixin to place items on a circle
 @mixin on-circle($item-count, $item-size) {
   $radius: calc(100% * 50% / $item-size);
-  position: relative;
-  width: 100%;
-  height: 0;
 
   border-radius: 50%;
-  padding: 0 0 100% 0;
-
+  height: 0;
   list-style: none;
+  padding: 0 0 100% 0;
+  position: relative;
+  width: 100%;
 
   > * {
-    position: absolute;
-    top: 50%;
+    height: $item-size;
     left: 50%;
     margin: -1.5em;
+    position: absolute;
+    top: 50%;
     width: $item-size;
-    height: $item-size;
+
     $angle: calc(360 / $item-count);
     $rot: 0;
 

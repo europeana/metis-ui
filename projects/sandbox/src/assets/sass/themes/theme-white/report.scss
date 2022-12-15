@@ -1,0 +1,16 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.limited-list.boxed {
+  border: 1px solid $gray-5;
+}
+
+.report-description,
+.report-grid,
+.report-header,
+.report-sub-header {
+  color: $gray-med;
+}
+
+.separator-line {
+  background: $gray-5;
+}

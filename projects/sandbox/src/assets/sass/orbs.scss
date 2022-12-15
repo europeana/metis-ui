@@ -32,6 +32,7 @@ $orb-border-radius: 1.5em;
   }
 
   &.indicate-tier::before {
+    color: $white;
     content: attr(data-indicator);
     background-color: $eu-jade-light;
     line-height: 16px;
@@ -75,6 +76,7 @@ $orb-border-radius: 1.5em;
     box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
     &.indicator-orb::before {
       background-color: $white;
+      color: $eu-jade-dark;
     }
     &:not([data-indicator]):not(.warning-animated)::before {
       background-image: svg-url-icon-tick('#000');
@@ -90,6 +92,7 @@ $orb-border-radius: 1.5em;
     &.indicator-orb::before {
       border-color: $eu-light-orange;
       background-color: $white;
+      color: $eu-light-orange;
     }
     &.indicator-orb:not([data-indicator])::before {
       background-image: svg-url-icon-tick('#{$eu-light-orange}');

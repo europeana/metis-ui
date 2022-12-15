@@ -62,7 +62,6 @@ label {
   position: relative;
 
   &::before {
-    background-image: svg-url-icon-lightbulb($eu-jade);
     background-repeat: no-repeat;
     background-position: center 4px;
     content: '';
@@ -71,12 +70,6 @@ label {
     margin-right: 3px;
     min-width: 10px;
     width: 10px;
-  }
-  &:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-jade-dark);
-  }
-  &:active:hover::before {
-    background-image: svg-url-icon-lightbulb($eu-light-orange);
   }
 }
 
@@ -101,7 +94,6 @@ label {
 }
 
 .skip-arrows {
-  background-color: $eu-light-jade-classic;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
   float: right;
@@ -114,7 +106,6 @@ label {
 }
 
 .skip-arrow {
-  color: $gray-light;
   display: inline-block;
   line-height: 12px;
   pointer-events: none;
@@ -135,16 +126,7 @@ label {
   }
 
   &.enabled {
-    color: $eu-jade-dark;
     pointer-events: all;
-  }
-
-  &:hover {
-    color: $eu-jade-darkest;
-  }
-
-  &:active {
-    color: $eu-light-orange;
   }
 }
 
@@ -257,13 +239,7 @@ q {
   }
 }
 
-.record-links-view-content,
-.record-links-view-opener {
-  background: $eu-light-jade-classic;
-}
-
 .record-links-view-content {
-  border-top: 1px solid $grey-3;
   display: flex;
   flex-direction: column;
   padding: 0.75em 0 2em 2.25em;
@@ -275,7 +251,6 @@ q {
 
 .record-links-view-opener {
   align-self: flex-start;
-  border: 1px solid $grey-3;
   border-bottom-left-radius: 1.5em;
   border-right-style: dotted;
   border-top-left-radius: 1.5em;
@@ -303,7 +278,6 @@ q {
 }
 
 .title {
-  color: $eu-jade-dark;
   word-break: break-all;
   &.record-title {
     margin-right: 1em;
@@ -381,8 +355,6 @@ q {
   // connecting lines
 
   .link-related::after {
-    border-left: 1px solid $eu-jade-light;
-    color: $eu-jade-light;
     content: '';
     left: -11px;
     overflow: hidden;
@@ -393,14 +365,12 @@ q {
 
   .openable-list {
     .link-related::after {
-      border-left: 1px solid $eu-jade-light;
       content: '——';
       height: calc(100% + 0.8em);
       line-height: 1.6em;
       overflow: hidden;
     }
     :last-child .link-related::after {
-      border-bottom: 1px solid $eu-jade-light;
       content: '';
       height: 26px;
       transform: translate(0px, -16px);
@@ -415,7 +385,6 @@ q {
   }
 
   .list-opener:not(.fmt-compact).is-open::before {
-    border-left: 1px solid $eu-jade-light;
     content: '';
     height: 80px;
     left: 5px;

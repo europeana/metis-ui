@@ -1,0 +1,50 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import '../../header';
+
+.dataset-info .dataset-name.link-internal {
+  &:hover .tick::after {
+    background-image: svg-url-icon-tick('#{$grey-3}');
+  }
+  &:active .tick::after {
+    background-image: svg-url-icon-tick('#{$eu-jade-light}');
+  }
+}
+
+.form-group {
+  margin: 0 auto 12px;
+}
+
+.full-info-view {
+  background: $white;
+}
+
+.home,
+.wizard {
+  border: 1px solid transparent;
+  box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
+}
+
+.inputs {
+  margin-top: 1em;
+}
+
+.wizard {
+  background-color: $white;
+  margin: 6rem auto 8rem auto;
+}
+
+.wizard-content {
+  margin: 3em 2em 2em 2em;
+}
+
+@media (min-width: $bp-med) {
+  .dataset-info .copyable-link-item {
+    right: 1.5em;
+  }
+}
+
+@media (min-width: $bp-large) {
+  .wizard-content {
+    margin-top: 1em;
+  }
+}

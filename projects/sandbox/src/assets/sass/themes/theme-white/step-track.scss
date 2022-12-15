@@ -1,0 +1,32 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.dataset-info {
+  color: $gray-med;
+
+  .creation-date.warning-icon::before {
+    background: svg-url-icon-warning($gray-med) center no-repeat;
+  }
+}
+
+.sb-progress-tracker .wrapper {
+  border: 1px solid $gray-5;
+}
+
+.warning-view {
+  .sb-navigation-orbs {
+    background: #fff;
+    border: 1px solid $gray-5;
+    border-right: 1px dotted $gray-5;
+  }
+
+  .warning-view-content {
+    background: #fff;
+    border-right: 1px dotted $gray-5;
+    border-top: 1px solid $gray-5;
+    border-bottom: 1px solid $gray-5;
+  }
+
+  .warning-view-list li::before {
+    color: $gray-med;
+  }
+}
