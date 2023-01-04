@@ -54,9 +54,7 @@ describe('test helpers', () => {
                 body: {},
                 method: 'GET'
               },
-              flush: () => {
-                return undefined;
-              }
+              flush: () => void 0
             } as unknown) as MockHttpRequest;
           }
         ),
