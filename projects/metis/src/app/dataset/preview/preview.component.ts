@@ -390,7 +390,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       }
       if (searchedRecordId) {
         this.searchTerm = searchedRecordId;
-        this.searchXMLSample(searchedRecordId, false);
+        this.searchXMLSample(searchedRecordId);
       }
     }
 
@@ -541,6 +541,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
    * updates local searchTerm and optionally invokes search on it
    * updates local variables searchError / searchedXMLSample | searchedXMLSampleCompare
    * @param {string} searchTerm - the term
+   * @param {boolean} comparison - flag if comparison is to be searched / assigned
    **/
   searchXMLSample(searchTerm: string, comparison = false): void {
     this.searchTerm = searchTerm;
@@ -559,7 +560,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       ? this.previewFilters.comparisonFilter
       : this.previewFilters.baseFilter;
     const pluginType = filterPlugin ? filterPlugin.pluginType : null;
-    const executionId = this.previewFilters.baseFilter.executionId;
+    const executionId = filterPlugin ? filterPlugin.executionId : undefined;
 
     if (!(executionId && pluginType)) {
       return;
