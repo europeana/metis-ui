@@ -560,13 +560,9 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
         return this.sandbox.requestProgress(this.trackDatasetId).pipe(
           // temporary removal of back-end info
           map((dataset: Dataset) => {
-            const nullStrings = [
-              'Harvesting dataset identifiers and records.',
-              'A review URL will be generated when the dataset has finished processing.'
-            ];
             if (
               dataset[fieldNamePortalPublish] &&
-              nullStrings.includes(dataset[fieldNamePortalPublish])
+              SandboxService.nullUrlStrings.includes(dataset[fieldNamePortalPublish])
             ) {
               delete dataset[fieldNamePortalPublish];
             }
