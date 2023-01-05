@@ -128,6 +128,7 @@ describe('sandbox service', () => {
         harvestUrl: [url, []],
         metadataFormat: [metadataFormat, []],
         setSpec: [setSpec, []],
+        stepSize: [1, []],
         uploadProtocol: [protocol, []],
         url: [url, []],
         xsltFile: []
@@ -158,14 +159,17 @@ describe('sandbox service', () => {
     mockHttp
       .expect(
         'POST',
-        `/dataset/${name}/harvestByUrl?country=${country}&language=${language}&url=${encodeURIComponent(
+        `/dataset/${name}/harvestByUrl?country=${country}&language=${language}&stepsize=1&url=${encodeURIComponent(
           url
         )}`
       )
       .body(new FormData())
       .send(form1);
     mockHttp
-      .expect('POST', `/dataset/${name}/harvestByFile?country=${country}&language=${language}`)
+      .expect(
+        'POST',
+        `/dataset/${name}/harvestByFile?country=${country}&language=${language}&stepsize=1`
+      )
       .body(new FormData())
       .send(form2);
     mockHttp
@@ -173,7 +177,7 @@ describe('sandbox service', () => {
         'POST',
         [
           `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}`,
-          `&metadataformat=${metadataFormat}&setspec=${setSpec}`,
+          `&stepsize=1&metadataformat=${metadataFormat}&setspec=${setSpec}`,
           `&url=${encodeURIComponent(url)}`
         ].join('')
       )

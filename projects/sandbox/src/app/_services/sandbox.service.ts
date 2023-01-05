@@ -185,7 +185,9 @@ export class SandboxService {
     const urlParameter = sendUrl.length > 0 ? '&url=' + encodeURIComponent(sendUrl) : '';
 
     let url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}`;
-    url += `?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
+    url += `?country=${form.value.country}&language=${form.value.language}`;
+    url += `&stepsize=${form.value.stepSize}`;
+    url += `${oaiParameters}${urlParameter}`;
 
     const formData = new FormData();
     let fileAppended = false;
