@@ -471,11 +471,10 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     this.currentStepType = this.wizardConf[stepIndex].stepType;
     this.wizardConf[stepIndex].isHidden = false;
 
+    // 'home' enables 2 entry-points
     if (this.currentStepType === WizardStepType.HOME) {
-      if (this.currentStepType === WizardStepType.HOME) {
-        this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)].isHidden = false;
-        this.wizardConf[this.getStepIndex(WizardStepType.UPLOAD)].isHidden = false;
-      }
+      this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)].isHidden = false;
+      this.wizardConf[this.getStepIndex(WizardStepType.UPLOAD)].isHidden = false;
     }
 
     if (updateLocation) {
