@@ -761,9 +761,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
    * @returns void
    **/
   goToLocation(path: string): void {
-    console.log('goToLocation(' + path + ') ?');
     if (this.location.path() !== path) {
-      console.log('   goToLocation(' + path + ')!');
       this.location.go(path);
     }
   }
