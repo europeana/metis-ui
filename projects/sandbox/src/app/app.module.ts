@@ -1,9 +1,11 @@
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouteReuseStrategy } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
@@ -46,7 +48,7 @@ import { WizardComponent } from './wizard';
     ReactiveFormsModule,
     SharedModule
   ],
-  providers: [],
+  providers: [{ provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy }],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

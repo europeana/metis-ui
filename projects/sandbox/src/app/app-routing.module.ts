@@ -1,29 +1,43 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { WizardComponent } from './wizard';
-import { HomeComponent } from './home';
 
 const routes: Routes = [
   {
     path: 'dataset/:id',
-    component: WizardComponent
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
   },
   {
     path: 'dataset',
-    component: WizardComponent
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
   },
   {
     path: 'new',
-    component: WizardComponent
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
   },
   {
     path: '',
-    component: HomeComponent
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
   },
   {
     path: '**',
     redirectTo: '',
-    pathMatch: 'full'
+    pathMatch: 'full',
+    data: {
+      reuseComponent: true
+    }
   }
 ];
 

@@ -1,20 +1,19 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
 .get-started {
-  display: flex;
+  display: table;
   font-weight: bold;
   margin: auto;
 }
 
 .home {
-  background-color: $white;
-}
-
-.home-content {
-  display: flex;
+  display: none;
   flex-direction: column;
   padding: 0 2em 2em 2em;
   text-align: center;
+  &.showing {
+    display: flex;
+  }
 }
 
 .list {
@@ -31,7 +30,7 @@
     margin: 0 0 0 auto;
   }
 
-  .home-content {
+  .home {
     text-align: left;
   }
 

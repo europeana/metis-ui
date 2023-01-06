@@ -18,7 +18,6 @@
   background: $white;
 }
 
-.home,
 .wizard {
   border: 1px solid transparent;
   box-shadow: rgba(77, 77, 77, 0.2) 0 2px 3px;
@@ -45,6 +44,6 @@
 
 @media (min-width: $bp-large) {
   .wizard-content {
-    margin-top: 1em;
+    margin-top: 0;
   }
 }

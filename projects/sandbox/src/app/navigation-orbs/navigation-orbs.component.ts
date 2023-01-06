@@ -12,12 +12,15 @@ export class NavigationOrbsComponent {
   collapsed = false;
   steps: Array<number>;
   _indicatorAttributes: { [details: string]: string } = {};
-
+  @Input() maxUncollapsed: number;
   @Input() index = 0;
   @Input() ariaLabel: string;
   @Input()
   set count(count: number) {
-    this.collapsed = count > NavigationOrbsComponent.maxOrbsUncollapsed;
+    const max = this.maxUncollapsed
+      ? this.maxUncollapsed
+      : NavigationOrbsComponent.maxOrbsUncollapsed;
+    this.collapsed = count > max;
     this.steps = Array.from({ length: count }, (_, i) => {
       return i;
     });

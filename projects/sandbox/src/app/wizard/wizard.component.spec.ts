@@ -31,6 +31,13 @@ describe('WizardComponent', () => {
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
 
+  const stepIndexHome = 0;
+  const stepIndexUpload = 1;
+  const stepIndexTrack = 2;
+  const stepIndexProblemsDataset = 3;
+  const stepIndexReport = 4;
+  const stepIndexProblemsRecord = 5;
+
   const setFormValueDataset = (val: string): void => {
     component.formProgress.controls.datasetToTrack.setValue(val);
   };
@@ -116,40 +123,39 @@ describe('WizardComponent', () => {
     }));
 
     it('should get if a step is an indicator', () => {
-      expect(component.getStepIsIndicator(0)).toBeFalsy();
-      expect(component.getStepIsIndicator(0)).toBeFalsy();
+      expect(component.getStepIsIndicator(stepIndexHome)).toBeFalsy();
 
-      expect(component.getStepIsIndicator(1)).toBeFalsy();
+      expect(component.getStepIsIndicator(stepIndexTrack)).toBeFalsy();
       component.progressData = Object.assign({}, mockDataset);
       setFormValueDataset('1');
-      expect(component.getStepIsIndicator(1)).toBeFalsy();
-      component.wizardConf[1].lastLoadedIdDataset = '1';
-      expect(component.getStepIsIndicator(1)).toBeTruthy();
+      expect(component.getStepIsIndicator(stepIndexTrack)).toBeFalsy();
+      component.wizardConf[stepIndexTrack].lastLoadedIdDataset = '1';
+      expect(component.getStepIsIndicator(stepIndexTrack)).toBeTruthy();
 
-      expect(component.getStepIsIndicator(2)).toBeFalsy();
+      expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeFalsy();
       component.problemPatternsDataset = mockProblemPatternsDataset;
-      expect(component.getStepIsIndicator(2)).toBeFalsy();
-      component.wizardConf[2].lastLoadedIdDataset = '1';
-      expect(component.getStepIsIndicator(2)).toBeTruthy();
+      expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeFalsy();
+      component.wizardConf[stepIndexProblemsDataset].lastLoadedIdDataset = '1';
+      expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeTruthy();
 
-      expect(component.getStepIsIndicator(3)).toBeFalsy();
+      expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
       component.recordReport = mockRecordReport;
-      expect(component.getStepIsIndicator(3)).toBeFalsy();
-      component.wizardConf[3].lastLoadedIdDataset = '1';
-      component.wizardConf[3].lastLoadedIdRecord = '2';
-      expect(component.getStepIsIndicator(3)).toBeFalsy();
+      expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
+      component.wizardConf[stepIndexReport].lastLoadedIdDataset = '1';
+      component.wizardConf[stepIndexReport].lastLoadedIdRecord = '2';
+      expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
       setFormValueRecord('2');
-      expect(component.getStepIsIndicator(3)).toBeTruthy();
+      expect(component.getStepIsIndicator(stepIndexReport)).toBeTruthy();
 
-      expect(component.getStepIsIndicator(4)).toBeFalsy();
+      expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeFalsy();
       component.problemPatternsRecord = {
         datasetId: '1',
         problemPatternList: mockProblemPatternsRecord
       };
-      expect(component.getStepIsIndicator(4)).toBeFalsy();
-      component.wizardConf[4].lastLoadedIdDataset = '1';
-      component.wizardConf[4].lastLoadedIdRecord = '2';
-      expect(component.getStepIsIndicator(4)).toBeTruthy();
+      expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeFalsy();
+      component.wizardConf[stepIndexProblemsRecord].lastLoadedIdDataset = '1';
+      component.wizardConf[stepIndexProblemsRecord].lastLoadedIdRecord = '2';
+      expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeTruthy();
     });
 
     it('should get the connect classes', () => {
@@ -186,6 +192,35 @@ describe('WizardComponent', () => {
       expect(cClasses.top).toBeFalsy();
     });
 
+    it('should update the location', () => {
+      let location = '';
+      const datasetId = '1';
+      const recordId = '2';
+
+      spyOn(component, 'goToLocation').and.callFake((path: string): void => {
+        location = path;
+      });
+
+      expect(location).toEqual('');
+
+      component.updateLocation(true, false);
+      expect(location).toEqual('/dataset');
+
+      component.trackDatasetId = datasetId;
+      component.trackRecordId = recordId;
+      component.updateLocation(true, false);
+      expect(location).toEqual(`/dataset/${datasetId}`);
+
+      component.updateLocation(true);
+      expect(location).toEqual(`/dataset/${datasetId}?recordId=${recordId}`);
+
+      component.updateLocation(true, false, true);
+      expect(location).toEqual(`/dataset/${datasetId}?view=problems`);
+
+      component.updateLocation(true, true, true);
+      expect(location).toEqual(`/dataset/${datasetId}?recordId=${recordId}&view=problems`);
+    });
+
     it('should get the form group', () => {
       expect(
         component.getFormGroup({ stepType: WizardStepType.PROGRESS_TRACK } as WizardStep)
@@ -202,19 +237,19 @@ describe('WizardComponent', () => {
     });
 
     it('should reset the busy flags', () => {
-      component.wizardConf[0].isBusy = true;
-      component.wizardConf[4].isBusy = true;
+      component.wizardConf[stepIndexUpload].isBusy = true;
+      component.wizardConf[stepIndexProblemsRecord].isBusy = true;
       component.isPollingProgress = true;
       component.resetBusy();
-      expect(component.wizardConf[0].isBusy).toBeFalsy();
-      expect(component.wizardConf[4].isBusy).toBeFalsy();
+      expect(component.wizardConf[stepIndexUpload].isBusy).toBeFalsy();
+      expect(component.wizardConf[stepIndexProblemsRecord].isBusy).toBeFalsy();
       expect(component.isPollingProgress).toBeFalsy();
     });
 
     it('should set the busy flag for upload', () => {
-      expect(component.wizardConf[0].isBusy).toBeFalsy();
+      expect(component.wizardConf[stepIndexUpload].isBusy).toBeFalsy();
       component.setBusyUpload(true);
-      expect(component.wizardConf[0].isBusy).toBeTruthy();
+      expect(component.wizardConf[stepIndexUpload].isBusy).toBeTruthy();
     });
 
     it('should set the trackDatasetId on upload success', () => {
@@ -222,6 +257,19 @@ describe('WizardComponent', () => {
       expect(component.trackDatasetId).toBeFalsy();
       component.dataUploaded(testId);
       expect(component.trackDatasetId).toEqual(testId);
+    });
+
+    it('should tell if the default inputs should be shown', () => {
+      component.currentStepType = WizardStepType.PROBLEMS_RECORD;
+      expect(component.defaultInputsShown()).toBeTruthy();
+      component.currentStepType = WizardStepType.HOME;
+      expect(component.defaultInputsShown()).toBeFalsy();
+      component.currentStepType = WizardStepType.PROBLEMS_DATASET;
+      expect(component.defaultInputsShown()).toBeTruthy();
+      component.currentStepType = WizardStepType.UPLOAD;
+      expect(component.defaultInputsShown()).toBeFalsy();
+      component.currentStepType = WizardStepType.PROGRESS_TRACK;
+      expect(component.defaultInputsShown()).toBeTruthy();
     });
 
     it('should tell if the progress is complete', () => {
@@ -263,27 +311,54 @@ describe('WizardComponent', () => {
       } as unknown) as PopStateEvent;
 
       expect(component.progressData).toBeFalsy();
+      expect(component.currentStepType).toEqual(WizardStepType.HOME);
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.progressData).toBeTruthy();
+      expect(component.currentStepType).toEqual(WizardStepType.PROGRESS_TRACK);
 
       ps.url = '/dataset';
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.progressData).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
+      expect(component.currentStepType).toEqual(WizardStepType.PROGRESS_TRACK);
+
+      ps.url = '/new';
+      component.handleLocationPopState(ps);
+      tick(1);
+      expect(component.progressData).toBeFalsy();
+      expect(component.trackRecordId).toBeFalsy();
+      expect(component.currentStepType).toEqual(WizardStepType.UPLOAD);
 
       ps.url = '/dataset/1?recordId=2';
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.trackRecordId).toBeTruthy();
+      expect(component.currentStepType).toEqual(WizardStepType.REPORT);
+
+      ps.url = '';
+      component.handleLocationPopState(ps);
+      tick(1);
+      expect(component.trackRecordId).toBeFalsy();
+      expect(component.trackRecordId).toBeFalsy();
+      expect(component.currentStepType).toEqual(WizardStepType.HOME);
 
       component.cleanup();
       tick(apiSettings.interval);
     }));
 
+    it('should get if the current step is a problem step', () => {
+      expect(component.getIsProblem(stepIndexHome)).toBeFalsy();
+      expect(component.getIsProblem(stepIndexReport)).toBeFalsy();
+      expect(component.getIsProblem(stepIndexTrack)).toBeFalsy();
+      expect(component.getIsProblem(stepIndexUpload)).toBeFalsy();
+      expect(component.getIsProblem(stepIndexProblemsDataset)).toBeTruthy();
+      expect(component.getIsProblem(stepIndexProblemsRecord)).toBeTruthy();
+    });
+
     it('should get the outer orb config', () => {
-      Object.keys(new Array(3).fill(null)).forEach((i: string) => {
+      Object.keys(new Array(2).fill(null)).forEach((i: string) => {
         expect(component.getNavOrbConfigOuter(parseInt(i))).toBeTruthy();
       });
     });
@@ -292,29 +367,27 @@ describe('WizardComponent', () => {
       Object.keys(new Array(3).fill(null)).forEach((i: string) => {
         expect(component.getNavOrbConfigInner(parseInt(i))).toBeTruthy();
       });
-      expect(component.getNavOrbConfigInner(1)['indicate-polling']).toBeFalsy();
-      component.isPollingProgress = true;
-      expect(component.getNavOrbConfigInner(1)['indicate-polling']).toBeTruthy();
 
-      expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeFalsy();
+      expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeFalsy();
+      component.isPollingProgress = true;
+      expect(component.getNavOrbConfigInner(stepIndexTrack)['indicate-polling']).toBeTruthy();
+
+      expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeFalsy();
       component.isPollingRecord = true;
-      expect(component.getNavOrbConfigInner(3)['indicate-polling']).toBeTruthy();
+      expect(component.getNavOrbConfigInner(stepIndexReport)['indicate-polling']).toBeTruthy();
     });
 
     it('should set the step', () => {
       const form = component.uploadComponent.form;
-      const conf = component.wizardConf;
       spyOn(form, 'enable');
-      expect(conf[0].isHidden).toBeTruthy();
-      expect(component.currentStepIndex).toEqual(1);
-      component.setStep(0, false, false);
-      expect(conf[0].isHidden).toBeFalsy();
-      expect(component.currentStepIndex).toEqual(0);
+      expect(component.currentStepIndex).toEqual(stepIndexHome);
+      component.setStep(stepIndexUpload, false, false);
+      expect(component.currentStepIndex).toEqual(stepIndexUpload);
       expect(form.enable).not.toHaveBeenCalled();
-      component.setStep(0, true);
+      component.setStep(stepIndexUpload, true);
       expect(form.enable).not.toHaveBeenCalled();
       form.disable();
-      component.setStep(0, true);
+      component.setStep(stepIndexUpload, true);
       expect(form.enable).toHaveBeenCalled();
     });
 
@@ -328,41 +401,55 @@ describe('WizardComponent', () => {
         } as unknown) as KeyboardEvent;
       };
 
-      component.callSetStep(createKeyEvent(true), 1, false);
+      component.callSetStep(createKeyEvent(true), stepIndexUpload, false);
       expect(component.setStep).not.toHaveBeenCalled();
 
-      component.callSetStep(createKeyEvent(false), 1, false);
+      component.callSetStep(createKeyEvent(false), stepIndexUpload, false);
       expect(component.setStep).toHaveBeenCalled();
 
-      component.callSetStep(createKeyEvent(true), 1, true);
+      component.callSetStep(createKeyEvent(true), stepIndexUpload, true);
       expect(component.setStep).toHaveBeenCalledTimes(1);
 
-      component.callSetStep(createKeyEvent(false), 1, true);
+      component.callSetStep(createKeyEvent(false), stepIndexUpload);
       expect(component.setStep).toHaveBeenCalledTimes(2);
     });
 
-    it('should show the orbs', () => {
+    it('should show the step content', () => {
       const conf = component.wizardConf;
-      expect(conf[0].isHidden).toBeTruthy();
-      expect(conf[1].isHidden).toBeFalsy();
-      expect(conf[2].isHidden).toBeTruthy();
-      expect(conf[3].isHidden).toBeTruthy();
-      expect(conf[4].isHidden).toBeTruthy();
 
-      component.setStep(0, false, false);
-      expect(conf[0].isHidden).toBeFalsy();
+      expect(conf[stepIndexHome].isHidden).toBeFalsy();
+      expect(conf[stepIndexTrack].isHidden).toBeFalsy();
+      expect(conf[stepIndexReport].isHidden).toBeTruthy();
+      expect(conf[stepIndexProblemsRecord].isHidden).toBeTruthy();
+      expect(conf[stepIndexProblemsDataset].isHidden).toBeTruthy();
+      expect(conf[stepIndexUpload].isHidden).toBeFalsy();
 
-      component.setStep(1, false, false);
-      expect(conf[1].isHidden).toBeFalsy();
+      component.setStep(stepIndexUpload, false, false);
+      expect(conf[stepIndexUpload].isHidden).toBeFalsy();
 
-      component.setStep(2, false, false);
-      expect(conf[2].isHidden).toBeFalsy();
+      component.setStep(stepIndexTrack, false, false);
+      expect(conf[stepIndexTrack].isHidden).toBeFalsy();
 
-      component.setStep(3, false, false);
-      expect(conf[3].isHidden).toBeFalsy();
+      component.setStep(stepIndexProblemsDataset, false, true);
+      expect(conf[stepIndexProblemsDataset].isHidden).toBeFalsy();
 
-      component.setStep(4, false, false);
-      expect(conf[4].isHidden).toBeFalsy();
+      component.setStep(stepIndexProblemsRecord, false, true);
+      expect(conf[stepIndexProblemsRecord].isHidden).toBeFalsy();
+
+      component.setStep(stepIndexReport, false, true);
+      expect(conf[stepIndexReport].isHidden).toBeFalsy();
+
+      component.setStep(stepIndexReport, false, true);
+      expect(conf[stepIndexReport].isHidden).toBeFalsy();
+
+      conf[stepIndexHome].isHidden = true;
+      conf[stepIndexTrack].isHidden = true;
+      conf[stepIndexUpload].isHidden = true;
+      component.setStep(stepIndexHome, false, true);
+
+      expect(conf[stepIndexHome].isHidden).toBeFalsy();
+      expect(conf[stepIndexTrack].isHidden).toBeFalsy();
+      expect(conf[stepIndexUpload].isHidden).toBeFalsy();
     });
 
     it('should validate the dataset id', () => {
@@ -451,11 +538,13 @@ describe('WizardComponent', () => {
 
     it('should handle progress form errors', fakeAsync(() => {
       component.progressData = mockDataset;
-      expect(component.wizardConf[1].error).toBeFalsy();
+      const confIndex = stepIndexTrack;
+
+      expect(component.wizardConf[confIndex].error).toBeFalsy();
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       tick(1);
-      expect(component.wizardConf[1].error).toBeTruthy();
+      expect(component.wizardConf[confIndex].error).toBeTruthy();
       expect(component.progressData).toBeFalsy();
       expect(component.formProgress.value.datasetToTrack).toBeTruthy();
       component.cleanup();
@@ -463,7 +552,7 @@ describe('WizardComponent', () => {
     }));
 
     it('should handle record form errors', fakeAsync(() => {
-      let index = component.getStepIndex(WizardStepType.REPORT);
+      let index = stepIndexReport;
       component.recordReport = mockRecordReport;
       expect(component.wizardConf[index].error).toBeFalsy();
 
@@ -479,7 +568,7 @@ describe('WizardComponent', () => {
       expect(component.recordReport).toBeFalsy();
 
       component.wizardConf[index].error = undefined;
-      index = component.getStepIndex(WizardStepType.PROBLEMS_RECORD);
+      index = stepIndexProblemsRecord;
 
       component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, false);
       tick(1);
@@ -491,20 +580,20 @@ describe('WizardComponent', () => {
     }));
 
     it('should handle problem pattern errors (dataset)', fakeAsync(() => {
-      expect(component.wizardConf[2].error).toBeFalsy();
+      expect(component.wizardConf[stepIndexProblemsDataset].error).toBeFalsy();
       component.trackDatasetId = '1';
       component.submitDatasetProblemPatterns();
       tick(1);
-      expect(component.wizardConf[2].error).toBeTruthy();
+      expect(component.wizardConf[stepIndexProblemsDataset].error).toBeTruthy();
     }));
 
     it('should handle problem pattern errors (record)', fakeAsync(() => {
-      expect(component.wizardConf[4].error).toBeFalsy();
+      expect(component.wizardConf[stepIndexProblemsRecord].error).toBeFalsy();
       component.trackDatasetId = '1';
       component.trackRecordId = '1/2';
       component.submitRecordProblemPatterns();
       tick(1);
-      expect(component.wizardConf[4].error).toBeTruthy();
+      expect(component.wizardConf[stepIndexProblemsRecord].error).toBeTruthy();
     }));
   });
 });

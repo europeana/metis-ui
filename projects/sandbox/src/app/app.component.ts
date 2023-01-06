@@ -1,7 +1,8 @@
+import { DOCUMENT } from '@angular/common';
 import { Component, HostListener, Inject } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
 import { ClickService } from 'shared';
-import { DOCUMENT } from '@angular/common';
+import { WizardComponent } from './wizard';
 
 @Component({
   selector: 'sb-root',
@@ -17,6 +18,7 @@ export class AppComponent {
   isSidebarOpen = false;
   themes = ['theme-default', 'theme-white'];
   themeIndex = 0;
+  wizardRef: WizardComponent;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -42,6 +44,24 @@ export class AppComponent {
       this.document.body.classList.remove(theme);
     });
     this.document.body.classList.add(this.themes[this.themeIndex]);
+  }
+
+  /** onOutletLoaded
+  /* - obtains ref to app component
+  /* @param { WizardComponent } component - route component
+  */
+  onOutletLoaded(component: WizardComponent): void {
+    this.wizardRef = component;
+  }
+
+  /**
+   * onLogoClick
+   * invokes setStep on wizardRef
+   * @param { Event } event - the click event
+   **/
+  onLogoClick(event: Event): void {
+    event.preventDefault();
+    this.wizardRef.setStep(0, false, true);
   }
 
   /**

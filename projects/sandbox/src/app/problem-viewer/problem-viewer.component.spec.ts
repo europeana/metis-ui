@@ -59,6 +59,11 @@ describe('ProblemViewerComponent', () => {
       expect(component).toBeTruthy();
     });
 
+    it('should decode', () => {
+      const testString = 'http://it works!';
+      expect(component.decode(encodeURIComponent(testString))).toEqual(testString);
+    });
+
     it('should open the link', () => {
       spyOn(component.openLinkEvent, 'emit');
       const event = {

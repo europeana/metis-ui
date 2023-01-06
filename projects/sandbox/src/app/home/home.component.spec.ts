@@ -24,4 +24,10 @@ describe('HomeComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should emit events', () => {
+    spyOn(component.appEntryLink, 'emit');
+    component.clickEvent(({} as unknown) as Event);
+    expect(component.appEntryLink.emit).toHaveBeenCalled();
+  });
 });
