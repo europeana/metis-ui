@@ -24,6 +24,10 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
+  static nullUrlStrings = [
+    'Harvesting dataset identifiers and records.',
+    'A review URL will be generated when the dataset has finished processing.'
+  ];
   datasetInfoCache = new KeyedCache((key) => this.requestDatasetInfo(key));
 
   constructor(private readonly http: HttpClient) {}
@@ -71,7 +75,12 @@ export class SandboxService {
         return this.requestProgress(datasetId);
       }),
       takeWhile((dataset: Dataset) => {
-        return dataset.status !== DatasetStatus.COMPLETED && !dataset['portal-publish'];
+        const url = dataset['portal-publish'];
+        return (
+          dataset.status !== DatasetStatus.COMPLETED &&
+          !url &&
+          !(url && SandboxService.nullUrlStrings.includes(url))
+        );
       }, true),
       takeLast(1)
     );
