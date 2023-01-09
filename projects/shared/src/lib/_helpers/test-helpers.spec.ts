@@ -1,4 +1,4 @@
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import {
@@ -31,7 +31,7 @@ describe('test helpers', () => {
   });
 
   it('should gather the errors', () => {
-    const myError = 'It went wrongly';
+    const myError = new Error('It went wrongly');
     const result1 = gatherError(of(myError));
     const result2 = gatherError(throwError(myError));
     expect(result1).toBeFalsy();
@@ -54,7 +54,7 @@ describe('test helpers', () => {
                 body: {},
                 method: 'GET'
               },
-              flush: () => {}
+              flush: () => void 0
             } as unknown) as MockHttpRequest;
           }
         ),
