@@ -10,7 +10,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { debounceTime, map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 
@@ -189,12 +189,14 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
   /**
    * ngOnInit
-   * handle route parameters
+   * handle route parameter changes
+   * uses debounceTime to reduce invocations when both param types change together
    **/
   ngOnInit(): void {
     this.subs.push(
       combineLatest([this.route.params, this.route.queryParams])
         .pipe(
+          debounceTime(0),
           map((results) => {
             return {
               params: results[0],
@@ -213,20 +215,16 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             this.trackRecordId = decodeURIComponent(preloadRecordId);
 
             if (queryParams.view === 'problems') {
-              this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_RECORD), false, false);
-              this.fillAndSubmitRecordForm(true, false);
+              this.fillAndSubmitRecordForm(true);
             } else {
-              this.setStep(this.getStepIndex(WizardStepType.REPORT), false, false);
-              this.fillAndSubmitRecordForm(false, false);
+              this.fillAndSubmitRecordForm(false);
             }
           } else if (preloadDatasetId) {
             this.trackDatasetId = preloadDatasetId;
             if (queryParams.view === 'problems') {
-              this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_DATASET), false, false);
-              this.fillAndSubmitProgressForm(true, false);
+              this.fillAndSubmitProgressForm(true);
             } else {
-              this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), false, false);
-              this.fillAndSubmitProgressForm(false, false);
+              this.fillAndSubmitProgressForm(false);
             }
           } else if (/\/new$/.exec(window.location.toString())) {
             this.setStep(this.getStepIndex(WizardStepType.UPLOAD), false, false);
@@ -260,7 +258,6 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
       this.trackRecordId = '';
       this.resetStepData();
       this.clearDataPollers();
-      this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
       this.formProgress.controls.datasetToTrack.setValue('');
 
       if (url === '/new') {
