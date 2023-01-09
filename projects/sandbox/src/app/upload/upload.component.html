@@ -106,6 +106,13 @@
     </div>
   </div>
 
+  <div class="form-group">
+    <label for="stepSize">
+      Step size
+    </label>
+    <input id="stepSize" type="number" min="1" [formGroup]="form" formControlName="stepSize" />
+  </div>
+
   <button
     type="submit"
     class="submit-button"
