@@ -751,7 +751,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   /**
    * goToLocation
    * avoid pushing duplicate states to history
-   * sets location uel to the supplied path if it is different to that currently set
+   * sets location url to the supplied path if it is different to that currently set
    *
    * @param { string } path - the url path
    * @returns void
@@ -764,26 +764,27 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
 
   /**
    * updateLocation
-   * calculates path according to variables and calls goToLocation()
+   * routing utility to build location path
+   * an call goToLocation()
    *
-   * @param { true } progress - include the dataset id
-   * @param { true } record - include the record id
-   * @param { true } problems - include the record id
+   * @param { true } datasetSegment - flag to include the dataset segment
+   * @param { true } recordSegment - flag to include the record segment
+   * @param { false } problemView - flag to include the view problems parameter
    * @returns boolean
    **/
-  updateLocation(progress = true, record = true, problems = false): void {
+  updateLocation(datasetSegment = true, recordSegment = true, problemView = false): void {
     let newPath = '';
-    if (progress && this.trackDatasetId) {
+    if (datasetSegment && this.trackDatasetId) {
       newPath += `/dataset/${this.trackDatasetId}`;
-      if (record && this.trackRecordId) {
+      if (recordSegment && this.trackRecordId) {
         newPath += `?recordId=${this.trackRecordId}`;
-        if (problems) {
+        if (problemView) {
           newPath += `&view=problems`;
         }
-      } else if (problems) {
+      } else if (problemView) {
         newPath += `?view=problems`;
       }
-    } else if (progress) {
+    } else if (datasetSegment) {
       newPath += `/dataset`;
     }
     this.goToLocation(newPath);
