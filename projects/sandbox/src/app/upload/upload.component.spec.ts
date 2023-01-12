@@ -2,14 +2,23 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { SandboxService } from '../_services';
 import { UploadComponent } from './';
-import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import {
+  FileUploadComponent,
+  MockModalConfirmService,
+  ModalConfirmService,
+  ProtocolFieldSetComponent,
+  ProtocolType
+} from 'shared';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
   let fixture: ComponentFixture<UploadComponent>;
+  let modalConfirms: ModalConfirmService;
 
   const testFile = new File([], 'file.zip', { type: 'zip' });
 
@@ -21,10 +30,12 @@ describe('UploadComponent', () => {
         {
           provide: SandboxService,
           useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
-        }
+        },
+        { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    modalConfirms = TestBed.inject(ModalConfirmService);
   };
 
   const b4Each = (): void => {
@@ -80,6 +91,17 @@ describe('UploadComponent', () => {
     it('should load the countries and languages', () => {
       expect(component.countryList).toBeTruthy();
       expect(component.languageList).toBeTruthy();
+    });
+
+    it('should show the information modal', () => {
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        const res = of(true);
+        modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+        return res;
+      });
+
+      component.showStepSizeInfo();
+      expect(modalConfirms.open).toHaveBeenCalled();
     });
 
     it('should validate input', () => {

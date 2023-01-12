@@ -65,7 +65,7 @@
     </select>
   </div>
 
-  <div class="form-group">
+  <div class="form-group protocol-wrapper">
     <lib-protocol-field-set
       #protocolFields
       [protocolForm]="form"
@@ -79,7 +79,50 @@
       }"
     >
     </lib-protocol-field-set>
-    <label>
+  </div>
+
+  <div class="form-group">
+    <div style="display: flex;">
+      <a (click)="showStepSizeInfo()" class="open-info" title="Open information on step size"></a>
+      <label
+        for="stepSize"
+        [ngClass]="{
+          tick: form.value['stepSize'],
+          asterisked: !form.value['stepSize']
+        }"
+      >
+        Step size
+      </label>
+    </div>
+
+    <ng-template #tmpStepSizeModalContent>
+      <ng-container>
+        <p>
+          The step size determines which records in the dataset will be imported. If the step size
+          is <i>n</i>, then one in every <i>n</i> records encountered in the dataset will be
+          imported.
+        </p>
+        <ul class="modal-info-list">
+          <li><i>a step size of 1 will import records 1, 2, 3, 4, …, 1000</i></li>
+          <li><i>a step size of 3 will import records 3, 6, 9, 12, …, 3000</i></li>
+          <li><i>a step size of 5 will import records 5, 10, 15, 20, …, 5000</i></li>
+        </ul>
+      </ng-container>
+    </ng-template>
+
+    <lib-modal
+      id="{{ modalIdStepSizeInfo }}"
+      title="Step Size Information"
+      [isSmall]="false"
+      [buttons]="[{ label: 'Close' }]"
+    >
+      <ng-content *ngTemplateOutlet="tmpStepSizeModalContent"></ng-content>
+    </lib-modal>
+    <input id="stepSize" type="number" min="1" [formGroup]="form" formControlName="stepSize" />
+  </div>
+
+  <div class="form-group">
+    <label class="checkbox-non-edm">
       <input
         type="checkbox"
         (change)="updateConditionalXSLValidator()"
@@ -104,13 +147,6 @@
         ngDefaultControl
       ></lib-file-upload>
     </div>
-  </div>
-
-  <div class="form-group">
-    <label for="stepSize">
-      Step size
-    </label>
-    <input id="stepSize" type="number" min="1" [formGroup]="form" formControlName="stepSize" />
   </div>
 
   <button
