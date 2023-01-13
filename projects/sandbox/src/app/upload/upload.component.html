@@ -120,6 +120,17 @@
       <ng-content *ngTemplateOutlet="tmpStepSizeModalContent"></ng-content>
     </lib-modal>
     <input id="stepSize" type="number" min="1" [formGroup]="form" formControlName="stepSize" />
+
+    <ng-container *ngIf="form.get('stepSize'); let field">
+      <span class="field-errors" *ngIf="field.errors; let errors">
+        <span class="errors" *ngIf="errors.min" i18n="Field error@@lowStepSize"
+          >Please provide a higher value</span
+        >
+        <span class="errors" *ngIf="errors.required" i18n="Field error@@invalidStepSize"
+          >Please provide a numeric value</span
+        >
+      </span>
+    </ng-container>
   </div>
 
   <div class="form-group">

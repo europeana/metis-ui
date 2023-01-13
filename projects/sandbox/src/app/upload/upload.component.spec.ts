@@ -135,6 +135,17 @@ describe('UploadComponent', () => {
       expect(component.protocolIsValid()).toBeFalsy();
     });
 
+    it('should validate the stepSize input', () => {
+      const input = component.form.controls.stepSize;
+      expect(input.valid).toBeTruthy();
+      input.setValue(-1);
+      expect(input.valid).toBeFalsy();
+      input.setValue((' ' as unknown) as number);
+      expect(input.valid).toBeFalsy();
+      input.setValue(1);
+      expect(input.valid).toBeTruthy();
+    });
+
     it('should disable the form on submit', () => {
       fillUploadForm();
       expect(component.form.enabled).toBeTruthy();

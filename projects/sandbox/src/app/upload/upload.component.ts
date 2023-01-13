@@ -1,6 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   DataPollingComponent,
@@ -78,7 +84,20 @@ export class UploadComponent extends DataPollingComponent {
     language: ['', [Validators.required]],
     uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
     url: ['', [Validators.required]],
-    stepSize: [1, [Validators.required, Validators.min(1)]],
+    stepSize: [
+      1,
+      [
+        (control: AbstractControl): ValidationErrors | null => {
+          const value = control.value;
+          if (!value) {
+            return { required: true };
+          } else if (typeof value != 'number') {
+            return { nonNumeric: true };
+          }
+          return null;
+        }
+      ]
+    ],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataset: [(undefined as any) as File, [Validators.required]],
     harvestUrl: ['', [Validators.required]],
