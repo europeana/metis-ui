@@ -85,10 +85,11 @@
     <div style="display: flex;">
       <a (click)="showStepSizeInfo()" class="open-info" title="Open information on step size"></a>
       <label
+        *ngIf="form.controls.stepSize"
         for="stepSize"
         [ngClass]="{
-          tick: form.value['stepSize'],
-          asterisked: !form.value['stepSize']
+          tick: form.controls.stepSize.valid,
+          asterisked: !form.controls.stepSize.valid
         }"
       >
         Step size
