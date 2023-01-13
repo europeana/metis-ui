@@ -15,14 +15,13 @@ import {
 
 context('Sandbox', () => {
   const classActive = 'is-active';
-
   const setStep = (step: number): void => {
     cy.get(`.wizard-status li:nth-child(${step}) a`).click({ force: true });
     cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
   };
 
   describe('Dataset Form', () => {
-    let currentStep = 1;
+    let currentStep = 2;
     const force = { force: true };
     const selectorFieldErrors = '.field-errors';
     const selectorInputXSLFile = '[type="file"][accept=".xsl"]';
@@ -61,7 +60,7 @@ context('Sandbox', () => {
     };
 
     it('should navigate the steps with the orbs', () => {
-      currentStep = 1;
+      currentStep = 2;
       navigateSteps(
         () => {
           currentStep++;
@@ -75,13 +74,13 @@ context('Sandbox', () => {
     });
 
     it('should flag when a step is invalid', () => {
-      setStep(2);
+      setStep(3);
       cy.get(selectorFieldErrors).should('have.length', 0);
 
       cy.get(selectorInputDatasetId).type('1');
       cy.get(selectorFieldErrors).should('have.length', 0);
 
-      setStep(1);
+      setStep(2);
       cy.get(selectorInputName).type(' ', { scrollBehavior: false });
       cy.get(selectorFieldErrors)
         .filter(':visible')
@@ -119,7 +118,7 @@ context('Sandbox', () => {
       cy.url().should('match', /\d+\/\S+\d+/);
 
       // confirm the form is navigable
-      cy.get(`.wizard-head li:first-child() a`).click(force);
+      cy.get(`.wizard-head li:nth-child(2) a`).click(force);
 
       navigateSteps(
         () => {

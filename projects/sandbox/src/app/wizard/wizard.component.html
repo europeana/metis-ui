@@ -2,6 +2,10 @@
   <div class="wizard-head">
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <h1 class="header-text" *ngIf="currentStepIndex === i">
+        <ng-container *ngSwitchCase="EnumWizardStepType.HOME" i18n="step title@@titleHome">
+          <span>Welcome to</span><span class="br">Metis Sandbox!</span>
+        </ng-container>
+
         <ng-container
           *ngSwitchCase="EnumWizardStepType.UPLOAD"
           i18n="step title@@titleConfigureSource"
@@ -36,12 +40,14 @@
     <sb-navigation-orbs
       ariaLabel="Wizard Step Navigation"
       class="sb-navigation-orbs"
+      [maxUncollapsed]="wizardConf.length"
       [count]="wizardConf.length"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
       (clickEvent)="setStep($event)"
       [tooltips]="[
+        'Home',
         'Upload Dataset',
         'Track Dataset Processing',
         'Problem Patterns (Dataset)',
@@ -57,6 +63,11 @@
       (notifyBusy)="setBusyUpload($event)"
     >
     </sb-upload>
+
+    <sb-home
+      [showing]="currentStepType === EnumWizardStepType.HOME"
+      (appEntryLink)="callSetStep($event, getStepIndex(WizardStepType.PROGRESS_TRACK))"
+    ></sb-home>
 
     <sb-progress-tracker
       *ngIf="progressData"
@@ -118,7 +129,7 @@
       <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
     </div>
 
-    <div class="inputs" *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
+    <div class="inputs" *ngIf="defaultInputsShown()">
       <span>
         <label
           i18n="track id label"
@@ -230,7 +241,7 @@
     </div>
     <!-- end grid -->
 
-    <ng-container *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
+    <ng-container *ngIf="defaultInputsShown()">
       <ul class="inline-texts">
         <li *ngIf="currentStepType !== EnumWizardStepType.PROGRESS_TRACK">
           <label class="inline-text"
@@ -249,7 +260,7 @@
             >Or
             <a
               class="link-internal"
-              (click)="callSetStep($event, 0, true)"
+              (click)="callSetStep($event, getStepIndex(WizardStepType.UPLOAD), true)"
               data-e2e="link-dataset-form"
               href="/new"
               >create a new dataset</a

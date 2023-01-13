@@ -2,6 +2,11 @@
 
 $wizard-border-radius: 1.5em;
 
+.br::after {
+  content: '\a';
+  white-space: pre;
+}
+
 .inline-texts {
   margin-top: 2em;
 }

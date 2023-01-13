@@ -3,7 +3,12 @@
     <div class="header-container">
       <a class="hamburger" (click)="toggleSidebarOpen()"></a>
       <div class="metis-logo">
-        <a href="/" aria-label="Europeana Metis Sandbox" class="logo"></a>
+        <a
+          href="/"
+          (click)="onLogoClick($event)"
+          aria-label="Europeana Metis Sandbox"
+          class="logo"
+        ></a>
       </div>
     </div>
   </header>
@@ -46,6 +51,6 @@
 </div>
 
 <div class="pusher">
-  <router-outlet></router-outlet>
+  <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>
   <app-footer id="footer"></app-footer>
 </div>
