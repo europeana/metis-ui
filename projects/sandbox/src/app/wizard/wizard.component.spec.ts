@@ -417,12 +417,12 @@ describe('WizardComponent', () => {
     it('should show the step content', () => {
       const conf = component.wizardConf;
 
-      expect(conf[stepIndexHome].isHidden).toBeFalsy();
-      expect(conf[stepIndexTrack].isHidden).toBeFalsy();
+      expect(conf[stepIndexHome].isHidden).toBeTruthy();
+      expect(conf[stepIndexTrack].isHidden).toBeTruthy();
       expect(conf[stepIndexReport].isHidden).toBeTruthy();
       expect(conf[stepIndexProblemsRecord].isHidden).toBeTruthy();
       expect(conf[stepIndexProblemsDataset].isHidden).toBeTruthy();
-      expect(conf[stepIndexUpload].isHidden).toBeFalsy();
+      expect(conf[stepIndexUpload].isHidden).toBeTruthy();
 
       component.setStep(stepIndexUpload, false, false);
       expect(conf[stepIndexUpload].isHidden).toBeFalsy();

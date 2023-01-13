@@ -9,8 +9,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, map } from 'rxjs/operators';
+import { combineLatest, Observable, interval } from 'rxjs';
+import { debounce, map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 
@@ -102,8 +102,8 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     }
   ];
 
-  currentStepIndex = this.getStepIndex(WizardStepType.PROGRESS_TRACK);
-  currentStepType = WizardStepType.PROGRESS_TRACK;
+  currentStepIndex = this.getStepIndex(WizardStepType.HOME);
+  currentStepType = WizardStepType.HOME;
 
   constructor(
     private readonly fb: NonNullableFormBuilder,
@@ -196,7 +196,7 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
     this.subs.push(
       combineLatest([this.route.params, this.route.queryParams])
         .pipe(
-          debounceTime(0),
+          debounce(()=> interval(0)),
           map((results) => {
             return {
               params: results[0],
