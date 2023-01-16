@@ -9,8 +9,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { combineLatest, Observable, interval } from 'rxjs';
-import { debounce, map } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap, DataPollingComponent, ProtocolType } from 'shared';
 
@@ -190,13 +190,11 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
   /**
    * ngOnInit
    * handle route parameter changes
-   * uses debounceTime to reduce invocations when both param types change together
    **/
   ngOnInit(): void {
     this.subs.push(
       combineLatest([this.route.params, this.route.queryParams])
         .pipe(
-          debounce(()=> interval(0)),
           map((results) => {
             return {
               params: results[0],
@@ -215,16 +213,20 @@ export class WizardComponent extends DataPollingComponent implements OnInit {
             this.trackRecordId = decodeURIComponent(preloadRecordId);
 
             if (queryParams.view === 'problems') {
-              this.fillAndSubmitRecordForm(true);
+              this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_RECORD), false, false);
+              this.fillAndSubmitRecordForm(true, false);
             } else {
-              this.fillAndSubmitRecordForm(false);
+              this.setStep(this.getStepIndex(WizardStepType.REPORT), false, false);
+              this.fillAndSubmitRecordForm(false, false);
             }
           } else if (preloadDatasetId) {
             this.trackDatasetId = preloadDatasetId;
             if (queryParams.view === 'problems') {
-              this.fillAndSubmitProgressForm(true);
+              this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_DATASET), false, false);
+              this.fillAndSubmitProgressForm(true, false);
             } else {
-              this.fillAndSubmitProgressForm(false);
+              this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), false, false);
+              this.fillAndSubmitProgressForm(false, false);
             }
           } else if (/\/new$/.exec(window.location.toString())) {
             this.setStep(this.getStepIndex(WizardStepType.UPLOAD), false, false);

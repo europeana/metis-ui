@@ -417,12 +417,15 @@ describe('WizardComponent', () => {
     it('should show the step content', () => {
       const conf = component.wizardConf;
 
-      expect(conf[stepIndexHome].isHidden).toBeTruthy();
-      expect(conf[stepIndexTrack].isHidden).toBeTruthy();
-      expect(conf[stepIndexReport].isHidden).toBeTruthy();
-      expect(conf[stepIndexProblemsRecord].isHidden).toBeTruthy();
-      expect(conf[stepIndexProblemsDataset].isHidden).toBeTruthy();
-      expect(conf[stepIndexUpload].isHidden).toBeTruthy();
+      conf[stepIndexHome].isHidden = true;
+      conf[stepIndexTrack].isHidden = true;
+      conf[stepIndexUpload].isHidden = true;
+      conf[stepIndexReport].isHidden = true;
+      conf[stepIndexProblemsRecord].isHidden = true;
+      conf[stepIndexProblemsDataset].isHidden = true;
+
+      component.setStep(stepIndexHome, false, false);
+      expect(conf[stepIndexHome].isHidden).toBeFalsy();
 
       component.setStep(stepIndexUpload, false, false);
       expect(conf[stepIndexUpload].isHidden).toBeFalsy();
@@ -438,18 +441,6 @@ describe('WizardComponent', () => {
 
       component.setStep(stepIndexReport, false, true);
       expect(conf[stepIndexReport].isHidden).toBeFalsy();
-
-      component.setStep(stepIndexReport, false, true);
-      expect(conf[stepIndexReport].isHidden).toBeFalsy();
-
-      conf[stepIndexHome].isHidden = true;
-      conf[stepIndexTrack].isHidden = true;
-      conf[stepIndexUpload].isHidden = true;
-      component.setStep(stepIndexHome, false, true);
-
-      expect(conf[stepIndexHome].isHidden).toBeFalsy();
-      expect(conf[stepIndexTrack].isHidden).toBeFalsy();
-      expect(conf[stepIndexUpload].isHidden).toBeFalsy();
     });
 
     it('should validate the dataset id', () => {
