@@ -1,6 +1,10 @@
 @import 'shared-styles/assets/sass/pandora/settings/_metis-variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
+#stepSize {
+  width: 5em;
+}
+
 .form-group.protocol-wrapper {
   margin-bottom: 1.5em;
 }
@@ -20,10 +24,6 @@ select {
 
 .submit-button {
   margin: 2em auto 0 0;
-}
-
-[type='number'] {
-  width: 5em;
 }
 
 .checkbox-non-edm {

@@ -138,11 +138,15 @@ describe('UploadComponent', () => {
     it('should validate the stepSize input', () => {
       const input = component.form.controls.stepSize;
       expect(input.valid).toBeTruthy();
-      input.setValue(-1);
+      input.setValue('-1');
       expect(input.valid).toBeFalsy();
-      input.setValue((' ' as unknown) as number);
+      input.setValue(' ');
       expect(input.valid).toBeFalsy();
-      input.setValue(1);
+      input.setValue('abc');
+      expect(input.valid).toBeFalsy();
+      input.setValue('');
+      expect(input.valid).toBeFalsy();
+      input.setValue('1');
       expect(input.valid).toBeTruthy();
     });
 

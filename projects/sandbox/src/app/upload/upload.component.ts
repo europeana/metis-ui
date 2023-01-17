@@ -74,7 +74,7 @@ export class UploadComponent extends DataPollingComponent {
     this.protocolFields.clearFileValue();
     this.xslFileField.clearFileValue();
     this.form.reset();
-    this.form.controls.stepSize.setValue(1);
+    this.form.controls.stepSize.setValue('1');
     this.error = undefined;
   }
 
@@ -85,13 +85,18 @@ export class UploadComponent extends DataPollingComponent {
     uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
     url: ['', [Validators.required]],
     stepSize: [
-      1,
+      '1',
       [
         (control: AbstractControl): ValidationErrors | null => {
           const value = control.value;
+          const parsedValue = parseInt(value);
+          const isNumeric = `${parsedValue}` === value;
+
           if (value) {
-            if (!`${value}`.match(/^\d+$/)) {
+            if (!isNumeric) {
               return { nonNumeric: true };
+            } else if (parsedValue < 1) {
+              return { min: true };
             }
           } else {
             return { required: true };
