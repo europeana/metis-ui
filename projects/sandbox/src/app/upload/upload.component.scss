@@ -1,5 +1,17 @@
+@import 'shared-styles/assets/sass/pandora/settings/_metis-variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.form-group.protocol-wrapper {
+  margin-bottom: 1.5em;
+}
+
 select {
   width: 100%;
+}
+
+.modal-info-list {
+  list-style: disc;
+  margin: 1em 0 0 2em;
 }
 
 .separator-line:first-child {
@@ -7,9 +19,21 @@ select {
 }
 
 .submit-button {
-  margin: 2em 0 0 auto;
+  margin: 2em auto 0 0;
 }
 
 [type='number'] {
-  width: 8em;
+  width: 5em;
+}
+
+.checkbox-non-edm {
+  display: flex;
+  flex-direction: row;
+}
+
+.open-info {
+  display: block;
+  height: 1.6em;
+  margin-right: 0.3em;
+  width: 1em;
 }

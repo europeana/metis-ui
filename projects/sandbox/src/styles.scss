@@ -215,3 +215,7 @@ label {
 html {
   scrollbar-color: rgba(55, 185, 139, 0.75) $eu-jade-light;
 }
+
+.modal-wrapper .modal .content {
+  overflow: auto;
+}

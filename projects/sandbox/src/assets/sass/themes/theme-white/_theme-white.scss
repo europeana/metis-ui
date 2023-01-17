@@ -20,5 +20,9 @@ input[type='file'] {
 }
 
 .tick::after {
-  background-image: svg-url-icon-tick('#{$gray-med}');
+  background-image: svg-url-icon-tick($gray-med);
+}
+
+.open-info {
+  background: svg-url-icon-info($gray-med) center / 14px no-repeat;
 }

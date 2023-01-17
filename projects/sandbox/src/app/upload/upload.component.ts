@@ -1,10 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import {
   DataPollingComponent,
   FileUploadComponent,
+  ModalConfirmService,
   ProtocolFieldSetComponent,
   ProtocolType
 } from 'shared';
@@ -29,11 +36,16 @@ export class UploadComponent extends DataPollingComponent {
 
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
+  modalIdStepSizeInfo = 'id-modal-step-size-info';
   public EnumProtocolType = ProtocolType;
 
   error: HttpErrorResponse | undefined;
 
-  constructor(private readonly fb: FormBuilder, private readonly sandbox: SandboxService) {
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly sandbox: SandboxService,
+    private readonly modalConfirms: ModalConfirmService
+  ) {
     super();
     this.subs.push(
       this.sandbox.getCountries().subscribe((countries: Array<FieldOption>) => {
@@ -72,7 +84,20 @@ export class UploadComponent extends DataPollingComponent {
     language: ['', [Validators.required]],
     uploadProtocol: [ProtocolType.ZIP_UPLOAD, [Validators.required]],
     url: ['', [Validators.required]],
-    stepSize: [1, [Validators.min(1)]],
+    stepSize: [
+      1,
+      [
+        (control: AbstractControl): ValidationErrors | null => {
+          const value = control.value;
+          if (!value) {
+            return { required: true };
+          } else if (typeof value != 'number') {
+            return { nonNumeric: true };
+          }
+          return null;
+        }
+      ]
+    ],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataset: [(undefined as any) as File, [Validators.required]],
     harvestUrl: ['', [Validators.required]],
@@ -106,6 +131,14 @@ export class UploadComponent extends DataPollingComponent {
       });
     }
     return false;
+  }
+
+  /**
+   * showStepSizeInfo
+   * acivate the step-size info modal
+   **/
+  showStepSizeInfo(): void {
+    this.subs.push(this.modalConfirms.open(this.modalIdStepSizeInfo).subscribe());
   }
 
   /**

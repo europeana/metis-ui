@@ -19,5 +19,9 @@ input[type='file'] {
 }
 
 .tick::after {
-  background-image: svg-url-icon-tick('#{$eu-jade-classic}');
+  background-image: svg-url-icon-tick($eu-jade-classic);
+}
+
+.open-info {
+  background: svg-url-icon-info($eu-jade-dark) center / 14px no-repeat;
 }
