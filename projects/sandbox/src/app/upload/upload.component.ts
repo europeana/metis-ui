@@ -89,10 +89,12 @@ export class UploadComponent extends DataPollingComponent {
       [
         (control: AbstractControl): ValidationErrors | null => {
           const value = control.value;
-          if (!value) {
+          if (value) {
+            if (!`${value}`.match(/^\d+$/)) {
+              return { nonNumeric: true };
+            }
+          } else {
             return { required: true };
-          } else if (typeof value != 'number') {
-            return { nonNumeric: true };
           }
           return null;
         }

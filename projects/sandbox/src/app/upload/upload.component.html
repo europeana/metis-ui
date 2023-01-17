@@ -126,7 +126,10 @@
         <span class="errors" *ngIf="errors.min" i18n="Field error@@lowStepSize"
           >Please provide a higher value</span
         >
-        <span class="errors" *ngIf="errors.required" i18n="Field error@@invalidStepSize"
+        <span
+          class="errors"
+          *ngIf="!errors.min && errors.required"
+          i18n="Field error@@invalidStepSize"
           >Please provide a numeric value</span
         >
       </span>
