@@ -131,6 +131,21 @@ We use jenkins to deploy. Make sure you can access [https://jenkins.eanadev.org/
 
 The test and acceptance jobs should be run off the `develop` branch.
 
+## Docker (Metis UI)
+
+To make a (parameterised) docker image of the app first run these commands from the root of the project:
+
+`npm run build-shared`
+`npm run dist-metis`
+
+and then send the output of that command to a docker nginx image with this command:
+
+`docker build -t metis-ui-app-image:version projects/metis/`
+
+The generated docker image can then be ran with the command:
+
+`docker run -it --rm -d -p 8080:80  --env-file=projects/metis/env_file --name metis-ui metis-ui-app-image:version`
+
 ## Release
 
 The release documentation is in the "Release Metis UI/Metis Framework/ECloud manual" document on Google Docs.
