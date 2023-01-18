@@ -9,18 +9,9 @@ This repository is an angular workspace configured to build the projects:
 * metis-ui
 * mentis-sandbox (placeholder)
 
-
-## Getting started (Metis-UI)
-
-To run the Metis UI you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
-
-    cp projects/metis/src/environments/apisettings-example.ts projects/metis/src/environments/apisettings.ts
-
-If you are working at Europeana, just ask Andy MacLean or Mirjam Verloop for the right `apisettings.ts` file.
-
 ## Getting started (Metis-UI and Sandbox)
 
-Make sure you have `node` version 14 and `npm` version 6.x:
+Make sure you have `node` version 14.7.8 and `npm` version 6.x:
 
     node --version
     npm --version
@@ -32,6 +23,16 @@ Get the `npm` dependencies:
 Build the shared library:
 
     npm run build-shared
+
+## Getting started (Metis-UI)
+
+To run the Metis UI you need to provide a backend server to connect to. Modify the file `projects/metis/src/assets/env.js` by filling in the URLs
+
+## Getting started (Sandbox)
+
+To run the Sandbox you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
+
+    cp projects/metis/src/environments/apisettings-example.ts projects/metis/src/environments/apisettings.ts
 
 ## Development server
 
