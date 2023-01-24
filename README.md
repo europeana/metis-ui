@@ -9,18 +9,9 @@ This repository is an angular workspace configured to build the projects:
 * metis-ui
 * mentis-sandbox (placeholder)
 
-
-## Getting started (Metis-UI)
-
-To run the Metis UI you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
-
-    cp projects/metis/src/environments/apisettings-example.ts projects/metis/src/environments/apisettings.ts
-
-If you are working at Europeana, just ask Andy MacLean or Mirjam Verloop for the right `apisettings.ts` file.
-
 ## Getting started (Metis-UI and Sandbox)
 
-Make sure you have `node` version 14 and `npm` version 6.x:
+Make sure you have `node` version 14.7.8 and `npm` version 6.x:
 
     node --version
     npm --version
@@ -32,6 +23,16 @@ Get the `npm` dependencies:
 Build the shared library:
 
     npm run build-shared
+
+## Getting started (Metis-UI)
+
+To run the Metis UI you need to provide a backend server to connect to. Modify the file `projects/metis/src/assets/env.js` by filling in the URLs
+
+## Getting started (Sandbox)
+
+To run the Sandbox you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
+
+    cp projects/metis/src/environments/apisettings-example.ts projects/metis/src/environments/apisettings.ts
 
 ## Development server
 
@@ -129,6 +130,21 @@ We use jenkins to deploy. Make sure you can access [https://jenkins.eanadev.org/
 - `Sandbox-UI-Test`
 
 The test and acceptance jobs should be run off the `develop` branch.
+
+## Docker (Metis UI)
+
+To make a (parameterised) docker image of the app first run these commands from the root of the project:
+
+`npm run build-shared`
+`npm run dist-metis`
+
+and then send the output of that command to a docker nginx image with this command:
+
+`docker build -t metis-ui-app-image:version projects/metis/`
+
+Once the values in `projects/metis/env_file` have been set the generated docker image can then be ran with the command:
+
+`docker run -it --rm -d -p 8080:8080  --env-file=projects/metis/env_file --name metis-ui metis-ui-app-image:version`
 
 ## Release
 
