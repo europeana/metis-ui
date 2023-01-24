@@ -7,7 +7,7 @@
 This repository is an angular workspace configured to build the projects:
 
 * metis-ui
-* mentis-sandbox (placeholder)
+* mentis-sandbox
 
 ## Getting started (Metis-UI and Sandbox)
 
@@ -131,20 +131,30 @@ We use jenkins to deploy. Make sure you can access [https://jenkins.eanadev.org/
 
 The test and acceptance jobs should be run off the `develop` branch.
 
-## Docker (Metis UI)
+## Docker
 
-To make a (parameterised) docker image of the app first run these commands from the root of the project:
+To make a (parameterised) docker image of either app first build the shared library:
 
-`npm run build-shared`
-`npm run dist-metis`
+  `npm run build-shared`
 
-and then send the output of that command to a docker nginx image with this command:
+And then from the root of the project build the app, so either:
+
+  `npm run dist-metis`
+or
+  `npm run dist-sandbox`
+
+The docker nginx image is the built with either:
 
 `docker build -t metis-ui-app-image:version projects/metis/`
+or
+`docker build -t sandbox-ui-app-image:version projects/sandbox/`
 
-Once the values in `projects/metis/env_file` have been set the generated docker image can then be ran with the command:
+
+Once the values in `projects/[PROJECT_NAME]/env_file` have been set then the generated docker image can be ran with either:
 
 `docker run -it --rm -d -p 8080:8080  --env-file=projects/metis/env_file --name metis-ui metis-ui-app-image:version`
+or
+`docker run -it --rm -d -p 8080:8080  --env-file=projects/sandbox/env_file --name sandbox-ui sandbox-ui-app-image:version`
 
 ## Release
 

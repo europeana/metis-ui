@@ -2,10 +2,9 @@
 .DS_Store
 .idea
 .scannerwork
-
 **/coverage
 **/dist
 /dist
 /node_modules
-/projects/sandbox/**/apisettings.ts
+/projects/**/apisettings.ts
 **/tmp
