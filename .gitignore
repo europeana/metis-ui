@@ -6,5 +6,6 @@
 **/dist
 /dist
 /node_modules
-/projects/**/apisettings.ts
+/projects/**/env_file
+/projects/**/src/assets/env.js
 **/tmp
