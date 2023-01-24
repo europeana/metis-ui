@@ -142,7 +142,7 @@ and then send the output of that command to a docker nginx image with this comma
 
 `docker build -t metis-ui-app-image:version projects/metis/`
 
-The generated docker image can then be ran with the command:
+Once the values in `projects/metis/env_file` have been set the generated docker image can then be ran with the command:
 
 `docker run -it --rm -d -p 8080:8080  --env-file=projects/metis/env_file --name metis-ui metis-ui-app-image:version`
 
