@@ -7,6 +7,5 @@
   env.documentationUrl = '${APP_DOCUMENTATION_URL}';
   env.enableThemes = $APP_ENABLE_THEMES;
   env.feedbackUrl = '${APP_FEEDBACK_URL}';
-  env.interval = $APP_INTERVAL;
   env.userGuideUrl = '${APP_USER_GUIDE_URL}';
 })(this);

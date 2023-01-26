@@ -10,5 +10,5 @@ export const apiSettings = {
   feedbackUrl: getEnvVar('feedbackUrl') as string,
   documentationUrl: getEnvVar('documentationUrl') as string,
   userGuideUrl: getEnvVar('userGuideUrl') as string,
-  interval: getEnvVar('interval') as number
+  interval: 2000
 };

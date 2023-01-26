@@ -6,6 +6,5 @@
   env.documentationUrl = '';
   env.enableThemes = false;
   env.feedbackUrl = '';
-  env.interval = 2000;
   env.userGuideUrl = '';
 })(this);
