@@ -7,7 +7,7 @@
 This repository is an angular workspace configured to build the projects:
 
 * metis-ui
-* mentis-sandbox
+* metis-sandbox
 
 ## Getting started (Metis-UI and Sandbox)
 
