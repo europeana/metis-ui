@@ -2,9 +2,6 @@
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
 $problem-viewer-padding: 0.5em;
-$record-links-content-width: 25.5em;
-$record-links-opener-width: 4em;
-$record-links-slide-out-duration: 0.4s;
 
 input,
 label {
@@ -222,52 +219,6 @@ q {
   position: relative;
 }
 
-.record-links-view {
-  bottom: 0;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-  display: flex;
-  position: absolute;
-  right: 0;
-  transition: clip-path $record-links-slide-out-duration ease-in-out,
-    right $record-links-slide-out-duration ease-in-out;
-  width: $record-links-content-width;
-  z-index: 2;
-
-  &.closed {
-    clip-path: polygon(0 0, $record-links-opener-width 0, $record-links-opener-width 100%, 0% 100%);
-    right: calc($record-links-opener-width - $record-links-content-width);
-  }
-}
-
-.record-links-view-content {
-  display: flex;
-  flex-direction: column;
-  padding: 0.75em 0 2em 2.25em;
-  width: 100%;
-  &.disabled {
-    pointer-events: none;
-  }
-}
-
-.record-links-view-opener {
-  align-self: flex-start;
-  border-bottom-left-radius: 1.5em;
-  border-right-style: dotted;
-  border-top-left-radius: 1.5em;
-  display: flex;
-  padding: 0.5em;
-  transition: opacity 0.2s linear;
-
-  .element-orb {
-    border-color: $eu-jade-dark;
-    transform: scale(0.75);
-
-    &.spinner {
-      pointer-events: none;
-    }
-  }
-}
-
 .semi-colon::after {
   content: ':';
 }
@@ -340,8 +291,8 @@ q {
   }
 }
 
-.wrapper {
-  overflow: hidden;
+.problem-viewer-wrapper {
+  overflow: visible;
   position: relative;
 }
 
@@ -391,14 +342,5 @@ q {
     position: absolute;
     top: -2.5em;
     width: 1px;
-  }
-
-  // hide record links opener on hover
-  .record-links-view.closed .record-links-view-opener {
-    opacity: 0;
-  }
-
-  .wrapper:hover .record-links-view.closed .record-links-view-opener {
-    opacity: 1;
   }
 }

@@ -1,0 +1,36 @@
+<div
+  class="pop-out"
+  [ngClass]="{
+    open: isOpen,
+    'hovered-state': userClosedPanel
+  }"
+>
+  <span
+    class="pop-out-opener"
+    libClickAware
+    (clickOutside)="clickOutside()"
+    [ignoreClasses]="ignoreClassesList"
+  >
+    <a
+      (click)="toggleOpen()"
+      class="nav-orb labelled element-orb allow-active-clicks"
+      [ngClass]="{
+        'is-active': isOpen,
+        'indicator-orb': isLoading,
+        spinner: isLoading,
+        'warning-animated': notify
+      }"
+      [title]="title"
+    >
+    </a>
+  </span>
+  <div
+    class="pop-out-content"
+    [ngClass]="{ disabled: disabled }"
+    libClickAware
+    (clickOutside)="clickOutside()"
+    [ignoreClasses]="ignoreClassesList"
+  >
+    <ng-content></ng-content>
+  </div>
+</div>

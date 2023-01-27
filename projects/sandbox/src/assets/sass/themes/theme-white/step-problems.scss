@@ -4,16 +4,21 @@
   border: 1px solid $gray-5;
 }
 
-.record-links-view-content {
+.pop-out.open .pop-out-content {
   border-top: 1px solid $gray-5;
+  transition: border-top 1s linear;
 }
 
-.record-links-view-opener {
-  border: 1px solid $gray-5;
+.pop-out.open,
+.pop-out:hover {
+  .pop-out-opener {
+    background-color: $white;
+    border: 1px solid $gray-5;
+    border-right-color: $gray-5;
+  }
 }
 
-.record-links-view-content,
-.record-links-view-opener {
+.pop-out-content {
   background-color: $white;
 }
 
@@ -22,6 +27,7 @@
   border-bottom: 1px solid $gray-5;
   border-left: 1px solid $gray-5;
   border-right: 1px solid $gray-5;
+
   .skip-arrow {
     color: $gray-lighter;
     &.enabled {

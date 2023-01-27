@@ -1,21 +1,25 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
-.record-links-view-content {
+.pop-out.open .pop-out-content {
   border-top: 1px solid $grey-3;
+  transition: border-top 1s linear;
 }
 
-.record-links-view-opener {
-  border: 1px solid $grey-3;
+.pop-out.open,
+.pop-out:hover {
+  .pop-out-opener {
+    background-color: $eu-light-jade-classic;
+    border: 1px solid $grey-3;
+    border-right-color: $grey-3;
+  }
 }
 
-.record-links-view-content,
-.record-links-view-opener,
-.skip-arrows {
+.pop-out-content {
   background: $eu-light-jade-classic;
 }
 
 .skip-arrows {
-  background-color: $eu-light-jade-classic;
+  background: $eu-light-jade-classic;
 
   .skip-arrow {
     color: $gray-light;
