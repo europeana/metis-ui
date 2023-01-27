@@ -36,6 +36,12 @@ $zeroSeconds: 0s;
     }
   }
 
+  &.hovered-state .pop-out-opener {
+    // slow the background fade when transitioning from open to close
+    transition: background-color 0.8s ease-in-out, border-color $zeroSeconds linear,
+      border-right-color $zeroSeconds linear;
+  }
+
   // prevent overflow from appearing outside the container during open / close
   &.hovered-state,
   &:hover {
