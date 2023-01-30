@@ -42,8 +42,7 @@ export class NavigationOrbsComponent {
 
   @Input() links: Array<string> = [];
   @Input() tooltips: Array<string> = [];
-
-  @Output() clickEvent: EventEmitter<number> = new EventEmitter();
+  @Output() clickEvent = new EventEmitter<number>();
 
   clicked(event: { ctrlKey: boolean; preventDefault: () => void }, index: number): void {
     if (!event.ctrlKey) {

@@ -1,25 +1,12 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import '../../mixins/pop-out';
 
 .problem-viewer {
   border: 1px solid $gray-5;
 }
 
-.pop-out.open .pop-out-content {
-  border-top: 1px solid $gray-5;
-  transition: border-top 1s linear;
-}
-
-.pop-out.open,
-.pop-out:hover {
-  .pop-out-opener {
-    background-color: $white;
-    border: 1px solid $gray-5;
-    border-right-color: $gray-5;
-  }
-}
-
-.pop-out-content {
-  background-color: $white;
+.problem-viewer-wrapper .pop-out {
+  @include pop-up(25.5em, -1, 180deg);
 }
 
 .skip-arrows {

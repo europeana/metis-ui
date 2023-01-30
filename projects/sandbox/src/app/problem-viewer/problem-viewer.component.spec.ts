@@ -12,6 +12,7 @@ import { of } from 'rxjs';
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   mockProblemPatternsDataset,
+  mockProblemPatternsRecord,
   MockSandboxService,
   MockSandboxServiceErrors
 } from '../_mocked';
@@ -61,6 +62,16 @@ describe('ProblemViewerComponent', () => {
     it('should decode', () => {
       const testString = 'http://it works!';
       expect(component.decode(encodeURIComponent(testString))).toEqual(testString);
+    });
+
+    it('should load the link data', () => {
+      expect(component.processedRecordData).toBeFalsy();
+      component.problemPatternsRecord = {
+        datasetId: '123',
+        problemPatternList: mockProblemPatternsRecord
+      };
+      component.loadRecordLinksData('1');
+      expect(component.processedRecordData).toBeTruthy();
     });
 
     it('should open the link', () => {
@@ -178,5 +189,24 @@ describe('ProblemViewerComponent', () => {
       component.onScroll((fakeEvent as unknown) as Event);
       expect(component.scrollSubject.next).toHaveBeenCalled();
     });
+  });
+
+  describe('Error Handling', () => {
+    beforeEach(async(() => {
+      configureTestbed(true);
+    }));
+
+    beforeEach(b4Each);
+
+    it('should load the link data', fakeAsync(() => {
+      spyOn(component.onError, 'emit');
+      component.problemPatternsRecord = {
+        datasetId: '123',
+        problemPatternList: mockProblemPatternsRecord
+      };
+      component.loadRecordLinksData('1');
+      tick(1);
+      expect(component.onError.emit).toHaveBeenCalled();
+    }));
   });
 });

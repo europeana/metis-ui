@@ -22,13 +22,6 @@ import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 export class ProgressTrackerComponent extends SubscriptionManager {
   public formatDate = formatDate;
   public DisplayedTier = DisplayedTier;
-  public readonly ignoreClassesList = [
-    'link-internal:not(.dataset-name)',
-    'nav-orb',
-    'sb-navigation-orbs',
-    'creation-date',
-    'modal-wrapper'
-  ];
 
   readonly fieldContentTier = 'content-tier';
   readonly fieldMetadataTier = 'metadata-tier';
@@ -40,10 +33,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() datsetInfo: DatasetInfo;
 
   @Input() set progressData(data: Dataset) {
-    if (!this.warningViewOpen) {
-      // reset the notification flag unless the user's already looking at it
-      this.warningViewOpened = [false, false];
-    }
+    this.warningViewOpened = [false, false];
     const tierInfo = data[this.fieldTierZeroInfo];
     if (tierInfo) {
       // add placeholder content-tier data if only metadata-tier data is present
@@ -69,8 +59,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   modalIdErrors = 'confirm-modal-errors';
   detailIndex: number;
   expandedWarning = false;
-
-  warningViewOpen = false;
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier;
 
@@ -81,7 +69,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   getOrbConfigInner(i: number): ClassMap {
     return {
       'is-active': this.warningDisplayedTier === i,
-      'allow-active-clicks': this.getOrbConfigCount() === 1,
       'content-tier-orb': i === DisplayedTier.CONTENT,
       'metadata-tier-orb': i === DisplayedTier.METADATA,
       'warning-animated': !this.warningViewOpened[i]
@@ -155,12 +142,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   /**
    * closeWarningView
-   * Template utility - sets warningViewOpen to false
+   * Sets warningDisplayedTier to -1
    * Delays the resetting of warningView to fit with animation
    **/
   closeWarningView(): void {
     if (this.showing) {
-      this.warningViewOpen = false;
       setTimeout(() => {
         this.warningDisplayedTier = -1;
       }, 400);
@@ -173,16 +159,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @param { number } index - the warning view code
    **/
   setWarningView(index: DisplayedTier): void {
-    // close if only one option is present and is being set to the same value
-    if (this.getOrbConfigCount() === 1) {
-      if (this.warningDisplayedTier === index) {
-        this.closeWarningView();
-        return;
-      }
-    }
-
     this.warningDisplayedTier = index;
-    this.warningViewOpen = true;
     this.warningViewOpened[index] = true;
   }
 

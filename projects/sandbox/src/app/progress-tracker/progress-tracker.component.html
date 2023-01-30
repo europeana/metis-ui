@@ -108,40 +108,20 @@
       </span>
     </ng-container>
   </div>
+
   <ng-container *ngIf="progressData['tier-zero-info']; let tierInfo">
-    <div
-      class="warning-view"
-      *ngIf="
-        (tierInfo['content-tier'] && tierInfo['content-tier'].total) ||
-        (tierInfo['metadata-tier'] && tierInfo['metadata-tier'].total)
-      "
-      [ngClass]="{
-        closed: !warningViewOpen
-      }"
+    <sb-pop-out
+      (open)="setWarningView($event)"
+      (close)="closeWarningView()"
+      [openerCount]="getOrbConfigCount()"
+      [fnClassMapInner]="getOrbConfigInner.bind(this)"
+      [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
+      [tooltips]="[
+        'content-tier-zero records found (click to see samples)',
+        'metadata-tier-zero records found (click to see samples)'
+      ]"
     >
-      <sb-navigation-orbs
-        libClickAware
-        [ignoreClasses]="ignoreClassesList"
-        [clickAwareIgnoreWhen]="!showing"
-        (clickOutside)="closeWarningView()"
-        ariaLabel="Tier Zero Warnings Navigation"
-        class="sb-navigation-orbs vertical zero-warning"
-        [count]="getOrbConfigCount()"
-        [fnClassMapInner]="getOrbConfigInner.bind(this)"
-        [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
-        [tooltips]="[
-          'content-tier-zero records found (click to see samples)',
-          'metadata-tier-zero records found (click to see samples)'
-        ]"
-        (clickEvent)="setWarningView($event)"
-      ></sb-navigation-orbs>
-      <div
-        class="warning-view-content"
-        libClickAware
-        [ignoreClasses]="ignoreClassesList"
-        [clickAwareIgnoreWhen]="!showing"
-        (clickOutside)="closeWarningView()"
-      >
+      <div class="warning-view-content">
         <ng-template #warningViewHeader let-list="list" let-label="label" let-total="total">
           <span class="warning-view-header">
             This dataset contains
@@ -209,6 +189,6 @@
           </li>
         </ul>
       </div>
-    </div>
+    </sb-pop-out>
   </ng-container>
 </div>

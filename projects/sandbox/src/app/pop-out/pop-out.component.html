@@ -11,18 +11,14 @@
     (clickOutside)="clickOutside()"
     [ignoreClasses]="ignoreClassesList"
   >
-    <a
-      (click)="toggleOpen()"
-      class="nav-orb labelled element-orb allow-active-clicks"
-      [ngClass]="{
-        'is-active': isOpen,
-        'indicator-orb': isLoading,
-        spinner: isLoading,
-        'warning-animated': notify
-      }"
-      [title]="title"
-    >
-    </a>
+    <sb-navigation-orbs
+      class="sb-navigation-orbs vertical zero-warning"
+      (clickEvent)="navOrbsClick($event)"
+      [count]="openerCount"
+      [tooltips]="tooltips"
+      [fnClassMapInner]="fnClassMapInner"
+      [fnClassMapOuter]="fnClassMapOuter"
+    ></sb-navigation-orbs>
   </span>
   <div
     class="pop-out-content"

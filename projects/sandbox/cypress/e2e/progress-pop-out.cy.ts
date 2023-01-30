@@ -17,10 +17,10 @@ context('Sandbox', () => {
     const datasetIdMetadataTier = '5';
     const datasetIdBoth = '3';
 
-    const selectorView = '.warning-view';
+    const selectorView = '.pop-out';
     const selectorPopOutCloser = selectorProgressOrb;
     const selectorPopOutOpener = `${selectorView} .orb-container:not(.hidden) .nav-orb`;
-    const selectorOpen = `${selectorView}:not(.closed)`;
+    const selectorOpen = `${selectorView}.open`;
     const selectorOpenerWarning = `${selectorPopOutOpener}.warning-animated`;
     const force = { force: true };
 

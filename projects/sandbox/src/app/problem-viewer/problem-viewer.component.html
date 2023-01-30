@@ -413,10 +413,15 @@
   >
     <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
       <sb-pop-out
-        [isLoading]="isLoading"
+        [applyDefaultNotification]="true"
+        [classMapInner]="{
+          'element-orb': true
+        }"
         [disabled]="!processedRecordData"
-        title="record xml links (click to open)"
-        (onOpen)="
+        [isLoading]="isLoading"
+        [openerCount]="1"
+        [tooltips]="['record xml links (click to open)']"
+        (open)="
           loadRecordLinksData(
             problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
           )
