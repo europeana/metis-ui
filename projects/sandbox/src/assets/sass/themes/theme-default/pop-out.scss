@@ -13,10 +13,6 @@
       border-right-color: $grey-3;
     }
   }
-
-  .pop-out-content {
-    background: $eu-light-jade-classic;
-  }
 }
 
 // Overrides
@@ -32,6 +28,13 @@
     &:hover {
       .pop-out-opener {
         border-right-color: $grey-3;
+      }
+    }
+    &.open,
+    &.hovered-state {
+      .pop-out-content {
+        background: $eu-light-jade-classic;
+        transition: background-color 0s, border-top 0.4s;
       }
     }
   }
