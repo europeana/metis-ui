@@ -146,6 +146,10 @@ $colour-background: $eu-jade-light;
     &.indicator-orb:not([data-indicator]):active::before {
       background-image: svg-url-icon-spin($colour-active-foreground);
     }
+
+    &.indicator-orb:not([data-indicator]).is-active::before {
+      background-image: svg-url-icon-spin($colour-hover-background);
+    }
   }
 
   &:not(.spinner) {
@@ -364,6 +368,13 @@ $colour-background: $eu-jade-light;
       background-image: svg-url-icon-xml($colour-active-foreground);
     }
 
+    &.element-orb.is-active:hover{
+      background-color: $colour-hover-background;
+      &::after {
+        background-image: svg-url-icon-xml($colour-hover-foreground);
+      }
+    }
+
     // Classes
 
     &.classes-orb::after {
@@ -413,6 +424,9 @@ $colour-background: $eu-jade-light;
   &:active {
     background-image: svg-url-icon-spin($colour-active-foreground);
   }
+  &.is-active:hover {
+    background-image: svg-url-icon-spin($colour-foreground);
+  }
 }
 
 .warning-animated::before {
@@ -442,6 +456,9 @@ $colour-background: $eu-jade-light;
       height: 48px;
       .nav-orb.labelled {
         transform: scale(0.75);
+        &.is-active.indicator-orb::before {
+          border-color: $eu-jade-dark;
+        }
       }
       & + .orb-container {
         margin-top: 7px;
