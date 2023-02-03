@@ -3,7 +3,6 @@
  *  - styled by the pop-out mixin under assets/sass/mixins on an instance basis
  *
  **/
-
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
@@ -49,7 +48,7 @@ export class PopOutComponent {
     if (this._fnClassMapOuter) {
       return this._fnClassMapOuter;
     } else {
-      // Supply function returnng empty map
+      // Supply function returning empty map
       return (_: number) => {
         return {};
       };
