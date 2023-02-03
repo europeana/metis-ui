@@ -15,6 +15,28 @@ $colour-hover-foreground: $eu-jade-dark;
 $colour-foreground: $white;
 $colour-background: $eu-jade-light;
 
+// Mixin for orb customisation
+@mixin custom-orb($fnIcon, $bgSize) {
+  &::after {
+    background: call($fnIcon, $colour-foreground) center / $bgSize no-repeat;
+    content: '';
+    height: 100%;
+    width: 100%;
+  }
+  &:hover::after {
+    background-image: call($fnIcon, $colour-hover-foreground);
+  }
+  &:active::after {
+    background-image: call($fnIcon, $colour-active-foreground);
+  }
+  &.is-active:hover {
+    background-color: $colour-hover-background;
+    &::after {
+      background-image: svg-url-icon-xml($colour-hover-foreground);
+    }
+  }
+}
+
 .home-orb-container {
   display: none;
 }
@@ -153,243 +175,64 @@ $colour-background: $eu-jade-light;
   }
 
   &:not(.spinner) {
-    &.upload-orb::after {
-      background: svg-url-icon-cloud($colour-foreground) center / 2.25rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.upload-orb {
+      @include custom-orb(get-function(svg-url-icon-cloud), 2.25rem);
     }
 
-    &.upload-orb:hover::after {
-      background-image: svg-url-icon-cloud($colour-hover-foreground);
+    &.problem-orb {
+      @include custom-orb(get-function(svg-url-icon-lightbulb), 1.5rem);
     }
 
-    &.upload-orb:active::after {
-      background-image: svg-url-icon-cloud($colour-active-foreground);
+    &.progress-orb {
+      @include custom-orb(get-function(svg-url-icon-dataset), 1.75rem);
     }
 
-    &.problem-orb::after {
-      background: svg-url-icon-lightbulb($white) center / 1.5rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.report-orb {
+      @include custom-orb(get-function(svg-url-icon-record-report), 1.5rem);
     }
 
-    &.problem-orb:hover::after {
-      background-image: svg-url-icon-lightbulb($colour-hover-foreground);
+    &.content-tier-orb {
+      @include custom-orb(get-function(svg-url-icon-content-tier), 1.85rem);
     }
 
-    &.problem-orb:active::after {
-      background-image: svg-url-icon-lightbulb($eu-light-orange);
+    &.metadata-tier-orb {
+      @include custom-orb(get-function(svg-url-icon-metadata), 2.05rem);
     }
 
-    &.progress-orb::after {
-      background: svg-url-icon-dataset($colour-foreground) center / 1.75rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.orb-media-3d {
+      @include custom-orb(get-function(svg-url-icon-media-3d), 1.8rem);
     }
 
-    &.progress-orb:hover::after {
-      background-image: svg-url-icon-dataset($colour-hover-foreground);
+    &.orb-media-audio {
+      @include custom-orb(get-function(svg-url-icon-media-audio), 1.8rem);
     }
 
-    &.progress-orb:active::after {
-      background-image: svg-url-icon-dataset($colour-active-foreground);
+    &.orb-media-image {
+      @include custom-orb(get-function(svg-url-icon-media-image), 1.8rem);
     }
 
-    &.report-orb::after {
-      background: svg-url-icon-record-report($colour-foreground) center / 1.5rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.orb-media-text {
+      @include custom-orb(get-function(svg-url-icon-media-text), 1.8rem);
     }
 
-    &.report-orb:hover::after {
-      background-image: svg-url-icon-record-report($colour-hover-foreground);
+    &.orb-media-video {
+      @include custom-orb(get-function(svg-url-icon-media-video), 1.8rem);
     }
-
-    &.report-orb:active::after {
-      background-image: svg-url-icon-record-report($colour-active-foreground);
-    }
-
-    &.content-tier-orb::after {
-      background: svg-url-icon-content-tier($colour-foreground) center / 1.85rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.content-tier-orb:hover::after {
-      background-image: svg-url-icon-content-tier($colour-hover-foreground);
-    }
-
-    &.content-tier-orb:active::after {
-      background-image: svg-url-icon-content-tier($colour-active-foreground);
-    }
-
-    &.metadata-tier-orb::after {
-      background: svg-url-icon-metadata($colour-foreground) center / 2.05rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.metadata-tier-orb:hover::after {
-      background-image: svg-url-icon-metadata($colour-hover-foreground);
-    }
-
-    &.metadata-tier-orb:active::after {
-      background-image: svg-url-icon-metadata($colour-active-foreground);
-    }
-
-    // 3D
-
-    &.orb-media-3d::after {
-      background: svg-url-icon-media-3d($colour-foreground) center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-3d:hover::after {
-      background-image: svg-url-icon-media-3d($colour-hover-foreground);
-    }
-
-    &.orb-media-3d:active::after {
-      background-image: svg-url-icon-media-3d($colour-active-foreground);
-    }
-
-    // AUDIO
-
-    &.orb-media-audio::after {
-      background: svg-url-icon-media-audio($colour-foreground) center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-audio:hover::after {
-      background-image: svg-url-icon-media-audio($colour-hover-foreground);
-    }
-
-    &.orb-media-audio:active::after {
-      background-image: svg-url-icon-media-audio($colour-active-foreground);
-    }
-
-    // IMAGE
-
-    &.orb-media-image::after {
-      background: svg-url-icon-media-image($colour-foreground) center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-image:hover::after {
-      background-image: svg-url-icon-media-image($colour-hover-foreground);
-    }
-
-    &.orb-media-image:active::after {
-      background-image: svg-url-icon-media-image($colour-active-foreground);
-    }
-
-    // TEXT
-
-    &.orb-media-text::after {
-      background: svg-url-icon-media-text($colour-foreground) center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-text:hover::after {
-      background-image: svg-url-icon-media-text($colour-hover-foreground);
-    }
-
-    &.orb-media-text:active::after {
-      background-image: svg-url-icon-media-text($colour-active-foreground);
-    }
-
-    // VIDEO
-
-    &.orb-media-video::after {
-      background: svg-url-icon-media-video($colour-foreground) center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-video:hover::after {
-      background-image: svg-url-icon-media-video($colour-hover-foreground);
-    }
-
-    &.orb-media-video:active::after {
-      background-image: svg-url-icon-media-video($colour-active-foreground);
-    }
-
-    // UNKNOWN
 
     &.orb-media-unknown::after {
       content: '?';
     }
 
-    // Speech bubble
-
-    &.language-orb::after {
-      background: svg-url-icon-speech-bubble($colour-foreground) center / 1.5rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.language-orb {
+      @include custom-orb(get-function(svg-url-icon-speech-bubble), 1.5rem);
     }
 
-    &.language-orb:hover::after {
-      background-image: svg-url-icon-speech-bubble($colour-hover-foreground);
+    &.element-orb {
+      @include custom-orb(get-function(svg-url-icon-xml), 1.8rem);
     }
 
-    &.language-orb:active::after {
-      background-image: svg-url-icon-speech-bubble($colour-active-foreground);
-    }
-
-    // Elements
-
-    &.element-orb::after {
-      background: svg-url-icon-xml($colour-foreground) center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.element-orb:hover::after {
-      background-image: svg-url-icon-xml($colour-hover-foreground);
-    }
-
-    &.element-orb:active::after {
-      background-image: svg-url-icon-xml($colour-active-foreground);
-    }
-
-    &.element-orb.is-active:hover{
-      background-color: $colour-hover-background;
-      &::after {
-        background-image: svg-url-icon-xml($colour-hover-foreground);
-      }
-    }
-
-    // Classes
-
-    &.classes-orb::after {
-      background: svg-url-icon-classes($colour-foreground) center 35% / 2.2rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.classes-orb:hover::after {
-      background-image: svg-url-icon-classes($colour-hover-foreground);
-    }
-
-    &.classes-orb:active::after {
-      background-image: svg-url-icon-classes($colour-active-foreground);
+    &.classes-orb {
+      @include custom-orb(get-function(svg-url-icon-classes), 2.2rem);
     }
   }
   &.indicator-orb:not([data-indicator]),
@@ -451,6 +294,7 @@ $colour-background: $eu-jade-light;
   .wizard-status {
     flex-direction: column;
   }
+
   &.zero-warning {
     .orb-container:not(.hidden) {
       height: 48px;
