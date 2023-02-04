@@ -23,7 +23,6 @@ export class PopOutComponent {
   notify = false;
 
   @Input() disabled = false;
-  @Input() title = '';
   @Output() open = new EventEmitter<number>();
   @Output() close = new EventEmitter<Event>();
   @Input() applyDefaultNotification = false;

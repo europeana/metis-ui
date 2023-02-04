@@ -80,6 +80,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   @Input() set problemPatternsRecord(problemPatternsRecord: ProblemPatternsRecord) {
     this.problemCount = 0;
     this.processedRecordData = undefined;
+    this.isLoading = false;
 
     // use timer to prevent ExpressionChangedAfterIthasBeenCheckedError
     setTimeout(() => {

@@ -1,54 +1,33 @@
+@use "sass:map";
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@import 'mixins/orb-customisation';
 
 $orb-border-radius: 1.5em;
 
-$colour-border: $eu-jade-dark;
-$colour-activated-border: $white;
-$colour-activated-background: $eu-light-orange;
-$colour-activated-foreground: $white;
-$colour-active-border: $eu-light-orange;
-$colour-active-background: $white;
-$colour-active-foreground: $eu-light-orange;
-$colour-hover-background: $white;
-$colour-hover-foreground: $eu-jade-dark;
-$colour-foreground: $white;
-$colour-background: $eu-jade-light;
-
-// Mixin for orb customisation
-@mixin custom-orb($fnIcon, $bgSize) {
-  &::after {
-    background: call($fnIcon, $colour-foreground) center / $bgSize no-repeat;
-    content: '';
-    height: 100%;
-    width: 100%;
-  }
-  &:hover::after {
-    background-image: call($fnIcon, $colour-hover-foreground);
-  }
-  &:active::after {
-    background-image: call($fnIcon, $colour-active-foreground);
-  }
-  &.is-active:hover {
-    background-color: $colour-hover-background;
-    &::after {
-      background-image: svg-url-icon-xml($colour-hover-foreground);
-    }
-  }
-}
+$defaultPalette: (
+  'activated-background': $eu-light-orange,
+  'activated-border': $white,
+  'activated-foreground': $white,
+  'active-background': $white,
+  'active-border': $eu-light-orange,
+  'active-foreground': $eu-light-orange,
+  'background': $eu-jade-light,
+  'border': $eu-jade-dark,
+  'foreground': $white,
+  'hover-background': $white,
+  'hover-foreground': $eu-jade-dark
+);
 
 .home-orb-container {
   display: none;
 }
 
 .nav-orb {
-  background-color: $colour-background;
-  border-color: $colour-border;
   border-radius: $orb-border-radius;
   border-style: solid;
   border-width: 1px;
 
-  color: $colour-foreground;
   display: inline-block;
   height: 3em;
   margin: 0;
@@ -70,9 +49,9 @@ $colour-background: $eu-jade-light;
   }
 
   &.indicate-tier::before {
+    background-color: map.get($defaultPalette, 'background');
     color: $white;
     content: attr(data-indicator);
-    background-color: $colour-background;
     line-height: 16px;
     text-align: center;
     font-size: 16px;
@@ -104,50 +83,46 @@ $colour-background: $eu-jade-light;
   }
 
   &.indicator-orb:not([data-indicator])::before {
-    background: svg-url-icon-tick($colour-foreground) center 75% / 75% no-repeat $colour-background;
+    $foreground: map.get($defaultPalette, 'foreground');
+    $background: map.get($defaultPalette, 'background');
+    background: svg-url-icon-tick($foreground) center 75% / 75% no-repeat $background;
   }
 
   &:hover {
-    background-color: $colour-hover-background;
     box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
     &.indicator-orb::before {
-      background-color: $colour-hover-background;
-      color: $colour-hover-foreground;
+      background-color: map.get($defaultPalette, 'hover-background');
+      color: map.get($defaultPalette, 'hover-foreground');
     }
-    &:not([data-indicator]):not(.warning-animated)::before {
-      background-image: svg-url-icon-tick($colour-hover-foreground);
+    &:not([data-indicator]):not(.error-animated):not(.warning-animated)::before {
+      background-image: svg-url-icon-tick(map.get($defaultPalette, 'hover-foreground'));
     }
   }
 
-  &:active:hover,
-  &:active {
-    background-color: $colour-active-background;
-    border-color: $colour-active-border;
-    color: $colour-active-foreground;
-
+  &:active,
+  &:active:hover {
     &.indicator-orb::before {
-      border-color: $colour-active-border;
-      background-color: $colour-active-background;
-      color: $colour-active-foreground;
+      border-color: map.get($defaultPalette, 'active-border');
+      background-color: map.get($defaultPalette, 'active-background');
+      color: map.get($defaultPalette, 'active-foreground');
     }
     &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-tick($colour-active-foreground);
+      background-image: svg-url-icon-tick(map.get($defaultPalette, 'active-foreground'));
     }
   }
 
   &.is-active {
-    background-color: $colour-activated-background;
-    border-color: $colour-activated-border;
     pointer-events: none;
     &.allow-active-clicks {
       pointer-events: all;
     }
+
     &.indicator-orb::before {
-      border-color: $colour-activated-border;
-      background-color: $colour-activated-background;
+      border-color: map.get($defaultPalette, 'activated-border');
+      background-color: map.get($defaultPalette, 'activated-background');
     }
     &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-tick($colour-activated-foreground);
+      background-image: svg-url-icon-tick(map.get($defaultPalette, 'activated-foreground'));
     }
   }
 
@@ -157,82 +132,95 @@ $colour-background: $eu-jade-light;
       background-position: center;
       background-repeat: no-repeat;
     }
-    &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-spin($colour-foreground);
-    }
-
-    &.indicator-orb:not([data-indicator]):hover::before {
-      background-image: svg-url-icon-spin($colour-hover-foreground);
-    }
-
-    &.indicator-orb:not([data-indicator]):active::before {
-      background-image: svg-url-icon-spin($colour-active-foreground);
-    }
-
-    &.indicator-orb:not([data-indicator]).is-active::before {
-      background-image: svg-url-icon-spin($colour-hover-background);
+    &.indicator-orb:not([data-indicator]) {
+      &::before {
+        background-image: svg-url-icon-spin(map.get($defaultPalette, 'foreground'));
+      }
+      &:hover::before {
+        background-image: svg-url-icon-spin(map.get($defaultPalette, 'hover-foreground'));
+      }
+      &:active,
+      &.is-active:active,
+      &.is-active:hover {
+        &::before {
+          background-color: map.get($defaultPalette, 'active-background');
+          background-image: svg-url-icon-spin(map.get($defaultPalette, 'active-foreground'));
+        }
+      }
+      &.is-active,
+      &.is-active:active:hover {
+        &::before {
+          background-color: map.get($defaultPalette, 'activated-background');
+          background-image: svg-url-icon-spin(map.get($defaultPalette, 'activated-foreground'));
+        }
+      }
     }
   }
 
   &:not(.spinner) {
     &.upload-orb {
-      @include custom-orb(get-function(svg-url-icon-cloud), 2.25rem);
+      @include custom-orb(get-function(svg-url-icon-cloud), 2.25rem, $defaultPalette);
     }
 
     &.problem-orb {
-      @include custom-orb(get-function(svg-url-icon-lightbulb), 1.5rem);
+      @include custom-orb(get-function(svg-url-icon-lightbulb), 1.5rem, $defaultPalette);
     }
 
     &.progress-orb {
-      @include custom-orb(get-function(svg-url-icon-dataset), 1.75rem);
+      @include custom-orb(get-function(svg-url-icon-dataset), 1.75rem, $defaultPalette);
     }
 
     &.report-orb {
-      @include custom-orb(get-function(svg-url-icon-record-report), 1.5rem);
+      @include custom-orb(get-function(svg-url-icon-record-report), 1.5rem, $defaultPalette);
     }
 
     &.content-tier-orb {
-      @include custom-orb(get-function(svg-url-icon-content-tier), 1.85rem);
+      @include custom-orb(get-function(svg-url-icon-content-tier), 1.85rem, $defaultPalette);
     }
 
     &.metadata-tier-orb {
-      @include custom-orb(get-function(svg-url-icon-metadata), 2.05rem);
+      @include custom-orb(get-function(svg-url-icon-metadata), 2.05rem, $defaultPalette);
     }
 
     &.orb-media-3d {
-      @include custom-orb(get-function(svg-url-icon-media-3d), 1.8rem);
+      @include custom-orb(get-function(svg-url-icon-media-3d), 1.8rem, $defaultPalette);
     }
 
     &.orb-media-audio {
-      @include custom-orb(get-function(svg-url-icon-media-audio), 1.8rem);
+      @include custom-orb(get-function(svg-url-icon-media-audio), 1.8rem, $defaultPalette);
     }
 
     &.orb-media-image {
-      @include custom-orb(get-function(svg-url-icon-media-image), 1.8rem);
+      @include custom-orb(get-function(svg-url-icon-media-image), 1.8rem, $defaultPalette);
     }
 
     &.orb-media-text {
-      @include custom-orb(get-function(svg-url-icon-media-text), 1.8rem);
+      @include custom-orb(get-function(svg-url-icon-media-text), 1.8rem, $defaultPalette);
     }
 
     &.orb-media-video {
-      @include custom-orb(get-function(svg-url-icon-media-video), 1.8rem);
+      @include custom-orb(get-function(svg-url-icon-media-video), 1.8rem, $defaultPalette);
     }
 
-    &.orb-media-unknown::after {
-      content: '?';
+    &.orb-media-unknown {
+      @include basic-orb($defaultPalette);
+      &::after {
+        content: '?';
+        top: 50%;
+        transform: translateY(-50%);
+      }
     }
 
     &.language-orb {
-      @include custom-orb(get-function(svg-url-icon-speech-bubble), 1.5rem);
+      @include custom-orb(get-function(svg-url-icon-speech-bubble), 1.5rem, $defaultPalette);
     }
 
     &.element-orb {
-      @include custom-orb(get-function(svg-url-icon-xml), 1.8rem);
+      @include custom-orb(get-function(svg-url-icon-xml), 1.8rem, $defaultPalette);
     }
 
     &.classes-orb {
-      @include custom-orb(get-function(svg-url-icon-classes), 2.2rem);
+      @include custom-orb(get-function(svg-url-icon-classes), 2.2rem, $defaultPalette);
     }
   }
   &.indicator-orb:not([data-indicator]),
@@ -260,50 +248,60 @@ $colour-background: $eu-jade-light;
 }
 
 .spinner {
-  background: svg-url-icon-spin($colour-foreground) center / 2em no-repeat $colour-background;
+  background: svg-url-icon-spin(map.get($defaultPalette, 'foreground')) center / 2em no-repeat
+    map.get($defaultPalette, 'background');
+
   &:hover {
-    background-image: svg-url-icon-spin($colour-hover-foreground);
+    background-color: map.get($defaultPalette, 'hover-background');
+    background-image: svg-url-icon-spin(map.get($defaultPalette, 'hover-foreground'));
   }
-  &:active {
-    background-image: svg-url-icon-spin($colour-active-foreground);
-  }
+
+  &:active,
   &.is-active:hover {
-    background-image: svg-url-icon-spin($colour-foreground);
+    background-color: map.get($defaultPalette, 'active-background');
+    background-image: svg-url-icon-spin(map.get($defaultPalette, 'active-foreground'));
+  }
+
+  &.is-active,
+  &.is-active:active:hover {
+    background-color: map.get($defaultPalette, 'activated-background');
+    background-image: svg-url-icon-spin(map.get($defaultPalette, 'activated-foreground'));
   }
 }
 
-.warning-animated::before {
-  @keyframes spin {
-    100% {
-      transform: rotateY(180deg);
+.error-animated,
+.warning-animated {
+  &::before {
+    @keyframes spin {
+      100% {
+        transform: rotateY(180deg);
+      }
     }
+    animation: spin 0.6s linear 1;
+    bottom: -0.75rem;
+    content: '';
+    display: inline-block;
+    height: 22px;
+    left: calc(50% - 10px);
+    position: absolute;
+    width: 20px;
+    z-index: 1;
   }
-  animation: spin 0.6s linear 1;
+}
+
+.error-animated::before {
+  background: svg-url-icon-warning-detailed($eu-red, $white, $eu-red) center no-repeat;
+}
+
+.warning-animated::before {
   background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red) center no-repeat;
-  bottom: -0.75rem;
-  content: '';
-  display: inline-block;
-  height: 22px;
-  left: calc(50% - 10px);
-  position: absolute;
-  width: 20px;
-  z-index: 1;
 }
 
 .vertical {
   .wizard-status {
     flex-direction: column;
-  }
-
-  &.zero-warning {
     .orb-container:not(.hidden) {
       height: 48px;
-      .nav-orb.labelled {
-        transform: scale(0.75);
-        &.is-active.indicator-orb::before {
-          border-color: $eu-jade-dark;
-        }
-      }
       & + .orb-container {
         margin-top: 7px;
       }

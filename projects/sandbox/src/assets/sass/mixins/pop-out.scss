@@ -85,13 +85,9 @@ $zeroSeconds: 0s;
     transition: background-color $slide-duration linear, border-color $slide-duration linear;
     width: $pop-out-opener-width;
 
-    .element-orb {
-      border-color: $eu-jade-dark;
-      transform: scale(0.75);
-    }
-
     .nav-orb {
       right: -33px;
+      transform: scale(0.75);
       transition: right $spin-duration linear;
       &::after {
         transform: rotate($rotation);
