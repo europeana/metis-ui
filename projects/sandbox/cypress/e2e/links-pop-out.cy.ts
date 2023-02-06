@@ -73,7 +73,7 @@ context('Sandbox', () => {
     });
 
     it('should handle the error when loading fails', () => {
-      const selErrors = '.errors';
+      const selErrors = '.load-error';
       fillProgressForm('1');
       fillRecordForm('1-four-o-four', true);
       cy.get(selErrors).should('not.exist');
