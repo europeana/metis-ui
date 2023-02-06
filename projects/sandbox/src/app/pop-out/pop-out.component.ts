@@ -12,7 +12,12 @@ import { ClassMap } from 'shared';
   templateUrl: './pop-out.component.html'
 })
 export class PopOutComponent {
-  public readonly ignoreClassesList = ['link-internal', 'nav-orb', 'pop-out-content'];
+  public readonly ignoreClassesList = [
+    'link-internal',
+    'nav-orb',
+    'pop-out-content',
+    'pop-out-opener'
+  ];
 
   _fnClassMapOuter: (i: number) => ClassMap;
   _fnClassMapInner: (i: number) => ClassMap;

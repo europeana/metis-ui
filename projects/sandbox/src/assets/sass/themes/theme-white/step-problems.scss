@@ -7,6 +7,9 @@
 
 .problem-viewer-wrapper .pop-out {
   @include pop-up(25.5em, -1, 180deg);
+  &.open {
+    right: 1px;
+  }
 }
 
 .skip-arrows {

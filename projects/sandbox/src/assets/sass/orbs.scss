@@ -142,16 +142,20 @@ $defaultPalette: (
       &:active,
       &.is-active:active,
       &.is-active:hover {
+        border-color: map.get($defaultPalette, 'active-border');
         &::before {
           background-color: map.get($defaultPalette, 'active-background');
           background-image: svg-url-icon-spin(map.get($defaultPalette, 'active-foreground'));
+          border-color: map.get($defaultPalette, 'active-border');
         }
       }
       &.is-active,
       &.is-active:active:hover {
+        border-color: map.get($defaultPalette, 'activated-border');
         &::before {
           background-color: map.get($defaultPalette, 'activated-background');
           background-image: svg-url-icon-spin(map.get($defaultPalette, 'activated-foreground'));
+          border-color: map.get($defaultPalette, 'activated-border');
         }
       }
     }

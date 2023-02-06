@@ -111,6 +111,7 @@
 
   <ng-container *ngIf="progressData['tier-zero-info']; let tierInfo">
     <sb-pop-out
+      #tierPopOut
       (open)="setWarningView($event)"
       (close)="closeWarningView()"
       [openerCount]="getOrbConfigCount()"
@@ -134,7 +135,7 @@
         </ng-template>
         <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
           <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
-            <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+            <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
               >Content Tier Zero ({{ contentTier.total }})</a
             >
             <ng-content
@@ -151,7 +152,7 @@
         </ng-container>
         <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
           <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-            <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+            <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
               >Metadata Tier Zero ({{ metadataTier.total }})</a
             >
             <ng-content

@@ -1,4 +1,4 @@
-/// Mixin to configure pop-out component
+// Mixin to configure pop-out component
 
 $allowed-content-overflow-width: 2.25em;
 $pop-out-opener-width: 64px;
@@ -21,7 +21,7 @@ $zeroSeconds: 0s;
   );
   display: flex;
   position: absolute;
-  right: calc(1px + $pop-out-opener-width - $content-width);
+  right: calc(-1px + $pop-out-opener-width - $content-width);
   transition: clip-path $slide-duration ease-in-out, right $slide-duration ease-in-out;
   width: $content-width;
   z-index: 2;
