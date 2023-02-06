@@ -1,32 +1,28 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import '../../mixins/pop-out';
 
 .dataset-info {
   color: $eu-jade-dark;
-
   .creation-date.warning-icon::before {
     background: svg-url-icon-warning($eu-jade-dark) center no-repeat;
   }
 }
 
-.warning-view {
-  .sb-navigation-orbs {
-    background: $eu-light-jade-classic;
-    border: 1px solid $grey-3;
-    border-right: 1px dotted $grey-3;
-  }
+.warning-view-content {
+  background: $eu-light-jade-classic;
+}
 
-  .warning-view-content {
-    background: $eu-light-jade-classic;
-    border-right: 1px dotted $grey-3;
-    border-top: 1px solid $grey-3;
-    border-bottom: 1px dotted $grey-3;
-  }
+.warning-view-header {
+  color: $eu-jade-dark;
+}
 
-  .warning-view-header {
-    color: $eu-jade-dark;
-  }
+.warning-view-list li::before {
+  color: $eu-jade-dark;
+}
 
-  .warning-view-list li::before {
-    color: $eu-jade-dark;
+.wrapper {
+  overflow: visible;
+  .pop-out {
+    @include pop-up(80%, 1.5em);
   }
 }

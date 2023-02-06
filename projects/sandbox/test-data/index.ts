@@ -645,7 +645,12 @@ new (class extends TestDataServer {
             }
           }
           if (recordIdUnparsed.indexOf('four-o-four') > -1) {
-            this.handle404(route, response);
+            setTimeout(
+              () => {
+                this.handle404(route, response);
+              },
+              isNaN(recordId) ? 0 : recordId
+            );
             return;
           } else if (this.errorCodes.indexOf(`${recordId}`) > -1) {
             response.statusCode = recordId;

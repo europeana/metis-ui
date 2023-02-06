@@ -1,4 +1,5 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import '../../mixins/pop-out';
 
 .dataset-info {
   color: $gray-med;
@@ -12,21 +13,17 @@
   border: 1px solid $gray-5;
 }
 
-.warning-view {
-  .sb-navigation-orbs {
-    background: #fff;
-    border: 1px solid $gray-5;
-    border-right: 1px dotted $gray-5;
-  }
+.warning-view-content {
+  background: $white;
+}
 
-  .warning-view-content {
-    background: #fff;
-    border-right: 1px dotted $gray-5;
-    border-top: 1px solid $gray-5;
-    border-bottom: 1px solid $gray-5;
-  }
+.warning-view-list li::before {
+  color: $gray-med;
+}
 
-  .warning-view-list li::before {
-    color: $gray-med;
+.wrapper {
+  overflow: visible;
+  .pop-out {
+    @include pop-up(80%, 1.5em);
   }
 }

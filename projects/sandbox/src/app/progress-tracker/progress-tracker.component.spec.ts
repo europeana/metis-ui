@@ -40,27 +40,14 @@ describe('ProgressTrackerComponent', () => {
 
     it('should close the warning view', fakeAsync(() => {
       const tickTime = 400;
-
-      component.showing = true;
-      component.warningViewOpen = true;
       component.warningDisplayedTier = 1;
       component.closeWarningView();
-
-      expect(component.warningViewOpen).toBeFalsy();
+      tick(tickTime);
       expect(component.warningDisplayedTier).toEqual(1);
+      component.showing = true;
+      component.closeWarningView();
       tick(tickTime);
       expect(component.warningDisplayedTier).toEqual(-1);
-
-      component.showing = false;
-      component.warningViewOpen = true;
-      component.warningDisplayedTier = 1;
-      component.closeWarningView();
-
-      expect(component.warningViewOpen).toBeTruthy();
-      expect(component.warningDisplayedTier).toEqual(1);
-      tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(1);
-      tick(tickTime);
     }));
 
     it('should format the error', () => {
@@ -183,9 +170,8 @@ describe('ProgressTrackerComponent', () => {
       expect(component.warningViewOpened).toEqual([false, false]);
 
       component.warningViewOpened = [true, true];
-      component.warningViewOpen = true;
       component.progressData = mockDataset;
-      expect(component.warningViewOpened).toEqual([true, true]);
+      expect(component.warningViewOpened).toEqual([false, false]);
     });
 
     it('should show the errors and warning modals', () => {
@@ -205,30 +191,16 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should set the warning view', () => {
-      component.showing = true;
-      component.warningViewOpen = false;
-      component.warningViewOpened = [false, false];
-      component.setWarningView(1);
-      expect(component.warningViewOpen).toBeTruthy();
-      expect(component.warningViewOpened[1]).toBeTruthy();
-
-      // close if single opener
-      let orbCount = 1;
-      spyOn(component, 'getOrbConfigCount').and.callFake(() => orbCount);
-      component.setWarningView(orbCount);
-      expect(component.warningViewOpen).toBeFalsy();
-      component.setWarningView(DisplayedTier.METADATA);
       expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeFalsy();
-      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeTruthy();
-      expect(component.warningViewOpen).toBeFalsy();
+      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeFalsy();
 
-      // remain open if multiple openers
-      orbCount = 2;
-      component.setWarningView(orbCount);
-      expect(component.warningViewOpen).toBeTruthy();
       component.setWarningView(DisplayedTier.CONTENT);
-      expect(component.warningViewOpen).toBeTruthy();
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.CONTENT);
       expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeTruthy();
+
+      component.setWarningView(DisplayedTier.METADATA);
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
+      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeTruthy();
     });
 
     it('should toggle the exapnded-warning flag', () => {

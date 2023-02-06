@@ -1,21 +1,12 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
+@import '../../mixins/pop-out';
 
-.record-links-view-content {
-  border-top: 1px solid $grey-3;
+.problem-viewer-wrapper .pop-out {
+  @include pop-up(25.5em, -1, 180deg);
 }
 
-.record-links-view-opener {
-  border: 1px solid $grey-3;
-}
-
-.record-links-view-content,
-.record-links-view-opener,
 .skip-arrows {
   background: $eu-light-jade-classic;
-}
-
-.skip-arrows {
-  background-color: $eu-light-jade-classic;
 
   .skip-arrow {
     color: $gray-light;

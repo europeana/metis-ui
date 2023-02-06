@@ -64,6 +64,16 @@ describe('ProblemViewerComponent', () => {
       expect(component.decode(encodeURIComponent(testString))).toEqual(testString);
     });
 
+    it('should load the link data', () => {
+      expect(component.processedRecordData).toBeFalsy();
+      component.problemPatternsRecord = {
+        datasetId: '123',
+        problemPatternList: mockProblemPatternsRecord
+      };
+      component.loadRecordLinksData('1');
+      expect(component.processedRecordData).toBeTruthy();
+    });
+
     it('should open the link', () => {
       spyOn(component.openLinkEvent, 'emit');
       const event = {
@@ -79,26 +89,6 @@ describe('ProblemViewerComponent', () => {
       component.openLink(event, 'x');
       expect(component.openLinkEvent.emit).toHaveBeenCalledTimes(1);
       expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    });
-
-    it('should open the records link view', () => {
-      expect(component.processedRecordData).toBeFalsy();
-      expect(component.recordLinksViewOpen).toBeFalsy();
-
-      component.openRecordLinksView('1');
-      expect(component.isLoading).toBeFalsy();
-      expect(component.processedRecordData).toBeFalsy();
-      expect(component.recordLinksViewOpen).toBeTruthy();
-
-      component.problemPatternsRecord = {
-        datasetId: '1',
-        problemPatternList: mockProblemPatternsRecord
-      };
-      component.recordLinksViewOpen = false;
-      component.openRecordLinksView('1');
-      expect(component.processedRecordData).toBeTruthy();
-      expect(component.recordLinksViewOpen).toBeTruthy();
-      expect(component.isLoading).toBeFalsy();
     });
 
     it('should get the warning classmap', () => {
@@ -205,21 +195,17 @@ describe('ProblemViewerComponent', () => {
     beforeEach(async(() => {
       configureTestbed(true);
     }));
+
     beforeEach(b4Each);
 
-    it('should handle errors loading the records link view', fakeAsync(() => {
+    it('should load the link data', fakeAsync(() => {
       spyOn(component.onError, 'emit');
-      expect(component.processedRecordData).toBeFalsy();
-      expect(component.recordLinksViewOpen).toBeFalsy();
       component.problemPatternsRecord = {
-        datasetId: '1',
+        datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
       };
-      component.openRecordLinksView('1');
+      component.loadRecordLinksData('1');
       tick(1);
-      expect(component.processedRecordData).toBeFalsy();
-      expect(component.recordLinksViewOpen).toBeFalsy();
-      expect(component.isLoading).toBeFalsy();
       expect(component.onError.emit).toHaveBeenCalled();
     }));
   });

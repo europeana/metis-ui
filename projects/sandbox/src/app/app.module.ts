@@ -16,6 +16,7 @@ import { FooterComponent } from './footer';
 import { HomeComponent } from './home';
 import { HttpErrorsComponent } from './http-errors';
 import { NavigationOrbsComponent } from './navigation-orbs';
+import { PopOutComponent } from './pop-out';
 import { ProblemViewerComponent } from './problem-viewer';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
@@ -33,6 +34,7 @@ import { WizardComponent } from './wizard';
     FormatHarvestUrlPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,
+    PopOutComponent,
     ProblemViewerComponent,
     ProgressTrackerComponent,
     RecordReportComponent,

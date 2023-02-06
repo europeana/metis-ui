@@ -12,8 +12,8 @@ context('Sandbox', () => {
       cy.visit('/dataset');
     });
 
-    const selectorView = '.record-links-view';
-    const selectorOpen = `${selectorView}:not(.closed)`;
+    const selectorView = '.pop-out';
+    const selectorOpen = `${selectorView}.open`;
     const selectorPopOutOpener = `.nav-orb.labelled.element-orb`;
 
     const force = { force: true };
