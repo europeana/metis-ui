@@ -426,8 +426,15 @@
             problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
           )
         "
+        (close)="httpErrorRecordLinks = undefined"
       >
-        <ul>
+        <div *ngIf="httpErrorRecordLinks" class="load-error">
+          <h2>Error {{ httpErrorRecordLinks.status }} ({{ httpErrorRecordLinks.statusText }})</h2>
+          <span class="detail">
+            Couldn't fetch record links.
+          </span>
+        </div>
+        <ul *ngIf="!httpErrorRecordLinks">
           <li>
             <ng-template #labelRefHarvest
               ><span i18n="record link link@@recordLinkHarvest"

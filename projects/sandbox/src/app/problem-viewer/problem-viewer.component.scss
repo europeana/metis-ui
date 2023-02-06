@@ -70,6 +70,17 @@ label {
   }
 }
 
+.load-error {
+  color: $eu-red;
+  h2 {
+    font-size: 16px;
+  }
+  .detail {
+    font-size: 14px;
+    font-style: italic;
+  }
+}
+
 .openable-list {
   display: block;
   height: 100%;

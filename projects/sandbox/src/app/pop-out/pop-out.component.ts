@@ -15,6 +15,7 @@ export class PopOutComponent {
   public readonly ignoreClassesList = [
     'link-internal',
     'nav-orb',
+    'pop-out',
     'pop-out-content',
     'pop-out-opener'
   ];
@@ -27,9 +28,10 @@ export class PopOutComponent {
   isOpen = false;
   notify = false;
 
-  @Input() disabled = false;
   @Output() open = new EventEmitter<number>();
   @Output() close = new EventEmitter<Event>();
+
+  @Input() disabled = false;
   @Input() applyDefaultNotification = false;
   @Input() classMapInner: ClassMap = {};
   @Input() openerCount = 0;
