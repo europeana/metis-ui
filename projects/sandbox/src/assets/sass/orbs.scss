@@ -94,7 +94,7 @@ $defaultPalette: (
       background-color: map.get($defaultPalette, 'hover-background');
       color: map.get($defaultPalette, 'hover-foreground');
     }
-    &:not([data-indicator]):not(.error-animated):not(.warning-animated)::before {
+    &:not([data-indicator]):not(.warning-animated)::before {
       background-image: svg-url-icon-tick(map.get($defaultPalette, 'hover-foreground'));
     }
   }
@@ -273,7 +273,6 @@ $defaultPalette: (
   }
 }
 
-.error-animated,
 .warning-animated {
   &::before {
     @keyframes spin {
@@ -291,10 +290,6 @@ $defaultPalette: (
     width: 20px;
     z-index: 1;
   }
-}
-
-.error-animated::before {
-  background: svg-url-icon-warning-detailed($eu-red, $white, $eu-red) center no-repeat;
 }
 
 .warning-animated::before {
