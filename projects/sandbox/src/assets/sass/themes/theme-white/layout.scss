@@ -29,11 +29,17 @@
 
 .wizard {
   background-color: $white;
-  margin: 6rem auto 8rem auto;
 }
 
 .wizard-content {
   margin: 3em 2em 2em 2em;
+}
+
+@media (min-width: $bp-small-2) {
+  .wizard {
+    margin: 6rem auto 8rem auto;
+    width: 80%;
+  }
 }
 
 @media (min-width: $bp-med) {
