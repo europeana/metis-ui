@@ -1,16 +1,25 @@
+import { Renderer2 } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
+import { MockRenderer2 } from '../_mocked/mocked-renderer-2';
 import { ModalConfirmComponent } from './modal-confirm.component';
 
 describe('ModalConfirmComponent', () => {
   let component: ModalConfirmComponent;
   let fixture: ComponentFixture<ModalConfirmComponent>;
   let modalConfirms: ModalConfirmService;
+  let renderer: Renderer2;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ModalConfirmComponent],
-      providers: [ModalConfirmService]
+      providers: [
+        ModalConfirmService,
+        {
+          provide: Renderer2,
+          userClass: MockRenderer2
+        }
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(ModalConfirmComponent);
     component = fixture.componentInstance;
@@ -21,6 +30,7 @@ describe('ModalConfirmComponent', () => {
       }
     };
     modalConfirms = TestBed.inject(ModalConfirmService);
+    renderer = fixture.debugElement.injector.get(Renderer2);
   });
 
   it('should create', () => {
@@ -46,15 +56,19 @@ describe('ModalConfirmComponent', () => {
   }));
 
   it('should open', () => {
+    spyOn(renderer, 'addClass');
     expect(component.show).toBeFalsy();
     // eslint-disable-next-line rxjs/no-ignored-observable
     component.open();
     expect(component.show).toBeTruthy();
+    expect(renderer.addClass).toHaveBeenCalled();
   });
 
   it('should close', () => {
+    spyOn(renderer, 'removeClass');
     component.show = true;
     component.close(false);
     expect(component.show).toBeFalsy();
+    expect(renderer.removeClass).toHaveBeenCalled();
   });
 });

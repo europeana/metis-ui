@@ -1,4 +1,12 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild
+} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { ModalDialog, ModalDialogButtonDefinition } from '../_models/modal-dialog';
 import { ModalConfirmService } from '../_services/modal-confirm.service';
@@ -17,8 +25,9 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
 
   subConfirmResponse: Subject<boolean>;
   show = false;
+  bodyClassOpen = 'modal-open';
 
-  constructor(private readonly modalConfirms: ModalConfirmService) {
+  constructor(private readonly modalConfirms: ModalConfirmService, private renderer: Renderer2) {
     this.subConfirmResponse = new Subject<boolean>();
   }
 
@@ -33,6 +42,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   /*  unregister this instance from the managing service
   */
   ngOnDestroy(): void {
+    this.renderer.removeClass(document.body, this.bodyClassOpen);
     this.modalConfirms.remove(this.id);
   }
 
@@ -53,6 +63,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
     setTimeout(() => {
       this.modalWrapper.nativeElement.focus();
     }, 1);
+    this.renderer.addClass(document.body, this.bodyClassOpen);
     return this.subConfirmResponse;
   }
 
@@ -63,5 +74,6 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   close(response: boolean): void {
     this.show = false;
     this.subConfirmResponse.next(response);
+    this.renderer.removeClass(document.body, this.bodyClassOpen);
   }
 }

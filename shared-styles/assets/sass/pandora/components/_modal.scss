@@ -1,3 +1,8 @@
+body.modal-open {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
 .modal-wrapper {
   background: $opacity-black;
   height: 100vh;
@@ -5,7 +10,7 @@
   position: fixed;
   top: 0;
   width: 100%; // 100vw leaves uneven spacing
-  z-index: 11;
+  z-index: 15;
 
   .footer {
     text-align: center;
