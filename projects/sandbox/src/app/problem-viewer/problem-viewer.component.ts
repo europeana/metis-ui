@@ -10,6 +10,7 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
+
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, tap } from 'rxjs/operators';
 
@@ -43,6 +44,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   _problemPatternsRecord: ProblemPatternsRecord;
   _problemPatternsDataset: ProblemPatternsDataset;
 
+  httpErrorRecordLinks?: HttpErrorResponse;
   isLoading = false;
   modalInstanceId = 'modalDescription_dataset';
   problemCount = 0;
@@ -52,7 +54,6 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   viewerVisibleIndex = 0;
 
   @Output() openLinkEvent = new EventEmitter<string>();
-  @Output() onError = new EventEmitter<HttpErrorResponse>();
   @Input() recordId: string;
   @Input() enableDynamicInfo = false;
   @ViewChildren('problemType', { read: ElementRef }) problemTypes: QueryList<ElementRef>;
@@ -194,10 +195,11 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
             (prd: ProcessedRecordData) => {
               this.processedRecordData = prd;
               this.isLoading = false;
+              this.httpErrorRecordLinks = undefined;
             },
             (err: HttpErrorResponse) => {
               this.processedRecordData = undefined;
-              this.onError.emit(err);
+              this.httpErrorRecordLinks = err;
               this.isLoading = false;
               return err;
             }

@@ -198,15 +198,15 @@ describe('ProblemViewerComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should load the link data', fakeAsync(() => {
-      spyOn(component.onError, 'emit');
+    it('should initialise the http error', fakeAsync(() => {
+      expect(component.httpErrorRecordLinks).toBeFalsy();
       component.problemPatternsRecord = {
         datasetId: '123',
         problemPatternList: mockProblemPatternsRecord
       };
       component.loadRecordLinksData('1');
       tick(1);
-      expect(component.onError.emit).toHaveBeenCalled();
+      expect(component.httpErrorRecordLinks).toBeTruthy();
     }));
   });
 });

@@ -73,7 +73,7 @@ context('Sandbox', () => {
     });
 
     it('should handle the error when loading fails', () => {
-      const selErrors = '.errors';
+      const selErrors = '.load-error';
       fillProgressForm('1');
       fillRecordForm('1-four-o-four', true);
       cy.get(selErrors).should('not.exist');
@@ -113,6 +113,46 @@ context('Sandbox', () => {
 
       cy.get(selectorInputDatasetId).click();
       cy.get(selectorOpen).should('not.exist');
+    });
+
+    it('should notify the user when loading completes if the tab is closed', () => {
+      const selNotification = '.warning-animated';
+      fillProgressForm('1');
+      fillRecordForm('2001', true);
+      cy.get(selNotification)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorPopOutOpener).click(force);
+      cy.get(selectorOpen).should('exist');
+      cy.get(selNotification)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorPopOutOpener).click(force);
+      cy.get(selectorOpen).should('not.exist');
+      cy.wait(3000);
+      cy.get(selNotification)
+        .filter(':visible')
+        .should('exist');
+    });
+
+    it('should notify the user when loading fails if the tab is closed', () => {
+      const selNotification = '.warning-animated';
+      fillProgressForm('1');
+      fillRecordForm('2001-four-o-four', true);
+      cy.get(selNotification)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorPopOutOpener).click(force);
+      cy.get(selectorOpen).should('exist');
+      cy.get(selNotification)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorPopOutOpener).click(force);
+      cy.get(selectorOpen).should('not.exist');
+      cy.wait(3000);
+      cy.get(selNotification)
+        .filter(':visible')
+        .should('exist');
     });
   });
 });
