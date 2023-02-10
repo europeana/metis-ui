@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   Dataset,
+  DatasetInfo,
   DatasetStatus,
   DisplayedTier,
   ProgressByStep,
@@ -21,18 +22,23 @@ import { ClassMap, ModalConfirmService, SubscriptionManager } from 'shared';
 export class ProgressTrackerComponent extends SubscriptionManager {
   public formatDate = formatDate;
   public DisplayedTier = DisplayedTier;
+
+  readonly fieldContentTier = 'content-tier';
+  readonly fieldMetadataTier = 'metadata-tier';
+  readonly fieldTierZeroInfo = 'tier-zero-info';
+
   _progressData: Dataset;
 
+  @Input() enableDynamicInfo = false;
+  @Input() datsetInfo: DatasetInfo;
+
   @Input() set progressData(data: Dataset) {
-    if (!this.warningViewOpen) {
-      // reset the notification flag unless the user's already looking at it
-      this.warningViewOpened = [false, false];
-    }
-    const tierInfo = data['tier-zero-info'];
+    this.warningViewOpened = [false, false];
+    const tierInfo = data[this.fieldTierZeroInfo];
     if (tierInfo) {
       // add placeholder content-tier data if only metadata-tier data is present
-      if (tierInfo['metadata-tier'] && !tierInfo['content-tier']) {
-        tierInfo['content-tier'] = {
+      if (tierInfo[this.fieldMetadataTier] && !tierInfo[this.fieldContentTier]) {
+        tierInfo[this.fieldContentTier] = {
           samples: [],
           total: 0
         };
@@ -50,13 +56,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   @Input() showing: boolean;
   @Output() openReport = new EventEmitter<RecordReportRequest>();
 
-  modalIdProcessingErrors = 'confirm-modal-processing-error';
   modalIdErrors = 'confirm-modal-errors';
-  modalIdIncompleteData = 'confirm-modal-incomplete-data';
   detailIndex: number;
   expandedWarning = false;
-
-  warningViewOpen = false;
   warningViewOpened = [false, false];
   warningDisplayedTier: DisplayedTier;
 
@@ -75,9 +77,10 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   getOrbConfigOuter(i: number): ClassMap {
     if (this.progressData && i === DisplayedTier.CONTENT) {
-      const tierInfo = this.progressData['tier-zero-info'];
+      const tierInfo = this.progressData[this.fieldTierZeroInfo];
       if (tierInfo) {
-        if (tierInfo['content-tier'] && tierInfo['content-tier'].total === 0) {
+        const infoContentTier = tierInfo[this.fieldContentTier];
+        if (infoContentTier && infoContentTier.total === 0) {
           return {
             hidden: true
           };
@@ -92,9 +95,9 @@ export class ProgressTrackerComponent extends SubscriptionManager {
    * @returns { number }
    **/
   getOrbConfigCount(): number {
-    const tierInfo = this.progressData['tier-zero-info'];
+    const tierInfo = this.progressData[this.fieldTierZeroInfo];
     if (tierInfo) {
-      if (tierInfo['metadata-tier']) {
+      if (tierInfo[this.fieldMetadataTier]) {
         return 2;
       }
       return 1;
@@ -139,12 +142,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   /**
    * closeWarningView
-   * Template utility - sets warningViewOpen to false
+   * Sets warningDisplayedTier to -1
    * Delays the resetting of warningView to fit with animation
    **/
   closeWarningView(): void {
     if (this.showing) {
-      this.warningViewOpen = false;
       setTimeout(() => {
         this.warningDisplayedTier = -1;
       }, 400);
@@ -153,12 +155,11 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   /**
    * setWarningView
-   * navigationOrbs output
+   * Template utility: navigationOrbs click output
    * @param { number } index - the warning view code
    **/
   setWarningView(index: DisplayedTier): void {
     this.warningDisplayedTier = index;
-    this.warningViewOpen = true;
     this.warningViewOpened[index] = true;
   }
 
@@ -170,22 +171,6 @@ export class ProgressTrackerComponent extends SubscriptionManager {
   showErrorsForStep(detailIndex: number): void {
     this.detailIndex = detailIndex;
     this.subs.push(this.modalConfirms.open(this.modalIdErrors).subscribe());
-  }
-
-  /**
-   * showProcessingErrors
-   * Shows the processing-error modal
-   **/
-  showProcessingErrors(): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdProcessingErrors).subscribe());
-  }
-
-  /**
-   * showIncompleteDataWarning
-   * Shows the incomplete-data warning modal
-   **/
-  showIncompleteDataWarning(): void {
-    this.subs.push(this.modalConfirms.open(this.modalIdIncompleteData).subscribe());
   }
 
   /**

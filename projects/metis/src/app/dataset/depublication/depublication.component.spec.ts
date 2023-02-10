@@ -68,8 +68,8 @@ describe('DepublicationComponent', () => {
     beforeEach(async(configureTestbed));
     beforeEach(b4Each);
 
-    const frmCtrl = (val: string, fileInput?: boolean): FormControl => {
-      return ({ value: fileInput ? { name: val } : val } as unknown) as FormControl;
+    const frmCtrl = (val: string): FormControl<string> => {
+      return ({ value: val } as unknown) as FormControl<string>;
     };
 
     it('should set the dataset id', () => {
@@ -155,11 +155,8 @@ describe('DepublicationComponent', () => {
     it('should submit the file', fakeAsync(() => {
       component.dialogFileOpen = true;
       component.datasetId = '123';
-      expect(component.dialogFileOpen).toBeTruthy();
-      component.onSubmitFormFile();
-      tick(1);
-      expect(component.dialogFileOpen).toBeTruthy();
       addFormFieldData();
+      expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       tick(1);
       expect(component.dialogFileOpen).toBeFalsy();
@@ -240,8 +237,11 @@ describe('DepublicationComponent', () => {
     });
 
     it('should validate the file extension', () => {
-      expect(component.validateFileExtension(frmCtrl('file.txt', true))).toBeFalsy();
-      expect(component.validateFileExtension(frmCtrl('file.png', true))).toBeTruthy();
+      const frmCtrlFile = (val: string): FormControl<File> => {
+        return ({ value: { name: val } } as unknown) as FormControl<File>;
+      };
+      expect(component.validateFileExtension(frmCtrlFile('file.txt'))).toBeFalsy();
+      expect(component.validateFileExtension(frmCtrlFile('file.png'))).toBeTruthy();
     });
 
     it('should set the sort parameter', () => {

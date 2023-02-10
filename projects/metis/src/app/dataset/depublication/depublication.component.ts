@@ -6,7 +6,7 @@
 */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent, ModalConfirmService } from 'shared';
@@ -47,8 +47,22 @@ export class DepublicationComponent extends DataPollingComponent {
   depublicationSelections: Array<string> = [];
   dialogFileOpen = false;
   dialogInputOpen = false;
-  formRawText: FormGroup;
-  formFile: FormGroup;
+
+  formRawText = this.fb.group({
+    recordIds: [
+      '',
+      [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
+    ]
+  });
+
+  formFile = this.fb.group({
+    depublicationFile: [
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (undefined as unknown) as File,
+      [Validators.required, this.validateFileExtension]
+    ]
+  });
+
   isSaving = false;
   modalAllRecDepublish = 'confirm-depublish-all-recordIds';
   modalDatasetDepublish = 'confirm-depublish-dataset';
@@ -81,7 +95,7 @@ export class DepublicationComponent extends DataPollingComponent {
     private readonly modalConfirms: ModalConfirmService,
     private readonly depublications: DepublicationService,
     private readonly errors: ErrorService,
-    private readonly fb: FormBuilder
+    private readonly fb: NonNullableFormBuilder
   ) {
     super();
   }
@@ -90,14 +104,12 @@ export class DepublicationComponent extends DataPollingComponent {
 
   /** datasetId
   /* setter for private variable _datasetId
-  /* * calls buildForms if defined
   /* * calls beginPolling if defined
   */
   @Input()
   set datasetId(id: string | undefined) {
     if (id) {
       this._datasetId = id;
-      this.buildForms();
       this.beginPolling();
     }
   }
@@ -151,27 +163,11 @@ export class DepublicationComponent extends DataPollingComponent {
     }
   }
 
-  /** buildForm
-  /* - create a FormGroup
-  /* - update the form
-  */
-  buildForms(): void {
-    this.formRawText = this.fb.group({
-      recordIds: [
-        '',
-        [Validators.required, this.validateWhitespace, this.validateRecordIds.bind(this)]
-      ]
-    });
-    this.formFile = this.fb.group({
-      depublicationFile: ['', [Validators.required, this.validateFileExtension]]
-    });
-  }
-
   /** validateRecordIds
   /*  returns an error if the form control value includes invalid record ids
   /*  @param {FormControl} control - the input control to validate
   */
-  validateRecordIds(control: FormControl): { [key: string]: boolean } | null {
+  validateRecordIds(control: FormControl<string>): { [key: string]: boolean } | null {
     const val = control.value || '';
     let invalid = false;
     const reg = new RegExp(
@@ -195,7 +191,7 @@ export class DepublicationComponent extends DataPollingComponent {
   /*  returns an error if the form control value is just whitespace
   /*  @param {FormControl} control - the input control to validate
   */
-  validateWhitespace(control: FormControl): { [key: string]: boolean } | null {
+  validateWhitespace(control: FormControl<string>): { [key: string]: boolean } | null {
     const val = control.value || '';
     const isWhitespace = val.length > 0 && val.trim().length === 0;
     return isWhitespace ? { whitespace: true } : null;
@@ -205,7 +201,7 @@ export class DepublicationComponent extends DataPollingComponent {
   /*  returns an error if the form control value is the incorrect extension
   /*  @param {FormControl} control - the input control to validate
   */
-  validateFileExtension(control: FormControl): { [key: string]: boolean } | null {
+  validateFileExtension(control: FormControl<File>): { [key: string]: boolean } | null {
     const splitVal = (control.value ? control.value.name : '').split('.');
     if (splitVal.length > 1 && splitVal[1].toLowerCase() !== 'txt') {
       return { extension: true };
@@ -330,7 +326,7 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationFile(this._datasetId, (form.get('depublicationFile') as FormControl).value)
+          .setPublicationFile(this._datasetId, form.controls.depublicationFile.value)
           .subscribe(
             () => {
               this.refreshPolling();
@@ -462,11 +458,11 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = true;
       this.subs.push(
         this.depublications
-          .setPublicationInfo(this._datasetId, (form.get('recordIds') as FormControl).value.trim())
+          .setPublicationInfo(this._datasetId, form.controls.recordIds.value.trim())
           .subscribe(
             () => {
               this.refreshPolling();
-              (form.get('recordIds') as FormControl).reset();
+              form.controls.recordIds.reset();
               this.closeDialogs();
               this.isSaving = false;
             },

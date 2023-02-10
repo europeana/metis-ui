@@ -2,7 +2,7 @@ context('Sandbox', () => {
   describe('App', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     const selectorLogo = '.metis-logo .logo';
@@ -16,10 +16,42 @@ context('Sandbox', () => {
       cy.get(selectorWizard).should('have.length', 1);
     });
 
-    it('should show the user assistance urls', () => {
-      cy.get(selectorFeedback).should('have.length', 1);
-      cy.get(selectorUserGuide).should('have.length', 1);
-      cy.get(selectorDocumentation).should('have.length', 1);
+    it('should open and close the side panel / user assistance urls', () => {
+      const selHamburger = '.hamburger';
+
+      cy.get(selectorFeedback)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorUserGuide)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorDocumentation)
+        .filter(':visible')
+        .should('not.exist');
+
+      cy.get(selHamburger).click();
+
+      cy.get(selectorFeedback)
+        .filter(':visible')
+        .should('have.length', 1);
+      cy.get(selectorUserGuide)
+        .filter(':visible')
+        .should('have.length', 1);
+      cy.get(selectorDocumentation)
+        .filter(':visible')
+        .should('have.length', 1);
+
+      cy.get(selHamburger).click();
+
+      cy.get(selectorFeedback)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorUserGuide)
+        .filter(':visible')
+        .should('not.exist');
+      cy.get(selectorDocumentation)
+        .filter(':visible')
+        .should('not.exist');
     });
   });
 });

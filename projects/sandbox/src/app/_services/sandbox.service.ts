@@ -1,16 +1,22 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
+import { map, mergeMap, switchMap, takeLast, takeWhile } from 'rxjs/operators';
+
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { ProtocolType } from 'shared';
+import { KeyedCache, ProtocolType } from 'shared';
 
 import { apiSettings } from '../../environments/apisettings';
 import {
   Dataset,
+  DatasetInfo,
+  DatasetStatus,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -18,6 +24,12 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SandboxService {
+  static nullUrlStrings = [
+    'Harvesting dataset identifiers and records.',
+    'A review URL will be generated when the dataset has finished processing.'
+  ];
+  datasetInfoCache = new KeyedCache((key) => this.requestDatasetInfo(key));
+
   constructor(private readonly http: HttpClient) {}
 
   /**
@@ -29,6 +41,61 @@ export class SandboxService {
   getProblemPatternsRecord(datasetId: string, recordId: string): Observable<Array<ProblemPattern>> {
     const url = `${apiSettings.apiHost}/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`;
     return this.http.get<Array<ProblemPattern>>(url);
+  }
+
+  /**
+  /* getProblemPatternsRecordWrapped
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<ProblemPatternsRecord>
+  **/
+  getProblemPatternsRecordWrapped(
+    datasetId: string,
+    recordId: string
+  ): Observable<ProblemPatternsRecord> {
+    return this.getProblemPatternsRecord(datasetId, recordId).pipe(
+      map((errorList) => {
+        return {
+          datasetId: datasetId,
+          problemPatternList: errorList
+        };
+      })
+    );
+  }
+
+  /**
+  /* getProcessedRecordData
+  /*  @param { string } datasetId
+  /*  @param { string } recordId
+  /* @returns Observable<ProcessedRecordData>
+  **/
+  getProcessedRecordData(datasetId: string, recordId: string): Observable<ProcessedRecordData> {
+    const pollInfo = timer(0, apiSettings.interval).pipe(
+      switchMap(() => {
+        return this.requestProgress(datasetId);
+      }),
+      takeWhile((dataset: Dataset) => {
+        const url = dataset['portal-publish'];
+        return (
+          dataset.status !== DatasetStatus.COMPLETED &&
+          !url &&
+          !(url && SandboxService.nullUrlStrings.includes(url))
+        );
+      }, true),
+      takeLast(1)
+    );
+    return pollInfo.pipe(
+      mergeMap((_: Dataset) => {
+        return this.getRecordReport(datasetId, recordId).pipe(
+          map((report: RecordReport) => {
+            return {
+              europeanaRecordId: report.recordTierCalculationSummary.europeanaRecordId,
+              portalRecordLink: report.recordTierCalculationSummary.portalRecordLink
+            };
+          })
+        );
+      })
+    );
   }
 
   /**
@@ -80,6 +147,27 @@ export class SandboxService {
     return this.http.get<Dataset>(url);
   }
 
+  /** requestDatasetInfo
+  /*  @param { string } datasetId
+  /* request dataset info from server
+  */
+  requestDatasetInfo(datasetId: string): Observable<DatasetInfo> {
+    const url = `${apiSettings.apiHost}/dataset-info/${datasetId}`;
+    return this.http.get<DatasetInfo>(url);
+  }
+
+  /** getDatasetInfo
+  /*  @param { string } datasetId
+  /*  @param { false } clearCache - flag cache clear
+  /* returns dataset info from cache
+  */
+  getDatasetInfo(datasetId: string, clearCache = false): Observable<DatasetInfo> {
+    if (clearCache) {
+      this.datasetInfoCache.clear(datasetId);
+    }
+    return this.datasetInfoCache.get(datasetId);
+  }
+
   /** submitDataset
   /*  attach file data to form and post
   /*  @param {FormGroup} form - the user-filled data
@@ -106,7 +194,9 @@ export class SandboxService {
     const urlParameter = sendUrl.length > 0 ? '&url=' + encodeURIComponent(sendUrl) : '';
 
     let url = `${apiSettings.apiHost}/dataset/${form.value.name}/${harvestType}`;
-    url += `?country=${form.value.country}&language=${form.value.language}${oaiParameters}${urlParameter}`;
+    url += `?country=${form.value.country}&language=${form.value.language}`;
+    url += `&stepsize=${form.value.stepSize}`;
+    url += `${oaiParameters}${urlParameter}`;
 
     const formData = new FormData();
     let fileAppended = false;

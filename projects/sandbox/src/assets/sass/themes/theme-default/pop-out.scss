@@ -1,0 +1,41 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.pop-out {
+  &.open .pop-out-content {
+    transition: border-top 1s linear;
+  }
+
+  &.open,
+  &:hover {
+    .pop-out-opener {
+      background-color: $eu-light-jade-classic;
+      border: 1px solid $grey-3;
+      border-right-color: $grey-3;
+    }
+  }
+}
+
+// Overrides
+.wrapper,
+.problem-viewer-wrapper {
+  .pop-out {
+    &.open {
+      .pop-out-content {
+        border-top: 1px solid $grey-3;
+      }
+    }
+    &.open,
+    &:hover {
+      .pop-out-opener {
+        border-right-color: $grey-3;
+      }
+    }
+    &.open,
+    &.hovered-state {
+      .pop-out-content {
+        background: $eu-light-jade-classic;
+        transition: background-color 0s, border-top 0.4s;
+      }
+    }
+  }
+}

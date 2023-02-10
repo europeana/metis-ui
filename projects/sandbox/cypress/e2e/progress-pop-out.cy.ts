@@ -10,18 +10,19 @@ context('Sandbox', () => {
   describe('Progress Pop-Out', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     const datasetIdContentTier = '1';
     const datasetIdMetadataTier = '5';
     const datasetIdBoth = '3';
 
-    const selectorView = '.warning-view';
+    const selectorView = '.pop-out';
     const selectorPopOutCloser = selectorProgressOrb;
     const selectorPopOutOpener = `${selectorView} .orb-container:not(.hidden) .nav-orb`;
-    const selectorOpen = `${selectorView}:not(.closed)`;
+    const selectorOpen = `${selectorView}.open`;
     const selectorOpenerWarning = `${selectorPopOutOpener}.warning-animated`;
+    const selectorCloseLink = `${selectorOpen} .warning-view-title`;
     const force = { force: true };
 
     it('should show the openers', () => {
@@ -100,6 +101,18 @@ context('Sandbox', () => {
         .click(force);
       cy.get(selectorOpen).should('exist');
       cy.get(selectorInputDatasetId).click();
+      cy.get(selectorOpen).should('not.exist');
+    });
+
+    it('should close when the user clicks the internal title', () => {
+      fillProgressForm(datasetIdBoth);
+      cy.get(selectorOpen).should('not.exist');
+      cy.get(selectorCloseLink).should('not.exist');
+      cy.get(selectorPopOutOpener)
+        .first()
+        .click(force);
+      cy.get(selectorOpen).should('exist');
+      cy.get(selectorCloseLink).click(force);
       cy.get(selectorOpen).should('not.exist');
     });
   });

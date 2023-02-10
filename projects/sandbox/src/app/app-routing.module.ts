@@ -5,20 +5,39 @@ import { WizardComponent } from './wizard';
 const routes: Routes = [
   {
     path: 'dataset/:id',
-    component: WizardComponent
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
+  },
+  {
+    path: 'dataset',
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
   },
   {
     path: 'new',
-    component: WizardComponent
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
   },
   {
     path: '',
-    component: WizardComponent
+    component: WizardComponent,
+    data: {
+      reuseComponent: true
+    }
   },
   {
     path: '**',
     redirectTo: '',
-    pathMatch: 'full'
+    pathMatch: 'full',
+    data: {
+      reuseComponent: true
+    }
   }
 ];
 

@@ -78,9 +78,7 @@ describe('DatasetformComponent', () => {
     });
 
     it('should handle form enabling and disabling', () => {
-      expect(component.datasetForm).toBeFalsy();
       component.isSaving = false;
-      fixture.detectChanges();
       expect(component.datasetForm).toBeTruthy();
       spyOn(component.datasetForm, 'enable');
       spyOn(component.datasetForm, 'disable');

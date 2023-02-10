@@ -3,18 +3,16 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Input,
   Output,
   ViewChild
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-
 import {
   DragType,
   EventDragDT,
   ParameterFieldName,
-  WorkflowFieldData,
-  WorkflowFieldDataName
+  WorkflowFieldDataName,
+  workflowFormFieldConf
 } from '../../../_models';
 
 @Component({
@@ -26,10 +24,10 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   @Output() returnToTop: EventEmitter<void> = new EventEmitter();
   @Output() setLinkCheck: EventEmitter<number> = new EventEmitter();
 
-  @Input() conf: Array<WorkflowFieldData>;
   @ViewChild('workflowheader') elRef: ElementRef;
   @ViewChild('ghost') ghost: ElementRef;
 
+  conf = workflowFormFieldConf;
   ghostClone: Element;
   workflowForm: FormGroup;
   isDragging: boolean;
@@ -43,12 +41,12 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   */
   togglePlugin(plugin: string): void {
     if (plugin !== 'pluginLINK_CHECKING') {
-      const ctrl = this.workflowForm.get(plugin) as FormControl;
+      const ctrl = this.workflowForm.get(plugin) as FormControl<boolean>;
       ctrl.setValue(!ctrl.value);
       this.workflowForm.markAsDirty();
     }
     if (plugin === 'pluginHARVEST') {
-      const ctrl = this.workflowForm.get(ParameterFieldName.pluginType) as FormControl;
+      const ctrl = this.workflowForm.get(ParameterFieldName.pluginType) as FormControl<boolean>;
       if (this.workflowForm.value.pluginHARVEST) {
         ctrl.setValidators([Validators.required]);
       } else {
@@ -97,7 +95,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   clearAll(): void {
     const hasSelected = Object.values(this.workflowForm.value).indexOf(true) > -1;
     this.conf.forEach((plugin) => {
-      const ctrl = this.workflowForm.get(plugin.name) as FormControl;
+      const ctrl = this.workflowForm.get(plugin.name) as FormControl<boolean>;
       ctrl.setValue(false);
     });
     if (hasSelected) {
@@ -114,7 +112,7 @@ export class WorkflowHeaderComponent implements AfterViewInit {
   selectAll(): void {
     const hasUnselected = Object.values(this.workflowForm.value).indexOf(false) > -1;
     this.conf.forEach((plugin) => {
-      const ctrl = this.workflowForm.get(plugin.name) as FormControl;
+      const ctrl = this.workflowForm.get(plugin.name) as FormControl<boolean>;
       ctrl.enable();
       ctrl.setValue(true);
     });

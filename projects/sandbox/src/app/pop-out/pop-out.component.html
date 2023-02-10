@@ -1,0 +1,32 @@
+<div
+  class="pop-out"
+  [ngClass]="{
+    open: isOpen,
+    'hovered-state': userClosedPanel
+  }"
+>
+  <span
+    class="pop-out-opener"
+    libClickAware
+    (clickOutside)="clickOutside()"
+    [ignoreClasses]="ignoreClassesList"
+  >
+    <sb-navigation-orbs
+      class="sb-navigation-orbs vertical zero-warning"
+      (clickEvent)="navOrbsClick($event)"
+      [count]="openerCount"
+      [tooltips]="tooltips"
+      [fnClassMapInner]="fnClassMapInner"
+      [fnClassMapOuter]="fnClassMapOuter"
+    ></sb-navigation-orbs>
+  </span>
+  <div
+    class="pop-out-content"
+    [ngClass]="{ disabled: disabled }"
+    libClickAware
+    (clickOutside)="clickOutside()"
+    [ignoreClasses]="ignoreClassesList"
+  >
+    <ng-content></ng-content>
+  </div>
+</div>

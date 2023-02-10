@@ -1,102 +1,15 @@
-<div
-  class="form-group"
-  [ngClass]="{ hidden: !showing }"
-  *ngIf="progressData['dataset-info']; let info"
->
-  <ul class="header-info container-h">
-    <!-- left col -->
-    <li>
-      <ul>
-        <li class="container-h">
-          <h2 class="progress-title" title="({{ progressData.status }})" i18n="progress title">
-            <span class="title-name" [ngClass]="{ tick: isComplete() }">{{
-              info['dataset-name']
-            }}</span>
-          </h2>
-        </li>
-        <li class="container-h" *ngIf="info['transformed-to-edm-external']">
-          <span class="xsl-icon"></span>
-          <span>xsl-transformed</span>
-        </li>
-        <li
-          data-e2e="creation-date"
-          class="creation-date"
-          [title]="
-            progressData['dataset-info']['record-limit-exceeded']
-              ? 'Some records not processed'
-              : ''
-          "
-          [ngClass]="{ 'warning-icon': progressData['dataset-info']['record-limit-exceeded'] }"
-        >
-          <lib-modal
-            id="{{ modalIdIncompleteData }}"
-            title="Data Incomplete Warning"
-            [isSmall]="false"
-            [buttons]="[{ label: 'Close' }]"
-          >
-            <p>Some records may not have been processed.</p>
-            <p>If the dataset is too large then the remainder of the records is ignored</p>
-          </lib-modal>
-          <a
-            *ngIf="
-              progressData['dataset-info']['record-limit-exceeded'];
-              else conditionalWrapWarnLink
-            "
-            (click)="showIncompleteDataWarning()"
-          >
-            <ng-container *ngTemplateOutlet="conditionalWrapWarnLink"></ng-container>
-          </a>
-          <ng-template #conditionalWrapWarnLink
-            ><span>{{
-              formatDate(
-                progressData['dataset-info']['creation-date'],
-                'dd/MM/yyyy, HH:mm:ss',
-                'en-GB'
-              )
-            }}</span></ng-template
-          >
-        </li>
-        <li data-e2e="country-language">{{ info.country }} / {{ info.language }}</li>
-      </ul>
-    </li>
+<ng-container *ngIf="datsetInfo">
+  <sb-dataset-info
+    [ngClass]="{ hidden: !showing }"
+    [datasetInfo]="datsetInfo"
+    [processingComplete]="isComplete()"
+    [publishUrl]="progressData['portal-publish']"
+    [processingError]="progressData['error-type']"
+    [enableDynamicInfo]="enableDynamicInfo"
+  >
+  </sb-dataset-info>
+</ng-container>
 
-    <!-- right col -->
-    <li class="align-right">
-      <ul>
-        <li>
-          <h2 class="title-id">{{ datasetId }}</h2>
-        </li>
-
-        <li *ngIf="progressData['error-type']" class="align-left">
-          <span class="preview-unavailable">
-            <a (click)="showProcessingErrors()">Preview Unavailable</a>
-          </span>
-
-          <lib-modal
-            id="{{ modalIdProcessingErrors }}"
-            title="Processing Error Detail"
-            [isSmall]="false"
-            [buttons]="[{ label: 'Close' }]"
-          >
-            {{ progressData['error-type'] }}
-          </lib-modal>
-        </li>
-
-        <li *ngIf="!progressData['error-type']" class="portal-links">
-          <ng-template #labelRefPublish
-            ><span i18n="progress link link@@progressLinkPublish"
-              >view published records</span
-            ></ng-template
-          >
-          <sb-copyable-link-item
-            [href]="progressData['portal-publish']"
-            [labelRef]="labelRefPublish"
-          ></sb-copyable-link-item>
-        </li>
-      </ul>
-    </li>
-  </ul>
-</div>
 <div class="wrapper" *ngIf="progressData" [ngClass]="{ hidden: !showing }">
   <div>
     <span
@@ -180,7 +93,7 @@
 
       <span
         class="full-grid-width"
-        *ngIf="i === 0 && progressData['dataset-info']['record-limit-exceeded']"
+        *ngIf="i === 0 && datsetInfo && datsetInfo['record-limit-exceeded']"
         data-e2e="warn-limit-reached"
       >
         <a
@@ -195,40 +108,21 @@
       </span>
     </ng-container>
   </div>
+
   <ng-container *ngIf="progressData['tier-zero-info']; let tierInfo">
-    <div
-      class="warning-view"
-      *ngIf="
-        (tierInfo['content-tier'] && tierInfo['content-tier'].total) ||
-        (tierInfo['metadata-tier'] && tierInfo['metadata-tier'].total)
-      "
-      [ngClass]="{
-        closed: !warningViewOpen
-      }"
+    <sb-pop-out
+      #tierPopOut
+      (open)="setWarningView($event)"
+      (close)="closeWarningView()"
+      [openerCount]="getOrbConfigCount()"
+      [fnClassMapInner]="getOrbConfigInner.bind(this)"
+      [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
+      [tooltips]="[
+        'content-tier-zero records found (click to see samples)',
+        'metadata-tier-zero records found (click to see samples)'
+      ]"
     >
-      <sb-navigation-orbs
-        libClickAware
-        [ignoreClasses]="['link-internal', 'nav-orb', 'warning-view-content']"
-        [clickAwareIgnoreWhen]="!showing"
-        (clickOutside)="closeWarningView()"
-        ariaLabel="Tier Zero Warnings Navigation"
-        class="sb-navigation-orbs vertical zero-warning"
-        [count]="getOrbConfigCount()"
-        [fnClassMapInner]="getOrbConfigInner.bind(this)"
-        [fnClassMapOuter]="getOrbConfigOuter.bind(this)"
-        [tooltips]="[
-          'content-tier-zero records found (click to see samples)',
-          'metadata-tier-zero records found (click to see samples)'
-        ]"
-        (clickEvent)="setWarningView($event)"
-      ></sb-navigation-orbs>
-      <div
-        class="warning-view-content"
-        libClickAware
-        [ignoreClasses]="['link-internal', 'nav-orb', 'sb-navigation-orbs']"
-        [clickAwareIgnoreWhen]="!showing"
-        (clickOutside)="closeWarningView()"
-      >
+      <div class="warning-view-content">
         <ng-template #warningViewHeader let-list="list" let-label="label" let-total="total">
           <span class="warning-view-header">
             This dataset contains
@@ -241,7 +135,7 @@
         </ng-template>
         <ng-container *ngIf="tierInfo['content-tier']; let contentTier">
           <div *ngIf="warningDisplayedTier === DisplayedTier.CONTENT">
-            <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+            <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
               >Content Tier Zero ({{ contentTier.total }})</a
             >
             <ng-content
@@ -258,7 +152,7 @@
         </ng-container>
         <ng-container *ngIf="tierInfo['metadata-tier']; let metadataTier">
           <div *ngIf="warningDisplayedTier === DisplayedTier.METADATA">
-            <a (click)="closeWarningView()" class="warning-animated warning-view-title"
+            <a (click)="tierPopOut.clickOutside()" class="warning-animated warning-view-title"
               >Metadata Tier Zero ({{ metadataTier.total }})</a
             >
             <ng-content
@@ -296,6 +190,6 @@
           </li>
         </ul>
       </div>
-    </div>
+    </sb-pop-out>
   </ng-container>
 </div>

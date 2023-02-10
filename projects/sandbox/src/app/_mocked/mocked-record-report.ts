@@ -1,5 +1,10 @@
 import { LicenseType, MediaDataItem, RecordMediaType, RecordReport } from '../_models';
 
+export const mockProcessedRecordData = {
+  europeanaRecordId: 'europeanaRecordId',
+  portalRecordLink: 'https://example.com'
+};
+
 export const mockMediaResources: Array<MediaDataItem> = [
   {
     resourceUrl: 'https://text-resource-url.com',
@@ -57,11 +62,11 @@ export const mockMediaResources: Array<MediaDataItem> = [
 
 export const mockRecordReport: RecordReport = {
   recordTierCalculationSummary: {
-    europeanaRecordId: 'europeanaRecordId',
+    europeanaRecordId: mockProcessedRecordData.europeanaRecordId,
     providerRecordId: 'providerRecordId',
     contentTier: '4',
     metadataTier: 'C',
-    portalRecordLink: 'https://example.com'
+    portalRecordLink: mockProcessedRecordData.portalRecordLink
   },
   contentTierBreakdown: {
     recordType: RecordMediaType.AUDIO,

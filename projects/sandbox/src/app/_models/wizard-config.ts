@@ -17,6 +17,7 @@ export interface FieldOption {
 }
 
 export enum WizardStepType {
+  HOME = 'HOME',
   UPLOAD = 'UPLOAD',
   PROGRESS_TRACK = 'PROGRESS_TRACK',
   REPORT = 'REPORT',

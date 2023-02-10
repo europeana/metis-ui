@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { DataPollingComponent } from 'shared';
@@ -18,7 +18,10 @@ import { TranslateService } from '../_translate';
 export class LoginComponent extends DataPollingComponent implements OnInit {
   loading = false;
   notification?: Notification;
-  loginForm: FormGroup;
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required]
+  });
   msgBadCredentials: string;
   msgSigninFailed: string;
 
@@ -26,7 +29,7 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     private readonly router: Router,
     private readonly authentication: AuthenticationService,
     private readonly redirectPreviousUrl: RedirectPreviousUrl,
-    private readonly fb: FormBuilder,
+    private readonly fb: NonNullableFormBuilder,
     private readonly translate: TranslateService,
     private readonly documentTitleService: DocumentTitleService
   ) {
@@ -43,7 +46,6 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
     this.msgBadCredentials = this.translate.instant('msgBadCredentials');
     this.msgSigninFailed = this.translate.instant('msgSigninFailed');
 
-    this.buildForm();
     this.createNewDataPoller(
       environment.intervalStatusMedium,
       (): Observable<boolean> => {
@@ -58,18 +60,6 @@ export class LoginComponent extends DataPollingComponent implements OnInit {
         }
       }
     );
-  }
-
-  /** buildForm
-  /* build the login form
-  */
-  buildForm(): void {
-    if (!this.loginForm) {
-      this.loginForm = this.fb.group({
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', Validators.required]
-      });
-    }
   }
 
   /** onSubmit

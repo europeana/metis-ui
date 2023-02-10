@@ -4,11 +4,13 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 
 import { copyExecutionAndTaskId } from '../../_helpers';
 import {
+  MediaProcessPluginMetadata,
   PluginExecution,
   PluginStatus,
   PluginType,
   PreviewFilters,
   ReportRequest,
+  ThrottleLevel,
   TopologyName
 } from '../../_models';
 
@@ -18,6 +20,9 @@ import {
   styleUrls: ['./executions-data-grid.component.scss']
 })
 export class ExecutionsDataGridComponent {
+  public PluginType = PluginType;
+  public ThrottleLevel = ThrottleLevel;
+
   applyHighlight = false;
   _plugin: PluginExecution;
   @Input() applyStripe?: boolean;
@@ -57,6 +62,18 @@ export class ExecutionsDataGridComponent {
     return [PluginType.HTTP_HARVEST, PluginType.OAIPMH_HARVEST].includes(
       pluginExecution.pluginType
     );
+  }
+
+  /** getPluginMediaMetadata
+  /* template utility for PluginExecution pluginMetadata
+  /* @param { PluginExecution } pluginExecution - the PluginExecution to evaluate
+  /* @return MediaProcessPluginMetadata | null
+  */
+  getPluginMediaMetadata(plugin: PluginExecution): MediaProcessPluginMetadata | null {
+    if (plugin.pluginType === PluginType.MEDIA_PROCESS) {
+      return plugin.pluginMetadata as MediaProcessPluginMetadata;
+    }
+    return null;
   }
 
   /** goToPreview

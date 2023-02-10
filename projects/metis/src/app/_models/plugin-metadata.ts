@@ -1,5 +1,5 @@
 // Java name: AbstractMetisPluginMetadata
-import { PluginType } from '.';
+import { PluginType } from './workflow-execution';
 
 type pluginTypes =
   | 'VALIDATION_EXTERNAL'

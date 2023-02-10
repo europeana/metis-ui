@@ -1,0 +1,29 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import '../../mixins/pop-out';
+
+.dataset-info {
+  color: $gray-med;
+
+  .creation-date.warning-icon::before {
+    background: svg-url-icon-warning($gray-med) center no-repeat;
+  }
+}
+
+.sb-progress-tracker .wrapper {
+  border: 1px solid $gray-5;
+}
+
+.warning-view-content {
+  background: $white;
+}
+
+.warning-view-list li::before {
+  color: $gray-med;
+}
+
+.wrapper {
+  overflow: visible;
+  .pop-out {
+    @include pop-up(80%, 1.5em);
+  }
+}

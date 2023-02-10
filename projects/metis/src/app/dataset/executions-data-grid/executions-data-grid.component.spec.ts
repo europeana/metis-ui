@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { createMockPipe, MockErrorService, MockWorkflowService } from '../../_mocked';
-import { PluginExecution, PluginStatus, PluginType } from '../../_models';
+import { PluginExecution, PluginStatus, PluginType, ThrottleLevel } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 
 import { ExecutionsDataGridComponent } from '.';
@@ -62,6 +62,18 @@ describe('ExecutionsDataGridComponent', () => {
   it('should detect if plugin is harvest', () => {
     expect(component.pluginIsHarvest(basicPluginExecution)).toBeFalsy();
     expect(component.pluginIsHarvest(OAIPMHPluginExecution)).toBeTruthy();
+  });
+
+  it('should getPluginMediaMetadata', () => {
+    const mediaPluginExecution = Object.assign({}, basicPluginExecution);
+    mediaPluginExecution.pluginMetadata = {
+      pluginType: PluginType.MEDIA_PROCESS,
+      throttlingLevel: ThrottleLevel.WEAK
+    };
+    expect(component.getPluginMediaMetadata(basicPluginExecution)).toBeFalsy();
+    expect(component.getPluginMediaMetadata(mediaPluginExecution)).toBeFalsy();
+    mediaPluginExecution.pluginType = PluginType.MEDIA_PROCESS;
+    expect(component.getPluginMediaMetadata(mediaPluginExecution)).toBeTruthy();
   });
 
   it('should open a report', () => {

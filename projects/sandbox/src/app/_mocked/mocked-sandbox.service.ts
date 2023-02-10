@@ -3,16 +3,20 @@ import { Observable, of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import {
   mockDataset,
+  mockDatasetInfo,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
+  mockProcessedRecordData,
   mockRecordReport
 } from '.';
 import {
   Dataset,
+  DatasetInfo,
   DatasetStatus,
   FieldOption,
-  ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -97,6 +101,15 @@ export class MockSandboxService {
     return of(res).pipe(delay(1));
   }
 
+  requestDatasetInfo(_: string): Observable<DatasetInfo> {
+    const res = Object.assign({}, mockDatasetInfo);
+    return of(res).pipe(delay(1));
+  }
+
+  getDatasetInfo(_: string): Observable<DatasetInfo> {
+    return this.requestDatasetInfo(_);
+  }
+
   submitDataset(
     form: FormGroup,
     fileNames: Array<string>
@@ -111,12 +124,19 @@ export class MockSandboxService {
         })
       );
     }
+    if (form.value.url && form.value.url.indexOf('wrap') > -1) {
+      return of({
+        body: {
+          'dataset-id': '1',
+          'records-to-process': 1,
+          'duplicate-records': 0
+        }
+      }).pipe(delay(1));
+    }
     return of({
-      body: {
-        'dataset-id': '1',
-        'records-to-process': 1,
-        'duplicate-records': 0
-      }
+      'dataset-id': '1',
+      'records-to-process': 1,
+      'duplicate-records': 0
     }).pipe(delay(1));
   }
 
@@ -131,15 +151,29 @@ export class MockSandboxService {
     return of(mockProblemPatternsDataset).pipe(delay(1));
   }
 
-  getProblemPatternsRecord(_: string, __: string): Observable<Array<ProblemPattern>> {
+  getProblemPatternsRecordWrapped(datasetId: string, _: string): Observable<ProblemPatternsRecord> {
     if (this.errorMode) {
       return timer(1).pipe(
         switchMap(() => {
-          return throwError(new Error(`mock getProblemPatternsRecord throws error`));
+          return throwError(new Error(`mock getProblemPatternsRecordWrapped throws error`));
         })
       );
     }
-    return of(mockProblemPatternsRecord).pipe(delay(1));
+    return of({
+      datasetId: datasetId,
+      problemPatternList: mockProblemPatternsRecord
+    }).pipe(delay(1));
+  }
+
+  getProcessedRecordData(_: string, __: string): Observable<ProcessedRecordData> {
+    if (this.errorMode) {
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error(`mock getProcessedRecordData throws error`));
+        })
+      );
+    }
+    return of(mockProcessedRecordData);
   }
 }
 

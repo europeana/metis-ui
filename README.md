@@ -7,20 +7,11 @@
 This repository is an angular workspace configured to build the projects:
 
 * metis-ui
-* mentis-sandbox (placeholder)
-
-
-## Getting started (Metis-UI)
-
-To run the Metis UI you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
-
-    cp projects/metis/src/environments/apisettings-example.ts projects/metis/src/environments/apisettings.ts
-
-If you are working at Europeana, just ask Andy MacLean or Mirjam Verloop for the right `apisettings.ts` file.
+* metis-sandbox
 
 ## Getting started (Metis-UI and Sandbox)
 
-Make sure you have `node` version 14 and `npm` version 6.x:
+Make sure you have `node` version 14.7.8 and `npm` version 6.x:
 
     node --version
     npm --version
@@ -32,6 +23,16 @@ Get the `npm` dependencies:
 Build the shared library:
 
     npm run build-shared
+
+## Getting started (Metis-UI)
+
+To run the Metis UI you need to provide a backend server to connect to. Modify the file `projects/metis/src/assets/env.js` by filling in the URLs
+
+## Getting started (Sandbox)
+
+To run the Sandbox you need to provide a backend server to connect to. Copy `apisettings-test.ts` to `apisettings.ts` and fill in the URL's:
+
+    cp projects/metis/src/environments/apisettings-example.ts projects/metis/src/environments/apisettings.ts
 
 ## Development server
 
@@ -129,6 +130,31 @@ We use jenkins to deploy. Make sure you can access [https://jenkins.eanadev.org/
 - `Sandbox-UI-Test`
 
 The test and acceptance jobs should be run off the `develop` branch.
+
+## Docker
+
+To make a (parameterised) docker image of either app first build the shared library:
+
+  `npm run build-shared`
+
+And then from the root of the project build the app, so either:
+
+  `npm run dist-metis`
+or
+  `npm run dist-sandbox`
+
+The docker nginx image is the built with either:
+
+`docker build -t metis-ui-app-image:version projects/metis/`
+or
+`docker build -t sandbox-ui-app-image:version projects/sandbox/`
+
+
+Once the values in `projects/[PROJECT_NAME]/env_file` have been set then the generated docker image can be ran with either:
+
+`docker run -it --rm -d -p 8080:8080  --env-file=projects/metis/env_file --name metis-ui metis-ui-app-image:version`
+or
+`docker run -it --rm -d -p 8080:8080  --env-file=projects/sandbox/env_file --name sandbox-ui sandbox-ui-app-image:version`
 
 ## Release
 

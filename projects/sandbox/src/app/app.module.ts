@@ -1,16 +1,22 @@
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouteReuseStrategy } from '@angular/router';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SharedModule } from 'shared';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AppRouteReuseStrategy } from './app-route-reuse-strategy';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TextCopyDirective } from './_directives';
-import { RenameStepPipe } from './_translate';
+import { FormatHarvestUrlPipe, RenameStepPipe } from './_translate';
 import { CopyableLinkItemComponent } from './copyable-link-item';
+import { DatasetInfoComponent } from './dataset-info';
+import { FooterComponent } from './footer';
+import { HomeComponent } from './home';
 import { HttpErrorsComponent } from './http-errors';
 import { NavigationOrbsComponent } from './navigation-orbs';
+import { PopOutComponent } from './pop-out';
 import { ProblemViewerComponent } from './problem-viewer';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
@@ -22,8 +28,13 @@ import { WizardComponent } from './wizard';
     AppComponent,
     TextCopyDirective,
     CopyableLinkItemComponent,
+    DatasetInfoComponent,
+    FooterComponent,
+    HomeComponent,
+    FormatHarvestUrlPipe,
     HttpErrorsComponent,
     NavigationOrbsComponent,
+    PopOutComponent,
     ProblemViewerComponent,
     ProgressTrackerComponent,
     RecordReportComponent,
@@ -39,7 +50,7 @@ import { WizardComponent } from './wizard';
     ReactiveFormsModule,
     SharedModule
   ],
-  providers: [],
+  providers: [{ provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy }],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

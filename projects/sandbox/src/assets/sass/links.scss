@@ -18,7 +18,8 @@
     white-space: nowrap;
   }
 
-  &:hover {
+  &:hover,
+  &:not(.permanent):hover {
     color: $eu-jade-darkest;
     display: inline;
   }
@@ -48,50 +49,48 @@
   position: relative;
 }
 
+.external-link-left {
+  align-items: center;
+  display: flex;
+  line-height: 3em;
+
+  &::before {
+    background-repeat: no-repeat;
+    background-size: cover;
+    content: '';
+    display: inline-block;
+    height: 1.25em;
+    margin-right: 1em;
+    width: 1.25em;
+  }
+}
+
 .external-link {
   display: inline-block;
   position: relative;
 
   &::after {
-    background-image: svg-url-icon-external($eu-jade-classic);
+    // background-image set in theme!
     background-repeat: no-repeat;
     content: '';
     display: block;
     height: 1em;
-    top: 0.425em;
+    top: 0.275em;
     position: absolute;
     width: 1em;
     right: -1.35em;
   }
 
-  &:hover {
-    &::after {
-      background-image: svg-url-icon-external($eu-jade-darkest);
-    }
-    & + .copy {
-      display: inline;
-    }
-  }
-
-  &:active,
-  &:active:hover {
-    color: $eu-light-orange;
-    &::after {
-      background-image: svg-url-icon-external($eu-light-orange);
-    }
+  &:hover + .copy {
+    display: inline;
   }
 
   &.pending {
-    color: $eu-jade-disabled;
     cursor: default;
     &::after,
     &:hover::after {
-      background-image: svg-url-icon-spin($eu-jade-classic);
       background-size: 0.85em;
       right: -1.2em;
-    }
-    &:hover {
-      color: $eu-jade-disabled;
     }
   }
 }

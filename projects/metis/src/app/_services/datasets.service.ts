@@ -3,8 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { KeyedCache } from 'shared';
+
 import { apiSettings } from '../../environments/apisettings';
-import { KeyedCache } from '../_helpers';
 import { Dataset, DatasetSearchView, MoreResults, Results, XmlSample } from '../_models';
 
 import { collectResultsUptoPage } from './service-utils';

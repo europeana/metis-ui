@@ -1,6 +1,7 @@
 export * from './lib/shared.module';
 export * from './lib/footer/footer.component';
 export * from './lib/_directives/click-aware.directive';
+export * from './lib/_helpers/cache';
 export * from './lib/_helpers/test-helpers';
 export * from './lib/_mocked/MockedModalConfirm.service';
 export * from './lib/_models/modal-dialog';

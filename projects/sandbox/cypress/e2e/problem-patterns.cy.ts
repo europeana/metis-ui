@@ -63,21 +63,29 @@ context('Sandbox', () => {
 
       it('should collapse and expand the list of affected record ids', () => {
         cy.visit('/dataset/101?view=problems');
-        const selOpener = '.list-opener';
-        const openedContent = `${selOpener} + li .openable-list`;
-        cy.get(openedContent).should('exist');
-        cy.get(`${selOpener} a`)
+
+        const selOpener = '.problem-pattern .list-opener a';
+        const selOpenedContent = `.openable-list`;
+
+        cy.get(selOpenedContent)
+          .filter(':visible')
+          .should('have.length', 2);
+
+        cy.get(selOpener)
           .first()
           .click(force);
-        cy.get(openedContent)
+
+        cy.get(selOpenedContent)
           .filter(':visible')
-          .should('not.exist');
-        cy.get(`${selOpener} a`)
+          .should('have.length', 1);
+
+        cy.get(selOpener)
           .first()
           .click(force);
-        cy.get(openedContent)
+
+        cy.get(selOpenedContent)
           .filter(':visible')
-          .should('exist');
+          .should('have.length', 2);
       });
     });
 
@@ -100,7 +108,7 @@ context('Sandbox', () => {
       it('should link the viewers', () => {
         cy.visit('/dataset/101?view=problems');
         cy.get(selectorLinkRelated)
-          .first()
+          .eq(1)
           .click(force);
         cy.location('search').should('contain', `?recordId=`);
         cy.location('search').should('contain', `&view=problems`);
@@ -132,6 +140,27 @@ context('Sandbox', () => {
           testModalOpen();
           cy.get(selectorModalClose).click(force);
         });
+      });
+    });
+
+    describe('(error navigation)', () => {
+      it('should show the arrows (dataset)', () => {
+        cy.visit('/dataset/101?view=problems');
+        cy.get('.skip-arrows')
+          .filter(':visible')
+          .should('exist');
+      });
+
+      it('should not show the arrows if (record) viewer is not scrollable', () => {
+        cy.visit('/dataset/1?recordId=1&view=problems');
+        cy.get('.skip-arrows').should('not.exist');
+      });
+
+      it('should show the arrows if the (record) viewer is scrollable', () => {
+        cy.visit('/dataset/1478?recordId=121r9&view=problems');
+        cy.get('.skip-arrows')
+          .filter(':visible')
+          .should('exist');
       });
     });
   });

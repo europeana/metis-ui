@@ -30,8 +30,8 @@ describe('WorkflowFormFieldLinkCheckComponent', () => {
       parameterFields: [ParameterFieldName.performSampling]
     };
     component.workflowForm = formBuilder.group({
-      pluginLINK_CHECKING: null,
-      performSampling: null
+      pluginLINK_CHECKING: [false],
+      performSampling: [false]
     });
     fixture.detectChanges();
   });

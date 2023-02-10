@@ -1,19 +1,35 @@
-<form [formGroup]="form" [ngClass]="{ hidden: !showing }" (ngSubmit)="onSubmitDataset()">
+<form
+  [formGroup]="form"
+  [ngClass]="{ hidden: !showing }"
+  (ngSubmit)="onSubmitDataset()"
+  [attr.aria-disabled]="!showing"
+>
   <div class="form-group">
     <label
       for="name"
       i18n="name label"
-      *ngFor="let isValid of [form.value['name'].length > 0 && !form.get('name')?.errors]"
+      *ngFor="
+        let isValid of [
+          form.value['name'] && form.value['name'].length > 0 && !form.get('name')?.errors
+        ]
+      "
       [ngClass]="{
         tick: isValid,
         asterisked: !isValid
       }"
       >Name</label
     >
+
     <input id="name" formControlName="name" autocomplete="off" />
-    <span class="field-errors" *ngIf="form.value['name'].length > 0 && form.get('name')?.errors">
-      <span class="errors" i18n="Field error@@invalidDatasetName">Please provide a valid name</span>
-    </span>
+    <ng-container *ngIf="form.get('name'); let nameField">
+      <ng-container *ngIf="nameField.value; let name">
+        <span class="field-errors" *ngIf="name.length > 0 && nameField.errors">
+          <span class="errors" i18n="Field error@@invalidDatasetName"
+            >Please provide a valid name</span
+          >
+        </span>
+      </ng-container>
+    </ng-container>
   </div>
   <div class="form-group">
     <label
@@ -49,7 +65,7 @@
     </select>
   </div>
 
-  <div class="form-group">
+  <div class="form-group protocol-wrapper">
     <lib-protocol-field-set
       #protocolFields
       [protocolForm]="form"
@@ -63,7 +79,64 @@
       }"
     >
     </lib-protocol-field-set>
-    <label>
+  </div>
+
+  <div class="form-group">
+    <div style="display: flex;">
+      <a (click)="showStepSizeInfo()" class="open-info" title="Open information on step size"></a>
+      <label
+        *ngIf="form.controls.stepSize"
+        for="stepSize"
+        [ngClass]="{
+          tick: form.controls.stepSize.valid,
+          asterisked: !form.controls.stepSize.valid
+        }"
+      >
+        Step size
+      </label>
+    </div>
+
+    <ng-template #tmpStepSizeModalContent>
+      <ng-container>
+        <p>
+          The step size determines which records in the dataset will be imported. If the step size
+          is <i>n</i>, then one in every <i>n</i> records encountered in the dataset will be
+          imported.
+        </p>
+        <ul class="modal-info-list">
+          <li><i>a step size of 1 will import records 1, 2, 3, 4, …, 1000</i></li>
+          <li><i>a step size of 3 will import records 3, 6, 9, 12, …, 3000</i></li>
+          <li><i>a step size of 5 will import records 5, 10, 15, 20, …, 5000</i></li>
+        </ul>
+      </ng-container>
+    </ng-template>
+
+    <lib-modal
+      id="{{ modalIdStepSizeInfo }}"
+      title="Step Size Information"
+      [isSmall]="false"
+      [buttons]="[{ label: 'Close' }]"
+    >
+      <ng-content *ngTemplateOutlet="tmpStepSizeModalContent"></ng-content>
+    </lib-modal>
+    <input id="stepSize" [formGroup]="form" formControlName="stepSize" />
+    <ng-container *ngIf="form.get('stepSize'); let field">
+      <span class="field-errors" *ngIf="field.errors; let errors">
+        <span class="errors" *ngIf="errors.min" i18n="Field error@@lowStepSize"
+          >Please provide a higher value</span
+        >
+        <span class="errors" *ngIf="errors.nonNumeric" i18n="Field error@@invalidStepSize"
+          >Please provide a numeric value</span
+        >
+        <span class="errors" *ngIf="errors.required" i18n="Field error@@missingStepSize"
+          >Please provide a value</span
+        >
+      </span>
+    </ng-container>
+  </div>
+
+  <div class="form-group">
+    <label class="checkbox-non-edm">
       <input
         type="checkbox"
         (change)="updateConditionalXSLValidator()"

@@ -1,0 +1,29 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import './connections';
+@import './home';
+@import './layout';
+@import './links';
+@import './pop-out';
+@import './report';
+@import './step-problems';
+@import './step-track';
+
+input,
+select {
+  border: 1px solid $gray-5;
+  border-radius: 6px;
+  box-shadow: unset;
+}
+
+input[type='file'] {
+  box-shadow: none;
+  border-color: $gray-5;
+}
+
+.tick::after {
+  background-image: svg-url-icon-tick($gray-med);
+}
+
+.open-info {
+  background: svg-url-icon-info($gray-med) center / 14px no-repeat;
+}

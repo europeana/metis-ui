@@ -1,0 +1,28 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import './connections';
+@import './home';
+@import './layout';
+@import './links';
+@import './pop-out';
+@import './report';
+@import './step-problems';
+@import './step-track';
+
+input,
+select {
+  border: 1px solid $eu-jade-dark;
+  box-shadow: unset;
+}
+
+input[type='file'] {
+  box-shadow: none;
+  border-color: $eu-jade-classic;
+}
+
+.tick::after {
+  background-image: svg-url-icon-tick($eu-jade-classic);
+}
+
+.open-info {
+  background: svg-url-icon-info($eu-jade-dark) center / 14px no-repeat;
+}

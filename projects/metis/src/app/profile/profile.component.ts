@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { environment } from '../../environments/environment';
@@ -19,11 +19,28 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   public password: string;
   confirmPasswordError = false;
   emailInfo: string = environment.links.updateProfileMain;
-  profileForm: FormGroup;
+  profileForm: FormGroup<{
+    'user-id': FormControl<string>;
+    email: FormControl<string>;
+    'first-name': FormControl<string>;
+    'last-name': FormControl<string>;
+    'organization-name': FormControl<string>;
+    country: FormControl<string>;
+    'network-member': FormControl<string>;
+    'metis-user-flag': FormControl<boolean>;
+    'account-role': FormControl<string>;
+    'created-date': FormControl<Date>;
+    'updated-date': FormControl<Date>;
+    passwords: FormGroup<{
+      oldpassword: FormControl<string>;
+      password: FormControl<string>;
+      confirm: FormControl<string>;
+    }>;
+  }>;
 
   constructor(
     private readonly authentication: AuthenticationService,
-    private readonly fb: FormBuilder,
+    private readonly fb: NonNullableFormBuilder,
     private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
   ) {
@@ -102,7 +119,7 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
   /* set password variable to input value
   */
   onKeyupPassword(): void {
-    this.password = (this.profileForm.controls.passwords.get('password') as FormControl).value;
+    this.password = this.profileForm.controls.passwords.controls.password.value;
   }
 
   /** checkMatchingPasswords
@@ -125,8 +142,8 @@ export class ProfileComponent extends SubscriptionManager implements OnInit {
     this.loading = true;
     const controls = this.profileForm.controls;
     const passwords = controls.passwords;
-    const password = (passwords.get('password') as FormControl).value;
-    const oldpassword = (passwords.get('oldpassword') as FormControl).value;
+    const password = passwords.controls.password.value;
+    const oldpassword = passwords.controls.oldpassword.value;
 
     this.subs.push(
       this.authentication.updatePassword(password, oldpassword).subscribe(

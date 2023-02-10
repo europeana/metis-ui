@@ -1,4 +1,4 @@
-import { Results } from '.';
+import { Results } from './results';
 
 export enum SortDirection {
   UNSET = 'UNSET',

@@ -1,7 +1,6 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClassMap } from 'shared';
-import { apiSettings } from '../../environments/apisettings';
 import {
   DisplayedMetaTier,
   DisplayedTier,
@@ -17,7 +16,6 @@ import { NavigationOrbsComponent } from '../navigation-orbs';
   styleUrls: ['./record-report.component.scss']
 })
 export class RecordReportComponent {
-  public apiSettings = apiSettings;
   public RecordMediaType = RecordMediaType;
   public DisplayedTier = DisplayedTier;
 

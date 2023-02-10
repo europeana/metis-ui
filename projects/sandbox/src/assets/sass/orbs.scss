@@ -1,16 +1,33 @@
+@use "sass:map";
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+@import 'mixins/orb-customisation';
 
 $orb-border-radius: 1.5em;
 
+$defaultPalette: (
+  'activated-background': $eu-light-orange,
+  'activated-border': $white,
+  'activated-foreground': $white,
+  'active-background': $white,
+  'active-border': $eu-light-orange,
+  'active-foreground': $eu-light-orange,
+  'background': $eu-jade-light,
+  'border': $eu-jade-dark,
+  'foreground': $white,
+  'hover-background': $white,
+  'hover-foreground': $eu-jade-dark
+);
+
+.home-orb-container {
+  display: none;
+}
+
 .nav-orb {
-  background-color: $eu-jade-light;
-  border-color: $eu-jade-dark;
   border-radius: $orb-border-radius;
   border-style: solid;
   border-width: 1px;
 
-  color: $white;
   display: inline-block;
   height: 3em;
   margin: 0;
@@ -32,8 +49,9 @@ $orb-border-radius: 1.5em;
   }
 
   &.indicate-tier::before {
+    background-color: map.get($defaultPalette, 'background');
+    color: $white;
     content: attr(data-indicator);
-    background-color: $eu-jade-light;
     line-height: 16px;
     text-align: center;
     font-size: 16px;
@@ -45,8 +63,6 @@ $orb-border-radius: 1.5em;
       font-weight: bold;
       position: absolute;
       text-align: center;
-      top: 50%;
-      transform: translateY(-50%);
       width: 100%;
     }
   }
@@ -67,43 +83,46 @@ $orb-border-radius: 1.5em;
   }
 
   &.indicator-orb:not([data-indicator])::before {
-    background: svg-url-icon-tick('#{$white}') center 75% / 75% no-repeat $eu-jade-light;
+    $foreground: map.get($defaultPalette, 'foreground');
+    $background: map.get($defaultPalette, 'background');
+    background: svg-url-icon-tick($foreground) center 75% / 75% no-repeat $background;
   }
 
   &:hover {
-    background-color: $white;
     box-shadow: rgba(25, 115, 36, 0.35) 0px 5px 15px;
     &.indicator-orb::before {
-      background-color: $white;
+      background-color: map.get($defaultPalette, 'hover-background');
+      color: map.get($defaultPalette, 'hover-foreground');
     }
     &:not([data-indicator]):not(.warning-animated)::before {
-      background-image: svg-url-icon-tick('#000');
+      background-image: svg-url-icon-tick(map.get($defaultPalette, 'hover-foreground'));
     }
   }
 
-  &:active {
-    background-color: $white;
-    border-color: $eu-light-orange;
-    color: $eu-light-orange;
-
+  &:active,
+  &:active:hover {
     &.indicator-orb::before {
-      border-color: $eu-light-orange;
-      background-color: $white;
+      border-color: map.get($defaultPalette, 'active-border');
+      background-color: map.get($defaultPalette, 'active-background');
+      color: map.get($defaultPalette, 'active-foreground');
     }
     &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-tick('#{$eu-light-orange}');
+      background-image: svg-url-icon-tick(map.get($defaultPalette, 'active-foreground'));
     }
   }
+
   &.is-active {
-    background-color: $eu-light-orange;
-    border-color: $white;
     pointer-events: none;
+    &.allow-active-clicks {
+      pointer-events: all;
+    }
+
     &.indicator-orb::before {
-      border-color: $white;
-      background-color: $eu-light-orange;
+      border-color: map.get($defaultPalette, 'activated-border');
+      background-color: map.get($defaultPalette, 'activated-background');
     }
     &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-tick('#{$white}');
+      background-image: svg-url-icon-tick(map.get($defaultPalette, 'activated-foreground'));
     }
   }
 
@@ -113,250 +132,99 @@ $orb-border-radius: 1.5em;
       background-position: center;
       background-repeat: no-repeat;
     }
-    &.indicator-orb:not([data-indicator])::before {
-      background-image: svg-url-icon-spin('#{$white}');
-    }
-
-    &.indicator-orb:not([data-indicator]):hover::before {
-      background-image: svg-url-icon-spin('#000');
-    }
-
-    &.indicator-orb:not([data-indicator]):active::before {
-      background-image: svg-url-icon-spin('#{$eu-light-orange}');
+    &.indicator-orb:not([data-indicator]) {
+      &::before {
+        background-image: svg-url-icon-spin(map.get($defaultPalette, 'foreground'));
+      }
+      &:hover::before {
+        background-image: svg-url-icon-spin(map.get($defaultPalette, 'hover-foreground'));
+      }
+      &:active,
+      &.is-active:active,
+      &.is-active:hover {
+        border-color: map.get($defaultPalette, 'active-border');
+        &::before {
+          background-color: map.get($defaultPalette, 'active-background');
+          background-image: svg-url-icon-spin(map.get($defaultPalette, 'active-foreground'));
+          border-color: map.get($defaultPalette, 'active-border');
+        }
+      }
+      &.is-active,
+      &.is-active:active:hover {
+        border-color: map.get($defaultPalette, 'activated-border');
+        &::before {
+          background-color: map.get($defaultPalette, 'activated-background');
+          background-image: svg-url-icon-spin(map.get($defaultPalette, 'activated-foreground'));
+          border-color: map.get($defaultPalette, 'activated-border');
+        }
+      }
     }
   }
 
   &:not(.spinner) {
-    &.upload-orb::after {
-      background: svg-url-icon-cloud('#{$white}') center / 2.25rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.upload-orb {
+      @include custom-orb(get-function(svg-url-icon-cloud), 2.25rem, $defaultPalette);
     }
 
-    &.upload-orb:hover::after {
-      background-image: svg-url-icon-cloud('#000');
+    &.problem-orb {
+      @include custom-orb(get-function(svg-url-icon-lightbulb), 1.5rem, $defaultPalette);
     }
 
-    &.upload-orb:active::after {
-      background-image: svg-url-icon-cloud('#{$eu-light-orange}');
+    &.progress-orb {
+      @include custom-orb(get-function(svg-url-icon-dataset), 1.75rem, $defaultPalette);
     }
 
-    &.problem-orb::after {
-      background: svg-url-icon-lightbulb('#{$white}') center / 1.5rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.report-orb {
+      @include custom-orb(get-function(svg-url-icon-record-report), 1.5rem, $defaultPalette);
     }
 
-    &.problem-orb:hover::after {
-      background-image: svg-url-icon-lightbulb('#000');
+    &.content-tier-orb {
+      @include custom-orb(get-function(svg-url-icon-content-tier), 1.85rem, $defaultPalette);
     }
 
-    &.problem-orb:active::after {
-      background-image: svg-url-icon-lightbulb('#{$eu-light-orange}');
+    &.metadata-tier-orb {
+      @include custom-orb(get-function(svg-url-icon-metadata), 2.05rem, $defaultPalette);
     }
 
-    &.progress-orb::after {
-      background: svg-url-icon-dataset('#{$white}') center / 1.75rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.orb-media-3d {
+      @include custom-orb(get-function(svg-url-icon-media-3d), 1.8rem, $defaultPalette);
     }
 
-    &.progress-orb:hover::after {
-      background-image: svg-url-icon-dataset('#000');
+    &.orb-media-audio {
+      @include custom-orb(get-function(svg-url-icon-media-audio), 1.8rem, $defaultPalette);
     }
 
-    &.progress-orb:active::after {
-      background-image: svg-url-icon-dataset('#{$eu-light-orange}');
+    &.orb-media-image {
+      @include custom-orb(get-function(svg-url-icon-media-image), 1.8rem, $defaultPalette);
     }
 
-    &.report-orb::after {
-      background: svg-url-icon-record-report('#{$white}') center / 1.5rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.orb-media-text {
+      @include custom-orb(get-function(svg-url-icon-media-text), 1.8rem, $defaultPalette);
     }
 
-    &.report-orb:hover::after {
-      background-image: svg-url-icon-record-report('#000');
+    &.orb-media-video {
+      @include custom-orb(get-function(svg-url-icon-media-video), 1.8rem, $defaultPalette);
     }
 
-    &.report-orb:active::after {
-      background-image: svg-url-icon-record-report('#{$eu-light-orange}');
+    &.orb-media-unknown {
+      @include basic-orb($defaultPalette);
+      &::after {
+        content: '?';
+        top: 50%;
+        transform: translateY(-50%);
+      }
     }
 
-    &.content-tier-orb::after {
-      background: svg-url-icon-content-tier('#{$white}') center / 1.85rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
+    &.language-orb {
+      @include custom-orb(get-function(svg-url-icon-speech-bubble), 1.5rem, $defaultPalette);
     }
 
-    &.content-tier-orb:hover::after {
-      background-image: svg-url-icon-content-tier('#000');
+    &.element-orb {
+      @include custom-orb(get-function(svg-url-icon-xml), 1.8rem, $defaultPalette);
     }
 
-    &.content-tier-orb:active::after {
-      background-image: svg-url-icon-content-tier('#{$eu-light-orange}');
-    }
-
-    &.metadata-tier-orb::after {
-      background: svg-url-icon-metadata('#{$white}') center / 2.05rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.metadata-tier-orb:hover::after {
-      background-image: svg-url-icon-metadata('#000');
-    }
-
-    &.metadata-tier-orb:active::after {
-      background-image: svg-url-icon-metadata('#{$eu-light-orange}');
-    }
-
-    // 3D
-
-    &.orb-media-3d::after {
-      background: svg-url-icon-media-3d('#{$white}') center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-3d:hover::after {
-      background-image: svg-url-icon-media-3d('#000');
-    }
-
-    &.orb-media-3d:active::after {
-      background-image: svg-url-icon-media-3d('#{$eu-light-orange}');
-    }
-
-    // AUDIO
-
-    &.orb-media-audio::after {
-      background: svg-url-icon-media-audio('#{$white}') center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-audio:hover::after {
-      background-image: svg-url-icon-media-audio('#000');
-    }
-
-    &.orb-media-audio:active::after {
-      background-image: svg-url-icon-media-audio('#{$eu-light-orange}');
-    }
-
-    // IMAGE
-
-    &.orb-media-image::after {
-      background: svg-url-icon-media-image('#{$white}') center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-image:hover::after {
-      background-image: svg-url-icon-media-image('#000');
-    }
-
-    &.orb-media-image:active::after {
-      background-image: svg-url-icon-media-image('#{$eu-light-orange}');
-    }
-
-    // TEXT
-
-    &.orb-media-text::after {
-      background: svg-url-icon-media-text('#{$white}') center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-text:hover::after {
-      background-image: svg-url-icon-media-text('#000');
-    }
-
-    &.orb-media-text:active::after {
-      background-image: svg-url-icon-media-text('#{$eu-light-orange}');
-    }
-
-    // VIDEO
-
-    &.orb-media-video::after {
-      background: svg-url-icon-media-video('#{$white}') center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.orb-media-video:hover::after {
-      background-image: svg-url-icon-media-video('#000');
-    }
-
-    &.orb-media-video:active::after {
-      background-image: svg-url-icon-media-video('#{$eu-light-orange}');
-    }
-
-    // UNKNOWN
-
-    &.orb-media-unknown::after {
-      content: '?';
-    }
-
-    // Speech bubble
-
-    &.language-orb::after {
-      background: svg-url-icon-speech-bubble('#{$white}') center / 1.5rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.language-orb:hover::after {
-      background-image: svg-url-icon-speech-bubble('#000');
-    }
-
-    &.language-orb:active::after {
-      background-image: svg-url-icon-speech-bubble('#{$eu-light-orange}');
-    }
-
-    // Elements
-
-    &.element-orb::after {
-      background: svg-url-icon-xml('#{$white}') center / 1.8rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.element-orb:hover::after {
-      background-image: svg-url-icon-xml('#000');
-    }
-
-    &.element-orb:active::after {
-      background-image: svg-url-icon-xml('#{$eu-light-orange}');
-    }
-
-    // Classes
-
-    &.classes-orb::after {
-      background: svg-url-icon-classes('#{$white}') center 35% / 2.2rem no-repeat;
-      content: '';
-      height: 100%;
-      width: 100%;
-    }
-
-    &.classes-orb:hover::after {
-      background-image: svg-url-icon-classes('#000');
-    }
-
-    &.classes-orb:active::after {
-      background-image: svg-url-icon-classes('#{$eu-light-orange}');
+    &.classes-orb {
+      @include custom-orb(get-function(svg-url-icon-classes), 2.2rem, $defaultPalette);
     }
   }
   &.indicator-orb:not([data-indicator]),
@@ -383,56 +251,56 @@ $orb-border-radius: 1.5em;
   }
 }
 
-.dataset-orbs-hidden {
-  .upload-orb {
-    display: none;
+.spinner {
+  background: svg-url-icon-spin(map.get($defaultPalette, 'foreground')) center / 2em no-repeat
+    map.get($defaultPalette, 'background');
+
+  &:hover {
+    background-color: map.get($defaultPalette, 'hover-background');
+    background-image: svg-url-icon-spin(map.get($defaultPalette, 'hover-foreground'));
   }
 
-  .orb-container {
-    flex-basis: 100%;
-    text-align: center;
+  &:active,
+  &.is-active:hover {
+    background-color: map.get($defaultPalette, 'active-background');
+    background-image: svg-url-icon-spin(map.get($defaultPalette, 'active-foreground'));
+  }
+
+  &.is-active,
+  &.is-active:active:hover {
+    background-color: map.get($defaultPalette, 'activated-background');
+    background-image: svg-url-icon-spin(map.get($defaultPalette, 'activated-foreground'));
   }
 }
 
-.spinner {
-  background: svg-url-icon-spin('#{$white}') center / 2em no-repeat $eu-jade-light;
-  &:hover {
-    background-image: svg-url-icon-spin('#000');
-  }
-  &:active {
-    background-image: svg-url-icon-spin('#{$eu-light-orange}');
+.warning-animated {
+  &::before {
+    @keyframes spin {
+      100% {
+        transform: rotateY(180deg);
+      }
+    }
+    animation: spin 0.6s linear 1;
+    bottom: -0.75rem;
+    content: '';
+    display: inline-block;
+    height: 22px;
+    left: calc(50% - 10px);
+    position: absolute;
+    width: 20px;
+    z-index: 1;
   }
 }
 
 .warning-animated::before {
-  @keyframes spin {
-    100% {
-      transform: rotateY(180deg);
-    }
-  }
-  animation: spin 0.6s linear 1;
   background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red) center no-repeat;
-  bottom: -0.75rem;
-  content: '';
-  display: inline-block;
-  height: 22px;
-  left: calc(50% - 10px);
-  position: absolute;
-  width: 20px;
-  z-index: 1;
 }
 
 .vertical {
   .wizard-status {
     flex-direction: column;
-  }
-  &.zero-warning {
     .orb-container:not(.hidden) {
       height: 48px;
-      .nav-orb.labelled {
-        border-color: $eu-jade-dark;
-        transform: scale(0.75);
-      }
       & + .orb-container {
         margin-top: 7px;
       }

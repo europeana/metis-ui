@@ -1,20 +1,27 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { of } from 'rxjs';
 import { MockHttp, ProtocolType } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockCountries,
   mockDataset,
+  mockDatasetInfo,
   mockLanguages,
   mockProblemPatternsDataset,
   mockProblemPatternsRecord,
+  mockProcessedRecordData,
   mockRecordReport
 } from '../_mocked';
 import {
+  DatasetInfo,
+  DatasetStatus,
   FieldOption,
   ProblemPattern,
   ProblemPatternsDataset,
+  ProblemPatternsRecord,
+  ProcessedRecordData,
   RecordReport,
   SubmissionResponseData,
   SubmissionResponseDataWrapped
@@ -25,7 +32,7 @@ describe('sandbox service', () => {
   let mockHttp: MockHttp;
   let service: SandboxService;
 
-  const formBuilder: FormBuilder = new FormBuilder();
+  const formBuilder = new FormBuilder();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -72,6 +79,31 @@ describe('sandbox service', () => {
     sub.unsubscribe();
   });
 
+  it('should request the dataset info', () => {
+    const sub = service.requestDatasetInfo('1').subscribe((datasetInfo) => {
+      expect(datasetInfo).toEqual(mockDatasetInfo);
+    });
+    mockHttp.expect('GET', '/dataset-info/1').send(mockDatasetInfo);
+    sub.unsubscribe();
+  });
+
+  it('should get the dataset info (from the cache)', () => {
+    spyOn(service, 'requestDatasetInfo').and.callFake(() => {
+      return of(({} as unknown) as DatasetInfo);
+    });
+    let observable = service.getDatasetInfo('1');
+    expect(service.requestDatasetInfo).toHaveBeenCalled();
+    observable = service.getDatasetInfo('1');
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(1);
+    observable = service.getDatasetInfo('2');
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
+    observable = service.getDatasetInfo('2');
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(2);
+    observable = service.getDatasetInfo('2', true);
+    expect(service.requestDatasetInfo).toHaveBeenCalledTimes(3);
+    expect(observable).toBeTruthy();
+  });
+
   it('should get the progress', () => {
     const sub = service.requestProgress('1').subscribe((datasetInfo) => {
       expect(datasetInfo).toEqual(mockDataset);
@@ -96,10 +128,11 @@ describe('sandbox service', () => {
         harvestUrl: [url, []],
         metadataFormat: [metadataFormat, []],
         setSpec: [setSpec, []],
+        stepSize: [1, []],
         uploadProtocol: [protocol, []],
-        url: [url, []]
+        url: [url, []],
+        xsltFile: []
       });
-      res.addControl('xsltFile', new FormControl(''));
       return res;
     };
 
@@ -126,14 +159,17 @@ describe('sandbox service', () => {
     mockHttp
       .expect(
         'POST',
-        `/dataset/${name}/harvestByUrl?country=${country}&language=${language}&url=${encodeURIComponent(
+        `/dataset/${name}/harvestByUrl?country=${country}&language=${language}&stepsize=1&url=${encodeURIComponent(
           url
         )}`
       )
       .body(new FormData())
       .send(form1);
     mockHttp
-      .expect('POST', `/dataset/${name}/harvestByFile?country=${country}&language=${language}`)
+      .expect(
+        'POST',
+        `/dataset/${name}/harvestByFile?country=${country}&language=${language}&stepsize=1`
+      )
       .body(new FormData())
       .send(form2);
     mockHttp
@@ -141,7 +177,7 @@ describe('sandbox service', () => {
         'POST',
         [
           `/dataset/${name}/harvestOaiPmh?country=${country}&language=${language}`,
-          `&metadataformat=${metadataFormat}&setspec=${setSpec}`,
+          `&stepsize=1&metadataformat=${metadataFormat}&setspec=${setSpec}`,
           `&url=${encodeURIComponent(url)}`
         ].join('')
       )
@@ -167,9 +203,6 @@ describe('sandbox service', () => {
   });
 
   it('should get the problem-patterns for records', () => {
-    console.log({} as ProblemPattern);
-    expect(true).toBeTruthy();
-
     const datasetId = '123';
     const recordId = '456';
     const sub = service
@@ -185,4 +218,49 @@ describe('sandbox service', () => {
       .send(mockProblemPatternsRecord);
     sub.unsubscribe();
   });
+
+  it('should get the problem-patterns for records (wrapped)', () => {
+    const datasetId = '123';
+    const recordId = '456';
+    const sub = service
+      .getProblemPatternsRecordWrapped(datasetId, recordId)
+      .subscribe((pp: ProblemPatternsRecord) => {
+        expect(pp.problemPatternList).toEqual(mockProblemPatternsRecord);
+      });
+    mockHttp
+      .expect(
+        'GET',
+        `/pattern-analysis/${datasetId}/get-record-pattern-analysis?recordId=${recordId}`
+      )
+      .send(mockProblemPatternsRecord);
+    sub.unsubscribe();
+  });
+
+  it('should get the processed record data', fakeAsync(() => {
+    const datasetId = '123_PROCESSED_RECORD_DATA';
+    const recordId = '456';
+    const processedDataset = Object.assign({}, mockDataset);
+    processedDataset.status = DatasetStatus.IN_PROGRESS;
+    delete processedDataset['portal-publish'];
+
+    const sub = service
+      .getProcessedRecordData(datasetId, recordId)
+      .subscribe((prd: ProcessedRecordData) => {
+        expect(prd).toEqual(mockProcessedRecordData);
+      });
+
+    tick();
+    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    tick(apiSettings.interval);
+
+    processedDataset.status = DatasetStatus.COMPLETED;
+    processedDataset['portal-publish'] = 'http://portal';
+    mockHttp.expect('GET', `/dataset/${datasetId}`).send(processedDataset);
+    tick(apiSettings.interval);
+
+    mockHttp
+      .expect('GET', `/dataset/${datasetId}/record/compute-tier-calculation?recordId=${recordId}`)
+      .send(mockRecordReport);
+    sub.unsubscribe();
+  }));
 });

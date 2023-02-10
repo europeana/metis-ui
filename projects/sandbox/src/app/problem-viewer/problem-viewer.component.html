@@ -1,4 +1,22 @@
-<div class="wrapper">
+<div class="problem-viewer-wrapper">
+  <!-- skip arrows -->
+  <ng-template #tmpSkipArrows>
+    <span *ngIf="problemCount > 1 && (canScrollUp() || canScrollDown())" class="skip-arrows">
+      <a
+        class="skip-arrow up"
+        title="Go to previous"
+        [ngClass]="{ enabled: canScrollUp() }"
+        (click)="skipToProblem(viewerVisibleIndex - 1)"
+      ></a>
+      <a
+        class="skip-arrow"
+        title="Go to next"
+        [ngClass]="{ enabled: canScrollDown() }"
+        (click)="skipToProblem(viewerVisibleIndex + 1)"
+      ></a>
+    </span>
+  </ng-template>
+
   <!-- Modal -->
   <ng-template #tmpModal let-modalInstanceId="modalInstanceId">
     <lib-modal
@@ -109,18 +127,21 @@
     let-ppId="ppId"
   >
     <ul class="problem-occurence">
-      <li class="message" *ngIf="occurence.messageReport; let message">
-        <q>
-          <span class="italic message-copy">
-            {{ message }}
-          </span>
-        </q>
-      </li>
+      <ng-container *ngIf="problemPatternsRecord || ppId !== ProblemPatternId.P1">
+        <li class="message" *ngIf="occurence.messageReport; let message">
+          <q>
+            <span class="italic message-copy">
+              {{ message }}
+            </span>
+          </q>
+        </li>
+      </ng-container>
       <ng-container *ngIf="!problemPatternsRecord && occurence.affectedRecordIds.length > 0">
         <li
           class="list-opener"
           [ngClass]="{
-            'is-open': occurence.affectedRecordIdsShowing
+            'is-open': occurence.affectedRecordIdsShowing,
+            'fmt-compact': [ProblemPatternId.P1, ProblemPatternId.P7].includes(ppId)
           }"
         >
           <a (click)="occurence.affectedRecordIdsShowing = !occurence.affectedRecordIdsShowing">
@@ -166,6 +187,7 @@
   </ng-template>
 
   <!-- Record Analysis List -->
+
   <ng-template
     #tmpRecordAnalysisList
     let-analyses="analyses"
@@ -175,19 +197,35 @@
   >
     <ul class="analysis-list">
       <ng-container *ngFor="let analysis of analyses">
+        <!-- duplicate titles - extended version for dataset problems -->
         <ng-container *ngIf="!problemPatternsRecord">
-          <ng-content
-            *ngTemplateOutlet="
-              internalLinkItem;
-              context: {
-                recordId: analysis.recordId,
-                datasetId: datasetId,
-                showConnectBelow:
-                  analysis.problemOccurrenceList[0].affectedRecordIds.length &&
-                  analysis.problemOccurrenceList[0].affectedRecordIdsShowing
-              }
-            "
-          ></ng-content>
+          <li
+            *ngIf="ppId === ProblemPatternId.P1"
+            class="link-related"
+            [ngClass]="{
+              'connect-to-below':
+                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
+                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+            }"
+          >
+            <q class="quote-header">
+              <span class="italic message-copy">
+                {{ analysis.problemOccurrenceList[0].messageReport }}
+              </span>
+            </q>
+          </li>
+
+          <ng-container
+            *ngIf="ppId !== ProblemPatternId.P1"
+            [ngTemplateOutlet]="internalLinkItem"
+            [ngTemplateOutletContext]="{
+              recordId: analysis.recordId,
+              datasetId: datasetId,
+              showConnectBelow:
+                analysis.problemOccurrenceList[0].affectedRecordIds.length &&
+                analysis.problemOccurrenceList[0].affectedRecordIdsShowing
+            }"
+          ></ng-container>
         </ng-container>
 
         <li class="analysis-item" *ngFor="let problemOccurrence of analysis.problemOccurrenceList">
@@ -208,8 +246,14 @@
   </ng-template>
 
   <!-- Problem Pattern (record) -->
-  <ng-template #tmpProblemPattern let-problemPattern="problemPattern" let-datasetId="datasetId">
-    <div class="problem-pattern">
+  <ng-template
+    #tmpProblemPattern
+    let-problemPattern="problemPattern"
+    let-datasetId="datasetId"
+    let-index="index"
+    let-totalProblems="totalProblems"
+  >
+    <div class="problem-pattern" #problemType>
       <span class="problem-header">
         <a
           (click)="showDescriptionModal(problemPattern.problemPatternDescription.problemPatternId)"
@@ -235,18 +279,31 @@
         >Occurs in <strong>{{ problemPattern.recordOccurrences }}</strong>
         <ng-template ngPluralCase="=1"> record</ng-template>
         <ng-template ngPluralCase="other"> records</ng-template>
+
+        <!-- different title count -->
+        <ng-container
+          *ngIf="problemPattern.problemPatternDescription.problemPatternId === ProblemPatternId.P1"
+        >
+          <ng-container *ngIf="problemPattern.recordAnalysisList.length > 1">
+            with
+            <strong>{{ problemPattern.recordAnalysisList.length }}</strong>
+            different titles
+          </ng-container>
+        </ng-container>
       </span>
-      <ng-content
-        *ngTemplateOutlet="
-          tmpRecordAnalysisList;
-          context: {
-            analyses: problemPattern.recordAnalysisList,
-            problemTitle: problemPattern.problemPatternDescription.problemPatternTitle,
-            datasetId: datasetId,
-            ppId: problemPattern.problemPatternDescription.problemPatternId
-          }
-        "
-      ></ng-content>
+      <ng-container *ngIf="!problemPattern.closed">
+        <ng-content
+          *ngTemplateOutlet="
+            tmpRecordAnalysisList;
+            context: {
+              analyses: problemPattern.recordAnalysisList,
+              problemTitle: problemPattern.problemPatternDescription.problemPatternTitle,
+              datasetId: datasetId,
+              ppId: problemPattern.problemPatternDescription.problemPatternId
+            }
+          "
+        ></ng-content>
+      </ng-container>
     </div>
   </ng-template>
 
@@ -262,24 +319,36 @@
     </ng-container>
 
     <ng-template #noProblems>
-      <h2 *ngIf="recordId" class="form-group title">Record: {{ recordId }}</h2>
+      <h2 *ngIf="recordId" class="form-group title">Record: {{ decode(recordId) }}</h2>
       <h3 class="problem-viewer">
         <span class="tick">No Problem Patterns Found for Record</span>
       </h3>
     </ng-template>
 
-    <div *ngIf="problemPatternsRecord.length > 0; else noProblems" class="form-group header-info">
+    <div
+      *ngIf="problemPatternsRecord.problemPatternList.length > 0; else noProblems"
+      class="form-group header-info"
+    >
       <h2 class="title record-title">
-        Record: {{ problemPatternsRecord[0].recordAnalysisList[0].recordId }}
+        Record: {{ problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId }}
       </h2>
     </div>
-    <div *ngIf="problemPatternsRecord.length > 0" class="problem-viewer record">
+
+    <div *ngIf="problemPatternsRecord.problemPatternList.length > 0" class="problem-viewer record">
+      <ng-content *ngTemplateOutlet="tmpSkipArrows"></ng-content>
       <ng-container>
-        <ng-container *ngFor="let problemPattern of problemPatternsRecord">
+        <ng-container
+          *ngFor="let problemPattern of problemPatternsRecord.problemPatternList; let i = index"
+        >
           <ng-content
             *ngTemplateOutlet="
               tmpProblemPattern;
-              context: { problemPattern: problemPattern, datasetId: '' }
+              context: {
+                problemPattern: problemPattern,
+                datasetId: '',
+                index: i,
+                totalProblems: problemPatternsRecord.problemPatternList.length
+              }
             "
           ></ng-content>
         </ng-container>
@@ -296,7 +365,7 @@
       ></ng-content>
     </ng-container>
 
-    <ul class="form-group header-info">
+    <ul class="form-group header-info" *ngIf="!enableDynamicInfo">
       <li>
         <ul>
           <li>
@@ -312,21 +381,89 @@
     </ul>
 
     <ng-template #problemViewer>
-      <div class="problem-viewer">
+      <div class="problem-viewer" (scroll)="onScroll($event)">
+        <ng-content *ngTemplateOutlet="tmpSkipArrows"></ng-content>
         <ng-container>
-          <ng-container *ngFor="let problemPattern of ppd.problemPatternList">
+          <ng-container *ngFor="let problemPattern of ppd.problemPatternList; let i = index">
             <ng-content
               *ngTemplateOutlet="
                 tmpProblemPattern;
-                context: { problemPattern: problemPattern, datasetId: ppd.datasetId }
+                context: {
+                  problemPattern: problemPattern,
+                  datasetId: ppd.datasetId,
+                  index: i,
+                  totalProblems: ppd.problemPatternList.length
+                }
               "
             ></ng-content>
           </ng-container>
         </ng-container>
       </div>
     </ng-template>
+
     <h3 class="problem-viewer" *ngIf="ppd.problemPatternList.length === 0; else problemViewer">
       <span class="bold tick">No Problem Patterns Found for Dataset</span>
     </h3>
   </div>
+
+  <!-- DOWNLOAD LINKS VIEW -->
+
+  <ng-container
+    *ngIf="problemPatternsRecord && problemPatternsRecord.problemPatternList.length > 0"
+  >
+    <ng-container *ngIf="problemPatternsRecord.problemPatternList[0].recordAnalysisList.length > 0">
+      <sb-pop-out
+        [applyDefaultNotification]="true"
+        [classMapInner]="{
+          'element-orb': true
+        }"
+        [disabled]="!processedRecordData"
+        [isLoading]="isLoading"
+        [openerCount]="1"
+        [tooltips]="['record xml links (click to open)']"
+        (open)="
+          loadRecordLinksData(
+            problemPatternsRecord.problemPatternList[0].recordAnalysisList[0].recordId
+          )
+        "
+        (close)="httpErrorRecordLinks = undefined"
+      >
+        <div *ngIf="httpErrorRecordLinks" class="load-error">
+          <h2>Error {{ httpErrorRecordLinks.status }} ({{ httpErrorRecordLinks.statusText }})</h2>
+          <span class="detail">
+            Couldn't fetch record links.
+          </span>
+        </div>
+        <ul *ngIf="!httpErrorRecordLinks">
+          <li>
+            <ng-template #labelRefHarvest
+              ><span i18n="record link link@@recordLinkHarvest"
+                >record before processing (as provided)</span
+              ></ng-template
+            >
+            <sb-copyable-link-item
+              [labelRef]="labelRefHarvest"
+              [href]="
+                processedRecordData
+                  ? (problemPatternsRecord.datasetId
+                    | formatHarvestUrl: processedRecordData.europeanaRecordId)
+                  : ''
+              "
+            ></sb-copyable-link-item>
+          </li>
+          <li>
+            <ng-template #labelRefPortal
+              ><span i18n="record link link@@recordLinkPortal"
+                >record after processing (as published)</span
+              ></ng-template
+            >
+            <sb-copyable-link-item
+              [labelRef]="labelRefPortal"
+              [href]="processedRecordData ? processedRecordData.portalRecordLink : ''"
+            ></sb-copyable-link-item>
+          </li>
+        </ul>
+      </sb-pop-out>
+    </ng-container>
+  </ng-container>
 </div>

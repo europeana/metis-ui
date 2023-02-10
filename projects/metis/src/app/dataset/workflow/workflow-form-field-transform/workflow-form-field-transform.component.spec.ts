@@ -30,8 +30,8 @@ describe('WorkflowFormFieldTransformComponent', () => {
       parameterFields: [ParameterFieldName.customXslt]
     };
     component.workflowForm = formBuilder.group({
-      pluginTRANSFORMATION: null,
-      customXslt: null
+      pluginTRANSFORMATION: [false],
+      customXslt: [File]
     });
     fixture.detectChanges();
   });

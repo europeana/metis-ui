@@ -39,6 +39,16 @@ describe('NavigationOrbsComponent', () => {
     expect(component.collapsed).toBeFalsy();
   });
 
+  it('should allow the maxOrbsUncollapsed to be set', () => {
+    expect(component.collapsed).toBeFalsy();
+    component.count = 10;
+    expect(component.collapsed).toBeTruthy();
+    component.maxUncollapsed = 10;
+    expect(component.collapsed).toBeTruthy();
+    component.count = 10;
+    expect(component.collapsed).toBeFalsy();
+  });
+
   it('should emit an event when clicked', () => {
     const event = {
       preventDefault: jasmine.createSpy(),

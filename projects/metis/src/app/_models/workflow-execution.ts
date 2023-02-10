@@ -1,4 +1,5 @@
-import { User } from '.';
+import { User } from './user';
+import { PluginMetadata } from './plugin-metadata';
 
 export enum PluginType {
   HTTP_HARVEST = 'HTTP_HARVEST',
@@ -84,6 +85,7 @@ export interface PluginExecution extends PluginExecutionBasic {
   topologyName: TopologyName;
   canDisplayRawXml?: boolean;
   hasReport?: boolean;
+  pluginMetadata?: PluginMetadata;
 }
 
 export interface PluginExecutionOverview extends PluginExecutionBasic {

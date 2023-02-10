@@ -37,26 +37,21 @@ $textcolour_highlight: $accent;
 @import 'shared-styles/assets/sass/pandora/components/modal';
 @import 'shared-styles/assets/sass/pandora/components/status-bullet';
 
-@import 'assets/sass/connections';
 @import 'assets/sass/links';
 @import 'assets/sass/orbs';
 @import 'assets/sass/submit-button';
 
-a {
-  color: $eu-jade-dark;
+body.theme-default {
+  @import 'assets/sass/themes/theme-default/theme-default';
 
-  &.link-internal {
-    font-weight: bold;
-  }
-  &:hover {
-    color: $eu-jade-darkest;
-  }
-  &:active {
-    color: $eu-light-orange;
-  }
-  &:focus-visible {
-    outline: 1px dotted $eu-jade;
-  }
+  background-color: #f4f4f1;
+  color: $gray-med;
+}
+
+body.theme-white {
+  @import 'assets/sass/themes/theme-white/theme-white';
+  background-color: #fff;
+  color: $black;
 }
 
 input,
@@ -67,12 +62,6 @@ label {
     opacity: 0.5;
     pointer-events: none;
   }
-}
-
-input,
-select {
-  border: 1px solid $eu-jade-dark;
-  box-shadow: unset;
 }
 
 .asterisked::after {
@@ -125,11 +114,6 @@ select {
   margin-top: 1em;
 }
 
-.form-group {
-  color: $eu-jade-dark;
-  margin: 0 auto 12px;
-}
-
 .header-wrapper header {
   height: $fixed-header-height;
 }
@@ -144,7 +128,6 @@ select {
 }
 
 .separator-line {
-  background: $eu-jade-light;
   display: block;
   height: 1px;
   margin: 1.6em 0;
@@ -160,7 +143,7 @@ select {
 }
 
 .tick::after {
-  background-image: svg-url-icon-tick('#{$eu-jade-classic}');
+  // the background-image is set by the theme!
   width: 1em;
   height: 1em;
   content: '';
@@ -211,11 +194,6 @@ select {
   }
 }
 
-.wizard input[type='file'] {
-  box-shadow: none;
-  border-color: $eu-jade-classic;
-}
-
 ::-webkit-scrollbar-track {
   border: 1px solid $eu-jade-light;
 }
@@ -232,4 +210,12 @@ select {
 ::-webkit-scrollbar-track {
   border-radius: 5px;
   cursor: pointer !important;
+}
+
+html {
+  scrollbar-color: rgba(55, 185, 139, 0.75) $eu-jade-light;
+}
+
+.modal-wrapper .modal .content {
+  overflow: auto;
 }

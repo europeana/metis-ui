@@ -2,14 +2,23 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 import { MockSandboxService, MockSandboxServiceErrors } from '../_mocked';
 import { SandboxService } from '../_services';
 import { UploadComponent } from './';
-import { FileUploadComponent, ProtocolFieldSetComponent, ProtocolType } from 'shared';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import {
+  FileUploadComponent,
+  MockModalConfirmService,
+  ModalConfirmService,
+  ProtocolFieldSetComponent,
+  ProtocolType
+} from 'shared';
 
 describe('UploadComponent', () => {
   let component: UploadComponent;
   let fixture: ComponentFixture<UploadComponent>;
+  let modalConfirms: ModalConfirmService;
 
   const testFile = new File([], 'file.zip', { type: 'zip' });
 
@@ -21,16 +30,17 @@ describe('UploadComponent', () => {
         {
           provide: SandboxService,
           useClass: errorMode ? MockSandboxServiceErrors : MockSandboxService
-        }
+        },
+        { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    modalConfirms = TestBed.inject(ModalConfirmService);
   };
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;
-    component.buildForm();
     fixture.detectChanges();
   };
 
@@ -51,20 +61,20 @@ describe('UploadComponent', () => {
   };
 
   const fillUploadForm = (protocolType = ProtocolType.HTTP_HARVEST): void => {
-    (component.form.get('name') as FormControl).setValue('A');
-    (component.form.get('country') as FormControl).setValue('Greece');
-    (component.form.get('language') as FormControl).setValue('Greek');
-    (component.form.get('dataset') as FormControl).setValue(testFile);
-    (component.form.get('name') as FormControl).setValue('A');
-    (component.form.get('uploadProtocol') as FormControl).setValue(protocolType);
+    component.form.controls.name.setValue('A');
+    component.form.controls.country.setValue('Greece');
+    component.form.controls.language.setValue('Greek');
+    component.form.controls.dataset.setValue(testFile);
+    component.form.controls.name.setValue('A');
+    component.form.controls.uploadProtocol.setValue(protocolType);
 
     fixture.detectChanges();
 
     if (protocolType === ProtocolType.OAIPMH_HARVEST) {
-      (component.form.get('harvestUrl') as FormControl).setValue('http://x');
-      (component.form.get('metadataFormat') as FormControl).setValue('xxx');
+      component.form.controls.harvestUrl.setValue('http://x');
+      component.form.controls.metadataFormat.setValue('xxx');
     } else if (protocolType === ProtocolType.HTTP_HARVEST) {
-      (component.form.get('url') as FormControl).setValue('http://x');
+      component.form.controls.url.setValue('http://x');
     }
     expect(getFormValidationErrors(component.form)).toEqual('');
     expect(component.form.valid).toBeTruthy();
@@ -83,8 +93,19 @@ describe('UploadComponent', () => {
       expect(component.languageList).toBeTruthy();
     });
 
+    it('should show the information modal', () => {
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        const res = of(true);
+        modalConfirms.add({ open: () => res, close: () => undefined, id: '1' });
+        return res;
+      });
+
+      component.showStepSizeInfo();
+      expect(modalConfirms.open).toHaveBeenCalled();
+    });
+
     it('should validate input', () => {
-      const input = component.form.get('name') as FormControl;
+      const input = component.form.controls.name;
       expect(input.valid).toBeFalsy();
       input.setValue('A');
       expect(input.valid).toBeTruthy();
@@ -105,14 +126,57 @@ describe('UploadComponent', () => {
     });
 
     it('should validate the protocol', () => {
-      expect(component.protocolIsValid()).toBeFalsy();
-
-      component.form = (undefined as unknown) as FormGroup;
-      expect(component.protocolIsValid()).toBeFalsy();
-
-      component.rebuildForm();
       fillUploadForm();
       expect(component.protocolIsValid()).toBeTruthy();
+      component.form.controls.uploadProtocol.setValue(ProtocolType.HTTP_HARVEST);
+      component.form.controls.url.setValue('');
+      expect(component.protocolIsValid()).toBeFalsy();
+      component.form = (null as unknown) as FormGroup;
+      expect(component.protocolIsValid()).toBeFalsy();
+    });
+
+    it('should validate the stepSize input', () => {
+      const input = component.form.controls.stepSize;
+      expect(input.valid).toBeTruthy();
+      input.setValue('-1');
+      expect(input.valid).toBeFalsy();
+      input.setValue(' ');
+      expect(input.valid).toBeFalsy();
+      input.setValue('abc');
+      expect(input.valid).toBeFalsy();
+      input.setValue('');
+      expect(input.valid).toBeFalsy();
+      input.setValue('1');
+      expect(input.valid).toBeTruthy();
+    });
+
+    it('should disable the form on submit', () => {
+      fillUploadForm();
+      expect(component.form.enabled).toBeTruthy();
+      expect(component.form.valid).toBeTruthy();
+
+      component.form.controls.url.setValue('http://wrap.it');
+      component.onSubmitDataset();
+      expect(component.form.enabled).toBeFalsy();
+      expect(component.form.valid).toBeFalsy();
+
+      component.form.enable();
+      component.rebuildForm();
+
+      fillUploadForm(ProtocolType.OAIPMH_HARVEST);
+      expect(component.form.enabled).toBeTruthy();
+      expect(component.form.valid).toBeTruthy();
+      component.onSubmitDataset();
+      expect(component.form.enabled).toBeFalsy();
+      expect(component.form.valid).toBeFalsy();
+
+      component.form.enable();
+      component.rebuildForm();
+
+      fillUploadForm(ProtocolType.OAIPMH_HARVEST);
+      component.onSubmitDataset();
+      expect(component.form.enabled).toBeFalsy();
+      expect(component.form.valid).toBeFalsy();
     });
   });
 
@@ -123,9 +187,8 @@ describe('UploadComponent', () => {
     beforeEach(b4Each);
 
     it('should validate conditionally', () => {
-      component.buildForm();
-      const ctrlFile = component.form.get(component.xsltFileFormName) as FormControl;
-      const ctrlCB = component.form.get('sendXSLT') as FormControl;
+      const ctrlFile = component.form.controls.xsltFile;
+      const ctrlCB = component.form.controls.sendXSLT;
 
       component.updateConditionalXSLValidator();
       expect(ctrlFile.valid).toBeTruthy();
@@ -135,10 +198,6 @@ describe('UploadComponent', () => {
       expect(ctrlFile.valid).toBeFalsy();
 
       ctrlCB.setValue(false);
-      component.updateConditionalXSLValidator();
-      expect(ctrlFile.valid).toBeTruthy();
-
-      component.form.removeControl('sendXSLT');
       component.updateConditionalXSLValidator();
       expect(ctrlFile.valid).toBeTruthy();
     });

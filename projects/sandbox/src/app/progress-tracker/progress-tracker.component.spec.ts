@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { ProgressTrackerComponent } from './progress-tracker.component';
 import { mockDataset } from '../_mocked';
 import { RenameStepPipe } from '../_translate';
-import { Dataset, DatasetStatus, ProgressByStep, StepStatus } from '../_models';
+import { Dataset, DatasetStatus, DisplayedTier, ProgressByStep, StepStatus } from '../_models';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 
@@ -40,27 +40,14 @@ describe('ProgressTrackerComponent', () => {
 
     it('should close the warning view', fakeAsync(() => {
       const tickTime = 400;
-
-      component.showing = true;
-      component.warningViewOpen = true;
       component.warningDisplayedTier = 1;
       component.closeWarningView();
-
-      expect(component.warningViewOpen).toBeFalsy();
+      tick(tickTime);
       expect(component.warningDisplayedTier).toEqual(1);
+      component.showing = true;
+      component.closeWarningView();
       tick(tickTime);
       expect(component.warningDisplayedTier).toEqual(-1);
-
-      component.showing = false;
-      component.warningViewOpen = true;
-      component.warningDisplayedTier = 1;
-      component.closeWarningView();
-
-      expect(component.warningViewOpen).toBeTruthy();
-      expect(component.warningDisplayedTier).toEqual(1);
-      tick(tickTime);
-      expect(component.warningDisplayedTier).toEqual(1);
-      tick(tickTime);
     }));
 
     it('should format the error', () => {
@@ -183,9 +170,8 @@ describe('ProgressTrackerComponent', () => {
       expect(component.warningViewOpened).toEqual([false, false]);
 
       component.warningViewOpened = [true, true];
-      component.warningViewOpen = true;
       component.progressData = mockDataset;
-      expect(component.warningViewOpened).toEqual([true, true]);
+      expect(component.warningViewOpened).toEqual([false, false]);
     });
 
     it('should show the errors and warning modals', () => {
@@ -196,10 +182,6 @@ describe('ProgressTrackerComponent', () => {
       });
       component.showErrorsForStep(1);
       expect(modalConfirms.open).toHaveBeenCalled();
-      component.showProcessingErrors();
-      expect(modalConfirms.open).toHaveBeenCalledTimes(2);
-      component.showIncompleteDataWarning();
-      expect(modalConfirms.open).toHaveBeenCalledTimes(3);
     });
 
     it('should report if complete', () => {
@@ -209,11 +191,16 @@ describe('ProgressTrackerComponent', () => {
     });
 
     it('should set the warning view', () => {
-      component.warningViewOpen = false;
-      component.warningViewOpened = [false, false];
-      component.setWarningView(1);
-      expect(component.warningViewOpen).toBeTruthy();
-      expect(component.warningViewOpened[1]).toBeTruthy();
+      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeFalsy();
+      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeFalsy();
+
+      component.setWarningView(DisplayedTier.CONTENT);
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.CONTENT);
+      expect(component.warningViewOpened[DisplayedTier.CONTENT]).toBeTruthy();
+
+      component.setWarningView(DisplayedTier.METADATA);
+      expect(component.warningDisplayedTier).toEqual(DisplayedTier.METADATA);
+      expect(component.warningViewOpened[DisplayedTier.METADATA]).toBeTruthy();
     });
 
     it('should toggle the exapnded-warning flag', () => {

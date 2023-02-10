@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, timer } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
@@ -19,8 +19,7 @@ import {
   ReportRequestWithData,
   successNotification,
   Workflow,
-  WorkflowExecution,
-  workflowFormFieldConf
+  WorkflowExecution
 } from '../_models';
 import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
 import { WorkflowComponent } from './workflow';
@@ -43,7 +42,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
     super();
   }
 
-  fieldConf = workflowFormFieldConf;
   activeTab = 'edit';
   datasetId: string;
   prevTab?: string;
@@ -74,7 +72,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   @ViewChild(WorkflowHeaderComponent) workflowHeaderRef: WorkflowHeaderComponent;
   @ViewChild('scrollToTopAnchor') scrollToTopAnchor: ElementRef;
 
-  formInitialised(workflowForm: FormGroup): void {
+  formInitialised(workflowForm: UntypedFormGroup): void {
     if (this.workflowHeaderRef && this.workflowFormRef) {
       this.workflowHeaderRef.setWorkflowForm(workflowForm);
       this.workflowFormRef.onHeaderSynchronised(this.workflowHeaderRef.elRef.nativeElement);

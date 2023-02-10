@@ -1,0 +1,83 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.footer-wrapper {
+  line-height: 1.5;
+  position: relative;
+
+  &::before {
+    background-color: $eu-jade-light;
+    clip-path: polygon(0 0, calc(100% - 77px) 0, 100% 170px, 100% 100%, 0 100%);
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &::after {
+    background-color: #000;
+    color: #fff;
+    clip-path: polygon(
+      0 -100vh,
+      calc(100% - 95px) -100vh,
+      calc(100% - 95px) 0,
+      100% 209px,
+      100% 100%,
+      0 100%
+    );
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .footer {
+    color: #fff;
+    margin: auto;
+    max-width: 540px;
+    padding: 3rem 1.5rem;
+    position: relative;
+    z-index: 1;
+
+    .sub-footer {
+      font-size: 0.625rem;
+      margin: auto;
+      padding: 0 1em;
+      display: flex;
+      flex-direction: column;
+      > * {
+        margin-top: 1rem;
+      }
+    }
+
+    .flag {
+      color: #fff;
+      background-image: url('../../assets/images/eu-flag.svg');
+      background-repeat: no-repeat;
+      background-size: contain;
+      height: 7em;
+      max-width: 100%;
+      width: 31em;
+    }
+
+    @media (min-width: 576px) {
+      max-width: 720px;
+      padding: 3rem 2.5rem;
+      .sub-footer {
+        margin: unset;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      max-width: none;
+      padding: 3rem 7.5rem;
+
+      .sub-footer {
+        width: 55%;
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ context('Sandbox', () => {
   describe('Progress Form', () => {
     beforeEach(() => {
       cy.server();
-      cy.visit('/');
+      cy.visit('/dataset');
     });
 
     const selectorProgressTitleComplete = selectorProgressTitle + ' .tick';
@@ -24,7 +24,7 @@ context('Sandbox', () => {
     const selectorErrorLink = '.open-error-detail';
     const selectorModalDisplay = '.modal';
 
-    const selPortalLinks = '.portal-links';
+    const selPortalLinks = '.hide-mobile .portal-links';
     const selCountryLang = '[data-e2e="country-language"]';
     const selCreationDate = '[data-e2e="creation-date"]';
 
@@ -37,11 +37,11 @@ context('Sandbox', () => {
     });
 
     it('should show the complete progress on submit', () => {
-      cy.get(selectorProgressTitle).should('have.length', 0);
-      cy.get(selectorProgressTitleComplete).should('have.length', 0);
-      cy.get(selCountryLang).should('have.length', 0);
-      cy.get(selCreationDate).should('have.length', 0);
-      cy.get(selPortalLinks).should('have.length', 0);
+      cy.get(selectorProgressTitle).should('not.exist');
+      cy.get(selectorProgressTitleComplete).should('not.exist');
+      cy.get(selCountryLang).should('not.exist');
+      cy.get(selCreationDate).should('not.exist');
+      cy.get(selPortalLinks).should('not.exist');
 
       fillProgressForm('1');
 
@@ -53,11 +53,11 @@ context('Sandbox', () => {
     });
 
     it('should show the complete progress on navigation', () => {
-      cy.get(selectorProgressTitle).should('have.length', 0);
-      cy.get(selectorProgressTitleComplete).should('have.length', 0);
-      cy.get(selCountryLang).should('have.length', 0);
-      cy.get(selCreationDate).should('have.length', 0);
-      cy.get(selPortalLinks).should('have.length', 0);
+      cy.get(selectorProgressTitle).should('not.exist');
+      cy.get(selectorProgressTitleComplete).should('not.exist');
+      cy.get(selCountryLang).should('not.exist');
+      cy.get(selCreationDate).should('not.exist');
+      cy.get(selPortalLinks).should('not.exist');
 
       cy.visit('/dataset/1');
 
@@ -66,6 +66,22 @@ context('Sandbox', () => {
       cy.get(selCountryLang).should('have.length', 1);
       cy.get(selCreationDate).should('have.length', 1);
       cy.get(selPortalLinks).should('have.length', 1);
+    });
+
+    it('should warn when the preview is unavailable', () => {
+      const selectorPreviewUnavailable = '.preview-unavailable a';
+      cy.get(selectorPreviewUnavailable).should('not.exist');
+      cy.get(selectorModalDisplay).should('not.exist');
+
+      fillProgressForm('13');
+      cy.get(selectorPreviewUnavailable)
+        .filter(':visible')
+        .should('have.length', 1);
+
+      cy.get(selectorPreviewUnavailable)
+        .filter(':visible')
+        .click({ force: true });
+      cy.get(selectorModalDisplay).should('be.visible');
     });
 
     it('should show network errors', () => {
@@ -83,20 +99,20 @@ context('Sandbox', () => {
     });
 
     it('should show the progress warn', () => {
-      cy.get(selectorWarnPresent).should('have.length', 0);
+      cy.get(selectorWarnPresent).should('not.exist');
       fillProgressForm('110');
       cy.get(selectorWarnPresent).should('have.length', totalNumberOfSteps);
     });
 
     it('should show the progress fail', () => {
-      cy.get(selectorFailPresent).should('have.length', 0);
+      cy.get(selectorFailPresent).should('not.exist');
       fillProgressForm('101');
       cy.get(selectorFailPresent).should('have.length', totalNumberOfSteps);
     });
 
     it('should show the progress errors', () => {
-      cy.get(selectorErrorLink).should('have.length', 0);
-      cy.get(selectorModalDisplay).should('have.length', 0);
+      cy.get(selectorErrorLink).should('not.exist');
+      cy.get(selectorModalDisplay).should('not.exist');
       fillProgressForm('10118');
       cy.get(selectorErrorLink).should('have.length', 1);
       cy.get(selectorErrorLink).click({ force: true });
@@ -106,7 +122,7 @@ context('Sandbox', () => {
 
     it('should show the input and submit button', () => {
       cy.get(selectorLinkDatasetForm).click();
-      cy.get(selReachedDataLimit).should('have.length', 0);
+      cy.get(selReachedDataLimit).should('not.exist');
       fillUploadForm('Name_At_Least_Ten_Characters');
       cy.get(selectorBtnSubmitData).click();
       cy.get(selReachedDataLimit).should('have.length', 1);
@@ -119,11 +135,11 @@ context('Sandbox', () => {
       fillUploadForm('Name_At_Least_Ten_Characters');
       cy.get(selectorBtnSubmitData).click(force);
       cy.get(selReachedDataLimit).should('have.length', 1);
-      cy.get(selWarnDetail).should('have.length', 0);
+      cy.get(selWarnDetail).should('not.exist');
       cy.get(`${selReachedDataLimit} a`).click(force);
       cy.get(selWarnDetail).should('have.length', 1);
       cy.get(`${selReachedDataLimit} a`).click(force);
-      cy.get(selWarnDetail).should('have.length', 0);
+      cy.get(selWarnDetail).should('not.exist');
     });
   });
 });

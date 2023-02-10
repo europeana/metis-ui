@@ -1,12 +1,12 @@
 import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 
 export function MatchPasswordValidator(ac: AbstractControl): ValidationErrors | null {
-  const getField = (fieldName: string): FormControl => {
-    return ac.get(fieldName) as FormControl;
+  const getField = (fieldName: string): FormControl<string> => {
+    return ac.get(fieldName) as FormControl<string>;
   };
 
   const getValue = (fieldName: string): string => {
-    return getField(fieldName).value as string;
+    return getField(fieldName).value;
   };
 
   if (getValue('password') !== getValue('confirm')) {

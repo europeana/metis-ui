@@ -1,4 +1,4 @@
-import { fillRecordForm } from '../support/helpers';
+import { fillRecordForm, getSelectorPublishedUrl } from '../support/helpers';
 import {
   selectorBtnSubmitProgress,
   selectorBtnSubmitRecord,
@@ -19,7 +19,6 @@ context('Sandbox', () => {
     const force = { force: true };
     const noScrollCheck = { ensureScrollable: false };
     const selectorDatasetOrb = '.upload-orb';
-    const selectorOrbsHidden = '.dataset-orbs-hidden';
     const selectorContentTierOrb = '.content-tier-orb';
     const selectorMetadataTierOrb = '.metadata-tier-orb';
 
@@ -54,7 +53,7 @@ context('Sandbox', () => {
     };
 
     it('should be disabled if there is no dataset id or if the dataset id is invalid', () => {
-      cy.visit('/');
+      cy.visit('/dataset');
       cy.get(selectorBtnSubmitRecord).should('have.length', 1);
       cy.get(selectorInputRecordId).should('be.disabled');
 
@@ -77,6 +76,22 @@ context('Sandbox', () => {
       cy.get(selectorBtnSubmitProgress).should('not.be.disabled');
       cy.get(selectorInputRecordId).should('have.value', '2');
       cy.get(selectorInputDatasetId).should('have.value', '1');
+    });
+
+    it('should show the as processed / as published links', () => {
+      let datasetId = '1';
+      let recordId = '/1/23';
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('not.exist');
+      cy.visit(`/dataset/${datasetId}?recordId=${encodeURIComponent(recordId)}`);
+      cy.wait(200);
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('have.length', 1);
+
+      datasetId = '4';
+      recordId = '/4/321';
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('not.exist');
+      cy.visit(`/dataset/${datasetId}?recordId=${encodeURIComponent(recordId)}`);
+      cy.wait(200);
+      cy.get(getSelectorPublishedUrl(datasetId, recordId)).should('have.length', 1);
     });
 
     it('should show the processing errors conditionally', () => {
@@ -106,18 +121,14 @@ context('Sandbox', () => {
         .should('have.length', 1);
     });
 
-    it('should link the report to the dataset form (without opening the progress form)', () => {
+    it('should link the report to the dataset form', () => {
       cy.visit('/dataset/1?recordId=2');
       cy.get(`.progress-orb-container:not(.hidden)`).should('not.exist');
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('have.length', 1);
-
       cy.scrollTo('bottom', noScrollCheck);
       cy.wait(500);
       cy.get(selectorLinkDatasetForm).click();
-
       cy.get(`.wizard-head ${selectorDatasetOrb}`).should('have.length', 1);
-      cy.get(`.wizard-head${selectorOrbsHidden} ${selectorDatasetOrb}`).should('not.exist');
     });
 
     it('should toggle the contentTier and metadataTier sections', () => {

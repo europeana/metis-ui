@@ -1,9 +1,10 @@
 import * as url from 'url';
+import formidable from 'formidable';
 import { IncomingMessage, ServerResponse } from 'http';
 import { TestDataServer } from '../../../tools/test-data-server/test-data-server';
 import { problemPatternData } from '../src/app/_data';
 import {
-  Dataset,
+  DatasetInfo,
   DatasetStatus,
   FieldOption,
   ProblemPattern,
@@ -15,7 +16,7 @@ import {
   TierInfo
 } from '../src/app/_models';
 import { stepErrorDetails } from './data/step-error-detail';
-import { ProgressByStepStatus, TimedTarget } from './models/models';
+import { DatasetWithInfo, ProgressByStepStatus, TimedTarget } from './models/models';
 import { ReportGenerator } from './report-generator';
 
 new (class extends TestDataServer {
@@ -78,6 +79,76 @@ new (class extends TestDataServer {
     );
   }
 
+  /** handleUpload
+   **/
+  handleUpload(request: IncomingMessage, response: ServerResponse, datasetName: string): void {
+    const route = request.url as string;
+
+    if (datasetName === '404') {
+      this.handle404(route, response);
+      return;
+    }
+
+    const params = url.parse(route, true).query;
+    const getParam = (name: string): string => {
+      return params[name] as string;
+    };
+
+    const harvestType =
+      route.indexOf('harvestOaiPmh') > -1
+        ? StepStatus.HARVEST_OAI_PMH
+        : route.indexOf('harvestByUrl') > -1
+        ? StepStatus.HARVEST_HTTP
+        : StepStatus.HARVEST_ZIP;
+
+    const dataset = this.initialiseDataset(
+      `${this.newId}`,
+      harvestType,
+      datasetName,
+      getParam('country'),
+      getParam('language')
+    );
+
+    // Set up timed target and send response
+    this.addTimedTarget(`${this.newId}`, dataset);
+    this.headerJSON(response);
+    response.end(
+      JSON.stringify({
+        'dataset-id': `${this.newId}`,
+        'duplicate-records': 0,
+        'records-to-process': 0
+      } as SubmissionResponseData)
+    );
+
+    // Temporary function to add non-model (parameter) fields
+    const addNewDatasetInfoField = (name: string, value: string | boolean): void => {
+      const res: { [details: string]: string | boolean } = {};
+      res[name] = value;
+      dataset['dataset-info'] = Object.assign(res, dataset['dataset-info']) as DatasetInfo;
+    };
+    if (harvestType === StepStatus.HARVEST_OAI_PMH) {
+      addNewDatasetInfoField('harvestUrl', getParam('url'));
+      addNewDatasetInfoField('setSpec', getParam('setspec'));
+      addNewDatasetInfoField('metadataFormat', getParam('metadataformat'));
+    } else if (harvestType === StepStatus.HARVEST_HTTP) {
+      addNewDatasetInfoField('url', getParam('url'));
+    }
+
+    // continue request processing (get file info)
+    const form = formidable({ multiples: true });
+    form.parse(request, (_, __, files) => {
+      if (files) {
+        if (files.dataset) {
+          const fileName = (files.dataset as { originalFilename: string }).originalFilename;
+          addNewDatasetInfoField('dataset-filename', fileName);
+        }
+        if (files.xsltFile) {
+          addNewDatasetInfoField('transformed-to-edm-external', true);
+        }
+      }
+    });
+  }
+
   /**
    * initialiseProgressByStep
    *
@@ -103,7 +174,7 @@ new (class extends TestDataServer {
    * Initialises and returns a new Dataset object
    *
    * @param {number} totalRecords - the value for the result's 'total-records'
-   * @returns {Dataset}
+   * @returns {DatasetWithInfo}
    **/
   initialiseDataset(
     datasetId: string,
@@ -111,7 +182,7 @@ new (class extends TestDataServer {
     datasetName?: string,
     country?: string,
     language?: string
-  ): Dataset {
+  ): DatasetWithInfo {
     const idAsNumber = parseInt(datasetId[0]);
     const totalRecords = idAsNumber;
     const steps = Object.values(StepStatus).filter((step: StepStatus) => {
@@ -143,22 +214,40 @@ new (class extends TestDataServer {
             'content-tier': createEmptyTier()
           };
 
+    const datasetProtocol = Object.assign(
+      { 'upload-protocol': harvestType },
+      harvestType === StepStatus.HARVEST_OAI_PMH
+        ? {
+            harvestUrl: 'http://default-harvest-url',
+            setSpec: 'default-set-spec'
+          }
+        : harvestType === StepStatus.HARVEST_HTTP
+        ? {
+            url: 'http://default-url'
+          }
+        : {
+            'dataset-filename': 'default.zip'
+          }
+    );
+
+    const datasetInfo = {
+      'creation-date': `${new Date().toISOString()}`,
+      'dataset-id': datasetId,
+      'dataset-name': datasetName ? datasetName : 'GeneratedName',
+      country: country ? country : 'GeneratedCountry',
+      language: language ? language : 'GeneratedLanguage',
+      'record-limit-exceeded': !!(datasetName && datasetName.length > 10)
+    };
+
     return {
       status: DatasetStatus.IN_PROGRESS,
       'total-records': totalRecords,
+      'error-type': datasetId === '13' ? 'The process failed bigly' : '',
       'processed-records': 0,
       'progress-by-step': steps.map((key: StepStatus) => {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
-      'dataset-info': {
-        'creation-date': `${new Date().toISOString()}`,
-        'dataset-id': datasetId,
-        'dataset-name': datasetName ? datasetName : 'GeneratedName',
-        country: country ? country : 'GeneratedCountry',
-        language: language ? language : 'GeneratedLanguage',
-        'transformed-to-edm-external': country === 'Greece',
-        'record-limit-exceeded': !!(datasetName && datasetName.length > 10)
-      },
+      'dataset-info': (Object.assign(datasetInfo, datasetProtocol) as unknown) as DatasetInfo,
       'tier-zero-info': tierZeroInfo
     };
   }
@@ -215,6 +304,9 @@ new (class extends TestDataServer {
       dataset.status = DatasetStatus.COMPLETED;
       if (timedTarget.timesCalled >= 5) {
         dataset['portal-publish'] = 'http://this-collection/that-dataset/publish';
+        dataset['dataset-info'] = (Object.assign(dataset['dataset-info'], {
+          'end-date': `${new Date().toISOString()}`
+        }) as unknown) as DatasetInfo;
       }
       const tierZeroInfo = dataset['tier-zero-info'];
       if (tierZeroInfo) {
@@ -274,8 +366,7 @@ new (class extends TestDataServer {
   /**
    * handleId
    *
-   * Retrieves or creates a TimedTarget object with the supplied id and
-   * ends the response with its dataset data.
+   * Retrieves or creates a TimedTarget object with the supplied id
    *
    * The id "42001357" will be interpreted as having:
    *  - 4 records in total
@@ -284,14 +375,12 @@ new (class extends TestDataServer {
    *  - 0 errors
    *  - 1,3,5,7 will be the 'progress-by-step' items to apply the (non success) statuses to
    *
-   *  @param {ServerResponse} response - the server response object
    *  @param {string} id - the id to track
    **/
-  handleId(response: ServerResponse, id: string): void {
+  handleId(id: string): DatasetWithInfo {
     const timedTarget = this.timedTargets.get(id);
-    this.headerJSON(response);
     if (timedTarget) {
-      response.end(JSON.stringify(timedTarget.dataset));
+      return timedTarget.dataset;
     } else {
       const numericId = parseInt(this.ensureNumeric(id[0]));
       let harvestType = StepStatus.HARVEST_ZIP;
@@ -312,7 +401,7 @@ new (class extends TestDataServer {
       }
       const dataset = this.initialiseDataset(id, harvestType);
       this.addTimedTarget(id, dataset);
-      response.end(JSON.stringify(dataset));
+      return dataset;
     }
   }
 
@@ -322,9 +411,9 @@ new (class extends TestDataServer {
    *  Derives progressBurndown data and adds it to a TimedTarget
    *
    * @param { string } id - object identity
-   * @param { Dataset } dataset - the timed target dataset
+   * @param { DatasetWithInfo } dataset - the timed target dataset
    **/
-  addTimedTarget(id: string, dataset: Dataset): void {
+  addTimedTarget(id: string, dataset: DatasetWithInfo): void {
     const minIdLength = 4;
     const numericId = this.ensureNumeric(id);
     const paddedId = numericId.padEnd(minIdLength, id);
@@ -372,11 +461,13 @@ new (class extends TestDataServer {
   /**
    * generateProblem
    *
+   * @param ( number ) datasetId
+   * @param ( number ) patternIdIndex
    * @param ( string ) recordId
    **/
-  generateProblem(datasetId: number, patternId: number, recordId?: string): ProblemPattern {
+  generateProblem(datasetId: number, patternIdIndex: number, recordId?: string): ProblemPattern {
     const messageReports = {
-      P1: ['My Title', 'My Other Title'],
+      P1: ['My Title', 'My Other Title', "Can't people think of original titles?"],
       P2: [
         'The Descriptive Title',
         `The Descriptive Title: when all the good titles were taken
@@ -397,35 +488,49 @@ new (class extends TestDataServer {
       ]
     };
 
-    const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number) => {
+    let indexMatch = -1;
+
+    const patternIds = [1, 2, 3, 5, 6, 7, 9, 12].map((id: number, index: number) => {
+      if (recordId && recordId.indexOf(`${id}`) === 0) {
+        indexMatch = index;
+      }
       return `P${id}` as ProblemPatternId;
     });
 
-    const resultId = patternIds[patternId % patternIds.length];
+    const resultId = patternIds[indexMatch > -1 ? indexMatch : patternIdIndex % patternIds.length];
 
-    const occurenceList = new Array(Math.max(1, (datasetId + patternId) % 4))
-      .fill(null)
-      .map((_, occurenceIndex) => {
-        const messageReportGroup = messageReports[resultId];
-        return {
-          recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
-          problemOccurrenceList: [
-            {
-              messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
-              affectedRecordIds: Object.keys(new Array(occurenceIndex % 5).fill(null)).map(
-                (i, index) => {
-                  let suffix = '';
-                  if ((occurenceIndex + index) % 2 > 0) {
-                    suffix =
-                      '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
-                  }
-                  return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
+    let occurrenceCount = Math.max(1, (datasetId + patternIdIndex) % 4);
+
+    if (recordId && recordId.indexOf('x') > -1) {
+      const multiplier = parseInt(recordId.substr(recordId.indexOf('x') + 1, recordId.length));
+      if (!isNaN(multiplier)) {
+        occurrenceCount = occurrenceCount * multiplier;
+      }
+    } else if (resultId === 'P1' && patternIdIndex === 0) {
+      occurrenceCount += 1;
+    }
+
+    const occurenceList = new Array(occurrenceCount).fill(null).map((_, occurenceIndex) => {
+      const messageReportGroup = messageReports[resultId];
+      return {
+        recordId: recordId ? decodeURIComponent(recordId) : '/X/generated-record-id',
+        problemOccurrenceList: [
+          {
+            messageReport: messageReportGroup[occurenceIndex % messageReportGroup.length],
+            affectedRecordIds: Object.keys(new Array((occurenceIndex % 5) + 2).fill(null)).map(
+              (i, index) => {
+                let suffix = '';
+                if ((occurenceIndex + index) % 2 > 0) {
+                  suffix =
+                    '/artificially-long-to-test-line-wrapping-within-the-affected-records-list';
                 }
-              )
-            }
-          ]
-        };
-      });
+                return `/${datasetId}/${occurenceIndex + i}/${suffix}`;
+              }
+            )
+          }
+        ]
+      };
+    });
 
     return {
       problemPatternDescription: {
@@ -465,48 +570,10 @@ new (class extends TestDataServer {
     }
     if (request.method === 'POST') {
       const regRes = /\/dataset\/(\S+)\//.exec(route);
-
       if (regRes) {
         this.newId++;
-
-        const datasetName = regRes[1].split('/')[0];
-        const params = url.parse(route, true).query;
-        const getParam = (name: string): string => {
-          return params[name] as string;
-        };
-
-        if (datasetName === '404') {
-          this.handle404(route, response);
-          return;
-        }
-
-        let harvestType = StepStatus.HARVEST_ZIP;
-        if (params.url) {
-          if (params.metadataformat) {
-            harvestType = StepStatus.HARVEST_OAI_PMH;
-          } else {
-            harvestType = StepStatus.HARVEST_HTTP;
-          }
-        }
-
-        const dataset = this.initialiseDataset(
-          `${this.newId}`,
-          harvestType,
-          datasetName,
-          getParam('country'),
-          getParam('language')
-        );
-
-        this.addTimedTarget(`${this.newId}`, dataset);
-
-        this.headerJSON(response);
-        response.end(
-          JSON.stringify({
-            'dataset-id': `${this.newId}`,
-            'duplicate-records': 0,
-            'records-to-process': 0
-          } as SubmissionResponseData)
-        );
+        this.handleUpload(request, response, regRes[1].split('/')[0]);
+        return;
       } else {
         response.end(`{ "error": "invalid url" }`);
       }
@@ -515,6 +582,10 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify([
+            {
+              name: 'Bosnia and Herzogovina',
+              xmlValue: 'Bosnia and Herzogovina'
+            },
             {
               name: 'Greece',
               xmlValue: 'Greece'
@@ -533,6 +604,10 @@ new (class extends TestDataServer {
         this.headerJSON(response);
         response.end(
           JSON.stringify([
+            {
+              name: 'Bosnian',
+              xmlValue: 'Bosnian'
+            },
             {
               name: 'Greek',
               xmlValue: 'Greek'
@@ -569,8 +644,15 @@ new (class extends TestDataServer {
               }
             }
           }
-
-          if (this.errorCodes.indexOf(`${recordId}`) > -1) {
+          if (recordIdUnparsed.indexOf('four-o-four') > -1) {
+            setTimeout(
+              () => {
+                this.handle404(route, response);
+              },
+              isNaN(recordId) ? 0 : recordId
+            );
+            return;
+          } else if (this.errorCodes.indexOf(`${recordId}`) > -1) {
             response.statusCode = recordId;
             response.end();
             return;
@@ -587,6 +669,24 @@ new (class extends TestDataServer {
           return;
         }
 
+        // get dataset info
+
+        const regResDatasetInfo = /\/dataset-info\/([A-Za-z0-9_]+)$/.exec(route);
+
+        if (regResDatasetInfo) {
+          const id = regResDatasetInfo[1];
+          if (this.errorCodes.indexOf(id) > -1) {
+            response.statusCode = parseInt(id);
+            response.end();
+          } else {
+            this.headerJSON(response);
+            response.end(JSON.stringify(this.handleId(id)['dataset-info']));
+          }
+          return;
+        }
+
+        // get dataset progress
+
         const regResDataset = /\/dataset\/([A-Za-z0-9_]+)$/.exec(route);
 
         if (regResDataset) {
@@ -595,7 +695,8 @@ new (class extends TestDataServer {
             response.statusCode = parseInt(id);
             response.end();
           } else {
-            this.handleId(response, id);
+            this.headerJSON(response);
+            response.end(JSON.stringify(this.handleId(id)));
           }
           return;
         }
@@ -614,22 +715,33 @@ new (class extends TestDataServer {
 
             if (recordId && recordId.length > 1) {
               const recordIdNumeric = parseInt(recordId[1]);
-
               if (this.errorCodes.indexOf(recordId[1]) > -1) {
                 response.statusCode = parseInt(recordId[1]);
                 response.end();
-              } else {
-                const result =
-                  recordIdNumeric % 2 === 0
-                    ? '[]'
-                    : JSON.stringify([this.generateProblem(idNumeric, 0, recordId[1])]);
-                if (idNumeric > 999) {
-                  setTimeout(() => {
-                    response.end(result);
-                  }, idNumeric);
-                } else {
+                return;
+              }
+
+              let result = '[]';
+
+              if (recordIdNumeric % 2 === 1) {
+                // Add problems as per subsequent characters in the (numeric) dataset id
+                result = JSON.stringify([
+                  this.generateProblem(idNumeric, 0, recordId[1]),
+                  ...`${idNumeric}`
+                    .slice(1)
+                    .split('')
+                    .map((numericPart: string) => {
+                      return this.generateProblem(idNumeric, parseInt(numericPart));
+                    })
+                ]);
+              }
+
+              if (idNumeric > 999) {
+                setTimeout(() => {
                   response.end(result);
-                }
+                }, idNumeric);
+              } else {
+                response.end(result);
               }
               return;
             }
@@ -641,6 +753,7 @@ new (class extends TestDataServer {
               response.end();
               return;
             }
+
             const problemsDataset = {
               datasetId: id,
               executionTimestamp: `${new Date().toISOString()}`,
@@ -652,13 +765,13 @@ new (class extends TestDataServer {
                     })
             } as ProblemPatternsDataset;
 
-            if (idNumeric > 999) {
-              setTimeout(() => {
+            // apply possible delay to response
+            setTimeout(
+              () => {
                 response.end(JSON.stringify(problemsDataset));
-              }, idNumeric);
-            } else {
-              response.end(JSON.stringify(problemsDataset));
-            }
+              },
+              idNumeric > 999 ? idNumeric : 0
+            );
             return;
           }
         }

@@ -390,7 +390,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       }
       if (searchedRecordId) {
         this.searchTerm = searchedRecordId;
-        this.searchXMLSample(searchedRecordId, false);
+        this.searchXMLSample(searchedRecordId);
       }
     }
 
@@ -541,6 +541,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
    * updates local searchTerm and optionally invokes search on it
    * updates local variables searchError / searchedXMLSample | searchedXMLSampleCompare
    * @param {string} searchTerm - the term
+   * @param {boolean} comparison - flag if comparison is to be searched / assigned
    **/
   searchXMLSample(searchTerm: string, comparison = false): void {
     this.searchTerm = searchTerm;
@@ -559,37 +560,38 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
       ? this.previewFilters.comparisonFilter
       : this.previewFilters.baseFilter;
     const pluginType = filterPlugin ? filterPlugin.pluginType : null;
-    const executionId = this.previewFilters.baseFilter.executionId;
+    const executionId = filterPlugin ? filterPlugin.executionId : undefined;
 
-    if (executionId && pluginType) {
-      this.searchError = false;
-      this.isLoadingSearch = true;
-      this.subs.push(
-        this.workflows.searchWorkflowRecordsById(executionId, pluginType, searchTerm).subscribe(
-          (result: XmlSample) => {
-            if (result) {
-              this.previewFilters.searchedRecordId = searchTerm;
-              const searchedSample = Object.assign(result, { label: searchTerm });
-              if (comparison) {
-                this.searchedXMLSampleCompare = searchedSample;
-              } else {
-                this.searchedXMLSample = searchedSample;
-              }
-              this.setPreviewFilters.emit(this.previewFilters);
-            } else {
-              this.previewFilters.searchedRecordId = undefined;
-              this.searchError = true;
-              this.searchedXMLSample = undefined;
-            }
-            this.isLoadingSearch = false;
-          },
-          (error: HttpErrorResponse) => {
-            this.notification = httpErrorNotification(error);
-            this.searchedXMLSample = undefined;
-            this.isLoadingSearch = false;
-          }
-        )
-      );
+    if (!(executionId && pluginType)) {
+      return;
     }
+    this.searchError = false;
+    this.isLoadingSearch = true;
+    this.subs.push(
+      this.workflows.searchWorkflowRecordsById(executionId, pluginType, searchTerm).subscribe(
+        (result: XmlSample) => {
+          if (result) {
+            this.previewFilters.searchedRecordId = searchTerm;
+            const searchedSample = Object.assign(result, { label: searchTerm });
+            if (comparison) {
+              this.searchedXMLSampleCompare = searchedSample;
+            } else {
+              this.searchedXMLSample = searchedSample;
+            }
+            this.setPreviewFilters.emit(this.previewFilters);
+          } else {
+            this.previewFilters.searchedRecordId = undefined;
+            this.searchError = true;
+            this.searchedXMLSample = undefined;
+          }
+          this.isLoadingSearch = false;
+        },
+        (error: HttpErrorResponse) => {
+          this.notification = httpErrorNotification(error);
+          this.searchedXMLSample = undefined;
+          this.isLoadingSearch = false;
+        }
+      )
+    );
   }
 }

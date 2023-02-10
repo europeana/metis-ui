@@ -30,7 +30,7 @@ import {
   Workflow,
   WorkflowExecution,
   WorkflowFieldData,
-  WorkflowFormFieldConf
+  workflowFormFieldConf
 } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
@@ -55,7 +55,8 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   @Input() workflowData?: Workflow;
   @Input() lastExecution?: WorkflowExecution;
   @Input() isStarting = false;
-  @Input() fieldConf: WorkflowFormFieldConf;
+
+  fieldConf = workflowFormFieldConf;
 
   @Output() startWorkflow = new EventEmitter<void>();
   @Output() formInitialised = new EventEmitter<FormGroup>();
@@ -64,7 +65,57 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
 
   notification?: Notification;
   newWorkflow = true;
-  workflowForm: FormGroup;
+
+  booleanFormFields = [
+    ParameterFieldName.customXslt,
+    ParameterFieldName.incrementalHarvest,
+    ParameterFieldName.performSampling,
+    'pluginHARVEST',
+    'pluginTRANSFORMATION',
+    'pluginVALIDATION_EXTERNAL',
+    'pluginENRICHMENT',
+    'pluginVALIDATION_INTERNAL',
+    'pluginMEDIA_PROCESS',
+    'pluginNORMALIZATION',
+    'pluginLINK_CHECKING',
+    'pluginPREVIEW',
+    'pluginPUBLISH'
+  ];
+
+  workflowForm = this.fb.group(
+    workflowFormFieldConf.reduce(
+      (newMap: { [details: string]: Array<string | boolean> }, confItem) => {
+        // declare form field
+        if (this.booleanFormFields.includes(confItem.name)) {
+          newMap[confItem.name] = [false];
+        } else {
+          newMap[confItem.name] = [''];
+        }
+
+        if (confItem.parameterFields) {
+          // declare parameter form field
+          confItem.parameterFields.forEach((paramField) => {
+            if (this.booleanFormFields.includes(paramField)) {
+              newMap[paramField] = [false];
+            } else {
+              newMap[paramField] = [''];
+            }
+          });
+        }
+        return newMap;
+      },
+      {}
+    ),
+    {
+      validators: (): { [key: string]: boolean } | null => {
+        if (this.inputFields && this.hasGapInSequence(this.inputFields.toArray())) {
+          return { gapInSequence: true };
+        }
+        return null;
+      }
+    }
+  );
+
   isSaving = false;
 
   newNotification: Notification;
@@ -110,7 +161,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   *  - get workflow for this dataset, could be empty if none is created yet
   */
   ngOnInit(): void {
-    this.buildForm();
+    this.bindToWorkflowFormChanges();
     this.getWorkflow();
     this.formInitialised.emit(this.workflowForm);
 
@@ -212,37 +263,12 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     );
   }
 
-  /** buildForm
-  /* set up a reactive form for creating and editing a workflow
-  */
-  buildForm(): void {
-    const formGroupConf = {} as { [key: string]: Array<string> };
-    this.fieldConf.forEach((confItem) => {
-      formGroupConf[confItem.name] = [''];
-      if (confItem.parameterFields) {
-        confItem.parameterFields.forEach((paramField) => {
-          formGroupConf[paramField] = [''];
-        });
-      }
-    });
-    this.workflowForm = this.fb.group(formGroupConf, {
-      validators: (): { [key: string]: boolean } | null => {
-        if (this.inputFields && this.hasGapInSequence(this.inputFields.toArray())) {
-          return { gapInSequence: true };
-        }
-        return null;
-      }
-    });
-
-    this.updateRequired();
-  }
-
   /** setLinkCheck
    * sets the link-checking to the specified index
    */
   setLinkCheck(linkCheckIndex: number): void {
     this.rearrange(linkCheckIndex, false);
-    (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).markAsDirty();
+    this.workflowForm.controls.pluginLINK_CHECKING.markAsDirty();
   }
 
   /** addLinkCheck
@@ -253,7 +279,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     insertIndex: number,
     correctForInactive: boolean
   ): void {
-    (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValue(true);
+    this.workflowForm.controls.pluginLINK_CHECKING.setValue(true);
 
     let activeCount = -1;
     let newInsertIndex = -1;
@@ -271,7 +297,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
       });
     }
     if (newInsertIndex > -1) {
-      this.fieldConf.splice(newInsertIndex + 1, 0, shiftable);
+      workflowFormFieldConf.splice(newInsertIndex + 1, 0, shiftable);
     }
   }
 
@@ -280,15 +306,15 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   */
   removeLinkCheck(): void {
     let removeIndex = -1;
-    this.fieldConf.forEach((confItem, index) => {
+    workflowFormFieldConf.forEach((confItem, index) => {
       if (confItem.dragType === DragType.dragCopy) {
         removeIndex = index;
       }
     });
     if (removeIndex > -1) {
       // remove any previously-set link-check
-      (this.workflowForm.get('pluginLINK_CHECKING') as FormControl).setValue(false);
-      this.fieldConf.splice(removeIndex, 1);
+      this.workflowForm.controls.pluginLINK_CHECKING.setValue(false);
+      workflowFormFieldConf.splice(removeIndex, 1);
     }
   }
 
@@ -299,7 +325,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   rearrange(insertIndex: number, correctForInactive: boolean): void {
     let shiftable;
     this.removeLinkCheck();
-    this.fieldConf.forEach((confItem) => {
+    workflowFormFieldConf.forEach((confItem) => {
       if (confItem.dragType === DragType.dragSource) {
         shiftable = Object.assign({}, confItem);
         shiftable.dragType = DragType.dragCopy;
@@ -319,13 +345,13 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     });
   }
 
-  /** updateRequired
-  /* update required fields depending on selection
+  /** bindToWorkflowFormChanges
+  /* add validation to link checking
   */
-  updateRequired(): void {
+  bindToWorkflowFormChanges(): void {
     this.subs.push(
       this.workflowForm.valueChanges.subscribe(() => {
-        const ctrlLinkChecking = this.workflowForm.get('pluginLINK_CHECKING') as FormControl;
+        const ctrlLinkChecking = this.workflowForm.controls.pluginLINK_CHECKING;
         if (ctrlLinkChecking.value === true) {
           ctrlLinkChecking.setValidators([Validators.required]);
         }
@@ -364,7 +390,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   /* set all values in the FormGroup referenced by the conf fields to false
   */
   clearForm(): void {
-    this.fieldConf.forEach((field) => {
+    workflowFormFieldConf.forEach((field) => {
       (this.workflowForm.get(field.name) as FormControl).setValue(false);
     });
   }
@@ -376,14 +402,18 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
     for (const thisWorkflow of workflow.metisPluginsMetadata) {
       if (thisWorkflow.pluginType === PluginType.HTTP_HARVEST) {
         this.workflowForm.controls.url.setValue(thisWorkflow.url);
-        this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
+        this.workflowForm.controls.incrementalHarvest.setValue(
+          thisWorkflow.incrementalHarvest ?? false
+        );
       } else if (thisWorkflow.pluginType === PluginType.OAIPMH_HARVEST) {
         if (thisWorkflow.url) {
           this.workflowForm.controls.harvestUrl.setValue(thisWorkflow.url.trim().split('?')[0]);
         }
         this.workflowForm.controls.setSpec.setValue(thisWorkflow.setSpec);
         this.workflowForm.controls.metadataFormat.setValue(thisWorkflow.metadataFormat);
-        this.workflowForm.controls.incrementalHarvest.setValue(thisWorkflow.incrementalHarvest);
+        this.workflowForm.controls.incrementalHarvest.setValue(
+          thisWorkflow.incrementalHarvest ?? false
+        );
       }
     }
     this.enableIncrementalHarvestingFieldIfAvailable(workflow);
@@ -501,10 +531,10 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   formatFormValues(): { metisPluginsMetadata: PluginMetadata[] } {
     const plugins: PluginMetadata[] = [];
 
-    this.fieldConf
+    workflowFormFieldConf
       .filter((conf) => conf.dragType !== DragType.dragSource)
       .forEach((conf) => {
-        const enabled = this.workflowForm.value[conf.name];
+        const enabled = !!this.workflowForm.value[conf.name];
 
         if (conf.name === 'pluginHARVEST') {
           const paramsOAIPMH: ParameterField = [

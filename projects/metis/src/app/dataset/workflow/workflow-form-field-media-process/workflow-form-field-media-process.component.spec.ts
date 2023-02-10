@@ -30,8 +30,8 @@ describe('WorkflowFormFieldMediaProcessComponent', () => {
       parameterFields: [ParameterFieldName.throttlingLevel]
     };
     component.workflowForm = formBuilder.group({
-      pluginMEDIA_PROCESS: null,
-      throttlingLevel: null
+      pluginMEDIA_PROCESS: [false],
+      throttlingLevel: ['']
     });
     fixture.detectChanges();
   });

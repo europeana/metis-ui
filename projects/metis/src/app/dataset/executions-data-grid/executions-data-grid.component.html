@@ -21,6 +21,17 @@
           >Incremental Processing</span
         >
       </ng-container>
+      <ng-container *ngIf="getPluginMediaMetadata(plugin); let metadata">
+        <ng-container [ngSwitch]="metadata.throttlingLevel">
+          <span *ngSwitchCase="ThrottleLevel.WEAK" class="pill-throttle weak">Weak Throttle</span>
+          <span *ngSwitchCase="ThrottleLevel.MEDIUM" class="pill-throttle medium"
+            >Medium Throttle</span
+          >
+          <span *ngSwitchCase="ThrottleLevel.STRONG" class="pill-throttle strong"
+            >Strong Throttle</span
+          >
+        </ng-container>
+      </ng-container>
     </span>
   </span>
   <span class="totals" [ngClass]="{ stripey: applyStripe }">

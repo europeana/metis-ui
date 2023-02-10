@@ -1,40 +1,36 @@
 <main class="wizard">
-  <div
-    class="wizard-head"
-    [ngClass]="{
-      'dataset-orbs-hidden': wizardConf[getStepIndex(EnumWizardStepType.UPLOAD)].isHidden
-    }"
-  >
+  <div class="wizard-head">
     <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
       <h1 class="header-text" *ngIf="currentStepIndex === i">
+        <ng-container *ngSwitchCase="EnumWizardStepType.HOME" i18n="step title@@titleHome">
+          <span>Welcome to</span><span class="br">Metis Sandbox!</span>
+        </ng-container>
+
         <ng-container
           *ngSwitchCase="EnumWizardStepType.UPLOAD"
-          i18n="upload step title@@titleConfigureSource"
+          i18n="step title@@titleConfigureSource"
         >
           Upload Dataset
         </ng-container>
 
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK"
-          i18n="upload step title@@titleTrackProcessing"
+          i18n="step title@@titleTrackProcessing"
         >
           Track Dataset Processing
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROBLEMS_DATASET"
-          i18n="upload step title@@titleProblemsDataset"
+          i18n="step title@@titleProblemsDataset"
         >
           Problem Patterns (Dataset)
         </ng-container>
-        <ng-container
-          *ngSwitchCase="EnumWizardStepType.REPORT"
-          i18n="upload step title@@titleReport"
-        >
+        <ng-container *ngSwitchCase="EnumWizardStepType.REPORT" i18n="step title@@titleReport">
           Record Report
         </ng-container>
         <ng-container
           *ngSwitchCase="EnumWizardStepType.PROBLEMS_RECORD"
-          i18n="upload step title@@titleProblemsRecord"
+          i18n="step title@@titleProblemsRecord"
         >
           Problem Patterns (Record)
         </ng-container>
@@ -43,11 +39,21 @@
 
     <sb-navigation-orbs
       ariaLabel="Wizard Step Navigation"
+      class="sb-navigation-orbs"
+      [maxUncollapsed]="wizardConf.length"
       [count]="wizardConf.length"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
       (clickEvent)="setStep($event)"
+      [tooltips]="[
+        'Home',
+        'Upload Dataset',
+        'Track Dataset Processing',
+        'Problem Patterns (Dataset)',
+        'Record Report',
+        'Problem Patterns (Record)'
+      ]"
     ></sb-navigation-orbs>
   </div>
   <div class="wizard-content">
@@ -58,13 +64,21 @@
     >
     </sb-upload>
 
+    <sb-home
+      [showing]="currentStepType === EnumWizardStepType.HOME"
+      (appEntryLink)="callSetStep($event, getStepIndex(WizardStepType.PROGRESS_TRACK))"
+    ></sb-home>
+
     <sb-progress-tracker
       *ngIf="progressData"
+      class="sb-progress-tracker"
       [showing]="currentStepType === EnumWizardStepType.PROGRESS_TRACK"
       [progressData]="progressData"
+      [datsetInfo]="progressData['dataset-info']"
       [datasetId]="trackDatasetId"
       [isLoading]="isPollingProgress"
       (openReport)="openReport($event)"
+      [enableDynamicInfo]="enableDynamicInfo"
     ></sb-progress-tracker>
 
     <div
@@ -73,10 +87,21 @@
       }"
       class="wizard-section"
     >
+      <!-- Show dataset-info component for dataset problem viewer -->
+      <span *ngIf="enableDynamicInfo && problemPatternsDataset">
+        <sb-dataset-info
+          [datasetId]="problemPatternsDataset.datasetId"
+          [pushHeight]="problemPatternsDataset.problemPatternList.length === 0"
+          [enableDynamicInfo]="true"
+        >
+        </sb-dataset-info>
+      </span>
+
       <sb-problem-viewer
         *ngIf="problemPatternsDataset"
         [problemPatternsDataset]="problemPatternsDataset"
         (openLinkEvent)="followProblemPatternLink($event)"
+        [enableDynamicInfo]="enableDynamicInfo"
       ></sb-problem-viewer>
     </div>
 
@@ -91,6 +116,7 @@
         *ngIf="problemPatternsRecord"
         [problemPatternsRecord]="problemPatternsRecord"
         (openLinkEvent)="followProblemPatternLink($event)"
+        (onError)="wizardConf[this.getStepIndex(EnumWizardStepType.PROBLEMS_RECORD)].error = $event"
       ></sb-problem-viewer>
     </div>
 
@@ -103,7 +129,7 @@
       <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
     </div>
 
-    <div class="grid" *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
+    <div class="inputs" *ngIf="defaultInputsShown()">
       <span>
         <label
           i18n="track id label"
@@ -155,11 +181,11 @@
           >
         </span>
       </ng-container>
-
       <span [ngClass]="getConnectClasses('bottom')">
         <label
           i18n="track id label"
           for="record-to-track"
+          [attr.disabled]="formProgress.valid ? null : true"
           [ngClass]="{ asterisked: !formRecord.valid, tick: formRecord.valid }"
           >Enter the id of a <strong>record</strong></label
         >
@@ -201,17 +227,21 @@
         </button>
       </span>
 
-      <ng-container *ngIf="formRecord.get('recordToTrack')?.errors; let errors">
-        <span class="cell-errors field-errors" *ngIf="errors.invalid">
-          <span class="errors" i18n="Field error@@invalidRecordId"
-            >Please provide a valid record id</span
-          >
-        </span>
+      <ng-container *ngIf="formRecord.get('recordToTrack'); let recordField">
+        <ng-container
+          *ngIf="formRecord.value.recordToTrack?.length && recordField.errors; let errors"
+        >
+          <span class="cell-errors field-errors" *ngIf="errors.invalid">
+            <span class="errors" i18n="Field error@@invalidRecordId"
+              >Please provide a valid record id</span
+            >
+          </span>
+        </ng-container>
       </ng-container>
     </div>
     <!-- end grid -->
 
-    <ng-container *ngIf="currentStepType !== EnumWizardStepType.UPLOAD">
+    <ng-container *ngIf="defaultInputsShown()">
       <ul class="inline-texts">
         <li *ngIf="currentStepType !== EnumWizardStepType.PROGRESS_TRACK">
           <label class="inline-text"
@@ -230,7 +260,7 @@
             >Or
             <a
               class="link-internal"
-              (click)="callSetStep($event, 0, true)"
+              (click)="callSetStep($event, getStepIndex(WizardStepType.UPLOAD), true)"
               data-e2e="link-dataset-form"
               href="/new"
               >create a new dataset</a

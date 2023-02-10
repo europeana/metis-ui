@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import {
@@ -49,14 +49,10 @@ describe('RegisterComponent', () => {
     fixture.detectChanges();
   };
 
-  const fillVaidForm = (): void => {
+  const fillValidForm = (): void => {
     component.registerForm.controls.email.setValue('test@mocked.com');
-    (component.registerForm.controls.passwords as FormGroup).controls.password.setValue(
-      '!Passw0rd123'
-    );
-    (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue(
-      '!Passw0rd123'
-    );
+    component.registerForm.controls.passwords.controls.password.setValue('!Passw0rd123');
+    component.registerForm.controls.passwords.controls.confirm.setValue('!Passw0rd123');
   };
 
   describe('Normal operations', () => {
@@ -72,7 +68,8 @@ describe('RegisterComponent', () => {
 
     it('updates the password on key-up', () => {
       expect(component.password).toBeFalsy();
-      component.registerForm.get('passwords.password')!.setValue('password');
+      component.registerForm.controls.passwords.controls.password.setValue('password');
+      expect(component.password).toBeFalsy();
       component.onKeyupPassword();
       expect(component.password).toBeTruthy();
     });
@@ -91,7 +88,7 @@ describe('RegisterComponent', () => {
       spyOn(authentication, 'register').and.callFake(() => {
         return of(false);
       });
-      fillVaidForm();
+      fillValidForm();
       component.onSubmit();
       tick(3000);
       tick(1);
@@ -102,7 +99,7 @@ describe('RegisterComponent', () => {
     it('should submit the form and redirect', fakeAsync(() => {
       spyOn(router, 'navigate');
       submitBtn = fixture.nativeElement.querySelector('app-loading-button');
-      fillVaidForm();
+      fillValidForm();
       component.onSubmit();
       tick(3000);
       tick(1);
@@ -115,8 +112,8 @@ describe('RegisterComponent', () => {
     it('should reject weak password', () => {
       submitBtn = fixture.nativeElement.querySelector('app-loading-button');
       component.registerForm.controls.email.setValue('test@mocked.com');
-      (component.registerForm.controls.passwords as FormGroup).controls.password.setValue('');
-      (component.registerForm.controls.passwords as FormGroup).controls.confirm.setValue('');
+      component.registerForm.controls.passwords.controls.password.setValue('');
+      component.registerForm.controls.passwords.controls.confirm.setValue('');
       expect(submitBtn.disabled).toBeTruthy();
       component.onSubmit();
       fixture.detectChanges();
@@ -135,7 +132,7 @@ describe('RegisterComponent', () => {
     beforeEach(b4Each);
 
     it('should handle submit errors', fakeAsync(() => {
-      fillVaidForm();
+      fillValidForm();
       component.onSubmit();
       tick(1);
       fixture.detectChanges();

@@ -1,0 +1,40 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.get-started {
+  display: table;
+  font-weight: bold;
+  margin: auto;
+}
+
+.home {
+  display: none;
+  flex-direction: column;
+  padding: 0 2em 2em 2em;
+  text-align: center;
+  &.showing {
+    display: flex;
+  }
+}
+
+.list {
+  list-style-type: decimal;
+  margin: 1em 0 3em 0;
+}
+
+.nav-orb.is-active {
+  border-color: $eu-light-orange;
+}
+
+@media (min-width: $bp-med) {
+  .get-started {
+    margin: 0 0 0 auto;
+  }
+
+  .home {
+    text-align: left;
+  }
+
+  .list {
+    margin: 1em 0 2em 3em;
+  }
+}

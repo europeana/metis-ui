@@ -1,0 +1,52 @@
+@use "sass:map";
+
+// Mixin for orb basic colours
+@mixin basic-orb($palette) {
+  background-color: map.get($palette, 'background');
+  border-color: map.get($palette, 'border');
+  color: map.get($palette, 'foreground');
+
+  &:hover {
+    background-color: map.get($palette, 'hover-background');
+  }
+
+  &.is-active,
+  &.is-active:active,
+  &.is-active:active:hover {
+    border-color: map.get($palette, 'activated-border');
+    background-color: map.get($palette, 'activated-background');
+  }
+
+  &:active,
+  &.is-active:hover {
+    background-color: map.get($palette, 'active-background');
+    border-color: map.get($palette, 'active-border');
+    color: map.get($palette, 'active-foreground');
+  }
+}
+
+// Mixin for orb customisation
+@mixin custom-orb($fnIcon, $bgSize, $palette) {
+  @include basic-orb($defaultPalette);
+
+  &::after {
+    background: call($fnIcon, map.get($palette, 'foreground')) center / $bgSize no-repeat;
+    content: '';
+    height: 100%;
+    width: 100%;
+  }
+
+  &:hover::after {
+    background-image: call($fnIcon, map.get($palette, 'hover-foreground'));
+  }
+
+  &:active::after,
+  &.is-active:hover::after {
+    background-image: call($fnIcon, map.get($palette, 'active-foreground'));
+  }
+
+  &.is-active::after,
+  &.is-active:active:hover::after {
+    background-image: call($fnIcon, map.get($palette, 'activated-foreground'));
+  }
+}

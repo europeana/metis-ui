@@ -23,7 +23,7 @@
             "tsConfig": "projects/metis/src/tsconfig.app.json",
             "polyfills": "projects/metis/src/polyfills.ts",
             "progress": false,
-            "allowedCommonJsDependencies": ["@ctrl/ngx-codemirror", "codemirror"],
+            "allowedCommonJsDependencies": ["@ctrl/ngx-codemirror", "codemirror", "vkbeautify"],
             "stylePreprocessorOptions": {
               "includePaths": ["shared-styles"]
             },
@@ -250,6 +250,5 @@
         }
       }
     }
-  },
-  "defaultProject": "metis"
+  }
 }

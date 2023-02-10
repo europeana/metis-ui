@@ -1,0 +1,31 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.pop-out {
+  &.open,
+  &:hover,
+  &.hovered-state {
+    .pop-out-content {
+      background-color: $white;
+    }
+    .pop-out-opener {
+      background-color: $white;
+      border: 1px solid $gray-5;
+    }
+  }
+  .pop-out-content {
+    background: transparent;
+  }
+}
+
+// Overrides
+.wrapper,
+.problem-viewer-wrapper {
+  .pop-out.open {
+    .pop-out-content {
+      border-top: 1px solid $gray-5;
+    }
+    .pop-out-opener {
+      border-right-color: $gray-5;
+    }
+  }
+}

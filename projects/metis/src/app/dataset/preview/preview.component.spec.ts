@@ -379,21 +379,46 @@ describe('PreviewComponent', () => {
     });
 
     it('should get the comparison for the searched sample', fakeAsync((): void => {
-      expect(component.searchedXMLSampleCompare).toBeFalsy();
-      component.searchXMLSample('abc', true);
-      tick(1);
-      expect(component.searchedXMLSampleCompare).toBeFalsy();
-      component.previewFilters.baseFilter = {
+      const term = 'abc';
+      const baseFilter = {
         executionId: 'A',
         pluginType: PluginType.NORMALIZATION
       };
-      component.previewFilters.comparisonFilter = {
+      const comparisonFilter = {
         executionId: 'B',
         pluginType: PluginType.VALIDATION_INTERNAL
       };
-      component.searchXMLSample('abc', true);
+      spyOn(workflows, 'searchWorkflowRecordsById').and.callThrough();
+      expect(component.searchedXMLSampleCompare).toBeFalsy();
+
+      component.searchXMLSample(term, true);
       tick(1);
+      expect(component.searchedXMLSample).toBeFalsy();
+      expect(component.searchedXMLSampleCompare).toBeFalsy();
+      expect(workflows.searchWorkflowRecordsById).not.toHaveBeenCalled();
+
+      component.previewFilters.baseFilter = baseFilter;
+      component.previewFilters.comparisonFilter = comparisonFilter;
+
+      component.searchXMLSample(term);
+      tick(1);
+      expect(component.searchedXMLSample).toBeTruthy();
+      expect(component.searchedXMLSampleCompare).toBeFalsy();
+      expect(workflows.searchWorkflowRecordsById).toHaveBeenCalledWith(
+        baseFilter.executionId,
+        baseFilter.pluginType,
+        term
+      );
+
+      component.searchXMLSample(term, true);
+      tick(1);
+      expect(component.searchedXMLSample).toBeTruthy();
       expect(component.searchedXMLSampleCompare).toBeTruthy();
+      expect(workflows.searchWorkflowRecordsById).toHaveBeenCalledWith(
+        comparisonFilter.executionId,
+        comparisonFilter.pluginType,
+        term
+      );
     }));
 
     it('should toggle filters', fakeAsync(() => {

@@ -1,0 +1,22 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+.get-started {
+  color: $white;
+  background: $eu-jade;
+  border: 1px solid $eu-jade;
+  border-radius: 2px;
+  padding: 0.25em 0.5em;
+
+  &:hover {
+    border-color: $gray-5;
+  }
+
+  &:active {
+    border-color: $eu-jade-light;
+  }
+
+  &:hover,
+  &:active {
+    background: white;
+  }
+}
