@@ -1,10 +1,90 @@
-<lib-modal id="{{ modalDatasetDepublish }}" title="Depublish">
+<ng-template #tmpIdsByFile>
+  <form [formGroup]="formFile">
+    <lib-file-upload
+      formControlName="depublicationFile"
+      [form]="formFile"
+      [acceptedTypes]="'.txt'"
+    ></lib-file-upload>
+    <div class="form-ctrls">
+      <div
+        class="errors"
+        *ngIf="
+          formFile.get('depublicationFile')!.errors && formFile.get('depublicationFile')!.dirty
+        "
+      >
+        <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+          {{ 'depublicationFormErrorExtension' | translate }}
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #tmpIdsByInput>
+  <form [formGroup]="formRawText" class="dialog-input">
+    <textarea
+      formControlName="recordIds"
+      name="recordIds"
+      placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
+    ></textarea>
+    <div class="form-ctrls">
+      <div
+        class="errors"
+        *ngIf="formRawText.get('recordIds')!.errors && formRawText.get('recordIds')!.dirty"
+      >
+        <div *ngIf="formRawText.get('recordIds')!.errors!.required">
+          {{ 'depublicationFormErrorBlank' | translate }}
+        </div>
+        <div *ngIf="formRawText.get('recordIds')!.errors!.whitespace">
+          {{ 'depublicationFormErrorWhitespace' | translate }}
+        </div>
+        <div *ngIf="formRawText.get('recordIds')!.errors!.invalidIdFmt">
+          {{ 'depublicationFormErrorInvalidFmt' | translate }}
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<lib-modal
+  [buttons]="[
+    {
+      label: 'depublicationSubmitButtonText' | translate,
+      disabled: !(formRawText.valid && formRawText.dirty),
+      cssClass: 'button-filled submit-form right-aligned',
+      clickVal: true
+    }
+  ]"
+  [id]="modalIdAddByInput"
+  [isSmall]="false"
+  [title]="'depublicationModalTitle' | translate"
+>
+  <ng-content *ngTemplateOutlet="tmpIdsByInput"></ng-content>
+</lib-modal>
+
+<lib-modal
+  [buttons]="[
+    {
+      label: 'depublicationSubmitButtonText' | translate,
+      disabled: !(formFile.valid && formFile.dirty),
+      cssClass: 'button-filled submit-form right-aligned',
+      clickVal: true
+    }
+  ]"
+  [id]="modalIdAddByFile"
+  [isSmall]="false"
+  [title]="'depublicationModalTitle' | translate"
+>
+  <ng-content *ngTemplateOutlet="tmpIdsByFile"></ng-content>
+</lib-modal>
+
+<lib-modal buttonClass="button-filled" id="{{ modalDatasetDepublish }}" title="Depublish">
   <p i18n="confirm dataset depublish|show modal to get user confirmation@@confirmDatasetDepublish">
     Are you sure you want to depublish "{{ datasetName }}"?
   </p>
 </lib-modal>
 
-<lib-modal id="{{ modalRecIdDepublish }}" title="Depublish">
+<lib-modal buttonClass="button-filled" id="{{ modalRecIdDepublish }}" title="Depublish">
   <p
     i18n="
        confirm record id depublish|show modal to get user confirmation@@confirmRecordIdsDepublish
@@ -14,7 +94,7 @@
   </p>
 </lib-modal>
 
-<lib-modal id="{{ modalAllRecDepublish }}" title="Depublish">
+<lib-modal buttonClass="button-filled" id="{{ modalAllRecDepublish }}" title="Depublish">
   <p
     i18n="
        confirm all record id depublish|show modal to get user
@@ -90,79 +170,6 @@
       </div>
     </li>
   </ul>
-</div>
-<div class="modal-wrapper" *ngIf="dialogInputOpen || dialogFileOpen">
-  <div
-    class="modal"
-    [ngClass]="{
-      'dialog-file': dialogFileOpen,
-      'dialog-input': dialogInputOpen
-    }"
-  >
-    <div class="head">
-      {{ 'depublicationModalTitle' | translate }} <a class="btn-close" (click)="closeDialogs()"></a>
-    </div>
-    <ng-container *ngIf="dialogFileOpen">
-      <form [formGroup]="formFile" (ngSubmit)="onSubmitFormFile()">
-        <lib-file-upload
-          formControlName="depublicationFile"
-          [form]="formFile"
-          [acceptedTypes]="'.txt'"
-        ></lib-file-upload>
-        <div class="form-ctrls">
-          <div
-            class="errors"
-            *ngIf="
-              formFile.get('depublicationFile')!.errors && formFile.get('depublicationFile')!.dirty
-            "
-          >
-            <div *ngIf="formRawText.get('recordIds')!.errors!.required">
-              {{ 'depublicationFormErrorExtension' | translate }}
-            </div>
-          </div>
-          <button
-            class="button-filled submit-form"
-            type="submit"
-            [disabled]="!(formFile.valid && formFile.dirty)"
-          >
-            {{ 'depublicationSubmitButtonText' | translate }}
-          </button>
-        </div>
-      </form>
-    </ng-container>
-    <ng-container *ngIf="dialogInputOpen">
-      <form [formGroup]="formRawText" (ngSubmit)="onSubmitRawText()">
-        <textarea
-          formControlName="recordIds"
-          name="recordIds"
-          placeholder="{{ 'depublicationFormPlaceholderRecordIds' | translate }}"
-        ></textarea>
-        <div class="form-ctrls">
-          <div
-            class="errors"
-            *ngIf="formRawText.get('recordIds')!.errors && formRawText.get('recordIds')!.dirty"
-          >
-            <div *ngIf="formRawText.get('recordIds')!.errors!.required">
-              {{ 'depublicationFormErrorBlank' | translate }}
-            </div>
-            <div *ngIf="formRawText.get('recordIds')!.errors!.whitespace">
-              {{ 'depublicationFormErrorWhitespace' | translate }}
-            </div>
-            <div *ngIf="formRawText.get('recordIds')!.errors!.invalidIdFmt">
-              {{ 'depublicationFormErrorInvalidFmt' | translate }}
-            </div>
-          </div>
-          <button
-            class="button-filled submit-form"
-            type="submit"
-            [disabled]="!(formRawText.valid && formRawText.dirty)"
-          >
-            {{ 'depublicationSubmitButtonText' | translate }}
-          </button>
-        </div>
-      </form>
-    </ng-container>
-  </div>
 </div>
 
 <div class="depublications-grid">

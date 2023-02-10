@@ -21,8 +21,8 @@
       </p>
       <ng-template #yes_no>
         <p>
-          <button class="button" type="button" (click)="close(false)">No</button>
-          <button class="button" type="button" (click)="close(true)">Yes</button>
+          <button class="button {{ buttonClass }}" type="button" (click)="close(false)">No</button>
+          <button class="button {{ buttonClass }}" type="button" (click)="close(true)">Yes</button>
         </p>
       </ng-template>
     </div>

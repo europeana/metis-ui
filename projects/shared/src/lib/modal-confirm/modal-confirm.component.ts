@@ -18,6 +18,7 @@ import { ModalConfirmService } from '../_services/modal-confirm.service';
 export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() id: string;
   @Input() title: string;
+  @Input() buttonClass = '';
   @Input() buttonText: string;
   @Input() buttons: Array<ModalDialogButtonDefinition>;
   @Input() isSmall = true;

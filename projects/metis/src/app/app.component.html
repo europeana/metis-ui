@@ -2,7 +2,7 @@
 <div class="pusher pusher-{{ bodyClass }}">
   <div class="metis-main-content"><router-outlet></router-outlet></div>
 </div>
-<lib-modal id="{{ modalConfirmId }}" title="{{ 'cancel' | translate }}">
+<lib-modal buttonClass="button-filled" id="{{ modalConfirmId }}" title="{{ 'cancel' | translate }}">
   <ng-container *ngIf="cancellationRequest">
     <p
       i18n="

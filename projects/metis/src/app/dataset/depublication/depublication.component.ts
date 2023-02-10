@@ -45,8 +45,6 @@ export class DepublicationComponent extends DataPollingComponent {
   dataFilterParam: string | undefined;
   depublicationData: Array<RecordDepublicationInfoDeletable> = [];
   depublicationSelections: Array<string> = [];
-  dialogFileOpen = false;
-  dialogInputOpen = false;
 
   formRawText = this.fb.group({
     recordIds: [
@@ -64,9 +62,13 @@ export class DepublicationComponent extends DataPollingComponent {
   });
 
   isSaving = false;
+
   modalAllRecDepublish = 'confirm-depublish-all-recordIds';
   modalDatasetDepublish = 'confirm-depublish-dataset';
   modalRecIdDepublish = 'confirm-depublish-recordIds';
+  modalIdAddByFile = 'add-by-file';
+  modalIdAddByInput = 'add-by-input';
+
   optionsOpenAdd = false;
   optionsOpenDepublish = false;
   pollingRefresh: Subject<boolean>;
@@ -213,25 +215,28 @@ export class DepublicationComponent extends DataPollingComponent {
   /* - open the input dialog
   */
   openDialogInput(): void {
-    this.dialogInputOpen = true;
     this.closeMenus();
+    this.subs.push(
+      this.modalConfirms.open(this.modalIdAddByInput).subscribe((userResponse: boolean) => {
+        if (userResponse) {
+          this.onSubmitRawText();
+        }
+      })
+    );
   }
 
   /** openDialogFile
   /* - open the file dialog
   */
   openDialogFile(): void {
-    this.dialogFileOpen = true;
     this.closeMenus();
-  }
-
-  /** closeDialogs
-  /* - close the file dialog
-  /* - close the input dialog
-  */
-  closeDialogs(): void {
-    this.dialogInputOpen = false;
-    this.dialogFileOpen = false;
+    this.subs.push(
+      this.modalConfirms.open(this.modalIdAddByFile).subscribe((userResponse: boolean) => {
+        if (userResponse) {
+          this.onSubmitFormFile();
+        }
+      })
+    );
   }
 
   /** closeMenus
@@ -330,7 +335,6 @@ export class DepublicationComponent extends DataPollingComponent {
           .subscribe(
             () => {
               this.refreshPolling();
-              this.closeDialogs();
               this.isSaving = false;
             },
             (err: HttpErrorResponse): void => {
@@ -463,7 +467,6 @@ export class DepublicationComponent extends DataPollingComponent {
             () => {
               this.refreshPolling();
               form.controls.recordIds.reset();
-              this.closeDialogs();
               this.isSaving = false;
             },
             (err: HttpErrorResponse): void => {
