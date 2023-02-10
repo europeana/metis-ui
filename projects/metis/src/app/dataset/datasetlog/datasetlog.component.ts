@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { DataPollingComponent } from 'shared';
+import { DataPollingComponent, ModalConfirmService } from 'shared';
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
 import { ErrorService, WorkflowService } from '../../_services';
@@ -17,6 +17,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   constructor(
     private readonly workflows: WorkflowService,
     private readonly errors: ErrorService,
+    private readonly modalConfirms: ModalConfirmService,
     private readonly translate: TranslateService
   ) {
     super();
@@ -30,6 +31,7 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   noLogs: string;
   noLogMessage?: string;
   isFirstLoading = true;
+  modalIdLog = 'modal-id-log';
 
   private _showPluginLog: PluginExecution;
 
@@ -69,6 +71,13 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
   */
   ngOnInit(): void {
     this.noLogs = this.translate.instant('noLogs');
+    setTimeout(() => {
+      this.subs.push(
+        this.modalConfirms.open(this.modalIdLog).subscribe(() => {
+          this.closeLog();
+        })
+      );
+    });
   }
 
   /** closeLog
