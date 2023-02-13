@@ -30,10 +30,7 @@ describe('ReportSimpleComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        createMockPipe('renameWorkflow'),
-        ReportSimpleComponent
-      ],
+      declarations: [createMockPipe('renameWorkflow'), ReportSimpleComponent],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: WorkflowService, useClass: MockWorkflowService },

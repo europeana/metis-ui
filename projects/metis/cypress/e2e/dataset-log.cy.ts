@@ -24,6 +24,5 @@ context('metis-ui', () => {
         .click(force);
       cy.get(selectorModal).should('have.length', 1);
     });
-
   });
 });
