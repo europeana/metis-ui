@@ -1,6 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
   MockTranslateService,
@@ -16,6 +18,7 @@ describe('ReportSimpleComponent', () => {
   let component: ReportSimpleComponent;
   let fixture: ComponentFixture<ReportSimpleComponent>;
   let workflows: WorkflowService;
+  let modalConfirms: ModalConfirmService;
 
   const mockError = {
     errorType: 'my type',
@@ -27,64 +30,69 @@ describe('ReportSimpleComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [createMockPipe('renameWorkflow'), ReportSimpleComponent],
+      declarations: [
+        createMockPipe('renameWorkflow'),
+        ReportSimpleComponent
+      ],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
-        { provide: WorkflowService, useClass: MockWorkflowService }
+        { provide: WorkflowService, useClass: MockWorkflowService },
+        { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     workflows = TestBed.inject(WorkflowService);
+    modalConfirms = TestBed.inject(ModalConfirmService);
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ReportSimpleComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should not be visible or loading by default', () => {
-    expect(component.reportLoading).toBeFalsy();
-    expect(component.isVisible).toBeFalsy();
   });
 
   it('should show if a simple message is provided', () => {
-    expect(component.isVisible).toBeFalsy();
+    spyOn(modalConfirms, 'open').and.callFake(() => {
+      return of(true);
+    });
     component.reportRequest = { message: 'Hello' };
-    expect(component.isVisible).toBeTruthy();
+    expect(modalConfirms.open).toHaveBeenCalled();
   });
 
   it('should not show if an undefined message is provided', () => {
-    expect(component.isVisible).toBeFalsy();
+    spyOn(modalConfirms, 'open').and.callFake(() => {
+      return of(true);
+    });
     component.reportRequest = { message: '' };
-    expect(component.isVisible).toBeFalsy();
+    expect(modalConfirms.open).not.toHaveBeenCalled();
   });
 
   it('should show if an errors array is provided', () => {
-    expect(component.isVisible).toBeFalsy();
+    spyOn(modalConfirms, 'open').and.callFake(() => {
+      return of(true);
+    });
     component.reportRequest = { errors: [mockError] };
-    expect(component.isVisible).toBeTruthy();
+    expect(modalConfirms.open).toHaveBeenCalled();
   });
 
   it('should not show if the provided errors array is null', () => {
-    expect(component.isVisible).toBeFalsy();
+    spyOn(modalConfirms, 'open').and.callFake(() => {
+      return of(true);
+    });
     component.reportRequest = { errors: undefined };
-    expect(component.isVisible).toBeFalsy();
+    expect(modalConfirms.open).not.toHaveBeenCalled();
   });
 
   it('should show if loading', () => {
-    expect(component.isVisible).toBeFalsy();
+    spyOn(modalConfirms, 'open').and.callFake(() => {
+      return of(true);
+    });
     component.reportLoading = true;
-    expect(component.isVisible).toBeTruthy();
-    component.reportLoading = false;
-    expect(component.isVisible).toBeTruthy();
+    expect(modalConfirms.open).toHaveBeenCalled();
   });
 
   it('should warn if the provided errors array is empty', () => {
-    expect(component.isVisible).toBeFalsy();
     expect(component.notification).toBeFalsy();
     component.reportRequest = { errors: [] };
-    expect(component.isVisible).toBeTruthy();
     expect(component.notification!.content).toEqual('en:reportEmpty');
   });
 

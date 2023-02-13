@@ -25,7 +25,6 @@ export const LANG_EN_TRANS = Object.assign(LANG_EN_STATUS_TYPES, {
   changePassword: 'Change password',
   checkAll: 'Check all',
   checkSample: 'Check sample',
-  close: 'Close',
   compare: 'Compare with',
   country: 'Country',
   create: 'Create',

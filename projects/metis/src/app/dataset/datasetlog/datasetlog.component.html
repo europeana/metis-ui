@@ -1,13 +1,13 @@
 <lib-modal
   [buttons]="[
     {
-      label: 'close' | translate,
+      label: 'Close',
       cssClass: 'button-filled'
     }
   ]"
   [id]="modalIdLog"
   [isSmall]="false"
-  title="{{ 'log' | translate }} {{ showPluginLog.pluginType }}"
+  title="{{ 'log' | translate }} ({{ showPluginLog.pluginType | renameWorkflow }})"
 >
   <app-load-animation [resources]="{ logs: true }" *ngIf="isFirstLoading"></app-load-animation>
   <p *ngIf="noLogMessage">{{ noLogMessage }}</p>

@@ -1,102 +1,107 @@
-<div class="modal-wrapper" *ngIf="isVisible">
-  <div class="modal modal-big">
-    <div class="head">
-      Report
-      <span *ngIf="reportRequest.pluginType; let plugin">({{ plugin | renameWorkflow }})</span
-      ><a class="btn-close" (click)="close()"></a>
-      <a
-        class="btn-right"
-        (click)="copyReport()"
-        *ngIf="reportRequest.errors || reportRequest.message"
-        >Copy</a
-      >
+<ng-template #tmpBtnCopy>
+  <a class="btn-right" (click)="copyReport()" *ngIf="reportRequest.errors || reportRequest.message"
+    >Copy</a
+  >
+</ng-template>
+
+<lib-modal
+  [id]="modalReportId"
+  [isSmall]="false"
+  title="Report
+    {{ reportRequest.pluginType ? '(' + (reportRequest.pluginType | renameWorkflow) + ')' : '' }}
+  "
+  [templateHeadContent]="tmpBtnCopy"
+  [buttons]="[
+    {
+      label: 'Close',
+      cssClass: 'button-filled'
+    }
+  ]"
+>
+  <ng-content *ngTemplateOutlet="tmpReportContent"></ng-content>
+</lib-modal>
+
+<ng-template #tmpReportContent>
+  <app-load-animation
+    [resources]="{ reportErrors: false }"
+    *ngIf="reportLoading"
+  ></app-load-animation>
+  <app-notification
+    [notification]="notification"
+    (closed)="notification = undefined"
+  ></app-notification>
+  <div #contentRef>
+    <div
+      *ngIf="reportRequest.message"
+      [ngClass]="{ 'fail-message-separator': reportRequest.errors }"
+    >
+      {{ reportRequest.message }}
     </div>
-    <div class="content">
-      <app-load-animation
-        [resources]="{ reportErrors: false }"
-        *ngIf="reportLoading"
-      ></app-load-animation>
-      <app-notification
-        [notification]="notification"
-        (closed)="notification = undefined"
-      ></app-notification>
-      <div #contentRef>
-        <div
-          *ngIf="reportRequest.message"
-          [ngClass]="{ 'fail-message-separator': reportRequest.errors }"
-        >
-          {{ reportRequest.message }}
-        </div>
-        <div *ngIf="reportRequest.errors; let reportErrors">
-          <ul *ngFor="let r of reportKeys(reportErrors)">
-            <li *ngFor="let rk of reportKeys(reportErrors[r])">
-              <strong class="capitalise">{{ splitCamelCase(rk) }}:&nbsp;</strong>
-              <span *ngIf="!isObject(reportErrors[r][rk])">
-                <app-text-with-links [text]="reportErrors[r][rk]"></app-text-with-links>
-              </span>
-              <ul class="report-errors" *ngIf="isObject(reportErrors[r][rk])">
-                <ng-container *ngFor="let subrk of reportKeys(reportErrors[r][rk])">
-                  <ng-container *ngFor="let sub of reportKeys(reportErrors[r][rk][subrk])">
-                    <li class="omit-from-copy" *ngIf="sub === 'identifier' && isDownloadable()">
-                      <span>
-                        <strong class="capitalise">Record XML:&nbsp;</strong>
-                        <a
-                          class="btn-download"
-                          (click)="
-                            downloadRecord(
-                              reportErrors[r][rk][subrk][sub],
-                              reportErrors[r][rk][subrk]
-                            )
-                          "
-                        >
-                          <strong>Download</strong>
-                        </a>
-                      </span>
-                    </li>
-                    <li
-                      class="download-error omit-from-copy"
-                      *ngIf="
-                        sub === 'identifier' && reportErrors[r][rk][subrk].downloadError;
-                        let downloadError
+    <div *ngIf="reportRequest.errors; let reportErrors">
+      <ul *ngFor="let r of reportKeys(reportErrors)">
+        <li *ngFor="let rk of reportKeys(reportErrors[r])">
+          <strong class="capitalise">{{ splitCamelCase(rk) }}:&nbsp;</strong>
+          <span *ngIf="!isObject(reportErrors[r][rk])">
+            <app-text-with-links [text]="reportErrors[r][rk]"></app-text-with-links>
+          </span>
+          <ul class="report-errors" *ngIf="isObject(reportErrors[r][rk])">
+            <ng-container *ngFor="let subrk of reportKeys(reportErrors[r][rk])">
+              <ng-container *ngFor="let sub of reportKeys(reportErrors[r][rk][subrk])">
+                <li class="omit-from-copy" *ngIf="sub === 'identifier' && isDownloadable()">
+                  <span>
+                    <strong class="capitalise">Record XML:&nbsp;</strong>
+                    <a
+                      class="btn-download"
+                      (click)="
+                        downloadRecord(reportErrors[r][rk][subrk][sub], reportErrors[r][rk][subrk])
                       "
                     >
+                      <strong>Download</strong>
+                    </a>
+                  </span>
+                </li>
+                <li
+                  class="download-error omit-from-copy"
+                  *ngIf="
+                    sub === 'identifier' && reportErrors[r][rk][subrk].downloadError;
+                    let downloadError
+                  "
+                >
+                  <ul>
+                    <li>
+                      Error Downloading:
+                    </li>
+                    <li>
                       <ul>
                         <li>
-                          Error Downloading:
+                          {{ downloadError.message }}
                         </li>
                         <li>
-                          <ul>
-                            <li>
-                              {{ downloadError.message }}
-                            </li>
-                            <li>
-                              {{ downloadError.error.errorMessage }}
-                            </li>
-                          </ul>
+                          {{ downloadError.error.errorMessage }}
                         </li>
                       </ul>
                     </li>
-                    <li *ngIf="sub === 'identifier'">
-                      <span>
-                        <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
-                        {{ reportErrors[r][rk][subrk][sub] }}
-                      </span>
-                    </li>
-                    <li class="last-in-group" *ngIf="sub === 'additionalInfo'">
-                      <span>
-                        <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
-                        <app-text-with-links
-                          [text]="reportErrors[r][rk][subrk][sub]"
-                        ></app-text-with-links>
-                      </span>
-                    </li>
-                  </ng-container>
-                </ng-container>
-              </ul>
-            </li>
+                  </ul>
+                </li>
+                <li *ngIf="sub === 'identifier'">
+                  <span>
+                    <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
+                    {{ reportErrors[r][rk][subrk][sub] }}
+                  </span>
+                </li>
+                <li class="last-in-group" *ngIf="sub === 'additionalInfo'">
+                  <span>
+                    <strong class="capitalise">{{ splitCamelCase(sub) }}:&nbsp;</strong>
+                    <app-text-with-links
+                      [text]="reportErrors[r][rk][subrk][sub]"
+                    ></app-text-with-links>
+                  </span>
+                </li>
+              </ng-container>
+            </ng-container>
           </ul>
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   </div>
-</div>
+</ng-template>

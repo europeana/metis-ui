@@ -61,7 +61,6 @@
 
 @import '~codemirror/lib/codemirror.css';
 @import '~codemirror/theme/midnight.css';
-
 @import '~codemirror/addon/fold/foldgutter.css';
 
 body {
@@ -76,4 +75,11 @@ body {
     position: relative;
     top: auto;
   }
+}
+
+.modal .notification {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }

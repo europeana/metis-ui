@@ -67,7 +67,7 @@ context('metis-ui', () => {
           .scrollIntoView()
           .click(force);
         cy.get('[name=recordIds]').type(entries);
-        cy.get('.submit-form').click();
+        cy.get('.modal [type="button"]').click();
       };
 
       it('should open and close the file dialog form', () => {
@@ -76,6 +76,7 @@ context('metis-ui', () => {
         cy.get(selItemFile)
           .scrollIntoView()
           .click(force);
+
         cy.get(selDialogFile).should('be.visible');
         cy.get(selDialogClose).click();
         cy.get(selDialogFile).should('not.exist');

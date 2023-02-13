@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   Renderer2,
+  TemplateRef,
   ViewChild
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
@@ -22,6 +23,7 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   @Input() buttonText: string;
   @Input() buttons: Array<ModalDialogButtonDefinition>;
   @Input() isSmall = true;
+  @Input() templateHeadContent?: TemplateRef<HTMLElement>;
   @ViewChild('modalWrapper', { static: false }) modalWrapper: ElementRef;
 
   subConfirmResponse: Subject<boolean>;
