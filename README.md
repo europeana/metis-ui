@@ -152,8 +152,10 @@ or
 
 Once the values in `projects/[PROJECT_NAME]/env_file` have been set then the generated docker image can be ran with either:
 
-`docker run -it --rm -d -p 8080:8080 --env-file=projects/metis/deployment/local/env_file -v ./projects/metis/src/static/nginx-docker.conf:/etc/nginx/nginx.conf --name metis-ui andyjmaclean/metis-ui:v11`
-or
+`docker run -it --rm -d -p 8080:8080 --env-file=./projects/metis/deployment/local/env_file -v ./projects/metis/src/static/nginx-docker.conf:/etc/nginx/nginx.conf --name metis-ui andyjmaclean/metis-ui:v11`
+
+or:
+
 `docker run -it --rm -d -p 8080:8080  --env-file=projects/sandbox/env_file --name sandbox-ui sandbox-ui-app-image:version`
 
 ## Kubernetes
