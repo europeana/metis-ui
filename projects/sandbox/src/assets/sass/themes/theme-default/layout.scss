@@ -24,13 +24,10 @@ $wizard-border-radius: 1.5em;
 .wizard {
   background-color: $eu-light-jade-classic;
   border: 1px solid $eu-jade-dark;
-  border-radius: $wizard-border-radius;
-  margin: 7rem auto 8rem auto;
 
   .wizard-head {
     background: $eu-jade-classic;
     border-bottom: 1px solid $eu-jade-dark;
-    border-radius: $wizard-border-radius $wizard-border-radius 0 0;
     color: $white;
 
     .header-text {
@@ -56,6 +53,18 @@ $wizard-border-radius: 1.5em;
   margin: 3em 2em 2em 2em;
   label {
     color: $eu-jade-dark;
+  }
+}
+
+@media (min-width: $bp-small-2) {
+  .wizard {
+    border-radius: $wizard-border-radius;
+    margin: 7rem auto 8rem auto;
+    width: 80%;
+  }
+
+  .wizard-head {
+    border-radius: $wizard-border-radius $wizard-border-radius 0 0;
   }
 }
 
