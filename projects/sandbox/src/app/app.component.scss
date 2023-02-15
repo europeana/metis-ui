@@ -27,6 +27,18 @@
   justify-content: flex-start;
 }
 
+.overlay {
+  background: #000;
+  bottom: 0;
+  display: none;
+  position: absolute;
+  left: 0;
+  opacity: 0.75;
+  right: 0;
+  top: $fixed-header-height;
+  z-index: 13;
+}
+
 .sidebar-outer {
   background: $white;
   box-shadow: rgba(77, 77, 77, 0.2) 0 0 3px;
@@ -37,10 +49,13 @@
   position: fixed;
   top: calc($fixed-header-height);
   width: 100%;
-  z-index: 11;
+  z-index: 14;
 
   &.open {
     display: block;
+    + .pusher .overlay {
+      display: block;
+    }
   }
 
   @media (min-width: $bp-small-2) {
