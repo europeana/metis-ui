@@ -105,16 +105,23 @@
 
   <!-- Internal Link -->
   <!-- prettier-ignore -->
-  <ng-template #internalLinkItem let-recordId="recordId" let-datasetId="datasetId" let-showConnectBelow="showConnectBelow">
+  <ng-template #internalLinkItem let-recordId="recordId" let-datasetId="datasetId" let-ppId="ppId" let-showConnectBelow="showConnectBelow">
     <!-- //NOSONAR --><li>
-      <ng-container>
-        <a class="code link-related" (click)="openLink($event, recordId)" title="view record issues"
-        [ngClass]="{ 'connect-to-below' : showConnectBelow }"
+    <ng-container>
+      <a
+      *ngIf="ppId !== ProblemPatternId.P1; else unwrapped"
+        (click)="openLink($event, recordId)"
+        title="view record issues"
         href="/dataset/{{datasetId}}?view=problems&recordId={{recordId}}"
-        >
-          {{ recordId }}
-        </a>
-      </ng-container>
+      >
+        <ng-container *ngTemplateOutlet="unwrapped"></ng-container>
+      </a>
+      <ng-template #unwrapped
+        ><span class="code link-related"
+          [ngClass]="{ 'connect-to-below' : showConnectBelow }"
+        >{{ recordId }}</span></ng-template
+      >
+    </ng-container>
     </li>
   </ng-template>
 
@@ -176,7 +183,7 @@
               <ng-content
                 *ngTemplateOutlet="
                   internalLinkItem;
-                  context: { recordId: id, datasetId: datasetId }
+                  context: { recordId: id, datasetId: datasetId, ppId: ppId }
                 "
               ></ng-content>
             </ng-container>
@@ -214,13 +221,13 @@
               </span>
             </q>
           </li>
-
           <ng-container
             *ngIf="ppId !== ProblemPatternId.P1"
             [ngTemplateOutlet]="internalLinkItem"
             [ngTemplateOutletContext]="{
               recordId: analysis.recordId,
               datasetId: datasetId,
+              ppId: ppId,
               showConnectBelow:
                 analysis.problemOccurrenceList[0].affectedRecordIds.length &&
                 analysis.problemOccurrenceList[0].affectedRecordIdsShowing
