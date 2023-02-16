@@ -1,4 +1,4 @@
-<ng-template #tmpBtnCopy>
+<ng-template #tmpBtnCopyReport>
   <a class="btn-right" (click)="copyReport()" *ngIf="reportRequest.errors || reportRequest.message"
     >Copy</a
   >
@@ -10,7 +10,7 @@
   title="Report
     {{ reportRequest.pluginType ? '(' + (reportRequest.pluginType | renameWorkflow) + ')' : '' }}
   "
-  [templateHeadContent]="tmpBtnCopy"
+  [templateHeadContent]="tmpBtnCopyReport"
   [buttons]="[
     {
       label: 'Close',
