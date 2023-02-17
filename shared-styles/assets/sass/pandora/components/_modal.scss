@@ -1,11 +1,16 @@
+body.modal-open {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
 .modal-wrapper {
   background: $opacity-black;
   height: 100vh;
   left: 0;
   position: fixed;
   top: 0;
-  width: 100%; // 100vw leaves uneven spacing
-  z-index: 11;
+  width: 100%;
+  z-index: 15;
 
   .footer {
     text-align: center;
@@ -18,7 +23,6 @@
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 50vw;
   }
 
   .modal .head {
@@ -58,8 +62,6 @@
 
   .modal .content button,
   .modal .footer button {
-    background: $eu-jade;
-    border: 0;
     border-radius: $border-radius;
     color: $white;
     display: inline-block;
@@ -73,6 +75,9 @@
     &:first-child:last-child {
       display: block;
       margin: 1.5em auto;
+      &.right-aligned {
+        margin: 0 1em 1.5em auto;
+      }
     }
   }
 

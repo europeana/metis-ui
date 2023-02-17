@@ -10,6 +10,7 @@ import {
   executionsHistory,
   getListWrapper,
   information,
+  logs,
   overview,
   pluginsAvailable,
   reportExists,
@@ -640,6 +641,14 @@ new (class extends TestDataServer {
       response.end(JSON.stringify(evolution(regRes[1], regRes[2])));
       return true;
     }
+
+    regRes = route.match(/orchestrator\/proxies\/(\S+)\/task\/(\S+)\/logs/);
+
+    if (regRes) {
+      response.end(logs());
+      return true;
+    }
+
     return false;
   }
 

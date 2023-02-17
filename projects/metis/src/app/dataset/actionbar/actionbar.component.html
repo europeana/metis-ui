@@ -88,6 +88,7 @@
       <li class="nav-ctrl">
         <a
           class="nav-btn log-btn svg-icon-log tooltip"
+          data-e2e="open-log"
           title="{{ 'log' | translate }}"
           (click)="showLog()"
           *ngIf="currentStatus !== 'INQUEUE' && currentExternalTaskId && currentTopology"
