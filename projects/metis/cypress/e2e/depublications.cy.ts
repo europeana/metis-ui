@@ -4,8 +4,8 @@ context('metis-ui', () => {
   describe('depublication', () => {
     const force = { force: true };
     const selDialogClose = '.modal .btn-close';
-    const selDialogFile = '.dialog-file';
-    const selDialogInput = '.dialog-input';
+    const selDialogFile = '.modal [type="file"]';
+    const selDialogInput = '.modal textarea';
     const selGrid = '.depublications-grid';
     const selCtrls = '.depublication-ctrls';
     const selCheckbox = `${selGrid} .checkbox [type="checkbox"]`;
@@ -67,7 +67,7 @@ context('metis-ui', () => {
           .scrollIntoView()
           .click(force);
         cy.get('[name=recordIds]').type(entries);
-        cy.get('.submit-form').click();
+        cy.get('.modal [type="button"]').click();
       };
 
       it('should open and close the file dialog form', () => {

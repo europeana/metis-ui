@@ -106,9 +106,9 @@ context('Sandbox', () => {
 
     describe('(linked-viewers)', () => {
       it('should link the viewers', () => {
-        cy.visit('/dataset/101?view=problems');
+        cy.visit('/dataset/321?view=problems');
         cy.get(selectorLinkRelated)
-          .eq(1)
+          .eq(7)
           .click(force);
         cy.location('search').should('contain', `?recordId=`);
         cy.location('search').should('contain', `&view=problems`);

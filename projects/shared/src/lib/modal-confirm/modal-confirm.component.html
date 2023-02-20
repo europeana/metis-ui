@@ -1,6 +1,12 @@
 <div class="modal-wrapper" *ngIf="show" #modalWrapper tabindex="0" (keydown)="fnKeyDown($event)">
   <div class="modal" [ngClass]="{ 'modal-small': isSmall }">
-    <div class="head">{{ title }} <a class="btn-close" (click)="close(false)"></a></div>
+    <div class="head">
+      {{ title }}
+      <a class="btn-close" (click)="close(false)"></a>
+      <ng-container *ngIf="templateHeadContent">
+        <ng-container *ngTemplateOutlet="templateHeadContent"></ng-container>
+      </ng-container>
+    </div>
     <div class="content content-autoscroll">
       <p>
         <ng-content></ng-content>
@@ -21,8 +27,8 @@
       </p>
       <ng-template #yes_no>
         <p>
-          <button class="button" type="button" (click)="close(false)">No</button>
-          <button class="button" type="button" (click)="close(true)">Yes</button>
+          <button class="button {{ buttonClass }}" type="button" (click)="close(false)">No</button>
+          <button class="button {{ buttonClass }}" type="button" (click)="close(true)">Yes</button>
         </p>
       </ng-template>
     </div>

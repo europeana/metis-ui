@@ -103,7 +103,6 @@ describe('DepublicationComponent', () => {
       link.click();
       expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
       component.depublicationIsTriggerable = false;
-      fixture.detectChanges();
       link.click();
       expect(component.toggleMenuOptionsDepublish).toHaveBeenCalledTimes(1);
     });
@@ -120,14 +119,6 @@ describe('DepublicationComponent', () => {
       expect(component.optionsOpenAdd).toBeTruthy();
       component.openDialogFile();
       expect(component.optionsOpenAdd).toBeFalsy();
-    });
-
-    it('should close the dialogs', () => {
-      component.dialogInputOpen = true;
-      component.dialogFileOpen = true;
-      component.closeDialogs();
-      expect(component.dialogInputOpen).toBeFalsy();
-      expect(component.dialogFileOpen).toBeFalsy();
     });
 
     it('should close the menus', () => {
@@ -153,26 +144,27 @@ describe('DepublicationComponent', () => {
     });
 
     it('should submit the file', fakeAsync(() => {
-      component.dialogFileOpen = true;
+      spyOn(depublications, 'setPublicationFile').and.callFake(() => {
+        return of(true);
+      });
       component.datasetId = '123';
       addFormFieldData();
-      expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       tick(1);
-      expect(component.dialogFileOpen).toBeFalsy();
+      expect(depublications.setPublicationFile).toHaveBeenCalled();
       discardPeriodicTasks();
     }));
 
     it('should submit the text', () => {
+      spyOn(depublications, 'setPublicationInfo').and.callFake(() => {
+        return of(true);
+      });
       const datasetId = '123';
       component.datasetId = datasetId;
-      component.dialogInputOpen = true;
-
       component.onSubmitRawText();
-      expect(component.dialogInputOpen).toBeTruthy();
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
-      expect(component.dialogInputOpen).toBeFalsy();
+      expect(depublications.setPublicationInfo).toHaveBeenCalled();
     });
 
     it('should validate the record ids', () => {
@@ -442,15 +434,11 @@ describe('DepublicationComponent', () => {
 
     it('should handle errors submitting the file', fakeAsync(() => {
       spyOn(component, 'onError').and.callThrough();
-      component.dialogFileOpen = true;
       component.datasetId = '123';
       component.beginPolling();
       addFormFieldData();
-
-      expect(component.dialogFileOpen).toBeTruthy();
       component.onSubmitFormFile();
       tick(1);
-      expect(component.dialogFileOpen).toBeTruthy();
       expect(component.onError).toHaveBeenCalled();
     }));
 
@@ -458,7 +446,6 @@ describe('DepublicationComponent', () => {
       spyOn(component, 'onError').and.callThrough();
       const datasetId = '123';
       component.datasetId = datasetId;
-      component.dialogInputOpen = true;
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(component.onError).toHaveBeenCalled();

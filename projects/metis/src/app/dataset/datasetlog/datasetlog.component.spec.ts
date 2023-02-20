@@ -1,5 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { of } from 'rxjs';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
   MockErrorService,
@@ -19,20 +22,27 @@ describe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;
   let fixture: ComponentFixture<DatasetlogComponent>;
   let errors: ErrorService;
+  let modalConfirms: ModalConfirmService;
 
   const configureTestingModule = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [DatasetlogComponent, createMockPipe('translate')],
+      declarations: [
+        DatasetlogComponent,
+        createMockPipe('translate'),
+        createMockPipe('renameWorkflow')
+      ],
       providers: [
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
         { provide: ErrorService, useClass: MockErrorService },
-        { provide: TranslateService, useClass: MockTranslateService }
+        { provide: TranslateService, useClass: MockTranslateService },
+        { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
+    modalConfirms = TestBed.inject(ModalConfirmService);
   };
 
   const b4Each = (): void => {
@@ -97,6 +107,10 @@ describe('DatasetlogComponent', () => {
     });
 
     it('should close the logs', () => {
+      // supply a user close action
+      spyOn(modalConfirms, 'open').and.callFake(() => {
+        return of(true);
+      });
       spyOn(component.closed, 'emit');
       component.closeLog();
       expect(component.closed.emit).toHaveBeenCalled();

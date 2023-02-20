@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { SubscriptionManager } from 'shared';
+import { ModalConfirmService, SubscriptionManager } from 'shared';
 import { triggerXmlDownload } from '../../_helpers';
 import {
   errorNotification,
@@ -21,14 +21,15 @@ import { TranslateService } from '../../_translate';
 })
 export class ReportSimpleComponent extends SubscriptionManager {
   constructor(
+    private readonly modalConfirms: ModalConfirmService,
     private readonly translate: TranslateService,
     private readonly workflows: WorkflowService
   ) {
     super();
   }
-  isVisible: boolean;
   notification?: Notification;
   loading: boolean;
+  modalReportId = 'modal-report-id';
 
   @ViewChild('contentRef') contentRef: ElementRef;
 
@@ -37,12 +38,11 @@ export class ReportSimpleComponent extends SubscriptionManager {
   _reportRequest: ReportRequestWithData;
   @Input() set reportRequest(request: ReportRequestWithData) {
     this._reportRequest = request;
-
     if (request.message && request.message.length > 0) {
-      this.isVisible = true;
+      this.triggerModal();
     }
     if (request.errors) {
-      this.isVisible = true;
+      this.triggerModal();
       if (request.errors.length === 0) {
         this.notification = errorNotification(this.translate.instant('reportEmpty'));
       }
@@ -64,12 +64,13 @@ export class ReportSimpleComponent extends SubscriptionManager {
   /** reportLoading
   /* setter for the report loading variable:
   /* - updates the loading variable
-  /* - updates the isVisible variable
+  /* - optionallly calls triggerModal
+  /* @param {boolean} loading - Input
   */
   @Input() set reportLoading(loading: boolean) {
     this.loading = loading;
     if (loading) {
-      this.isVisible = true;
+      this.triggerModal();
     }
   }
 
@@ -82,7 +83,6 @@ export class ReportSimpleComponent extends SubscriptionManager {
    */
   close(): void {
     this.notification = undefined;
-    this.isVisible = false;
     this.closeReport.emit();
   }
 
@@ -155,6 +155,17 @@ export class ReportSimpleComponent extends SubscriptionManager {
             model.downloadError = error;
           }
         )
+    );
+  }
+
+  /** triggerModal
+  /* sets component visibilty
+  */
+  triggerModal(): void {
+    this.subs.push(
+      this.modalConfirms.open(this.modalReportId).subscribe(() => {
+        this.close();
+      })
     );
   }
 }

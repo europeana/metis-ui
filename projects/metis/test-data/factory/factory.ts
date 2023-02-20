@@ -790,3 +790,65 @@ export function evolution(datasetId: string, peType: string): HistoryVersions {
     evolutionSteps: res
   };
 }
+
+// localhost:3000/orchestrator/proxies/link_checking/task/10/logs?from=766&to=865
+export function logs(): string {
+  return JSON.stringify([
+    {
+      resourceNum: 5,
+      resource:
+        'https://test.ecloud.psnc.pl/api/records/VKOBBAXYMXK2PK3G4UQ/representations/metadataRecord/versions/e9b32090-a928/files/81bbc67c',
+      recordState: 'SUCCESS',
+      info: 'Record is indexed correctly',
+      additionalInformations: null,
+      europeanaId: '/76/CMC_HA_1185',
+      processingTime: 18539,
+      resultResource: 'null'
+    },
+    {
+      resourceNum: 4,
+      resource:
+        'https://test.ecloud.psnc.pl/api/records/FQRVHVPSYGGHVZKD3AQ/representations/metadataRecord/versions/e9b32090-a928/files/58b9ee6e',
+      recordState: 'SUCCESS',
+      info: 'Record is indexed correctly',
+      additionalInformations: null,
+      europeanaId: '/76/CMC_HA_936',
+      processingTime: 6077,
+      resultResource: 'null'
+    },
+    {
+      resourceNum: 3,
+      resource:
+        'https://test.ecloud.psnc.pl/api/records/HH33HGHSQWTD44FFNDA/representations/metadataRecord/versions/e9b32090-a928/files/6bdfc3c1',
+      recordState: 'SUCCESS',
+      info: 'Record is indexed correctly',
+      additionalInformations: null,
+      europeanaId: '/76/CMC_HA_1255',
+      processingTime: 5927,
+      resultResource: 'null'
+    },
+    {
+      resourceNum: 2,
+      resource:
+        'https://test.ecloud.psnc.pl/api/records/NN334OW7RLQ4N2KPVWA/representations/metadataRecord/versions/e9b32090-a928/files/6dc08691',
+      recordState: 'SUCCESS',
+      info: 'Record is indexed correctly',
+      additionalInformations: null,
+      europeanaId: '/76/_nnhSX08',
+      processingTime: 4845,
+      resultResource: 'null'
+    },
+    {
+      resourceNum: 1,
+      resource:
+        'https://test.ecloud.psnc.pl/api/records/D2ZMGZHAUTK2OLZE4EQ/representations/metadataRecord/versions/e9b32090-a928/files/013ab78d',
+      recordState: 'SUCCESS',
+      info: 'Record is indexed correctly',
+      additionalInformations: null,
+      europeanaId:
+        '/76/data_sounds_http___archive_org_download_BTO2012_09_16_BTO_2012_09_16_set2_08_mp3',
+      processingTime: 4514,
+      resultResource: 'null'
+    }
+  ]);
+}

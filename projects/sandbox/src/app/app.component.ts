@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, HostListener, Inject } from '@angular/core';
+import { Component, HostListener, Renderer2 } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
 import { ClickService } from 'shared';
 import { WizardComponent } from './wizard';
@@ -20,10 +19,7 @@ export class AppComponent {
   themeIndex = 0;
   wizardRef: WizardComponent;
 
-  constructor(
-    @Inject(DOCUMENT) private document: Document,
-    private readonly clickService: ClickService
-  ) {}
+  constructor(private readonly clickService: ClickService, private readonly renderer: Renderer2) {}
 
   /** documentClick
    * - global document click handler
@@ -35,15 +31,19 @@ export class AppComponent {
     this.clickService.documentClickedTarget.next(event.target);
   }
 
+  /** switchTheme
+  /* - bumps or resets themeIndex
+  /* - manages relevant body-level classes
+  */
   switchTheme(): void {
     this.themeIndex += 1;
     if (this.themeIndex >= this.themes.length) {
       this.themeIndex = 0;
     }
     this.themes.forEach((theme: string) => {
-      this.document.body.classList.remove(theme);
+      this.renderer.removeClass(document.body, theme);
     });
-    this.document.body.classList.add(this.themes[this.themeIndex]);
+    this.renderer.addClass(document.body, this.themes[this.themeIndex]);
   }
 
   /** onOutletLoaded
