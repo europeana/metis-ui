@@ -2,9 +2,17 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: metis-ui-ingress-test
+  annotations:
+    cert-manager.io/issuer: letsencrypt-production
 spec:
+  ingressClassName: public-iks-k8s-nginx
+  tls:
+    - hosts:
+        - metis.test.eanadev.org
+      secretName: metis.test.eanadev.org
   rules:
-    - http:
+    - host: metis.test.eanadev.org
+      http:
         paths:
           - path: /
             pathType: Prefix
