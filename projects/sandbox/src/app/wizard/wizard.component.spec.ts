@@ -23,11 +23,11 @@ import { FormatHarvestUrlPipe } from '../_translate';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
-import { WizardComponent } from './wizard.component';
+import { SandboxNavigatonComponent } from './wizard.component';
 
-describe('WizardComponent', () => {
-  let component: WizardComponent;
-  let fixture: ComponentFixture<WizardComponent>;
+describe('SandboxNavigatonComponent', () => {
+  let component: SandboxNavigatonComponent;
+  let fixture: ComponentFixture<SandboxNavigatonComponent>;
   const params = new BehaviorSubject({} as Params);
   const queryParams = new BehaviorSubject({} as Params);
 
@@ -55,7 +55,7 @@ describe('WizardComponent', () => {
         ProtocolFieldSetComponent,
         RecordReportComponent,
         UploadComponent,
-        WizardComponent
+        SandboxNavigatonComponent
       ],
       imports: [HttpClientTestingModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
@@ -73,7 +73,7 @@ describe('WizardComponent', () => {
   };
 
   const b4Each = (): void => {
-    fixture = TestBed.createComponent(WizardComponent);
+    fixture = TestBed.createComponent(SandboxNavigatonComponent);
     component = fixture.componentInstance;
     params.next({});
     fixture.detectChanges();

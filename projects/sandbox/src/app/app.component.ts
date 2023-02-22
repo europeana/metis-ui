@@ -1,7 +1,7 @@
 import { Component, HostListener, Renderer2 } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
 import { ClickService } from 'shared';
-import { WizardComponent } from './wizard';
+import { SandboxNavigatonComponent } from './wizard';
 
 @Component({
   selector: 'sb-root',
@@ -17,7 +17,7 @@ export class AppComponent {
   isSidebarOpen = false;
   themes = ['theme-default', 'theme-white'];
   themeIndex = 0;
-  wizardRef: WizardComponent;
+  wizardRef: SandboxNavigatonComponent;
 
   constructor(private readonly clickService: ClickService, private readonly renderer: Renderer2) {}
 
@@ -48,9 +48,9 @@ export class AppComponent {
 
   /** onOutletLoaded
   /* - obtains ref to app component
-  /* @param { WizardComponent } component - route component
+  /* @param { SandboxNavigatonComponent } component - route component
   */
-  onOutletLoaded(component: WizardComponent): void {
+  onOutletLoaded(component: SandboxNavigatonComponent): void {
     this.wizardRef = component;
   }
 

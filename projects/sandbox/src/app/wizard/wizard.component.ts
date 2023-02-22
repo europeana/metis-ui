@@ -45,7 +45,7 @@ enum ButtonAction {
   templateUrl: './wizard.component.html',
   styleUrls: ['./wizard.component.scss']
 })
-export class WizardComponent extends DataPollingComponent implements OnInit {
+export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   public ButtonAction = ButtonAction;
   public WizardStepType = WizardStepType;
 

@@ -21,7 +21,7 @@ import { ProblemViewerComponent } from './problem-viewer';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
-import { WizardComponent } from './wizard';
+import { SandboxNavigatonComponent } from './wizard';
 
 @NgModule({
   declarations: [
@@ -40,7 +40,7 @@ import { WizardComponent } from './wizard';
     RecordReportComponent,
     RenameStepPipe,
     UploadComponent,
-    WizardComponent
+    SandboxNavigatonComponent
   ],
   imports: [
     AppRoutingModule,

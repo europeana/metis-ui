@@ -1,32 +1,32 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WizardComponent } from './wizard';
+import { SandboxNavigatonComponent } from './wizard';
 
 const routes: Routes = [
   {
     path: 'dataset/:id',
-    component: WizardComponent,
+    component: SandboxNavigatonComponent,
     data: {
       reuseComponent: true
     }
   },
   {
     path: 'dataset',
-    component: WizardComponent,
+    component: SandboxNavigatonComponent,
     data: {
       reuseComponent: true
     }
   },
   {
     path: 'new',
-    component: WizardComponent,
+    component: SandboxNavigatonComponent,
     data: {
       reuseComponent: true
     }
   },
   {
     path: '',
-    component: WizardComponent,
+    component: SandboxNavigatonComponent,
     data: {
       reuseComponent: true
     }

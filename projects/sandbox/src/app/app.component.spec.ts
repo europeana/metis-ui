@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { WizardComponent } from './wizard';
+import { SandboxNavigatonComponent } from './wizard';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickService } from 'shared';
@@ -30,7 +30,7 @@ describe('AppComponent', () => {
   });
 
   it('should assign the wizard ref on outlet load', () => {
-    const component = ({} as unknown) as WizardComponent;
+    const component = ({} as unknown) as SandboxNavigatonComponent;
     app.onOutletLoaded(component);
     expect(app.wizardRef).toEqual(component);
   });
@@ -43,7 +43,7 @@ describe('AppComponent', () => {
   });
 
   it('should handle clicks on the logo', () => {
-    app.wizardRef = ({ setStep: jasmine.createSpy() } as unknown) as WizardComponent;
+    app.wizardRef = ({ setStep: jasmine.createSpy() } as unknown) as SandboxNavigatonComponent;
     const event = ({ preventDefault: jasmine.createSpy() } as unknown) as Event;
     app.onLogoClick(event);
     expect(app.wizardRef.setStep).toHaveBeenCalled();
