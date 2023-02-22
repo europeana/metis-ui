@@ -13,7 +13,7 @@
   margin-left: 2em;
 }
 
-.wizard {
+.sandbox-navigation {
   margin: 4.8rem auto 8rem auto;
   max-width: 50em;
   min-width: 22rem;
@@ -21,20 +21,20 @@
   width: 100%;
 }
 
-.wizard-head {
+.sandbox-navigation-head {
   .header-text {
     padding-bottom: 0;
   }
 }
 
-.wizard-content label {
+.sandbox-navigation-content label {
   cursor: pointer;
   &.tick {
     white-space: nowrap;
   }
 }
 
-.wizard-section {
+.sandbox-navigation-section {
   display: none;
   &.active {
     display: block;

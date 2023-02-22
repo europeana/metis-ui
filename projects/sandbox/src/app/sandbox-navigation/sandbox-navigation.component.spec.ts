@@ -17,13 +17,13 @@ import {
   MockSandboxService,
   MockSandboxServiceErrors
 } from '../_mocked';
-import { DatasetStatus, WizardStep, WizardStepType } from '../_models';
+import { DatasetStatus, SandboxPage, SandboxPageType } from '../_models';
 import { SandboxService } from '../_services';
 import { FormatHarvestUrlPipe } from '../_translate';
 import { ProblemViewerComponent } from '../problem-viewer';
 import { RecordReportComponent } from '../record-report';
 import { UploadComponent } from '../upload';
-import { SandboxNavigatonComponent } from './wizard.component';
+import { SandboxNavigatonComponent } from './sandbox-navigation.component';
 
 describe('SandboxNavigatonComponent', () => {
   let component: SandboxNavigatonComponent;
@@ -129,20 +129,20 @@ describe('SandboxNavigatonComponent', () => {
       component.progressData = Object.assign({}, mockDataset);
       setFormValueDataset('1');
       expect(component.getStepIsIndicator(stepIndexTrack)).toBeFalsy();
-      component.wizardConf[stepIndexTrack].lastLoadedIdDataset = '1';
+      component.sandboxNavConf[stepIndexTrack].lastLoadedIdDataset = '1';
       expect(component.getStepIsIndicator(stepIndexTrack)).toBeTruthy();
 
       expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeFalsy();
       component.problemPatternsDataset = mockProblemPatternsDataset;
       expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeFalsy();
-      component.wizardConf[stepIndexProblemsDataset].lastLoadedIdDataset = '1';
+      component.sandboxNavConf[stepIndexProblemsDataset].lastLoadedIdDataset = '1';
       expect(component.getStepIsIndicator(stepIndexProblemsDataset)).toBeTruthy();
 
       expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
       component.recordReport = mockRecordReport;
       expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
-      component.wizardConf[stepIndexReport].lastLoadedIdDataset = '1';
-      component.wizardConf[stepIndexReport].lastLoadedIdRecord = '2';
+      component.sandboxNavConf[stepIndexReport].lastLoadedIdDataset = '1';
+      component.sandboxNavConf[stepIndexReport].lastLoadedIdRecord = '2';
       expect(component.getStepIsIndicator(stepIndexReport)).toBeFalsy();
       setFormValueRecord('2');
       expect(component.getStepIsIndicator(stepIndexReport)).toBeTruthy();
@@ -153,8 +153,8 @@ describe('SandboxNavigatonComponent', () => {
         problemPatternList: mockProblemPatternsRecord
       };
       expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeFalsy();
-      component.wizardConf[stepIndexProblemsRecord].lastLoadedIdDataset = '1';
-      component.wizardConf[stepIndexProblemsRecord].lastLoadedIdRecord = '2';
+      component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdDataset = '1';
+      component.sandboxNavConf[stepIndexProblemsRecord].lastLoadedIdRecord = '2';
       expect(component.getStepIsIndicator(stepIndexProblemsRecord)).toBeTruthy();
     });
 
@@ -223,33 +223,33 @@ describe('SandboxNavigatonComponent', () => {
 
     it('should get the form group', () => {
       expect(
-        component.getFormGroup({ stepType: WizardStepType.PROGRESS_TRACK } as WizardStep)
+        component.getFormGroup({ stepType: SandboxPageType.PROGRESS_TRACK } as SandboxPage)
       ).toEqual(component.formProgress);
-      expect(component.getFormGroup({ stepType: WizardStepType.UPLOAD } as WizardStep)).toEqual(
+      expect(component.getFormGroup({ stepType: SandboxPageType.UPLOAD } as SandboxPage)).toEqual(
         component.uploadComponent.form
       );
-      expect(component.getFormGroup({ stepType: WizardStepType.REPORT } as WizardStep)).toEqual(
+      expect(component.getFormGroup({ stepType: SandboxPageType.REPORT } as SandboxPage)).toEqual(
         component.formRecord
       );
       expect(
-        component.getFormGroup({ stepType: WizardStepType.PROBLEMS_DATASET } as WizardStep)
+        component.getFormGroup({ stepType: SandboxPageType.PROBLEMS_DATASET } as SandboxPage)
       ).toEqual(component.uploadComponent.form);
     });
 
     it('should reset the busy flags', () => {
-      component.wizardConf[stepIndexUpload].isBusy = true;
-      component.wizardConf[stepIndexProblemsRecord].isBusy = true;
+      component.sandboxNavConf[stepIndexUpload].isBusy = true;
+      component.sandboxNavConf[stepIndexProblemsRecord].isBusy = true;
       component.isPollingProgress = true;
       component.resetBusy();
-      expect(component.wizardConf[stepIndexUpload].isBusy).toBeFalsy();
-      expect(component.wizardConf[stepIndexProblemsRecord].isBusy).toBeFalsy();
+      expect(component.sandboxNavConf[stepIndexUpload].isBusy).toBeFalsy();
+      expect(component.sandboxNavConf[stepIndexProblemsRecord].isBusy).toBeFalsy();
       expect(component.isPollingProgress).toBeFalsy();
     });
 
     it('should set the busy flag for upload', () => {
-      expect(component.wizardConf[stepIndexUpload].isBusy).toBeFalsy();
+      expect(component.sandboxNavConf[stepIndexUpload].isBusy).toBeFalsy();
       component.setBusyUpload(true);
-      expect(component.wizardConf[stepIndexUpload].isBusy).toBeTruthy();
+      expect(component.sandboxNavConf[stepIndexUpload].isBusy).toBeTruthy();
     });
 
     it('should set the trackDatasetId on upload success', () => {
@@ -260,15 +260,15 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should tell if the default inputs should be shown', () => {
-      component.currentStepType = WizardStepType.PROBLEMS_RECORD;
+      component.currentStepType = SandboxPageType.PROBLEMS_RECORD;
       expect(component.defaultInputsShown()).toBeTruthy();
-      component.currentStepType = WizardStepType.HOME;
+      component.currentStepType = SandboxPageType.HOME;
       expect(component.defaultInputsShown()).toBeFalsy();
-      component.currentStepType = WizardStepType.PROBLEMS_DATASET;
+      component.currentStepType = SandboxPageType.PROBLEMS_DATASET;
       expect(component.defaultInputsShown()).toBeTruthy();
-      component.currentStepType = WizardStepType.UPLOAD;
+      component.currentStepType = SandboxPageType.UPLOAD;
       expect(component.defaultInputsShown()).toBeFalsy();
-      component.currentStepType = WizardStepType.PROGRESS_TRACK;
+      component.currentStepType = SandboxPageType.PROGRESS_TRACK;
       expect(component.defaultInputsShown()).toBeTruthy();
     });
 
@@ -311,38 +311,38 @@ describe('SandboxNavigatonComponent', () => {
       } as unknown) as PopStateEvent;
 
       expect(component.progressData).toBeFalsy();
-      expect(component.currentStepType).toEqual(WizardStepType.HOME);
+      expect(component.currentStepType).toEqual(SandboxPageType.HOME);
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.progressData).toBeTruthy();
-      expect(component.currentStepType).toEqual(WizardStepType.PROGRESS_TRACK);
+      expect(component.currentStepType).toEqual(SandboxPageType.PROGRESS_TRACK);
 
       ps.url = '/dataset';
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.progressData).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
-      expect(component.currentStepType).toEqual(WizardStepType.PROGRESS_TRACK);
+      expect(component.currentStepType).toEqual(SandboxPageType.PROGRESS_TRACK);
 
       ps.url = '/new';
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.progressData).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
-      expect(component.currentStepType).toEqual(WizardStepType.UPLOAD);
+      expect(component.currentStepType).toEqual(SandboxPageType.UPLOAD);
 
       ps.url = '/dataset/1?recordId=2';
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.trackRecordId).toBeTruthy();
-      expect(component.currentStepType).toEqual(WizardStepType.REPORT);
+      expect(component.currentStepType).toEqual(SandboxPageType.REPORT);
 
       ps.url = '';
       component.handleLocationPopState(ps);
       tick(1);
       expect(component.trackRecordId).toBeFalsy();
       expect(component.trackRecordId).toBeFalsy();
-      expect(component.currentStepType).toEqual(WizardStepType.HOME);
+      expect(component.currentStepType).toEqual(SandboxPageType.HOME);
 
       component.cleanup();
       tick(apiSettings.interval);
@@ -381,18 +381,18 @@ describe('SandboxNavigatonComponent', () => {
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
       expect(component.currentStepIndex).toEqual(stepIndexHome);
-      component.setStep(stepIndexUpload, false, false);
+      component.setPage(stepIndexUpload, false, false);
       expect(component.currentStepIndex).toEqual(stepIndexUpload);
       expect(form.enable).not.toHaveBeenCalled();
-      component.setStep(stepIndexUpload, true);
+      component.setPage(stepIndexUpload, true);
       expect(form.enable).not.toHaveBeenCalled();
       form.disable();
-      component.setStep(stepIndexUpload, true);
+      component.setPage(stepIndexUpload, true);
       expect(form.enable).toHaveBeenCalled();
     });
 
-    it('should set the step conditionally via callSetStep', () => {
-      spyOn(component, 'setStep');
+    it('should set the step conditionally via callSetPage', () => {
+      spyOn(component, 'setPage');
 
       const createKeyEvent = (ctrlKey = false): KeyboardEvent => {
         return ({
@@ -401,21 +401,21 @@ describe('SandboxNavigatonComponent', () => {
         } as unknown) as KeyboardEvent;
       };
 
-      component.callSetStep(createKeyEvent(true), stepIndexUpload, false);
-      expect(component.setStep).not.toHaveBeenCalled();
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, false);
+      expect(component.setPage).not.toHaveBeenCalled();
 
-      component.callSetStep(createKeyEvent(false), stepIndexUpload, false);
-      expect(component.setStep).toHaveBeenCalled();
+      component.callSetPage(createKeyEvent(false), stepIndexUpload, false);
+      expect(component.setPage).toHaveBeenCalled();
 
-      component.callSetStep(createKeyEvent(true), stepIndexUpload, true);
-      expect(component.setStep).toHaveBeenCalledTimes(1);
+      component.callSetPage(createKeyEvent(true), stepIndexUpload, true);
+      expect(component.setPage).toHaveBeenCalledTimes(1);
 
-      component.callSetStep(createKeyEvent(false), stepIndexUpload);
-      expect(component.setStep).toHaveBeenCalledTimes(2);
+      component.callSetPage(createKeyEvent(false), stepIndexUpload);
+      expect(component.setPage).toHaveBeenCalledTimes(2);
     });
 
     it('should show the step content', () => {
-      const conf = component.wizardConf;
+      const conf = component.sandboxNavConf;
 
       conf[stepIndexHome].isHidden = true;
       conf[stepIndexTrack].isHidden = true;
@@ -424,22 +424,22 @@ describe('SandboxNavigatonComponent', () => {
       conf[stepIndexProblemsRecord].isHidden = true;
       conf[stepIndexProblemsDataset].isHidden = true;
 
-      component.setStep(stepIndexHome, false, false);
+      component.setPage(stepIndexHome, false, false);
       expect(conf[stepIndexHome].isHidden).toBeFalsy();
 
-      component.setStep(stepIndexUpload, false, false);
+      component.setPage(stepIndexUpload, false, false);
       expect(conf[stepIndexUpload].isHidden).toBeFalsy();
 
-      component.setStep(stepIndexTrack, false, false);
+      component.setPage(stepIndexTrack, false, false);
       expect(conf[stepIndexTrack].isHidden).toBeFalsy();
 
-      component.setStep(stepIndexProblemsDataset, false, true);
+      component.setPage(stepIndexProblemsDataset, false, true);
       expect(conf[stepIndexProblemsDataset].isHidden).toBeFalsy();
 
-      component.setStep(stepIndexProblemsRecord, false, true);
+      component.setPage(stepIndexProblemsRecord, false, true);
       expect(conf[stepIndexProblemsRecord].isHidden).toBeFalsy();
 
-      component.setStep(stepIndexReport, false, true);
+      component.setPage(stepIndexReport, false, true);
       expect(conf[stepIndexReport].isHidden).toBeFalsy();
     });
 
@@ -531,11 +531,11 @@ describe('SandboxNavigatonComponent', () => {
       component.progressData = mockDataset;
       const confIndex = stepIndexTrack;
 
-      expect(component.wizardConf[confIndex].error).toBeFalsy();
+      expect(component.sandboxNavConf[confIndex].error).toBeFalsy();
       setFormValueDataset('1');
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       tick(1);
-      expect(component.wizardConf[confIndex].error).toBeTruthy();
+      expect(component.sandboxNavConf[confIndex].error).toBeTruthy();
       expect(component.progressData).toBeFalsy();
       expect(component.formProgress.value.datasetToTrack).toBeTruthy();
       component.cleanup();
@@ -545,25 +545,25 @@ describe('SandboxNavigatonComponent', () => {
     it('should handle record form errors', fakeAsync(() => {
       let index = stepIndexReport;
       component.recordReport = mockRecordReport;
-      expect(component.wizardConf[index].error).toBeFalsy();
+      expect(component.sandboxNavConf[index].error).toBeFalsy();
 
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
-      expect(component.wizardConf[index].error).toBeFalsy();
+      expect(component.sandboxNavConf[index].error).toBeFalsy();
 
       setFormValueDataset('1');
       setFormValueRecord('2');
 
       component.onSubmitRecord(component.ButtonAction.BTN_RECORD);
       tick(1);
-      expect(component.wizardConf[index].error).toBeTruthy();
+      expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
-      component.wizardConf[index].error = undefined;
+      component.sandboxNavConf[index].error = undefined;
       index = stepIndexProblemsRecord;
 
       component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, false);
       tick(1);
-      expect(component.wizardConf[index].error).toBeTruthy();
+      expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();
 
       component.cleanup();
@@ -571,20 +571,20 @@ describe('SandboxNavigatonComponent', () => {
     }));
 
     it('should handle problem pattern errors (dataset)', fakeAsync(() => {
-      expect(component.wizardConf[stepIndexProblemsDataset].error).toBeFalsy();
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeFalsy();
       component.trackDatasetId = '1';
       component.submitDatasetProblemPatterns();
       tick(1);
-      expect(component.wizardConf[stepIndexProblemsDataset].error).toBeTruthy();
+      expect(component.sandboxNavConf[stepIndexProblemsDataset].error).toBeTruthy();
     }));
 
     it('should handle problem pattern errors (record)', fakeAsync(() => {
-      expect(component.wizardConf[stepIndexProblemsRecord].error).toBeFalsy();
+      expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeFalsy();
       component.trackDatasetId = '1';
       component.trackRecordId = '1/2';
       component.submitRecordProblemPatterns();
       tick(1);
-      expect(component.wizardConf[stepIndexProblemsRecord].error).toBeTruthy();
+      expect(component.sandboxNavConf[stepIndexProblemsRecord].error).toBeTruthy();
     }));
   });
 });

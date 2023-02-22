@@ -297,7 +297,7 @@ $defaultPalette: (
 }
 
 .vertical {
-  .wizard-status {
+  .sandbox-status {
     flex-direction: column;
     .orb-container:not(.hidden) {
       height: 48px;
@@ -308,13 +308,13 @@ $defaultPalette: (
   }
 }
 
-.wizard-status {
+.sandbox-status {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
 }
 
-.wizard-head .wizard-status li {
+.sandbox-navigation-head .sandbox-status li {
   position: relative;
   top: 2em;
 }

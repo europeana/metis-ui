@@ -16,7 +16,7 @@ export interface FieldOption {
   xmlValue: string;
 }
 
-export enum WizardStepType {
+export enum SandboxPageType {
   HOME = 'HOME',
   UPLOAD = 'UPLOAD',
   PROGRESS_TRACK = 'PROGRESS_TRACK',
@@ -25,11 +25,11 @@ export enum WizardStepType {
   PROBLEMS_RECORD = 'PROBLEMS_RECORD'
 }
 
-export interface WizardStep {
+export interface SandboxPage {
   error?: HttpErrorResponse;
   isBusy?: boolean;
   isHidden: boolean;
   lastLoadedIdDataset?: string;
   lastLoadedIdRecord?: string;
-  stepType: WizardStepType;
+  stepType: SandboxPageType;
 }

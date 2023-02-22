@@ -1,6 +1,6 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
-$wizard-border-radius: 1.5em;
+$sandbox-navigation-border-radius: 1.5em;
 
 .dataset-info {
   color: $eu-jade-darkest;
@@ -21,11 +21,11 @@ $wizard-border-radius: 1.5em;
   background: $eu-light-jade-classic;
 }
 
-.wizard {
+.sandbox-navigation {
   background-color: $eu-light-jade-classic;
   border: 1px solid $eu-jade-dark;
 
-  .wizard-head {
+  .sandbox-navigation-head {
     background: $eu-jade-classic;
     border-bottom: 1px solid $eu-jade-dark;
     color: $white;
@@ -37,7 +37,7 @@ $wizard-border-radius: 1.5em;
       text-align: center;
     }
 
-    .wizard-status {
+    .sandbox-status {
       display: flex;
       justify-content: space-evenly;
       width: 100%;
@@ -49,7 +49,7 @@ $wizard-border-radius: 1.5em;
   }
 }
 
-.wizard-content {
+.sandbox-navigation-content {
   margin: 3em 2em 2em 2em;
   label {
     color: $eu-jade-dark;
@@ -57,14 +57,14 @@ $wizard-border-radius: 1.5em;
 }
 
 @media (min-width: $bp-small-2) {
-  .wizard {
-    border-radius: $wizard-border-radius;
+  .sandbox-navigation {
+    border-radius: $sandbox-navigation-border-radius;
     margin: 7rem auto 8rem auto;
     width: 80%;
   }
 
-  .wizard-head {
-    border-radius: $wizard-border-radius $wizard-border-radius 0 0;
+  .sandbox-navigation-head {
+    border-radius: $sandbox-navigation-border-radius $sandbox-navigation-border-radius 0 0;
   }
 }
 

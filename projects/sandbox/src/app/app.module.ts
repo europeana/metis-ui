@@ -21,7 +21,7 @@ import { ProblemViewerComponent } from './problem-viewer';
 import { ProgressTrackerComponent } from './progress-tracker';
 import { RecordReportComponent } from './record-report';
 import { UploadComponent } from './upload';
-import { SandboxNavigatonComponent } from './wizard';
+import { SandboxNavigatonComponent } from './sandbox-navigation';
 
 @NgModule({
   declarations: [

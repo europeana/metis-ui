@@ -25,8 +25,8 @@ import {
   ProblemPatternsRecord,
   RecordReport,
   RecordReportRequest,
-  WizardStep,
-  WizardStepType
+  SandboxPage,
+  SandboxPageType
 } from '../_models';
 
 import { SandboxService } from '../_services';
@@ -41,13 +41,13 @@ enum ButtonAction {
 }
 
 @Component({
-  selector: 'sb-wizard',
-  templateUrl: './wizard.component.html',
-  styleUrls: ['./wizard.component.scss']
+  selector: 'sb-sandbox-navigation',
+  templateUrl: './sandbox-navigation.component.html',
+  styleUrls: ['/sandbox-navigation.component.scss']
 })
 export class SandboxNavigatonComponent extends DataPollingComponent implements OnInit {
   public ButtonAction = ButtonAction;
-  public WizardStepType = WizardStepType;
+  public SandboxPageType = SandboxPageType;
 
   @ViewChild(ProblemViewerComponent, { static: false }) problemViewerRecord: ProblemViewerComponent;
   @ViewChild(UploadComponent, { static: false }) uploadComponent: UploadComponent;
@@ -66,7 +66,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   isPollingProgress = false;
   isPollingRecord = false;
   EnumProtocolType = ProtocolType;
-  EnumWizardStepType = WizardStepType;
+  EnumSandboxPageType = SandboxPageType;
   progressData?: Dataset;
   recordReport?: RecordReport;
   problemPatternsDataset?: ProblemPatternsDataset;
@@ -75,35 +75,35 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   trackRecordId = '';
   countryList: Array<FieldOption>;
   languageList: Array<FieldOption>;
-  wizardConf: FixedLengthArray<WizardStep, 6> = [
+  sandboxNavConf: FixedLengthArray<SandboxPage, 6> = [
     {
-      stepType: WizardStepType.HOME,
+      stepType: SandboxPageType.HOME,
       isHidden: true
     },
     {
-      stepType: WizardStepType.UPLOAD,
+      stepType: SandboxPageType.UPLOAD,
       isHidden: true
     },
     {
-      stepType: WizardStepType.PROGRESS_TRACK,
+      stepType: SandboxPageType.PROGRESS_TRACK,
       isHidden: true
     },
     {
-      stepType: WizardStepType.PROBLEMS_DATASET,
+      stepType: SandboxPageType.PROBLEMS_DATASET,
       isHidden: true
     },
     {
-      stepType: WizardStepType.REPORT,
+      stepType: SandboxPageType.REPORT,
       isHidden: true
     },
     {
-      stepType: WizardStepType.PROBLEMS_RECORD,
+      stepType: SandboxPageType.PROBLEMS_RECORD,
       isHidden: true
     }
   ];
 
-  currentStepIndex = this.getStepIndex(WizardStepType.HOME);
-  currentStepType = WizardStepType.HOME;
+  currentStepIndex = this.getStepIndex(SandboxPageType.HOME);
+  currentStepType = SandboxPageType.HOME;
 
   constructor(
     private readonly fb: NonNullableFormBuilder,
@@ -122,7 +122,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
         this.languageList = languages;
       })
     );
-    this.resetStepData();
+    this.resetPageData();
   }
 
   /**
@@ -135,8 +135,8 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   getNavOrbConfigOuter(i: number): ClassMap {
     return {
-      'home-orb-container': this.wizardConf[i].stepType === WizardStepType.HOME,
-      hidden: this.wizardConf[i].isHidden
+      'home-orb-container': this.sandboxNavConf[i].stepType === SandboxPageType.HOME,
+      hidden: this.sandboxNavConf[i].isHidden
     };
   }
 
@@ -149,12 +149,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @returns ngClass-compatible Map
    **/
   getNavOrbConfigInner(i: number): ClassMap {
-    const stepConf = this.wizardConf[i];
-    const isProblemOrb = [WizardStepType.PROBLEMS_DATASET, WizardStepType.PROBLEMS_RECORD].includes(
-      stepConf.stepType
-    );
-    const isProgressTrack = stepConf.stepType === WizardStepType.PROGRESS_TRACK;
-    const isRecordTrack = stepConf.stepType === WizardStepType.REPORT;
+    const stepConf = this.sandboxNavConf[i];
+    const isProblemOrb = [
+      SandboxPageType.PROBLEMS_DATASET,
+      SandboxPageType.PROBLEMS_RECORD
+    ].includes(stepConf.stepType);
+    const isProgressTrack = stepConf.stepType === SandboxPageType.PROGRESS_TRACK;
+    const isRecordTrack = stepConf.stepType === SandboxPageType.REPORT;
     const isUpload = this.getIsUpload(i);
 
     return {
@@ -213,30 +214,30 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
             this.trackRecordId = decodeURIComponent(preloadRecordId);
 
             if (queryParams.view === 'problems') {
-              this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_RECORD), false, false);
+              this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD), false, false);
               this.fillAndSubmitRecordForm(true, false);
             } else {
-              this.setStep(this.getStepIndex(WizardStepType.REPORT), false, false);
+              this.setPage(this.getStepIndex(SandboxPageType.REPORT), false, false);
               this.fillAndSubmitRecordForm(false, false);
             }
           } else if (preloadDatasetId) {
             this.trackDatasetId = preloadDatasetId;
             if (queryParams.view === 'problems') {
-              this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_DATASET), false, false);
+              this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_DATASET), false, false);
               this.fillAndSubmitProgressForm(true, false);
             } else {
-              this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), false, false);
+              this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), false, false);
               this.fillAndSubmitProgressForm(false, false);
             }
           } else if (/\/new$/.exec(window.location.toString())) {
-            this.setStep(this.getStepIndex(WizardStepType.UPLOAD), false, false);
+            this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
           } else {
             if (/\/dataset$/.exec(window.location.toString())) {
-              this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
+              this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
             } else if (/\/new$/.exec(window.location.toString())) {
-              this.setStep(this.getStepIndex(WizardStepType.UPLOAD), false, false);
+              this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), false, false);
             } else {
-              this.setStep(this.getStepIndex(WizardStepType.HOME), false, false);
+              this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
             }
           }
         })
@@ -258,16 +259,16 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       this.progressData = undefined;
       this.trackDatasetId = '';
       this.trackRecordId = '';
-      this.resetStepData();
+      this.resetPageData();
       this.clearDataPollers();
       this.formProgress.controls.datasetToTrack.setValue('');
 
       if (url === '/new') {
-        this.setStep(this.getStepIndex(WizardStepType.UPLOAD), true, false);
+        this.setPage(this.getStepIndex(SandboxPageType.UPLOAD), true, false);
       } else if (url === '') {
-        this.setStep(this.getStepIndex(WizardStepType.HOME), false, false);
+        this.setPage(this.getStepIndex(SandboxPageType.HOME), false, false);
       } else {
-        this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK), true, false);
+        this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK), true, false);
       }
     } else {
       this.trackDatasetId = ids[1];
@@ -286,11 +287,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   }
 
   /**
-   * resetStepData
-   * reset variables in the wizardConf object
+   * resetPageData
+   * reset variables in the sandboxNavConf object
    **/
-  resetStepData(): void {
-    this.wizardConf.forEach((step: WizardStep) => {
+  resetPageData(): void {
+    this.sandboxNavConf.forEach((step: SandboxPage) => {
       step.error = undefined;
       step.isBusy = false;
     });
@@ -350,15 +351,15 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   /**
    * getFormGroup
-   * Returns the correct form for the given WizardStep
+   * Returns the correct form for the given SandboxPage
    *
-   * @param { WizardStep } stepConf - the config to evaluate
+   * @param { SandboxPage } stepConf - the config to evaluate
    * @returns FormGroup
    **/
-  getFormGroup(stepConf: WizardStep): FormGroup | undefined {
-    if (stepConf.stepType === WizardStepType.PROGRESS_TRACK) {
+  getFormGroup(stepConf: SandboxPage): FormGroup | undefined {
+    if (stepConf.stepType === SandboxPageType.PROGRESS_TRACK) {
       return this.formProgress;
-    } else if (stepConf.stepType === WizardStepType.REPORT) {
+    } else if (stepConf.stepType === SandboxPageType.REPORT) {
       return this.formRecord;
     } else {
       return this.uploadComponent.form;
@@ -370,11 +371,11 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    * utility to get the index in the conf by the stepType
    *
-   * @param { WizardStepType } stepType - the type
+   * @param { SandboxPageType } stepType - the type
    * @returns nthe index
    **/
-  getStepIndex(stepType: WizardStepType): number {
-    return this.wizardConf.findIndex((step: WizardStep) => {
+  getStepIndex(stepType: SandboxPageType): number {
+    return this.sandboxNavConf.findIndex((step: SandboxPage) => {
       return step.stepType === stepType;
     });
   }
@@ -383,12 +384,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * getStepIsIndicator
    *
    * Template utility for setting 'indicator-orb' class on the step orbs
-   * @param { number } stepIndex - the WizardStep index
+   * @param { number } stepIndex - the SandboxPage index
    *
    * @returns boolean
    **/
   getStepIsIndicator(stepIndex: number): boolean {
-    const step = this.wizardConf[stepIndex];
+    const step = this.sandboxNavConf[stepIndex];
 
     const valDataset = this.formProgress.value.datasetToTrack;
     const valRecord = this.formRecord.value.recordToTrack;
@@ -397,13 +398,13 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     const matchValRecord = step.lastLoadedIdRecord === valRecord;
     const matchBoth = matchValDataset && matchValRecord;
 
-    if (step.stepType === WizardStepType.PROGRESS_TRACK) {
+    if (step.stepType === SandboxPageType.PROGRESS_TRACK) {
       return matchValDataset && !!this.progressData;
-    } else if (step.stepType === WizardStepType.REPORT) {
+    } else if (step.stepType === SandboxPageType.REPORT) {
       return matchBoth && !!this.recordReport;
-    } else if (step.stepType === WizardStepType.PROBLEMS_DATASET) {
+    } else if (step.stepType === SandboxPageType.PROBLEMS_DATASET) {
       return matchValDataset && !!this.problemPatternsDataset;
-    } else if (step.stepType === WizardStepType.PROBLEMS_RECORD) {
+    } else if (step.stepType === SandboxPageType.PROBLEMS_RECORD) {
       return matchBoth && !!this.problemPatternsRecord;
     }
     return this.uploadComponent && this.uploadComponent.form && this.uploadComponent.form.disabled;
@@ -411,45 +412,45 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   /**
    * getIsProblem
-   * Returns true if the stepType of the WizardStep at the given index is PROBLEMS_DATASET or PROBLEMS_RECORD
+   * Returns true if the stepType of the SandboxPage at the given index is PROBLEMS_DATASET or PROBLEMS_RECORD
    *
    * @returns boolean
    **/
   getIsProblem(stepIndex: number): boolean {
-    return [WizardStepType.PROBLEMS_DATASET, WizardStepType.PROBLEMS_RECORD].includes(
-      this.wizardConf[stepIndex].stepType
+    return [SandboxPageType.PROBLEMS_DATASET, SandboxPageType.PROBLEMS_RECORD].includes(
+      this.sandboxNavConf[stepIndex].stepType
     );
   }
 
   /**
    * getIsUpload
-   * Returns true if the stepType of the WizardStep at the given conf index's stepType is UPLOAD
+   * Returns true if the stepType of the SandboxPage at the given conf index's stepType is UPLOAD
    *
    * @param { number } stepIndex - the config index to evaluate
    * @returns boolean
    **/
   getIsUpload(stepIndex: number): boolean {
-    return this.wizardConf[stepIndex].stepType === WizardStepType.UPLOAD;
+    return this.sandboxNavConf[stepIndex].stepType === SandboxPageType.UPLOAD;
   }
 
   /**
-   * callSetStep
+   * callSetPage
    * Template utility to filter out right click / ctrl click events
-   * Conditionally calls this.setStep
+   * Conditionally calls this.setPage
    *
    * @param { event } event - the dome event
    * @param { number } stepIndex - the value to set
    * @param { boolean } reset - flag a reset
    **/
-  callSetStep(event: KeyboardEvent, stepIndex: number, reset = false): void {
+  callSetPage(event: KeyboardEvent, stepIndex: number, reset = false): void {
     if (!event.ctrlKey) {
       event.preventDefault();
-      this.setStep(stepIndex, reset);
+      this.setPage(stepIndex, reset);
     }
   }
 
   /**
-   * setStep
+   * setPage
    * Sets the currentStepIndex and isHidden values
    * Optionally resets the form
    * Optionally invokes this.updateLocation
@@ -458,36 +459,36 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @param { boolean } reset - flag a reset
    * @param { boolean } updateLocation - flag a location update
    **/
-  setStep(stepIndex: number, reset = false, updateLocation = true): void {
+  setPage(stepIndex: number, reset = false, updateLocation = true): void {
     if (reset) {
-      const form = this.getFormGroup(this.wizardConf[stepIndex]);
+      const form = this.getFormGroup(this.sandboxNavConf[stepIndex]);
       if (form && form.disabled) {
         form.enable();
         this.uploadComponent.rebuildForm();
       }
     }
     this.currentStepIndex = stepIndex;
-    this.currentStepType = this.wizardConf[stepIndex].stepType;
-    this.wizardConf[stepIndex].isHidden = false;
+    this.currentStepType = this.sandboxNavConf[stepIndex].stepType;
+    this.sandboxNavConf[stepIndex].isHidden = false;
 
     // 'home' enables 2 entry-points
-    if (this.currentStepType === WizardStepType.HOME) {
-      this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)].isHidden = false;
-      this.wizardConf[this.getStepIndex(WizardStepType.UPLOAD)].isHidden = false;
+    if (this.currentStepType === SandboxPageType.HOME) {
+      this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)].isHidden = false;
+      this.sandboxNavConf[this.getStepIndex(SandboxPageType.UPLOAD)].isHidden = false;
     }
 
     if (updateLocation) {
-      if (this.currentStepType === WizardStepType.HOME) {
+      if (this.currentStepType === SandboxPageType.HOME) {
         this.goToLocation('');
-      } else if (this.currentStepType === WizardStepType.UPLOAD) {
+      } else if (this.currentStepType === SandboxPageType.UPLOAD) {
         this.goToLocation('/new');
-      } else if (this.currentStepType === WizardStepType.PROGRESS_TRACK) {
+      } else if (this.currentStepType === SandboxPageType.PROGRESS_TRACK) {
         this.updateLocation(true, false);
-      } else if (this.currentStepType === WizardStepType.REPORT) {
+      } else if (this.currentStepType === SandboxPageType.REPORT) {
         this.updateLocation(true, true, false);
-      } else if (this.currentStepType === WizardStepType.PROBLEMS_DATASET) {
+      } else if (this.currentStepType === SandboxPageType.PROBLEMS_DATASET) {
         this.updateLocation(true, false, true);
-      } else if (this.currentStepType === WizardStepType.PROBLEMS_RECORD) {
+      } else if (this.currentStepType === SandboxPageType.PROBLEMS_RECORD) {
         this.updateLocation(true, true, true);
       }
     }
@@ -499,7 +500,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    *
    **/
   resetBusy(): void {
-    this.wizardConf.forEach((step: WizardStep) => {
+    this.sandboxNavConf.forEach((step: SandboxPage) => {
       step.isBusy = false;
     });
     this.isPollingProgress = false;
@@ -549,7 +550,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the trackDatasetId (problem patterns)
    **/
   submitDatasetProblemPatterns(): void {
-    const confStep = this.wizardConf[this.getStepIndex(WizardStepType.PROBLEMS_DATASET)];
+    const confStep = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_DATASET)];
     confStep.isBusy = true;
 
     this.subs.push(
@@ -577,7 +578,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    **/
   submitDatasetProgress(): void {
     const fieldNamePortalPublish = 'portal-publish';
-    const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.PROGRESS_TRACK)];
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROGRESS_TRACK)];
     stepConf.isBusy = true;
     this.isPollingProgress = true;
     this.clearDataPollers();
@@ -637,12 +638,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
       if (action === ButtonAction.BTN_PROGRESS) {
         if (updateLocation) {
-          this.setStep(this.getStepIndex(WizardStepType.PROGRESS_TRACK));
+          this.setPage(this.getStepIndex(SandboxPageType.PROGRESS_TRACK));
         }
         this.submitDatasetProgress();
       } else {
         if (updateLocation) {
-          this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_DATASET));
+          this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_DATASET));
         }
         this.submitDatasetProblemPatterns();
       }
@@ -654,7 +655,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the formRecord data (problem patterns)
    **/
   submitRecordProblemPatterns(): void {
-    const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.PROBLEMS_RECORD)];
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.PROBLEMS_RECORD)];
     stepConf.isBusy = true;
 
     this.subs.push(
@@ -688,7 +689,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * Submits the formRecord data
    **/
   submitRecordReport(showMeta = false): void {
-    const stepConf = this.wizardConf[this.getStepIndex(WizardStepType.REPORT)];
+    const stepConf = this.sandboxNavConf[this.getStepIndex(SandboxPageType.REPORT)];
     stepConf.isBusy = true;
     this.isPollingRecord = true;
 
@@ -735,12 +736,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
       if (action === ButtonAction.BTN_RECORD) {
         this.submitRecordReport(showMeta);
         if (updateLocation) {
-          this.setStep(this.getStepIndex(WizardStepType.REPORT));
+          this.setPage(this.getStepIndex(SandboxPageType.REPORT));
         }
       } else {
         this.submitRecordProblemPatterns();
         if (updateLocation) {
-          this.setStep(this.getStepIndex(WizardStepType.PROBLEMS_RECORD));
+          this.setPage(this.getStepIndex(SandboxPageType.PROBLEMS_RECORD));
         }
       }
     }
@@ -790,12 +791,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
 
   /**
    * setBusyUpload
-   * sets the "busy" flag in WizardConf
+   * sets the "busy" flag in sandboxNavConf
    *
    * @param { boolean } isBusy - the value to set
    **/
   setBusyUpload(isBusy: boolean): void {
-    this.wizardConf[this.getStepIndex(WizardStepType.UPLOAD)].isBusy = isBusy;
+    this.sandboxNavConf[this.getStepIndex(SandboxPageType.UPLOAD)].isBusy = isBusy;
   }
 
   /**
@@ -818,7 +819,7 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
    * @returns boolean
    **/
   defaultInputsShown(): boolean {
-    return ![WizardStepType.HOME, WizardStepType.UPLOAD].includes(this.currentStepType);
+    return ![SandboxPageType.HOME, SandboxPageType.UPLOAD].includes(this.currentStepType);
   }
 
   /**
@@ -833,12 +834,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
   fillAndSubmitProgressForm(problems: boolean, updateLocation = true): void {
     this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId);
 
-    let step: WizardStepType;
+    let step: SandboxPageType;
 
     if (problems) {
-      step = WizardStepType.PROBLEMS_DATASET;
+      step = SandboxPageType.PROBLEMS_DATASET;
     } else {
-      step = WizardStepType.PROGRESS_TRACK;
+      step = SandboxPageType.PROGRESS_TRACK;
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
@@ -861,12 +862,12 @@ export class SandboxNavigatonComponent extends DataPollingComponent implements O
     this.formProgress.controls.datasetToTrack.setValue(this.trackDatasetId ?? '');
     this.formRecord.controls.recordToTrack.setValue(this.trackRecordId ?? '');
 
-    let step: WizardStepType;
+    let step: SandboxPageType;
 
     if (problems) {
-      step = WizardStepType.PROBLEMS_RECORD;
+      step = SandboxPageType.PROBLEMS_RECORD;
     } else {
-      step = WizardStepType.REPORT;
+      step = SandboxPageType.REPORT;
     }
     this.currentStepType = step;
     this.currentStepIndex = this.getStepIndex(step);
