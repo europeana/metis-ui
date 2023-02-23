@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sandbox-ui-deployment-acceptance
+  name: sandbox-ui-deployment-acceptance
+spec:
+  selector:
+    matchLabels:
+      app: sandbox-ui-acceptance
+  template:
+    metadata:
+      labels:
+        app: sandbox-ui-acceptance
+    spec:
+      containers:
+        - image: APP_IMAGE
+          name: container
+          volumeMounts:
+            - name: sandbox-ui-nginx-config-volume
+              mountPath: "/etc/nginx/nginx.conf"
+              subPath: "nginx.conf"
+              readOnly: true
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: sandbox-ui-environment-acceptance
+          resources:
+            requests:
+              cpu: 30m
+              memory: 50M
+            limits:
+              cpu: 30m
+              memory: 50M
+      volumes:
+        - name: sandbox-ui-nginx-config-volume
+          configMap:
+            name: sandbox-ui-nginx-conf-acceptance

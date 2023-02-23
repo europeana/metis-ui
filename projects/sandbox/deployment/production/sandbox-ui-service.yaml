@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: sandbox-ui-service-production
+  name: sandbox-ui-service-production
+spec:
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: sandbox-ui-production
+  type: ClusterIP

@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: test
+resources:
+- deployment.yaml
+- sandbox-ui-service.yaml
+- ingress.yaml
+- hpa.yaml
+configMapGenerator:
+- name: sandbox-ui-nginx-conf-acceptance
+  files:
+  - nginx.conf
+secretGenerator:
+- name: sandbox-ui-environment-acceptance
+  envs:
+  - env_file
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+  annotations:
+    note: generated
