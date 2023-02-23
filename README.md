@@ -152,9 +152,34 @@ or
 
 Once the values in `projects/[PROJECT_NAME]/env_file` have been set then the generated docker image can be ran with either:
 
-`docker run -it --rm -d -p 8080:8080  --env-file=projects/metis/env_file --name metis-ui metis-ui-app-image:version`
-or
+`docker run -it --rm -d -p 8080:8080 --env-file=./projects/metis/deployment/local/env_file -v ./projects/metis/src/static/nginx-docker.conf:/etc/nginx/nginx.conf --name metis-ui andyjmaclean/metis-ui:v11`
+
+or:
+
 `docker run -it --rm -d -p 8080:8080  --env-file=projects/sandbox/env_file --name sandbox-ui sandbox-ui-app-image:version`
+
+## Kubernetes
+
+Running the script:
+
+`./k8s-deploy.sh -i myDockerImage`
+
+will deploy the (metis) app to a local Kubernetes cluster.
+
+The script accepts the parameter flags:
+- -c (context) the kubernetes context
+- -d (delete) flag that the app should be deleted
+- -h (help) shows a help message
+- -i (image) the application image to deploy
+- -r (replicas) hyphen-separated integers defining the min / max number of replicas
+- -t (target) the deploy target: local, test, acceptance, production
+- -u (utilisation) the CPU usage threshold for autoscaling
+
+so the command:
+
+    `./deployment/k8s-deploy.sh -d -t acceptance -i myDockerImage`
+
+...will delete myDockerImage in the default context with the acceptance namespace.
 
 ## Release
 

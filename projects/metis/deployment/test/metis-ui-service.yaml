@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: metis-ui-service-test
+  name: metis-ui-service-test
+spec:
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: metis-ui-test
+  type: ClusterIP
