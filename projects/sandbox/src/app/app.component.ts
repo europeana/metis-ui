@@ -1,7 +1,7 @@
 import { Component, HostListener, Renderer2 } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
 import { ClickService } from 'shared';
-import { WizardComponent } from './wizard';
+import { SandboxNavigatonComponent } from './sandbox-navigation';
 
 @Component({
   selector: 'sb-root',
@@ -17,7 +17,7 @@ export class AppComponent {
   isSidebarOpen = false;
   themes = ['theme-default', 'theme-white'];
   themeIndex = 0;
-  wizardRef: WizardComponent;
+  sandboxNavigationRef: SandboxNavigatonComponent;
 
   constructor(private readonly clickService: ClickService, private readonly renderer: Renderer2) {}
 
@@ -48,20 +48,20 @@ export class AppComponent {
 
   /** onOutletLoaded
   /* - obtains ref to app component
-  /* @param { WizardComponent } component - route component
+  /* @param { SandboxNavigatonComponent } component - route component
   */
-  onOutletLoaded(component: WizardComponent): void {
-    this.wizardRef = component;
+  onOutletLoaded(component: SandboxNavigatonComponent): void {
+    this.sandboxNavigationRef = component;
   }
 
   /**
    * onLogoClick
-   * invokes setStep on wizardRef
+   * invokes setPage on sandboxNavigationRef
    * @param { Event } event - the click event
    **/
   onLogoClick(event: Event): void {
     event.preventDefault();
-    this.wizardRef.setStep(0, false, true);
+    this.sandboxNavigationRef.setPage(0, false, true);
   }
 
   /**

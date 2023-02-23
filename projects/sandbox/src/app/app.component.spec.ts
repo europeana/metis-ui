@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { WizardComponent } from './wizard';
+import { SandboxNavigatonComponent } from './sandbox-navigation';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickService } from 'shared';
@@ -29,10 +29,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should assign the wizard ref on outlet load', () => {
-    const component = ({} as unknown) as WizardComponent;
+  it('should assign the sandboxNavigationRef on outlet load', () => {
+    const component = ({} as unknown) as SandboxNavigatonComponent;
     app.onOutletLoaded(component);
-    expect(app.wizardRef).toEqual(component);
+    expect(app.sandboxNavigationRef).toEqual(component);
   });
 
   it('should handle clicks', () => {
@@ -43,10 +43,12 @@ describe('AppComponent', () => {
   });
 
   it('should handle clicks on the logo', () => {
-    app.wizardRef = ({ setStep: jasmine.createSpy() } as unknown) as WizardComponent;
+    app.sandboxNavigationRef = ({
+      setPage: jasmine.createSpy()
+    } as unknown) as SandboxNavigatonComponent;
     const event = ({ preventDefault: jasmine.createSpy() } as unknown) as Event;
     app.onLogoClick(event);
-    expect(app.wizardRef.setStep).toHaveBeenCalled();
+    expect(app.sandboxNavigationRef.setPage).toHaveBeenCalled();
     expect(event.preventDefault).toHaveBeenCalled();
   });
 

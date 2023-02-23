@@ -15,9 +15,9 @@ import {
 
 context('Sandbox', () => {
   const classActive = 'is-active';
-  const setStep = (step: number): void => {
-    cy.get(`.wizard-status li:nth-child(${step}) a`).click({ force: true });
-    cy.get(`.wizard-status li:nth-child(${step}) a`).should('have.class', classActive);
+  const setPage = (step: number): void => {
+    cy.get(`.sandbox-status li:nth-child(${step}) a`).click({ force: true });
+    cy.get(`.sandbox-status li:nth-child(${step}) a`).should('have.class', classActive);
   };
 
   describe('Dataset Form', () => {
@@ -64,23 +64,23 @@ context('Sandbox', () => {
       navigateSteps(
         () => {
           currentStep++;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
+          cy.get(`.sandbox-status li:nth-child(${currentStep}) a`).click(force);
         },
         () => {
           currentStep--;
-          cy.get(`.wizard-status li:nth-child(${currentStep}) a`).click(force);
+          cy.get(`.sandbox-status li:nth-child(${currentStep}) a`).click(force);
         }
       );
     });
 
     it('should flag when a step is invalid', () => {
-      setStep(3);
+      setPage(3);
       cy.get(selectorFieldErrors).should('have.length', 0);
 
       cy.get(selectorInputDatasetId).type('1');
       cy.get(selectorFieldErrors).should('have.length', 0);
 
-      setStep(2);
+      setPage(2);
       cy.get(selectorInputName).type(' ', { scrollBehavior: false });
       cy.get(selectorFieldErrors)
         .filter(':visible')
@@ -118,16 +118,20 @@ context('Sandbox', () => {
       cy.url().should('match', /\d+\/\S+\d+/);
 
       // confirm the form is navigable
-      cy.get(`.wizard-head li:nth-child(2) a`).click(force);
+      cy.get(`.sandbox-navigation-head li:nth-child(2) a`).click(force);
+
+      const fnClickCurrentPageLinkInHeader = (): void => {
+        cy.get(`.sandbox-navigation-head li:nth-child(${currentStep}) a`).click(force);
+      };
 
       navigateSteps(
         () => {
           currentStep++;
-          cy.get(`.wizard-head li:nth-child(${currentStep}) a`).click(force);
+          fnClickCurrentPageLinkInHeader();
         },
         () => {
           currentStep--;
-          cy.get(`.wizard-head li:nth-child(${currentStep}) a`).click(force);
+          fnClickCurrentPageLinkInHeader();
         }
       );
     });

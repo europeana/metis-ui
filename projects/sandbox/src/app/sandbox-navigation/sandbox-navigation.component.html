@@ -1,35 +1,38 @@
-<main class="wizard">
-  <div class="wizard-head">
-    <ng-container *ngFor="let stepConf of wizardConf; let i = index" [ngSwitch]="stepConf.stepType">
+<main class="sandbox-navigation">
+  <div class="sandbox-navigation-head">
+    <ng-container
+      *ngFor="let stepConf of sandboxNavConf; let i = index"
+      [ngSwitch]="stepConf.stepType"
+    >
       <h1 class="header-text" *ngIf="currentStepIndex === i">
-        <ng-container *ngSwitchCase="EnumWizardStepType.HOME" i18n="step title@@titleHome">
+        <ng-container *ngSwitchCase="EnumSandboxPageType.HOME" i18n="step title@@titleHome">
           <span>Welcome to</span><span class="br">Metis Sandbox!</span>
         </ng-container>
 
         <ng-container
-          *ngSwitchCase="EnumWizardStepType.UPLOAD"
+          *ngSwitchCase="EnumSandboxPageType.UPLOAD"
           i18n="step title@@titleConfigureSource"
         >
           Upload Dataset
         </ng-container>
 
         <ng-container
-          *ngSwitchCase="EnumWizardStepType.PROGRESS_TRACK"
+          *ngSwitchCase="EnumSandboxPageType.PROGRESS_TRACK"
           i18n="step title@@titleTrackProcessing"
         >
           Track Dataset Processing
         </ng-container>
         <ng-container
-          *ngSwitchCase="EnumWizardStepType.PROBLEMS_DATASET"
+          *ngSwitchCase="EnumSandboxPageType.PROBLEMS_DATASET"
           i18n="step title@@titleProblemsDataset"
         >
           Problem Patterns (Dataset)
         </ng-container>
-        <ng-container *ngSwitchCase="EnumWizardStepType.REPORT" i18n="step title@@titleReport">
+        <ng-container *ngSwitchCase="EnumSandboxPageType.REPORT" i18n="step title@@titleReport">
           Record Report
         </ng-container>
         <ng-container
-          *ngSwitchCase="EnumWizardStepType.PROBLEMS_RECORD"
+          *ngSwitchCase="EnumSandboxPageType.PROBLEMS_RECORD"
           i18n="step title@@titleProblemsRecord"
         >
           Problem Patterns (Record)
@@ -38,14 +41,14 @@
     </ng-container>
 
     <sb-navigation-orbs
-      ariaLabel="Wizard Step Navigation"
+      ariaLabel="Page Navigation"
       class="sb-navigation-orbs"
-      [maxUncollapsed]="wizardConf.length"
-      [count]="wizardConf.length"
+      [maxUncollapsed]="sandboxNavConf.length"
+      [count]="sandboxNavConf.length"
       [fnClassMapOuter]="getNavOrbConfigOuter.bind(this)"
       [fnClassMapInner]="getNavOrbConfigInner.bind(this)"
       [links]="getNavOrbLinks()"
-      (clickEvent)="setStep($event)"
+      (clickEvent)="setPage($event)"
       [tooltips]="[
         'Home',
         'Upload Dataset',
@@ -56,23 +59,23 @@
       ]"
     ></sb-navigation-orbs>
   </div>
-  <div class="wizard-content">
+  <div class="sandbox-navigation-content">
     <sb-upload
-      [showing]="currentStepType === EnumWizardStepType.UPLOAD"
+      [showing]="currentStepType === EnumSandboxPageType.UPLOAD"
       (notifySubmitted)="dataUploaded($event)"
       (notifyBusy)="setBusyUpload($event)"
     >
     </sb-upload>
 
     <sb-home
-      [showing]="currentStepType === EnumWizardStepType.HOME"
-      (appEntryLink)="callSetStep($event, getStepIndex(WizardStepType.PROGRESS_TRACK))"
+      [showing]="currentStepType === EnumSandboxPageType.HOME"
+      (appEntryLink)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
     ></sb-home>
 
     <sb-progress-tracker
       *ngIf="progressData"
       class="sb-progress-tracker"
-      [showing]="currentStepType === EnumWizardStepType.PROGRESS_TRACK"
+      [showing]="currentStepType === EnumSandboxPageType.PROGRESS_TRACK"
       [progressData]="progressData"
       [datsetInfo]="progressData['dataset-info']"
       [datasetId]="trackDatasetId"
@@ -83,9 +86,9 @@
 
     <div
       [ngClass]="{
-        active: currentStepType === EnumWizardStepType.PROBLEMS_DATASET
+        active: currentStepType === EnumSandboxPageType.PROBLEMS_DATASET
       }"
-      class="wizard-section"
+      class="sandbox-navigation-section"
     >
       <!-- Show dataset-info component for dataset problem viewer -->
       <span *ngIf="enableDynamicInfo && problemPatternsDataset">
@@ -107,23 +110,25 @@
 
     <div
       [ngClass]="{
-        active: currentStepType === EnumWizardStepType.PROBLEMS_RECORD
+        active: currentStepType === EnumSandboxPageType.PROBLEMS_RECORD
       }"
-      class="wizard-section"
+      class="sandbox-navigation-section"
     >
       <sb-problem-viewer
         #problemViewerRecord
         *ngIf="problemPatternsRecord"
         [problemPatternsRecord]="problemPatternsRecord"
         (openLinkEvent)="followProblemPatternLink($event)"
-        (onError)="wizardConf[this.getStepIndex(EnumWizardStepType.PROBLEMS_RECORD)].error = $event"
+        (onError)="
+          sandboxNavConf[this.getStepIndex(EnumSandboxPageType.PROBLEMS_RECORD)].error = $event
+        "
       ></sb-problem-viewer>
     </div>
 
     <div
-      [ngClass]="{ active: currentStepType === EnumWizardStepType.REPORT }"
+      [ngClass]="{ active: currentStepType === EnumSandboxPageType.REPORT }"
       [formGroup]="formRecord"
-      class="wizard-section"
+      class="sandbox-navigation-section"
       *ngIf="recordReport"
     >
       <sb-record-report [report]="recordReport" #reportComponent></sb-record-report>
@@ -243,12 +248,12 @@
 
     <ng-container *ngIf="defaultInputsShown()">
       <ul class="inline-texts">
-        <li *ngIf="currentStepType !== EnumWizardStepType.PROGRESS_TRACK">
+        <li *ngIf="currentStepType !== EnumSandboxPageType.PROGRESS_TRACK">
           <label class="inline-text"
             >Or
             <a
               class="link-internal"
-              (click)="callSetStep($event, getStepIndex(WizardStepType.PROGRESS_TRACK))"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.PROGRESS_TRACK))"
               data-e2e="link-progress-form"
               href="/dataset/{{ trackDatasetId }}"
               >track a dataset</a
@@ -260,7 +265,7 @@
             >Or
             <a
               class="link-internal"
-              (click)="callSetStep($event, getStepIndex(WizardStepType.UPLOAD), true)"
+              (click)="callSetPage($event, getStepIndex(SandboxPageType.UPLOAD), true)"
               data-e2e="link-dataset-form"
               href="/new"
               >create a new dataset</a
@@ -269,6 +274,6 @@
         </li>
       </ul>
     </ng-container>
-    <sb-http-errors [error]="wizardConf[currentStepIndex].error"></sb-http-errors>
+    <sb-http-errors [error]="sandboxNavConf[currentStepIndex].error"></sb-http-errors>
   </div>
 </main>
