@@ -3,15 +3,15 @@ kind: Kustomization
 namespace: default
 resources:
 - deployment.yaml
-- sandbox-ui-service.yaml
+- service.yaml
 - ingress.yaml
 - hpa.yaml
 configMapGenerator:
-- name: sandbox-ui-nginx-conf
+- name: metis-sandbox-ui-nginx-conf
   files:
   - nginx.conf
 secretGenerator:
-- name: sandbox-ui-environment
+- name: metis-sandbox-ui-environment
   envs:
   - env_file
 generatorOptions:

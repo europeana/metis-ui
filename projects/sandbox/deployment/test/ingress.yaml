@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: sandbox-ui-ingress-test
+  name: metis-sandbox-ui-ingress-test
 spec:
   rules:
     - http:

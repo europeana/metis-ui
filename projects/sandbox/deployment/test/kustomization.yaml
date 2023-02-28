@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: test
 resources:
 - deployment.yaml
-- sandbox-ui-service.yaml
+- service.yaml
 - ingress.yaml
 - hpa.yaml
 configMapGenerator:
