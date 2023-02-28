@@ -2,29 +2,29 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: sandbox-ui-deployment-acceptance
-  name: sandbox-ui-deployment-acceptance
+    app: metis-sandbox-ui-deployment-acceptance
+  name: metis-sandbox-ui-deployment-acceptance
 spec:
   selector:
     matchLabels:
-      app: sandbox-ui-acceptance
+      app: metis-sandbox-ui-acceptance
   template:
     metadata:
       labels:
-        app: sandbox-ui-acceptance
+        app: metis-sandbox-ui-acceptance
     spec:
       containers:
         - image: APP_IMAGE
           name: container
           volumeMounts:
-            - name: sandbox-ui-nginx-config-volume
+            - name: metis-sandbox-ui-nginx-config-volume
               mountPath: "/etc/nginx/nginx.conf"
               subPath: "nginx.conf"
               readOnly: true
           imagePullPolicy: Always
           envFrom:
             - secretRef:
-                name: sandbox-ui-environment-acceptance
+                name: metis-sandbox-ui-environment-acceptance
           resources:
             requests:
               cpu: 30m
@@ -33,6 +33,6 @@ spec:
               cpu: 30m
               memory: 50M
       volumes:
-        - name: sandbox-ui-nginx-config-volume
+        - name: metis-sandbox-ui-nginx-config-volume
           configMap:
-            name: sandbox-ui-nginx-conf-acceptance
+            name: metis-sandbox-ui-nginx-conf-acceptance

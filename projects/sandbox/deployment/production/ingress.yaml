@@ -10,6 +10,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: sandbox-ui-service-production
+                name: metis-sandbox-ui-service-production
                 port:
                   number: 8080

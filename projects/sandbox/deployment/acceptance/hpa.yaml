@@ -1,14 +1,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: sandbox-ui-hpa-acceptance
+  name: metis-sandbox-ui-hpa-acceptance
 spec:
   maxReplicas: MAX_REPLICAS
   minReplicas: MIN_REPLICAS
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: sandbox-ui-deployment-acceptance
+    name: metis-sandbox-ui-deployment-acceptance
   metrics:
     - type: Resource
       resource:

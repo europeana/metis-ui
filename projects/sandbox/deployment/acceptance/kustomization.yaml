@@ -7,11 +7,11 @@ resources:
 - ingress.yaml
 - hpa.yaml
 configMapGenerator:
-- name: sandbox-ui-nginx-conf-acceptance
+- name: metis-sandbox-ui-nginx-conf-acceptance
   files:
   - nginx.conf
 secretGenerator:
-- name: sandbox-ui-environment-acceptance
+- name: metis-sandbox-ui-environment-acceptance
   envs:
   - env_file
 generatorOptions:

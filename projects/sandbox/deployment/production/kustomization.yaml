@@ -7,11 +7,11 @@ resources:
 - ingress.yaml
 - hpa.yaml
 configMapGenerator:
-- name: sandbox-ui-nginx-conf-production
+- name: metis-sandbox-ui-nginx-conf-production
   files:
   - nginx.conf
 secretGenerator:
-- name: sandbox-ui-environment-production
+- name: metis-sandbox-ui-environment-production
   envs:
   - env_file
 generatorOptions:
