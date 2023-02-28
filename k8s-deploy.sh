@@ -75,6 +75,7 @@ while getopts ":c:dhp:r:i:t:u:" o; do
       ;;
     p)
       PROJECT=${OPTARG}
+      DEPLOYMENT_DIR=projects/$PROJECT/deployment
       ;;
     r)
       ARR=(${OPTARG//-/ })
