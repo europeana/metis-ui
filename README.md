@@ -164,11 +164,12 @@ Running the script:
 
 `./k8s-deploy.sh -i myDockerImage`
 
-will deploy the (metis) app to a local Kubernetes cluster.
+will deploy either app (metis by default) to a local Kubernetes cluster.
 
 The script accepts the parameter flags:
 - -c (context) the kubernetes context
 - -d (delete) flag that the app should be deleted
+- -p (project) either sandbox or metis
 - -h (help) shows a help message
 - -i (image) the application image to deploy
 - -r (replicas) hyphen-separated integers defining the min / max number of replicas
@@ -177,9 +178,16 @@ The script accepts the parameter flags:
 
 so the command:
 
-    `./deployment/k8s-deploy.sh -d -t acceptance -i myDockerImage`
+    `./deployment/k8s-deploy.sh -d -t acceptance -i myMetisDockerImage`
 
-...will delete myDockerImage in the default context with the acceptance namespace.
+...will delete myMetisDockerImage in the default context with the acceptance namespace,
+
+and the command:
+
+    `./deployment/k8s-deploy.sh -p sandbox -i mySandboxDockerImage`
+
+...will deploy mySandboxDockerImage to the local namespace.
+
 
 ## Release
 

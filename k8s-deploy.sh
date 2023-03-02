@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Set default context / delete / image / target
+# Set run defaults
 CONTEXT=minikube
 DELETE=false
 APP_IMAGE=
 TARGET=local
 UTILISATION_AVERAGE_PERCENT=75
-
 PROJECT=metis
 DEPLOYMENT_DIR=projects/$PROJECT/deployment
 
@@ -29,6 +28,7 @@ function HELP {
   echo "The following optional parameters are recognised:"
   echo "${REV}-c${NORM}  --Sets the ${BOLD}context${NORM}. The default is ${BOLD}${CONTEXT}${NORM}."
   echo "${REV}-d${NORM}  --Sets the ${BOLD}delete${NORM} flag. The default is ${BOLD}${DELETE}${NORM}."
+  echo "${REV}-p${NORM}  --Sets the ${BOLD}project${NORM} (sandbox or metis). The default is ${BOLD}${PROJECT}${NORM}."
   echo "${REV}-r${NORM}  --Sets the ${BOLD}replica${NORM} ${BOLD}min-max${NORM}. The default is ${BOLD}${MIN_REPLICAS}-${MAX_REPLICAS}${NORM}."
   echo "${REV}-t${NORM}  --Sets the ${BOLD}target${NORM}. The default is ${BOLD}${TARGET}${NORM}."
   echo "${REV}-u${NORM}  --Sets the desired resource ${BOLD}utilisation${NORM} average. The default is ${BOLD}${UTILISATION_AVERAGE_PERCENT}${NORM}(%)."
@@ -42,10 +42,11 @@ if [ $NUMARGS -eq 0 ]; then
 fi
 
 # Check for missing parameter values
-while getopts "c:dhr:i:t:u:" opt; do
+while getopts "c:dhp:r:i:t:u:" opt; do
   case $opt in
     d) ;;
     h) ;;
+    p) ;;
     *)
       if [ -z "$OPTARG" ];
       then
@@ -58,7 +59,7 @@ done
 
 # Reset args and override default context / delete / target / image
 OPTIND=1
-while getopts ":c:dhr:i:t:u:" o; do
+while getopts ":c:dhp:r:i:t:u:" o; do
   case "${o}" in
     c)
       CONTEXT=${OPTARG}
@@ -71,6 +72,10 @@ while getopts ":c:dhr:i:t:u:" o; do
       ;;
     i)
       APP_IMAGE=${OPTARG}
+      ;;
+    p)
+      PROJECT=${OPTARG}
+      DEPLOYMENT_DIR=projects/$PROJECT/deployment
       ;;
     r)
       ARR=(${OPTARG//-/ })
@@ -95,6 +100,12 @@ then
   exit 1;
 fi
 
+# Check for invalid project
+if ! ([ "$PROJECT" = metis ] || [ "$PROJECT" = sandbox ]); then
+  echo "usage: the -p parameter should be a valid project"
+  exit 1;
+fi
+
 # Check for invalid min-max replicas or an invalid utilisation average
 re='^[0-9]+$'
 if ! [[ $MIN_REPLICAS =~ $re && $MAX_REPLICAS =~ $re ]] ; then
@@ -116,6 +127,7 @@ if [[ $UTILISATION_AVERAGE_PERCENT -gt 100 ]] ; then
 fi
 
 echo "Will run deploy with the parameters:"
+echo "  - ${BOLD}PROJECT${NORM} = ${PROJECT}"
 echo "  - ${BOLD}CONTEXT${NORM} = ${CONTEXT}"
 echo "  - ${BOLD}DELETE${NORM} = ${DELETE}"
 echo "  - ${BOLD}APP_IMAGE${NORM} = ${APP_IMAGE}"
