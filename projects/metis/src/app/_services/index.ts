@@ -7,5 +7,6 @@ export * from './editor-pref.service';
 export * from './error.service';
 export * from './redirect-previous-url.service';
 export * from './service-utils';
+export * from './error.interceptor';
 export * from './token.interceptor';
 export * from './workflow.service';

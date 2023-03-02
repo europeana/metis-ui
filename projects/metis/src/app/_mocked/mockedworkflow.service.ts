@@ -571,9 +571,13 @@ export class MockWorkflowService {
 
   cancelThisWorkflow(): Observable<void> {
     if (this.errorMode) {
-      return throwError(new Error('mock cancelThisWorkflow throws error'));
+      return timer(1).pipe(
+        switchMap(() => {
+          return throwError(new Error('mock cancelThisWorkflow throws error'));
+        })
+      );
     }
-    return of(void 0);
+    return of(void 0).pipe(delay(1));
   }
 
   getLastDatasetExecution(): Observable<WorkflowExecution> {

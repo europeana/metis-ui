@@ -8,11 +8,9 @@ import { SingleCache } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { Country, Language } from '../_models';
 
-import { ErrorService } from './error.service';
-
 @Injectable({ providedIn: 'root' })
 export class CountriesService {
-  constructor(private readonly http: HttpClient, private readonly errors: ErrorService) {}
+  constructor(private readonly http: HttpClient) {}
 
   private readonly countries = new SingleCache(() => this.requestCountries());
   private readonly languages = new SingleCache(() => this.requestLanguages());
@@ -23,7 +21,7 @@ export class CountriesService {
   */
   private requestCountries(): Observable<Country[]> {
     const url = `${apiSettings.apiHostCore}/datasets/countries`;
-    return this.http.get<Country[]>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Country[]>(url);
   }
 
   /** requestLanguages
@@ -32,7 +30,7 @@ export class CountriesService {
   */
   private requestLanguages(): Observable<Language[]> {
     const url = `${apiSettings.apiHostCore}/datasets/languages`;
-    return this.http.get<Language[]>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Language[]>(url);
   }
 
   /** getCountries

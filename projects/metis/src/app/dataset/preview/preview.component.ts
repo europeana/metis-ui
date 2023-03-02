@@ -18,7 +18,7 @@ import {
   XmlDownload,
   XmlSample
 } from '../../_models';
-import { DatasetsService, ErrorService, WorkflowService } from '../../_services';
+import { DatasetsService, WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 @Component({
@@ -32,7 +32,6 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   constructor(
     private readonly workflows: WorkflowService,
     private readonly translate: TranslateService,
-    private readonly errors: ErrorService,
     private readonly datasets: DatasetsService,
     private readonly router: Router
   ) {
@@ -125,9 +124,8 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           this.allWorkflowExecutions = result.executions;
           this.isLoadingFilter = false;
         },
-        (err: HttpErrorResponse) => {
+        () => {
           this.isLoadingFilter = false;
-          this.errors.handleError(err);
         }
       )
     );
@@ -197,10 +195,8 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
             this.pluginsFilterSubscription.unsubscribe();
           }
         },
-        (err: HttpErrorResponse) => {
-          console.log(err);
+        () => {
           this.isLoadingFilter = false;
-          this.errors.handleError(err);
         }
       );
   }
@@ -232,8 +228,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
               this.isLoadingComparisons = false;
             },
             (err: HttpErrorResponse): void => {
-              const error = this.errors.handleError(err);
-              this.notification = httpErrorNotification(error);
+              this.notification = httpErrorNotification(err);
               this.isLoadingComparisons = false;
             }
           )
@@ -291,8 +286,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           });
         },
         (err: HttpErrorResponse): void => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
+          this.notification = httpErrorNotification(err);
           this.isLoadingSamples = false;
         }
       )
@@ -315,8 +309,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
           this.isLoadingHistories = false;
         },
         (err: HttpErrorResponse): void => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
+          this.notification = httpErrorNotification(err);
           this.isLoadingHistories = false;
         }
       )
@@ -330,8 +323,7 @@ export class PreviewComponent extends SubscriptionManager implements OnInit, OnD
   transformSamples(type: string): void {
     this.isLoadingTransformSamples = true;
     const handleError = (err: HttpErrorResponse): void => {
-      const error = this.errors.handleError(err);
-      this.notification = httpErrorNotification(error);
+      this.notification = httpErrorNotification(err);
       this.isLoadingTransformSamples = false;
     };
     this.subs.push(

@@ -59,6 +59,7 @@ context('metis-ui', () => {
       cy.get(selectorDownloadLink)
         .first()
         .click(force);
+      cy.wait(3000);
       cy.get(selectorDownloadError).should('have.length', 1);
     });
   });

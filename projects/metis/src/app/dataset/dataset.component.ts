@@ -21,7 +21,7 @@ import {
   Workflow,
   WorkflowExecution
 } from '../_models';
-import { DatasetsService, DocumentTitleService, ErrorService, WorkflowService } from '../_services';
+import { DatasetsService, DocumentTitleService, WorkflowService } from '../_services';
 import { WorkflowComponent } from './workflow';
 import { WorkflowHeaderComponent } from './workflow/workflow-header';
 
@@ -34,7 +34,6 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
   constructor(
     private readonly datasets: DatasetsService,
     private readonly workflows: WorkflowService,
-    private readonly errors: ErrorService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly documentTitleService: DocumentTitleService
@@ -128,10 +127,9 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
         this.harvestIsLoading = false;
       },
       (err: HttpErrorResponse): HttpErrorResponse | false => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
+        this.notification = httpErrorNotification(err);
         this.harvestIsLoading = false;
-        return error;
+        return err;
       }
     ).getPollingSubject();
 
@@ -146,10 +144,9 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
         this.workflowIsLoading = false;
       },
       (err: HttpErrorResponse): HttpErrorResponse | false => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
+        this.notification = httpErrorNotification(err);
         this.workflowIsLoading = false;
-        return error;
+        return err;
       }
     ).getPollingSubject();
 
@@ -166,13 +163,13 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
         }
       },
       (err: HttpErrorResponse): HttpErrorResponse | false => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
-        return error;
+        this.notification = httpErrorNotification(err);
+        return err;
       }
     );
 
     // stream for start-workflow click events
+
     this.pollingRefresh = new Subject();
     this.subs.push(
       this.pollingRefresh.subscribe(() => {
@@ -202,8 +199,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
             this.reportLoading = false;
           },
           (err: HttpErrorResponse) => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
+            this.notification = httpErrorNotification(err);
             this.reportLoading = false;
           }
         )
@@ -251,8 +247,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
         this.documentTitleService.setTitle(this.datasetName || 'Dataset');
       },
       (err: HttpErrorResponse) => {
-        const error = this.errors.handleError(err);
-        this.notification = httpErrorNotification(error);
+        this.notification = httpErrorNotification(err);
         this.datasetIsLoading = false;
         return err;
       }
@@ -285,8 +280,7 @@ export class DatasetComponent extends DataPollingComponent implements OnInit {
           window.scrollTo(0, 0);
         },
         (err: HttpErrorResponse) => {
-          const error = this.errors.handleError(err);
-          this.notification = httpErrorNotification(error);
+          this.notification = httpErrorNotification(err);
           this.isStarting = false;
           window.scrollTo(0, 0);
         }

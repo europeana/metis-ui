@@ -83,9 +83,11 @@ new (class extends TestDataServer {
     response.end('{ "results": [], "listSize":0, "nextPage":-1 }');
   }
 
-  return404(response: ServerResponse): void {
+  return404(response: ServerResponse, statusMessage = 'Not found'): void {
     response.statusCode = 404;
-    response.end();
+    response.statusMessage = statusMessage;
+    ((response as unknown) as { errorMessage: string }).errorMessage = statusMessage;
+    response.end(JSON.stringify({ errorMessage: statusMessage }));
   }
 
   cleanSwitches(): void {
@@ -239,6 +241,11 @@ new (class extends TestDataServer {
         return entry.recordId != recordId;
       });
     };
+
+    if (request.method === 'DELETE' && route.match(/workflows\/executions/)) {
+      response.end();
+      return true;
+    }
 
     if (request.method === 'DELETE' && route.match(/depublish\/record_ids/)) {
       let body = '';
@@ -531,14 +538,24 @@ new (class extends TestDataServer {
     regRes = route.match(/datasets\/-?(\d+)/);
 
     if (regRes) {
-      response.end(JSON.stringify(dataset(regRes[1])));
+      const result = dataset(regRes[1]);
+      if (result) {
+        response.end(JSON.stringify(result));
+      } else {
+        this.return404(response, `No dataset found with datasetId: '${regRes[1]}' in METIS`);
+      }
       return true;
     }
 
     regRes = route.match(/orchestrator\/workflows\/-?(\d+)/);
 
     if (regRes) {
-      response.end(JSON.stringify(workflow(regRes[1])));
+      const result = workflow(regRes[1]);
+      if (result) {
+        response.end(JSON.stringify(result));
+      } else {
+        this.return404(response, `No workflow found with datasetId: '${regRes[1]}' in METIS`);
+      }
       return true;
     }
 

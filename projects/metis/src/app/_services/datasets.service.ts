@@ -5,22 +5,19 @@ import { map, tap } from 'rxjs/operators';
 
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { KeyedCache } from 'shared';
-
 import { apiSettings } from '../../environments/apisettings';
 import { Dataset, DatasetSearchView, MoreResults, Results, XmlSample } from '../_models';
-
 import { collectResultsUptoPage } from './service-utils';
-import { ErrorService } from './error.service';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetsService {
   datasetCache = new KeyedCache((id) => this.requestDataset(id));
 
-  constructor(private readonly http: HttpClient, private readonly errors: ErrorService) {}
+  constructor(private readonly http: HttpClient) {}
 
   private requestDataset(id: string): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets/${id}`;
-    return this.http.get<Dataset>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Dataset>(url);
   }
 
   getDataset(id: string, refresh = false): Observable<Dataset> {
@@ -30,7 +27,7 @@ export class DatasetsService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createDataset(datasetFormValues: { dataset: any }): Observable<Dataset> {
     const url = `${apiSettings.apiHostCore}/datasets`;
-    return this.http.post<Dataset>(url, datasetFormValues).pipe(this.errors.handleRetry());
+    return this.http.post<Dataset>(url, datasetFormValues);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,8 +36,7 @@ export class DatasetsService {
     return this.http.put<void>(url, datasetFormValues).pipe(
       tap(() => {
         this.datasetCache.clear(datasetFormValues.dataset.datasetId);
-      }),
-      this.errors.handleRetry()
+      })
     );
   }
 
@@ -62,7 +58,6 @@ export class DatasetsService {
             return type === 'default' ? data : data.xslt;
           })
         )
-        .pipe(this.errors.handleRetry())
     );
   }
 
@@ -72,11 +67,9 @@ export class DatasetsService {
     if (type === 'default') {
       url += '/default';
     }
-    return this.http
-      .post<XmlSample[]>(url, samples, {
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .pipe(this.errors.handleRetry());
+    return this.http.post<XmlSample[]>(url, samples, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   /** search
@@ -86,7 +79,7 @@ export class DatasetsService {
   */
   search(term: string, page: number): Observable<Results<DatasetSearchView>> {
     const url = `${apiSettings.apiHostCore}/datasets/search?searchString=${term}&nextPage=${page}`;
-    return this.http.get<Results<DatasetSearchView>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<DatasetSearchView>>(url);
   }
 
   /** getSearchResultsUptoPage

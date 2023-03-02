@@ -1,21 +1,16 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { environment } from '../../environments/environment';
 import {
   createMockPipe,
   MockAuthenticationService,
   MockDatasetsService,
   MockDatasetsServiceErrors,
-  MockErrorService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from '../_mocked';
 import { PluginExecution, PluginStatus, PluginType, WorkflowExecution } from '../_models';
-import {
-  AuthenticationService,
-  DatasetsService,
-  ErrorService,
-  WorkflowService
-} from '../_services';
+import { AuthenticationService, DatasetsService, WorkflowService } from '../_services';
 
 import { DashboardComponent } from '.';
 
@@ -35,8 +30,7 @@ describe('DashboardComponent', () => {
         {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
-        },
-        { provide: ErrorService, useClass: MockErrorService }
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
@@ -118,7 +112,7 @@ describe('DashboardComponent', () => {
       component.runningIsLoading = true;
       component.runningIsFirstLoading = true;
       component.getRunningExecutions();
-      tick();
+      tick(environment.intervalStatusMedium);
       expect(component.runningIsLoading).toBeFalsy();
       expect(component.runningIsFirstLoading).toBeFalsy();
     }));

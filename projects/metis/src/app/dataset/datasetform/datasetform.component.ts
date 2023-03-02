@@ -22,12 +22,7 @@ import {
   successNotification,
   User
 } from '../../_models';
-import {
-  AuthenticationService,
-  CountriesService,
-  DatasetsService,
-  ErrorService
-} from '../../_services';
+import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 const DATASET_TEMP_LSKEY = 'tempDatasetData';
@@ -109,7 +104,6 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     private readonly datasets: DatasetsService,
     private readonly router: Router,
     private readonly fb: NonNullableFormBuilder,
-    private readonly errors: ErrorService,
     private readonly translate: TranslateService
   ) {
     super();
@@ -244,7 +238,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
           this.updateForm();
         },
         (err: HttpErrorResponse) => {
-          this.errors.handleError(err);
+          this.handleError(err);
         }
       )
     );
@@ -270,7 +264,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
           this.updateForm();
         },
         (err: HttpErrorResponse) => {
-          this.errors.handleError(err);
+          this.handleError(err);
         }
       )
     );
@@ -323,6 +317,15 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     }
   }
 
+  /** handleError
+  /* set notification / reset isSaving
+  /* @param {HttpErrorResponse} err
+  */
+  handleError(err: HttpErrorResponse): void {
+    this.notification = httpErrorNotification(err);
+    this.isSaving = false;
+  }
+
   /** onSubmit
   /* - submit the form if valid
   /* - redirect to new page if dataset is new
@@ -335,12 +338,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
     if (!this.datasetForm.valid) {
       return;
     }
-    // declare local error-handler function
-    const handleError = (err: HttpErrorResponse): void => {
-      const error = this.errors.handleError(err);
-      this.notification = httpErrorNotification(error);
-      this.isSaving = false;
-    };
+
     // clear notification variable
     this.notification = undefined;
     this.isSaving = true;
@@ -352,7 +350,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
           .subscribe((result) => {
             localStorage.removeItem(DATASET_TEMP_LSKEY);
             this.router.navigate(['/dataset/new/' + result.datasetId]);
-          }, handleError)
+          }, this.handleError)
       );
     } else {
       const dataset = {
@@ -370,7 +368,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
 
           this.isSaving = false;
           this.datasetForm.markAsPristine();
-        }, handleError)
+        }, this.handleError)
       );
     }
   }

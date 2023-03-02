@@ -6,7 +6,6 @@ import {
   MockAuthenticationService,
   mockDatasetOverviewResults,
   MockDatasetsService,
-  MockErrorService,
   mockFirstPageResults,
   mockHarvestData,
   mockHistoryVersion,
@@ -32,7 +31,7 @@ import {
   WorkflowStatus
 } from '../_models';
 
-import { AuthenticationService, DatasetsService, ErrorService, WorkflowService } from '.';
+import { AuthenticationService, DatasetsService, WorkflowService } from '.';
 
 describe('Workflow Service', () => {
   let mockHttp: MockHttp;
@@ -42,7 +41,6 @@ describe('Workflow Service', () => {
     TestBed.configureTestingModule({
       providers: [
         WorkflowService,
-        { provide: ErrorService, useClass: MockErrorService },
         { provide: DatasetsService, useClass: MockDatasetsService },
         { provide: AuthenticationService, useClass: MockAuthenticationService }
       ],

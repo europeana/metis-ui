@@ -7,12 +7,7 @@ import { Observable } from 'rxjs';
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../environments/environment';
 import { getCurrentPlugin, PluginExecution, WorkflowExecution } from '../_models';
-import {
-  AuthenticationService,
-  DocumentTitleService,
-  ErrorService,
-  WorkflowService
-} from '../_services';
+import { AuthenticationService, DocumentTitleService, WorkflowService } from '../_services';
 
 @Component({
   templateUrl: './dashboard.component.html'
@@ -29,7 +24,6 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly workflows: WorkflowService,
-    private readonly errors: ErrorService,
     private readonly documentTitleService: DocumentTitleService
   ) {
     super();
@@ -81,7 +75,6 @@ export class DashboardComponent extends DataPollingComponent implements OnInit, 
         this.checkUpdateLog(executions);
       },
       (err: HttpErrorResponse) => {
-        this.errors.handleError(err);
         this.runningIsLoading = false;
         this.runningIsFirstLoading = false;
         return err;

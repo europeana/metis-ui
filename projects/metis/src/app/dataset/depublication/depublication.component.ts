@@ -4,7 +4,6 @@
 /* - handles depublishing of all records in the dataset
 /* - handles depublishing of individual records in the dataset
 */
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
@@ -17,7 +16,7 @@ import {
   SortDirection,
   SortParameter
 } from '../../_models';
-import { DepublicationService, ErrorService } from '../../_services';
+import { DepublicationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
 
@@ -96,7 +95,6 @@ export class DepublicationComponent extends DataPollingComponent {
   constructor(
     private readonly modalConfirms: ModalConfirmService,
     private readonly depublications: DepublicationService,
-    private readonly errors: ErrorService,
     private readonly fb: NonNullableFormBuilder
   ) {
     super();
@@ -310,15 +308,13 @@ export class DepublicationComponent extends DataPollingComponent {
   }
 
   /** onError
-  /* - run default error handlere
   /* - set isSaving to false
-  /* - log the error to the console
-  /*  @param {HttpErrorResponse} err - the fail response
   */
-  onError(err: HttpErrorResponse): void {
-    this.errors.handleError(err);
+  onError(): void {
+
+    // TODO: add a notification
+
     this.isSaving = false;
-    console.error(`${err.status}: ${err.statusText}`);
   }
 
   /** onSubmitFormFile
@@ -337,8 +333,8 @@ export class DepublicationComponent extends DataPollingComponent {
               this.refreshPolling();
               this.isSaving = false;
             },
-            (err: HttpErrorResponse): void => {
-              this.onError(err);
+            (): void => {
+              this.onError();
             }
           )
       );
@@ -372,8 +368,8 @@ export class DepublicationComponent extends DataPollingComponent {
           this.refreshPolling();
           this.isSaving = false;
         },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
+        (): void => {
+          this.onError();
         }
       )
     );
@@ -412,8 +408,8 @@ export class DepublicationComponent extends DataPollingComponent {
           this.refreshPolling();
           this.isSaving = false;
         },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
+        (): void => {
+          this.onError();
         }
       )
     );
@@ -469,8 +465,8 @@ export class DepublicationComponent extends DataPollingComponent {
               form.controls.recordIds.reset();
               this.isSaving = false;
             },
-            (err: HttpErrorResponse): void => {
-              this.onError(err);
+            (): void => {
+              this.onError();
             }
           )
       );
@@ -507,8 +503,7 @@ export class DepublicationComponent extends DataPollingComponent {
       environment.intervalStatusMedium,
       fnDataCall,
       false,
-      fnDataProcess,
-      this.errors.handleError
+      fnDataProcess
     ).getPollingSubject();
   }
 }
