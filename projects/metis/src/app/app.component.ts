@@ -116,7 +116,9 @@ export class AppComponent extends SubscriptionManager implements OnInit {
       this.errorNotification = undefined;
       this.subs.push(
         this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe(
-          () => {},
+          () => {
+            // successful cancellation request made
+          },
           (err: HttpErrorResponse) => {
             this.errorNotification = httpErrorNotification(err);
           }

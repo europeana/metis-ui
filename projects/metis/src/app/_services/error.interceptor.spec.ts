@@ -19,21 +19,17 @@ describe('ErrorInterceptor', () => {
     return new HttpErrorResponse({
       status: errorCode,
       statusText: 'status text',
-      error: 'error response' //new Error('error response')
+      error: 'error response'
     });
   };
 
   const getHandler = (responseCode = 200): HttpHandler => {
-    console.log('getHandler responseCode ' + responseCode);
-
     return ({
       // this is the function that gets piped to the retry
       handle: () => {
         if (responseCode !== 200) {
-          console.log('handler throws fake err');
           return throwError(getErrorResponse(responseCode));
         } else {
-          console.log('handler returns ' + responseCode);
           return of({ status: responseCode });
         }
       }
@@ -63,7 +59,7 @@ describe('ErrorInterceptor', () => {
     try {
       tick(ErrorInterceptor.retryDelay);
     } catch (e) {
-      console.log('(catch the thrown error)');
+      // (catch the thrown error)
     }
 
     expect(service.shouldRetry).toHaveBeenCalledTimes(2);
@@ -77,8 +73,14 @@ describe('ErrorInterceptor', () => {
     let sub: Subscription;
     try {
       sub = service.shouldRetry(getErrorResponse(200)).subscribe(
-        () => {},
         () => {
+          // success
+        },
+        () => {
+          // fail
+        },
+        () => {
+          // finally
           sub.unsubscribe();
         }
       );
@@ -93,8 +95,14 @@ describe('ErrorInterceptor', () => {
     let sub: Subscription;
     try {
       sub = service.shouldRetry(getErrorResponse(406)).subscribe(
-        () => {},
         () => {
+          // success
+        },
+        () => {
+          // fail
+        },
+        () => {
+          // finally
           sub.unsubscribe();
         }
       );

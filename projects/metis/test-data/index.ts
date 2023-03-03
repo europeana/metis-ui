@@ -236,6 +236,8 @@ new (class extends TestDataServer {
   routeToFile(request: IncomingMessage, response: ServerResponse, route: string): boolean {
     response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
+    const fn404 = this.return404;
+
     const removeFromDepublicationCache = (recordId: string): void => {
       this.depublicationInfoCache = this.depublicationInfoCache.filter((entry) => {
         return entry.recordId != recordId;
@@ -253,12 +255,21 @@ new (class extends TestDataServer {
         body += data.toString();
       });
       request.on('end', function() {
+        let throwError = false;
         body.split('\n').forEach((id: string) => {
           removeFromDepublicationCache(id);
+          if (id === 'ERROR_404') {
+            throwError = true;
+          }
         });
-        response.end();
-        return true;
+
+        if (throwError) {
+          fn404(response, 'Depublication Deletion Error');
+        } else {
+          response.end();
+        }
       });
+      return true;
     }
 
     let regRes = route.match(/depublish\/execute\/(\d+)/);
@@ -319,11 +330,23 @@ new (class extends TestDataServer {
         request.on('data', function(data: { toString: () => string }) {
           body += data.toString();
         });
+
         request.on('end', function() {
-          body.split(/\s+/).forEach((recordId: string) => pushToDepublicationCache(recordId));
-          response.end();
-          return true;
+          let throwError = false;
+          body.split(/\s+/).forEach((recordId: string) => {
+            if (recordId === '404') {
+              throwError = true;
+            } else {
+              pushToDepublicationCache(recordId);
+            }
+          });
+          if (throwError) {
+            fn404(response, 'Depublication Error');
+          } else {
+            response.end();
+          }
         });
+        return true;
       } else {
         let result = Array.from(this.depublicationInfoCache);
 

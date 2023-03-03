@@ -4,6 +4,7 @@
 /* - handles depublishing of all records in the dataset
 /* - handles depublishing of individual records in the dataset
 */
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
@@ -12,6 +13,8 @@ import { DataPollingComponent, ModalConfirmService } from 'shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
+  httpErrorNotification,
+  Notification,
   RecordDepublicationInfoDeletable,
   SortDirection,
   SortParameter
@@ -27,6 +30,7 @@ import { DepublicationRowComponent } from './depublication-row';
 })
 export class DepublicationComponent extends DataPollingComponent {
   depublicationRows: QueryList<DepublicationRowComponent>;
+  errorNotification?: Notification;
 
   @ViewChildren(DepublicationRowComponent)
   set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
@@ -308,35 +312,30 @@ export class DepublicationComponent extends DataPollingComponent {
   }
 
   /** onError
-  /* - set isSaving to false
-  */
-  onError(): void {
-
-    // TODO: add a notification
-
+   * - set isSaving to false and initialise notification
+   *  @param {HttpErrorResponse} error
+   */
+  onError(error: HttpErrorResponse): void {
     this.isSaving = false;
+    this.errorNotification = httpErrorNotification(error);
   }
 
   /** onSubmitFormFile
-  /* - submit the formFile form data if validation has passed
-  /* - trigger a reload of the displayed depublication data
-  */
+   * - submit the formFile form data if validation has passed
+   * - trigger a reload of the displayed depublication data
+   */
   onSubmitFormFile(): void {
     const form = this.formFile;
     if (form.valid) {
       this.isSaving = true;
+      this.errorNotification = undefined;
       this.subs.push(
         this.depublications
           .setPublicationFile(this._datasetId, form.controls.depublicationFile.value)
-          .subscribe(
-            () => {
-              this.refreshPolling();
-              this.isSaving = false;
-            },
-            (): void => {
-              this.onError();
-            }
-          )
+          .subscribe(() => {
+            this.refreshPolling();
+            this.isSaving = false;
+          }, this.onError.bind(this))
       );
     }
   }
@@ -362,16 +361,12 @@ export class DepublicationComponent extends DataPollingComponent {
   onDepublishDataset(): void {
     this.closeMenus();
     this.isSaving = true;
+    this.errorNotification = undefined;
     this.subs.push(
-      this.depublications.depublishDataset(this._datasetId).subscribe(
-        () => {
-          this.refreshPolling();
-          this.isSaving = false;
-        },
-        (): void => {
-          this.onError();
-        }
-      )
+      this.depublications.depublishDataset(this._datasetId).subscribe(() => {
+        this.refreshPolling();
+        this.isSaving = false;
+      }, this.onError.bind(this))
     );
   }
 
@@ -401,17 +396,14 @@ export class DepublicationComponent extends DataPollingComponent {
    *  @param {Observable <unknown>} observable
    **/
   resetSelectionOnEvent(observable: Observable<unknown>): void {
+    this.isSaving = true;
+    this.errorNotification = undefined;
     this.subs.push(
-      observable.subscribe(
-        () => {
-          this.depublicationSelections = [];
-          this.refreshPolling();
-          this.isSaving = false;
-        },
-        (): void => {
-          this.onError();
-        }
-      )
+      observable.subscribe(() => {
+        this.depublicationSelections = [];
+        this.refreshPolling();
+        this.isSaving = false;
+      }, this.onError.bind(this))
     );
   }
 
@@ -427,7 +419,6 @@ export class DepublicationComponent extends DataPollingComponent {
     if (!all && this.depublicationSelections.length === 0) {
       return;
     }
-    this.isSaving = true;
     this.resetSelectionOnEvent(
       this.depublications.depublishRecordIds(
         this._datasetId,
@@ -442,7 +433,6 @@ export class DepublicationComponent extends DataPollingComponent {
    * - invoke service call
    **/
   deleteDepublications(): void {
-    this.isSaving = true;
     this.resetSelectionOnEvent(
       this.depublications.deleteDepublications(this._datasetId, this.depublicationSelections)
     );
@@ -456,19 +446,15 @@ export class DepublicationComponent extends DataPollingComponent {
     const form = this.formRawText;
     if (form.valid) {
       this.isSaving = true;
+      this.errorNotification = undefined;
       this.subs.push(
         this.depublications
           .setPublicationInfo(this._datasetId, form.controls.recordIds.value.trim())
-          .subscribe(
-            () => {
-              this.refreshPolling();
-              form.controls.recordIds.reset();
-              this.isSaving = false;
-            },
-            (): void => {
-              this.onError();
-            }
-          )
+          .subscribe(() => {
+            this.refreshPolling();
+            form.controls.recordIds.reset();
+            this.isSaving = false;
+          }, this.onError.bind(this))
       );
     }
   }
@@ -480,6 +466,7 @@ export class DepublicationComponent extends DataPollingComponent {
   beginPolling(): void {
     const fnDataCall = (): Observable<DatasetDepublicationInfo> => {
       this.isSaving = true;
+      this.errorNotification = undefined;
       return this.depublications.getPublicationInfoUptoPage(
         this._datasetId,
         this.currentPage,
@@ -499,11 +486,16 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = false;
       this.depublicationIsTriggerable = info.depublicationTriggerable;
     };
+
     this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCall,
       false,
-      fnDataProcess
+      fnDataProcess,
+      (error: HttpErrorResponse) => {
+        this.onError(error);
+        return false;
+      }
     ).getPollingSubject();
   }
 }

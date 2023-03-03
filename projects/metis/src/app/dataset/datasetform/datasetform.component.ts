@@ -339,6 +339,8 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
       return;
     }
 
+    const handleError = this.handleError;
+
     // clear notification variable
     this.notification = undefined;
     this.isSaving = true;
@@ -350,7 +352,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
           .subscribe((result) => {
             localStorage.removeItem(DATASET_TEMP_LSKEY);
             this.router.navigate(['/dataset/new/' + result.datasetId]);
-          }, this.handleError)
+          }, handleError)
       );
     } else {
       const dataset = {
@@ -368,7 +370,7 @@ export class DatasetformComponent extends SubscriptionManager implements OnInit 
 
           this.isSaving = false;
           this.datasetForm.markAsPristine();
-        }, this.handleError)
+        }, handleError)
       );
     }
   }

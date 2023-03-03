@@ -29,7 +29,6 @@ describe('DepublicationComponent', () => {
   let depublications: DepublicationService;
 
   const interval = environment.intervalStatusMedium;
-
   const recordId = 'BibliographicResource_1000126221328';
 
   const addFormFieldData = (): void => {
@@ -423,27 +422,32 @@ describe('DepublicationComponent', () => {
 
     it('should handle errors submitting the file', fakeAsync(() => {
       spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.datasetId = '123';
       component.beginPolling();
-      tick(interval);
+      tick(1);
       addFormFieldData();
       component.onSubmitFormFile();
       tick(interval);
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     }));
 
     it('should handle errors submitting the text', () => {
-      spyOn(component, 'onError');
+      spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       const datasetId = '123';
       component.datasetId = datasetId;
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     });
 
     it('should handle dataset depublication errors', fakeAsync(() => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
       spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       tick(interval);
       component.onDepublishDataset();
@@ -451,23 +455,28 @@ describe('DepublicationComponent', () => {
       expect(depublications.depublishDataset).toHaveBeenCalled();
       expect(component.onError).toHaveBeenCalled();
       expect(component.isSaving).toBeFalsy();
+      expect(component.errorNotification).toBeTruthy();
     }));
 
     it('should handle record id depublication errors', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();
-      spyOn(component, 'onError');
+      spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       component.depublicationSelections = ['0'];
       component.onDepublishRecordIds();
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     });
 
     it('should handle errors deleting depublications', () => {
-      spyOn(component, 'onError');
+      spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
       expect(component.depublicationSelections.length).toBeTruthy();
       component.deleteDepublications();
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     });
   });
 });
