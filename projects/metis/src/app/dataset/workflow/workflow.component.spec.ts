@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 import {
   createMockPipe,
   mockDataset,
-  MockErrorService,
   MockTranslateService,
   MockWorkflowService,
   MockWorkflowServiceErrors
@@ -27,7 +26,7 @@ import {
   workflowFormFieldConf,
   WorkflowStatus
 } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { WorkflowComponent } from '.';
@@ -146,7 +145,6 @@ describe('WorkflowComponent', () => {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService }
       ]
     }).compileComponents();

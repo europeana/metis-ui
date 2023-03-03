@@ -13,7 +13,7 @@ import { switchMap } from 'rxjs/operators';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { SubscriptionManager } from 'shared';
 import { Dataset, httpErrorNotification, Notification, successNotification } from '../../_models';
-import { DatasetsService, ErrorService } from '../../_services';
+import { DatasetsService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 enum XSLTStatus {
@@ -30,7 +30,6 @@ enum XSLTStatus {
 })
 export class MappingComponent extends SubscriptionManager implements OnInit {
   constructor(
-    private readonly errors: ErrorService,
     private readonly datasets: DatasetsService,
     private readonly translate: TranslateService,
     private readonly router: Router
@@ -58,13 +57,12 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
   }
 
   /** handleXSLTError
-  /* - create a notification for errors
-  /* - set notification variable
+  /* - create an error notification
+  /* - update variables
   */
   private handleXSLTError(err: HttpErrorResponse): void {
     this.xsltStatus = XSLTStatus.NOCUSTOM;
-    const error = this.errors.handleError(err);
-    this.notification = httpErrorNotification(error);
+    this.notification = httpErrorNotification(err);
     this.xsltToSave = this.xslt = '';
   }
 
@@ -142,8 +140,7 @@ export class MappingComponent extends SubscriptionManager implements OnInit {
             }
           },
           (err: HttpErrorResponse) => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
+            this.notification = httpErrorNotification(err);
           }
         )
     );
