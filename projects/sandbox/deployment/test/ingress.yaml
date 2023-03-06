@@ -11,6 +11,7 @@ spec:
         - metis-sandbox.test.eanadev.org
       secretName: metis-sandbox.test.eanadev.org
   rules:
+    - host: metis-sandbox.test.eanadev.org
     - http:
         paths:
           - path: /
