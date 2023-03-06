@@ -1,18 +1,26 @@
 import { HttpErrorResponse, HttpHandler, HttpRequest } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subscription, throwError } from 'rxjs';
 import { ErrorInterceptor } from '.';
 
 describe('ErrorInterceptor', () => {
   let service: ErrorInterceptor;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [ErrorInterceptor],
-      imports: [HttpClientTestingModule]
+      imports: [HttpClientTestingModule, RouterTestingModule]
     }).compileComponents();
     service = TestBed.inject(ErrorInterceptor);
+    router = TestBed.inject(Router);
+  });
+
+  afterEach(() => {
+    localStorage.removeItem('currentUser');
   });
 
   const getErrorResponse = (errorCode: number): HttpErrorResponse => {
@@ -36,6 +44,28 @@ describe('ErrorInterceptor', () => {
     } as unknown) as HttpHandler;
   };
 
+  const instantBailout = (responseCode = 200): boolean => {
+    let result = false;
+    let sub: Subscription;
+    try {
+      sub = service.shouldRetry(getErrorResponse(responseCode)).subscribe(
+        () => {
+          // success
+        },
+        () => {
+          // fail
+        },
+        () => {
+          // finally
+          sub.unsubscribe();
+        }
+      );
+    } catch (e) {
+      result = true;
+    }
+    return result;
+  };
+
   it('should intercept', () => {
     const handler = getHandler();
     spyOn(handler, 'handle').and.callThrough();
@@ -53,62 +83,33 @@ describe('ErrorInterceptor', () => {
 
     expect(service.shouldRetry).toHaveBeenCalledTimes(1);
     tick(ErrorInterceptor.retryDelay);
-
     expect(service.shouldRetry).toHaveBeenCalledTimes(2);
 
     try {
       tick(ErrorInterceptor.retryDelay);
     } catch (e) {
-      // (catch the thrown error)
+      // there are no more retries so catch the thrown error
     }
 
     expect(service.shouldRetry).toHaveBeenCalledTimes(2);
+    // there are no further errors as the retry notification variable has completed
     tick(ErrorInterceptor.retryDelay);
     expect(service.shouldRetry).toHaveBeenCalledTimes(2);
     sub.unsubscribe();
   }));
 
-  it('should not retry on code 200', () => {
-    let instantBailout = false;
-    let sub: Subscription;
-    try {
-      sub = service.shouldRetry(getErrorResponse(200)).subscribe(
-        () => {
-          // success
-        },
-        () => {
-          // fail
-        },
-        () => {
-          // finally
-          sub.unsubscribe();
-        }
-      );
-    } catch (e) {
-      instantBailout = true;
-    }
-    expect(instantBailout).toBeTruthy();
+  it('should redirect to the login page on a 401', () => {
+    localStorage.setItem('currentUser', 'user1');
+    spyOn(router, 'navigate');
+    expect(instantBailout(401)).toBeTruthy();
+    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
+    expect(localStorage.getItem('currentUser')).toBeFalsy();
   });
 
-  it('should not retry on 406', () => {
-    let instantBailout = false;
-    let sub: Subscription;
-    try {
-      sub = service.shouldRetry(getErrorResponse(406)).subscribe(
-        () => {
-          // success
-        },
-        () => {
-          // fail
-        },
-        () => {
-          // finally
-          sub.unsubscribe();
-        }
-      );
-    } catch (e) {
-      instantBailout = true;
-    }
-    expect(instantBailout).toBeTruthy();
+  it('should not retry on codes 200 and 406', () => {
+    localStorage.setItem('currentUser', 'user1');
+    expect(instantBailout(200)).toBeTruthy();
+    expect(instantBailout(406)).toBeTruthy();
+    expect(localStorage.getItem('currentUser')).toBe('user1');
   });
 });
