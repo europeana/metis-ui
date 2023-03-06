@@ -12,7 +12,7 @@ spec:
       secretName: metis-sandbox.test.eanadev.org
   rules:
     - host: metis-sandbox.test.eanadev.org
-    - http:
+      http:
         paths:
           - path: /
             pathType: Prefix
