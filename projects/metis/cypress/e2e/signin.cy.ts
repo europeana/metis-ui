@@ -2,10 +2,10 @@ import { cleanupUser } from '../support/helpers';
 import { user } from '../fixtures';
 
 context('metis-ui', () => {
-  const fillLoginFieldsAndSubmit = (submit = true): void => {
+  const fillLoginFieldsAndSubmit = (submit = true, email = 'hello@example.com'): void => {
     cy.get('#email')
       .clear()
-      .type('hello@example.com');
+      .type(email);
     cy.get('#password')
       .clear()
       .type('x');
@@ -69,14 +69,8 @@ context('metis-ui', () => {
     });
 
     it('should not login with the wrong credentials', () => {
-      cy.route({
-        method: 'POST',
-        url: '/authentication/login',
-        status: 401,
-        response: { errorMessage: 'Oops!' }
-      });
-      fillLoginFieldsAndSubmit();
-      cy.get('.error-notification').contains('401 Oops!');
+      fillLoginFieldsAndSubmit(true, 'mr@random');
+      cy.get('.error-notification').contains('Email or password is incorrect, please try again.');
     });
 
     it('should login', () => {

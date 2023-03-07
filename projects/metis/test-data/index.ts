@@ -90,6 +90,12 @@ new (class extends TestDataServer {
     response.end(JSON.stringify({ errorMessage: statusMessage }));
   }
 
+  return401(response: ServerResponse): void {
+    response.statusCode = 401;
+    response.statusMessage = 'Unauthorized';
+    response.end('{"errorMessage":"Wrong credentials"}');
+  }
+
   cleanSwitches(): void {
     this.switchedOff = {};
   }
@@ -758,6 +764,15 @@ new (class extends TestDataServer {
       if (request.method === 'POST') {
         response.setHeader('Content-Type', 'application/json;charset=UTF-8');
 
+        const auth = request.headers.authorization;
+        if (auth) {
+          const data = Buffer.from(auth.replace('Basic ', ''), 'base64').toString('ascii');
+          const username = data.split(':')[0];
+          if (username === 'mr@random') {
+            this.return401(response);
+            return;
+          }
+        }
         const result = {
           userId: '1',
           email: 'xxx@xxx.xxx',
