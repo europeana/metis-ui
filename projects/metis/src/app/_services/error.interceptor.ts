@@ -23,11 +23,11 @@ export class ErrorInterceptor implements HttpInterceptor {
   /** intercept
    * Adds a retry pipe to the http handler
    * @param { HttpRequest } request
-   * @param { HttpHandler } next
+   * @param { HttpHandler } handler
    * @returns Observable<HttpEvent>
    **/
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return next
+  intercept(request: HttpRequest<unknown>, handler: HttpHandler): Observable<HttpEvent<unknown>> {
+    return handler
       .handle(request)
       .pipe(retry({ count: this.numberOfRetries, delay: this.shouldRetry }));
   }
