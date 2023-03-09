@@ -6,7 +6,7 @@ import { filter, map, switchMap } from 'rxjs/operators';
 import { DataPollingComponent, ModalConfirmService } from 'shared';
 import { environment } from '../../../environments/environment';
 import { isPluginCompleted, PluginExecution, SubTaskInfo } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 @Component({
@@ -16,7 +16,6 @@ import { TranslateService } from '../../_translate';
 export class DatasetlogComponent extends DataPollingComponent implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
-    private readonly errors: ErrorService,
     private readonly modalConfirms: ModalConfirmService,
     private readonly translate: TranslateService
   ) {
@@ -131,7 +130,6 @@ export class DatasetlogComponent extends DataPollingComponent implements OnInit 
       },
       (err: HttpErrorResponse): HttpErrorResponse | false => {
         this.isFirstLoading = false;
-        this.errors.handleError(err);
         this.cleanup();
         return err;
       }

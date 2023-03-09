@@ -13,11 +13,13 @@ import { DataPollingComponent, ModalConfirmService } from 'shared';
 import {
   DatasetDepublicationInfo,
   DepublicationDeletionInfo,
+  httpErrorNotification,
+  Notification,
   RecordDepublicationInfoDeletable,
   SortDirection,
   SortParameter
 } from '../../_models';
-import { DepublicationService, ErrorService } from '../../_services';
+import { DepublicationService } from '../../_services';
 import { environment } from '../../../environments/environment';
 import { DepublicationRowComponent } from './depublication-row';
 
@@ -28,6 +30,7 @@ import { DepublicationRowComponent } from './depublication-row';
 })
 export class DepublicationComponent extends DataPollingComponent {
   depublicationRows: QueryList<DepublicationRowComponent>;
+  errorNotification?: Notification;
 
   @ViewChildren(DepublicationRowComponent)
   set setDepublicationRows(depublicationRows: QueryList<DepublicationRowComponent>) {
@@ -96,7 +99,6 @@ export class DepublicationComponent extends DataPollingComponent {
   constructor(
     private readonly modalConfirms: ModalConfirmService,
     private readonly depublications: DepublicationService,
-    private readonly errors: ErrorService,
     private readonly fb: NonNullableFormBuilder
   ) {
     super();
@@ -310,37 +312,30 @@ export class DepublicationComponent extends DataPollingComponent {
   }
 
   /** onError
-  /* - run default error handlere
-  /* - set isSaving to false
-  /* - log the error to the console
-  /*  @param {HttpErrorResponse} err - the fail response
-  */
-  onError(err: HttpErrorResponse): void {
-    this.errors.handleError(err);
+   * - set isSaving to false and initialise notification
+   *  @param {HttpErrorResponse} error
+   */
+  onError(error: HttpErrorResponse): void {
     this.isSaving = false;
-    console.error(`${err.status}: ${err.statusText}`);
+    this.errorNotification = httpErrorNotification(error);
   }
 
   /** onSubmitFormFile
-  /* - submit the formFile form data if validation has passed
-  /* - trigger a reload of the displayed depublication data
-  */
+   * - submit the formFile form data if validation has passed
+   * - trigger a reload of the displayed depublication data
+   */
   onSubmitFormFile(): void {
     const form = this.formFile;
     if (form.valid) {
       this.isSaving = true;
+      this.errorNotification = undefined;
       this.subs.push(
         this.depublications
           .setPublicationFile(this._datasetId, form.controls.depublicationFile.value)
-          .subscribe(
-            () => {
-              this.refreshPolling();
-              this.isSaving = false;
-            },
-            (err: HttpErrorResponse): void => {
-              this.onError(err);
-            }
-          )
+          .subscribe(() => {
+            this.refreshPolling();
+            this.isSaving = false;
+          }, this.onError.bind(this))
       );
     }
   }
@@ -366,16 +361,12 @@ export class DepublicationComponent extends DataPollingComponent {
   onDepublishDataset(): void {
     this.closeMenus();
     this.isSaving = true;
+    this.errorNotification = undefined;
     this.subs.push(
-      this.depublications.depublishDataset(this._datasetId).subscribe(
-        () => {
-          this.refreshPolling();
-          this.isSaving = false;
-        },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
-        }
-      )
+      this.depublications.depublishDataset(this._datasetId).subscribe(() => {
+        this.refreshPolling();
+        this.isSaving = false;
+      }, this.onError.bind(this))
     );
   }
 
@@ -405,17 +396,14 @@ export class DepublicationComponent extends DataPollingComponent {
    *  @param {Observable <unknown>} observable
    **/
   resetSelectionOnEvent(observable: Observable<unknown>): void {
+    this.isSaving = true;
+    this.errorNotification = undefined;
     this.subs.push(
-      observable.subscribe(
-        () => {
-          this.depublicationSelections = [];
-          this.refreshPolling();
-          this.isSaving = false;
-        },
-        (err: HttpErrorResponse): void => {
-          this.onError(err);
-        }
-      )
+      observable.subscribe(() => {
+        this.depublicationSelections = [];
+        this.refreshPolling();
+        this.isSaving = false;
+      }, this.onError.bind(this))
     );
   }
 
@@ -431,7 +419,6 @@ export class DepublicationComponent extends DataPollingComponent {
     if (!all && this.depublicationSelections.length === 0) {
       return;
     }
-    this.isSaving = true;
     this.resetSelectionOnEvent(
       this.depublications.depublishRecordIds(
         this._datasetId,
@@ -446,7 +433,6 @@ export class DepublicationComponent extends DataPollingComponent {
    * - invoke service call
    **/
   deleteDepublications(): void {
-    this.isSaving = true;
     this.resetSelectionOnEvent(
       this.depublications.deleteDepublications(this._datasetId, this.depublicationSelections)
     );
@@ -460,19 +446,15 @@ export class DepublicationComponent extends DataPollingComponent {
     const form = this.formRawText;
     if (form.valid) {
       this.isSaving = true;
+      this.errorNotification = undefined;
       this.subs.push(
         this.depublications
           .setPublicationInfo(this._datasetId, form.controls.recordIds.value.trim())
-          .subscribe(
-            () => {
-              this.refreshPolling();
-              form.controls.recordIds.reset();
-              this.isSaving = false;
-            },
-            (err: HttpErrorResponse): void => {
-              this.onError(err);
-            }
-          )
+          .subscribe(() => {
+            this.refreshPolling();
+            form.controls.recordIds.reset();
+            this.isSaving = false;
+          }, this.onError.bind(this))
       );
     }
   }
@@ -484,6 +466,7 @@ export class DepublicationComponent extends DataPollingComponent {
   beginPolling(): void {
     const fnDataCall = (): Observable<DatasetDepublicationInfo> => {
       this.isSaving = true;
+      this.errorNotification = undefined;
       return this.depublications.getPublicationInfoUptoPage(
         this._datasetId,
         this.currentPage,
@@ -503,12 +486,16 @@ export class DepublicationComponent extends DataPollingComponent {
       this.isSaving = false;
       this.depublicationIsTriggerable = info.depublicationTriggerable;
     };
+
     this.pollingRefresh = this.createNewDataPoller(
       environment.intervalStatusMedium,
       fnDataCall,
       false,
       fnDataProcess,
-      this.errors.handleError
+      (error: HttpErrorResponse) => {
+        this.onError(error);
+        return false;
+      }
     ).getPollingSubject();
   }
 }

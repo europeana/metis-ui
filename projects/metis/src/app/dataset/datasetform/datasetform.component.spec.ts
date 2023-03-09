@@ -11,15 +11,9 @@ import {
   mockDataset,
   MockDatasetsService,
   MockDatasetsServiceErrors,
-  MockErrorService,
   MockTranslateService
 } from '../../_mocked';
-import {
-  AuthenticationService,
-  CountriesService,
-  DatasetsService,
-  ErrorService
-} from '../../_services';
+import { AuthenticationService, CountriesService, DatasetsService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { DatasetformComponent } from '.';
@@ -28,7 +22,6 @@ describe('DatasetformComponent', () => {
   let component: DatasetformComponent;
   let fixture: ComponentFixture<DatasetformComponent>;
   let router: Router;
-  let errors: ErrorService;
 
   const existingId = '123';
   const newId = 'some_id';
@@ -47,14 +40,12 @@ describe('DatasetformComponent', () => {
           provide: DatasetsService,
           useClass: errorMode ? MockDatasetsServiceErrors : MockDatasetsService
         },
-        { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });
 
     fixture = TestBed.createComponent(DatasetformComponent);
-    errors = fixture.debugElement.injector.get<ErrorService>(ErrorService);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
     component.datasetData = mockDataset;
@@ -194,23 +185,23 @@ describe('DatasetformComponent', () => {
     });
 
     it('should handle errors getting the countries', () => {
-      spyOn(errors, 'handleError');
+      expect(component.notification).toBeFalsy();
       component.returnCountries();
-      expect(errors.handleError).toHaveBeenCalled();
+      expect(component.notification).toBeTruthy();
     });
 
     it('should handle errors getting the languages', () => {
-      spyOn(errors, 'handleError');
+      expect(component.notification).toBeFalsy();
       component.returnLanguages();
-      expect(errors.handleError).toHaveBeenCalled();
+      expect(component.notification).toBeTruthy();
     });
 
     it('should handle errors submitting the form', fakeAsync(() => {
-      spyOn(errors, 'handleError');
+      expect(component.notification).toBeFalsy();
       fixture.detectChanges();
       component.onSubmit();
       tick(1);
-      expect(errors.handleError).toHaveBeenCalled();
+      expect(component.notification).toBeTruthy();
     }));
   });
 });

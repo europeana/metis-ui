@@ -10,15 +10,15 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
+import { environment } from '../../../environments/environment';
 import {
   createMockPipe,
   MockDepublicationService,
-  MockDepublicationServiceErrors,
-  MockErrorService
+  MockDepublicationServiceErrors
 } from '../../_mocked';
 import { of } from 'rxjs';
 import { SortDirection, SortParameter } from '../../_models';
-import { DepublicationService, ErrorService } from '../../_services';
+import { DepublicationService } from '../../_services';
 import { DepublicationRowComponent } from './depublication-row';
 import { DepublicationComponent } from '.';
 
@@ -27,9 +27,8 @@ describe('DepublicationComponent', () => {
   let fixture: ComponentFixture<DepublicationComponent>;
   let modalConfirms: ModalConfirmService;
   let depublications: DepublicationService;
-  let errors: ErrorService;
 
-  const interval = 5000;
+  const interval = environment.intervalStatusMedium;
   const recordId = 'BibliographicResource_1000126221328';
 
   const addFormFieldData = (): void => {
@@ -49,14 +48,12 @@ describe('DepublicationComponent', () => {
         {
           provide: DepublicationService,
           useClass: errorMode ? MockDepublicationServiceErrors : MockDepublicationService
-        },
-        { provide: ErrorService, useClass: MockErrorService }
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     modalConfirms = TestBed.inject(ModalConfirmService);
     depublications = TestBed.inject(DepublicationService);
-    errors = TestBed.inject(ErrorService);
   };
 
   const b4Each = (): void => {
@@ -423,59 +420,63 @@ describe('DepublicationComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should handle load errors', fakeAsync(() => {
-      spyOn(errors, 'handleError');
-      component.beginPolling();
-      tick(interval);
-      expect(errors.handleError).toHaveBeenCalled();
-      component.cleanup();
-      tick(interval);
-    }));
-
     it('should handle errors submitting the file', fakeAsync(() => {
       spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.datasetId = '123';
       component.beginPolling();
+      tick(1);
       addFormFieldData();
       component.onSubmitFormFile();
-      tick(1);
+      tick(interval);
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     }));
 
     it('should handle errors submitting the text', () => {
       spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       const datasetId = '123';
       component.datasetId = datasetId;
       component.formRawText.patchValue({ recordIds: `http://${datasetId}/${recordId}` });
       component.onSubmitRawText();
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     });
 
-    it('should handle dataset depublication errors', () => {
+    it('should handle dataset depublication errors', fakeAsync(() => {
       spyOn(depublications, 'depublishDataset').and.callThrough();
       spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
+      tick(interval);
       component.onDepublishDataset();
+      tick(interval);
       expect(depublications.depublishDataset).toHaveBeenCalled();
-      expect(component.isSaving).toBeFalsy();
       expect(component.onError).toHaveBeenCalled();
-    });
+      expect(component.isSaving).toBeFalsy();
+      expect(component.errorNotification).toBeTruthy();
+    }));
 
     it('should handle record id depublication errors', () => {
       spyOn(depublications, 'depublishRecordIds').and.callThrough();
-      spyOn(component, 'onError');
+      spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.beginPolling();
       component.depublicationSelections = ['0'];
       component.onDepublishRecordIds();
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     });
 
     it('should handle errors deleting depublications', () => {
-      spyOn(component, 'onError');
+      spyOn(component, 'onError').and.callThrough();
+      expect(component.errorNotification).toBeFalsy();
       component.depublicationSelections = ['xxx', 'yyy', 'zzz'];
       expect(component.depublicationSelections.length).toBeTruthy();
       component.deleteDepublications();
       expect(component.onError).toHaveBeenCalled();
+      expect(component.errorNotification).toBeTruthy();
     });
   });
 });

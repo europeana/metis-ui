@@ -234,6 +234,7 @@ context('metis-ui', () => {
 
       cy.get(selInputSearch).type('500');
       cy.get(selBtnSearch).click(force);
+      cy.wait(3000);
 
       cy.get(selEditorSearchContent).should('not.exist');
       cy.get(selEditorSearchError).should('not.exist');

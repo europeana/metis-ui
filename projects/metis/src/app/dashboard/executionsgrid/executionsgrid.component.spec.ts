@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, QueryList } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { environment } from '../../../environments/environment';
 import {
   createMockPipe,
   MockTranslateService,
@@ -48,7 +49,7 @@ describe('ExecutionsgridComponent', () => {
     component = fixture.componentInstance;
   };
 
-  const interval = 5000;
+  const interval = environment.intervalStatusMedium;
 
   describe('Normal operation', () => {
     beforeEach(async(configureTestbed));

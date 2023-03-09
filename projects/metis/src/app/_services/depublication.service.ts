@@ -9,11 +9,10 @@ import {
   SortDirection,
   SortParameter
 } from '../_models';
-import { ErrorService } from './error.service';
 
 @Injectable({ providedIn: 'root' })
 export class DepublicationService {
-  constructor(private readonly http: HttpClient, private readonly errors: ErrorService) {}
+  constructor(private readonly http: HttpClient) {}
 
   /** depublishRecordIds
   /*  depublish individual record ids
@@ -22,11 +21,9 @@ export class DepublicationService {
   */
   depublishRecordIds(datasetId: string, recordIds: Array<string> | null): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=false`;
-    return this.http
-      .post<boolean>(url, recordIds === null ? ' ' : recordIds.join('\n'), {
-        reportProgress: true
-      })
-      .pipe(this.errors.handleRetry());
+    return this.http.post<boolean>(url, recordIds === null ? ' ' : recordIds.join('\n'), {
+      reportProgress: true
+    });
   }
 
   /** depublishDataset
@@ -35,11 +32,9 @@ export class DepublicationService {
   */
   depublishDataset(datasetId: string): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublish/execute/${datasetId}?datasetDepublish=true`;
-    return this.http
-      .post<boolean>(url, ' ', {
-        reportProgress: true
-      })
-      .pipe(this.errors.handleRetry());
+    return this.http.post<boolean>(url, ' ', {
+      reportProgress: true
+    });
   }
 
   /** handleUploadEvents
@@ -77,8 +72,7 @@ export class DepublicationService {
         },
         reportProgress: true
       })
-      .pipe(map(DepublicationService.handleUploadEvents))
-      .pipe(this.errors.handleRetry());
+      .pipe(map(DepublicationService.handleUploadEvents));
   }
 
   /** deleteDepublications
@@ -87,14 +81,12 @@ export class DepublicationService {
   */
   deleteDepublications(datasetId: string, recordIds: Array<string>): Observable<void> {
     const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
-    return this.http
-      .request<void>('delete', url, {
-        headers: {
-          'Content-Type': 'text/plain'
-        },
-        body: recordIds.join('\n')
-      })
-      .pipe(this.errors.handleRetry());
+    return this.http.request<void>('delete', url, {
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: recordIds.join('\n')
+    });
   }
 
   /** setPublicationInfo
@@ -104,13 +96,11 @@ export class DepublicationService {
   */
   setPublicationInfo(datasetId: string, toDepublish: string): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}`;
-    return this.http
-      .post<boolean>(url, toDepublish, {
-        headers: {
-          'Content-Type': 'text/plain'
-        }
-      })
-      .pipe(this.errors.handleRetry());
+    return this.http.post<boolean>(url, toDepublish, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    });
   }
 
   /** parseFilterParameter
@@ -150,7 +140,7 @@ export class DepublicationService {
     const sortParam = this.parseSortParameter(sort);
     const filterParam = this.parseFilterParameter(filter);
     const url = `${apiSettings.apiHostCore}/depublish/record_ids/${datasetId}?page=${page}${sortParam}${filterParam}`;
-    return this.http.get<DatasetDepublicationInfo>(url).pipe(this.errors.handleRetry());
+    return this.http.get<DatasetDepublicationInfo>(url);
   }
 
   /** flattenDatasetDepublicationInfos

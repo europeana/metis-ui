@@ -18,7 +18,7 @@ import { Observable, Subject } from 'rxjs';
 import { DataPollingComponent } from 'shared';
 import { environment } from '../../../environments/environment';
 import { DatasetOverview, MoreResults, PluginExecutionOverview } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 
 import { GridrowComponent } from './gridrow';
 
@@ -44,7 +44,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
   @Output() selectedSet: EventEmitter<string> = new EventEmitter();
   @ViewChildren(GridrowComponent) rows: QueryList<GridrowComponent>;
 
-  constructor(private readonly workflows: WorkflowService, private readonly errors: ErrorService) {
+  constructor(private readonly workflows: WorkflowService) {
     super();
   }
 
@@ -112,7 +112,7 @@ export class ExecutionsgridComponent extends DataPollingComponent
     const fnError = (err: HttpErrorResponse): false | HttpErrorResponse => {
       this.isLoading = false;
       this.isLoadingMore = false;
-      return this.errors.handleError(err);
+      return err;
     };
 
     this.pollingRefresh = this.createNewDataPoller(

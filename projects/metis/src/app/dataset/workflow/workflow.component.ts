@@ -32,7 +32,7 @@ import {
   WorkflowFieldData,
   workflowFormFieldConf
 } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 import { WorkflowFormFieldComponent } from './workflow-form-field';
 
@@ -45,7 +45,6 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
   constructor(
     private readonly workflows: WorkflowService,
     private readonly fb: FormBuilder,
-    private readonly errors: ErrorService,
     private readonly translate: TranslateService
   ) {
     super();
@@ -614,8 +613,7 @@ export class WorkflowComponent extends SubscriptionManager implements OnInit {
           subCreated.unsubscribe();
         },
         (err: HttpErrorResponse) => {
-          const errorSubmit = this.errors.handleError(err);
-          this.notification = httpErrorNotification(errorSubmit);
+          this.notification = httpErrorNotification(err);
           this.isSaving = false;
           subCreated.unsubscribe();
         }

@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
@@ -15,17 +15,15 @@ import { AppComponent } from '.';
 import {
   createMockPipe,
   MockAuthenticationService,
-  MockErrorService,
   MockWorkflowService,
   MockWorkflowServiceErrors
 } from './_mocked';
-import { AuthenticationService, ErrorService, WorkflowService } from './_services';
+import { AuthenticationService, WorkflowService } from './_services';
 import { DashboardComponent } from './dashboard';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
-  let errors: ErrorService;
   let modalConfirms: ModalConfirmService;
   let workflows: WorkflowService;
   let router: Router;
@@ -49,11 +47,9 @@ describe('AppComponent', () => {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: ErrorService, useClass: MockErrorService }
+        { provide: AuthenticationService, useClass: MockAuthenticationService }
       ]
     }).compileComponents();
-    errors = TestBed.inject(ErrorService);
   };
 
   const b4Each = (): void => {
@@ -162,11 +158,11 @@ describe('AppComponent', () => {
 
     beforeEach(b4Each);
 
-    it('should show a workflow', () => {
-      spyOn(errors, 'handleError').and.callThrough();
+    it('should show a workflow', fakeAsync(() => {
       app.cancellationRequest = cancellationRequest;
       app.cancelWorkflow();
-      expect(errors.handleError).toHaveBeenCalled();
-    });
+      tick(1);
+      expect(app.errorNotification).toBeTruthy();
+    }));
   });
 });

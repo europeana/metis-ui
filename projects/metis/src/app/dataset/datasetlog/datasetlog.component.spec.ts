@@ -5,7 +5,6 @@ import { of } from 'rxjs';
 import { MockModalConfirmService, ModalConfirmService } from 'shared';
 import {
   createMockPipe,
-  MockErrorService,
   mockLogs,
   mockPluginExecution,
   MockTranslateService,
@@ -13,7 +12,7 @@ import {
   MockWorkflowServiceErrors
 } from '../../_mocked';
 import { PluginStatus } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 import { TranslateService } from '../../_translate';
 
 import { DatasetlogComponent } from '.';
@@ -21,7 +20,6 @@ import { DatasetlogComponent } from '.';
 describe('DatasetlogComponent', () => {
   let component: DatasetlogComponent;
   let fixture: ComponentFixture<DatasetlogComponent>;
-  let errors: ErrorService;
   let modalConfirms: ModalConfirmService;
 
   const configureTestingModule = (errorMode = false): void => {
@@ -36,7 +34,6 @@ describe('DatasetlogComponent', () => {
           provide: WorkflowService,
           useClass: errorMode ? MockWorkflowServiceErrors : MockWorkflowService
         },
-        { provide: ErrorService, useClass: MockErrorService },
         { provide: TranslateService, useClass: MockTranslateService },
         { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
@@ -47,7 +44,6 @@ describe('DatasetlogComponent', () => {
 
   const b4Each = (): void => {
     fixture = TestBed.createComponent(DatasetlogComponent);
-    errors = TestBed.inject(ErrorService);
     component = fixture.componentInstance;
     component.showPluginLog = mockPluginExecution;
     fixture.detectChanges();
@@ -131,13 +127,13 @@ describe('DatasetlogComponent', () => {
     beforeEach(b4Each);
 
     it('should open the logs', fakeAsync(() => {
-      spyOn(errors, 'handleError');
+      spyOn(component, 'cleanup').and.callThrough();
       expect(component.logMessages).toBeFalsy();
       component.startPolling();
       tick(1);
       expect(component.logMessages).toBeFalsy();
-      expect(errors.handleError).toHaveBeenCalled();
-      component.cleanup();
+      expect(component.isFirstLoading).toBeFalsy();
+      expect(component.cleanup).toHaveBeenCalled();
     }));
   });
 });

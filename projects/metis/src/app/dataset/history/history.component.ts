@@ -22,7 +22,7 @@ import {
   User,
   WorkflowExecution
 } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-history',
@@ -32,11 +32,7 @@ import { ErrorService, WorkflowService } from '../../_services';
 export class HistoryComponent extends SubscriptionManager {
   public executionsIncludeDeleted = executionsIncludeDeleted;
 
-  constructor(
-    private readonly workflows: WorkflowService,
-    private readonly errors: ErrorService,
-    private readonly router: Router
-  ) {
+  constructor(private readonly workflows: WorkflowService, private readonly router: Router) {
     super();
   }
 
@@ -98,8 +94,7 @@ export class HistoryComponent extends SubscriptionManager {
             this.maxResults = results.length;
           },
           (err: HttpErrorResponse) => {
-            const error = this.errors.handleError(err);
-            this.notification = httpErrorNotification(error);
+            this.notification = httpErrorNotification(err);
             this.isLoading = false;
           }
         )

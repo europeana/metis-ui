@@ -5,11 +5,10 @@ import { of } from 'rxjs';
 import {
   createMockPipe,
   MockAuthenticationService,
-  MockAuthenticationServiceErrors,
-  MockErrorService
+  MockAuthenticationServiceErrors
 } from '../_mocked';
 import { AccountRole } from '../_models';
-import { AuthenticationService, ErrorService } from '../_services';
+import { AuthenticationService } from '../_services';
 
 import { ProfileComponent } from '.';
 
@@ -26,8 +25,7 @@ describe('ProfileComponent', () => {
         {
           provide: AuthenticationService,
           useClass: errorMode ? MockAuthenticationServiceErrors : MockAuthenticationService
-        },
-        { provide: ErrorService, useClass: MockErrorService }
+        }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

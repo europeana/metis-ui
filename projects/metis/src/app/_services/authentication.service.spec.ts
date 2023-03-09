@@ -5,9 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { DashboardComponent } from '../dashboard';
-import { MockErrorService, mockUser } from '../_mocked';
+import { mockUser } from '../_mocked';
 import { User } from '../_models';
-import { ErrorService, RedirectPreviousUrl } from '../_services';
+import { RedirectPreviousUrl } from '../_services';
 
 import { AuthenticationService } from '.';
 
@@ -30,11 +30,7 @@ describe('AuthenticationService', () => {
         RouterTestingModule.withRoutes([{ path: './dashboard', component: DashboardComponent }]),
         HttpClientTestingModule
       ],
-      providers: [
-        AuthenticationService,
-        RedirectPreviousUrl,
-        { provide: ErrorService, useClass: MockErrorService }
-      ]
+      providers: [AuthenticationService, RedirectPreviousUrl]
     }).compileComponents();
 
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostAuth);

@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -34,7 +34,6 @@ import {
 } from '../_models';
 import { AuthenticationService } from './authentication.service';
 import { DatasetsService } from './datasets.service';
-import { ErrorService } from './error.service';
 import { collectResultsUptoPage, paginatedResult } from './service-utils';
 
 @Injectable({ providedIn: 'root' })
@@ -42,7 +41,6 @@ export class WorkflowService extends SubscriptionManager {
   constructor(
     private readonly http: HttpClient,
     private readonly datasetsService: DatasetsService,
-    private readonly errors: ErrorService,
     private readonly authenticationServer: AuthenticationService
   ) {
     super();
@@ -86,7 +84,7 @@ export class WorkflowService extends SubscriptionManager {
   */
   getWorkflowForDataset(id: string): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
-    return this.http.get<Workflow>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Workflow>(url);
   }
 
   /** getPublishedHarvestedData
@@ -94,7 +92,7 @@ export class WorkflowService extends SubscriptionManager {
   */
   getPublishedHarvestedData(id: string): Observable<HarvestData> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/information`;
-    return this.http.get<HarvestData>(url).pipe(this.errors.handleRetry());
+    return this.http.get<HarvestData>(url);
   }
 
   /** createWorkflowForDataset
@@ -107,9 +105,9 @@ export class WorkflowService extends SubscriptionManager {
   ): Observable<Workflow> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}`;
     if (!newWorkflow) {
-      return this.http.put<Workflow>(url, values).pipe(this.errors.handleRetry());
+      return this.http.put<Workflow>(url, values);
     } else {
-      return this.http.post<Workflow>(url, values).pipe(this.errors.handleRetry());
+      return this.http.post<Workflow>(url, values);
     }
   }
 
@@ -121,7 +119,7 @@ export class WorkflowService extends SubscriptionManager {
     const enforce = '';
 
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/${id}/execute?priority=${priority}&enforcedPluginType=${enforce}`;
-    return this.http.post<WorkflowExecution>(url, {}).pipe(this.errors.handleRetry());
+    return this.http.post<WorkflowExecution>(url, {});
   }
 
   /** getLogs
@@ -135,7 +133,7 @@ export class WorkflowService extends SubscriptionManager {
   ): Observable<SubTaskInfo[]> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/logs?from=${start}&to=${finish}`;
 
-    return this.http.get<SubTaskInfo[]>(url).pipe(this.errors.handleRetry());
+    return this.http.get<SubTaskInfo[]>(url);
   }
 
   /** getReportAvailable
@@ -143,7 +141,7 @@ export class WorkflowService extends SubscriptionManager {
   */
   getReportAvailable(taskId: string, topologyName: TopologyName): Observable<ReportAvailability> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report/exists`;
-    return this.http.get<ReportAvailability>(url).pipe(this.errors.handleRetry());
+    return this.http.get<ReportAvailability>(url);
   }
 
   /** getReport
@@ -151,7 +149,7 @@ export class WorkflowService extends SubscriptionManager {
   */
   getReport(taskId: string, topologyName: TopologyName): Observable<Report> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/report?idsPerError=100`;
-    return this.http.get<Report>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Report>(url);
   }
 
   requestHasError(key: string): Observable<boolean> {
@@ -192,14 +190,11 @@ export class WorkflowService extends SubscriptionManager {
    **/
   getIsIncrementalHarvestAllowed(id: string): Observable<boolean> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/allowed_incremental`;
-    return this.http
-      .get<IncrementalHarvestingAllowedResult>(url)
-      .pipe(
-        switchMap((result: IncrementalHarvestingAllowedResult) => {
-          return of(result.incrementalHarvestingAllowed);
-        })
-      )
-      .pipe(this.errors.handleRetry());
+    return this.http.get<IncrementalHarvestingAllowedResult>(url).pipe(
+      switchMap((result: IncrementalHarvestingAllowedResult) => {
+        return of(result.incrementalHarvestingAllowed);
+      })
+    );
   }
 
   /** getCompletedDatasetExecutions
@@ -209,7 +204,7 @@ export class WorkflowService extends SubscriptionManager {
     const api = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/`;
     // eslint-disable-next-line max-len
     const url = `${api}${id}?workflowStatus=FINISHED&workflowStatus=FAILED&workflowStatus=CANCELLED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url);
   }
 
   /** getCompletedDatasetExecutionsUptoPage
@@ -232,7 +227,7 @@ export class WorkflowService extends SubscriptionManager {
   */
   getDatasetHistory(id: string): Observable<WorkflowExecutionHistoryList> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}/history`;
-    return this.http.get<WorkflowExecutionHistoryList>(url).pipe(this.errors.handleRetry());
+    return this.http.get<WorkflowExecutionHistoryList>(url);
   }
 
   /** getExecutionPlugins
@@ -240,7 +235,7 @@ export class WorkflowService extends SubscriptionManager {
   */
   getExecutionPlugins(id: string): Observable<PluginAvailabilityList> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/${id}/plugins/data-availability`;
-    return this.http.get<PluginAvailabilityList>(url).pipe(this.errors.handleRetry());
+    return this.http.get<PluginAvailabilityList>(url);
   }
 
   /** getFinishedDatasetExecutions
@@ -250,7 +245,7 @@ export class WorkflowService extends SubscriptionManager {
     const url =
       `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}` +
       `?workflowStatus=FINISHED&orderField=CREATED_DATE&ascending=false&nextPage=${page}`;
-    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url);
   }
 
   /** getLastDatasetExecution
@@ -258,15 +253,12 @@ export class WorkflowService extends SubscriptionManager {
   */
   getLastDatasetExecution(id: string): Observable<WorkflowExecution | undefined> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/executions/dataset/${id}?orderField=CREATED_DATE&ascending=false`;
-    return this.http
-      .get<Results<WorkflowExecution>>(url)
-      .pipe(
-        switchMap((executions) => this.addStartedByToWorkflowExecutionResults(executions)),
-        map((lastExecution) => {
-          return lastExecution.results[0];
-        })
-      )
-      .pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url).pipe(
+      switchMap((executions) => this.addStartedByToWorkflowExecutionResults(executions)),
+      map((lastExecution) => {
+        return lastExecution.results[0];
+      })
+    );
   }
 
   /** getAllExecutions
@@ -283,7 +275,7 @@ export class WorkflowService extends SubscriptionManager {
       url += '&workflowStatus=CANCELLED&workflowStatus=FAILED&workflowStatus=FINISHED';
     }
 
-    return this.http.get<Results<WorkflowExecution>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<WorkflowExecution>>(url);
   }
 
   /** getCompletedDatasetSummaries
@@ -301,7 +293,7 @@ export class WorkflowService extends SubscriptionManager {
       url += `nextPage=${page}`;
     }
     url += params ? params : '';
-    return this.http.get<Results<DatasetOverview>>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Results<DatasetOverview>>(url);
   }
 
   getCompletedDatasetOverviewsUptoPage(
@@ -392,14 +384,9 @@ export class WorkflowService extends SubscriptionManager {
             externalTaskId,
             topologyName,
             isPluginCompleted(pluginExecution)
-          ).subscribe(
-            (hasErrors) => {
-              pluginExecution.hasReport = hasErrors;
-            },
-            (err: HttpErrorResponse) => {
-              this.errors.handleError(err);
-            }
-          )
+          ).subscribe((hasErrors) => {
+            pluginExecution.hasReport = hasErrors;
+          })
         );
       }
     });
@@ -424,14 +411,11 @@ export class WorkflowService extends SubscriptionManager {
   getWorkflowSamples(executionId: string, pluginType: PluginType): Observable<XmlSample[]> {
     // eslint-disable-next-line max-len
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/records?workflowExecutionId=${executionId}&pluginType=${pluginType}&nextPage=`;
-    return this.http
-      .get<{ records: XmlSample[] }>(url)
-      .pipe(
-        map((samples) => {
-          return samples.records;
-        })
-      )
-      .pipe(this.errors.handleRetry());
+    return this.http.get<{ records: XmlSample[] }>(url).pipe(
+      map((samples) => {
+        return samples.records;
+      })
+    );
   }
 
   /** getRecordFromPredecessor
@@ -454,8 +438,7 @@ export class WorkflowService extends SubscriptionManager {
         map((samples) => {
           return samples.records;
         })
-      )
-      .pipe(this.errors.handleRetry());
+      );
   }
 
   /** searchWorkflowRecordsById
@@ -474,7 +457,7 @@ export class WorkflowService extends SubscriptionManager {
   ): Observable<XmlSample> {
     const params = `?workflowExecutionId=${executionId}&pluginType=${pluginType}&idToSearch=${idToSearch}`;
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/recordsearchbyid${params}`;
-    return this.http.post<XmlSample>(url, null).pipe(this.errors.handleRetry());
+    return this.http.post<XmlSample>(url, null);
   }
 
   /** getWorkflowRecordsById
@@ -498,27 +481,23 @@ export class WorkflowService extends SubscriptionManager {
         map((samples) => {
           return samples.records;
         })
-      )
-      .pipe(this.errors.handleRetry());
+      );
   }
 
   // return available transformation histories
   getVersionHistory(executionId: string, pluginType: PluginType): Observable<HistoryVersion[]> {
     const url = `${apiSettings.apiHostCore}/orchestrator/workflows/evolution/${executionId}/${pluginType}`;
-    return this.http
-      .get<HistoryVersions>(url)
-      .pipe(
-        map((res) => {
-          return res.evolutionSteps;
-        })
-      )
-      .pipe(this.errors.handleRetry());
+    return this.http.get<HistoryVersions>(url).pipe(
+      map((res) => {
+        return res.evolutionSteps;
+      })
+    );
   }
 
   //  get statistics for a certain dataset
   getStatistics(topologyName: TopologyName, taskId: string): Observable<Statistics> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/statistics`;
-    return this.http.get<Statistics>(url).pipe(this.errors.handleRetry());
+    return this.http.get<Statistics>(url);
   }
 
   getStatisticsDetail(
@@ -527,7 +506,7 @@ export class WorkflowService extends SubscriptionManager {
     xPath: string
   ): Observable<NodePathStatistics> {
     const url = `${apiSettings.apiHostCore}/orchestrator/proxies/${topologyName}/task/${taskId}/nodestatistics?nodePath=${xPath}`;
-    return this.http.get<NodePathStatistics>(url).pipe(this.errors.handleRetry());
+    return this.http.get<NodePathStatistics>(url);
   }
 
   getWorkflowCancelledBy(workflow: WorkflowExecution): Observable<User | undefined> {

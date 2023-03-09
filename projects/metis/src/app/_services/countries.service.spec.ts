@@ -2,8 +2,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, TestBed } from '@angular/core/testing';
 import { MockHttp } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
-import { mockedCountries, mockedLanguages, MockErrorService } from '../_mocked';
-import { CountriesService, ErrorService } from '.';
+import { mockedCountries, mockedLanguages } from '../_mocked';
+import { CountriesService } from '.';
 
 describe('countries service', () => {
   let mockHttp: MockHttp;
@@ -11,7 +11,7 @@ describe('countries service', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      providers: [CountriesService, { provide: ErrorService, useClass: MockErrorService }],
+      providers: [CountriesService],
       imports: [HttpClientTestingModule]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);

@@ -8,13 +8,9 @@ import { async, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockHttp, MockHttpRequest } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import { of } from 'rxjs';
-import {
-  MockErrorService,
-  mockPublicationInfoMoreResults,
-  mockPublicationInfoResults
-} from '../_mocked';
+import { mockPublicationInfoMoreResults, mockPublicationInfoResults } from '../_mocked';
 import { DatasetDepublicationInfo, SortDirection } from '../_models';
-import { DepublicationService, ErrorService } from '.';
+import { DepublicationService } from '.';
 
 describe('depublication service', () => {
   let mockHttp: MockHttp;
@@ -22,7 +18,7 @@ describe('depublication service', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      providers: [DepublicationService, { provide: ErrorService, useClass: MockErrorService }],
+      providers: [DepublicationService],
       imports: [HttpClientTestingModule]
     }).compileComponents();
     mockHttp = new MockHttp(TestBed.inject(HttpTestingController), apiSettings.apiHostCore);

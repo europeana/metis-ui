@@ -11,8 +11,8 @@ import {
   SubscriptionManager
 } from 'shared';
 import { environment } from '../environments/environment';
-import { CancellationRequest } from './_models';
-import { AuthenticationService, ErrorService, WorkflowService } from './_services';
+import { CancellationRequest, httpErrorNotification, Notification } from './_models';
+import { AuthenticationService, WorkflowService } from './_services';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +23,7 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   cancellationRequest?: CancellationRequest;
   public loggedIn = false;
   modalConfirmId = 'confirm-cancellation-request';
+  errorNotification?: Notification;
 
   @ViewChild(ModalConfirmComponent, { static: true })
   modalConfirm: ModalConfirmComponent;
@@ -31,7 +32,6 @@ export class AppComponent extends SubscriptionManager implements OnInit {
     private readonly workflows: WorkflowService,
     private readonly authentication: AuthenticationService,
     private readonly modalConfirms: ModalConfirmService,
-    private readonly errors: ErrorService,
     private readonly router: Router,
     private readonly clickService: ClickService
   ) {
@@ -113,13 +113,14 @@ export class AppComponent extends SubscriptionManager implements OnInit {
   */
   cancelWorkflow(): void {
     if (this.cancellationRequest) {
+      this.errorNotification = undefined;
       this.subs.push(
         this.workflows.cancelThisWorkflow(this.cancellationRequest.workflowExecutionId).subscribe(
           () => {
-            console.log('cancelling');
+            // successful cancellation request made
           },
           (err: HttpErrorResponse) => {
-            this.errors.handleError(err);
+            this.errorNotification = httpErrorNotification(err);
           }
         )
       );

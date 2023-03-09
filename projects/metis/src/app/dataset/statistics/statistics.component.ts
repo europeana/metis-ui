@@ -10,7 +10,7 @@ import {
   PluginExecution,
   Statistics
 } from '../../_models';
-import { ErrorService, WorkflowService } from '../../_services';
+import { WorkflowService } from '../../_services';
 
 @Component({
   selector: 'app-statistics',
@@ -18,7 +18,7 @@ import { ErrorService, WorkflowService } from '../../_services';
   styleUrls: ['./statistics.component.scss']
 })
 export class StatisticsComponent extends SubscriptionManager implements OnInit {
-  constructor(private readonly errors: ErrorService, private readonly workflows: WorkflowService) {
+  constructor(private readonly workflows: WorkflowService) {
     super();
   }
 
@@ -54,8 +54,7 @@ export class StatisticsComponent extends SubscriptionManager implements OnInit {
     this.setLoading(true);
 
     const httpErrorHandling = (err: HttpErrorResponse): void => {
-      const error = this.errors.handleError(err);
-      this.notification = httpErrorNotification(error);
+      this.notification = httpErrorNotification(err);
       this.setLoading(false);
     };
 
@@ -117,9 +116,7 @@ export class StatisticsComponent extends SubscriptionManager implements OnInit {
             this.setLoading(false);
           },
           (err: HttpErrorResponse) => {
-            const error = this.errors.handleError(err);
-            console.log('Error: ' + error);
-            this.notification = httpErrorNotification(error);
+            this.notification = httpErrorNotification(err);
             this.setLoading(false);
           }
         )
