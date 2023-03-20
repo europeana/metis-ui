@@ -74,7 +74,7 @@ describe('DatasetInfoComponent', () => {
     expect(component.fullInfoOpen).toBeFalsy();
   });
 
-  it('should load data when the datasetId is set', fakeAsync( () => {
+  it('should load data when the datasetId is set', fakeAsync(() => {
     fixture.detectChanges();
     expect(component.datasetId).toBeFalsy();
     component.datasetId = '1';

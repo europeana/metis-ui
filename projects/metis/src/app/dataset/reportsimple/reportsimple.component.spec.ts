@@ -35,7 +35,10 @@ describe('ReportSimpleComponent', () => {
       declarations: [createMockPipe('renameWorkflow'), ReportSimpleComponent],
       providers: [
         { provide: TranslateService, useClass: MockTranslateService },
-        { provide: WorkflowService, useClass: errorMode ? MockWorkflowService : MockWorkflowServiceErrors },
+        {
+          provide: WorkflowService,
+          useClass: errorMode ? MockWorkflowService : MockWorkflowServiceErrors
+        },
         { provide: ModalConfirmService, useClass: MockModalConfirmService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -171,7 +174,6 @@ describe('ReportSimpleComponent', () => {
     it('should split the camel case', () => {
       expect(component.splitCamelCase('helloThere')).toEqual('hello There');
     });
-
   });
 
   describe('Errors', () => {
@@ -189,7 +191,7 @@ describe('ReportSimpleComponent', () => {
         return of(mockXmlSamples);
       });
       component.reportRequest = reportRequest;
-      const model: { downloadError : HttpErrorResponse | undefined } = { downloadError: undefined};
+      const model: { downloadError: HttpErrorResponse | undefined } = { downloadError: undefined };
       component.downloadRecord('http://records/123', model);
       expect(model.downloadError).toBeTruthy();
     });

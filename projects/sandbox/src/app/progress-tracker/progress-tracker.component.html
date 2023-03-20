@@ -41,7 +41,7 @@
         </li>
         <li i18n="progress error error@@progressErrorType">Type: {{ error.type }}</li>
         <li i18n="progress error error@@progressErrorRecords">
-          Records: [{{ error.records }}]
+          Records: {{ error.records | json }}
           <ul class="code">
             <li>{{ error.message }}</li>
           </ul>

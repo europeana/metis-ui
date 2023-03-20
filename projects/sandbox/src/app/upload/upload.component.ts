@@ -184,7 +184,7 @@ export class UploadComponent extends DataPollingComponent {
             res = (res as unknown) as SubmissionResponseDataWrapped;
             if (res.body) {
               this.notifySubmitted.emit(res.body['dataset-id']);
-            } else if (form.value.url || form.value.harvestUrl) {
+            } else {
               this.notifySubmitted.emit(((res as unknown) as SubmissionResponseData)['dataset-id']);
             }
           },
