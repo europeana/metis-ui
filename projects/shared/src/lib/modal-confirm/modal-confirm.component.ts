@@ -30,7 +30,10 @@ export class ModalConfirmComponent implements ModalDialog, OnInit, OnDestroy {
   show = false;
   bodyClassOpen = 'modal-open';
 
-  constructor(private readonly modalConfirms: ModalConfirmService, private renderer: Renderer2) {
+  constructor(
+    private readonly modalConfirms: ModalConfirmService,
+    private readonly renderer: Renderer2
+  ) {
     this.subConfirmResponse = new Subject<boolean>();
   }
 

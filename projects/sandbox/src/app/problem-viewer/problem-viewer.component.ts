@@ -144,7 +144,7 @@ export class ProblemViewerComponent extends SubscriptionManager implements OnIni
   canScrollDown(): boolean {
     const scrollEl = this.getScrollableParent();
     if (scrollEl && scrollEl.scrollHeight > 0) {
-      return !(scrollEl.scrollTop + scrollEl.offsetHeight >= scrollEl.scrollHeight);
+      return scrollEl.scrollTop + scrollEl.offsetHeight < scrollEl.scrollHeight;
     }
     return false;
   }

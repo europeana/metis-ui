@@ -219,6 +219,9 @@ describe('SandboxNavigatonComponent', () => {
 
       component.updateLocation(true, true, true);
       expect(location).toEqual(`/dataset/${datasetId}?recordId=${recordId}&view=problems`);
+
+      component.updateLocation(false);
+      expect(location).toEqual('');
     });
 
     it('should get the form group', () => {
@@ -282,23 +285,39 @@ describe('SandboxNavigatonComponent', () => {
     });
 
     it('should submit the progress form, clearing the polling before and when complete', fakeAsync(() => {
-      spyOn(component, 'clearDataPollers');
+      spyOn(component, 'clearDataPollers').and.callThrough();
+      spyOn(component, 'setPage');
+
       component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
       expect(component.clearDataPollers).not.toHaveBeenCalled();
       setFormValueDataset('1');
-      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(1);
       tick(apiSettings.interval);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(2);
+      expect(component.setPage).toHaveBeenCalledTimes(1);
+      expect(component.setPage).toHaveBeenCalledWith(stepIndexTrack);
 
       // clear and re-submit
 
       spyOn(component, 'progressComplete').and.callFake(() => false);
       setFormValueDataset('1');
-      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS);
+      component.onSubmitProgress(component.ButtonAction.BTN_PROGRESS, true);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
       tick(apiSettings.interval);
       expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+      tick(apiSettings.interval);
+      expect(component.setPage).toHaveBeenCalledTimes(2);
+
+      // clear and re-submit
+      setFormValueRecord('1');
+      component.onSubmitProgress(component.ButtonAction.BTN_RECORD, true);
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+      tick(apiSettings.interval);
+      expect(component.clearDataPollers).toHaveBeenCalledTimes(3);
+      expect(component.setPage).toHaveBeenCalledTimes(3);
+      expect(component.setPage).toHaveBeenCalledWith(stepIndexProblemsDataset);
+
       component.cleanup();
       tick(apiSettings.interval);
     }));
@@ -380,8 +399,11 @@ describe('SandboxNavigatonComponent', () => {
     it('should set the step', () => {
       const form = component.uploadComponent.form;
       spyOn(form, 'enable');
+
       expect(component.currentStepIndex).toEqual(stepIndexHome);
-      component.setPage(stepIndexUpload, false, false);
+      expect(component.currentStepType).toEqual(SandboxPageType.HOME);
+      component.setPage(stepIndexUpload, false, true);
+
       expect(component.currentStepIndex).toEqual(stepIndexUpload);
       expect(form.enable).not.toHaveBeenCalled();
       component.setPage(stepIndexUpload, true);
@@ -389,6 +411,10 @@ describe('SandboxNavigatonComponent', () => {
       form.disable();
       component.setPage(stepIndexUpload, true);
       expect(form.enable).toHaveBeenCalled();
+
+      component.setPage(stepIndexHome, false);
+      expect(component.currentStepIndex).toEqual(stepIndexHome);
+      expect(component.currentStepType).toEqual(SandboxPageType.HOME);
     });
 
     it('should set the step conditionally via callSetPage', () => {
@@ -561,7 +587,7 @@ describe('SandboxNavigatonComponent', () => {
       component.sandboxNavConf[index].error = undefined;
       index = stepIndexProblemsRecord;
 
-      component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, false);
+      component.onSubmitRecord(component.ButtonAction.BTN_PROBLEMS, true);
       tick(1);
       expect(component.sandboxNavConf[index].error).toBeTruthy();
       expect(component.recordReport).toBeFalsy();

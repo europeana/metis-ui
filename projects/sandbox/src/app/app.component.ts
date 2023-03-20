@@ -1,5 +1,6 @@
 import { Component, HostListener, Renderer2 } from '@angular/core';
 import { apiSettings } from '../environments/apisettings';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ClickService } from 'shared';
 import { SandboxNavigatonComponent } from './sandbox-navigation';
 

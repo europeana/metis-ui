@@ -110,7 +110,8 @@ export const mockDatasetOverviewResults: Results<DatasetOverview> = {
               expectedRecords: 114092,
               processedRecords: 114092,
               progressPercentage: 100,
-              errors: 0
+              errors: 0,
+              deletedRecords: 21
             },
 
             finishedDate: novemberNineteenthFinish,
@@ -721,6 +722,9 @@ export class MockWorkflowService {
   }
 
   getRecordFromPredecessor(_: string, __: PluginType, ids: Array<string>): Observable<XmlSample[]> {
+    if (this.errorMode) {
+      return throwError(new Error('mock getWorkflowRecordsById throws error...'));
+    }
     return this.getWorkflowRecordsById(_, __, ids);
   }
 

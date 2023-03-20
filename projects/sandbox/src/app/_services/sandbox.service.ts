@@ -210,10 +210,7 @@ export class SandboxService {
     });
 
     if (fileAppended) {
-      return this.http.post<SubmissionResponseDataWrapped>(url, formData, {
-        observe: 'events',
-        reportProgress: true
-      }) as Observable<SubmissionResponseDataWrapped | SubmissionResponseData>;
+      return this.http.post<SubmissionResponseDataWrapped>(url, formData);
     } else {
       return this.http.post<SubmissionResponseData>(url, formData);
     }

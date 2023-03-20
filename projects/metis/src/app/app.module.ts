@@ -7,8 +7,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { SharedModule } from 'shared';
 import { CollapsibleDirective } from './_directives/collapsible';
 import { XmlPipe } from './_helpers';
-import { ErrorInterceptor } from './_services';
-import { TokenInterceptor } from './_services';
+import { ErrorInterceptor, TokenInterceptor } from './_services';
 import { RenameWorkflowPipe, TranslatePipe, TRANSLATION_PROVIDERS } from './_translate';
 import { AppComponent } from './app.component';
 import {
