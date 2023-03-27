@@ -110,9 +110,12 @@ app-workflow-form-field-harvest {
 
     label {
       color: $gray-light;
-      font-weight: bold;
       margin-bottom: 0;
       text-align: left;
+    }
+
+    & > label {
+      font-weight: bold;
     }
 
     input {
@@ -148,6 +151,10 @@ app-workflow-form-field-harvest {
 
     select.ng-invalid.ng-touched {
       border-color: $eu-red;
+    }
+
+    select:focus {
+      border-color: $eu-orange;
     }
 
     select:disabled {
@@ -240,7 +247,6 @@ app-workflow-form-field-harvest {
 
   .form-fields {
     background-color: $white;
-    border: 1px solid $offwhite;
     border-radius: $border-radius;
     color: $gray-light;
     padding: 2rem;
@@ -256,12 +262,17 @@ app-workflow-form-field-harvest {
       padding: 0;
       position: relative;
 
-      label,
+      & > label,
       p {
         flex: 1 0 120px;
         max-width: 14rem;
         padding-bottom: 0;
         padding-right: 2rem;
+      }
+
+      .radio-button:focus > input[type='radio'] + *::before {
+        outline: 1px solid $eu-orange;
+        border-color: transparent;
       }
 
       .form-group-radios {
@@ -279,15 +290,11 @@ app-workflow-form-field-harvest {
       }
 
       input {
-        border: 1px solid $gray-light;
         color: $gray-light;
         margin-bottom: 0;
 
         &::placeholder {
           color: $eu-blue;
-        }
-        &:focus {
-          border-color: $eu-jade;
         }
       }
 
@@ -379,14 +386,6 @@ app-workflow-form-field-harvest {
 /* workflow-form specific */
 
 .metis-form.workflow-form {
-  .form-group {
-    input:focus {
-      border-color: $eu-jade;
-      -webkit-box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
-      box-shadow: inset 1px 0 5px 2px rgba(55, 185, 139, 0.3);
-    }
-  }
-
   .form-group:not(.form-group-btns) {
     display: block;
     margin: 0 auto 1rem 0;

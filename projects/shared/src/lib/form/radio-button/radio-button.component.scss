@@ -1,0 +1,50 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$eu-green-1: #197324;
+$eu-green-2: #71c07b; // HIGHLIGHT
+
+.radio-button {
+  cursor: pointer;
+  padding: 0.4rem 0;
+
+  &:focus {
+    outline: 0;
+  }
+}
+
+.radio-button > input[type='radio'] {
+  display: none;
+}
+
+.radio-button > input[type='radio'] + *::before {
+  content: '';
+  display: inline-block;
+  vertical-align: bottom;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 12px;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 0.15rem;
+  border-color: $eu-green-1;
+  background-color: white;
+}
+
+.radio-button:focus {
+  border: 0;
+
+  /*
+  & > input[type='radio'] + *::before {
+    outline: 3px dotted $eu-green-2;
+  }
+  */
+}
+
+.radio-button > input[type='radio']:checked + *::before {
+  background-color: $eu-green-1;
+  background-image: svg-url-icon-tick($white);
+  background-position: center 3px;
+  background-repeat: no-repeat;
+  background-size: 14px;
+}
