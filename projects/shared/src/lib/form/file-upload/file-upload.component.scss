@@ -1,0 +1,32 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+$eu-green-1: #197324;
+
+.file-upload,
+.pseudo-button {
+  border-radius: 4px;
+}
+
+.file-upload {
+  border: 1px solid $gray-5;
+  padding: 1.75em 2em;
+}
+
+.pseudo-button {
+  background-image: svg-url-icon-folder($eu-green-1);
+  background-repeat: no-repeat;
+  background-size: 18px;
+  background-position: 14px center;
+  box-shadow: 0px 3px 3px 1px $gray-5;
+  color: $eu-green-1;
+  cursor: pointer;
+  margin-right: 1em;
+  padding: 9px 12px 9px 42px;
+  text-transform: uppercase;
+
+  &:focus-visible {
+    box-shadow: none;
+    outline: 1px solid $eu-orange;
+  }
+}

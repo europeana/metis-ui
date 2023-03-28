@@ -19,7 +19,6 @@
       }"
       >Name</label
     >
-
     <input id="name" formControlName="name" autocomplete="off" />
     <ng-container *ngIf="form.get('name'); let nameField">
       <ng-container *ngIf="nameField.value; let name">
@@ -83,7 +82,13 @@
 
   <div class="form-group">
     <div style="display: flex;">
-      <a (click)="showStepSizeInfo()" class="open-info" title="Open information on step size"></a>
+      <a
+        (click)="showStepSizeInfo()"
+        (keydown.enter)="showStepSizeInfo()"
+        class="open-info"
+        title="Open information on step size"
+        tabindex="0"
+      ></a>
       <label
         *ngIf="form.controls.stepSize"
         for="stepSize"

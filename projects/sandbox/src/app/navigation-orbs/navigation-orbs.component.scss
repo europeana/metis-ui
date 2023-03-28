@@ -9,3 +9,7 @@
     text-shadow: -1px -1px 1px rgba(165, 228, 206, 0.1), 1px 1px 1px rgba(165, 228, 206, 0.5);
   }
 }
+
+.nav-orb:focus-visible {
+  outline: 1px solid $eu-orange;
+}

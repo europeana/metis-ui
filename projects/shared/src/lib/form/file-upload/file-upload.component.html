@@ -1,8 +1,15 @@
-<input
-  #fileUpload
-  type="file"
-  accept="{{ acceptedTypes }}"
-  aria-label="File Upload"
-  [formGroup]="form"
-  [disabled]="form.disabled"
-/>
+<label class="file-upload" (keydown.enter)="fileUpload.click()">
+  <input
+    #fileUpload
+    type="file"
+    accept="{{ acceptedTypes }}"
+    aria-label="File Upload"
+    [formGroup]="form"
+    [disabled]="form.disabled"
+    style="display:none;"
+  />
+  <span class="pseudo-button" tabindex="0">Choose file</span>
+  <span>
+    {{ selectedFileName ? selectedFileName : 'No file chosen' }}
+  </span>
+</label>
