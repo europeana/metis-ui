@@ -1,8 +1,8 @@
 <label
   (keydown.space)="onKeyToggle($event)"
   class="radio-button"
-  [ngClass]="!!cssClass ? cssClass : ''"
-  tabindex="0"
+  [ngClass]="!!cssClass ? cssClass : null"
+  [attr.tabindex]="form.controls[formControlName].value !== valueName ? 0 : null"
   *ngIf="form"
   [formGroup]="form"
 >

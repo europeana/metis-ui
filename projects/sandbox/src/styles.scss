@@ -41,6 +41,7 @@
 
 body.theme-default {
   @import 'assets/sass/themes/theme-default/theme-default';
+  @import 'assets/sass/focus';
 
   background-color: #f4f4f1;
   color: $gray-med;
@@ -48,6 +49,8 @@ body.theme-default {
 
 body.theme-white {
   @import 'assets/sass/themes/theme-white/theme-white';
+  @import 'assets/sass/focus';
+
   background-color: #fff;
   color: $black;
 }
@@ -218,14 +221,14 @@ html {
   overflow: auto;
 }
 
-*:focus {
+*:focus-visible {
   outline: 0;
 }
 
 .form-group-radios {
   display: flex;
   flex-direction: row;
-  & > .radio-button:not(:last-child) {
+  > :not(:last-child) .radio-button {
     margin-right: 2em;
   }
 }

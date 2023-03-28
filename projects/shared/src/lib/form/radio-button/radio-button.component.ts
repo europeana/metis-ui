@@ -55,6 +55,10 @@ export class RadioButtonComponent implements ControlValueAccessor {
     this.onTouch = fn;
   }
 
+  /** onKeyToggle
+   * sets the form field to this instance's value / triggers change handler
+   * @param { Event: event }
+   **/
   onKeyToggle(event: Event): void {
     event.preventDefault();
     this.form.controls[this.formControlName].setValue(this.valueName);

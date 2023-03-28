@@ -1,0 +1,13 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+
+input,
+select {
+  &:focus-visible {
+    border-color: $eu-orange;
+  }
+}
+
+.radio-button:focus-visible > input[type='radio'] + *::before {
+  outline: 1px solid $eu-orange;
+  border-color: transparent;
+}

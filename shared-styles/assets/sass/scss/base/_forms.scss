@@ -54,7 +54,12 @@ input[type='checkbox']:focus {
 
 input:not([type='checkbox']),
 textarea {
-  &:focus {
+  &:focus-visible {
     border-color: $eu-orange;
   }
+}
+
+.form-group label.radio-button:focus-visible > input[type='radio'] + *::before {
+  outline: 1px solid $eu-orange;
+  border-color: transparent !important;
 }
