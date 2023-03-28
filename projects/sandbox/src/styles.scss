@@ -217,3 +217,15 @@ html {
 .modal-wrapper .modal .content {
   overflow: auto;
 }
+
+*:focus {
+  outline: 0;
+}
+
+.form-group-radios {
+  display: flex;
+  flex-direction: row;
+  & > .radio-button:not(:last-child) {
+    margin-right: 2em;
+  }
+}

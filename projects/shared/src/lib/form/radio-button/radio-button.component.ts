@@ -19,6 +19,7 @@ export class RadioButtonComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() cssClass = '';
   @Input() valueName = '';
+  @Input() disabled = false;
 
   @Input() form: FormGroup;
 
