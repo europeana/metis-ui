@@ -1,7 +1,7 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
 .disabled {
-  border-color: $eu-jade-light;
+  border-color: $eu-green-light;
   background-color: $eu-jade-disabled;
   pointer-events: none;
   &::after {

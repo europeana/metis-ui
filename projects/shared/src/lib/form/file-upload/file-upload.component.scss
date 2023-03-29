@@ -7,7 +7,7 @@
 }
 
 .file-upload {
-  border: 1px solid $gray-5;
+  border: 1px solid $eu-grey-middle;
   padding: 1.75em 2em;
 
   &.disabled {
@@ -22,7 +22,7 @@
   background-repeat: no-repeat;
   background-size: 18px;
   background-position: 14px center;
-  box-shadow: 0px 3px 3px 1px $gray-5;
+  box-shadow: 0px 3px 3px 1px $eu-grey-middle;
   color: $eu-green-dark;
   cursor: pointer;
   margin-right: 1em;

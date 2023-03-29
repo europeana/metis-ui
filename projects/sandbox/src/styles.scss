@@ -197,7 +197,7 @@ select {
 }
 
 ::-webkit-scrollbar-track {
-  border: 1px solid $eu-jade-light;
+  border: 1px solid $eu-green-light;
 }
 ::-webkit-scrollbar {
   background-color: $eu-light-jade-classic;
@@ -215,7 +215,7 @@ select {
 }
 
 html {
-  scrollbar-color: rgba(55, 185, 139, 0.75) $eu-jade-light;
+  scrollbar-color: rgba(55, 185, 139, 0.75) $eu-green-light;
 }
 
 .modal-wrapper .modal .content {

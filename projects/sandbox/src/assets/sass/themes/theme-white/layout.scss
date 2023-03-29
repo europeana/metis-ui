@@ -6,7 +6,7 @@
     background-image: svg-url-icon-tick('#{$grey-3}');
   }
   &:active .tick::after {
-    background-image: svg-url-icon-tick('#{$eu-jade-light}');
+    background-image: svg-url-icon-tick('#{$eu-green-light}');
   }
 }
 
