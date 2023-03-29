@@ -1,0 +1,11 @@
+<label
+  *ngIf="form"
+  class="checkbox"
+  [attr.tabindex]="0"
+  [formGroup]="form"
+  [ngClass]="{ disabled: form.disabled }"
+  (keydown.space)="onKeyToggle($event)"
+>
+  <input tabindex="-1" type="checkbox" (change)="onChange()" [formControlName]="formControlName"/>
+  <span>{{ labelText }}</span>
+</label>

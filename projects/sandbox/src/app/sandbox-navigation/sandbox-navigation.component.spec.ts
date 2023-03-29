@@ -7,7 +7,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { FileUploadComponent, ProtocolFieldSetComponent } from 'shared';
+import { FileUploadComponent, ProtocolFieldSetComponent, RadioButtonComponent } from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,
@@ -53,6 +53,7 @@ describe('SandboxNavigatonComponent', () => {
         FormatHarvestUrlPipe,
         ProblemViewerComponent,
         ProtocolFieldSetComponent,
+        RadioButtonComponent,
         RecordReportComponent,
         UploadComponent,
         SandboxNavigatonComponent

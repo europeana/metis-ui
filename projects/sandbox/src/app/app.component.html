@@ -1,7 +1,12 @@
 <div class="header-wrapper">
   <header class="header">
     <div class="header-container">
-      <a class="hamburger" (click)="toggleSidebarOpen()"></a>
+      <a
+        class="hamburger"
+        (click)="toggleSidebarOpen()"
+        (keydown.enter)="toggleSidebarOpen()"
+        tabindex="0"
+      ></a>
       <div class="metis-logo">
         <a
           href="/"

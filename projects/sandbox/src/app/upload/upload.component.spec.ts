@@ -12,7 +12,8 @@ import {
   MockModalConfirmService,
   ModalConfirmService,
   ProtocolFieldSetComponent,
-  ProtocolType
+  ProtocolType,
+  RadioButtonComponent
 } from 'shared';
 
 describe('UploadComponent', () => {
@@ -24,7 +25,12 @@ describe('UploadComponent', () => {
 
   const configureTestbed = (errorMode = false): void => {
     TestBed.configureTestingModule({
-      declarations: [FileUploadComponent, ProtocolFieldSetComponent, UploadComponent],
+      declarations: [
+        FileUploadComponent,
+        ProtocolFieldSetComponent,
+        RadioButtonComponent,
+        UploadComponent
+      ],
       imports: [HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {

@@ -56,7 +56,8 @@ body.theme-white {
 }
 
 input,
-label {
+label,
+select {
   &.disabled,
   &[disabled] {
     cursor: default;
@@ -228,6 +229,7 @@ html {
 .form-group-radios {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   > :not(:last-child) .radio-button {
     margin-right: 2em;
   }

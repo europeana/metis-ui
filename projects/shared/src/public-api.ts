@@ -9,6 +9,7 @@ export * from './lib/_models/shared-models';
 export * from './lib/_services/click.service';
 export * from './lib/_services/modal-confirm.service';
 export * from './lib/data-polling/data-polling.component';
+export * from './lib/form/checkbox/checkbox.component';
 export * from './lib/form/file-upload/file-upload.component';
 export * from './lib/form/radio-button/radio-button.component';
 export * from './lib/form/protocol-field-set/protocol-field-set.component';

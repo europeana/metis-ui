@@ -11,6 +11,12 @@ $eu-green-2: #71c07b; // HIGHLIGHT
   &:focus {
     outline: 0;
   }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .radio-button > input[type='radio'] {
@@ -33,12 +39,6 @@ $eu-green-2: #71c07b; // HIGHLIGHT
 
 .radio-button:focus {
   border: 0;
-
-  /*
-  & > input[type='radio'] + *::before {
-    outline: 3px dotted $eu-green-2;
-  }
-  */
 }
 
 .radio-button > input[type='radio']:checked + *::before {

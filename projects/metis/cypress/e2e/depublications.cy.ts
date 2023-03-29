@@ -4,7 +4,7 @@ context('metis-ui', () => {
   describe('depublication', () => {
     const force = { force: true };
     const selDialogClose = '.modal .btn-close';
-    const selDialogFile = '.modal [type="file"]';
+    const selDialogFile = '.modal .file-upload';
     const selDialogInput = '.modal textarea';
     const selGrid = '.depublications-grid';
     const selCtrls = '.depublication-ctrls';

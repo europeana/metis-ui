@@ -15,11 +15,6 @@ select {
   box-shadow: unset;
 }
 
-input[type='file'] {
-  box-shadow: none;
-  border-color: $gray-5;
-}
-
 .tick::after {
   background-image: svg-url-icon-tick($gray-med);
 }

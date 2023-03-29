@@ -24,8 +24,8 @@ context('Sandbox', () => {
     let currentStep = 2;
     const force = { force: true };
     const selectorFieldErrors = '.field-errors';
-    const selectorInputXSLFile = '[type="file"][accept=".xsl"]';
-    const selectorSendXSLT = '[formControlName="sendXSLT"]';
+    const selectorInputXSLFile = 'form > .form-group:not(.protocol-wrapper) .file-upload';
+    const selectorSendXSLT = '.form-group:nth-child(6) .checkbox';
     const testDatasetName = 'Test_dataset_1';
 
     beforeEach(() => {
@@ -156,7 +156,7 @@ context('Sandbox', () => {
       cy.get(selectorInputCountry).should('be.disabled');
       cy.get(selectorInputLanguage).should('be.disabled');
       cy.get(selectorUploadOrb).click(force);
-      cy.get(selectorInputZipFile).should('be.disabled');
+      cy.get(selectorInputZipFile).should('have.class', 'disabled');
       cy.get(selectorProgressOrb).click(force);
 
       // create a new dataset
@@ -170,7 +170,7 @@ context('Sandbox', () => {
       cy.get(selectorInputName).should('not.be.disabled');
       cy.get(selectorInputCountry).should('not.be.disabled');
       cy.get(selectorInputLanguage).should('not.be.disabled');
-      cy.get(selectorInputZipFile).should('not.be.disabled');
+      cy.get(selectorInputZipFile).should('not.have.class', 'disabled');
     });
   });
 });

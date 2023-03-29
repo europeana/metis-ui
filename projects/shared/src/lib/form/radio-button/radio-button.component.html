@@ -1,7 +1,7 @@
 <label
   (keydown.space)="onKeyToggle($event)"
-  class="radio-button"
-  [ngClass]="!!cssClass ? cssClass : null"
+  class="radio-button {{ cssClass }}"
+  [ngClass]="{ disabled: form.disabled }"
   [attr.tabindex]="form.controls[formControlName].value !== valueName ? 0 : null"
   *ngIf="form"
   [formGroup]="form"
@@ -12,7 +12,6 @@
     [value]="valueName"
     [formControlName]="formControlName"
     [attr.name]="formControlName"
-    [attr.disabled]="disabled"
   />
   <span>{{ label }}</span>
 </label>

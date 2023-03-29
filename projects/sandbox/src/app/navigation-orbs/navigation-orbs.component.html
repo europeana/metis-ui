@@ -12,10 +12,10 @@
         [attr.href]="links.length > itemIndex ? links[itemIndex] : null"
         [attr.data-indicator]="_indicatorAttributes[itemIndex]"
         [attr.title]="tooltips.length > itemIndex ? tooltips[itemIndex] : null"
-        [attr.tabindex]="0"
-      ></a>
+        [attr.tabindex]="fnClassMapInner(itemIndex)['is-active'] ? -1 : 0"
+      >
+      </a>
     </ng-template>
-
     <ng-template #showCollapsed>
       <li>
         <button

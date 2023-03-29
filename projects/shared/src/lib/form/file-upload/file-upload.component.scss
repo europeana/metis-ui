@@ -11,6 +11,12 @@ $eu-green-1: #197324;
 .file-upload {
   border: 1px solid $gray-5;
   padding: 1.75em 2em;
+
+  &.disabled {
+    cursor: default;
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .pseudo-button {
