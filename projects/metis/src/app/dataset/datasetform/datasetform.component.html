@@ -184,7 +184,6 @@
         <div class="radio-group">
           <ng-container *ngFor="let option of publicationFitnessOps">
             <lib-radio-button
-              [cssClass]="'fitness-radio-label'"
               [label]="option.label | translate"
               [formControlName]="'publicationFitness'"
               [valueName]="option.val"

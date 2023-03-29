@@ -1,7 +1,7 @@
 import { cleanupUser, setupUser } from '../support/helpers';
 
 context('metis-ui', () => {
-  const selFitnessOps = '.fitness-radio-label';
+  const selFitnessOps = '.radio-button';
   const selForm = '.metis-form';
   const selPermanentFields = [
     '#dataset-name',

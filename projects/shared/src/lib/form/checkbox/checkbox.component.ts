@@ -16,7 +16,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormGroup } from '@angu
 export class CheckboxComponent implements ControlValueAccessor {
   @Input() form: UntypedFormGroup;
   @Input() labelText: string;
-  @Input() formControlName: string;
+  @Input() controlName: string;
+  @Input() disabled = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: any = (): void => {
@@ -50,7 +51,7 @@ export class CheckboxComponent implements ControlValueAccessor {
    * @param { Event: event }
    **/
   onKeyToggle(event: Event): void {
-    const ctrl = this.form.controls[this.formControlName];
+    const ctrl = this.form.controls[this.controlName];
     ctrl.setValue(!ctrl.value);
     event.preventDefault();
     this.onChange();

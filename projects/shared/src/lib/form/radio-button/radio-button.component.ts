@@ -17,7 +17,7 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
 export class RadioButtonComponent implements ControlValueAccessor {
   @Input() form: FormGroup;
   @Input() formControlName = '';
-  @Input() cssClass = '';
+  @Input() disabled = false;
   @Input() label = '';
   @Input() valueName = '';
 

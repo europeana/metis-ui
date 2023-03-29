@@ -1,6 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+// sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
+import { CheckboxComponent } from 'shared';
 import { createMockPipe } from '../../../_mocked';
 import { DragType, ParameterFieldName, PluginType } from '../../../_models';
 import { WorkflowFormFieldTransformComponent } from '.';
@@ -14,7 +16,7 @@ describe('WorkflowFormFieldTransformComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
-      declarations: [WorkflowFormFieldTransformComponent, createMockPipe('translate')],
+      declarations: [CheckboxComponent, WorkflowFormFieldTransformComponent, createMockPipe('translate')],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [{ provide: FormBuilder, useValue: formBuilder }]
     }).compileComponents();

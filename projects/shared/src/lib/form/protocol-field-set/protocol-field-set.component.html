@@ -40,13 +40,11 @@
   *ngIf="incrementalEnabled && (isProtocolOAIPMH() || isProtocolHTTP())"
   [formGroup]="form"
 >
-  <input type="checkbox" id="incremental-harvest" formControlName="incrementalHarvest" />
-  <label
-    for="incremental-harvest"
-    i18n="protocol label incrementalHarvest@@protocolLabelIncrementalHarvest"
-  >
-    Incremental Harvest
-  </label>
+  <lib-checkbox
+    [form]="form"
+    controlName="incrementalHarvest"
+    labelText="Incremental Harvest"
+  ></lib-checkbox>
 </div>
 
 <div class="form-group" *ngIf="isProtocolOAIPMH()" [formGroup]="form">

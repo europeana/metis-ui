@@ -143,10 +143,11 @@
   <div class="form-group">
     <lib-checkbox
       [form]="form"
-      formControlName="sendXSLT"
+      controlName="sendXSLT"
       labelText="Records are not provided in the EDM (external) format"
       (valueChanged)="updateConditionalXSLValidator()"
     ></lib-checkbox>
+
     <div [ngClass]="{ hidden: !form.value.sendXSLT }">
       <label
         [ngClass]="{
