@@ -185,7 +185,7 @@
           <ng-container *ngFor="let option of publicationFitnessOps">
             <lib-radio-button
               [label]="option.label | translate"
-              [formControlName]="'publicationFitness'"
+              controlName="publicationFitness"
               [valueName]="option.val"
               [form]="datasetForm"
             ></lib-radio-button>

@@ -16,7 +16,7 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
 })
 export class RadioButtonComponent implements ControlValueAccessor {
   @Input() form: FormGroup;
-  @Input() formControlName = '';
+  @Input() controlName = '';
   @Input() disabled = false;
   @Input() label = '';
   @Input() valueName = '';
@@ -59,7 +59,7 @@ export class RadioButtonComponent implements ControlValueAccessor {
    **/
   onKeyToggle(event: Event): void {
     event.preventDefault();
-    this.form.controls[this.formControlName].setValue(this.valueName);
+    this.form.controls[this.controlName].setValue(this.valueName);
     this.onInputChange(event);
   }
 }
