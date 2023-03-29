@@ -1,9 +1,6 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-$eu-green-1: #197324;
-$eu-green-2: #71c07b; // HIGHLIGHT
-
 .radio-button {
   cursor: pointer;
   padding: 0.4rem 0;
@@ -33,7 +30,7 @@ $eu-green-2: #71c07b; // HIGHLIGHT
   border-radius: 50%;
   border-style: solid;
   border-width: 0.15rem;
-  border-color: $eu-green-1;
+  border-color: $eu-green-dark;
   background-color: white;
 }
 
@@ -42,7 +39,7 @@ $eu-green-2: #71c07b; // HIGHLIGHT
 }
 
 .radio-button > input[type='radio']:checked + *::before {
-  background-color: $eu-green-1;
+  background-color: $eu-green-dark;
   background-image: svg-url-icon-tick($white);
   background-position: center 3px;
   background-repeat: no-repeat;

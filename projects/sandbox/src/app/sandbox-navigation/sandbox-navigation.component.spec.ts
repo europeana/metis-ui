@@ -7,7 +7,12 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
-import { CheckboxComponent, FileUploadComponent, ProtocolFieldSetComponent, RadioButtonComponent } from 'shared';
+import {
+  CheckboxComponent,
+  FileUploadComponent,
+  ProtocolFieldSetComponent,
+  RadioButtonComponent
+} from 'shared';
 import { apiSettings } from '../../environments/apisettings';
 import {
   mockDataset,

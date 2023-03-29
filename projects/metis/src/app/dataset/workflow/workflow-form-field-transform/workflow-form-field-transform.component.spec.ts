@@ -16,7 +16,11 @@ describe('WorkflowFormFieldTransformComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
-      declarations: [CheckboxComponent, WorkflowFormFieldTransformComponent, createMockPipe('translate')],
+      declarations: [
+        CheckboxComponent,
+        WorkflowFormFieldTransformComponent,
+        createMockPipe('translate')
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [{ provide: FormBuilder, useValue: formBuilder }]
     }).compileComponents();

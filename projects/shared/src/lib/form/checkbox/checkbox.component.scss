@@ -1,8 +1,6 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 @import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
 
-$eu-green-1: #197324;
-
 .checkbox {
   cursor: pointer;
   padding: 0.4rem 0;
@@ -37,7 +35,7 @@ $eu-green-1: #197324;
   margin-right: 14px;
   border-style: solid;
   border-width: 1px;
-  border-color: $eu-green-1;
+  border-color: $eu-green-dark;
   background-color: white;
 }
 
@@ -46,7 +44,7 @@ $eu-green-1: #197324;
 }
 
 .checkbox > input[type='checkbox']:checked + *::before {
-  background-color: $eu-green-1;
+  background-color: $eu-green-dark;
   background-image: svg-url-icon-tick($white);
   background-position: center;
   background-repeat: no-repeat;

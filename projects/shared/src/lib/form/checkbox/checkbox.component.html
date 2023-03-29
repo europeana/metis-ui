@@ -3,9 +3,14 @@
   class="checkbox"
   [attr.tabindex]="0"
   [formGroup]="form"
-  [ngClass]="{'disabled': form.disabled || disabled}"
+  [ngClass]="{ disabled: form.disabled || disabled }"
   (keydown.space)="onKeyToggle($event)"
 >
-  <input tabindex="-1" type="checkbox" (change)="onInputChange($event)" [formControlName]="controlName"/>
+  <input
+    tabindex="-1"
+    type="checkbox"
+    (change)="onInputChange($event)"
+    [formControlName]="controlName"
+  />
   <span>{{ labelText }}</span>
 </label>
