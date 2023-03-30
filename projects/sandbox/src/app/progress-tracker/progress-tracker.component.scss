@@ -18,7 +18,7 @@ $eu-jade-slightly-dark: #1ea072;
 }
 
 .dataset-errors {
-  color: $eu-red;
+  color: $eu-red-error;
 }
 
 .full-grid-width {
@@ -172,7 +172,7 @@ $eu-jade-slightly-dark: #1ea072;
   background: $eu-jade-classic;
 }
 .fail {
-  background: $eu-red;
+  background: $eu-red-error;
 }
 .warn {
   background: $eu-yellow;

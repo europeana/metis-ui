@@ -293,7 +293,7 @@ $defaultPalette: (
 }
 
 .warning-animated::before {
-  background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red) center no-repeat;
+  background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red-error) center no-repeat;
 }
 
 .vertical {

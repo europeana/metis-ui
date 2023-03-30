@@ -13,6 +13,16 @@ select {
   border: 1px solid $eu-grey-middle;
   border-radius: 6px;
   box-shadow: unset;
+  padding: 12px;
+}
+
+label {
+  text-transform: uppercase;
+}
+
+.submit-button .icon {
+  height: 2.7rem;
+  width: 2.7rem;
 }
 
 .tick::after {

@@ -14,11 +14,19 @@ select {
   box-shadow: unset;
 }
 
+select {
+  padding: 7px;
+}
+
 .file-upload {
   border-color: $eu-jade-dark;
-  .pseudo-button {
-    border: 1px solid $eu-jade-dark;
-    box-shadow: none;
+}
+
+.pseudo-button {
+  border: 1px solid $eu-jade-dark;
+  box-shadow: none;
+  &:focus-visible {
+    border-color: transparent;
   }
 }
 

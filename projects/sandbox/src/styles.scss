@@ -82,7 +82,7 @@ select {
 .errors,
 .error-message {
   background-color: $white;
-  border: 1px solid $eu-red;
+  border: 1px solid $eu-red-error;
   color: $eu-red;
   font-size: 14px;
   font-weight: bold;
@@ -104,7 +104,7 @@ select {
       display: inline-block;
       height: 12px;
       width: 13px;
-      background: svg-url-icon-warning($eu-red) center no-repeat;
+      background: svg-url-icon-warning($eu-red-error) center no-repeat;
       margin: 2px 2px 0 0;
     }
   }
@@ -182,7 +182,7 @@ select {
   }
 
   &:focus-visible {
-    outline: 1px solid $eu-light-orange;
+    outline: 1px solid $eu-orange;
   }
 
   &.next::after {
