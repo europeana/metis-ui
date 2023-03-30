@@ -74,6 +74,14 @@ export class AppComponent {
   }
 
   /**
+   * getLinkTabIndex
+   * template utility
+   **/
+  getLinkTabIndex(): number {
+    return this.isSidebarOpen ? 0 : -1;
+  }
+
+  /**
    * toggleSidebarOpen
    * toggle isSidebarOpen
    **/
