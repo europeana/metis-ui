@@ -58,5 +58,4 @@ describe('CheckboxComponent', () => {
     expect(component.onChange).toHaveBeenCalled();
     expect(component.form.value.checkboxOp).toBeTruthy();
   });
-
 });
