@@ -37,7 +37,7 @@ describe('RadioButtonComponent', () => {
 
   it('should handle key events', () => {
     const fnPreventDefault = jasmine.createSpy();
-    component.formControlName = 'radioOps';
+    component.controlName = 'radioOps';
     component.form = new UntypedFormBuilder().group({
       radioOps: ['']
     });
