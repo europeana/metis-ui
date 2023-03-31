@@ -98,18 +98,32 @@ describe('ErrorInterceptor', () => {
     sub.unsubscribe();
   }));
 
-  it('should redirect to the login page on a 401', () => {
+  it('should expire the session and redirect to the login page on a 401', fakeAsync(() => {
     localStorage.setItem('currentUser', 'user1');
-    spyOn(router, 'navigate');
-    expect(instantBailout(401)).toBeTruthy();
-    expect(router.navigate).toHaveBeenCalledWith(['/signin']);
-    expect(localStorage.getItem('currentUser')).toBeFalsy();
-  });
+    spyOn(router, 'navigateByUrl');
+    spyOn(service, 'shouldRetry').and.callThrough();
 
-  it('should not retry on codes 200 and 406', () => {
+    const handler = getHandler(401);
+    const observable = service.intercept(new HttpRequest('GET', '/dashboard'), handler);
+    let sub: Subscription | null = null;
+
+    try {
+      sub = observable.subscribe();
+      tick(ErrorInterceptor.retryDelay);
+    } catch {
+      if (sub) {
+        sub.unsubscribe();
+      }
+    }
+    expect(service.shouldRetry).toHaveBeenCalledTimes(1);
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/signin');
+    expect(localStorage.getItem('currentUser')).toBeFalsy();
+  }));
+
+  it('should not retry on codes 200, 401 and 406', () => {
     localStorage.setItem('currentUser', 'user1');
     expect(instantBailout(200)).toBeTruthy();
+    expect(instantBailout(401)).toBeTruthy();
     expect(instantBailout(406)).toBeTruthy();
-    expect(localStorage.getItem('currentUser')).toBe('user1');
   });
 });

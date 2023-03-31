@@ -719,7 +719,7 @@ export function search(term: string, page = 0): ResultList {
   return getListWrapper(allResults, false, page);
 }
 
-// localhost:3000/orchestrator/workflows/0
+// /orchestrator/workflows/0
 export function workflow(datasetId: string): Workflow | undefined {
   const dsx = dataset(datasetId);
 
@@ -729,14 +729,14 @@ export function workflow(datasetId: string): Workflow | undefined {
   return undefined;
 }
 
-// localhost:3000/orchestrator/proxies/enrichment/task/external-task-id/report/exists
+// /orchestrator/proxies/enrichment/task/external-task-id/report/exists
 export function reportExists(reportId: string): ReportAvailability {
   return {
     existsExternalTaskReport: !!reportId
   };
 }
 
-// localhost:3000/datasets/0/xslt
+// /datasets/0/xslt
 export function xslt(xsltId: string): XmlSample {
   return {
     ecloudId: xsltId,
@@ -744,7 +744,7 @@ export function xslt(xsltId: string): XmlSample {
   };
 }
 
-// localhost:3000/orchestrator/proxies/link_checking/task/60/report?idsPerError=100
+// /orchestrator/proxies/link_checking/task/60/report?idsPerError=100
 export function errorReport(reportId: string, process: string): Report {
   return {
     id: reportId,
@@ -764,7 +764,7 @@ export function errorReport(reportId: string, process: string): Report {
   };
 }
 
-// localhost:3000/orchestrator/workflows/evolution/0/OAIPMH_HARVEST
+// /orchestrator/workflows/evolution/0/OAIPMH_HARVEST
 export function evolution(datasetId: string, peType: string): HistoryVersions {
   const wl = getMostRecentExecutionByDatasetId(datasetId);
   const res: Array<HistoryVersion> = [];
@@ -791,7 +791,7 @@ export function evolution(datasetId: string, peType: string): HistoryVersions {
   };
 }
 
-// localhost:3000/orchestrator/proxies/link_checking/task/10/logs?from=766&to=865
+// /orchestrator/proxies/link_checking/task/10/logs?from=766&to=865
 export function logs(): string {
   return JSON.stringify([
     {
