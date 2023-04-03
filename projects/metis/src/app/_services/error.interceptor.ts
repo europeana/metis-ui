@@ -31,11 +31,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       retry({ count: this.numberOfRetries, delay: this.shouldRetry }),
       tap({
         error: (res) => {
-          if (res.status === 401) {
-            this.expiredToken();
-          }
-          if (res.status === 406) {
-            console.log('got the 406');
+          if ([401, 406].includes(res.status)) {
             this.expiredToken();
           }
         }
