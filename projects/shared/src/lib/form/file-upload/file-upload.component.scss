@@ -15,6 +15,11 @@
     opacity: 0.5;
     pointer-events: none;
   }
+
+  input:active + .pseudo-button {
+    border-color: $eu-orange;
+    outline: 0;
+  }
 }
 
 .pseudo-button {

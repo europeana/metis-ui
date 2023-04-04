@@ -16,6 +16,10 @@ select {
   padding: 12px;
 }
 
+.file-upload input:active + .pseudo-button {
+  border: 1px solid $eu-orange;
+}
+
 label {
   text-transform: uppercase;
 }
