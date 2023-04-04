@@ -1,4 +1,4 @@
-export const selectorInputZipFile = '[type="file"][accept=".zip"]';
+export const selectorInputZipFile = '.form-group:nth-child(4) .file-upload';
 export const selectorBtnNext = '.next';
 export const selectorBtnSubmitData = '[data-e2e="submit-upload"]';
 export const selectorBtnSubmitRecord = '[data-e2e="submitRecord"]';

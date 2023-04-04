@@ -295,7 +295,7 @@ q {
   }
   &.fatal {
     &::before {
-      background: svg-url-icon-warning($eu-red) center no-repeat;
+      background: svg-url-icon-warning($eu-red-error) center no-repeat;
     }
   }
   &:not(.summary) {

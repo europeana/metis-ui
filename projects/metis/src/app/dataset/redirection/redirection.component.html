@@ -13,7 +13,7 @@
     <span class="redirect-label">
       {{ redirectionId }}
     </span>
-    <a class="redirect-remove" (click)="remove()"></a>
+    <a class="redirect-remove" (click)="remove()" tabindex="0"></a>
   </ng-container>
   <span class="error" [ngClass]="{ hidden: !(flagIdInvalid || flagInvalidSelfReference) }">{{
     (flagIdInvalid ? 'datasetInexistent' : 'datasetNoSelfReference') | translate

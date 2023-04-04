@@ -10,10 +10,10 @@ a {
     color: $gray-light;
   }
   &:active {
-    color: $eu-jade-light;
+    color: $eu-green-light;
   }
   &:focus-visible {
-    outline: 1px dotted $eu-jade;
+    outline: 1px solid $eu-orange;
   }
 }
 
@@ -30,9 +30,9 @@ a {
 
   &:active,
   &:active:hover {
-    color: $eu-jade-light;
+    color: $eu-green-light;
     &::after {
-      background-image: svg-url-icon-external($eu-jade-light);
+      background-image: svg-url-icon-external($eu-green-light);
     }
   }
 
@@ -61,9 +61,9 @@ a {
   }
   &:active,
   &:active:hover {
-    color: $eu-jade-light;
+    color: $eu-green-light;
     &::before {
-      background-image: svg-url-icon-external($eu-jade-light);
+      background-image: svg-url-icon-external($eu-green-light);
     }
   }
 }

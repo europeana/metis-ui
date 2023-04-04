@@ -17,6 +17,7 @@ button,
 input,
 select,
 textarea {
+  background: $white;
   font-family: inherit;
   font-size: 100%;
   margin: 0;
@@ -30,28 +31,6 @@ textarea {
   padding: $pad-half 0.65rem;
   transition: 0.3s linear border;
   width: 100%;
-
-  &:focus {
-    border-color: $textcolour_link;
-    outline: 0;
-  }
-}
-
-input[type='file']:focus,
-input[type='radio']:focus,
-input[type='checkbox']:focus {
-  outline: 1px auto $textcolour_link;
-}
-
-input[type='text'] {
-  @include placeholder {
-    color: $textcolour_link;
-  }
-}
-input[type='text']:focus {
-  @include placeholder {
-    color: $gray-light;
-  }
 }
 
 button,
@@ -65,8 +44,23 @@ input[type='submit'] {
   width: auto;
 }
 
-input[type='checkbox'],
-input[type='radio'] {
+input[type='checkbox'] {
   margin-right: 0.3em;
   width: auto;
+}
+
+input[type='checkbox']:focus {
+  outline: 1px solid $eu-orange;
+}
+
+input:not([type='checkbox']),
+textarea {
+  &:focus-visible {
+    border-color: $eu-orange;
+  }
+}
+
+.form-group label.radio-button:focus-visible > input[type='radio'] + *::before {
+  outline: 1px solid $eu-orange;
+  border-color: transparent !important;
 }

@@ -5,7 +5,7 @@
   position: relative;
 
   &::before {
-    background-color: $eu-jade-light;
+    background-color: $eu-green-light;
     clip-path: polygon(0 0, calc(100% - 77px) 0, 100% 170px, 100% 100%, 0 100%);
     content: '';
     position: absolute;

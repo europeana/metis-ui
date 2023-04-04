@@ -1,7 +1,7 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
 .limited-list.boxed {
-  border: 1px solid $gray-5;
+  border: 1px solid $eu-grey-middle;
 }
 
 .report-description,
@@ -12,5 +12,5 @@
 }
 
 .separator-line {
-  background: $gray-5;
+  background: $eu-grey-middle;
 }

@@ -29,8 +29,8 @@
 // connector lines
 @media (min-width: $bp-large) {
   .link-related::after {
-    border-left: 1px solid $eu-jade-light;
-    color: $eu-jade-light;
+    border-left: 1px solid $eu-green-light;
+    color: $eu-green-light;
   }
 
   .link-related::before {
@@ -46,14 +46,14 @@
 
   .openable-list {
     .link-related::after {
-      border-left: 1px solid $eu-jade-light;
+      border-left: 1px solid $eu-green-light;
     }
     :last-child .link-related::after {
-      border-bottom: 1px solid $eu-jade-light;
+      border-bottom: 1px solid $eu-green-light;
     }
   }
 
   .list-opener:not(.fmt-compact).is-open::before {
-    border-left: 1px solid $eu-jade-light;
+    border-left: 1px solid $eu-green-light;
   }
 }

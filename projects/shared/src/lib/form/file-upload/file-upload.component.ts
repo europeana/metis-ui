@@ -4,6 +4,7 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
 @Component({
   selector: 'lib-file-upload',
   templateUrl: './file-upload.component.html',
+  styleUrls: ['./file-upload.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -15,6 +16,8 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
 })
 export class FileUploadComponent implements ControlValueAccessor {
   onChange: Function;
+  selectedFileName = '';
+
   @ViewChild('fileUpload', { static: false }) fileUpload: ElementRef;
 
   @Input() acceptedTypes: string;
@@ -24,6 +27,11 @@ export class FileUploadComponent implements ControlValueAccessor {
   emitFiles(event: FileList): void {
     const file = event && event.item(0);
     this.onChange(file);
+    if (file) {
+      this.selectedFileName = file.name;
+    } else {
+      this.selectedFileName = '';
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define

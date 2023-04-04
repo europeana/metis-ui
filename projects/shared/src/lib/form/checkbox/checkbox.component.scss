@@ -1,0 +1,48 @@
+@import 'shared-styles/assets/sass/scss/generic/variables';
+@import 'shared-styles/assets/sass/scss/iconography/svg-icons-metis';
+
+.checkbox {
+  cursor: pointer;
+  padding: 0.4rem 0;
+
+  &:focus > input[type='checkbox'] + *::before {
+    border-color: transparent;
+  }
+
+  &.disabled {
+    cursor: default;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.checkbox > input[type='checkbox'] {
+  display: none;
+}
+
+.checkbox > input[type='checkbox'] + * {
+  display: flex;
+  line-height: 1.2rem;
+}
+
+.checkbox > input[type='checkbox'] + *::before {
+  content: '';
+  display: inline-block;
+  vertical-align: bottom;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-left: 1px;
+  margin-right: 14px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: $eu-green-dark;
+  background-color: white;
+}
+
+.checkbox > input[type='checkbox']:checked + *::before {
+  background-color: $eu-green-dark;
+  background-image: svg-url-icon-tick($white);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 14px;
+}

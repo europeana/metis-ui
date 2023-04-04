@@ -1,6 +1,6 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
-$gray-5: #d8d8d8;
+$eu-grey-middle: #d8d8d8;
 $bp-desktop: $bp-xl;
 
 .feedback-link {
@@ -31,7 +31,7 @@ $bp-desktop: $bp-xl;
 
 .legal {
   align-items: flex-start;
-  border-top: 1px solid $gray-5;
+  border-top: 1px solid $eu-grey-middle;
   color: #000;
   display: flex;
   flex-direction: column;

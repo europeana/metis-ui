@@ -1,0 +1,17 @@
+<label
+  (keydown.space)="onKeyToggle($event)"
+  class="radio-button"
+  [ngClass]="{ disabled: form.disabled || disabled }"
+  [attr.tabindex]="form.controls[controlName].value !== valueName ? 0 : null"
+  *ngIf="form"
+  [formGroup]="form"
+>
+  <input
+    type="radio"
+    (change)="onInputChange($event)"
+    [value]="valueName"
+    [formControlName]="controlName"
+    [attr.name]="controlName"
+  />
+  <span>{{ label }}</span>
+</label>

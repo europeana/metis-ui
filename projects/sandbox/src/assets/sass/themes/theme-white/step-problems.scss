@@ -2,7 +2,7 @@
 @import '../../mixins/pop-out';
 
 .problem-viewer {
-  border: 1px solid $gray-5;
+  border: 1px solid $eu-grey-middle;
 }
 
 .problem-viewer-wrapper .pop-out {
@@ -14,9 +14,9 @@
 
 .skip-arrows {
   background-color: $white;
-  border-bottom: 1px solid $gray-5;
-  border-left: 1px solid $gray-5;
-  border-right: 1px solid $gray-5;
+  border-bottom: 1px solid $eu-grey-middle;
+  border-left: 1px solid $eu-grey-middle;
+  border-right: 1px solid $eu-grey-middle;
 
   .skip-arrow {
     color: $gray-lighter;
@@ -34,7 +34,7 @@
 
 // connector lines
 @media (min-width: $bp-large) {
-  $colour-connect-lines: $gray-5;
+  $colour-connect-lines: $eu-grey-middle;
 
   .link-related::after {
     border-left: 1px solid $colour-connect-lines;

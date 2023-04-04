@@ -95,7 +95,7 @@ context('Sandbox', () => {
     });
 
     it('should show the processing errors conditionally', () => {
-      cy.visit('/dataset/1?recordId=2');
+      cy.visit('/dataset/1?recordId=0');
       const selectorErrors = '.processing-errors';
       cy.get(selectorErrors).should('not.exist');
       cy.visit('/dataset/1?recordId=13');

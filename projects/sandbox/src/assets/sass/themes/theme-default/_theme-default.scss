@@ -14,13 +14,23 @@ select {
   box-shadow: unset;
 }
 
-input[type='file'] {
-  box-shadow: none;
-  border-color: $eu-jade-classic;
+select {
+  padding: 7px;
+}
+
+.file-upload {
+  border-color: $eu-jade-dark;
+  .pseudo-button {
+    border: 1px solid $eu-jade-dark;
+    box-shadow: none;
+    &:focus-visible {
+      border-color: transparent;
+    }
+  }
 }
 
 .tick::after {
-  background-image: svg-url-icon-tick($eu-jade-classic);
+  background-image: svg-url-icon-tick($eu-jade-dark);
 }
 
 .open-info {

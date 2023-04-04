@@ -9,29 +9,35 @@ import { ClickService } from './_services/click.service';
 import { ModalConfirmService } from './_services/modal-confirm.service';
 import { SubscriptionManager } from './subscription-manager/subscription.manager';
 import { ProtocolFieldSetComponent } from './form/protocol-field-set/protocol-field-set.component';
+import { CheckboxComponent } from './form/checkbox/checkbox.component';
 import { FileUploadComponent } from './form/file-upload/file-upload.component';
+import { RadioButtonComponent } from './form/radio-button/radio-button.component';
 import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
     ClickAwareDirective,
+    CheckboxComponent,
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
     ModalConfirmComponent,
     SubscriptionManager,
-    ProtocolFieldSetComponent
+    ProtocolFieldSetComponent,
+    RadioButtonComponent
   ],
   imports: [BrowserModule, FormsModule, ReactiveFormsModule],
   providers: [ClickService, ModalConfirmService, MockModalConfirmService],
   exports: [
+    CheckboxComponent,
     ClickAwareDirective,
     DataPollingComponent,
     FileUploadComponent,
     FooterComponent,
     ModalConfirmComponent,
     SubscriptionManager,
-    ProtocolFieldSetComponent
+    ProtocolFieldSetComponent,
+    RadioButtonComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -12,7 +12,7 @@ $defaultPalette: (
   'active-background': $white,
   'active-border': $eu-light-orange,
   'active-foreground': $eu-light-orange,
-  'background': $eu-jade-light,
+  'background': $eu-green-light,
   'border': $eu-jade-dark,
   'foreground': $white,
   'hover-background': $white,
@@ -293,7 +293,7 @@ $defaultPalette: (
 }
 
 .warning-animated::before {
-  background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red) center no-repeat;
+  background: svg-url-icon-warning-detailed($eu-yellow, $white, $eu-red-error) center no-repeat;
 }
 
 .vertical {

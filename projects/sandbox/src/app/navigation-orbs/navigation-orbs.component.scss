@@ -1,11 +1,15 @@
 @import 'shared-styles/assets/sass/scss/generic/variables';
 
 .disabled {
-  border-color: $eu-jade-light;
+  border-color: $eu-green-light;
   background-color: $eu-jade-disabled;
   pointer-events: none;
   &::after {
     opacity: 0.35;
     text-shadow: -1px -1px 1px rgba(165, 228, 206, 0.1), 1px 1px 1px rgba(165, 228, 206, 0.5);
   }
+}
+
+.nav-orb:focus-visible {
+  outline: 1px solid $eu-orange;
 }

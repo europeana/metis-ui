@@ -50,6 +50,10 @@
   padding: 0.5em;
   text-transform: none;
 
+  &:focus {
+    border-color: $eu-orange;
+  }
+
   &:hover {
     background: $offwhite;
     color: $eu_jade;
