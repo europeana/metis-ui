@@ -42,6 +42,7 @@ export class FileUploadComponent implements ControlValueAccessor {
   */
   clearFileValue(): void {
     this.fileUpload.nativeElement.value = '';
+    this.selectedFileName = '';
   }
 
   /** writeValue
