@@ -117,14 +117,14 @@ new (class extends TestDataServer {
 
   switchOn(r: string): void {
     SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
-      r = r.replace(urlCode, '')
+      r = r.replace(urlCode, '');
     });
     delete this.switchedOff[r];
   }
 
   isSwitchedOff(r: string): UrlManipulation {
     SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
-      r = r.replace(urlCode, '')
+      r = r.replace(urlCode, '');
     });
     return this.switchedOff[r] as UrlManipulation;
   }

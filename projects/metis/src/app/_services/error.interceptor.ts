@@ -7,7 +7,7 @@ import {
   HttpRequest
 } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, retry, timer, tap } from 'rxjs';
+import { Observable, retry, tap, timer } from 'rxjs';
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable({ providedIn: 'root' })
