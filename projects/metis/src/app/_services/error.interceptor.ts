@@ -7,7 +7,7 @@ import {
   HttpRequest
 } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, retry, timer } from 'rxjs';
+import { Observable, retry, timer, tap } from 'rxjs';
 import { RedirectPreviousUrl } from './redirect-previous-url.service';
 
 @Injectable({ providedIn: 'root' })
@@ -27,9 +27,16 @@ export class ErrorInterceptor implements HttpInterceptor {
    * @returns Observable<HttpEvent>
    **/
   intercept(request: HttpRequest<unknown>, handler: HttpHandler): Observable<HttpEvent<unknown>> {
-    return handler
-      .handle(request)
-      .pipe(retry({ count: this.numberOfRetries, delay: this.shouldRetry }));
+    return handler.handle(request).pipe(
+      retry({ count: this.numberOfRetries, delay: this.shouldRetry }),
+      tap({
+        error: (res) => {
+          if ([401, 406].includes(res.status)) {
+            this.expiredToken();
+          }
+        }
+      })
+    );
   }
 
   /** shouldRetry
@@ -39,9 +46,7 @@ export class ErrorInterceptor implements HttpInterceptor {
    **/
   shouldRetry(error: HttpErrorResponse): Observable<number> {
     const status = parseInt(`${error.status}`);
-    if (status === 401) {
-      this.expiredToken();
-    } else if (![200, 406].includes(status)) {
+    if (![200, 401, 406].includes(status)) {
       return timer(ErrorInterceptor.retryDelay);
     }
     throw error;
@@ -49,12 +54,13 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   /** expiredToken
    * if token expired: remember current url,
-   * logout,
-   * navigate to signin page
+   * logout and navigate to signin page
    **/
   expiredToken(): void {
-    this.redirectPreviousUrl.set(this.router.url);
+    if (this.router.url !== '/signin') {
+      this.redirectPreviousUrl.set(this.router.url);
+    }
     localStorage.removeItem('currentUser');
-    this.router.navigate(['/signin']);
+    this.router.navigateByUrl('/signin');
   }
 }

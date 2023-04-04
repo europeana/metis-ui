@@ -23,6 +23,11 @@ import { RecordDepublicationInfoField, UrlManipulation } from './_models/test-mo
 import { DepublicationStatus, RecordDepublicationInfo, XmlSample } from '../src/app/_models';
 
 const FAIL = 'fail';
+const SWITCH_TYPES = [
+  UrlManipulation.RETURN_401,
+  UrlManipulation.RETURN_404,
+  UrlManipulation.RETURN_EMPTY
+];
 
 // handler defined outside "this" content of server instance so it can be assigned within request.data event
 const handleRecordSearch = (
@@ -96,28 +101,32 @@ new (class extends TestDataServer {
     response.end('{"errorMessage":"Wrong credentials"}');
   }
 
+  // clear switchedOff map
   cleanSwitches(): void {
     this.switchedOff = {};
   }
 
+  // assign to switchedOff map
   switchOff(r: string): void {
-    const route = r.replace(UrlManipulation.RETURN_404, '');
-    this.switchedOff[route.replace(UrlManipulation.RETURN_EMPTY, '')] =
-      route === r ? UrlManipulation.RETURN_EMPTY : UrlManipulation.RETURN_404;
+    SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
+      if (r.indexOf(urlCode) > -1) {
+        this.switchedOff[r.replace(urlCode, '')] = urlCode;
+      }
+    });
   }
 
   switchOn(r: string): void {
-    const route = r
-      .replace(UrlManipulation.RETURN_404, '')
-      .replace(UrlManipulation.RETURN_EMPTY, '');
-    delete this.switchedOff[route];
+    SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
+      r = r.replace(urlCode, '')
+    });
+    delete this.switchedOff[r];
   }
 
   isSwitchedOff(r: string): UrlManipulation {
-    const route = r
-      .replace(UrlManipulation.RETURN_404, '')
-      .replace(UrlManipulation.RETURN_EMPTY, '');
-    return this.switchedOff[route] as UrlManipulation;
+    SWITCH_TYPES.forEach((urlCode: UrlManipulation) => {
+      r = r.replace(urlCode, '')
+    });
+    return this.switchedOff[r] as UrlManipulation;
   }
 
   getStatisticsDetail(): string {
@@ -722,23 +731,22 @@ new (class extends TestDataServer {
       return;
     }
 
-    const isSwitch =
-      route.match(UrlManipulation.RETURN_404) || route.match(UrlManipulation.RETURN_EMPTY);
-
-    if (isSwitch) {
+    if (route.match(SWITCH_TYPES.join('|'))) {
       this.switchOff(route);
+      this.returnEmpty(response);
+      return;
     }
 
     const switchedOff = this.isSwitchedOff(route);
     if (switchedOff) {
       if (switchedOff === UrlManipulation.RETURN_EMPTY) {
         this.returnEmpty(response);
+      } else if (switchedOff === UrlManipulation.RETURN_401) {
+        this.return401(response);
       } else if (switchedOff === UrlManipulation.RETURN_404) {
         this.return404(response);
       }
-      if (!isSwitch) {
-        this.switchOn(route);
-      }
+      this.switchOn(route);
       return;
     }
 
