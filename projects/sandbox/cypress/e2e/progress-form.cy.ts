@@ -153,7 +153,7 @@ context('Sandbox', () => {
     });
 
     it('should show a modal dialog for dataset errors', () => {
-      fillProgressForm('101');
+      fillProgressForm('201');
       cy.get(selCreationDate).should('have.class', 'error-icon');
       cy.get(selectorModalDisplay).should('not.exist');
       cy.get(`${selCreationDate} a`).click(force);
@@ -163,7 +163,7 @@ context('Sandbox', () => {
     });
 
     it('should show a modal dialog for dataset warnings and errors', () => {
-      fillProgressForm('113');
+      fillProgressForm('213');
       cy.get(selCreationDate).should('have.class', 'error-icon');
       cy.get(selectorModalDisplay).should('not.exist');
       cy.get(`${selCreationDate} a`).click(force);

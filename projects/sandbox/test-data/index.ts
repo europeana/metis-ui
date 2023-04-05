@@ -248,6 +248,7 @@ new (class extends TestDataServer {
         return this.initialiseProgressByStep(key, totalRecords);
       }),
       'dataset-info': (Object.assign(datasetInfo, datasetProtocol) as unknown) as DatasetInfo,
+      'dataset-logs': [],
       'tier-zero-info': tierZeroInfo
     };
   }
@@ -711,8 +712,8 @@ new (class extends TestDataServer {
             response.end();
           } else {
             this.headerJSON(response);
-            if (idNumeric > 100 && idNumeric <= 200) {
-              response.end(JSON.stringify(this.handleId(id, idNumeric - 100)));
+            if (idNumeric > 200 && idNumeric <= 300) {
+              response.end(JSON.stringify(this.handleId(id, idNumeric - 200)));
             } else {
               response.end(JSON.stringify(this.handleId(id)));
             }

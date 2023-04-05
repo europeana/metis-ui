@@ -17,7 +17,7 @@
     </li>
   </ul>
 
-  <ng-container *ngIf="datasetLogs">
+  <ng-container *ngIf="datasetLogs.length > 0">
     <span class="modal-summary error-icon sticky">Errors</span>
     <span class="explanation">The following errors were detected in your data:</span>
     <ul *ngFor="let log of datasetLogs" class="decorated-list">
@@ -128,13 +128,13 @@
           class="creation-date container-h ignore-close-click nowrap"
           title="dataset issues detected"
           [ngClass]="{
-            'error-icon': !!datasetLogs,
+            'error-icon': datasetLogs.length > 0,
             'warning-icon': datasetInfo['record-limit-exceeded']
           }"
         >
           <a
             *ngIf="
-              datasetInfo['record-limit-exceeded'] || datasetLogs;
+              datasetInfo['record-limit-exceeded'] || datasetLogs.length > 0;
               else conditionalWrapWarnLink
             "
             (click)="showDatasetIssues()"

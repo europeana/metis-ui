@@ -52,6 +52,14 @@ describe('AppComponent', () => {
     expect(event.preventDefault).toHaveBeenCalled();
   });
 
+  it('should get the link tab index', () => {
+    expect(app.getLinkTabIndex()).toEqual(-1);
+    app.isSidebarOpen = true;
+    expect(app.getLinkTabIndex()).toEqual(0);
+    app.isSidebarOpen = false;
+    expect(app.getLinkTabIndex()).toEqual(-1);
+  });
+
   it('should close the sidebar', () => {
     app.isSidebarOpen = true;
     app.closeSideBar();

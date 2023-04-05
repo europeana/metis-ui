@@ -11,7 +11,15 @@
   </sb-dataset-info>
 </ng-container>
 
-<div class="wrapper" *ngIf="progressData" [ngClass]="{ hidden: !showing }">
+<ng-container *ngIf="progressData && datsetLogs.length > 0">
+  <span class="separator-line"></span>
+</ng-container>
+
+<div
+  class="wrapper"
+  *ngIf="progressData && datsetLogs.length === 0"
+  [ngClass]="{ hidden: !showing }"
+>
   <div>
     <span
       *ngFor="let item of progressData['progress-by-step']"
