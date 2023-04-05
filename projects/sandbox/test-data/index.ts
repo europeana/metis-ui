@@ -377,7 +377,7 @@ new (class extends TestDataServer {
    *
    *  @param {string} id - the id to track
    **/
-  handleId(id: string): DatasetWithInfo {
+  handleId(id: string, appendErrors = 0): DatasetWithInfo {
     const timedTarget = this.timedTargets.get(id);
     if (timedTarget) {
       return timedTarget.dataset;
@@ -401,6 +401,20 @@ new (class extends TestDataServer {
       }
       const dataset = this.initialiseDataset(id, harvestType);
       this.addTimedTarget(id, dataset);
+
+      if (appendErrors > 0) {
+        dataset['dataset-logs'] = Array.from(Array(appendErrors).keys()).map((i: number) => {
+          return {
+            type: `Error Type ${i}`,
+            message: `There was an error of type ${i} in the data`
+          };
+        });
+
+        if (appendErrors === 13) {
+          // throw in the warning too!
+          dataset['dataset-info']['record-limit-exceeded'] = true;
+        }
+      }
       return dataset;
     }
   }
@@ -691,12 +705,17 @@ new (class extends TestDataServer {
 
         if (regResDataset) {
           const id = regResDataset[1];
+          const idNumeric = parseInt(id);
           if (this.errorCodes.indexOf(id) > -1) {
             response.statusCode = parseInt(id);
             response.end();
           } else {
             this.headerJSON(response);
-            response.end(JSON.stringify(this.handleId(id)));
+            if (idNumeric > 100 && idNumeric <= 200) {
+              response.end(JSON.stringify(this.handleId(id, idNumeric - 100)));
+            } else {
+              response.end(JSON.stringify(this.handleId(id)));
+            }
           }
           return;
         }

@@ -48,7 +48,7 @@ describe('DatasetInfoComponent', () => {
 
   it('should show the modal for incomplete data', () => {
     spyOn(modalConfirms, 'open').and.callFake(getConfirmResult);
-    component.showIncompleteDataWarning();
+    component.showDatasetIssues();
     expect(modalConfirms.open).toHaveBeenCalled();
   });
 

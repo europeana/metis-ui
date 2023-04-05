@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   Dataset,
   DatasetInfo,
+  DatasetLog,
   DatasetStatus,
   DisplayedTier,
   ProgressByStep,
@@ -31,6 +32,7 @@ export class ProgressTrackerComponent extends SubscriptionManager {
 
   @Input() enableDynamicInfo = false;
   @Input() datsetInfo: DatasetInfo;
+  @Input() datsetLogs: Array<DatasetLog>;
 
   @Input() set progressData(data: Dataset) {
     this.warningViewOpened = [false, false];

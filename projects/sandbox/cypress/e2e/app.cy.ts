@@ -8,9 +8,11 @@ context('Sandbox', () => {
     const selHamburger = '.hamburger';
     const selectorLogo = '.metis-logo .logo';
     const selectorSandboxNavigation = '.sandbox-navigation';
-    const selectorFeedback = '[data-e2e=feedback-url]';
-    const selectorUserGuide = '[data-e2e=user-guide-url]';
-    const selectorDocumentation = '[data-e2e=documentation-url]';
+
+    const selectorFeedback = '.links-external :nth-of-type(1) .external-link-left';
+    const selectorUserGuide = '.links-external :nth-of-type(2) .external-link-left';
+    const selectorDocumentation = '.links-external :nth-of-type(3) .external-link-left';
+
     const selectorsLinks = [selectorFeedback, selectorUserGuide, selectorDocumentation];
 
     const checkLinksHidden = (): void => {

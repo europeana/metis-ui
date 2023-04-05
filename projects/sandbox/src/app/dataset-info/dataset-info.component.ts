@@ -2,7 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component, Input } from '@angular/core';
 // sonar-disable-next-statement (sonar doesn't read tsconfig paths entry)
 import { ModalConfirmService, SubscriptionManager } from 'shared';
-import { DatasetInfo } from '../_models';
+import { DatasetInfo, DatasetLog } from '../_models';
 import { SandboxService } from '../_services';
 
 @Component({
@@ -37,6 +37,7 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   @Input() datasetInfo: DatasetInfo;
+  @Input() datasetLogs: Array<DatasetLog>;
   @Input() processingComplete: boolean;
   @Input() publishUrl?: string;
   @Input() processingError: string;
@@ -72,10 +73,10 @@ export class DatasetInfoComponent extends SubscriptionManager {
   }
 
   /**
-   * showIncompleteDataWarning
-   * Shows the incomplete-data warning modal
+   * showDatasetIssues
+   * Shows the warning / errors modal
    **/
-  showIncompleteDataWarning(): void {
+  showDatasetIssues(): void {
     this.subs.push(this.modalConfirms.open(this.modalIdIncompleteData).subscribe());
   }
 

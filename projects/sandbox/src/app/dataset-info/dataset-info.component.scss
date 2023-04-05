@@ -33,6 +33,7 @@ $slide-down-duration: 0.4s;
   .creation-date {
     align-items: center;
     display: flex;
+    &.error-icon,
     &.warning-icon {
       position: relative;
       &::before {
